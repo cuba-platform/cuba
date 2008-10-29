@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project xmlns:ext="http://haulmont.com/schema/ant"
+	default="noop" basedir=".">
+
+	<property name="root.dir" location=".."/>
+
+	<import file="${root.dir}/build-inc.xml"/>
+	<property file="${root.dir}/build.properties"/>
+	<property file="lib.properties"/>
+
+	<target name="delegate">
+		<property name="target" value="noop" />
+		<ant dir="modules/core" target="${target}" inheritAll="false"/>
+		<ant dir="modules/web" target="${target}" inheritAll="false"/>
+	</target>
+
+	<target name="clean">
+		<antcall target="delegate" inheritAll="false">
+			<param name="target" value="clean-module"/>
+		</antcall>
+	</target>
+		
+	<target name="install-lib">
+		<!-- jboss -->
+		<ext:install-jboss version="${jboss.version}" toDir="${jboss.dir}"/>
+		<!-- libs -->
+		<ext:install-lib name="commons-lang-${commons-lang.version}" toDir="${lib.common.dir}"/>
+		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.jboss.dir}"/>
+		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.jboss.dir}"/>
+	</target>
+	
+	<target name="compile">
+		<antcall target="delegate" inheritAll="false">
+			<param name="target" value="compile-module"/>
+		</antcall>
+	</target>
+		
+	<target name="build">
+		<antcall target="delegate" inheritAll="false">
+			<param name="target" value="build-module"/>
+		</antcall>
+	</target>
+	
+</project>
