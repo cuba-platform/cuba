@@ -25,8 +25,9 @@
 		<ext:install-jboss version="${jboss.version}" toDir="${jboss.dir}"/>
 		<!-- libs -->
 		<ext:install-lib name="commons-lang-${commons-lang.version}" toDir="${lib.common.dir}"/>
-		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.jboss.dir}"/>
-		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.jboss.dir}"/>
+		<ext:install-lib name="openjpa-${openjpa.version}" toDir="${lib.server.dir}"/>
+		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.server.dir}"/>
+		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
 	</target>
 	
 	<target name="compile">
