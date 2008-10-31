@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	default="noop" basedir=".">
+	name="cuba" default="noop" basedir=".">
 
 	<property name="root.dir" location=".."/>
 
@@ -11,7 +11,7 @@
 	<target name="delegate">
 		<property name="target" value="noop" />
 		<ant dir="modules/core" target="${target}" inheritAll="false"/>
-		<ant dir="modules/web" target="${target}" inheritAll="false"/>
+		<!--<ant dir="modules/web" target="${target}" inheritAll="false"/>-->
 	</target>
 
 	<target name="clean">
@@ -26,8 +26,14 @@
 		<!-- libs -->
 		<ext:install-lib name="commons-lang-${commons-lang.version}" toDir="${lib.common.dir}"/>
 		<ext:install-lib name="openjpa-${openjpa.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="serp-${serp.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="ejb3-persistence" version="${jboss.version}" toDir="${lib.common.dir}"/>
+        <ext:install-jboss-lib name="jboss-j2ee" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-ejb3x" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="log4j" version="${jboss.version}" toDir="${lib.common.dir}"/>
+        <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>
 	</target>
 	
 	<target name="compile">
@@ -41,5 +47,17 @@
 			<param name="target" value="build-module"/>
 		</antcall>
 	</target>
+
+    <target name="deploy">
+        <antcall target="delegate" inheritAll="false">
+            <param name="target" value="deploy-module"/>
+        </antcall>
+    </target>
 	
+    <target name="undeploy">
+        <antcall target="delegate" inheritAll="false">
+            <param name="target" value="undeploy-module"/>
+        </antcall>
+    </target>
+
 </project>

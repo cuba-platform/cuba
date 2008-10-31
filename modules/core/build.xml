@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	default="noop" basedir=".">
+	name="cuba-core" default="noop" basedir=".">
 
 	<property name="project.dir" location="../.."/>
 	<property name="root.dir" location="${project.dir}/.."/>
@@ -13,7 +13,7 @@
 
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
-        <fileset refid="jboss-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
         <fileset dir="${root.dir}/chile/build">
             <include name="*.jar"/>
         </fileset>
@@ -21,7 +21,7 @@
 
     <path id="test-compile-cp">
         <fileset refid="common-lib-fs"/>
-        <fileset refid="jboss-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
         <fileset dir="${root.dir}/chile/build">
             <include name="*.jar"/>
         </fileset>
