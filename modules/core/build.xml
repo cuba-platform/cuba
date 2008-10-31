@@ -6,25 +6,25 @@
 	<property name="root.dir" location="${project.dir}/.."/>
 	
 	<property name="module.name" value="core"/>
-	<property name="module.jar" value="cuba-core.jar"/>
+	<property name="module.jar" value="20-cuba-core.jar"/>
 
 	<import file="${root.dir}/build-inc.xml"/>
 	<property file="${root.dir}/build.properties"/>
 
+    <fileset id="chile-jars" dir="${root.dir}/chile/build">
+        <include name="*.jar"/>
+    </fileset>
+
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
-        <fileset dir="${root.dir}/chile/build">
-            <include name="*.jar"/>
-        </fileset>
+        <!--<fileset refid="chile-jars"/>-->
     </path>
 
     <path id="test-compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
-        <fileset dir="${root.dir}/chile/build">
-            <include name="*.jar"/>
-        </fileset>
+        <!--<fileset refid="chile-jars"/>-->
     </path>
 
 </project>

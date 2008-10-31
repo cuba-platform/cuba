@@ -4,13 +4,13 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.chile.core.ChileCore;
+//import com.haulmont.chile.core.ChileCore;
 
 public class CubaCore {
 
     public static void main(String[] args) {
         System.out.println("Hello from CubaCore");
-        new ChileCore();
+//        new ChileCore();
     }
 
     public String getName() {

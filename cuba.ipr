@@ -277,13 +277,9 @@
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
     <library name="chile">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../chile/build/chile-core.jar!/" />
-      </CLASSES>
+      <CLASSES />
       <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../chile/modules/core/src" />
-      </SOURCES>
+      <SOURCES />
     </library>
     <library name="server">
       <CLASSES>
