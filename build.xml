@@ -24,9 +24,9 @@
 		<!-- jboss -->
 		<ext:install-jboss version="${jboss.version}" toDir="${jboss.dir}"/>
 		<!-- libs -->
-		<ext:install-lib name="commons-lang-${commons-lang.version}" toDir="${lib.common.dir}"/>
-		<ext:install-lib name="openjpa-${openjpa.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="serp-${serp.version}" toDir="${lib.server.dir}"/>
+		<ext:install-lib name="commons-lang" version="${commons-lang.version}" toDir="${lib.common.dir}"/>
+		<ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="ejb3-persistence" version="${jboss.version}" toDir="${lib.common.dir}"/>
