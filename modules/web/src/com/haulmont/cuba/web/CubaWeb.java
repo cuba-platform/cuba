@@ -4,13 +4,10 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.CubaCore;
-
 public class CubaWeb {
 
     public static void main(String[] args) {
         System.out.println("Hello from CubaWeb");
-        new CubaCore();
     }
 
     public String getName() {

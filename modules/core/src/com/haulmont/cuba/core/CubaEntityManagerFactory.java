@@ -12,15 +12,17 @@ package com.haulmont.cuba.core;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-public class CubaEntityManagerFactory
+import java.io.Serializable;
+
+public class CubaEntityManagerFactory implements Serializable
 {
     private OpenJPAEntityManagerFactory jpaFactory;
 
-    public CubaEntityManagerFactory(OpenJPAEntityManagerFactory jpaFactory) {
+   CubaEntityManagerFactory(OpenJPAEntityManagerFactory jpaFactory) {
         this.jpaFactory = jpaFactory;
     }
 
-    public CubaEntityManager getEntityManager() {
+    public CubaEntityManager createEntityManager() {
         OpenJPAEntityManager em = jpaFactory.createEntityManager();
         return new CubaEntityManager(em);
     }

@@ -286,6 +286,8 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/openjpa-1.2.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-collections.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2ee.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3x.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -296,6 +298,7 @@
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-lang-2.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/ejb3-persistence.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-logging.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

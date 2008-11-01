@@ -19,15 +19,23 @@ public class CubaEntityManager
         this.jpaEm = jpaEntityManager;
     }
 
-    public void insert(BaseEntity entity) {
+    public void persist(BaseEntity entity) {
         jpaEm.persist(entity);
     }
 
-    public <T> T merge(BaseEntity entity) {
-        return (T) jpaEm.merge(entity);
+    public <T extends BaseEntity> T merge(T entity) {
+        return jpaEm.merge(entity);
     }
 
-    public void delete(BaseEntity entity) {
-        
+    public void remove(BaseEntity entity) {
+        jpaEm.remove(entity);
+    }
+
+    public <T extends BaseEntity> T find(Class<T> clazz, Object key) {
+        return jpaEm.find(clazz, key);
+    }
+
+    public void close() {
+        jpaEm.close();
     }
 }
