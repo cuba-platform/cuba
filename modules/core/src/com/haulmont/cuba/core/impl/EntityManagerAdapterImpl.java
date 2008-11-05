@@ -11,7 +11,7 @@ package com.haulmont.cuba.core.impl;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import com.haulmont.cuba.core.EntityManagerAdapter;
-import com.haulmont.cuba.core.BaseEntity;
+import com.haulmont.cuba.core.entity.BaseEntity;
 
 public class EntityManagerAdapterImpl implements EntityManagerAdapter
 {

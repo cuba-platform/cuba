@@ -7,7 +7,7 @@
  * Created: 31.10.2008 16:51:51
  * $Id$
  */
-package com.haulmont.cuba.core;
+package com.haulmont.cuba.core.entity;
 
 import java.io.Serializable;
 

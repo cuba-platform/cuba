@@ -11,6 +11,7 @@ package com.haulmont.cuba.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
@@ -25,6 +26,7 @@ import com.haulmont.cuba.core.impl.EntityManagerFactoryAdapterImpl;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerFactoryAdapter;
 import com.haulmont.cuba.core.EntityManagerAdapter;
+import com.haulmont.cuba.core.CubaProperties;
 
 public class ManagedPersistenceProvider implements PersistenceProvider
 {
@@ -50,8 +52,18 @@ public class ManagedPersistenceProvider implements PersistenceProvider
         synchronized (mutex) {
             if (!emfInitialized) {
                 log.debug("Creating new EntityManagerFactory");
+
+                String xmlPath = System.getProperty(CubaProperties.PERSISTENCE_XML);
+                if (StringUtils.isBlank(xmlPath))
+                    xmlPath = "META-INF/cuba-persistence.xml";
+                String unitName = System.getProperty(CubaProperties.PERSISTENCE_UNIT);
+                if (StringUtils.isBlank(unitName))
+                    unitName = "cuba";
+                log.debug(String.format("Using persistence unit %s from %s", unitName, xmlPath));
+
                 OpenJPAEntityManagerFactory jpaFactory =
-                        OpenJPAPersistence.createEntityManagerFactory("cuba", "META-INF/cuba-persistence.xml");
+                        OpenJPAPersistence.createEntityManagerFactory(unitName, xmlPath);
+
                 EntityManagerFactoryAdapter emf = new EntityManagerFactoryAdapterImpl(jpaFactory);
                 try {
                     log.debug("Binding new EntityManagerFactory to JNDI context " + EMF_JNDI_NAME);

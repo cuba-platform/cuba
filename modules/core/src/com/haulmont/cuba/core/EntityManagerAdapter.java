@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.entity.BaseEntity;
+
 public interface EntityManagerAdapter
 {
     void persist(BaseEntity entity);

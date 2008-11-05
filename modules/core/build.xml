@@ -7,6 +7,7 @@
 	
 	<property name="module.name" value="core"/>
 	<property name="module.jar" value="20-cuba-core.jar"/>
+    <property name="module.intf.jar" value="cuba-core-intf.jar"/>
 
 	<import file="${root.dir}/build-inc.xml"/>
 	<property file="${root.dir}/build.properties"/>
@@ -24,7 +25,9 @@
     <path id="test-compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
+        <fileset refid="test-lib-fs"/>
         <!--<fileset refid="chile-jars"/>-->
+        <pathelement location="${prod.out.dir}/${module.name}"/>
     </path>
 
     <path id="enhance-cp">
@@ -41,6 +44,25 @@
             <arg value="-properties"/>
             <arg value="META-INF/cuba-persistence.xml"/>
         </java>
+    </target>
+
+    <target name="build-module" depends="compile-module">
+        <echo>==> building ${project.dir} ${module.name}</echo>
+        <mkdir dir="${build.dir}"/>
+        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
+            <exclude name="**/entity/*"/>
+        </jar>
+        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.intf.jar}">
+            <include name="**/entity/*"/>
+        </jar>
+    </target>
+
+    <target name="deploy-module" depends="base.deploy-module">
+        <copy file="${build.dir}/${module.intf.jar}" todir="${jboss.dir}/server/default/deploy"/>
+    </target>
+
+    <target name="undeploy-module" depends="base.undeploy-module">
+        <delete file="${jboss.dir}/server/default/deploy/${module.intf.jar}"/>
     </target>
 
 </project>
