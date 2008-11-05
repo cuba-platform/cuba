@@ -9,43 +9,40 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.impl.LocatorImpl;
+
 import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
-public class Locator
+public abstract class Locator
 {
-    private static Context jndiContext;
-    private static PersistenceProvider persistenceProvider;
+    private static Locator instance;
 
-    public static Context getJndiContext() {
-        if (jndiContext == null) {
-            try {
-                jndiContext = new InitialContext();
-            } catch (NamingException e) {
-                throw new RuntimeException(e);
-            }
+    private static Locator getInstance() {
+        if (instance == null) {
+            instance = new LocatorImpl();
         }
-        return jndiContext;
+        return instance;
+    }
+    
+    public static Context getJndiContext() {
+        return getInstance().__getJndiContextImpl();
     }
 
     public static PersistenceProvider getPersistenceProvider() {
-        if (persistenceProvider == null) {
-            persistenceProvider = new ManagedPersistenceProvider(getJndiContext());
-        }
-        return persistenceProvider;
+        return getInstance().__getPersistenceProvider();
     }
 
-    public static CubaEntityManager getEntityManager() {
-        return getPersistenceProvider().getEntityManager();
+    public static EntityManagerAdapter getEntityManager() {
+        return getInstance().__getPersistenceProvider().getEntityManager();
     }
 
     public static <T> T lookupLocal(String name) {
-        Context ctx = getJndiContext();
-        try {
-            return (T) ctx.lookup(name + "/local");
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        }
+        return (T) getInstance().__lookupLocal(name);
     }
+
+    protected abstract Context __getJndiContextImpl();
+
+    protected abstract PersistenceProvider __getPersistenceProvider();
+
+    protected abstract Object __lookupLocal(String name);
 }

@@ -7,15 +7,17 @@
  * Created: 31.10.2008 16:56:32
  * $Id$
  */
-package com.haulmont.cuba.core;
+package com.haulmont.cuba.core.impl;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import com.haulmont.cuba.core.EntityManagerAdapter;
+import com.haulmont.cuba.core.BaseEntity;
 
-public class CubaEntityManager
+public class EntityManagerAdapterImpl implements EntityManagerAdapter
 {
     private OpenJPAEntityManager jpaEm;
 
-    CubaEntityManager(OpenJPAEntityManager jpaEntityManager) {
+    EntityManagerAdapterImpl(OpenJPAEntityManager jpaEntityManager) {
         this.jpaEm = jpaEntityManager;
     }
 
@@ -33,6 +35,10 @@ public class CubaEntityManager
 
     public <T extends BaseEntity> T find(Class<T> clazz, Object key) {
         return jpaEm.find(clazz, key);
+    }
+
+    public void flush() {
+        jpaEm.flush();
     }
 
     public void close() {

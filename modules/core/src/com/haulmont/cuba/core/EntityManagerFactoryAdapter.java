@@ -4,14 +4,16 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 01.11.2008 13:23:09
+ * Created: 03.11.2008 18:42:58
  * $Id$
  */
 package com.haulmont.cuba.core;
 
-public interface PersistenceProvider
-{
-    EntityManagerFactoryAdapter getEntityManagerFactory();
+import com.haulmont.cuba.core.impl.EntityManagerAdapterImpl;
 
-    EntityManagerAdapter getEntityManager();
+import java.io.Serializable;
+
+public interface EntityManagerFactoryAdapter extends Serializable
+{
+    EntityManagerAdapterImpl createEntityManager();
 }

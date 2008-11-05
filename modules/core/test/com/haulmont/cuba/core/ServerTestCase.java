@@ -4,14 +4,17 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 01.11.2008 13:23:09
+ * Created: 04.11.2008 10:29:29
  * $Id$
  */
 package com.haulmont.cuba.core;
 
-public interface PersistenceProvider
-{
-    EntityManagerFactoryAdapter getEntityManagerFactory();
+import junit.framework.TestCase;
 
-    EntityManagerAdapter getEntityManager();
+public class ServerTestCase extends TestCase
+{
+    protected void setUp() throws Exception {
+        super.setUp();
+        TestContainer.start();
+    }
 }

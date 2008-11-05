@@ -7,7 +7,7 @@
  * Created: 01.11.2008 13:24:28
  * $Id$
  */
-package com.haulmont.cuba.core;
+package com.haulmont.cuba.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,6 +20,12 @@ import javax.transaction.*;
 import java.util.Hashtable;
 import java.util.Map;
 
+import com.haulmont.cuba.core.impl.EntityManagerAdapterImpl;
+import com.haulmont.cuba.core.impl.EntityManagerFactoryAdapterImpl;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.EntityManagerFactoryAdapter;
+import com.haulmont.cuba.core.EntityManagerAdapter;
+
 public class ManagedPersistenceProvider implements PersistenceProvider
 {
     private Context jndiContext;
@@ -28,9 +34,9 @@ public class ManagedPersistenceProvider implements PersistenceProvider
 
     private boolean emfInitialized;
 
-    private Map<Transaction, CubaEntityManager> emMap = new Hashtable<Transaction, CubaEntityManager>();
+    private Map<Transaction, EntityManagerAdapterImpl> emMap = new Hashtable<Transaction, EntityManagerAdapterImpl>();
 
-    public static final String EMF_JNDI_NAME = "CubaEntityManagerFactory";
+    public static final String EMF_JNDI_NAME = "EntityManagerFactoryAdapterImpl";
 
     public static final String TM_JNDI_NAME = "java:/TransactionManager";
 
@@ -40,15 +46,15 @@ public class ManagedPersistenceProvider implements PersistenceProvider
         this.jndiContext = jndiContext;
     }
 
-    public CubaEntityManagerFactory getEntityManagerFactory() {
+    public EntityManagerFactoryAdapter getEntityManagerFactory() {
         synchronized (mutex) {
             if (!emfInitialized) {
-                log.debug("Create new EntityManagerFactory");
+                log.debug("Creating new EntityManagerFactory");
                 OpenJPAEntityManagerFactory jpaFactory =
                         OpenJPAPersistence.createEntityManagerFactory("cuba", "META-INF/cuba-persistence.xml");
-                CubaEntityManagerFactory emf = new CubaEntityManagerFactory(jpaFactory);
+                EntityManagerFactoryAdapter emf = new EntityManagerFactoryAdapterImpl(jpaFactory);
                 try {
-                    log.debug("Bind new EntityManagerFactory to JNDI context " + EMF_JNDI_NAME);
+                    log.debug("Binding new EntityManagerFactory to JNDI context " + EMF_JNDI_NAME);
                     jndiContext.bind(EMF_JNDI_NAME, emf);
                 } catch (NamingException e) {
                     throw new RuntimeException(e);
@@ -57,38 +63,28 @@ public class ManagedPersistenceProvider implements PersistenceProvider
             }
         }
         try {
-            return (CubaEntityManagerFactory) jndiContext.lookup(EMF_JNDI_NAME);
+            return (EntityManagerFactoryAdapter) jndiContext.lookup(EMF_JNDI_NAME);
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public CubaEntityManager getEntityManager() {
-        return getEntityManager(true);
-    }
-
-    public CubaEntityManager getEntityManager(boolean transactional) {
-        CubaEntityManager em;
+    public EntityManagerAdapter getEntityManager() {
+        EntityManagerAdapterImpl em;
         try {
             TransactionManager tm = getTransactionManager();
             Transaction tx = tm.getTransaction();
-            if (transactional) {
-                if (tx == null) {
-                    log.trace("Begin new transaction");
-                    tm.begin();
-                    tx = tm.getTransaction();
-                }
+            if (tx != null) {
                 em = emMap.get(tx);
                 if (em == null) {
-                    log.trace("Create new EntityManager for transaction " + tx);
+                    log.trace("Creating new EntityManager for transaction " + tx);
                     em = getEntityManagerFactory().createEntityManager();
                     registerSync(tx, em);
                     emMap.put(tx, em);
                 }
             }
             else {
-                if (tx != null)
-                    throw new RuntimeException("Unable to get non-transactional EntityManager: JTA transaction exists");
+                log.trace("Creating new non-transactional EntityManager");
                 em = getEntityManagerFactory().createEntityManager();
             }
             return em;
@@ -96,18 +92,16 @@ public class ManagedPersistenceProvider implements PersistenceProvider
             throw new RuntimeException(e);
         } catch (SystemException e) {
             throw new RuntimeException(e);
-        } catch (NotSupportedException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private void registerSync(final javax.transaction.Transaction tx, final CubaEntityManager em) {
+    private void registerSync(final javax.transaction.Transaction tx, final EntityManagerAdapter em) {
         try {
             tx.registerSynchronization(
                     new Synchronization()
                     {
                         public void beforeCompletion() {
-                            log.trace("Close EntityManager for transaction " + tx);
+                            log.trace("Closing EntityManager for transaction " + tx);
                             em.close();
                         }
 

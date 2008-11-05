@@ -7,23 +7,24 @@
  * Created: 31.10.2008 16:55:55
  * $Id$
  */
-package com.haulmont.cuba.core;
+package com.haulmont.cuba.core.impl;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-import java.io.Serializable;
+import com.haulmont.cuba.core.impl.EntityManagerAdapterImpl;
+import com.haulmont.cuba.core.EntityManagerFactoryAdapter;
 
-public class CubaEntityManagerFactory implements Serializable
+public class EntityManagerFactoryAdapterImpl implements EntityManagerFactoryAdapter
 {
     private OpenJPAEntityManagerFactory jpaFactory;
 
-   CubaEntityManagerFactory(OpenJPAEntityManagerFactory jpaFactory) {
+   EntityManagerFactoryAdapterImpl(OpenJPAEntityManagerFactory jpaFactory) {
         this.jpaFactory = jpaFactory;
     }
 
-    public CubaEntityManager createEntityManager() {
+    public EntityManagerAdapterImpl createEntityManager() {
         OpenJPAEntityManager em = jpaFactory.createEntityManager();
-        return new CubaEntityManager(em);
+        return new EntityManagerAdapterImpl(em);
     }
 }

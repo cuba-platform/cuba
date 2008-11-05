@@ -27,4 +27,20 @@
         <!--<fileset refid="chile-jars"/>-->
     </path>
 
+    <path id="enhance-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
+        <pathelement location="${prod.out.dir}/${module.name}"/>
+        <pathelement location="${test.out.dir}/${module.name}"/>
+    </path>
+
+    <target name="compile-module" depends="base.compile-module">
+        <echo>==> enhancing ${project.dir} ${module.name}</echo>
+        <java classpathref="enhance-cp"
+              classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="true">
+            <arg value="-properties"/>
+            <arg value="META-INF/cuba-persistence.xml"/>
+        </java>
+    </target>
+
 </project>

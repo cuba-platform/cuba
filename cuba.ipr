@@ -77,6 +77,15 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="FacetAutodetectingManager">
+    <autodetection-disabled>
+      <facet-type id="jpa">
+        <modules>
+          <module name="core" />
+        </modules>
+      </facet-type>
+    </autodetection-disabled>
+  </component>
   <component name="IdProvider" IDEtalkID="99EE4594F0AAAC224547C8FE93321E41" />
   <component name="InspectionProjectProfileManager">
     <option name="PROJECT_PROFILE" value="Project Default" />
@@ -288,6 +297,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2ee.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3x.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/serp-1.13.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -303,6 +313,17 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-lang-2.4-src.zip!/" />
+      </SOURCES>
+    </library>
+    <library name="test">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../lib/test/jboss-ejb3-embeddable-ALPHA-9.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/test/jboss-ejb3-embeddable-thirdparty-ALPHA-9.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/test/junit-4.5.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../lib/test/src/junit-4.5-src.zip!/" />
       </SOURCES>
     </library>
   </component>
