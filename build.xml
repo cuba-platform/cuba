@@ -28,11 +28,12 @@
         <ext:install-lib name="jboss-ejb3-embeddable" version="${jboss-ejb3-embeddable.version}" toDir="${lib.test.dir}"/>
         <ext:install-lib name="jboss-ejb3-embeddable-thirdparty" version="${jboss-ejb3-embeddable-thirdparty.version}" toDir="${lib.test.dir}"/>
 		<ext:install-lib name="commons-lang" version="${commons-lang.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib name="dom4j" version="${dom4j.version}" toDir="${lib.common.dir}"/>
 		<ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="commons-logging" version="${jboss.version}" toDir="${lib.common.dir}"/>
 		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="jboss-common" path="lib" version="${jboss-common.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-common" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="ejb3-persistence" version="${jboss.version}" toDir="${lib.common.dir}"/>
         <ext:install-jboss-lib name="jboss-j2ee" version="${jboss.version}" toDir="${lib.server.dir}"/>

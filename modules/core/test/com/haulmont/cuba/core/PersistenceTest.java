@@ -11,7 +11,7 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Server;
 
-public class PersistenceTest extends ServerTestCase
+public class PersistenceTest extends CubaTestCase
 {
     public void test() {
         EntityManagerAdapter em = Locator.getEntityManager();

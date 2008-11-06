@@ -8,6 +8,7 @@
 	<property name="module.name" value="core"/>
 	<property name="module.jar" value="20-cuba-core.jar"/>
     <property name="module.intf.jar" value="cuba-core-intf.jar"/>
+    <property name="module.test.jar" value="cuba-core-test.jar"/>
 
 	<import file="${root.dir}/build-inc.xml"/>
 	<property file="${root.dir}/build.properties"/>
@@ -54,6 +55,9 @@
         </jar>
         <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.intf.jar}">
             <include name="**/entity/*"/>
+        </jar>
+        <jar basedir="${test.out.dir}/${module.name}" destfile="${build.dir}/${module.test.jar}">
+            <include name="**/*"/>
         </jar>
     </target>
 

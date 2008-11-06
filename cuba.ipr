@@ -309,6 +309,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-lang-2.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/ejb3-persistence.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-logging.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/dom4j-1.6.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

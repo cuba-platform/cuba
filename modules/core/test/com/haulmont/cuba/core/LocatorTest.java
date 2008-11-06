@@ -13,7 +13,7 @@ import javax.transaction.TransactionManager;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-public class LocatorTest extends ServerTestCase
+public class LocatorTest extends CubaTestCase
 {
     public void testJndi() {
         Context ctx = Locator.getJndiContext();

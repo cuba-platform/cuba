@@ -11,10 +11,15 @@ package com.haulmont.cuba.core;
 
 import junit.framework.TestCase;
 
-public class ServerTestCase extends TestCase
+public class CubaTestCase extends TestCase
 {
+    protected void setUpDeploymentFiles() {
+        TestContainer.addDeploymentFile("20-cuba-core.jar");
+    }
+
     protected void setUp() throws Exception {
         super.setUp();
+        setUpDeploymentFiles();
         TestContainer.start();
     }
 }

@@ -8,8 +8,8 @@
     </content>
     <orderEntry type="jdk" jdkName="1.5" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="test" level="project" />
     <orderEntry type="library" name="chile" level="project" />
+    <orderEntry type="library" name="test" level="project" />
     <orderEntry type="library" name="server" level="project" />
     <orderEntry type="library" name="common" level="project" />
     <orderEntryProperties />
