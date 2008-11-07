@@ -14,6 +14,7 @@ import junit.framework.TestCase;
 public class CubaTestCase extends TestCase
 {
     protected void setUpDeploymentFiles() {
+        TestContainer.addDeploymentFile("cuba-core-intf.jar");
         TestContainer.addDeploymentFile("20-cuba-core.jar");
     }
 

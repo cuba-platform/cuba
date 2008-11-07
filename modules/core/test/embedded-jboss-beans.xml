@@ -73,8 +73,8 @@
 
    <bean name="DefaultDSBootstrap" class="org.jboss.resource.adapter.jdbc.local.LocalTxDataSource">
       <property name="driverClass">org.hsqldb.jdbcDriver</property>
-      <property name="connectionURL">jdbc:hsqldb:.</property>
-      <!--      <property name="connectionURL">jdbc:hsqldb:./hypersonic/localDB</property> -->
+      <!--<property name="connectionURL">jdbc:hsqldb:.</property>-->
+      <property name="connectionURL">jdbc:hsqldb:hsql://localhost/cubadb</property> 
       <property name="userName">sa</property>
       <property name="jndiName">java:/DefaultDS</property>
       <property name="minSize">0</property>

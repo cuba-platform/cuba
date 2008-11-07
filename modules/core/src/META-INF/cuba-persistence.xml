@@ -3,11 +3,14 @@
     <persistence-unit name="cuba" transaction-type="JTA">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <jta-data-source>java:/DefaultDS</jta-data-source>
+        <class>com.haulmont.cuba.core.entity.BaseUuidEntity</class>
         <class>com.haulmont.cuba.core.entity.Server</class>
         <properties>
             <property name="openjpa.Log" value="log4j"/>
             <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72"/>
             <property name="openjpa.jdbc.DBDictionary" value="hsql(SimulateLocking=true)"/>
+            <property name="openjpa.jdbc.MappingDefaults"
+                      value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.persistence.UuidValueHandler'"/>
         </properties>
     </persistence-unit>
 </persistence>

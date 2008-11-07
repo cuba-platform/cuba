@@ -17,7 +17,7 @@ import javax.persistence.Column;
 
 @Entity
 @Table(name = "SYS_SERVER")
-public class Server implements BaseEntity
+public class Server extends BaseUuidEntity
 {
     @Column(name = "NAME")
     private String name;

@@ -4,17 +4,24 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 31.10.2008 16:51:51
+ * Created: 07.11.2008 16:38:30
  * $Id$
  */
 package com.haulmont.cuba.core.entity;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-public interface BaseEntity<T> extends Serializable
+public class BaseLongIdEntity implements BaseEntity<Long>
 {
-    T getId();
+    private Long id;
 
-    UUID getUuid();
+    private UUID uuid;
+
+    public Long getId() {
+        return id;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 }
