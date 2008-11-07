@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	name="cuba-core" default="noop" basedir=".">
+	name="cuba-core" default="build-module" basedir=".">
 
 	<property name="project.dir" location="../.."/>
 	<property name="root.dir" location="${project.dir}/.."/>
@@ -10,7 +10,7 @@
     <property name="module.intf.jar" value="cuba-core-intf.jar"/>
     <property name="module.test.jar" value="cuba-core-test.jar"/>
 
-	<import file="${root.dir}/build-inc.xml"/>
+	<import file="${root.dir}/build-inc-mod.xml"/>
 	<property file="${root.dir}/build.properties"/>
 
     <fileset id="chile-jars" dir="${root.dir}/chile/build">
@@ -38,7 +38,7 @@
         <pathelement location="${test.out.dir}/${module.name}"/>
     </path>
 
-    <target name="compile-module" depends="base.compile-module">
+    <target name="compile-module" depends="base-mod.compile-module">
         <echo>==> enhancing ${project.dir} ${module.name}</echo>
         <java classpathref="enhance-cp"
               classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="true">
@@ -61,11 +61,11 @@
         </jar>
     </target>
 
-    <target name="deploy-module" depends="base.deploy-module">
+    <target name="deploy-module" depends="base-mod.deploy-module">
         <copy file="${build.dir}/${module.intf.jar}" todir="${jboss.dir}/server/default/deploy"/>
     </target>
 
-    <target name="undeploy-module" depends="base.undeploy-module">
+    <target name="undeploy-module" depends="base-mod.undeploy-module">
         <delete file="${jboss.dir}/server/default/deploy/${module.intf.jar}"/>
     </target>
 

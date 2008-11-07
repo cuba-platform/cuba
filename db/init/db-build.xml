@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project name="cuba-db">
+    
+    <property name="project.dir" location="../.."/>
+    <property name="root.dir" location="${project.dir}/.."/>
+
+    <import file="${root.dir}/build-inc-prj.xml"/>
+	<property file="${root.dir}/build.properties"/>
+
+    <property name="sql.dir" location="sql"/>
+    <property name="db.name" value="cubadb"/>
+
+    <path id="run-cp">
+        <fileset refid="server-lib-fs"/>
+    </path>
+
+    <target name="run-hsqldb">
+        <mkdir dir="${project.dir}/data"/>
+        <java classpathref="run-cp" fork="true" spawn="true"
+              classname="org.hsqldb.Server" dir="${project.dir}/data">
+            <arg line="-database.0 file:${db.name} -dbname.0 ${db.name}"/>
+        </java>
+    </target>
+
+    <target name="stop-hsqldb">
+        <sql classpathref="run-cp"
+            driver="org.hsqldb.jdbcDriver"
+            url="jdbc:hsqldb:hsql://localhost/${db.name}"
+            userid="sa" password="" onerror="continue">
+            shutdown
+         </sql>
+    </target>
+
+    <target name="run-hsqlman" depends="run-hsqldb">
+        <java classpathref="run-cp" fork="true" spawn="true"
+              classname="org.hsqldb.util.DatabaseManagerSwing" dir="${project.dir}/data">
+            <arg line="--url jdbc:hsqldb:hsql://localhost/${db.name}"/>
+        </java>
+    </target>
+
+    <target name="create-db">
+        <sql classpathref="run-cp" src="${sql.dir}/create-db.sql"
+            driver="org.hsqldb.jdbcDriver"
+            url="jdbc:hsqldb:hsql://localhost/${db.name}"
+            userid="sa" password=""/>
+    </target>
+
+</project>

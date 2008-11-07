@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	name="cuba" default="noop" basedir=".">
+	name="cuba" default="build" basedir=".">
 
 	<property name="root.dir" location=".."/>
 
-	<import file="${root.dir}/build-inc.xml"/>
+	<import file="${root.dir}/build-inc-prj.xml"/>
 	<property file="${root.dir}/build.properties"/>
 	<property file="lib.properties"/>
 
@@ -38,6 +38,7 @@
         <ext:install-jboss-lib name="ejb3-persistence" version="${jboss.version}" toDir="${lib.common.dir}"/>
         <ext:install-jboss-lib name="jboss-j2ee" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-ejb3x" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-annotations-ejb3" path="server/default/deploy/ejb3.deployer" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="log4j" version="${jboss.version}" toDir="${lib.common.dir}"/>
         <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>
 	</target>
