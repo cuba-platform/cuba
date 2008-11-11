@@ -9,9 +9,28 @@
  */
 package com.haulmont.cuba.core;
 
-public interface PersistenceProvider
-{
-    EntityManagerFactoryAdapter getEntityManagerFactory();
+import com.haulmont.cuba.core.impl.ManagedPersistenceProvider;
 
-    EntityManagerAdapter getEntityManager();
+public abstract class PersistenceProvider
+{
+    private static PersistenceProvider instance;
+
+    private static PersistenceProvider getInstance() {
+        if (instance == null) {
+            instance = new ManagedPersistenceProvider(Locator.getJndiContext());
+        }
+        return instance;
+    }
+
+    public static EntityManagerFactoryAdapter getEntityManagerFactory() {
+        return getInstance().__getEntityManagerFactory();
+    }
+
+    public static EntityManagerAdapter getEntityManager() {
+        return getInstance().__getEntityManager();
+    }
+
+    protected abstract EntityManagerFactoryAdapter __getEntityManagerFactory();
+
+    protected abstract EntityManagerAdapter __getEntityManager();
 }

@@ -36,6 +36,7 @@
         <ext:install-jboss-lib name="jboss-common" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="ejb3-persistence" version="${jboss.version}" toDir="${lib.common.dir}"/>
+        <ext:install-jboss-lib name="hibernate3" version="${jboss.version}" toDir="${lib.test.dir}"/>
         <ext:install-jboss-lib name="jboss-j2ee" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-ejb3x" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-annotations-ejb3" path="server/default/deploy/ejb3.deployer" version="${jboss.version}" toDir="${lib.server.dir}"/>

@@ -22,7 +22,7 @@ public class PersistenceTest extends CubaTestCase
         UUID id;
         beginTran();
         try {
-            EntityManagerAdapter em = Locator.getEntityManager();
+            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
@@ -36,7 +36,7 @@ public class PersistenceTest extends CubaTestCase
             throw new RuntimeException(e);
         }
 
-        EntityManagerAdapter em = Locator.getEntityManager();
+        EntityManagerAdapter em = PersistenceProvider.getEntityManager();
         Server server = em.find(Server.class, id);
         assertEquals(id, server.getId());
     }

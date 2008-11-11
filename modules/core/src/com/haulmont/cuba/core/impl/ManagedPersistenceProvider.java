@@ -28,7 +28,7 @@ import com.haulmont.cuba.core.EntityManagerFactoryAdapter;
 import com.haulmont.cuba.core.EntityManagerAdapter;
 import com.haulmont.cuba.core.CubaProperties;
 
-public class ManagedPersistenceProvider implements PersistenceProvider
+public class ManagedPersistenceProvider extends PersistenceProvider
 {
     private Context jndiContext;
 
@@ -44,11 +44,11 @@ public class ManagedPersistenceProvider implements PersistenceProvider
 
     private Log log = LogFactory.getLog(ManagedPersistenceProvider.class);
 
-    ManagedPersistenceProvider(Context jndiContext) {
+    public ManagedPersistenceProvider(Context jndiContext) {
         this.jndiContext = jndiContext;
     }
 
-    public EntityManagerFactoryAdapter getEntityManagerFactory() {
+    protected EntityManagerFactoryAdapter __getEntityManagerFactory() {
         synchronized (mutex) {
             if (!emfInitialized) {
                 log.debug("Creating new EntityManagerFactory");
@@ -81,7 +81,7 @@ public class ManagedPersistenceProvider implements PersistenceProvider
         }
     }
 
-    public EntityManagerAdapter getEntityManager() {
+    protected EntityManagerAdapter __getEntityManager() {
         EntityManagerAdapterImpl em;
         try {
             TransactionManager tm = getTransactionManager();

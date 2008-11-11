@@ -137,6 +137,7 @@ public class TestContainer
     }
 
     private static void deployServiceXml(File file) {
+        // TODO KK: implement MBeans dependency
         SAXReader xmlReader = new SAXReader();
         Document doc;
         try {

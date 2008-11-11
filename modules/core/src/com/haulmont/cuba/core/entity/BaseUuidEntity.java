@@ -14,15 +14,27 @@ import org.apache.openjpa.persistence.Persistent;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Id;
 import javax.persistence.Column;
+import javax.persistence.EntityListeners;
 import java.util.UUID;
+import java.util.Date;
+
+import com.haulmont.cuba.core.CubaProperties;
+import com.haulmont.cuba.core.persistence.BaseEntityListener;
 
 @MappedSuperclass
+@EntityListeners({BaseEntityListener.class})
 public class BaseUuidEntity implements BaseEntity<UUID>
 {
     @Id
     @Column(name = "ID")
     @Persistent
     private UUID id;
+
+    @Column(name = "CREATE_TS")
+    private Date createTs;
+
+    @Column(name = "CREATED_BY", length = CubaProperties.LOGIN_FIELD_LEN)
+    private String createdBy;
 
     public BaseUuidEntity() {
         id = UUID.randomUUID();
@@ -38,6 +50,22 @@ public class BaseUuidEntity implements BaseEntity<UUID>
 
     public UUID getUuid() {
         return id;
+    }
+
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public void setUuid(UUID id) {

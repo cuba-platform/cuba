@@ -9,19 +9,56 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.CubaProperties;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
 import java.util.UUID;
+import java.util.Date;
 
 public class BaseLongIdEntity implements BaseEntity<Long>
 {
+    @Id
+    @Column(name = "ID")
     private Long id;
 
     private UUID uuid;
+
+    @Column(name = "CREATE_TS")
+    private Date createTs;
+
+    @Column(name = "CREATED_BY", length = CubaProperties.LOGIN_FIELD_LEN)
+    private String createdBy;
 
     public Long getId() {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public UUID getUuid() {
         return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public Date getCreateTs() {
+        return createTs;
+    }
+
+    public void setCreateTs(Date createTs) {
+        this.createTs = createTs;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

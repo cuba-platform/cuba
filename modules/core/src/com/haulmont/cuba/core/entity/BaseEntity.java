@@ -11,10 +11,19 @@ package com.haulmont.cuba.core.entity;
 
 import java.io.Serializable;
 import java.util.UUID;
+import java.util.Date;
 
 public interface BaseEntity<T> extends Serializable
 {
     T getId();
 
     UUID getUuid();
+
+    Date getCreateTs();
+
+    void setCreateTs(Date date);
+
+    String getCreatedBy();
+
+    void setCreatedBy(String createdBy);
 }

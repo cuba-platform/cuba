@@ -32,13 +32,6 @@ public class LocatorImpl extends Locator
         return jndiContext;
     }
 
-    protected PersistenceProvider __getPersistenceProvider() {
-        if (persistenceProvider == null) {
-            persistenceProvider = new ManagedPersistenceProvider(getJndiContext());
-        }
-        return persistenceProvider;
-    }
-
     protected Object __lookupLocal(String name) {
         Context ctx = getJndiContext();
         try {

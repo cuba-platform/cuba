@@ -28,21 +28,11 @@ public abstract class Locator
         return getInstance().__getJndiContextImpl();
     }
 
-    public static PersistenceProvider getPersistenceProvider() {
-        return getInstance().__getPersistenceProvider();
-    }
-
-    public static EntityManagerAdapter getEntityManager() {
-        return getInstance().__getPersistenceProvider().getEntityManager();
-    }
-
     public static <T> T lookupLocal(String name) {
         return (T) getInstance().__lookupLocal(name);
     }
 
     protected abstract Context __getJndiContextImpl();
-
-    protected abstract PersistenceProvider __getPersistenceProvider();
 
     protected abstract Object __lookupLocal(String name);
 }
