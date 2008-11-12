@@ -9,15 +9,14 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.cuba.core.entity.BaseEntity;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
+import javax.persistence.EntityListeners;
 
 @Entity
 @Table(name = "SYS_SERVER")
-public class Server extends BaseUuidEntity
+public class Server extends StandardEntity
 {
     @Column(name = "NAME")
     private String name;

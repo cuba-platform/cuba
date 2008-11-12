@@ -13,6 +13,8 @@ import com.haulmont.cuba.core.impl.ManagedPersistenceProvider;
 
 public abstract class PersistenceProvider
 {
+    public static final int LOGIN_FIELD_LEN = 20;
+
     private static PersistenceProvider instance;
 
     private static PersistenceProvider getInstance() {

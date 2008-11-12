@@ -14,6 +14,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.EntityManagerFactoryImpl;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -27,6 +29,7 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerFactoryAdapter;
 import com.haulmont.cuba.core.EntityManagerAdapter;
 import com.haulmont.cuba.core.CubaProperties;
+import com.haulmont.cuba.core.persistence.EntityLifecycleListener;
 
 public class ManagedPersistenceProvider extends PersistenceProvider
 {
@@ -63,6 +66,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
 
                 OpenJPAEntityManagerFactory jpaFactory =
                         OpenJPAPersistence.createEntityManagerFactory(unitName, xmlPath);
+                initJpaFactory(jpaFactory);
 
                 EntityManagerFactoryAdapter emf = new EntityManagerFactoryAdapterImpl(jpaFactory);
                 try {
@@ -79,6 +83,13 @@ public class ManagedPersistenceProvider extends PersistenceProvider
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void initJpaFactory(OpenJPAEntityManagerFactory jpaFactory) {
+        ((OpenJPAEntityManagerFactorySPI) jpaFactory).addLifecycleListener(
+                new EntityLifecycleListener(),
+                null
+        );
     }
 
     protected EntityManagerAdapter __getEntityManager() {

@@ -36,9 +36,32 @@ public class PersistenceTest extends CubaTestCase
             throw new RuntimeException(e);
         }
 
-        EntityManagerAdapter em = PersistenceProvider.getEntityManager();
-        Server server = em.find(Server.class, id);
-        assertEquals(id, server.getId());
+        beginTran();
+        try {
+            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            Server server = em.find(Server.class, id);
+            assertEquals(id, server.getId());
+
+            server.setAddress("222");
+            commitTran();
+        } catch (Exception e) {
+            rollbackTran();
+            throw new RuntimeException(e);
+        }
+
+        beginTran();
+        try {
+            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            Server server = em.find(Server.class, id);
+            assertEquals(id, server.getId());
+
+            em.remove(server);
+            commitTran();
+        } catch (Exception e) {
+            rollbackTran();
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void beginTran() {

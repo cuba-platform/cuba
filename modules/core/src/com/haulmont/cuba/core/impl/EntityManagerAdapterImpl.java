@@ -11,7 +11,9 @@ package com.haulmont.cuba.core.impl;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import com.haulmont.cuba.core.EntityManagerAdapter;
+import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.DeleteDeferred;
 
 public class EntityManagerAdapterImpl implements EntityManagerAdapter
 {
@@ -30,7 +32,13 @@ public class EntityManagerAdapterImpl implements EntityManagerAdapter
     }
 
     public void remove(BaseEntity entity) {
-        jpaEm.remove(entity);
+        if (entity instanceof DeleteDeferred) {
+            ((DeleteDeferred) entity).setDeleted(true);
+            ((DeleteDeferred) entity).setDeletedBy(SecurityProvider.currentUserLogin());
+        }
+        else {
+            jpaEm.remove(entity);
+        }
     }
 
     public <T extends BaseEntity> T find(Class<T> clazz, Object key) {

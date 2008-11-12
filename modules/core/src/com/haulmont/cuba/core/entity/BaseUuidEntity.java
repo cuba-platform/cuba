@@ -9,20 +9,16 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.PersistenceProvider;
 import org.apache.openjpa.persistence.Persistent;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Id;
 import javax.persistence.Column;
-import javax.persistence.EntityListeners;
-import java.util.UUID;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.util.Date;
-
-import com.haulmont.cuba.core.CubaProperties;
-import com.haulmont.cuba.core.persistence.BaseEntityListener;
+import java.util.UUID;
 
 @MappedSuperclass
-@EntityListeners({BaseEntityListener.class})
 public class BaseUuidEntity implements BaseEntity<UUID>
 {
     @Id
@@ -33,7 +29,7 @@ public class BaseUuidEntity implements BaseEntity<UUID>
     @Column(name = "CREATE_TS")
     private Date createTs;
 
-    @Column(name = "CREATED_BY", length = CubaProperties.LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String createdBy;
 
     public BaseUuidEntity() {

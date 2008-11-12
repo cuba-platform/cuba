@@ -13,6 +13,4 @@ public class CubaProperties
 {
     public static final String PERSISTENCE_XML = "cuba.PersistenceXml";
     public static final String PERSISTENCE_UNIT = "cuba.PersistenceUnit";
-
-    public static final int LOGIN_FIELD_LEN = 20;
 }

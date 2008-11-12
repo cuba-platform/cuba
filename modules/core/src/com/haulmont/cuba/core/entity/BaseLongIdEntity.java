@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.cuba.core.CubaProperties;
+import com.haulmont.cuba.core.PersistenceProvider;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -27,7 +27,7 @@ public class BaseLongIdEntity implements BaseEntity<Long>
     @Column(name = "CREATE_TS")
     private Date createTs;
 
-    @Column(name = "CREATED_BY", length = CubaProperties.LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String createdBy;
 
     public Long getId() {
