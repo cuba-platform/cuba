@@ -11,15 +11,16 @@ package com.haulmont.cuba.core.impl;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.TransactionAdapter;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.TransactionManager;
 
 public class LocatorImpl extends Locator
 {
     private Context jndiContext;
-    private PersistenceProvider persistenceProvider;
 
     protected Context __getJndiContextImpl() {
         if (jndiContext == null) {
@@ -33,12 +34,23 @@ public class LocatorImpl extends Locator
     }
 
     protected Object __lookupLocal(String name) {
-        Context ctx = getJndiContext();
+        Context ctx = __getJndiContextImpl();
         try {
             return ctx.lookup(name + "/local");
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected TransactionAdapter __createTransaction() {
+        Context ctx = __getJndiContextImpl();
+        TransactionManager tm;
+        try {
+            tm = (TransactionManager) ctx.lookup("java:/TransactionManager");
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
+        return new JtaTransactionAdapter(tm);
     }
 
 }

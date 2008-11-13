@@ -32,7 +32,13 @@ public abstract class Locator
         return (T) getInstance().__lookupLocal(name);
     }
 
+    public static TransactionAdapter createTransaction() {
+        return getInstance().__createTransaction();
+    }
+
     protected abstract Context __getJndiContextImpl();
 
     protected abstract Object __lookupLocal(String name);
+
+    protected abstract TransactionAdapter __createTransaction();
 }
