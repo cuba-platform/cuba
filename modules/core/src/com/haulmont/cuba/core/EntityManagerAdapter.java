@@ -21,6 +21,8 @@ public interface EntityManagerAdapter
 
     <T extends BaseEntity> T find(Class<T> clazz, Object key);
 
+    QueryAdapter createQuery(String qlStr);
+
     void flush();
 
     void close();

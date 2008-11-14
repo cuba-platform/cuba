@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 
-@Entity
+@Entity(name = "core$Server")
 @Table(name = "SYS_SERVER")
 public class Server extends StandardEntity
 {

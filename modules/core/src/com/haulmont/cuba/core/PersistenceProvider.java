@@ -11,6 +11,12 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.impl.ManagedPersistenceProvider;
 
+import javax.persistence.Entity;
+import java.lang.annotation.Annotation;
+
+import org.jboss.remoting.samples.chat.exceptions.InvalidArgumentException;
+import org.apache.commons.lang.StringUtils;
+
 public abstract class PersistenceProvider
 {
     public static final int LOGIN_FIELD_LEN = 20;
@@ -30,6 +36,17 @@ public abstract class PersistenceProvider
 
     public static EntityManagerAdapter getEntityManager() {
         return getInstance().__getEntityManager();
+    }
+
+    public static String getEntityName(Class entityClass) {
+        Annotation annotation = entityClass.getAnnotation(Entity.class);
+        if (annotation == null)
+            throw new IllegalArgumentException("Class " + entityClass + " is not an entity");
+        String name = ((Entity) annotation).name();
+        if (!StringUtils.isEmpty(name))
+            return name;
+        else
+            return entityClass.getSimpleName();
     }
 
     protected abstract EntityManagerFactoryAdapter __getEntityManagerFactory();

@@ -108,7 +108,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
             }
             else {
                 log.trace("Creating new non-transactional EntityManager");
-                em = getEntityManagerFactory().createEntityManager();
+                em = __getEntityManagerFactory().createEntityManager();
             }
             return em;
         } catch (NamingException e) {

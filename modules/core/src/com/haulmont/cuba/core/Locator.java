@@ -32,6 +32,10 @@ public abstract class Locator
         return (T) getInstance().__lookupLocal(name);
     }
 
+    public static <T> T lookupRemote(String name) {
+        return (T) getInstance().__lookupRemote(name);
+    }
+
     public static TransactionAdapter createTransaction() {
         return getInstance().__createTransaction();
     }
@@ -39,6 +43,8 @@ public abstract class Locator
     protected abstract Context __getJndiContextImpl();
 
     protected abstract Object __lookupLocal(String name);
+
+    protected abstract Object __lookupRemote(String name);
 
     protected abstract TransactionAdapter __createTransaction();
 }

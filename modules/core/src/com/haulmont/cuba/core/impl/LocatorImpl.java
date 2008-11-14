@@ -42,6 +42,15 @@ public class LocatorImpl extends Locator
         }
     }
 
+    protected Object __lookupRemote(String name) {
+        Context ctx = __getJndiContextImpl();
+        try {
+            return ctx.lookup(name + "/remote");
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     protected TransactionAdapter __createTransaction() {
         Context ctx = __getJndiContextImpl();
         TransactionManager tm;

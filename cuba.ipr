@@ -328,6 +328,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/test/jboss-ejb3-embeddable-ALPHA-9.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/test/jboss-ejb3-embeddable-thirdparty-ALPHA-9.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/test/junit-4.5.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/test/hibernate3.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
