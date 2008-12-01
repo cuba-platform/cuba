@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 
-@Entity(name = "security$ProfileRole")
+@Entity(name = "sec$ProfileRole")
 @Table(name = "SEC_PROFILE_ROLE")
 public class ProfileRole extends StandardEntity
 {

@@ -12,18 +12,26 @@ package com.haulmont.cuba.core.ejb;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.security.SecurityAssociation;
 
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
+import java.security.Principal;
 
 public class ServiceInterceptor
 {
     @AroundInvoke
     private Object aroundInvoke(InvocationContext ctx) throws Exception {
+        Log log = LogFactory.getLog(ctx.getTarget().getClass());
+
+        Principal principal = SecurityAssociation.getCallerPrincipal();
+        char[] credential = (char[]) SecurityAssociation.getCredential();
+        log.debug("Invoking method " + ctx.getMethod().getName() +
+                ", user=" + principal.getName() + ", session=" + String.valueOf(credential));
+
         try {
             return ctx.proceed();
         } catch (Exception e) {
-            Log log = LogFactory.getLog(ctx.getTarget().getClass());
             log.error("ServiceInterceptor caught exception: ", e);
             throw e;
         }

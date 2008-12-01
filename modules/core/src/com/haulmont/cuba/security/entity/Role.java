@@ -16,7 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
 
-@Entity(name = "security$Role")
+@Entity(name = "sec$Role")
 @Table(name = "SEC_ROLE")
 public class Role extends StandardEntity
 {

@@ -16,12 +16,15 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity(name = "security$User")
+@Entity(name = "sec$User")
 @Table(name = "SEC_USER")
 public class User extends StandardEntity
 {
     @Column(name = "LOGIN", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String login;
+
+    @Column(name = "PASSWORD", length = 32)
+    private String password;
 
     @Column(name = "NAME")
     private String name;
@@ -35,6 +38,14 @@ public class User extends StandardEntity
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {

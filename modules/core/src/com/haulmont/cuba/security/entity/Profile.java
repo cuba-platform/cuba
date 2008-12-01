@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity(name = "security$Profile")
+@Entity(name = "sec$Profile")
 @Table(name = "SEC_PROFILE")
 public class Profile extends StandardEntity
 {
