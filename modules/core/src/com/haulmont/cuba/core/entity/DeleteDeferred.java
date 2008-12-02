@@ -10,11 +10,15 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import java.util.Date;
+
 public interface DeleteDeferred extends Updatable
 {
     Boolean isDeleted();
 
-    void setDeleted(Boolean deleted);
+    Date getDeleteTs();
+
+    void setDeleteTs(Date deleteTs);
 
     String getDeletedBy();
 

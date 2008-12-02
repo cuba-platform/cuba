@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.intf;
+package com.haulmont.cuba.core.global;
 
 import javax.ejb.Local;
 

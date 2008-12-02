@@ -7,7 +7,7 @@
 	
 	<property name="module.name" value="core"/>
 	<property name="module.jar" value="20-cuba-core.jar"/>
-    <property name="module.intf.jar" value="cuba-core-intf.jar"/>
+    <property name="module.global.jar" value="cuba-core-global.jar"/>
     <property name="module.test.jar" value="cuba-core-test.jar"/>
 
 	<import file="${root.dir}/build-inc-mod.xml"/>
@@ -52,9 +52,11 @@
         <mkdir dir="${build.dir}"/>
         <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
             <exclude name="**/entity/*"/>
+            <exclude name="**/global/*"/>
         </jar>
-        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.intf.jar}">
+        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.global.jar}">
             <include name="**/entity/*"/>
+            <include name="**/global/*"/>
         </jar>
         <jar basedir="${test.out.dir}/${module.name}" destfile="${build.dir}/${module.test.jar}">
             <include name="**/*"/>
@@ -62,11 +64,11 @@
     </target>
 
     <target name="deploy-module" depends="base-mod.deploy-module">
-        <copy file="${build.dir}/${module.intf.jar}" todir="${jboss.dir}/server/default/deploy"/>
+        <copy file="${build.dir}/${module.global.jar}" todir="${jboss.dir}/server/default/deploy"/>
     </target>
 
     <target name="undeploy-module" depends="base-mod.undeploy-module">
-        <delete file="${jboss.dir}/server/default/deploy/${module.intf.jar}"/>
+        <delete file="${jboss.dir}/server/default/deploy/${module.global.jar}"/>
     </target>
 
 </project>

@@ -11,7 +11,7 @@
 package com.haulmont.cuba.core.ejb;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.intf.BasicInvocationContext;
+import com.haulmont.cuba.core.global.BasicInvocationContext;
 
 import javax.ejb.Local;
 import java.util.List;

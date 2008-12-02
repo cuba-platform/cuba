@@ -10,11 +10,12 @@
 package com.haulmont.cuba.core;
 
 import junit.framework.TestCase;
+import com.haulmont.cuba.core.global.SecurityProvider;
 
 public class CubaTestCase extends TestCase
 {
     protected void setUpDeploymentFiles() {
-        TestContainer.addDeploymentFile("cuba-core-intf.jar");
+        TestContainer.addDeploymentFile("cuba-core-global.jar");
         TestContainer.addDeploymentFile("20-cuba-core.jar");
     }
 
@@ -22,5 +23,7 @@ public class CubaTestCase extends TestCase
         super.setUp();
         setUpDeploymentFiles();
         TestContainer.start();
+
+        System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.impl.TestSecurityProvider");
     }
 }

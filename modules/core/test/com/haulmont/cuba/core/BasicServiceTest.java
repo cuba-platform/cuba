@@ -10,9 +10,9 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.intf.BasicService;
-import com.haulmont.cuba.core.intf.BasicInvocationContext;
-import com.haulmont.cuba.core.intf.BasicServiceRemote;
+import com.haulmont.cuba.core.global.BasicService;
+import com.haulmont.cuba.core.global.BasicInvocationContext;
+import com.haulmont.cuba.core.global.BasicServiceRemote;
 import com.haulmont.cuba.core.entity.Server;
 
 import java.util.UUID;

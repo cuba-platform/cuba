@@ -8,47 +8,48 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.intf;
+package com.haulmont.cuba.security.global;
+
+import com.haulmont.cuba.core.global.UuidProvider;
+import com.haulmont.cuba.security.entity.User;
 
 import java.util.UUID;
 import java.io.Serializable;
 
 public class UserSession implements Serializable
 {
-    private UUID id;
-    private UUID userId;
-    private String login;
-    private String name;
+    private final UUID id;
+    private final UUID userId;
+    private final String login;
+    private final String name;
+
+    public UserSession(User user) {
+        id = UuidProvider.createUuid();
+        userId = user.getId();
+        login = user.getLogin();
+        name = user.getName();
+    }
 
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
     public String getLogin() {
         return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String toString() {
+        return "UserSession{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                '}';
     }
 }

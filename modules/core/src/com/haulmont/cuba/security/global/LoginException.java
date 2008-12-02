@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.intf;
+package com.haulmont.cuba.security.global;
 
 public class LoginException extends Exception
 {

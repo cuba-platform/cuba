@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.intf;
+package com.haulmont.cuba.security.global;
 
 import com.haulmont.cuba.security.entity.Profile;
 
@@ -24,4 +24,6 @@ public interface LoginService
     List<Profile> authenticate(String login, String password, Locale locale) throws LoginException;
 
     UserSession login(String login, String password, String profileName, Locale locale) throws LoginException;
+
+    void logout();
 }

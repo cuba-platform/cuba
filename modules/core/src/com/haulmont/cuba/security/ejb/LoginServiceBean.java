@@ -12,9 +12,9 @@ package com.haulmont.cuba.security.ejb;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.entity.Profile;
-import com.haulmont.cuba.security.intf.LoginService;
-import com.haulmont.cuba.security.intf.UserSession;
-import com.haulmont.cuba.security.intf.LoginException;
+import com.haulmont.cuba.security.global.LoginService;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.global.LoginException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,5 +47,9 @@ public class LoginServiceBean implements LoginService
             log.error(e);
             throw new RuntimeException(e);
         }
+    }
+
+    public void logout() {
+        getLoginWorker().logout();
     }
 }

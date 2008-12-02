@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.client;
 
-import com.haulmont.cuba.security.intf.LoginService;
-import com.haulmont.cuba.security.intf.JaasConfiguration;
+import com.haulmont.cuba.security.global.LoginService;
+import com.haulmont.cuba.security.global.JaasConfiguration;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -55,7 +55,7 @@ public class Client
 
         try {
             ls.authenticate(null, null, null);
-        } catch (com.haulmont.cuba.security.intf.LoginException e) {
+        } catch (com.haulmont.cuba.security.global.LoginException e) {
             throw new RuntimeException(e);
         }
     }

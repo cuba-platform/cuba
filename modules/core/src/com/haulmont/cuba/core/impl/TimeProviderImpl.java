@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core.impl;
 
-import com.haulmont.cuba.core.TimeProvider;
+import com.haulmont.cuba.core.global.TimeProvider;
 
 import java.util.Date;
 

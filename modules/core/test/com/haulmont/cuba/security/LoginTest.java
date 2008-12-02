@@ -12,16 +12,16 @@ package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.intf.BasicService;
-import com.haulmont.cuba.core.intf.BasicInvocationContext;
+import com.haulmont.cuba.core.global.BasicService;
+import com.haulmont.cuba.core.global.BasicInvocationContext;
+import com.haulmont.cuba.core.global.SecurityProvider;
 import com.haulmont.cuba.security.ejb.LoginWorker;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.intf.JaasCallbackHandler;
-import com.haulmont.cuba.security.intf.JaasConfiguration;
-import com.haulmont.cuba.security.intf.UserSession;
+import com.haulmont.cuba.security.global.JaasCallbackHandler;
+import com.haulmont.cuba.security.global.JaasConfiguration;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.security.auth.login.Configuration;
@@ -34,6 +34,11 @@ public class LoginTest extends CubaTestCase
 {
     private static final String ADMIN_NAME = "admin";
     private static final String ADMIN_PASSW = DigestUtils.md5Hex("admin");
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.impl.SecurityProviderImpl");
+    }
 
     public void test() throws Exception {
         LoginWorker lw = Locator.lookupLocal(LoginWorker.JNDI_NAME);
@@ -62,6 +67,8 @@ public class LoginTest extends CubaTestCase
                 .setQueryString("select u from sec$User u");
         List<User> list = bs.loadList(ctx);
         assertTrue(list.size() > 0);
+
+        lw.logout();
     }
 
 }

@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.security.ejb;
 
-import com.haulmont.cuba.security.intf.LoginService;
+import com.haulmont.cuba.security.global.LoginService;
 
 import javax.ejb.Local;
 

@@ -10,23 +10,23 @@
  */
 package com.haulmont.cuba.security.ejb;
 
-import com.haulmont.cuba.security.intf.UserSession;
-import com.haulmont.cuba.security.intf.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.resources.Messages;
+import com.haulmont.cuba.security.session.UserSessionManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerAdapter;
 import com.haulmont.cuba.core.QueryAdapter;
+import com.haulmont.cuba.core.global.SecurityProvider;
 
 import javax.ejb.Stateless;
 import java.util.List;
-import java.util.UUID;
 import java.util.Locale;
 import java.util.ArrayList;
-import java.security.Principal;
 
-import org.jboss.security.SecurityAssociation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,38 +35,32 @@ public class LoginWorkerBean implements LoginWorker
 {
     private Log log = LogFactory.getLog(LoginWorkerBean.class);
 
-    private List<Object[]> __authenticate(String login, String password, Locale locale)
+    private User loadUser(String login, String password, Locale locale)
             throws LoginException
     {
         EntityManagerAdapter em = PersistenceProvider.getEntityManager();
         QueryAdapter q = em.createQuery(
-                "select u.id, u.name, p " +
-                        " from sec$Profile p join p.user u" +
-                        " where u.login = ?1 and u.password = ?2");
+                "select u " +
+                " from sec$User u join fetch u.profiles" +
+                " where u.login = ?1 and u.password = ?2 and u.deleteTs is null");
         q.setParameter(1, login);
         q.setParameter(2, password);
-        List<Object[]> rows = q.getResultList();
-        if (rows.isEmpty()) {
+        User user = (User) q.getSingleResult();
+        if (user == null) {
             log.warn("Failed to authenticate: " + login);
             throw new LoginException(Messages.getString("LoginException.InvalidLoginOrPassword", locale));
         }
-        return rows;
+        return user;
     }
 
     public List<Profile> authenticate(String login, String password, Locale locale)
             throws LoginException
     {
         log.info("Authenticating: " + login);
-        List<Object[]> rows = __authenticate(login, password, locale);
+        User user = loadUser(login, password, locale);
 
-        List<Profile> profiles = new ArrayList<Profile>();
-        for (Object[] row : rows) {
-            profiles.add((Profile) row[2]);
-        }
-        return profiles;
-//        Principal principal = SecurityAssociation.getCallerPrincipal();
-//        char[] credential = (char[]) SecurityAssociation.getCredential();
-//        log.debug("principal=" + principal.getName() + ", credential=" + String.valueOf(credential));
+        List<Profile> list = new ArrayList<Profile>(user.getProfiles());
+        return list;
     }
 
     public UserSession login(String login, String password, String profileName, Locale locale)
@@ -75,29 +69,28 @@ public class LoginWorkerBean implements LoginWorker
         if (profileName == null)
             throw new IllegalArgumentException("profileName can not be null");
 
-        List<Object[]> rows = __authenticate(login, password, locale);
+        User user = loadUser(login, password, locale);
         Profile profile = null;
-        UUID userId = null;
-        String name = null;
-        for (Object[] row : rows) {
-            Profile p = (Profile) row[2];
-            if (profileName.equals(p.getName())) {
+        for (Profile p : user.getProfiles()) {
+            if (profileName.equals(p.getName()) && !p.isDeleted()) {
                 profile = p;
-                userId = (UUID) row[0];
-                name = (String) row[1];
                 break;
             }
         }
-        if (profile == null)
+         if (profile == null)
             throw new LoginException(Messages.getString("LoginException.InvalidProfile", locale), profileName);
 
-        UserSession session = new UserSession();
-        session.setId(UUID.randomUUID());
-        session.setUserId(userId);
-        session.setName(name);
-        session.setLogin(login);
-
-        log.info("Logged in: " + login);
+        UserSession session = UserSessionManager.getInstance().createSession(user);
+        log.info("Logged in: " + session);
         return session;
+    }
+
+    public void logout() {
+        try {
+            UserSession session = SecurityProvider.currentUserSession();
+            UserSessionManager.getInstance().removeSession(session);
+        } catch (NoUserSessionException e) {
+            log.warn("NoUserSessionException thrown on logout");
+        }
     }
 }

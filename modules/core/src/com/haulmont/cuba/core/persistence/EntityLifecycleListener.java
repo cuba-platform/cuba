@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.core.persistence;
 
-import com.haulmont.cuba.core.SecurityProvider;
-import com.haulmont.cuba.core.TimeProvider;
+import com.haulmont.cuba.core.global.SecurityProvider;
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Updatable;
 import org.apache.openjpa.enhance.PersistenceCapable;

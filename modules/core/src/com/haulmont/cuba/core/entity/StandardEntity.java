@@ -32,8 +32,8 @@ public class StandardEntity
     @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String updatedBy;
 
-    @Column(name = "IS_DELETED")
-    private Boolean deleted = false;
+    @Column(name = "DELETE_TS")
+    private Date deleteTs;
 
     @Column(name = "DELETED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String deletedBy;
@@ -63,11 +63,15 @@ public class StandardEntity
     }
 
     public Boolean isDeleted() {
-        return deleted;
+        return deleteTs != null;
     }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
+    public Date getDeleteTs() {
+        return deleteTs;
+    }
+
+    public void setDeleteTs(Date deleteTs) {
+        this.deleteTs = deleteTs;
     }
 
     public String getDeletedBy() {

@@ -10,6 +10,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.Column;
@@ -33,7 +34,7 @@ public class BaseUuidEntity implements BaseEntity<UUID>
     private String createdBy;
 
     public BaseUuidEntity() {
-        id = UUID.randomUUID();
+        id = UuidProvider.createUuid();
     }
 
     public UUID getId() {
