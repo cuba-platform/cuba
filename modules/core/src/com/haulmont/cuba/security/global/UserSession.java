@@ -12,8 +12,12 @@ package com.haulmont.cuba.security.global;
 
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.Profile;
+import com.haulmont.cuba.security.entity.ProfileRole;
 
 import java.util.UUID;
+import java.util.List;
+import java.util.Arrays;
 import java.io.Serializable;
 
 public class UserSession implements Serializable
@@ -22,12 +26,16 @@ public class UserSession implements Serializable
     private final UUID userId;
     private final String login;
     private final String name;
+    private final String[] roles;
 
-    public UserSession(User user) {
+    public UserSession(User user, String[] roles) {
         id = UuidProvider.createUuid();
         userId = user.getId();
         login = user.getLogin();
         name = user.getName();
+
+        this.roles = roles;
+        Arrays.sort(this.roles);
     }
 
     public UUID getId() {
@@ -44,6 +52,10 @@ public class UserSession implements Serializable
 
     public String getName() {
         return name;
+    }
+
+    public String[] getRoles() {
+        return roles;
     }
 
     public String toString() {

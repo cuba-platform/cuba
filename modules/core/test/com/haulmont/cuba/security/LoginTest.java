@@ -68,6 +68,8 @@ public class LoginTest extends CubaTestCase
         List<User> list = bs.loadList(ctx);
         assertTrue(list.size() > 0);
 
+        assertTrue(SecurityProvider.currentUserInRole("Administrators"));
+
         lw.logout();
     }
 

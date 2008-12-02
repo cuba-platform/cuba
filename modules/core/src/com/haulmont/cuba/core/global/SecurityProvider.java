@@ -12,6 +12,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.security.global.UserSession;
 
+import java.util.Arrays;
+
 public abstract class SecurityProvider
 {
     public static final String IMPL_PROP = "cuba.SecurityProvider.impl";
@@ -45,6 +47,11 @@ public abstract class SecurityProvider
 
     public static UserSession currentUserSession() {
         return getInstance().__currentUserSession();
+    }
+
+    public static boolean currentUserInRole(String role) {
+        UserSession session = getInstance().__currentUserSession();
+        return (Arrays.binarySearch(session.getRoles(), role) >= 0);
     }
 
     protected abstract UserSession __currentUserSession();

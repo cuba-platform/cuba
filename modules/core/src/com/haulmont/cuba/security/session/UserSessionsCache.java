@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+// TODO KK: implement as MBean with cluster support
 public class UserSessionsCache implements UserSessions
 {
     private Map<UUID, UserSession> cache = new ConcurrentHashMap<UUID, UserSession>();

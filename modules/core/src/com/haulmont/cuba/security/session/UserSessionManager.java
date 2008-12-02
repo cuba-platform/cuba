@@ -11,10 +11,14 @@
 package com.haulmont.cuba.security.session;
 
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.Profile;
+import com.haulmont.cuba.security.entity.ProfileRole;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 public class UserSessionManager
 {
@@ -33,8 +37,12 @@ public class UserSessionManager
         sessions = new UserSessionsCache();
     }
 
-    public UserSession createSession(User user) {
-        UserSession session = new UserSession(user);
+    public UserSession createSession(User user, Profile profile) {
+        List<String> roles = new ArrayList<String>();
+        for (ProfileRole profileRole : profile.getProfileRoles()) {
+            roles.add(profileRole.getRole().getName());
+        }
+        UserSession session = new UserSession(user, roles.toArray(new String[roles.size()]));
         sessions.add(session);
         return session;
     }

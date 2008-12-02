@@ -80,7 +80,7 @@ public class LoginWorkerBean implements LoginWorker
          if (profile == null)
             throw new LoginException(Messages.getString("LoginException.InvalidProfile", locale), profileName);
 
-        UserSession session = UserSessionManager.getInstance().createSession(user);
+        UserSession session = UserSessionManager.getInstance().createSession(user, profile);
         log.info("Logged in: " + session);
         return session;
     }
