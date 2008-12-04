@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.service.BasicService;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
-import com.haulmont.cuba.core.global.SecurityProvider;
+import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.security.worker.LoginWorker;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;

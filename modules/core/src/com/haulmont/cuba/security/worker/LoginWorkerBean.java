@@ -20,7 +20,7 @@ import com.haulmont.cuba.security.impl.UserSessionManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerAdapter;
 import com.haulmont.cuba.core.QueryAdapter;
-import com.haulmont.cuba.core.global.SecurityProvider;
+import com.haulmont.cuba.core.SecurityProvider;
 
 import javax.ejb.Stateless;
 import java.util.List;

@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core.impl;
 
-import com.haulmont.cuba.core.global.SecurityProvider;
+import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.impl.UserSessionManager;
 

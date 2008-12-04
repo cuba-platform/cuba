@@ -10,7 +10,7 @@
 package com.haulmont.cuba.core;
 
 import junit.framework.TestCase;
-import com.haulmont.cuba.core.global.SecurityProvider;
+import com.haulmont.cuba.core.SecurityProvider;
 
 public class CubaTestCase extends TestCase
 {
