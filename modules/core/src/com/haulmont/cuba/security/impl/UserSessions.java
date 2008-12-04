@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.session;
+package com.haulmont.cuba.security.impl;
 
 import com.haulmont.cuba.security.global.UserSession;
 

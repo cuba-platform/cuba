@@ -12,7 +12,7 @@ package com.haulmont.cuba.core.impl;
 
 import com.haulmont.cuba.core.global.SecurityProvider;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.session.UserSessionManager;
+import com.haulmont.cuba.security.impl.UserSessionManager;
 
 import java.util.UUID;
 

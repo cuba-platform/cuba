@@ -8,13 +8,14 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.ejb;
+package com.haulmont.cuba.security.service;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.entity.Profile;
-import com.haulmont.cuba.security.global.LoginService;
+import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.worker.LoginWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,8 +23,8 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 
-@Stateless(name = LoginService.JNDI_NAME)
-public class LoginServiceBean implements LoginService
+@Stateless(name = LoginServiceRemote.JNDI_NAME)
+public class LoginServiceBean implements LoginService, LoginServiceRemote
 {
     private Log log = LogFactory.getLog(LoginServiceBean.class);
 

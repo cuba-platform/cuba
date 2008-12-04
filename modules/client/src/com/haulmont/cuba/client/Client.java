@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.client;
 
-import com.haulmont.cuba.security.global.LoginService;
+import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.JaasConfiguration;
 
 import javax.naming.Context;
@@ -51,7 +51,7 @@ public class Client
         connProps.put("java.naming.provider.url", "localhost:1099");
 
         Context ctx = new InitialContext(connProps);
-        LoginService ls = (LoginService) ctx.lookup("cuba/security/LoginService/remote");
+        LoginServiceRemote ls = (LoginServiceRemote) ctx.lookup("cuba/security/LoginService/remote");
 
         try {
             ls.authenticate(null, null, null);

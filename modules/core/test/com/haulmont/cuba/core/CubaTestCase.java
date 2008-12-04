@@ -16,7 +16,7 @@ public class CubaTestCase extends TestCase
 {
     protected void setUpDeploymentFiles() {
         TestContainer.addDeploymentFile("cuba-core-global.jar");
-        TestContainer.addDeploymentFile("20-cuba-core.jar");
+        TestContainer.addDeploymentFile("20cuba-core.jar");
     }
 
     protected void setUp() throws Exception {

@@ -4,18 +4,17 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 26.11.2008 14:05:10
+ * Created: 04.12.2008 9:40:11
  *
  * $Id$
  */
-package com.haulmont.cuba.security.ejb;
+package com.haulmont.cuba.security.service;
 
-import com.haulmont.cuba.security.global.LoginService;
+import com.haulmont.cuba.security.global.LoginServiceRemote;
 
 import javax.ejb.Local;
 
 @Local
-public interface LoginWorker extends LoginService
+public interface LoginService extends LoginServiceRemote
 {
-    String JNDI_NAME = "cuba/security/LoginWorker";
 }

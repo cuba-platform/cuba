@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.EntityManagerFactoryImpl;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 import javax.naming.Context;
@@ -29,7 +28,7 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerFactoryAdapter;
 import com.haulmont.cuba.core.EntityManagerAdapter;
 import com.haulmont.cuba.core.CubaProperties;
-import com.haulmont.cuba.core.persistence.EntityLifecycleListener;
+import com.haulmont.cuba.core.impl.persistence.EntityLifecycleListener;
 
 public class ManagedPersistenceProvider extends PersistenceProvider
 {

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.ejb;
+package com.haulmont.cuba.security.worker;
 
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.LoginException;
@@ -16,7 +16,7 @@ import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.resources.Messages;
-import com.haulmont.cuba.security.session.UserSessionManager;
+import com.haulmont.cuba.security.impl.UserSessionManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerAdapter;
 import com.haulmont.cuba.core.QueryAdapter;

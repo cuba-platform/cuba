@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.ejb;
+package com.haulmont.cuba.core.worker;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.BasicInvocationContext;

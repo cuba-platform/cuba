@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Remote
-public interface LoginService
+public interface LoginServiceRemote
 {
     String JNDI_NAME = "cuba/security/LoginService";
     

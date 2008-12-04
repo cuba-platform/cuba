@@ -8,7 +8,9 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.global;
+package com.haulmont.cuba.core.service;
+
+import com.haulmont.cuba.core.global.BasicServiceRemote;
 
 import javax.ejb.Local;
 

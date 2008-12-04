@@ -8,13 +8,15 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.ejb;
+package com.haulmont.cuba.core.service;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
-import com.haulmont.cuba.core.global.BasicService;
+import com.haulmont.cuba.core.service.BasicService;
 import com.haulmont.cuba.core.global.BasicServiceRemote;
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.worker.BasicWorker;
+import com.haulmont.cuba.core.impl.ServiceInterceptor;
 
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;

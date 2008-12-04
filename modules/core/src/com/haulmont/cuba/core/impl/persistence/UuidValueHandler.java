@@ -7,7 +7,7 @@
  * Created: 07.11.2008 19:09:04
  * $Id$
  */
-package com.haulmont.cuba.core.persistence;
+package com.haulmont.cuba.core.impl.persistence;
 
 import org.apache.openjpa.jdbc.meta.strats.AbstractValueHandler;
 import org.apache.openjpa.jdbc.meta.ValueMapping;

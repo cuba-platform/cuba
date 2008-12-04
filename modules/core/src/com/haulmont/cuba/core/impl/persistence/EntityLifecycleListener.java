@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.persistence;
+package com.haulmont.cuba.core.impl.persistence;
 
 import com.haulmont.cuba.core.global.SecurityProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
