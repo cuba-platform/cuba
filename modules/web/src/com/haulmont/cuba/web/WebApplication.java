@@ -11,17 +11,25 @@
 package com.haulmont.cuba.web;
 
 import com.itmill.toolkit.Application;
-import com.itmill.toolkit.ui.*;
 
 public class WebApplication extends Application
 {
+    private Connection connection;
+
+    public WebApplication() {
+        this.connection = new Connection(this);
+    }
+
     public void init() {
-        Window mainWindow = new Window("Cuba");
-        setMainWindow(mainWindow);
+        AppWindow appWindow = getAppWindow();
+        connection.addListener(appWindow);
+    }
 
-        mainWindow.addComponent(new Label("Hello from Cuba!"));
+    protected AppWindow getAppWindow() {
+        return new AppWindow(this);
+    }
 
-        LoginDialog dialog = new LoginDialog(mainWindow);
-        dialog.show();
+    public Connection getConnection() {
+        return connection;
     }
 }

@@ -46,6 +46,7 @@
         <ext:install-jboss-lib name="jboss-j2ee" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-ejb3x" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-remoting" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jbosssx" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-annotations-ejb3" path="server/default/deploy/ejb3.deployer" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <!-- client libs -->

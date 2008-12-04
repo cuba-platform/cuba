@@ -22,7 +22,13 @@
         <fileset refid="server-lib-fs"/>
     </path>
 
-    <target name="compile-module"/>
+    <target name="compile-module">
+        <echo>==> compiling ${project.dir} ${module.name}</echo>
+        <mkdir dir="${prod.out.dir}/${module.name}"/>
+        <copy todir="${prod.out.dir}/${module.name}">
+            <fileset dir="${java.src.dir}" includes="**/*"/>
+        </copy>
+    </target>
 
     <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
 

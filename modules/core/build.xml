@@ -4,11 +4,14 @@
 
 	<property name="project.dir" location="../.."/>
 	<property name="root.dir" location="${project.dir}/.."/>
+
+    <property name="src-serv.dir" location="src-serv"/>
 	
 	<property name="module.name" value="core"/>
 	<property name="module.jar" value="20cuba-core.jar"/>
     <property name="module.global.jar" value="cuba-core-global.jar"/>
     <property name="module.test.jar" value="cuba-core-test.jar"/>
+    <property name="module.ds.xml" value="cuba-ds.xml"/>
 
 	<import file="${root.dir}/build-inc-mod.xml"/>
 	<property file="${root.dir}/build.properties"/>
@@ -38,6 +41,11 @@
         <pathelement location="${test.out.dir}/${module.name}"/>
     </path>
 
+    <target name="clean-module" depends="base-mod.clean-module">
+		<delete file="${build.dir}/${module.global.jar}"/>
+        <delete file="${build.dir}/${module.test.jar}"/>
+    </target>
+
     <target name="compile-module" depends="base-mod.compile-module">
         <echo>==> enhancing ${project.dir} ${module.name}</echo>
         <java classpathref="enhance-cp"
@@ -65,6 +73,7 @@
 
     <target name="deploy-module" depends="base-mod.deploy-module">
         <copy file="${build.dir}/${module.global.jar}" todir="${jboss.dir}/server/default/deploy"/>
+        <copy file="${src-serv.dir}/${module.ds.xml}" todir="${jboss.deploy.dir}"/>
     </target>
 
     <target name="undeploy-module" depends="base-mod.undeploy-module">

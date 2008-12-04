@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+   <local-tx-datasource>
+
+      <!-- The jndi name of the DataSource, it is prefixed with java:/ -->
+      <!-- Datasources are not available outside the virtual machine -->
+      <jndi-name>CubaDS</jndi-name>
+
+      <connection-url>jdbc:hsqldb:hsql://localhost/cubadb</connection-url>
+
+      <!-- The driver class -->
+      <driver-class>org.hsqldb.jdbcDriver</driver-class>
+
+      <!-- The login and password -->
+      <user-name>sa</user-name>
+      <password></password>
+
+      <!--example of how to specify class that determines if exception means connection should be destroyed-->
+      <!--exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.DummyExceptionSorter</exception-sorter-class-name-->
+
+      <!-- this will be run before a managed connection is removed from the pool for use by a client-->
+      <!--<check-valid-connection-sql>select * from something</check-valid-connection-sql> -->
+
+      <!-- The minimum connections in a pool/sub-pool. Pools are lazily constructed on first use -->
+      <min-pool-size>5</min-pool-size>
+
+      <!-- The maximum connections in a pool/sub-pool -->
+      <max-pool-size>20</max-pool-size>
+
+      <!-- The time before an unused connection is destroyed -->
+      <!-- NOTE: This is the check period. It will be destroyed somewhere between 1x and 2x this timeout after last use -->
+      <!-- TEMPORARY FIX! - Disable idle connection removal, HSQLDB has a problem with not reaping threads on closed connections -->
+      <idle-timeout-minutes>0</idle-timeout-minutes>
+
+      <!-- sql to call when connection is created
+        <new-connection-sql>some arbitrary sql</new-connection-sql>
+      -->
+
+      <!-- sql to call on an existing pooled connection when it is obtained from pool 
+         <check-valid-connection-sql>some arbitrary sql</check-valid-connection-sql>
+      -->
+
+      <!-- example of how to specify a class that determines a connection is valid before it is handed out from the pool
+         <valid-connection-checker-class-name>org.jboss.resource.adapter.jdbc.vendor.DummyValidConnectionChecker</valid-connection-checker-class-name>
+      -->
+
+      <!-- Whether to check all statements are closed when the connection is returned to the pool,
+           this is a debugging feature that should be turned off in production -->
+      <track-statements/>
+
+      <!-- HSQL DB benefits from prepared statement caching -->
+      <prepared-statement-cache-size>32</prepared-statement-cache-size>
+
+   </local-tx-datasource>
+
+</datasources>

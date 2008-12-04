@@ -315,20 +315,6 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="svn://dc/cuba/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="svn://dc/cuba/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://dc/cuba/branches" />
@@ -342,20 +328,6 @@
         <entry key="$PROJECT_DIR$/modules/core">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="svn://dc/cuba/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="svn://dc/cuba/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://dc/cuba/branches" />

@@ -45,12 +45,15 @@ public class LoginWorkerBean implements LoginWorker
                 " where u.login = ?1 and u.password = ?2 and u.deleteTs is null");
         q.setParameter(1, login);
         q.setParameter(2, password);
-        User user = (User) q.getSingleResult();
-        if (user == null) {
+        List list = q.getResultList();
+        if (list.isEmpty()) {
             log.warn("Failed to authenticate: " + login);
             throw new LoginException(Messages.getString("LoginException.InvalidLoginOrPassword", locale));
         }
-        return user;
+        else {
+            User user = (User) list.get(0);
+            return user;
+        }
     }
 
     public List<Profile> authenticate(String login, String password, Locale locale)
