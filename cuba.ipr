@@ -34,6 +34,14 @@
       <maximumStackSize value="32" />
       <properties />
     </buildFile>
+    <buildFile url="file://$PROJECT_DIR$/modules/web-war/build.xml">
+      <additionalClassPath />
+      <antReference projectDefault="true" />
+      <customJdkName value="" />
+      <maximumHeapSize value="128" />
+      <maximumStackSize value="32" />
+      <properties />
+    </buildFile>
   </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
@@ -94,6 +102,13 @@
       <facet-type id="jpa">
         <modules>
           <module name="core" />
+        </modules>
+      </facet-type>
+      <facet-type id="ejb" />
+      <facet-type id="web">
+        <modules>
+          <module name="web" />
+          <module name="web-war" />
         </modules>
       </facet-type>
     </autodetection-disabled>
@@ -274,6 +289,7 @@
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web/web.iml" filepath="$PROJECT_DIR$/modules/web/web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/web-war/web-war.iml" filepath="$PROJECT_DIR$/modules/web-war/web-war.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
@@ -314,10 +330,12 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2ee.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3x.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/serp-1.13.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.2.12.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/server/src/openjpa-1.2.0-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.2.12.jar!/" />
       </SOURCES>
     </library>
     <library name="common">

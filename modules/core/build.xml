@@ -6,7 +6,7 @@
 	<property name="root.dir" location="${project.dir}/.."/>
 	
 	<property name="module.name" value="core"/>
-	<property name="module.jar" value="20-cuba-core.jar"/>
+	<property name="module.jar" value="20cuba-core.jar"/>
     <property name="module.global.jar" value="cuba-core-global.jar"/>
     <property name="module.test.jar" value="cuba-core-test.jar"/>
 

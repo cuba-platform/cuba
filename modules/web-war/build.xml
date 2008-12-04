@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	name="cuba-web" default="noop" basedir=".">
+	name="cuba-web-war" default="noop" basedir=".">
 
 	<property name="project.dir" location="../.."/>
 	<property name="root.dir" location="${project.dir}/.."/>
 	
-	<property name="module.name" value="web"/>
-	<property name="module.jar" value="21cuba-web.jar"/>
+	<property name="module.name" value="web-war"/>
+	<property name="module.jar" value="22cuba.war"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
@@ -21,5 +21,9 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
     </path>
+
+    <target name="compile-module"/>
+
+    <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
 
 </project>

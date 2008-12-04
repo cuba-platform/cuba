@@ -11,7 +11,8 @@
 	<target name="delegate">
 		<property name="target" value="noop" />
 		<ant dir="modules/core" target="${target}" inheritAll="false"/>
-		<!--<ant dir="modules/web" target="${target}" inheritAll="false"/>-->
+		<ant dir="modules/web" target="${target}" inheritAll="false"/>
+        <ant dir="modules/web-war" target="${target}" inheritAll="false"/>
 	</target>
 
 	<target name="clean">
@@ -37,6 +38,7 @@
 		<!-- server libs -->
         <ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="itmill-toolkit" version="${itmill-toolkit.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-common" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
