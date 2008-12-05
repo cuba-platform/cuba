@@ -19,8 +19,8 @@ import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.security.worker.LoginWorker;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.global.JaasCallbackHandler;
-import com.haulmont.cuba.security.global.JaasConfiguration;
+import com.haulmont.cuba.security.JaasCallbackHandler;
+import com.haulmont.cuba.security.JaasConfiguration;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -68,7 +68,7 @@ public class LoginTest extends CubaTestCase
         List<User> list = bs.loadList(ctx);
         assertTrue(list.size() > 0);
 
-        assertTrue(SecurityProvider.currentUserInRole("Administrators"));
+        assertTrue("Not in role", SecurityProvider.currentUserInRole("Administrators"));
 
         lw.logout();
     }

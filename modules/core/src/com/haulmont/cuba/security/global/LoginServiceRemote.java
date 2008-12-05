@@ -26,4 +26,6 @@ public interface LoginServiceRemote
     UserSession login(String login, String password, String profileName, Locale locale) throws LoginException;
 
     void logout();
+
+    void ping();
 }

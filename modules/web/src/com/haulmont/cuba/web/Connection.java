@@ -10,28 +10,22 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.security.service.LoginService;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.service.LoginService;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class Connection
 {
-    private WebApplication app;
-
     private Set<ConnectionListener> listeners = new HashSet<ConnectionListener>();
 
     private boolean connected;
     private UserSession session;
-
-    public Connection(WebApplication app) {
-        this.app = app;
-    }
 
     public boolean isConnected() {
         return connected;
@@ -56,17 +50,20 @@ public class Connection
         LoginService ls = ServiceLocator.lookup(LoginService.JNDI_NAME);
         try {
             session = ls.login(login, password, profileName, Locale.getDefault()); // TODO KK: pass client locale
-            connected = true;
-            fireListeners();
         } catch (LoginException e) {
             throw new RuntimeException(e);
         }
+        connected = true;
+        fireListeners();
     }
 
     public void logout() {
         if (!connected)
             return;
-        
+
+        LoginService ls = ServiceLocator.lookup(LoginService.JNDI_NAME);
+        ls.logout();
+
         connected = false;
         session = null;
         fireListeners();

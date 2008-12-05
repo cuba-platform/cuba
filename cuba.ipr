@@ -73,6 +73,594 @@
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
   </component>
+  <component name="DataSourceManagerImpl">
+    <DataSource DataSourceSourceName="LOCAL">
+      <option name="DRIVER_CLASS" value="org.hsqldb.jdbcDriver" />
+      <option name="DATABASE_URL" value="jdbc:hsqldb:hsql://localhost/cubadb" />
+      <option name="DRIVER_PATH" />
+      <option name="DATBASE_USERNAME" value="sa" />
+      <option name="ENCODED_DATABASE_PASSWORD" value="" />
+      <option name="DEFAULT_SCHEMA_NAME" />
+      <option name="TABLE_PATTERN" value="" />
+      <option name="UUID" value="be4f06a3-32ca-4242-8188-c13049601826" />
+      <option name="NAME" value="CubaDB" />
+      <TABLE_DATA>
+        <option name="NAME" value="SEC_PROFILE" />
+        <option name="SCHEMA" value="PUBLIC" />
+        <option name="CATALOG" />
+        <option name="TYPE" value="TABLE" />
+        <FIELD_ELEMENT>
+          <option name="NAME" value="ID" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="true" />
+          <option name="LENGTH" value="36" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="false" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="VERSION" />
+          <option name="SQL_TYPE" value="INTEGER" />
+          <option name="JDBC_TYPE" value="4" />
+          <option name="TYPE" value="java.lang.Integer" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="0" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="NAME" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="255" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="USER_ID" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="36" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <RELATIONSHIP_ELEMENT>
+          <option name="RELATION_NAME" value="SEC_PROFILE_USER" />
+          <option name="TARGET_TABLE" value="SEC_USER" />
+          <option name="TARGET_SCHEMA" value="PUBLIC" />
+          <option name="TARGET_CATALOG" />
+          <option name="TARGET_COLUMN" value="ID" />
+          <option name="SOURCE_COLUMN" value="USER_ID" />
+          <option name="CASCADE_REMOVE" value="false" />
+          <option name="CASCADE_UPDATE" value="false" />
+        </RELATIONSHIP_ELEMENT>
+      </TABLE_DATA>
+      <TABLE_DATA>
+        <option name="NAME" value="SEC_PROFILE_ROLE" />
+        <option name="SCHEMA" value="PUBLIC" />
+        <option name="CATALOG" />
+        <option name="TYPE" value="TABLE" />
+        <FIELD_ELEMENT>
+          <option name="NAME" value="ID" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="true" />
+          <option name="LENGTH" value="36" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="false" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="VERSION" />
+          <option name="SQL_TYPE" value="INTEGER" />
+          <option name="JDBC_TYPE" value="4" />
+          <option name="TYPE" value="java.lang.Integer" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="0" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="PROFILE_ID" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="36" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="ROLE_ID" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="36" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <RELATIONSHIP_ELEMENT>
+          <option name="RELATION_NAME" value="SEC_PROFILE_ROLE_PROFILE" />
+          <option name="TARGET_TABLE" value="SEC_PROFILE" />
+          <option name="TARGET_SCHEMA" value="PUBLIC" />
+          <option name="TARGET_CATALOG" />
+          <option name="TARGET_COLUMN" value="ID" />
+          <option name="SOURCE_COLUMN" value="PROFILE_ID" />
+          <option name="CASCADE_REMOVE" value="false" />
+          <option name="CASCADE_UPDATE" value="false" />
+        </RELATIONSHIP_ELEMENT>
+        <RELATIONSHIP_ELEMENT>
+          <option name="RELATION_NAME" value="SEC_PROFILE_ROLE_ROLE" />
+          <option name="TARGET_TABLE" value="SEC_ROLE" />
+          <option name="TARGET_SCHEMA" value="PUBLIC" />
+          <option name="TARGET_CATALOG" />
+          <option name="TARGET_COLUMN" value="ID" />
+          <option name="SOURCE_COLUMN" value="ROLE_ID" />
+          <option name="CASCADE_REMOVE" value="false" />
+          <option name="CASCADE_UPDATE" value="false" />
+        </RELATIONSHIP_ELEMENT>
+      </TABLE_DATA>
+      <TABLE_DATA>
+        <option name="NAME" value="SEC_ROLE" />
+        <option name="SCHEMA" value="PUBLIC" />
+        <option name="CATALOG" />
+        <option name="TYPE" value="TABLE" />
+        <FIELD_ELEMENT>
+          <option name="NAME" value="ID" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="true" />
+          <option name="LENGTH" value="36" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="false" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="VERSION" />
+          <option name="SQL_TYPE" value="INTEGER" />
+          <option name="JDBC_TYPE" value="4" />
+          <option name="TYPE" value="java.lang.Integer" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="0" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="NAME" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="255" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+      </TABLE_DATA>
+      <TABLE_DATA>
+        <option name="NAME" value="SEC_USER" />
+        <option name="SCHEMA" value="PUBLIC" />
+        <option name="CATALOG" />
+        <option name="TYPE" value="TABLE" />
+        <FIELD_ELEMENT>
+          <option name="NAME" value="ID" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="true" />
+          <option name="LENGTH" value="36" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="false" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="VERSION" />
+          <option name="SQL_TYPE" value="INTEGER" />
+          <option name="JDBC_TYPE" value="4" />
+          <option name="TYPE" value="java.lang.Integer" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="0" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="LOGIN" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="PASSWORD" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="32" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="NAME" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="255" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+      </TABLE_DATA>
+      <TABLE_DATA>
+        <option name="NAME" value="SYS_SERVER" />
+        <option name="SCHEMA" value="PUBLIC" />
+        <option name="CATALOG" />
+        <option name="TYPE" value="TABLE" />
+        <FIELD_ELEMENT>
+          <option name="NAME" value="ID" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="true" />
+          <option name="LENGTH" value="36" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="false" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="CREATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="VERSION" />
+          <option name="SQL_TYPE" value="INTEGER" />
+          <option name="JDBC_TYPE" value="4" />
+          <option name="TYPE" value="java.lang.Integer" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="0" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="UPDATED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETE_TS" />
+          <option name="SQL_TYPE" value="TIMESTAMP" />
+          <option name="JDBC_TYPE" value="93" />
+          <option name="TYPE" value="java.sql.Timestamp" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="6" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="DELETED_BY" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="20" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="NAME" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="255" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="ADDRESS" />
+          <option name="SQL_TYPE" value="VARCHAR" />
+          <option name="JDBC_TYPE" value="12" />
+          <option name="TYPE" value="java.lang.String" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="255" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+        <FIELD_ELEMENT>
+          <option name="NAME" value="IS_RUNNING" />
+          <option name="SQL_TYPE" value="SMALLINT" />
+          <option name="JDBC_TYPE" value="5" />
+          <option name="TYPE" value="java.lang.Short" />
+          <option name="PRIMARY" value="false" />
+          <option name="LENGTH" value="0" />
+          <option name="PRECISION" value="0" />
+          <option name="NULLABLE" value="true" />
+        </FIELD_ELEMENT>
+      </TABLE_DATA>
+      <libraries>
+        <library>
+          <url>jar://$PROJECT_DIR$/../lib/server/hsqldb-1.8.0.9.jar!/</url>
+        </library>
+      </libraries>
+    </DataSource>
+  </component>
   <component name="DependenciesAnalyzeManager">
     <option name="myForwardDirection" value="false" />
   </component>
@@ -361,6 +949,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3x.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/serp-1.13.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.2.12.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

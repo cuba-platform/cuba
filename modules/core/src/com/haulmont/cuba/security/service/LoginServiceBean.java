@@ -18,10 +18,12 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.worker.LoginWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.security.SecurityAssociation;
 
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
+import java.security.Principal;
 
 @Stateless(name = LoginServiceRemote.JNDI_NAME)
 public class LoginServiceBean implements LoginService, LoginServiceRemote
@@ -36,7 +38,7 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
         try {
             return getLoginWorker().authenticate(login, password, null);
         } catch (Exception e) {
-            log.error(e);
+            log.error("Authentication error", e);
             throw new RuntimeException(e);
         }
     }
@@ -45,12 +47,23 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
         try {
             return getLoginWorker().login(login, password, profileName, null);
         } catch (Exception e) {
-            log.error(e);
+            log.error("Login error", e);
             throw new RuntimeException(e);
         }
     }
 
     public void logout() {
-        getLoginWorker().logout();
+        try {
+            getLoginWorker().logout();
+        } catch (Exception e) {
+            log.error("Logout error", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void ping() {
+        Principal principal = SecurityAssociation.getPrincipal();
+        Object credential = SecurityAssociation.getCredential();
+        log.debug(principal + " " + credential);
     }
 }

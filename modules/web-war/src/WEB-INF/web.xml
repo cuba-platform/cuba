@@ -10,7 +10,7 @@
         </servlet-class>
         <init-param>
             <param-name>application</param-name>
-            <param-value>com.haulmont.cuba.web.WebApplication</param-value>
+            <param-value>com.haulmont.cuba.web.App</param-value>
         </init-param>
     </servlet>
 

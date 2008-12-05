@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.global;
+package com.haulmont.cuba.security;
 
 import javax.security.auth.callback.*;
 import java.io.IOException;

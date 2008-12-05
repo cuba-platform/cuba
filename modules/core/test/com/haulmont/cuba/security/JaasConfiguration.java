@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.global;
+package com.haulmont.cuba.security;
 
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;

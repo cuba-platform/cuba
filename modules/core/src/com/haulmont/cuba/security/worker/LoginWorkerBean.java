@@ -92,8 +92,12 @@ public class LoginWorkerBean implements LoginWorker
         try {
             UserSession session = SecurityProvider.currentUserSession();
             UserSessionManager.getInstance().removeSession(session);
+            log.info("Logged out: " + session);
         } catch (NoUserSessionException e) {
             log.warn("NoUserSessionException thrown on logout");
         }
+    }
+
+    public void ping() {
     }
 }

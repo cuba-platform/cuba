@@ -19,39 +19,34 @@ public class AppWindow extends Window implements ConnectionListener
 {
     private OrderedLayout currentLayout;
 
-    public AppWindow(WebApplication app) {
-        super("Cuba Application");
+    public AppWindow(App app) {
+        super();
+        setCaption(getAppCaption());
         app.setMainWindow(this);
 
-        showWelcomeLayout();
-    }
-
-    private WebApplication getApp() {
-        return (WebApplication) getApplication();
-    }
-
-    public void showWelcomeLayout() {
-        if (currentLayout != null)
-            removeComponent(currentLayout);
-
         currentLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+        initWelcomeLayout();
+        addComponent(currentLayout);
+    }
 
+    protected String getAppCaption() {
+        return "Cuba Application";
+    }
+
+    public App getApp() {
+        return (App) getApplication();
+    }
+
+    protected void initWelcomeLayout() {
         Label label = new Label("Hello from Cuba!");
         currentLayout.addComponent(label);
-
-        addComponent(currentLayout);
 
         LoginDialog dialog = new LoginDialog(this, getApp().getConnection());
         dialog.show();
     }
 
-    public void showMainLayout() {
-        if (currentLayout != null)
-            removeComponent(currentLayout);
-
-        currentLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
-
-        Label label = new Label("Logged in");
+    protected void initMainLayout() {
+        Label label = new Label("Logged in as " + getApp().getConnection().getSession().getName());
         currentLayout.addComponent(label);
 
         Button logoutBtn = new Button("Logout",
@@ -62,16 +57,20 @@ public class AppWindow extends Window implements ConnectionListener
                 }
         );
         currentLayout.addComponent(logoutBtn);
-
-        addComponent(currentLayout);
     }
 
     public void connectionStateChanged(Connection connection) {
+        if (currentLayout != null)
+            removeComponent(currentLayout);
+        currentLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+
         if (connection.isConnected()) {
-            showMainLayout();
+            initMainLayout();
         }
         else {
-            showWelcomeLayout();
+            initWelcomeLayout();
         }
+
+        addComponent(currentLayout);
     }
 }
