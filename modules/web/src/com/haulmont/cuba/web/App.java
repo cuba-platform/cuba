@@ -26,6 +26,8 @@ public class App extends Application
 
     private Connection connection;
 
+    private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
+
     static {
         SecurityAssociation.setServer();
     }
@@ -44,7 +46,11 @@ public class App extends Application
         appContext.addTransactionListener(new RequestListener());
     }
 
-    protected AppWindow getAppWindow() {
+    public static App getInstance() {
+        return currentApp.get();
+    }
+
+    public AppWindow getAppWindow() {
         return new AppWindow(this);
     }
 
@@ -59,6 +65,9 @@ public class App extends Application
                 HttpServletRequest request = (HttpServletRequest) transactionData;
                 log.trace("requestStart: " + request + " from " + request.getRemoteAddr());
             }
+            if (application == App.this) {
+                currentApp.set((App) application);
+            }
             UserSession userSession = connection.getSession();
             if (userSession != null) {
                 SecurityAssociation.setPrincipal(new SimplePrincipal(userSession.getLogin()));
@@ -67,6 +76,10 @@ public class App extends Application
         }
 
         public void transactionEnd(Application application, Object transactionData) {
+            if (application == App.this) {
+                currentApp.set(null);
+                currentApp.remove();
+            }
             if (log.isTraceEnabled()) {
                 log.trace("requestEnd: " + transactionData);
             }

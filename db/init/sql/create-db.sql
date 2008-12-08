@@ -101,8 +101,8 @@ values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', '
 insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, USER_ID)
 values ('bf83541f-f610-46f4-a268-dff348347f93', current_timestamp, 0, 'Default', '60885987-1b61-4247-94c7-dff348347f93');
 
-/*insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, USER_ID)
-values ('cc1e0bc4-1062-4218-a09f-dff348347f93', current_timestamp, 0, 'Test', '60885987-1b61-4247-94c7-dff348347f93');*/
+insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, USER_ID)
+values ('cc1e0bc4-1062-4218-a09f-dff348347f93', current_timestamp, 0, 'Test', '60885987-1b61-4247-94c7-dff348347f93');
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators');

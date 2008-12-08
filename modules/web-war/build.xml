@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	name="cuba-web-war" default="noop" basedir=".">
+	name="cuba-web-war" default="build-module" basedir=".">
 
 	<property name="project.dir" location="../.."/>
 	<property name="root.dir" location="${project.dir}/.."/>
