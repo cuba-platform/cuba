@@ -10,6 +10,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.core.global.UuidProvider;
 
 import javax.transaction.*;
 import javax.naming.Context;
@@ -25,7 +26,8 @@ public class PersistenceTest extends CubaTestCase
             EntityManagerAdapter em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
-            id = server.getId();
+            id = UuidProvider.createUuid();
+            server.setId(id);
             server.setName("localhost");
             server.setAddress("127.0.0.1");
             server.setRunning(true);

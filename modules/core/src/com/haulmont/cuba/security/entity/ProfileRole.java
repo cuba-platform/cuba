@@ -21,6 +21,8 @@ import javax.persistence.JoinColumn;
 @Table(name = "SEC_PROFILE_ROLE")
 public class ProfileRole extends StandardEntity
 {
+    private static final long serialVersionUID = 6151402331592361210L;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "PROFILE_ID")
     private Profile profile;

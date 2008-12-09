@@ -20,6 +20,8 @@ import java.util.Set;
 @Table(name = "SEC_USER")
 public class User extends StandardEntity
 {
+    private static final long serialVersionUID = 5007187642916030394L;
+
     @Column(name = "LOGIN", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String login;
 

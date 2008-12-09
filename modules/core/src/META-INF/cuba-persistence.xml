@@ -16,6 +16,7 @@
             <property name="openjpa.Log" value="log4j"/>
             <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72"/>
             <property name="openjpa.jdbc.DBDictionary" value="hsql(SimulateLocking=true)"/>
+            <property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
             <property name="openjpa.jdbc.MappingDefaults"
                       value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.impl.persistence.UuidValueHandler'"/>
         </properties>

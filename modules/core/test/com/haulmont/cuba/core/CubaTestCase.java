@@ -21,9 +21,10 @@ public class CubaTestCase extends TestCase
 
     protected void setUp() throws Exception {
         super.setUp();
-        setUpDeploymentFiles();
-        TestContainer.start();
-
+        if (!TestContainer.isStarted()) {
+            setUpDeploymentFiles();
+            TestContainer.start();
+        }
         System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.impl.TestSecurityProvider");
     }
 }

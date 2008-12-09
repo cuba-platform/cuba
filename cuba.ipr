@@ -82,7 +82,7 @@
       <option name="ENCODED_DATABASE_PASSWORD" value="" />
       <option name="DEFAULT_SCHEMA_NAME" />
       <option name="TABLE_PATTERN" value="" />
-      <option name="UUID" value="be4f06a3-32ca-4242-8188-c13049601826" />
+      <option name="UUID" value="52dca3c0-fbab-4812-9bc7-f7103804c65b" />
       <option name="NAME" value="CubaDB" />
       <TABLE_DATA>
         <option name="NAME" value="SEC_PROFILE" />
@@ -656,6 +656,7 @@
       </TABLE_DATA>
       <libraries>
         <library>
+          <attribute name="URI" value="" />
           <url>jar://$PROJECT_DIR$/../lib/server/hsqldb-1.8.0.9.jar!/</url>
         </library>
       </libraries>

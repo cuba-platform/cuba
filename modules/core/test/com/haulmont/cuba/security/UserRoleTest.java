@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.Profile;
@@ -27,22 +28,25 @@ public class UserRoleTest extends CubaTestCase
             EntityManagerAdapter em = PersistenceProvider.getEntityManager();
 
             User user = new User();
-            UUID userId = user.getId();
+            UUID userId = UuidProvider.createUuid();
+            user.setId(userId);
             user.setLogin("testUser1");
             user.setName("Test User 1");
             em.persist(user);
 
             Role role = new Role();
-            UUID roleId = role.getId();
+            role.setId(UuidProvider.createUuid());
             role.setName("testRole1");
             em.persist(role);
 
             Profile profile = new Profile();
-            profile.setName("Default");
+            profile.setId(UuidProvider.createUuid());
+            profile.setName("testProfile");
             profile.setUser(user);
             em.persist(profile);
 
             ProfileRole profileRole = new ProfileRole();
+            profileRole.setId(UuidProvider.createUuid());
             profileRole.setProfile(profile);
             profileRole.setRole(role);
             em.persist(profileRole);

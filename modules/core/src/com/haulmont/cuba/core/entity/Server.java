@@ -18,6 +18,8 @@ import javax.persistence.EntityListeners;
 @Table(name = "SYS_SERVER")
 public class Server extends StandardEntity
 {
+    private static final long serialVersionUID = 1892335683693067357L;
+
     @Column(name = "NAME")
     private String name;
 

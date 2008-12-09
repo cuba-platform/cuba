@@ -20,6 +20,8 @@ import javax.persistence.Column;
 @Table(name = "SEC_ROLE")
 public class Role extends StandardEntity
 {
+    private static final long serialVersionUID = -4889116218059626402L;
+
     @Column(name = "NAME")
     private String name;
 

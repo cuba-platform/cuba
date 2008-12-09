@@ -21,9 +21,7 @@ import javax.management.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,9 +29,9 @@ public class TestContainer
 {
     private static boolean started;
 
-    private static TreeSet<String> filesByExt = new TreeSet<String>(new ExtensionComparator());
+    private static List<String> filesByExt = new ArrayList<String>();
 
-    private static TreeSet<String> filesByPrefix = new TreeSet<String>(new PrefixComparator());
+    private static List<String> filesByPrefix = new ArrayList<String>();
 
     private static class ExtensionComparator implements Comparator<String>
     {
@@ -72,6 +70,10 @@ public class TestContainer
         }
     }
 
+    public static boolean isStarted() {
+        return started;
+    }
+
     private static Integer getPrefix(String s) {
         Pattern pattern = Pattern.compile("\\A\\d+");
         Matcher matcher = pattern.matcher(s);
@@ -101,9 +103,12 @@ public class TestContainer
             return;
 
         EJB3StandaloneBootstrap.boot(null);
+
+        Collections.sort(filesByExt, new ExtensionComparator());
         for (String fileName : filesByExt) {
             deployFile(fileName);
         }
+        Collections.sort(filesByPrefix, new PrefixComparator());
         for (String fileName : filesByPrefix) {
             deployFile(fileName);
         }
