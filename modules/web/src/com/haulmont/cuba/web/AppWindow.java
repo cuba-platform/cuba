@@ -17,20 +17,24 @@ import com.itmill.toolkit.ui.Window;
 
 public class AppWindow extends Window implements ConnectionListener
 {
-    private OrderedLayout currentLayout;
+    private OrderedLayout rootLayout;
 
     public AppWindow(App app) {
         super();
         setCaption(getAppCaption());
         app.setMainWindow(this);
 
-        currentLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+        rootLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
         initWelcomeLayout();
-        addComponent(currentLayout);
+        addComponent(rootLayout);
     }
 
     protected String getAppCaption() {
         return "Cuba Application";
+    }
+
+    protected OrderedLayout getRootLayout() {
+        return rootLayout;
     }
 
     public App getApp() {
@@ -39,7 +43,7 @@ public class AppWindow extends Window implements ConnectionListener
 
     protected void initWelcomeLayout() {
         Label label = new Label("Hello from Cuba!");
-        currentLayout.addComponent(label);
+        rootLayout.addComponent(label);
 
         LoginDialog dialog = new LoginDialog(this, getApp().getConnection());
         dialog.show();
@@ -47,7 +51,7 @@ public class AppWindow extends Window implements ConnectionListener
 
     protected void initMainLayout() {
         Label label = new Label("Logged in as " + getApp().getConnection().getSession().getName());
-        currentLayout.addComponent(label);
+        rootLayout.addComponent(label);
 
         Button logoutBtn = new Button("Logout",
                 new Button.ClickListener() {
@@ -56,13 +60,13 @@ public class AppWindow extends Window implements ConnectionListener
                     }
                 }
         );
-        currentLayout.addComponent(logoutBtn);
+        rootLayout.addComponent(logoutBtn);
     }
 
     public void connectionStateChanged(Connection connection) {
-        if (currentLayout != null)
-            removeComponent(currentLayout);
-        currentLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+        if (rootLayout != null)
+            removeComponent(rootLayout);
+        rootLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
 
         if (connection.isConnected()) {
             initMainLayout();
@@ -71,6 +75,6 @@ public class AppWindow extends Window implements ConnectionListener
             initWelcomeLayout();
         }
 
-        addComponent(currentLayout);
+        addComponent(rootLayout);
     }
 }
