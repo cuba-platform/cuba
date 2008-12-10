@@ -28,25 +28,21 @@ public class UserRoleTest extends CubaTestCase
             EntityManagerAdapter em = PersistenceProvider.getEntityManager();
 
             User user = new User();
-            UUID userId = UuidProvider.createUuid();
-            user.setId(userId);
+            UUID userId = user.getId();
             user.setLogin("testUser1");
             user.setName("Test User 1");
             em.persist(user);
 
             Role role = new Role();
-            role.setId(UuidProvider.createUuid());
             role.setName("testRole1");
             em.persist(role);
 
             Profile profile = new Profile();
-            profile.setId(UuidProvider.createUuid());
             profile.setName("testProfile");
             profile.setUser(user);
             em.persist(profile);
 
             ProfileRole profileRole = new ProfileRole();
-            profileRole.setId(UuidProvider.createUuid());
             profileRole.setProfile(profile);
             profileRole.setRole(role);
             em.persist(profileRole);

@@ -33,6 +33,10 @@ public class BaseUuidEntity implements BaseEntity<UUID>
     @Column(name = "CREATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String createdBy;
 
+    public BaseUuidEntity() {
+        id = UuidProvider.createUuid();
+    }
+
     public UUID getId() {
         return id;
     }

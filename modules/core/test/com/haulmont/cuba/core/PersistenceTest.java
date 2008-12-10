@@ -26,8 +26,7 @@ public class PersistenceTest extends CubaTestCase
             EntityManagerAdapter em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
-            id = UuidProvider.createUuid();
-            server.setId(id);
+            id = server.getId();
             server.setName("localhost");
             server.setAddress("127.0.0.1");
             server.setRunning(true);

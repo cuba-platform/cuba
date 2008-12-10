@@ -57,6 +57,10 @@
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <option name="DEPLOY_AFTER_MAKE" value="0" />
+    <excludeFromCompile>
+      <directory url="file://$PROJECT_DIR$/modules/core/src/com/haulmont/cuba/core/entity" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/modules/core/src/com/haulmont/cuba/security/entity" includeSubdirectories="true" />
+    </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
       <entry name=".+\.(gif|png|jpeg|jpg)" />
