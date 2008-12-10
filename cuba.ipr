@@ -941,9 +941,15 @@
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
     <library name="chile">
-      <CLASSES />
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../chile/build/11chile-jpa.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../chile/build/10chile-core.jar!/" />
+      </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../chile/modules/core/src" />
+        <root url="file://$PROJECT_DIR$/../chile/modules/jpa/src" />
+      </SOURCES>
     </library>
     <library name="server">
       <CLASSES>
@@ -969,11 +975,14 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-logging.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/dom4j-1.6.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-codec-1.3.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/google-collect-snapshot-20080820.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/reflections-0.9.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-lang-2.4-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-codec-1.3-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/reflections-0.9-src.zip!/" />
       </SOURCES>
     </library>
     <library name="test">

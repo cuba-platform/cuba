@@ -23,11 +23,31 @@ public abstract class PersistenceProvider
 
     private static PersistenceProvider instance;
 
+    public static final String PERSISTENCE_XML = "cuba.PersistenceXml";
+    public static final String PERSISTENCE_UNIT = "cuba.PersistenceUnit";
+
+    protected static final String DEFAULT_PERSISTENCE_XML = "META-INF/cuba-persistence.xml";
+    protected static final String DEFAULT_PERSISTENCE_UNIT = "cuba";
+
     private static PersistenceProvider getInstance() {
         if (instance == null) {
             instance = new ManagedPersistenceProvider(Locator.getJndiContext());
         }
         return instance;
+    }
+
+    public static String getPersistenceXmlPath() {
+        String xmlPath = System.getProperty(PERSISTENCE_XML);
+        if (StringUtils.isBlank(xmlPath))
+            xmlPath = DEFAULT_PERSISTENCE_XML;
+        return xmlPath;
+    }
+
+    public static String getPersistenceUnitName() {
+        String unitName = System.getProperty(PERSISTENCE_UNIT);
+        if (StringUtils.isBlank(unitName))
+            unitName = DEFAULT_PERSISTENCE_UNIT;
+        return unitName;
     }
 
     public static EntityManagerFactoryAdapter getEntityManagerFactory() {

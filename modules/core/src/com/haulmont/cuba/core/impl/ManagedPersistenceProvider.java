@@ -27,7 +27,6 @@ import com.haulmont.cuba.core.impl.EntityManagerFactoryAdapterImpl;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerFactoryAdapter;
 import com.haulmont.cuba.core.EntityManagerAdapter;
-import com.haulmont.cuba.core.CubaProperties;
 import com.haulmont.cuba.core.impl.persistence.EntityLifecycleListener;
 
 public class ManagedPersistenceProvider extends PersistenceProvider
@@ -55,12 +54,8 @@ public class ManagedPersistenceProvider extends PersistenceProvider
             if (!emfInitialized) {
                 log.debug("Creating new EntityManagerFactory");
 
-                String xmlPath = System.getProperty(CubaProperties.PERSISTENCE_XML);
-                if (StringUtils.isBlank(xmlPath))
-                    xmlPath = "META-INF/cuba-persistence.xml";
-                String unitName = System.getProperty(CubaProperties.PERSISTENCE_UNIT);
-                if (StringUtils.isBlank(unitName))
-                    unitName = "cuba";
+                String xmlPath = getPersistenceXmlPath();
+                String unitName = getPersistenceUnitName();
                 log.debug(String.format("Using persistence unit %s from %s", unitName, xmlPath));
 
                 OpenJPAEntityManagerFactory jpaFactory =
