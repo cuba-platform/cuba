@@ -51,7 +51,37 @@
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
   </component>
   <component name="CodeStyleSettingsManager">
-    <option name="PER_PROJECT_SETTINGS" />
+    <option name="PER_PROJECT_SETTINGS">
+      <value>
+        <ADDITIONAL_INDENT_OPTIONS fileType="java">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="xml">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+      </value>
+    </option>
     <option name="USE_PER_PROJECT_SETTINGS" value="false" />
   </component>
   <component name="CompilerConfiguration">
@@ -977,12 +1007,14 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-codec-1.3.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/google-collect-snapshot-20080820.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/reflections-0.9.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-io-1.4.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-lang-2.4-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-codec-1.3-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/reflections-0.9-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-io-1.4-src.zip!/" />
       </SOURCES>
     </library>
     <library name="test">

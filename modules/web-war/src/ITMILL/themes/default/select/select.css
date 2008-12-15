@@ -1,0 +1,230 @@
+.i-select {
+	text-align: left /* Force default alignment */
+}
+.i-select-option {
+
+}
+
+.i-select-optiongroup {
+
+}
+
+.i-select-optiongroup .i-select-option {
+	display: block;
+	white-space: nowrap;
+}
+
+.i-select-select {
+	/*
+	border: 1px solid #b6b6b6;
+	border-bottom-color: #9d9d9d;
+	border-top-color: #d6d6d6;
+	border-left-color: #d6d6d6;
+	*/
+	display: block;
+	font-size: 13px;
+}
+
+/* Twincol style */
+.i-select-twincol {
+	white-space: nowrap;
+}
+.i-select-twincol-options {
+	float: left;
+	font-size: 13px;
+}
+.i-select-twincol-selections {
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.i-select-twincol-buttons {
+	float: left;
+	padding: 2px; /* does not work in first render in FF ? */
+	text-align: center;
+}
+
+.i-select-twincol-buttons .i-select-twincol-deco {
+	clear:both;
+}
+
+.i-select-twincol .i-textfield {
+	display: block;
+	float: left;
+	clear: left;
+}
+
+.i-select-twincol .i-button {
+	display: block;
+	float: left;
+}
+
+.i-select-twincol-buttons .i-button {
+	display: inline;
+	float: none;
+}
+
+/** Filterselect aka ComboBox styles */
+
+.i-filterselect {
+	height: 23px;
+	background: transparent url(img/bg-left-filter.png) no-repeat;
+	margin-right: 1px;
+	white-space: nowrap;
+	text-align: left /* Force default alignment */
+}
+
+.i-filterselect-input {
+	width: 99%;
+	border: none;
+	background: transparent;
+	height: 20px;
+	margin: 0;
+	padding: 3px 0 0 4px;
+	font-size: 13px;
+}
+.i-filterselect-input:focus {
+	/* button clips safari outline otherwise (#1684) */
+	outline-offset: -1px; 
+}
+
+.i-filterselect-button {
+	float: right;
+	margin: -23px -1px 0 0;
+	width: 25px;
+	height: 23px;
+	cursor: pointer;
+	background: transparent url(img/bg-right-filter.png);
+	position: relative;
+}
+.i-filterselect-button:hover {
+	background-position: bottom left;
+}
+.i-disabled .i-filterselect-button:hover,
+.i-readonly .i-filterselect-button:hover {
+	background-position: top left;
+}
+
+.i-filterselect-suggestpopup {
+	background: #f6f7f7;
+	border: 1px solid #b6bbbc;
+	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+	color: #464f52;
+	font-size: 12px;
+	line-height: 18px;
+	margin-top: -1px;
+}
+.i-filterselect-suggestmenu {
+	margin-left: -2px;
+}
+.i-filterselect-suggestmenu .gwt-MenuItem {
+	padding: 1px 5px;
+	cursor: pointer;
+	height: 18px;
+	white-space: nowrap;
+}
+
+.i-filterselect-suggestmenu .gwt-MenuItem-selected {
+	background: #5daee8;
+	color: #fff;
+}
+
+.i-filterselect-nextpage,
+.i-filterselect-nextpage-off,
+.i-filterselect-prevpage-off,
+.i-filterselect-prevpage {
+	height: 11px;
+	width:100%;
+	background: transparent url(img/button-bg.png) no-repeat 50% 0;
+	text-align: center;
+	margin: 2px 0 0 0;
+	overflow:hidden;
+}
+.i-filterselect-prevpage,
+.i-filterselect-prevpage-off {
+	background-position: 50% -1px;
+	margin: 0 0 2px 0;
+}
+.i-filterselect-prevpage:hover {
+	background-position: 50% bottom;
+}
+.i-filterselect-nextpage:hover {
+	background-position: 50% -12px;
+}
+.i-filterselect-nextpage span,
+.i-filterselect-nextpage-off span,
+.i-filterselect-prevpage-off span,
+.i-filterselect-prevpage span {
+	display: block;
+	height: 12px;
+	width:100%;
+	background: transparent url(img/arrow-up.png) no-repeat 50% 40%;
+	text-indent: -90000px;
+	cursor: pointer;
+	overflow: hidden;
+}
+.i-filterselect-nextpage span,
+.i-filterselect-nextpage-off span {
+	background: transparent url(img/arrow-down.png) no-repeat 50% 60%;
+}
+
+.i-filterselect-nextpage-off,
+.i-filterselect-prevpage-off {
+	color: #666;
+	opacity: 0.5;
+	filter: Alpha(opacity=50);
+}
+.i-filterselect-nextpage-off span,
+.i-filterselect-prevpage-off span {
+	cursor: default;
+}
+
+.i-filterselect-status {
+	font-size: 11px;
+	line-height: 11px;
+	width:100%;
+	padding: 4px 0px;
+	height: 11px;
+	white-space: nowrap;
+	text-align: center;
+	border-top: 1px solid #b6bbbc;
+}
+
+.i-filterselect-error {
+	background: transparent url(img/bg-left-filter-error.png) no-repeat;
+}
+
+.i-filterselect-error .i-filterselect-button {
+	background: transparent url(img/bg-right-filter-error.png);
+}
+
+.i-select-error .i-select-option,
+.i-select-error .i-select-select,
+.i-select-error .i-select-twincol-selections,
+.i-select-error .i-select-twincol-options {
+	background:transparent;
+	background-color: #FFE0E0;
+}
+
+/* IE specific styles */
+
+* html .i-filterselect {
+
+}
+* html .i-filterselect-input {
+	margin-top: -1px;
+}
+
+*+html .i-filterselect-input {
+	margin-top: -1px;
+}
+* html .i-filterselect-button {
+	position: static;
+	margin-top: -24px;
+}
+*+html .i-filterselect-button {
+	position: static;
+	margin-top: -24px;
+}
+
+

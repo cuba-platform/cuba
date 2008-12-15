@@ -1,0 +1,54 @@
+.i-textfield {
+	background: #fff url(img/bg.png) repeat-x;
+	padding: 2px;
+	border: 1px solid #b6b6b6;
+	border-top-color: #9d9d9d;
+	border-bottom-color: #d6d6d6;
+	border-right-color: #d6d6d6;
+	margin: 0;
+	font-size: 13px;
+	height: 18px;
+	text-align: left /* Force default alignment */
+}
+
+.i-textarea {
+	background: #fff url(img/bg.png) repeat-x;
+	padding: 2px;
+	border: 1px solid #b6b6b6;
+	border-top-color: #9d9d9d;
+	border-bottom-color: #d6d6d6;
+	border-right-color: #d6d6d6;
+	margin: 0;
+	font-size: 13px;
+}
+
+.i-textfield-focus,
+.i-textarea-focus {
+	border-color: #5daee8;
+}
+
+.i-textfield.i-readonly,
+.i-textarea.i-readonly {
+	background: transparent;
+	color: #222;
+	border: none;
+}
+
+
+.i-richtextarea {
+	border: 1px solid #b6b6b6;
+	overflow: hidden;
+}
+.i-richtextarea .gwt-RichTextArea {
+	background: #fff url(img/bg.png) repeat-x;
+}
+.i-richtextarea iframe {
+	border: 0;
+}
+
+.i-textarea-error,
+.i-textfield-error,
+.i-richtextarea-error iframe.gwt-RichTextArea {
+	background:transparent;
+	background-color: #FFE0E0;	
+}

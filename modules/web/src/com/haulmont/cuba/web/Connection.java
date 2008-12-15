@@ -39,7 +39,7 @@ public class Connection
         LoginService ls = ServiceLocator.lookup(LoginService.JNDI_NAME);
         List<Profile> profiles;
         try {
-            profiles = ls.authenticate(login, password, Locale.getDefault()); // TODO KK: pass client locale
+            profiles = ls.authenticate(login, password, App.getInstance().getLocale());
         } catch (LoginException e) {
             throw new RuntimeException(e);
         }
@@ -49,7 +49,7 @@ public class Connection
     public void login(String login, String password, String profileName) {
         LoginService ls = ServiceLocator.lookup(LoginService.JNDI_NAME);
         try {
-            session = ls.login(login, password, profileName, Locale.getDefault()); // TODO KK: pass client locale
+            session = ls.login(login, password, profileName, App.getInstance().getLocale());
         } catch (LoginException e) {
             throw new RuntimeException(e);
         }

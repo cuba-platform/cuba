@@ -19,6 +19,7 @@ import com.haulmont.cuba.security.global.NoUserSessionException;
 import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class UserSessionManager
 {
@@ -37,12 +38,12 @@ public class UserSessionManager
         sessions = new UserSessionsCache();
     }
 
-    public UserSession createSession(User user, Profile profile) {
+    public UserSession createSession(User user, Profile profile, Locale locale) {
         List<String> roles = new ArrayList<String>();
         for (ProfileRole profileRole : profile.getProfileRoles()) {
             roles.add(profileRole.getRole().getName());
         }
-        UserSession session = new UserSession(user, roles.toArray(new String[roles.size()]));
+        UserSession session = new UserSession(user, roles.toArray(new String[roles.size()]), locale);
         sessions.add(session);
         return session;
     }

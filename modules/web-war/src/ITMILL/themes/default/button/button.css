@@ -1,0 +1,55 @@
+.i-button {
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.i-button img {
+	display:inline;
+}
+
+.i-button-link {
+	border: none;
+	text-align: left;
+	text-decoration: underline;
+	background: none;
+	padding: 0;
+}
+.i-button-link span {
+	text-decoration: underline;
+}
+
+/* fixes streched buttons in IE6 */
+* html .i-button {
+	width: 1px;
+	overflow: visible;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+/* fixes streched buttons in IE7 */
+*+html .i-button {
+	overflow: visible;
+	padding-left: 10px;
+	padding-right: 10px;
+	width: expression(this.offsetWidth + "px");
+}
+
+	
+/* Error indicator on checkbox fix for IE6 */
+* html .i-checkbox * { display: block; float: left;}
+* html .i-checkbox .i-errorindicator {padding-right:4px;}
+
+/* Error indicator on checkbox fix for IE7 */
+*+ html .i-checkbox * { display: block; float: left;}
+*+ html .i-checkbox .i-errorindicator {padding-right:7px;}
+
+/* Error indicator on button fix for IE7 */
+*+ html button .i-errorindicator { display:inline; padding-right:5px; }
+
+/* Error indicator on button fix for IE6 */
+* html button .i-errorindicator { display:inline; padding-right:5px;}
+
+
+.i-checkbox-error {
+	background:transparent;
+	background-color: #FFE0E0;
+}

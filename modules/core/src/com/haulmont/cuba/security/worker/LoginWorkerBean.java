@@ -15,7 +15,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.resources.Messages;
+import com.haulmont.cuba.security.resource.Messages;
 import com.haulmont.cuba.security.impl.UserSessionManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerAdapter;
@@ -83,7 +83,7 @@ public class LoginWorkerBean implements LoginWorker
          if (profile == null)
             throw new LoginException(Messages.getString("LoginException.InvalidProfile", locale), profileName);
 
-        UserSession session = UserSessionManager.getInstance().createSession(user, profile);
+        UserSession session = UserSessionManager.getInstance().createSession(user, profile, locale);
         log.info("Logged in: " + session);
         return session;
     }

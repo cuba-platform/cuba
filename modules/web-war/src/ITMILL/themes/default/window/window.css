@@ -1,0 +1,187 @@
+.i-window {
+	color: #464f52;
+	font-size: 13px;
+	line-height: 18px;
+	background: transparent url(img/top-left.png) no-repeat top left;
+}
+
+.i-window:before {
+	display: block;
+	content: "";
+	background: transparent url(img/top-right.png) repeat-x right top;
+	height: 21px;
+	margin-left: 21px;
+}
+
+.i-window-wrap {
+	padding-left: 20px;
+	background: transparent url(img/left-bg.png) repeat-y;
+	/* somehow this won't inherit from .i-window */
+	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+}
+
+.i-window-wrap2 {
+	padding-right: 20px;
+	background: transparent url(img/right-bg.png) repeat-y top right;
+}
+
+.i-window-outerheader {
+	height: 18px;
+	padding: 8px 34px 14px 12px;
+	background: #fff;
+}
+
+.i-window-header {
+	font-size: 18px;
+	line-height: 18px;
+	font-weight: normal;
+	letter-spacing: -0.03em;
+	color: #f14c1a;
+	white-space: nowrap;
+	cursor: move;
+	text-overflow:ellipsis;
+	overflow:hidden;
+}
+
+.i-window-header .i-icon {
+	vertical-align: bottom;
+}
+
+.i-window-contents {
+	background: #fff;
+	border: 1px solid #babfc0;
+	font-size: 13px;
+	line-height: 18px;
+}
+
+/* Partial fix for bug #1106 */
+/* Target Firefox 2 (somehow this will force almost all window borders on top of a flash object) */
+.i-window-contents, x:-moz-any-link {
+	overflow: hidden;
+}
+/* Target Firefox 3 (it doesn't need any trickery) */
+.i-window-contents, x:-moz-any-link, x:default {
+	overflow: visible;
+}
+
+.i-window-footer {
+	height: 0;
+	font-size: 0px;
+	/* Occupy more height to prevent scrollbars in Mac FF */
+	margin-bottom: 46px;
+}
+
+.i-window-footer:before {
+	display: block;
+	content: "";
+	width: 21px;
+	height: 46px;
+	background: transparent url(img/bottom-left.png);
+	margin-left: -20px;
+}
+
+.i-window-footer:after {
+	display: block;
+	content: "";
+	height: 46px;
+	background: transparent url(img/bottom-right.png) no-repeat top right;
+	margin: -46px -20px 0 1px;
+}
+
+.i-window-resizebox {
+	position:absolute;
+	bottom: 24px;
+	right: 0;
+	width: 25px;
+	height: 21px;
+	cursor: se-resize;
+	background: transparent url(img/resize.png);
+}
+
+.i-window-resizebox-disabled {
+	cursor: default;
+	background: transparent;
+}
+
+.i-window-closebox {
+	position:absolute;
+	top: 33px;
+	right: 36px;
+	width: 12px;
+	height: 11px;
+	background: transparent url(img/close.png);
+	cursor: pointer;
+	overflow: hidden;
+}
+.i-window-closebox:hover {
+	background-position: 0 -11px;
+}
+
+.i-window-modalitycurtain {
+	top:0;
+	left:0;
+	background:white;
+	opacity: 0.5;
+	position:fixed;
+	width:100%;
+	height:100%;
+	filter: alpha(opacity=50);
+}
+
+/* IE6 workaround for position:fixed; */
+* html .i-window-modalitycurtain { 
+	position: absolute;
+	top: expression((ignoreMe = document.documentElement.scrollTop) + "px"); 
+}
+
+/* IE specific styles */
+
+* html .i-window {
+	width: 0;
+}
+
+* html .i-window-wrap {
+	padding: 12px;
+	border: 1px solid #e8e9e9;
+	background: #d8dee0;
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/widgetsets/com.itmill.toolkit.terminal.gwt.DefaultWidgetSet/default/window/img/bg-color.png", sizingMethod="scale");*/
+	/*zoom: 1;  to gain hasLayout, IE won't apply filter otherwise */
+}
+*+html .i-window-wrap {
+	padding: 12px;
+	border: 1px solid #e8e9e9;
+	background: transparent url(img/bg-color.png) repeat;
+}
+
+* html .i-window-wrap2 {
+	padding: 6px;
+	border: 1px solid #babfc0;
+	background: #fff;
+}
+*+html .i-window-wrap2 {
+	padding: 6px;
+	border: 1px solid #babfc0;
+	background: #fff;
+}
+
+* html .i-window-footer {
+	margin-bottom: 0;
+}
+*+html .i-window-footer {
+	margin-bottom: 0;
+}
+
+* html .i-window-resizebox {
+	bottom: 1px;
+	right:  1px;
+	width: 15px;
+	height: 12px;
+	background: url(img/resize.png);
+}
+* html .i-window-resizebox-disabled {
+	background: transparent;
+}
+*+html .i-window-resizebox {
+	bottom: 0;
+	background-position: 3px 3px;
+}

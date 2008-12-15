@@ -29,6 +29,7 @@
         <ext:install-lib name="jboss-ejb3-embeddable-thirdparty" version="${jboss-ejb3-embeddable-thirdparty.version}" toDir="${lib.test.dir}"/>
         <!-- common libs -->
         <ext:install-lib name="commons-codec" version="${commons-codec.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib name="commons-io" version="${commons-io.version}" toDir="${lib.common.dir}"/>
         <ext:install-jboss-lib name="log4j" version="${jboss.version}" toDir="${lib.common.dir}"/>
 		<!-- server libs -->
         <ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.server.dir}"/>
@@ -44,6 +45,7 @@
         <ext:install-jboss-lib name="jbosssx" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="servlet-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-annotations-ejb3" path="server/default/deploy/ejb3.deployer" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-jmx" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <!-- client libs -->
         <ext:install-jboss-lib name="jboss-ejb3-client" path="client" version="${jboss.version}" toDir="${lib.client.dir}"/>

@@ -1,0 +1,9 @@
+<menu-config>
+    <menu name="security">
+        <item action="sec$User.browse"/>
+        <item action="sec$Role.browse"/>
+    </menu>
+    <menu name="administration">
+        <item action="core$Server.browse"/>
+    </menu>
+</menu-config>

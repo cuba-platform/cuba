@@ -6,7 +6,7 @@
 	<property name="root.dir" location="${project.dir}/.."/>
 	
 	<property name="module.name" value="web-war"/>
-	<property name="module.jar" value="22cuba.war"/>
+	<property name="module.jar" value="23cuba.war"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>

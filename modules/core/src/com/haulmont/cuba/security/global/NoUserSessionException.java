@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.security.global;
 
-import com.haulmont.cuba.security.resources.Messages;
+import com.haulmont.cuba.security.resource.Messages;
 
 import java.util.UUID;
 

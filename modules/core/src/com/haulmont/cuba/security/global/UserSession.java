@@ -18,17 +18,21 @@ import com.haulmont.cuba.security.entity.ProfileRole;
 import java.util.UUID;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Locale;
 import java.io.Serializable;
 
 public class UserSession implements Serializable
 {
+    private static final long serialVersionUID = -8248326616891177382L;
+
     private final UUID id;
     private final UUID userId;
     private final String login;
     private final String name;
     private final String[] roles;
+    private final Locale locale;
 
-    public UserSession(User user, String[] roles) {
+    public UserSession(User user, String[] roles, Locale locale) {
         id = UuidProvider.createUuid();
         userId = user.getId();
         login = user.getLogin();
@@ -36,6 +40,8 @@ public class UserSession implements Serializable
 
         this.roles = roles;
         Arrays.sort(this.roles);
+
+        this.locale = locale;
     }
 
     public UUID getId() {
@@ -56,6 +62,10 @@ public class UserSession implements Serializable
 
     public String[] getRoles() {
         return roles;
+    }
+
+    public Locale getLocale() {
+        return locale;
     }
 
     public String toString() {

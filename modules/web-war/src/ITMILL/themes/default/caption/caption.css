@@ -1,0 +1,39 @@
+/* Provide some extra whitespace for wrapped elements
+   (these elements usually need the extra space, since 
+   they aren't even handling their own caption) */
+.i-captionwrapper {
+	margin: 0.3em 0 0 0;
+	text-align: left /* Force default alignment */
+}
+
+.i-errorindicator {
+	width: 10px;
+	height: 16px;
+	padding-right:13px;
+	display: inline;
+	background: transparent url(../icons/16/error.png) no-repeat top right;
+}
+* html .i-errorindicator {
+	background: transparent none;
+	/* gif for transparency */
+	background: transparent url(../icons/16/error.gif) no-repeat top right;
+}
+*+html .i-errorindicator {
+	margin-left:-3px;
+}
+	
+.i-caption .i-icon {
+	padding-right: 2px;
+	vertical-align: middle;
+}
+
+.i-errormessage {
+	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+	color: #464f52;
+	font-size: 13px;
+	line-height: 18px;
+	padding: 7px;
+	background-color: #FFE0E0;
+	border: 1px solid #FFB0B0;
+	overflow: auto;
+}

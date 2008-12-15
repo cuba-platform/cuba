@@ -10,31 +10,37 @@
  */
 package com.haulmont.cuba.web;
 
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.ui.OrderedLayout;
-import com.itmill.toolkit.ui.Window;
+import com.itmill.toolkit.ui.*;
+import com.haulmont.cuba.web.Navigator;
+import com.haulmont.cuba.web.resource.Messages;
+
+import java.util.Locale;
 
 public class AppWindow extends Window implements ConnectionListener
 {
-    private OrderedLayout rootLayout;
+    private ExpandLayout rootLayout;
+    private TabSheet tabSheet;
 
     public AppWindow(App app) {
         super();
         setCaption(getAppCaption());
         app.setMainWindow(this);
 
-        rootLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+        createRootLayout();
         initWelcomeLayout();
-        addComponent(rootLayout);
+        setLayout(rootLayout);
     }
 
     protected String getAppCaption() {
-        return "Cuba Application";
+        return Messages.getString("application.caption", Locale.getDefault());
     }
 
     protected OrderedLayout getRootLayout() {
         return rootLayout;
+    }
+
+    public TabSheet getTabSheet() {
+        return tabSheet;
     }
 
     public App getApp() {
@@ -42,7 +48,7 @@ public class AppWindow extends Window implements ConnectionListener
     }
 
     protected void initWelcomeLayout() {
-        Label label = new Label("Hello from Cuba!");
+        Label label = new Label(Messages.getString("welcomeLabel", Locale.getDefault()));
         rootLayout.addComponent(label);
 
         LoginDialog dialog = new LoginDialog(this, getApp().getConnection());
@@ -50,23 +56,45 @@ public class AppWindow extends Window implements ConnectionListener
     }
 
     protected void initMainLayout() {
-        Label label = new Label("Logged in as " + getApp().getConnection().getSession().getName());
-        rootLayout.addComponent(label);
+        Button navBtn = new Button(Messages.getString("navBtn"),
+                new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent event) {
+                        Navigator navigator = new Navigator(AppWindow.this);
+                        addWindow(navigator);
+                    }
+                }
+        );
+        navBtn.setStyleName(Button.STYLE_LINK);
 
-        Button logoutBtn = new Button("Logout",
+        Label label = new Label(String.format(Messages.getString("loggedInLabel"), getApp().getConnection().getSession().getName()));
+
+        Button logoutBtn = new Button(Messages.getString("logoutBtn"),
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
                         getApp().getConnection().logout();
                     }
                 }
         );
-        rootLayout.addComponent(logoutBtn);
+        logoutBtn.setStyleName(Button.STYLE_LINK);
+
+        ExpandLayout titleLayout = new ExpandLayout(ExpandLayout.ORIENTATION_HORIZONTAL);
+        titleLayout.setSpacing(true);
+        titleLayout.setHeight(-1);
+        titleLayout.addComponent(navBtn);
+        titleLayout.addComponent(label);
+        titleLayout.addComponent(logoutBtn);
+        titleLayout.expand(navBtn);
+
+        rootLayout.addComponent(titleLayout);
+
+        tabSheet = new TabSheet();
+        tabSheet.setSizeFull();
+        rootLayout.addComponent(tabSheet);
+        rootLayout.expand(tabSheet);
     }
 
     public void connectionStateChanged(Connection connection) {
-        if (rootLayout != null)
-            removeComponent(rootLayout);
-        rootLayout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+        createRootLayout();
 
         if (connection.isConnected()) {
             initMainLayout();
@@ -75,6 +103,12 @@ public class AppWindow extends Window implements ConnectionListener
             initWelcomeLayout();
         }
 
-        addComponent(rootLayout);
+        setLayout(rootLayout);
+    }
+
+    private void createRootLayout() {
+        rootLayout = new ExpandLayout(OrderedLayout.ORIENTATION_VERTICAL);
+        rootLayout.setMargin(true);
+        rootLayout.setSpacing(true);
     }
 }

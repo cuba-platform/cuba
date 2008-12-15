@@ -17,10 +17,21 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+
+import org.jboss.mx.util.MBeanServerLocator;
+import org.jboss.mx.util.MBeanProxyExt;
 
 public class LocatorImpl extends Locator
 {
     private Context jndiContext;
+
+    private MBeanServer localServer;
+
+    public LocatorImpl() {
+        localServer = MBeanServerLocator.locateJBoss();
+    }
 
     protected Context __getJndiContextImpl() {
         if (jndiContext == null) {
@@ -48,6 +59,14 @@ public class LocatorImpl extends Locator
             return ctx.lookup(name + "/remote");
         } catch (NamingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected <T> T __lookupMBean(Class<T> mbeanClass, String name) {
+        try {
+            return (T) MBeanProxyExt.create(mbeanClass, name, localServer);
+        } catch (MalformedObjectNameException e) {
+            throw new RuntimeException("Unable to locate MBean " + name, e);
         }
     }
 

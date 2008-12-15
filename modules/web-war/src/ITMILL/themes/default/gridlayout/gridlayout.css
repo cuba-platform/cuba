@@ -1,0 +1,41 @@
+.i-gridlayout-margin-top {
+	padding-top: 15px;
+}
+.i-gridlayout-margin-bottom {
+	padding-bottom: 15px;
+}
+.i-gridlayout-margin-left {
+	padding-left: 18px;
+} 
+.i-gridlayout-margin-right {
+	padding-right: 18px;
+}
+
+.i-gridlayout-grid {
+	margin:0;
+	padding:0;
+	border-collapse: collapse;
+	border:0;
+}
+
+.i-gridlayout-cell {
+	margin:0;
+	padding:0;
+}
+
+/* spacing value used by css detector */
+.i-gridlayout-spacing-element {
+	padding-left:8px;
+}
+
+.i-gridlayout-spacing .i-gridlayout-cell {
+	padding-left: 8px;
+	padding-top: 8px;
+}
+
+.i-gridlayout-spacing .i-gridlayout-firstcol {
+	padding-left: 0;
+}
+.i-gridlayout-spacing .i-gridlayout-firstrow {
+	padding-top: 0;
+}

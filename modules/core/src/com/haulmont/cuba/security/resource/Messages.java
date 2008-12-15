@@ -8,7 +8,9 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.resources;
+package com.haulmont.cuba.security.resource;
+
+import com.haulmont.cuba.core.SecurityProvider;
 
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -16,22 +18,15 @@ import java.util.ResourceBundle;
 
 public class Messages
 {
-    private static final String BUNDLE_NAME = "com.haulmont.cuba.security.resources.messages";
+    private static final String BUNDLE_NAME = "com.haulmont.cuba.security.resource.messages";
 
     public static ResourceBundle getResourceBundle(Locale locale) {
         return ResourceBundle.getBundle(BUNDLE_NAME, locale);
     }
 
     public static ResourceBundle getResourceBundle() {
-//        UserSessionManager manager = UserSessionManager.getInstance();
-//        Locale locale;
-//        if (manager.hasCurrentThreadSession()) {
-//            locale = manager.getCurrentThreadSession().getClientLocale();
-//        } else {
-//            locale = Locale.getDefault();
-//        }
-//        return getResourceBundle(locale);
-        throw new UnsupportedOperationException("not implemented");
+        Locale locale = SecurityProvider.currentUserSession().getLocale();
+        return getResourceBundle(locale);
     }
 
 
@@ -39,7 +34,7 @@ public class Messages
         try {
             return getResourceBundle().getString(key);
         } catch (MissingResourceException e) {
-            return '!' + key + '!';
+            return key;
         }
     }
 
@@ -47,7 +42,7 @@ public class Messages
         try {
             return getResourceBundle(locale).getString(key);
         } catch (MissingResourceException e) {
-            return '!' + key + '!';
+            return key;
         }
     }
 }
