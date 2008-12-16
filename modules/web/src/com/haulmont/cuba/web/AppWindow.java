@@ -10,9 +10,9 @@
  */
 package com.haulmont.cuba.web;
 
-import com.itmill.toolkit.ui.*;
-import com.haulmont.cuba.web.Navigator;
+import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.resource.Messages;
+import com.itmill.toolkit.ui.*;
 
 import java.util.Locale;
 
@@ -77,12 +77,24 @@ public class AppWindow extends Window implements ConnectionListener
         );
         logoutBtn.setStyleName(Button.STYLE_LINK);
 
+        Button viewLogBtn = new Button(Messages.getString("viewLogBtn"),
+                new Button.ClickListener()
+                {
+                    public void buttonClick(Button.ClickEvent event) {
+                        LogWindow logWindow = new LogWindow();
+                        addWindow(logWindow);
+                    }
+                }
+        );
+        viewLogBtn.setStyleName(Button.STYLE_LINK);
+
         ExpandLayout titleLayout = new ExpandLayout(ExpandLayout.ORIENTATION_HORIZONTAL);
         titleLayout.setSpacing(true);
         titleLayout.setHeight(-1);
         titleLayout.addComponent(navBtn);
         titleLayout.addComponent(label);
         titleLayout.addComponent(logoutBtn);
+        titleLayout.addComponent(viewLogBtn);
         titleLayout.expand(navBtn);
 
         rootLayout.addComponent(titleLayout);

@@ -13,6 +13,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.config.MenuConfig;
 import com.haulmont.cuba.web.ScreenManager;
+import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.config.ActionConfig;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.terminal.Terminal;
@@ -37,6 +38,8 @@ public class App extends Application implements ConnectionListener
 
     private ScreenManager screenManager;
 
+    private AppLog appLog;
+
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
 
     static {
@@ -44,6 +47,7 @@ public class App extends Application implements ConnectionListener
     }
 
     public App() {
+        appLog = new AppLog();
         connection = new Connection();
         connection.addListener(this);
         screenManager = new ScreenManager(this);
@@ -91,10 +95,19 @@ public class App extends Application implements ConnectionListener
         return screenManager;
     }
 
+    public AppLog getAppLog() {
+        return appLog;
+    }
+
     public void connectionStateChanged(Connection connection) {
         if (!connection.isConnected()) {
             menuConfig = null;
         }
+    }
+
+    public void terminalError(Terminal.ErrorEvent event) {
+        super.terminalError(event);
+        getAppLog().log(event);
     }
 
     private class RequestListener implements ApplicationContext.TransactionListener

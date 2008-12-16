@@ -12,6 +12,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.ScreenOpenType;
+import com.haulmont.cuba.web.log.LogLevel;
 import com.haulmont.cuba.web.config.ScreenAction;
 import com.haulmont.cuba.web.ui.Screen;
 import com.haulmont.cuba.web.ui.ScreenTitlePane;
@@ -50,6 +51,7 @@ public class ScreenManager
     }
 
     public Screen openScreen(ScreenOpenType type, String actionName, String tabCaption) {
+        app.getAppLog().debug("Opening screen " + actionName);
         ScreenAction action = app.getActionConfig().getAction(actionName);
         if (tabCaption == null)
             tabCaption = action.getCaption();
@@ -106,7 +108,7 @@ public class ScreenManager
 
         TabInfo tabInfo = tabs.get(layout);
         if (tabInfo == null)
-            throw new IllegalStateException("Current tab not found");
+            throw new IllegalStateException("Unable to close screen: current tab not found");
 
         Screen screen = tabInfo.screens.getLast();
         if (!screen.onClose()) {
