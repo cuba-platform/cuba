@@ -10,12 +10,20 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.impl.ManagedPersistenceProvider;
+import com.haulmont.cuba.core.entity.BaseEntity;
 
 import javax.persistence.Entity;
 import java.lang.annotation.Annotation;
+import java.util.BitSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.jboss.remoting.samples.chat.exceptions.InvalidArgumentException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.StateManager;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.FieldMetaData;
 
 public abstract class PersistenceProvider
 {
@@ -67,6 +75,22 @@ public abstract class PersistenceProvider
             return name;
         else
             return entityClass.getSimpleName();
+    }
+
+    public static String[] getDirtyFields(BaseEntity entity) {
+        if (!(entity instanceof PersistenceCapable))
+            return new String[0];
+
+        List<String> list = new ArrayList<String>();
+        OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
+        BitSet dirtySet = stateManager.getDirty();
+        for (int i = 0; i < dirtySet.size()-1; i++) {
+            if (dirtySet.get(i)) {
+                FieldMetaData field = stateManager.getMetaData().getField(i);
+                list.add(field.getName());
+            }
+        }
+        return list.toArray(new String[list.size()]);
     }
 
     protected abstract EntityManagerFactoryAdapter __getEntityManagerFactory();

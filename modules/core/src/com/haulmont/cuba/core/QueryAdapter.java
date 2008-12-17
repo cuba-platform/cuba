@@ -20,6 +20,8 @@ public interface QueryAdapter
 
     Object getSingleResult();
 
+    int executeUpdate();
+
     QueryAdapter setMaxResults(int maxResult);
 
     QueryAdapter setFirstResult(int startPosition);

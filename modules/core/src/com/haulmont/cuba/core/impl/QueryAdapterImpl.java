@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.impl;
 import com.haulmont.cuba.core.QueryAdapter;
 
 import javax.persistence.TemporalType;
+import javax.persistence.FlushModeType;
 import java.util.List;
 import java.util.Date;
 
@@ -24,6 +25,7 @@ public class QueryAdapterImpl implements QueryAdapter
 
     public QueryAdapterImpl(OpenJPAQuery query) {
         this.query = query;
+        this.query.setFlushMode(FlushModeType.COMMIT);
     }
 
     public List getResultList() {
@@ -32,6 +34,10 @@ public class QueryAdapterImpl implements QueryAdapter
 
     public Object getSingleResult() {
         return query.getSingleResult();
+    }
+
+    public int executeUpdate() {
+        return query.executeUpdate();
     }
 
     public QueryAdapter setMaxResults(int maxResult) {

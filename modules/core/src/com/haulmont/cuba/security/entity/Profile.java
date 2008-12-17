@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -18,6 +19,7 @@ import java.io.Serializable;
 
 @Entity(name = "sec$Profile")
 @Table(name = "SEC_PROFILE")
+@Listeners({"com.haulmont.cuba.security.listener.ProfileEntityListener"})
 public class Profile extends StandardEntity
 {
     private static final long serialVersionUID = -9008053062363137148L;
