@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core.impl;
 
-import com.haulmont.cuba.core.QueryAdapter;
+import com.haulmont.cuba.core.Query;
 
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
@@ -19,11 +19,11 @@ import java.util.Date;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
 
-public class QueryAdapterImpl implements QueryAdapter
+public class QueryImpl implements Query
 {
     private OpenJPAQuery query;
 
-    public QueryAdapterImpl(OpenJPAQuery query) {
+    public QueryImpl(OpenJPAQuery query) {
         this.query = query;
         this.query.setFlushMode(FlushModeType.COMMIT);
     }
@@ -40,32 +40,32 @@ public class QueryAdapterImpl implements QueryAdapter
         return query.executeUpdate();
     }
 
-    public QueryAdapter setMaxResults(int maxResult) {
+    public Query setMaxResults(int maxResult) {
         query.setMaxResults(maxResult);
         return this;
     }
 
-    public QueryAdapter setFirstResult(int startPosition) {
+    public Query setFirstResult(int startPosition) {
         query.setFirstResult(startPosition);
         return this;
     }
 
-    public QueryAdapter setParameter(String name, Object value) {
+    public Query setParameter(String name, Object value) {
         query.setParameter(name, value);
         return this;
     }
 
-    public QueryAdapter setParameter(String name, Date value, TemporalType temporalType) {
+    public Query setParameter(String name, Date value, TemporalType temporalType) {
         query.setParameter(name, value, temporalType);
         return this;
     }
 
-    public QueryAdapter setParameter(int position, Object value) {
+    public Query setParameter(int position, Object value) {
         query.setParameter(position, value);
         return this;
     }
 
-    public QueryAdapter setParameter(int position, Date value, TemporalType temporalType) {
+    public Query setParameter(int position, Date value, TemporalType temporalType) {
         query.setParameter(position, value, temporalType);
         return this;
     }

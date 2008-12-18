@@ -18,10 +18,8 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.jboss.remoting.samples.chat.exceptions.InvalidArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
 
@@ -58,11 +56,11 @@ public abstract class PersistenceProvider
         return unitName;
     }
 
-    public static EntityManagerFactoryAdapter getEntityManagerFactory() {
+    public static EntityManagerFactory getEntityManagerFactory() {
         return getInstance().__getEntityManagerFactory();
     }
 
-    public static EntityManagerAdapter getEntityManager() {
+    public static EntityManager getEntityManager() {
         return getInstance().__getEntityManager();
     }
 
@@ -93,7 +91,7 @@ public abstract class PersistenceProvider
         return list.toArray(new String[list.size()]);
     }
 
-    protected abstract EntityManagerFactoryAdapter __getEntityManagerFactory();
+    protected abstract EntityManagerFactory __getEntityManagerFactory();
 
-    protected abstract EntityManagerAdapter __getEntityManager();
+    protected abstract EntityManager __getEntityManager();
 }

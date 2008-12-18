@@ -23,9 +23,9 @@ public class RelationsTest extends CubaTestCase
     public void testProfile() {
         UUID profileId = createProfile();
 
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
 
             Profile profile = em.find(Profile.class, profileId);
             em.remove(profile);
@@ -39,9 +39,9 @@ public class RelationsTest extends CubaTestCase
     public void testRole() {
         UUID roleId = createRole();
 
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
 
             Role role = em.find(Role.class, roleId);
             em.remove(role);
@@ -53,9 +53,9 @@ public class RelationsTest extends CubaTestCase
     }
 
     public UUID createProfile() {
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
 
             User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
             Role role = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
@@ -79,9 +79,9 @@ public class RelationsTest extends CubaTestCase
     }
 
     public UUID createRole() {
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
 
             Profile profile = em.find(Profile.class, UUID.fromString("bf83541f-f610-46f4-a268-dff348347f93"));
 

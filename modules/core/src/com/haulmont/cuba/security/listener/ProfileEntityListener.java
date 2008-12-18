@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.security.listener;
 
-import com.haulmont.cuba.core.EntityManagerAdapter;
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.security.entity.Profile;
@@ -19,7 +19,7 @@ import com.haulmont.cuba.security.entity.ProfileRole;
 public class ProfileEntityListener implements BeforeDeleteEntityListener<Profile>
 {
     public void onBeforeDelete(Profile profile) {
-        EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+        EntityManager em = PersistenceProvider.getEntityManager();
 
         for (ProfileRole profileRole : profile.getProfileRoles()) {
             em.remove(profileRole);

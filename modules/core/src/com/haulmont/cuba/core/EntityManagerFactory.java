@@ -4,17 +4,16 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 12.11.2008 18:35:31
- *
+ * Created: 03.11.2008 18:42:58
  * $Id$
  */
 package com.haulmont.cuba.core;
 
-public interface TransactionAdapter
+import com.haulmont.cuba.core.impl.EntityManagerImpl;
+
+import java.io.Serializable;
+
+public interface EntityManagerFactory extends Serializable
 {
-    void commit();
-
-    void commitRetaining();
-
-    void end();
+    EntityManagerImpl createEntityManager();
 }

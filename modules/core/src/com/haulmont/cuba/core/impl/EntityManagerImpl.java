@@ -12,20 +12,20 @@ package com.haulmont.cuba.core.impl;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.haulmont.cuba.core.EntityManagerAdapter;
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.SecurityProvider;
-import com.haulmont.cuba.core.QueryAdapter;
+import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.DeleteDeferred;
 
-public class EntityManagerAdapterImpl implements EntityManagerAdapter
+public class EntityManagerImpl implements EntityManager
 {
-    private Log log = LogFactory.getLog(EntityManagerAdapterImpl.class);
+    private Log log = LogFactory.getLog(EntityManagerImpl.class);
 
     private OpenJPAEntityManager jpaEm;
 
-    EntityManagerAdapterImpl(OpenJPAEntityManager jpaEntityManager) {
+    EntityManagerImpl(OpenJPAEntityManager jpaEntityManager) {
         this.jpaEm = jpaEntityManager;
     }
 
@@ -51,9 +51,9 @@ public class EntityManagerAdapterImpl implements EntityManagerAdapter
         return jpaEm.find(clazz, key);
     }
 
-    public QueryAdapter createQuery(String qlStr) {
+    public Query createQuery(String qlStr) {
         log.debug("Creating JPQL query: " + qlStr);
-        return new QueryAdapterImpl(jpaEm.createQuery(qlStr));
+        return new QueryImpl(jpaEm.createQuery(qlStr));
     }
 
     public void flush() {

@@ -10,7 +10,6 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.UuidProvider;
 
 import javax.transaction.*;
 import javax.naming.Context;
@@ -23,7 +22,7 @@ public class PersistenceTest extends CubaTestCase
         UUID id;
         beginTran();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
@@ -39,7 +38,7 @@ public class PersistenceTest extends CubaTestCase
 
         beginTran();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             Server server = em.find(Server.class, id);
             assertEquals(id, server.getId());
 
@@ -52,7 +51,7 @@ public class PersistenceTest extends CubaTestCase
 
         beginTran();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             Server server = em.find(Server.class, id);
             assertEquals(id, server.getId());
 

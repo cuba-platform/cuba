@@ -11,7 +11,6 @@ package com.haulmont.cuba.core.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -22,11 +21,11 @@ import javax.transaction.*;
 import java.util.Hashtable;
 import java.util.Map;
 
-import com.haulmont.cuba.core.impl.EntityManagerAdapterImpl;
-import com.haulmont.cuba.core.impl.EntityManagerFactoryAdapterImpl;
+import com.haulmont.cuba.core.impl.EntityManagerImpl;
+import com.haulmont.cuba.core.impl.EntityManagerFactoryImpl;
 import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.EntityManagerFactoryAdapter;
-import com.haulmont.cuba.core.EntityManagerAdapter;
+import com.haulmont.cuba.core.EntityManagerFactory;
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.impl.persistence.EntityLifecycleListener;
 
 public class ManagedPersistenceProvider extends PersistenceProvider
@@ -37,7 +36,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
 
     private boolean emfInitialized;
 
-    private Map<Transaction, EntityManagerAdapterImpl> emMap = new Hashtable<Transaction, EntityManagerAdapterImpl>();
+    private Map<Transaction, EntityManagerImpl> emMap = new Hashtable<Transaction, EntityManagerImpl>();
 
     public static final String EMF_JNDI_NAME = "EntityManagerFactoryAdapterImpl";
 
@@ -49,7 +48,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
         this.jndiContext = jndiContext;
     }
 
-    protected EntityManagerFactoryAdapter __getEntityManagerFactory() {
+    protected EntityManagerFactory __getEntityManagerFactory() {
         synchronized (mutex) {
             if (!emfInitialized) {
                 log.debug("Creating new EntityManagerFactory");
@@ -62,7 +61,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                         OpenJPAPersistence.createEntityManagerFactory(unitName, xmlPath);
                 initJpaFactory(jpaFactory);
 
-                EntityManagerFactoryAdapter emf = new EntityManagerFactoryAdapterImpl(jpaFactory);
+                EntityManagerFactory emf = new EntityManagerFactoryImpl(jpaFactory);
                 try {
                     log.debug("Binding new EntityManagerFactory to JNDI context " + EMF_JNDI_NAME);
                     jndiContext.bind(EMF_JNDI_NAME, emf);
@@ -73,7 +72,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
             }
         }
         try {
-            return (EntityManagerFactoryAdapter) jndiContext.lookup(EMF_JNDI_NAME);
+            return (EntityManagerFactory) jndiContext.lookup(EMF_JNDI_NAME);
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
@@ -86,8 +85,8 @@ public class ManagedPersistenceProvider extends PersistenceProvider
         );
     }
 
-    protected EntityManagerAdapter __getEntityManager() {
-        EntityManagerAdapterImpl em;
+    protected EntityManager __getEntityManager() {
+        EntityManagerImpl em;
         try {
             TransactionManager tm = getTransactionManager();
             Transaction tx = tm.getTransaction();
@@ -112,7 +111,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
         }
     }
 
-    private void registerSync(final javax.transaction.Transaction tx, final EntityManagerAdapter em) {
+    private void registerSync(final javax.transaction.Transaction tx, final EntityManager em) {
         try {
             tx.registerSynchronization(
                     new Synchronization()

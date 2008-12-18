@@ -10,17 +10,20 @@
  */
 package com.haulmont.cuba.core.impl;
 
-import com.haulmont.cuba.core.TransactionAdapter;
+import com.haulmont.cuba.core.Transaction;
 
-import javax.transaction.*;
+import javax.transaction.TransactionManager;
+import javax.transaction.SystemException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.Status;
 
-public class JtaTransactionAdapter implements TransactionAdapter
+public class JtaTransaction implements Transaction
 {
     private TransactionManager tm;
 
     private boolean committed;
 
-    public JtaTransactionAdapter(TransactionManager tm) {
+    public JtaTransaction(TransactionManager tm) {
         this.tm = tm;
         try {
             if (tm.getTransaction() == null) {

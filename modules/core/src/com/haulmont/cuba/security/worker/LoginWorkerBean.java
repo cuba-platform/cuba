@@ -18,8 +18,8 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.resource.Messages;
 import com.haulmont.cuba.security.impl.UserSessionManager;
 import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.EntityManagerAdapter;
-import com.haulmont.cuba.core.QueryAdapter;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.SecurityProvider;
 
 import javax.ejb.Stateless;
@@ -38,8 +38,8 @@ public class LoginWorkerBean implements LoginWorker
     private User loadUser(String login, String password, Locale locale)
             throws LoginException
     {
-        EntityManagerAdapter em = PersistenceProvider.getEntityManager();
-        QueryAdapter q = em.createQuery(
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query q = em.createQuery(
                 "select u " +
                 " from sec$User u join fetch u.profiles" +
                 " where u.login = ?1 and u.password = ?2 and u.deleteTs is null");

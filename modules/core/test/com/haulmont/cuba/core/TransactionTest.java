@@ -20,9 +20,9 @@ public class TransactionTest extends CubaTestCase
 
     public void testCommit() {
         UUID id;
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
@@ -38,7 +38,7 @@ public class TransactionTest extends CubaTestCase
 
         tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             Server server = em.find(Server.class, id);
             assertEquals(id, server.getId());
             server.setAddress("222");
@@ -51,9 +51,9 @@ public class TransactionTest extends CubaTestCase
 
     public void testCommitRetaining() {
         UUID id;
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();
@@ -85,9 +85,9 @@ public class TransactionTest extends CubaTestCase
     }
 
     private void __testRollback() {
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             server.setName("localhost");
@@ -111,9 +111,9 @@ public class TransactionTest extends CubaTestCase
     }
 
     private void __testRollbackAndCatch() {
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             server.setName("localhost");
@@ -141,9 +141,9 @@ public class TransactionTest extends CubaTestCase
 
     private void __testCommitRetainingAndRollback() {
         UUID id;
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();

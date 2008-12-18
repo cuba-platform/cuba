@@ -18,9 +18,9 @@ public class EntityListenerTest extends CubaTestCase
 {
     public void test() {
         UUID id;
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
             Server server = new Server();
             id = server.getId();

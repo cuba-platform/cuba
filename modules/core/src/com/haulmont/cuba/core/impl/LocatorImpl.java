@@ -10,8 +10,7 @@
 package com.haulmont.cuba.core.impl;
 
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.TransactionAdapter;
+import com.haulmont.cuba.core.Transaction;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -70,7 +69,7 @@ public class LocatorImpl extends Locator
         }
     }
 
-    protected TransactionAdapter __createTransaction() {
+    protected Transaction __createTransaction() {
         Context ctx = __getJndiContextImpl();
         TransactionManager tm;
         try {
@@ -78,7 +77,7 @@ public class LocatorImpl extends Locator
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
-        return new JtaTransactionAdapter(tm);
+        return new JtaTransaction(tm);
     }
 
 }

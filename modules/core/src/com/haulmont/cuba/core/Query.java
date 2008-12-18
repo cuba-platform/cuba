@@ -14,7 +14,7 @@ import javax.persistence.TemporalType;
 import java.util.List;
 import java.util.Date;
 
-public interface QueryAdapter
+public interface Query
 {
     List getResultList();
 
@@ -22,15 +22,15 @@ public interface QueryAdapter
 
     int executeUpdate();
 
-    QueryAdapter setMaxResults(int maxResult);
+    Query setMaxResults(int maxResult);
 
-    QueryAdapter setFirstResult(int startPosition);
+    Query setFirstResult(int startPosition);
 
-    QueryAdapter setParameter(String name, Object value);
+    Query setParameter(String name, Object value);
 
-    QueryAdapter setParameter(String name, Date value, TemporalType temporalType);
+    Query setParameter(String name, Date value, TemporalType temporalType);
 
-    QueryAdapter setParameter(int position, Object value);
+    Query setParameter(int position, Object value);
 
-    QueryAdapter setParameter(int position, Date value, TemporalType temporalType);
+    Query setParameter(int position, Date value, TemporalType temporalType);
 }

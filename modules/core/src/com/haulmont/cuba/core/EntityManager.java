@@ -11,7 +11,7 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
 
-public interface EntityManagerAdapter
+public interface EntityManager
 {
     void persist(BaseEntity entity);
 
@@ -21,7 +21,7 @@ public interface EntityManagerAdapter
 
     <T extends BaseEntity> T find(Class<T> clazz, Object key);
 
-    QueryAdapter createQuery(String qlStr);
+    Query createQuery(String qlStr);
 
     void flush();
 

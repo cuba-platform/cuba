@@ -40,7 +40,7 @@ public abstract class Locator
         return (T) getInstance().__lookupMBean(mbeanClass, name);
     }
 
-    public static TransactionAdapter createTransaction() {
+    public static Transaction createTransaction() {
         return getInstance().__createTransaction();
     }
 
@@ -52,5 +52,5 @@ public abstract class Locator
 
     protected abstract <T> T __lookupMBean(Class<T> mbeanClass, String name);
 
-    protected abstract TransactionAdapter __createTransaction();
+    protected abstract Transaction __createTransaction();
 }

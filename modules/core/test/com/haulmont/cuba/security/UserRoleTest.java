@@ -11,7 +11,6 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.Profile;
@@ -23,9 +22,9 @@ import java.util.Set;
 public class UserRoleTest extends CubaTestCase
 {
     public void test() {
-        TransactionAdapter tx = Locator.createTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
-            EntityManagerAdapter em = PersistenceProvider.getEntityManager();
+            EntityManager em = PersistenceProvider.getEntityManager();
 
             User user = new User();
             UUID userId = user.getId();
