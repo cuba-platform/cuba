@@ -11,10 +11,7 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.Profile;
-import com.haulmont.cuba.security.entity.ProfileRole;
+import com.haulmont.cuba.security.entity.*;
 
 import java.util.UUID;
 import java.util.Set;
@@ -36,9 +33,14 @@ public class UserRoleTest extends CubaTestCase
             role.setName("testRole1");
             em.persist(role);
 
+            Group group = new Group();
+            group.setName("testGroup1");
+            em.persist(group);
+
             Profile profile = new Profile();
             profile.setName("testProfile");
             profile.setUser(user);
+            profile.setGroup(group);
             em.persist(profile);
 
             ProfileRole profileRole = new ProfileRole();

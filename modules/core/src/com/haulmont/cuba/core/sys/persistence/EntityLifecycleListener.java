@@ -23,7 +23,6 @@ import org.apache.openjpa.event.AbstractLifecycleListener;
 import org.apache.openjpa.event.LifecycleEvent;
 
 import java.util.Date;
-import java.util.Arrays;
 
 public class EntityLifecycleListener extends AbstractLifecycleListener
 {
@@ -35,7 +34,11 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
 
     public void beforeStore(LifecycleEvent event) {
         PersistenceCapable pc = (PersistenceCapable) event.getSource();
-        if (!pc.pcIsNew() && (pc instanceof Updatable)) {
+        if (pc.pcIsNew()) {
+            EntityListenerManager.getInstance().fireListener(
+                    ((BaseEntity) event.getSource()), EntityListenerType.BEFORE_INSERT);
+        }
+        else if (!pc.pcIsNew() && (pc instanceof Updatable)) {
             __beforeUpdate((Updatable) event.getSource());
             if ((pc instanceof DeleteDeferred) && justDeleted((DeleteDeferred) pc)) {
                 EntityListenerManager.getInstance().fireListener(
@@ -53,9 +56,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
             return false;
         }
         else {
-            String[] fields = PersistenceProvider.getDirtyFields((BaseEntity) dd);
-            Arrays.sort(fields);
-            return Arrays.binarySearch(fields, "deleteTs") >= 0;
+            return PersistenceProvider.getDirtyFields((BaseEntity) dd).contains("deleteTs");
         }
     }
 

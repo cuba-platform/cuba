@@ -32,6 +32,6 @@ public class UuidValueHandler extends AbstractValueHandler
     }
 
     public Object toObjectValue(ValueMapping vm, Object val) {
-        return UUID.fromString((String) val);
+        return val == null ? null : UUID.fromString((String) val);
     }
 }

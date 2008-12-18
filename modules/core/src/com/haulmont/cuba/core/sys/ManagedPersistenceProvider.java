@@ -21,8 +21,6 @@ import javax.transaction.*;
 import java.util.Hashtable;
 import java.util.Map;
 
-import com.haulmont.cuba.core.sys.EntityManagerImpl;
-import com.haulmont.cuba.core.sys.EntityManagerFactoryImpl;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManagerFactory;
 import com.haulmont.cuba.core.EntityManager;
@@ -36,7 +34,8 @@ public class ManagedPersistenceProvider extends PersistenceProvider
 
     private boolean emfInitialized;
 
-    private Map<Transaction, EntityManagerImpl> emMap = new Hashtable<Transaction, EntityManagerImpl>();
+    private Map<javax.transaction.Transaction, EntityManager> emMap = 
+            new Hashtable<javax.transaction.Transaction, EntityManager>();
 
     public static final String EMF_JNDI_NAME = "EntityManagerFactoryAdapterImpl";
 
@@ -86,7 +85,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
     }
 
     protected EntityManager __getEntityManager() {
-        EntityManagerImpl em;
+        EntityManager em;
         try {
             TransactionManager tm = getTransactionManager();
             Transaction tx = tm.getTransaction();

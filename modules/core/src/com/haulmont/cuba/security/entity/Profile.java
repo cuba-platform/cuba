@@ -22,7 +22,7 @@ import java.io.Serializable;
 @Listeners({"com.haulmont.cuba.security.listener.ProfileEntityListener"})
 public class Profile extends StandardEntity
 {
-    private static final long serialVersionUID = -9008053062363137148L;
+    private static final long serialVersionUID = 8037692798864039665L;
 
     @Column(name = "NAME")
     private String name;
@@ -33,6 +33,10 @@ public class Profile extends StandardEntity
 
     @OneToMany(mappedBy = "profile")
     private Set<ProfileRole> profileRoles;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "GROUP_ID")
+    private Group group;
 
     public String getName() {
         return name;
@@ -56,5 +60,13 @@ public class Profile extends StandardEntity
 
     public void setProfileRoles(Set<ProfileRole> profileRoles) {
         this.profileRoles = profileRoles;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }

@@ -11,10 +11,7 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.security.entity.Profile;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.ProfileRole;
+import com.haulmont.cuba.security.entity.*;
 
 import java.util.UUID;
 
@@ -59,9 +56,11 @@ public class RelationsTest extends CubaTestCase
 
             User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
             Role role = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
+            Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
             Profile profile = new Profile();
             profile.setUser(user);
+            profile.setGroup(group);
             profile.setName("RelationTest");
             em.persist(profile);
 

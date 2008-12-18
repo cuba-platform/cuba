@@ -14,9 +14,12 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
+import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.PersistenceProvider;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -73,6 +76,11 @@ public class EntityListenerManager
         Object entityListener = getListener(entity.getClass(), type);
         if (entityListener != null) {
             switch (type) {
+                case BEFORE_INSERT: {
+                    logExecution(type, entity);
+                    ((BeforeInsertEntityListener) entityListener).onBeforeInsert(entity);
+                    break;
+                }
                 case BEFORE_UPDATE: {
                     logExecution(type, entity);
                     ((BeforeUpdateEntityListener) entityListener).onBeforeUpdate(entity);
@@ -94,13 +102,13 @@ public class EntityListenerManager
             StringBuilder sb = new StringBuilder();
             sb.append("Executing ").append(type).append(" entity listener for ")
                     .append(entity.getClass().getName()).append(" id=").append(entity.getId());
-            String[] strings = PersistenceProvider.getDirtyFields(entity);
-            if (strings.length > 0) {
+            Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
+            if (!dirty.isEmpty()) {
                 sb.append(", changedProperties: ");
-                for (int i = 0; i < strings.length; i++) {
-                    String s = strings[i];
-                    sb.append(s);
-                    if (i < strings.length - 1)
+                for (Iterator<String> it = dirty.iterator(); it.hasNext();) {
+                    String field = it.next();
+                    sb.append(field);
+                    if (it.hasNext())
                         sb.append(",");
                 }
             }

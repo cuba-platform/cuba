@@ -12,9 +12,11 @@ package com.haulmont.cuba.core.sys.listener;
 
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
+import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 
 public enum EntityListenerType
 {
+    BEFORE_INSERT(BeforeInsertEntityListener.class),
     BEFORE_UPDATE(BeforeUpdateEntityListener.class),
     BEFORE_DELETE(BeforeDeleteEntityListener.class);
     

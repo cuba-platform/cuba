@@ -14,9 +14,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 
 import javax.persistence.Entity;
 import java.lang.annotation.Annotation;
-import java.util.BitSet;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -75,20 +73,23 @@ public abstract class PersistenceProvider
             return entityClass.getSimpleName();
     }
 
-    public static String[] getDirtyFields(BaseEntity entity) {
+    public static Set<String> getDirtyFields(BaseEntity entity) {
         if (!(entity instanceof PersistenceCapable))
-            return new String[0];
+            return Collections.emptySet();
 
-        List<String> list = new ArrayList<String>();
         OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
+        if (stateManager == null)
+            return Collections.emptySet();
+
+        Set<String> set = new HashSet<String>();
         BitSet dirtySet = stateManager.getDirty();
         for (int i = 0; i < dirtySet.size()-1; i++) {
             if (dirtySet.get(i)) {
                 FieldMetaData field = stateManager.getMetaData().getField(i);
-                list.add(field.getName());
+                set.add(field.getName());
             }
         }
-        return list.toArray(new String[list.size()]);
+        return set;
     }
 
     protected abstract EntityManagerFactory __getEntityManagerFactory();
