@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.impl.EntityManagerImpl;
+import com.haulmont.cuba.core.sys.EntityManagerImpl;
 
 import java.io.Serializable;
 

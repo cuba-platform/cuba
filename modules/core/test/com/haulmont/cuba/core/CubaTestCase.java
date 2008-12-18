@@ -25,6 +25,6 @@ public class CubaTestCase extends TestCase
             setUpDeploymentFiles();
             TestContainer.start();
         }
-        System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.impl.TestSecurityProvider");
+        System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.sys.TestSecurityProvider");
     }
 }

@@ -12,11 +12,11 @@ package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.service.BasicService;
+import com.haulmont.cuba.core.app.BasicService;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.core.SecurityProvider;
-import com.haulmont.cuba.security.worker.LoginWorker;
+import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.JaasCallbackHandler;
@@ -37,7 +37,7 @@ public class LoginTest extends CubaTestCase
 
     protected void setUp() throws Exception {
         super.setUp();
-        System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.impl.SecurityProviderImpl");
+        System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.sys.SecurityProviderImpl");
     }
 
     public void test() throws Exception {

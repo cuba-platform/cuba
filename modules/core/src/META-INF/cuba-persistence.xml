@@ -18,7 +18,7 @@
             <property name="openjpa.jdbc.DBDictionary" value="hsql(SimulateLocking=true)"/>
             <property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
             <property name="openjpa.jdbc.MappingDefaults"
-                      value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.impl.persistence.UuidValueHandler'"/>
+                      value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidValueHandler'"/>
         </properties>
     </persistence-unit>
 </persistence>

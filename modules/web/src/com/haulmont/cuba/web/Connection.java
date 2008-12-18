@@ -13,11 +13,10 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.service.LoginService;
+import com.haulmont.cuba.security.app.LoginService;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 public class Connection

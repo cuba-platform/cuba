@@ -14,9 +14,9 @@ import java.util.UUID;
 
 public abstract class UuidProvider
 {
-    public static final String IMPL_PROP = "cuba.UuidProvider.impl";
+    public static final String IMPL_PROP = "cuba.UuidProvider.sys";
 
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.impl.UuidProviderImpl";
+    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.UuidProviderImpl";
 
     private static UuidProvider instance;
 

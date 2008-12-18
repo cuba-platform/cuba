@@ -15,9 +15,9 @@ import java.util.Date;
 public abstract class TimeProvider
 {
 
-    public static final String IMPL_PROP = "cuba.TimeProvider.impl";
+    public static final String IMPL_PROP = "cuba.TimeProvider.sys";
 
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.impl.TimeProviderImpl";
+    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.TimeProviderImpl";
 
     private static TimeProvider instance;
 

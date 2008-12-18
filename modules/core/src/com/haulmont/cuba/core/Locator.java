@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.impl.LocatorImpl;
+import com.haulmont.cuba.core.sys.LocatorImpl;
 
 import javax.naming.Context;
 

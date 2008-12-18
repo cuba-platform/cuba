@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.service.BasicService;
+import com.haulmont.cuba.core.app.BasicService;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.core.global.BasicServiceRemote;
 import com.haulmont.cuba.core.entity.Server;

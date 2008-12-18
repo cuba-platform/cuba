@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.impl.ManagedPersistenceProvider;
+import com.haulmont.cuba.core.sys.ManagedPersistenceProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
 
 import javax.persistence.Entity;
