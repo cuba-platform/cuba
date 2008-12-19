@@ -11,7 +11,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.Model;
+import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.utils.PrintUtils;
 import com.haulmont.cuba.core.global.MetadataProvider;
 
@@ -23,8 +23,8 @@ public class MetadataProviderTest extends CubaTestCase
         Session session = MetadataProvider.getSession();
         assertNotNull(session);
 
-        Collection<Model> models = session.getModels();
-        for (Model model : models) {
+        Collection<MetaModel> models = session.getModels();
+        for (MetaModel model : models) {
             System.out.println("Model: " + model.getName());
             System.out.println(PrintUtils.printClassHierarchy(model));
         }

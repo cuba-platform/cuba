@@ -10,6 +10,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.global.View;
 
 public interface EntityManager
 {
@@ -22,6 +23,8 @@ public interface EntityManager
     <T extends BaseEntity> T find(Class<T> clazz, Object key);
 
     Query createQuery(String qlStr);
+
+    void setView(View view);
 
     void flush();
 

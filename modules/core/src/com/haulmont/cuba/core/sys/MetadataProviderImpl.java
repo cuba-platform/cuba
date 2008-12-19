@@ -16,10 +16,7 @@ import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
 
 import java.io.InputStream;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collection;
+import java.util.*;
 
 import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
@@ -68,7 +65,7 @@ public class MetadataProviderImpl extends MetadataProvider
             throw new RuntimeException(e);
         }
         Element root = document.getRootElement();
-        Set<String> packages = new HashSet<String>();
+        List<String> packages = new ArrayList<String>();
         for (Element unitElem : (List<Element>) root.elements("persistence-unit")) {
             String name = unitElem.attributeValue("name");
             if (PersistenceProvider.getPersistenceUnitName().equals(name)) {
@@ -78,7 +75,8 @@ public class MetadataProviderImpl extends MetadataProvider
                     if (i <= 0)
                         throw new IllegalStateException("Invalid persistent class definition: " + className);
                     String packageName = className.substring(0, i);
-                    packages.add(packageName);
+                    if (!packages.contains(packageName))
+                        packages.add(packageName);
                 }
             }
         }

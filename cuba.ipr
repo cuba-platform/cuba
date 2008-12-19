@@ -62,6 +62,15 @@
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="js">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
@@ -116,7 +125,7 @@
       <option name="ENCODED_DATABASE_PASSWORD" value="" />
       <option name="DEFAULT_SCHEMA_NAME" />
       <option name="TABLE_PATTERN" value="" />
-      <option name="UUID" value="52dca3c0-fbab-4812-9bc7-f7103804c65b" />
+      <option name="UUID" value="e0ea3ee8-6b3c-400c-92f4-18a6fabef2e2" />
       <option name="NAME" value="CubaDB" />
       <TABLE_DATA>
         <option name="NAME" value="SEC_PROFILE" />

@@ -11,6 +11,8 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewProperty;
 
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Date;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.FetchPlan;
 
 public class QueryImpl implements Query
 {
@@ -67,6 +70,11 @@ public class QueryImpl implements Query
 
     public Query setParameter(int position, Date value, TemporalType temporalType) {
         query.setParameter(position, value, temporalType);
+        return this;
+    }
+
+    public Query setView(View view) {
+        ViewHelper.setView(query.getFetchPlan(), view);
         return this;
     }
 }

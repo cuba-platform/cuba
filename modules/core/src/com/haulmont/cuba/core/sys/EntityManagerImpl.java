@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.DeleteDeferred;
 
@@ -54,6 +55,10 @@ public class EntityManagerImpl implements EntityManager
     public Query createQuery(String qlStr) {
         log.debug("Creating JPQL query: " + qlStr);
         return new QueryImpl(jpaEm.createQuery(qlStr));
+    }
+
+    public void setView(View view) {
+        ViewHelper.setView(jpaEm.getFetchPlan(), view);
     }
 
     public void flush() {

@@ -22,6 +22,8 @@ public class BasicInvocationContext implements Serializable
 
     private String queryString;
 
+    private View view;
+
     public Class<? extends BaseEntity> getEntityClass() {
         return entityClass;
     }
@@ -46,6 +48,15 @@ public class BasicInvocationContext implements Serializable
 
     public BasicInvocationContext setQueryString(String queryString) {
         this.queryString = queryString;
+        return this;
+    }
+
+    public View getView() {
+        return view;
+    }
+
+    public BasicInvocationContext setView(View view) {
+        this.view = view;
         return this;
     }
 }

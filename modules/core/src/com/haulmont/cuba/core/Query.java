@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.global.View;
+
 import javax.persistence.TemporalType;
 import java.util.List;
 import java.util.Date;
@@ -33,4 +35,6 @@ public interface Query
     Query setParameter(int position, Object value);
 
     Query setParameter(int position, Date value, TemporalType temporalType);
+
+    Query setView(View view);
 }

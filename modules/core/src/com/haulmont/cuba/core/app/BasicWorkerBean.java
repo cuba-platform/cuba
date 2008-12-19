@@ -42,6 +42,9 @@ public class BasicWorkerBean implements BasicWorker
 
     public <T extends BaseEntity> T get(BasicInvocationContext ctx) {
         EntityManager em = PersistenceProvider.getEntityManager();
+        if (ctx.getView() != null) {
+            em.setView(ctx.getView());
+        }
         BaseEntity result = em.find(ctx.getEntityClass(), ctx.getId());
         return (T) result;
     }
@@ -53,6 +56,9 @@ public class BasicWorkerBean implements BasicWorker
                 PersistenceProvider.getEntityName(ctx.getEntityClass()) + " e where e.id = ?1";
         Query query = em.createQuery(queryString);
         query.setParameter(1, ctx.getId());
+        if (ctx.getView() != null) {
+            query.setView(ctx.getView());
+        }
         Object result = query.getSingleResult();
         return (T) result;
     }
@@ -60,6 +66,9 @@ public class BasicWorkerBean implements BasicWorker
     public <T extends BaseEntity> List<T> loadList(BasicInvocationContext ctx) {
         EntityManager em = PersistenceProvider.getEntityManager();
         Query query = em.createQuery(ctx.getQueryString());
+        if (ctx.getView() != null) {
+            query.setView(ctx.getView());
+        }
         List resultList = query.getResultList();
         return resultList;
     }

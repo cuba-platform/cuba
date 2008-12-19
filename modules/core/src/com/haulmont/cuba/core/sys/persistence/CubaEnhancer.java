@@ -10,7 +10,7 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.chile.core.common.ValueListener;
-import com.haulmont.chile.core.model.Clazz;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -204,7 +204,7 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
 
     private void createGetMetaclassMethod() {
         // public Clazz getMetaClass()
-        BCMethod method = _pc.declareMethod("getMetaClass", Clazz.class, new Class[]{});
+        BCMethod method = _pc.declareMethod("getMetaClass", MetaClass.class, new Class[]{});
         method.makePublic();
 
         Code code = method.getCode(true);
@@ -213,7 +213,7 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         code.aload().setThis();
 
         code.invokevirtual().setMethod("getClass", Class.class, new Class[]{});
-        code.invokeinterface().setMethod(Session.class, "getClass", Clazz.class, new Class[]{Class.class});
+        code.invokeinterface().setMethod(Session.class, "getClass", MetaClass.class, new Class[]{Class.class});
 
         code.areturn();
         code.calculateMaxStack();
