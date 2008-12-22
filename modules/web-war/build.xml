@@ -11,6 +11,8 @@
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
 
+    <property name="web.src.dir" location="${module.dir}/web"/>
+
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
@@ -22,12 +24,24 @@
         <fileset refid="server-lib-fs"/>
     </path>
 
-    <target name="compile-module">
-        <echo>==> compiling ${project.dir} ${module.name}</echo>
-        <mkdir dir="${prod.out.dir}/${module.name}"/>
-        <copy todir="${prod.out.dir}/${module.name}">
-            <fileset dir="${java.src.dir}" includes="**/*"/>
+    <target name="clean-module" depends="base-mod.clean-module">
+		<delete dir="${build.dir}/${module.name}"/>
+    </target>
+
+    <target name="build-module" depends="compile-module">
+        <echo>==> building ${project.dir} ${module.name}</echo>
+
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dir}/${module.name}"/>
+        <copy todir="${build.dir}/${module.name}">
+            <fileset dir="${web.src.dir}" includes="**/*"/>
         </copy>
+        <mkdir dir="${build.dir}/${module.name}/WEB-INF/classes"/>
+        <copy todir="${build.dir}/${module.name}/WEB-INF/classes">
+            <fileset dir="${prod.out.dir}/${module.name}" includes="**/*"/>
+        </copy>
+
+        <jar basedir="${build.dir}/${module.name}" destfile="${build.dir}/${module.jar}"/>
     </target>
 
     <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
