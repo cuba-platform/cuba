@@ -20,6 +20,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.haulmont.cuba.core.Locator;
+
 public class ResourceRepository implements ResourceRepositoryMBean
 {
     private String rootPath;
@@ -28,15 +30,31 @@ public class ResourceRepository implements ResourceRepositoryMBean
 
     private static final String MSG_UNABLE_TO_LOAD_RESOURCE = "Unable to load resource %s";
 
+    public static ResourceRepository getInstance() {
+        ResourceRepositoryMBean mbean = Locator.lookupMBean(ResourceRepositoryMBean.class, ResourceRepositoryMBean.OBJECT_NAME);
+        return mbean.getImplementation();
+    }
+
     public void create() {
         String confUrl = System.getProperty("jboss.server.config.url");
+        if (confUrl == null)
+            throw new IllegalStateException("Evnironment variable jboss.server.config.url is not set");
         rootPath = URI.create(confUrl).getPath() + "/";
+    }
+
+    public ResourceRepository getImplementation() {
+        return this;
     }
 
     public void evictAll() {
         repository.clear();
     }
 
+    /**
+     * Loads resource into cache as byte array and returns it
+     * @param name resource file name relative to resources root (jboss/server/default/conf)
+     * @return resource as stream
+     */
     public InputStream getResAsStream(String name) {
         Object value = repository.get(name);
         if (value != null) {
@@ -56,6 +74,11 @@ public class ResourceRepository implements ResourceRepositoryMBean
         }
     }
 
+    /**
+     * Loads resource into cache as String and returns it
+     * @param name resource file name relative to resources root (jboss/server/default/conf)
+     * @return String resource
+     */
     public String getResAsString(String name) {
         Object value = repository.get(name);
         if (value != null) {

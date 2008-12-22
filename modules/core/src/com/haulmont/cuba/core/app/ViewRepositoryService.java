@@ -4,32 +4,29 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 19.12.2008 15:56:19
+ * Created: 22.12.2008 14:37:13
  *
  * $Id$
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.global.View;
 
-import java.io.InputStream;
-import java.io.Reader;
+import javax.ejb.Local;
+import java.net.URL;
 
-public interface ViewRepositoryMBean
+@Local
+public interface ViewRepositoryService
 {
-    String OBJECT_NAME = "haulmont.cuba:service=ViewRepository";
-
-    void create();
-
-    ViewRepository getImplementation();
+    String JNDI_NAME = "cuba/core/ViewRepositoryService";
 
     View getView(Class<? extends BaseEntity> entityClass, String name);
 
     View getView(MetaClass metaClass, String name);
 
-    void deployViews(InputStream xml);
+    void deployViews(URL xml);
 
-    void deployViews(Reader xml);
+    void deployViews(String xml);
 }

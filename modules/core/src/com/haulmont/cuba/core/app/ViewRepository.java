@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.ViewNotFoundException;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.chile.core.model.Session;
@@ -21,7 +22,10 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 
 import java.io.InputStream;
-import java.util.List;
+import java.io.Reader;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
@@ -31,6 +35,9 @@ import org.apache.commons.lang.StringUtils;
 
 public class ViewRepository implements ViewRepositoryMBean
 {
+    private Map<MetaClass, Map<String, View>> storage =
+            new ConcurrentHashMap<MetaClass, Map<String, View>>();
+
     public static ViewRepository getInstance() {
         ViewRepositoryMBean mbean = Locator.lookupMBean(ViewRepositoryMBean.class, ViewRepositoryMBean.OBJECT_NAME);
         return mbean.getImplementation();
@@ -44,22 +51,31 @@ public class ViewRepository implements ViewRepositoryMBean
     }
 
     public View getView(Class<? extends BaseEntity> entityClass, String name) {
-        return null;
+        MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
+        if (metaClass == null)
+            throw new IllegalStateException("Meta class not found for " + entityClass.getName());
+        return getView(metaClass, name);
     }
 
     public View getView(MetaClass metaClass, String name) {
-        return null;
+        if (metaClass == null)
+            throw new IllegalArgumentException("MetaClass is null");
+        
+        View view = findView(metaClass, name);
+        if (view == null)
+            throw new ViewNotFoundException(String.format("View %s/%s not found", metaClass.getName(), name));
+        return view;
     }
 
-    private View findView(MetaClass metaClass, String name) {
-        return null;
+    public void deployViews(InputStream xml) {
+        deployViews(new InputStreamReader(xml));
     }
 
-    public void deployViews(InputStream xmlStream) {
+    public void deployViews(Reader xml) {
         SAXReader reader = new SAXReader();
         Document doc;
         try {
-            doc = reader.read(xmlStream);
+            doc = reader.read(xml);
         } catch (DocumentException e) {
             throw new RuntimeException(e);
         }
@@ -67,6 +83,13 @@ public class ViewRepository implements ViewRepositoryMBean
         for (Element viewElem : (List<Element>) rootElem.elements("view")) {
             deployView(rootElem, viewElem);
         }
+    }
+    private View findView(MetaClass metaClass, String name) {
+        Map<String, View> views = storage.get(metaClass);
+        if (views == null)
+            return null;
+        else
+            return views.get(name);
     }
 
     private View deployView(Element rootElem, Element viewElem) {
@@ -88,7 +111,8 @@ public class ViewRepository implements ViewRepositoryMBean
             MetaProperty metaProperty = metaClass.getProperty(propName);
             if (metaProperty == null)
                 throw new IllegalStateException(
-                        String.format("View %s/%s definition error: property %s doesn't exists", entity, viewName, propName));
+                        String.format("View %s/%s definition error: property %s doesn't exists", entity, viewName, propName)
+                );
 
             View refView = null;
             String refViewName = propElem.attributeValue("view");
@@ -96,7 +120,8 @@ public class ViewRepository implements ViewRepositoryMBean
                 Range range = metaProperty.getRange();
                 if (!range.isClass())
                     throw new IllegalStateException(
-                            String.format("View %s/%s definition error: property %s is not an entity", entity, viewName, propName));
+                            String.format("View %s/%s definition error: property %s is not an entity", entity, viewName, propName)
+                    );
 
                 refView = findView(range.asClass(), refViewName);
                 if (refView == null) {
@@ -110,12 +135,24 @@ public class ViewRepository implements ViewRepositoryMBean
                     }
                     if (refView == null)
                         throw new IllegalStateException(
-                                String.format("View %s/%s definition error: property %s is not an entity", entity, viewName, propName)
+                                String.format(
+                                        "View %s/%s definition error: unable to find/deploy referenced view %s/%s",
+                                        entity, viewName, range.asClass().getName(), refViewName)
                         );
                 }
             }
             view.getProperties().add(new ViewProperty(propName, refView));
         }
+        storeView(metaClass, view);
         return view;
+    }
+
+    private void storeView(MetaClass metaClass, View view) {
+        Map<String, View> views = storage.get(metaClass);
+        if (views == null) {
+            views = new ConcurrentHashMap<String, View>();
+        }
+        views.put(view.getName(), view);
+        storage.put(metaClass, views);
     }
 }

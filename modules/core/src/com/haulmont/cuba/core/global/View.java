@@ -64,6 +64,24 @@ public class View implements Serializable
         return this;
     }
 
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        View view = (View) o;
+
+        if (!entityClass.equals(view.entityClass)) return false;
+        if (!name.equals(view.name)) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result = entityClass.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
+    }
+
     public String toString() {
         return "View{" +
                 "entityClass=" + entityClass.getName() +

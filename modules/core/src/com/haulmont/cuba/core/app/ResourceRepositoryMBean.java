@@ -18,6 +18,8 @@ public interface ResourceRepositoryMBean
 
     void create();
 
+    ResourceRepository getImplementation();
+
     void evictAll();
 
     /**
