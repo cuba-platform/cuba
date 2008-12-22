@@ -12,15 +12,18 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.chile.core.model.MetaClass;
 
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 import java.net.URL;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.StringReader;
 
 @Stateless(name = ViewRepositoryService.JNDI_NAME)
+@Interceptors({ServiceInterceptor.class})
 public class ViewRepositoryServiceBean implements ViewRepositoryService
 {
     private ViewRepository repository;
