@@ -14,7 +14,7 @@ import com.haulmont.chile.core.model.Session;
 
 public abstract class MetadataProvider
 {
-    public static final String IMPL_PROP = "cuba.MetadataProvider.sys";
+    public static final String IMPL_PROP = "cuba.MetadataProvider.impl";
 
     private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.MetadataProviderImpl";
 

@@ -37,6 +37,8 @@ public class ManagedPersistenceProvider extends PersistenceProvider
     private Map<javax.transaction.Transaction, EntityManager> emMap = 
             new Hashtable<javax.transaction.Transaction, EntityManager>();
 
+    private ThreadLocal<EntityManager> emThreadLocal = new ThreadLocal<EntityManager>();
+
     public static final String EMF_JNDI_NAME = "EntityManagerFactoryAdapterImpl";
 
     public static final String TM_JNDI_NAME = "java:/TransactionManager";
@@ -100,7 +102,19 @@ public class ManagedPersistenceProvider extends PersistenceProvider
             }
             else {
                 log.trace("Creating new non-transactional EntityManager");
-                em = __getEntityManagerFactory().createEntityManager();
+                em = emThreadLocal.get();
+                if (em == null || em.isClosed()) {
+                    em = __getEntityManagerFactory().createEntityManager();
+                    ((EntityManagerImpl) em).addCloseListener(
+                            new EntityManagerImpl.CloseListener()
+                            {
+                                public void onClose() {
+                                    emThreadLocal.remove();
+                                }
+                            }
+                    );
+                    emThreadLocal.set(em);
+                }
             }
             return em;
         } catch (NamingException e) {

@@ -10,6 +10,9 @@
 package com.haulmont.cuba.core.sys;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.haulmont.cuba.core.EntityManager;
@@ -20,14 +23,47 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.DeleteDeferred;
 
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+
 public class EntityManagerImpl implements EntityManager
 {
+    public interface CloseListener
+    {
+        void onClose();
+    }
+
     private Log log = LogFactory.getLog(EntityManagerImpl.class);
 
     private OpenJPAEntityManager jpaEm;
 
+    private boolean closed;
+    private Set<CloseListener> closeListeners = new HashSet<CloseListener>();
+
+    private boolean deleteDeferred = true;
+
     EntityManagerImpl(OpenJPAEntityManager jpaEntityManager) {
         this.jpaEm = jpaEntityManager;
+    }
+
+    public boolean isDeleteDeferred() {
+        return deleteDeferred;
+    }
+
+    public void setDeleteDeferred(boolean deleteDeferred) {
+        if (deleteDeferred != this.deleteDeferred) {
+            // clear SQL queries cache
+            OpenJPAConfiguration conf = ((OpenJPAEntityManagerFactorySPI) jpaEm.getEntityManagerFactory()).getConfiguration();
+            if (conf instanceof JDBCConfiguration) {
+                Map map = ((JDBCConfiguration) conf).getQuerySQLCacheInstance();
+                for (Object val : map.values()) {
+                    if (val instanceof Map)
+                        ((Map) val).clear();
+                }
+            }
+            this.deleteDeferred = deleteDeferred;
+        }
     }
 
     public void persist(BaseEntity entity) {
@@ -53,8 +89,13 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public Query createQuery(String qlStr) {
-        log.debug("Creating JPQL query: " + qlStr);
+        log.trace("Creating JPQL query: " + qlStr);
         return new QueryImpl(jpaEm.createQuery(qlStr));
+    }
+
+    public Query createNativeQuery(String sql) {
+        log.trace("Creating SQL query: " + sql);
+        return new QueryImpl(jpaEm.createNativeQuery(sql));
     }
 
     public void setView(View view) {
@@ -67,5 +108,21 @@ public class EntityManagerImpl implements EntityManager
 
     public void close() {
         jpaEm.close();
+        closed = true;
+        for (CloseListener listener : closeListeners) {
+            listener.onClose();
+        }
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void addCloseListener(CloseListener listener) {
+        closeListeners.add(listener);
+    }
+
+    public void removeCloseListener(CloseListener listener) {
+        closeListeners.remove(listener);
     }
 }

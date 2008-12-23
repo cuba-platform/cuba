@@ -24,9 +24,17 @@ public interface EntityManager
 
     Query createQuery(String qlStr);
 
+    Query createNativeQuery(String sql);
+
     void setView(View view);
 
     void flush();
 
     void close();
+
+    boolean isClosed();
+
+    boolean isDeleteDeferred();
+
+    void setDeleteDeferred(boolean deleteDeferred);
 }

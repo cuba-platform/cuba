@@ -10,12 +10,10 @@
 package com.haulmont.cuba.core;
 
 import junit.framework.TestCase;
-import com.haulmont.cuba.core.SecurityProvider;
 
-import java.net.URL;
 import java.io.File;
 
-public class CubaTestCase extends TestCase
+public abstract class CubaTestCase extends TestCase
 {
     protected void setUpDeploymentFiles() {
         TestContainer.addDeploymentFile("cuba-core-global.jar");
@@ -25,6 +23,7 @@ public class CubaTestCase extends TestCase
 
     protected void setUp() throws Exception {
         super.setUp();
+        System.setProperty("cuba.UnitTestMode", "true");
 
         File confDir = new File(System.getProperty("user.dir") + "/build/conf");
         System.setProperty("jboss.server.config.url", confDir.toURI().toString());

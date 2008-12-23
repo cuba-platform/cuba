@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 public abstract class SecurityProvider
 {
-    public static final String IMPL_PROP = "cuba.SecurityProvider.sys";
+    public static final String IMPL_PROP = "cuba.SecurityProvider.impl";
 
     private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.SecurityProviderImpl";
 

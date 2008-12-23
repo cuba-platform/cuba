@@ -42,7 +42,7 @@ public class LoginWorkerBean implements LoginWorker
         Query q = em.createQuery(
                 "select u " +
                 " from sec$User u join fetch u.profiles" +
-                " where u.login = ?1 and u.password = ?2 and u.deleteTs is null");
+                " where u.login = ?1 and u.password = ?2");
         q.setParameter(1, login);
         q.setParameter(2, password);
         List list = q.getResultList();
@@ -75,7 +75,7 @@ public class LoginWorkerBean implements LoginWorker
         User user = loadUser(login, password, locale);
         Profile profile = null;
         for (Profile p : user.getProfiles()) {
-            if (profileName.equals(p.getName()) && !p.isDeleted()) {
+            if (profileName.equals(p.getName())) {
                 profile = p;
                 break;
             }
