@@ -6,7 +6,7 @@
 	<property name="root.dir" location="${project.dir}/.."/>
 	
 	<property name="module.name" value="web-war"/>
-	<property name="module.jar" value="23cuba.war"/>
+	<property name="module.jar" value="24cuba.war"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
@@ -17,6 +17,8 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <pathelement location="${prod.out.dir}/core"/>
+        <pathelement location="${prod.out.dir}/gui"/>
+        <pathelement location="${prod.out.dir}/web"/>
     </path>
 
     <path id="test-compile-cp">

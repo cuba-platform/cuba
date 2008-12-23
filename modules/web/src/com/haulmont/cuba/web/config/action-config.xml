@@ -1,9 +1,0 @@
-<action-config>
-
-    <action name="core$Server.browse" class="com.haulmont.cuba.web.ui.DemoScreen"/>
-
-    <action name="sec$User.browse" class="com.haulmont.cuba.web.ui.DemoScreen"/>
-
-    <action name="sec$Role.browse" class="com.haulmont.cuba.web.ui.DemoScreen"/>
-
-</action-config>

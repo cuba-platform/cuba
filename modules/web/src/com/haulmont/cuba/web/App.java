@@ -10,15 +10,15 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.gui.config.ActionsConfig;
+import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.config.MenuConfig;
-import com.haulmont.cuba.web.ScreenManager;
 import com.haulmont.cuba.web.log.AppLog;
-import com.haulmont.cuba.web.config.ActionConfig;
+import com.haulmont.cuba.web.resource.Messages;
 import com.itmill.toolkit.Application;
+import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
 import com.itmill.toolkit.terminal.gwt.server.WebBrowser;
-import com.itmill.toolkit.service.ApplicationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.security.SecurityAssociation;
@@ -26,6 +26,8 @@ import org.jboss.security.SimplePrincipal;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
+import java.util.ResourceBundle;
+import java.io.InputStream;
 
 public class App extends Application implements ConnectionListener
 {
@@ -34,7 +36,7 @@ public class App extends Application implements ConnectionListener
     private Connection connection;
 
     private MenuConfig menuConfig;
-    private ActionConfig actionConfig;
+    private ActionsConfig actionConfig;
 
     private ScreenManager screenManager;
 
@@ -80,15 +82,33 @@ public class App extends Application implements ConnectionListener
     }
 
     public MenuConfig getMenuConfig() {
-        if (menuConfig == null)
-            menuConfig = new MenuConfig(getActionConfig());
+        if (menuConfig == null) {
+            menuConfig = new MenuConfig();
+            menuConfig.loadConfig(getClass().getName(), getActionsConfig(), getResourceBundle(), getMenuConfigXml());
+        }
+
         return menuConfig;
     }
 
-    public ActionConfig getActionConfig() {
-        if (actionConfig == null)
-            actionConfig = new ActionConfig();
+    public ActionsConfig getActionsConfig() {
+        if (actionConfig == null) {
+            actionConfig = new ActionsConfig();
+            actionConfig.loadConfig(getClass().getName(), getResourceBundle(), getActionsConfigXml());
+        }
+
         return actionConfig;
+    }
+
+    protected InputStream getActionsConfigXml() {
+        return getClass().getResourceAsStream("/com/haulmont/cuba/web/app/config/action-config.xml");
+    }
+
+    protected InputStream getMenuConfigXml() {
+        return getClass().getResourceAsStream("/com/haulmont/cuba/web/app/config/menu-config.xml");
+    }
+
+    protected ResourceBundle getResourceBundle() {
+        return Messages.getResourceBundle();
     }
 
     public ScreenManager getScreenManager() {

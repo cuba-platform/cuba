@@ -1,0 +1,11 @@
+<window>
+    <vbox>
+        <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse-filter.xml" flex="1"/>
+        <vbox>
+            <hbox>
+                <button id="Prev" caption="Previous"/>
+                <button id="Next" caption="Next"/>
+            </hbox>
+        </vbox>
+    </vbox>
+</window>

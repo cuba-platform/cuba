@@ -10,11 +10,12 @@
  */
 package com.haulmont.cuba.web.ui;
 
-import com.haulmont.cuba.web.config.ScreenAction;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.itmill.toolkit.ui.ExpandLayout;
-import com.itmill.toolkit.ui.Label;
 
-public class Screen extends ExpandLayout
+public class Screen extends ExpandLayout implements Window
 {
     protected ScreenContext screenContext;
 
@@ -24,6 +25,14 @@ public class Screen extends ExpandLayout
         setSpacing(true);
     }
 
+    public void add(Component component) {
+        addComponent(ComponentsHelper.unwrap(component));
+    }
+
+    public void remove(Component component) {
+        removeComponent(ComponentsHelper.unwrap(component));
+    }
+
     public void init(ScreenContext context) {
         screenContext = context;
     }
@@ -31,4 +40,16 @@ public class Screen extends ExpandLayout
     public boolean onClose() {
         return true;
     }
+
+    public int getVerticalAlIlignment() {
+        return ALIGNMENT_VERTICAL_CENTER;
+    }
+
+    public void setVerticalAlIlignment(int verticalAlIlignment) {}
+
+    public int getHorizontalAlIlignment() {
+        return ALIGNMENT_HORIZONTAL_CENTER;
+    }
+
+    public void setHorizontalAlIlignment(int horizontalAlIlignment) {}
 }

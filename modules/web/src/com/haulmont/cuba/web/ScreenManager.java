@@ -10,21 +10,23 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.ScreenOpenType;
-import com.haulmont.cuba.web.log.LogLevel;
-import com.haulmont.cuba.web.config.ScreenAction;
 import com.haulmont.cuba.web.ui.Screen;
-import com.haulmont.cuba.web.ui.ScreenTitlePane;
 import com.haulmont.cuba.web.ui.ScreenContext;
-import com.itmill.toolkit.ui.*;
+import com.haulmont.cuba.web.ui.ScreenTitlePane;
+import com.haulmont.cuba.web.xml.WebComponentsFactory;
+import com.haulmont.cuba.gui.config.Action;
+import com.haulmont.cuba.gui.xml.ComponentsLoader;
+import com.haulmont.cuba.gui.xml.ComponentsLoaderConfig;
 import com.itmill.toolkit.terminal.ExternalResource;
+import com.itmill.toolkit.ui.AbstractLayout;
+import com.itmill.toolkit.ui.ExpandLayout;
+import com.itmill.toolkit.ui.TabSheet;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.HashMap;
-
-import org.apache.commons.lang.StringUtils;
 
 public class ScreenManager
 {
@@ -52,7 +54,7 @@ public class ScreenManager
 
     public Screen openScreen(ScreenOpenType type, String actionName, String tabCaption) {
         app.getAppLog().debug("Opening screen " + actionName);
-        ScreenAction action = app.getActionConfig().getAction(actionName);
+        Action action = app.getActionsConfig().getAction(actionName);
         if (tabCaption == null)
             tabCaption = action.getCaption();
 
@@ -130,19 +132,22 @@ public class ScreenManager
         }
     }
 
-    private Screen createScreen(ScreenAction action) {
-        String className = action.getClassName();
-        if (StringUtils.isBlank(className))
-            throw new IllegalStateException("No screen class name for action " + action.getName());
-        try {
-            Class c = Thread.currentThread().getContextClassLoader().loadClass(className);
-            return (Screen) c.newInstance();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
+    private Screen createScreen(Action action) {
+        final Element descriptor = action.getDescriptor();
+        String className = descriptor.attributeValue("class");
+
+        if (StringUtils.isBlank(className)) {
+            final String template = descriptor.attributeValue("template");
+            final ComponentsLoader loader = new ComponentsLoader(new WebComponentsFactory(), ComponentsLoaderConfig.getWindowLoaders());
+
+            return (Screen) loader.loadComponent(getClass().getResource(template));
+        } else {
+            try {
+                Class c = Thread.currentThread().getContextClassLoader().loadClass(className);
+                return (Screen) c.newInstance();
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

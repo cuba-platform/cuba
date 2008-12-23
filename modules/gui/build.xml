@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	name="cuba-web" default="build-module" basedir=".">
+	name="cuba-gui" default="build-module" basedir=".">
 
 	<property name="project.dir" location="../.."/>
 	<property name="root.dir" location="${project.dir}/.."/>
 	
-	<property name="module.name" value="web"/>
-	<property name="module.jar" value="23cuba-web.jar"/>
+	<property name="module.name" value="gui"/>
+	<property name="module.jar" value="22cuba-gui.jar"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
@@ -15,7 +15,6 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <pathelement location="${prod.out.dir}/core"/>
-        <pathelement location="${prod.out.dir}/gui"/>
     </path>
 
     <path id="test-compile-cp">

@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.web.config.MenuItem;
 import com.haulmont.cuba.web.resource.Messages;
+import com.haulmont.cuba.gui.config.MenuItem;
 import com.itmill.toolkit.event.ItemClickEvent;
 import com.itmill.toolkit.ui.Tree;
 import com.itmill.toolkit.ui.Window;

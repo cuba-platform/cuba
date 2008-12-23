@@ -1,0 +1,16 @@
+<window>
+    <vbox>
+        <groupbox>
+            <caption label="Filter"/>
+            <hbox flex="1">
+                <label control="name" value="Name:"/>
+                <textbox id="name" flex="1"/>
+            </hbox>
+        </groupbox>
+        <hbox align="end">
+            
+            <button id="Clear" caption="Clear"/>
+            <button id="Apply" caption="Apply"/>
+        </hbox>
+    </vbox>
+</window>
