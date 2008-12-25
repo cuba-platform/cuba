@@ -1,0 +1,11 @@
+<permission-config>
+
+    <specific>
+
+        <category name="sampleCategory" description="Sample Category">
+            <permission name="samplePermission" description="Sample Permission"/>
+        </category>
+        
+    </specific>
+
+</permission-config>

@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.core.app;
 
-import java.io.InputStream;
-
 public interface ResourceRepositoryMBean
 {
     String OBJECT_NAME = "haulmont.cuba:service=ResourceRepository";
@@ -20,19 +18,11 @@ public interface ResourceRepositoryMBean
 
     ResourceRepository getImplementation();
 
+    String getContent();
+
+    void evict(String name);
+
     void evictAll();
 
-    /**
-     * Loads resource into cache as byte array and returns it
-     * @param name resource file name relative to resources root (jboss/server/default/conf)
-     * @return resource as stream
-     */
-    InputStream getResAsStream(String name);
-
-    /**
-     * Loads resource into cache as String and returns it
-     * @param name resource file name relative to resources root (jboss/server/default/conf)
-     * @return String resource
-     */
     String getResAsString(String name);
 }

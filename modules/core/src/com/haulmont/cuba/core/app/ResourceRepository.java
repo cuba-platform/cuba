@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.haulmont.cuba.core.Locator;
@@ -38,12 +41,26 @@ public class ResourceRepository implements ResourceRepositoryMBean
     public void create() {
         String confUrl = System.getProperty("jboss.server.config.url");
         if (confUrl == null)
-            throw new IllegalStateException("Evnironment variable jboss.server.config.url is not set");
+            throw new IllegalStateException("Environment variable jboss.server.config.url is not set");
         rootPath = URI.create(confUrl).getPath() + "/";
     }
 
     public ResourceRepository getImplementation() {
         return this;
+    }
+
+    public String getContent() {
+        List<String> list = new ArrayList<String>(repository.keySet());
+        Collections.sort(list);
+        StringBuilder sb = new StringBuilder();
+        for (String s : list) {
+            sb.append(s).append("<br>");
+        }
+        return sb.toString();
+    }
+
+    public void evict(String name) {
+        repository.remove(name);
     }
 
     public void evictAll() {

@@ -16,6 +16,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.resource.Messages;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
@@ -102,12 +103,14 @@ public class App extends Application implements ConnectionListener
         return actionConfig;
     }
 
-    protected InputStream getActionsConfigXml() {
-        return getClass().getResourceAsStream("/com/haulmont/cuba/web/app/config/action-config.xml");
+    protected String getActionsConfigXml() {
+        ResourceRepositoryService rrs = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
+        return rrs.getResAsString("cuba/client/web/action-config.xml");
     }
 
-    protected InputStream getMenuConfigXml() {
-        return getClass().getResourceAsStream("/com/haulmont/cuba/web/app/config/menu-config.xml");
+    protected String getMenuConfigXml() {
+        ResourceRepositoryService rrs = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
+        return rrs.getResAsString("cuba/client/web/menu-config.xml");
     }
 
     protected ResourceBundle getResourceBundle() {

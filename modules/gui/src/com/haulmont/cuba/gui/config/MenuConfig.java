@@ -19,6 +19,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.*;
 
 import com.haulmont.cuba.core.global.ClientType;
@@ -51,11 +52,7 @@ public class MenuConfig
         return res;
     }
 
-    public void loadConfig(String moduleName, ActionsConfig actionsConfig, ResourceBundle resourceBundle, InputStream stream) {
-        if (stream == null) {
-            throw new NullPointerException("Null menu config");
-        }
-
+    public void loadConfig(String moduleName, ActionsConfig actionsConfig, ResourceBundle resourceBundle, String xml) {
         rootItems.clear();
 
         this.actionsConfig = actionsConfig;
@@ -64,7 +61,7 @@ public class MenuConfig
         SAXReader reader = new SAXReader();
         Document doc;
         try {
-            doc = reader.read(stream);
+            doc = reader.read(new StringReader(xml));
         } catch (DocumentException e) {
             throw new RuntimeException(e);
         }

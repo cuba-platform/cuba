@@ -18,27 +18,24 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.io.StringReader;
 
 public class ActionsConfig
 {
     private Log LOG = LogFactory.getLog(ActionsConfig.class);
     private Map<String, Map<String, Action>> actions = new HashMap<String, Map<String, Action>>();
 
-    public void loadConfig(String moduleName, ResourceBundle resourceBundle, InputStream stream) {
-        if (stream == null)
-            throw new NullPointerException("Null actions config");
-
+    public void loadConfig(String moduleName, ResourceBundle resourceBundle, String xml) {
         Map<String, Action> actions = new HashMap<String, Action>();
 
         SAXReader reader = new SAXReader();
         Document doc;
         try {
-            doc = reader.read(stream);
+            doc = reader.read(new StringReader(xml));
         } catch (DocumentException e) {
             throw new RuntimeException(e);
         }

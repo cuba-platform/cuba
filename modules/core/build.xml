@@ -6,7 +6,8 @@
 	<property name="root.dir" location="${project.dir}/.."/>
 
     <property name="src-serv.dir" location="src-serv"/>
-	
+    <property name="src-conf.dir" location="src-conf"/>
+
 	<property name="module.name" value="core"/>
 	<property name="module.jar" value="20cuba-core.jar"/>
     <property name="module.global.jar" value="cuba-core-global.jar"/>
@@ -58,6 +59,7 @@
 
     <target name="build-module" depends="compile-module">
         <echo>==> building ${project.dir} ${module.name}</echo>
+
         <mkdir dir="${build.dir}"/>
         <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
             <exclude name="**/entity/*"/>
@@ -70,14 +72,23 @@
         <jar basedir="${test.out.dir}/${module.name}" destfile="${build.dir}/${module.test.jar}">
             <include name="**/*"/>
         </jar>
+
         <copy file="src-serv/${module.service.xml}" todir="${build.dir}"/>
         <copy file="src-serv/${module.ds.xml}" todir="${build.dir}"/>
+
+        <mkdir dir="${build.dir}/conf"/>
+        <copy todir="${build.dir}/conf">
+            <fileset dir="src-conf" includes="**/*"/>
+        </copy>
     </target>
 
     <target name="deploy-module" depends="base-mod.deploy-module">
         <copy file="${build.dir}/${module.global.jar}" todir="${jboss.dir}/server/default/deploy"/>
         <copy file="${build.dir}/${module.service.xml}" todir="${jboss.deploy.dir}"/>
         <copy file="${src-serv.dir}/${module.ds.xml}" todir="${jboss.deploy.dir}"/>
+        <copy todir="${jboss.dir}/server/default/conf">
+            <fileset dir="${build.dir}/conf" includes="**/*"/>
+        </copy>
     </target>
 
     <target name="undeploy-module" depends="base-mod.undeploy-module">
