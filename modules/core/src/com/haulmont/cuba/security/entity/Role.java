@@ -16,6 +16,11 @@ import com.haulmont.cuba.core.entity.annotation.Listeners;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
+import javax.persistence.OneToMany;
+
+import org.apache.commons.lang.BooleanUtils;
+
+import java.util.Set;
 
 @Entity(name = "sec$Role")
 @Table(name = "SEC_ROLE")
@@ -27,11 +32,33 @@ public class Role extends StandardEntity
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "IS_SUPER")
+    private Boolean superRole;
+
+    @OneToMany(mappedBy = "role")
+    private Set<Permission> permissions;
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isSuperRole() {
+        return BooleanUtils.isTrue(superRole);
+    }
+
+    public void setSuperRole(boolean superRole) {
+        this.superRole = superRole;
+    }
+
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
     }
 }

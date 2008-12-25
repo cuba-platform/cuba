@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.resource.Messages;
+import com.haulmont.cuba.core.global.ClientType;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
@@ -83,7 +84,9 @@ public class App extends Application implements ConnectionListener
 
     public MenuConfig getMenuConfig() {
         if (menuConfig == null) {
-            menuConfig = new MenuConfig();
+            if (!connection.isConnected())
+                throw new RuntimeException("Not connected");
+            menuConfig = new MenuConfig(ClientType.WEB, connection.getSession());
             menuConfig.loadConfig(getClass().getName(), getActionsConfig(), getResourceBundle(), getMenuConfigXml());
         }
 

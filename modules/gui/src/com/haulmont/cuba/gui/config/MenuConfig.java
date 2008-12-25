@@ -21,6 +21,10 @@ import org.dom4j.io.SAXReader;
 import java.io.InputStream;
 import java.util.*;
 
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.PermissionType;
+
 public class MenuConfig
 {
     private Log LOG = LogFactory.getLog(MenuConfig.class);
@@ -29,6 +33,14 @@ public class MenuConfig
 
     private ActionsConfig actionsConfig;
     private ResourceBundle resourceBundle;
+
+    private ClientType clientType;
+    private UserSession userSession;
+
+    public MenuConfig(ClientType clientType, UserSession userSession) {
+        this.clientType = clientType;
+        this.userSession = userSession;
+    }
 
     public List<MenuItem> getRootItems() {
         final List<MenuItem> res = new ArrayList<MenuItem>();
@@ -79,9 +91,14 @@ public class MenuConfig
                 menuItem.setDescriptor(element);
 
                 loadMenuItems(element, menuItem);
+
+                if (menuItem.getChildren().isEmpty()) {
+                    // do not add empty branches
+                    menuItem = null;
+                }
             } else if ("item".equals(element.getName())) {
                 String actionName = element.attributeValue("action");
-                if (!StringUtils.isBlank(actionName)) {
+                if (!StringUtils.isBlank(actionName) && isActionPermitted(actionName)) {
                     Action action = actionsConfig.getAction(actionName);
                     String menuCaption = getCaption("menu-config." + actionName, action.getCaption());
                     menuItem = new MenuItem(parentItem, menuCaption);
@@ -104,6 +121,11 @@ public class MenuConfig
 
         return res;
     }
+
+    private boolean isActionPermitted(String actionName) {
+        return userSession.isPermitted(PermissionType.SCREEN, clientType.getId() + ":" + actionName);
+    }
+
 
     private String getCaption(String key, String def) {
         try {

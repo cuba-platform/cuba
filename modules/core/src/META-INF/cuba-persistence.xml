@@ -13,6 +13,7 @@
         <class>com.haulmont.cuba.security.entity.GroupHierarchy</class>
         <class>com.haulmont.cuba.security.entity.Profile</class>
         <class>com.haulmont.cuba.security.entity.ProfileRole</class>
+        <class>com.haulmont.cuba.security.entity.Permission</class>
 
         <properties>
             <property name="openjpa.Log" value="log4j"/>

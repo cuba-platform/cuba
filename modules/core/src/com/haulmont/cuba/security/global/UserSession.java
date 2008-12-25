@@ -11,14 +11,9 @@
 package com.haulmont.cuba.security.global;
 
 import com.haulmont.cuba.core.global.UuidProvider;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.Profile;
-import com.haulmont.cuba.security.entity.ProfileRole;
+import com.haulmont.cuba.security.entity.*;
 
-import java.util.UUID;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.*;
 import java.io.Serializable;
 
 public class UserSession implements Serializable
@@ -32,6 +27,8 @@ public class UserSession implements Serializable
     private final String[] roles;
     private final Locale locale;
 
+    private final Map<String, Integer>[] permissions;
+
     public UserSession(User user, String[] roles, Locale locale) {
         id = UuidProvider.createUuid();
         userId = user.getId();
@@ -42,6 +39,11 @@ public class UserSession implements Serializable
         Arrays.sort(this.roles);
 
         this.locale = locale;
+
+        permissions = new Map[PermissionType.values().length];
+        for (int i = 0; i < permissions.length; i++) {
+            permissions[i] = new HashMap<String, Integer>();
+        }
     }
 
     public UUID getId() {
@@ -66,6 +68,23 @@ public class UserSession implements Serializable
 
     public Locale getLocale() {
         return locale;
+    }
+
+    public void addPermission(PermissionType type, String target, int value) {
+        permissions[type.ordinal()].put(target, value);
+    }
+
+    public Integer getPermissionValue(PermissionType type, String target) {
+        return permissions[type.ordinal()].get(target);
+    }
+    
+    public boolean isPermitted(PermissionType type, String target) {
+        return isPermitted(type, target, 1);
+    }
+
+    public boolean isPermitted(PermissionType type, String target, int value) {
+        Integer p = permissions[type.ordinal()].get(target);
+        return p == null || p >= value;
     }
 
     public String toString() {

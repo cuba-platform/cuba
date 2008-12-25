@@ -10,16 +10,11 @@
  */
 package com.haulmont.cuba.security.sys;
 
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.Profile;
-import com.haulmont.cuba.security.entity.ProfileRole;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 
-import java.util.UUID;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.*;
 
 public class UserSessionManager
 {
@@ -39,13 +34,34 @@ public class UserSessionManager
     }
 
     public UserSession createSession(User user, Profile profile, Locale locale) {
-        List<String> roles = new ArrayList<String>();
+        List<String> roleNames = new ArrayList<String>();
+        List<Role> roles = new ArrayList<Role>();
         for (ProfileRole profileRole : profile.getProfileRoles()) {
-            roles.add(profileRole.getRole().getName());
+            roleNames.add(profileRole.getRole().getName());
+            roles.add(profileRole.getRole());
         }
-        UserSession session = new UserSession(user, roles.toArray(new String[roles.size()]), locale);
+        UserSession session = new UserSession(user, roleNames.toArray(new String[roleNames.size()]), locale);
+        compilePermissions(session, roles);
         sessions.add(session);
         return session;
+    }
+
+    private void compilePermissions(UserSession session, List<Role> roles) {
+        for (Role role : roles) {
+            if (role.isSuperRole())
+                return;
+        }
+        for (Role role : roles) {
+            for (Permission permission : role.getPermissions()) {
+                PermissionType type = PermissionType.fromId(permission.getType());
+                if (type != null && permission.getValue() != null) {
+                    Integer value = session.getPermissionValue(type, permission.getTarget());
+                    if (value == null || value < permission.getValue()) {
+                        session.addPermission(type, permission.getTarget(), permission.getValue());
+                    }
+                }
+            }
+        }
     }
 
     public void removeSession(UserSession session) {
