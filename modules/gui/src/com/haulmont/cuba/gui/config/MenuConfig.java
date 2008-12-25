@@ -123,7 +123,7 @@ public class MenuConfig
     }
 
     private boolean isActionPermitted(String actionName) {
-        return userSession.isPermitted(PermissionType.SCREEN, clientType.getId() + ":" + actionName);
+        return userSession.isPermitted(PermissionType.ACTION, clientType.getId() + ":" + actionName);
     }
 
 

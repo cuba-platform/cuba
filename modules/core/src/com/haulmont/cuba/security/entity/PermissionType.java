@@ -12,7 +12,7 @@ package com.haulmont.cuba.security.entity;
 
 public enum PermissionType
 {
-    SCREEN(10),
+    ACTION(10),
     ENTITY_OP(20),
     ENTITY_ATTR(30),
     SPECIFIC(40);
