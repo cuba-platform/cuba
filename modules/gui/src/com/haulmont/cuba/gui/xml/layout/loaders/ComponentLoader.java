@@ -7,13 +7,13 @@
  * Created: 23.12.2008 10:16:44
  * $Id$
  */
-package com.haulmont.cuba.gui.xml.loaders;
+package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
-public abstract class ComponentLoader implements  com.haulmont.cuba.gui.xml.ComponentLoader {
+public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected void loadFlex(Component.Sizable component, Element element) {
         final String flex = element.attributeValue("flex");
         if (!StringUtils.isBlank(flex)) {

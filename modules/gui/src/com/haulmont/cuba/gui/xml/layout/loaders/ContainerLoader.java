@@ -7,12 +7,12 @@
  * Created: 22.12.2008 9:52:04
  * $Id$
  */
-package com.haulmont.cuba.gui.xml.loaders;
+package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.xml.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.ComponentsLoaderConfig;
-import com.haulmont.cuba.gui.xml.ComponentsLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.dom4j.Element;
 
 import java.util.Arrays;
@@ -20,15 +20,15 @@ import java.util.Collection;
 
 public abstract class ContainerLoader extends ComponentLoader {
     protected ComponentsFactory factory;
-    protected ComponentsLoaderConfig config;
+    protected LayoutLoaderConfig config;
 
-    public ContainerLoader(ComponentsLoaderConfig config, ComponentsFactory factory) {
+    public ContainerLoader(LayoutLoaderConfig config, ComponentsFactory factory) {
         this.config = config;
         this.factory = factory;
     }
 
     protected void loadSubComponents(Component component, Element element, String ...exceptTags) {
-        final ComponentsLoader loader = new ComponentsLoader(factory, config);
+        final LayoutLoader loader = new LayoutLoader(factory, config);
         for (Element subElement : (Collection<Element>)element.elements()) {
             final String name = subElement.getName();
             if (exceptTags != null && Arrays.binarySearch(exceptTags, name) < 0) {

@@ -7,16 +7,15 @@
  * Created: 22.12.2008 17:57:24
  * $Id$
  */
-package com.haulmont.cuba.gui.xml.loaders;
+package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.xml.ComponentLoader;
-import com.haulmont.cuba.gui.xml.ComponentsLoaderConfig;
-import com.haulmont.cuba.gui.xml.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.components.Component;
 import org.dom4j.Element;
 
-public class GroupBoxLoader  extends ContainerLoader implements ComponentLoader {
-    public GroupBoxLoader(ComponentsLoaderConfig config, ComponentsFactory factory) {
+public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+    public GroupBoxLoader(LayoutLoaderConfig config, ComponentsFactory factory) {
         super(config, factory);
     }
 

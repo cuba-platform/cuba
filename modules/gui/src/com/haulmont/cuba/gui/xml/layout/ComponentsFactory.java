@@ -7,7 +7,7 @@
  * Created: 19.12.2008 15:17:56
  * $Id$
  */
-package com.haulmont.cuba.gui.xml;
+package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
 

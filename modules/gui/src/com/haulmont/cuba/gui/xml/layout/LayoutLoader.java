@@ -7,7 +7,7 @@
  * Created: 19.12.2008 15:15:51
  * $Id$
  */
-package com.haulmont.cuba.gui.xml;
+package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
 import org.dom4j.Document;
@@ -19,11 +19,11 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 
-public class ComponentsLoader {
+public class LayoutLoader {
     private ComponentsFactory factory;
-    private ComponentsLoaderConfig config;
+    private LayoutLoaderConfig config;
 
-    public ComponentsLoader(ComponentsFactory factory, ComponentsLoaderConfig config) {
+    public LayoutLoader(ComponentsFactory factory, LayoutLoaderConfig config) {
         this.factory = factory;
         this.config = config;
     }
@@ -59,7 +59,7 @@ public class ComponentsLoader {
         ComponentLoader loader;
         try {
             final Constructor<? extends ComponentLoader> constructor =
-                    loaderClass.getConstructor(ComponentsLoaderConfig.class, ComponentsFactory.class);
+                    loaderClass.getConstructor(LayoutLoaderConfig.class, ComponentsFactory.class);
             loader = constructor.newInstance(config, factory);
         } catch (Throwable e) {
             loader = loaderClass.newInstance();

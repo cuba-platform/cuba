@@ -7,11 +7,11 @@
  * Created: 19.12.2008 15:31:30
  * $Id$
  */
-package com.haulmont.cuba.gui.xml;
+package com.haulmont.cuba.gui.xml.layout;
 
 import org.dom4j.Element;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.xml.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 public interface ComponentLoader {
 

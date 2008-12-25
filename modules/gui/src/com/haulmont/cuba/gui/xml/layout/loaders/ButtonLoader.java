@@ -7,15 +7,14 @@
  * Created: 19.12.2008 15:55:55
  * $Id$
  */
-package com.haulmont.cuba.gui.xml.loaders;
+package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.xml.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
 
-public class ButtonLoader extends com.haulmont.cuba.gui.xml.loaders.ComponentLoader {
+public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final Button button = factory.createComponent("button");
 

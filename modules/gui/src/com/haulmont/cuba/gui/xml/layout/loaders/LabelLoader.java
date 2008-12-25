@@ -7,20 +7,20 @@
  * Created: 22.12.2008 18:20:37
  * $Id$
  */
-package com.haulmont.cuba.gui.xml.loaders;
+package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.TextBox;
-import com.haulmont.cuba.gui.xml.ComponentsFactory;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
 
-public class TextBoxLoader extends ComponentLoader {
+public class LabelLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final TextBox textBox = factory.createComponent("textbox");
+        final Label label = factory.createComponent("label");
 
-        loadFlex(textBox, element);
-        loadCaption(textBox, element);
+        final String caption = element.attributeValue("value");
+        label.setValue(caption);
 
-        return textBox;
+        return label;
     }
 }

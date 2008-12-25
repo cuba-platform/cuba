@@ -13,10 +13,10 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.web.ui.Screen;
 import com.haulmont.cuba.web.ui.ScreenContext;
 import com.haulmont.cuba.web.ui.ScreenTitlePane;
-import com.haulmont.cuba.web.xml.WebComponentsFactory;
+import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.haulmont.cuba.gui.config.Action;
-import com.haulmont.cuba.gui.xml.ComponentsLoader;
-import com.haulmont.cuba.gui.xml.ComponentsLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.ui.AbstractLayout;
 import com.itmill.toolkit.ui.ExpandLayout;
@@ -138,7 +138,7 @@ public class ScreenManager
 
         if (StringUtils.isBlank(className)) {
             final String template = descriptor.attributeValue("template");
-            final ComponentsLoader loader = new ComponentsLoader(new WebComponentsFactory(), ComponentsLoaderConfig.getWindowLoaders());
+            final LayoutLoader loader = new LayoutLoader(new WebComponentsFactory(), LayoutLoaderConfig.getWindowLoaders());
 
             return (Screen) loader.loadComponent(getClass().getResource(template));
         } else {

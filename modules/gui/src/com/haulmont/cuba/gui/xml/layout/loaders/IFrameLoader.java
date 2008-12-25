@@ -7,18 +7,18 @@
  * Created: 19.12.2008 15:27:37
  * $Id$
  */
-package com.haulmont.cuba.gui.xml.loaders;
+package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.xml.ComponentLoader;
-import com.haulmont.cuba.gui.xml.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.ComponentsLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 
 public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
-    public IFrameLoader(ComponentsLoaderConfig config, ComponentsFactory factory) {
+    public IFrameLoader(LayoutLoaderConfig config, ComponentsFactory factory) {
         super(config, factory);
     }
 

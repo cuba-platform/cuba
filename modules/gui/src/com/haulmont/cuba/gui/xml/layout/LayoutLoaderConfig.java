@@ -7,18 +7,18 @@
  * Created: 19.12.2008 15:29:12
  * $Id$
  */
-package com.haulmont.cuba.gui.xml;
+package com.haulmont.cuba.gui.xml.layout;
 
-import com.haulmont.cuba.gui.xml.loaders.*;
+import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
 import java.util.Map;
 import java.util.HashMap;
 
-public class ComponentsLoaderConfig {
-    private Map<String, Class<? extends ComponentLoader>> loaders = new HashMap<String, Class<? extends ComponentLoader>>();
+public class LayoutLoaderConfig {
+    private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders = new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
 
-    private static ComponentsLoaderConfig windowLoaders = new ComponentsLoaderConfig();
-    private static ComponentsLoaderConfig frameLoaders = new ComponentsLoaderConfig();
+    private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
+    private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
     static {
         windowLoaders.registerLoader("window", WindowLoader.class);
@@ -40,19 +40,19 @@ public class ComponentsLoaderConfig {
         frameLoaders.registerLoader("textbox", TextBoxLoader.class);
     }
 
-    public static ComponentsLoaderConfig getWindowLoaders() {
+    public static LayoutLoaderConfig getWindowLoaders() {
         return windowLoaders;
     }
 
-    public static ComponentsLoaderConfig getFrameLoaders() {
+    public static LayoutLoaderConfig getFrameLoaders() {
         return frameLoaders;
     }
 
-    public Class<? extends ComponentLoader> getLoader(String name) {
+    public Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> getLoader(String name) {
         return loaders.get(name);
     }
 
-    public void registerLoader(String name, Class<? extends ComponentLoader> loader)
+    public void registerLoader(String name, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loader)
     {
         loaders.put(name, loader);
     }

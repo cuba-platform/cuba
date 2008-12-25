@@ -7,21 +7,18 @@
  * Created: 19.12.2008 15:27:37
  * $Id$
  */
-package com.haulmont.cuba.gui.xml.loaders;
+package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.xml.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.ComponentLoader;
-import com.haulmont.cuba.gui.xml.ComponentsLoaderConfig;
-import com.haulmont.cuba.gui.xml.ComponentsLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
-
-import java.util.Collection;
 
 public class WindowLoader extends ContainerLoader implements ComponentLoader {
 
-    public WindowLoader(ComponentsLoaderConfig config, ComponentsFactory factory) {
+    public WindowLoader(LayoutLoaderConfig config, ComponentsFactory factory) {
         super(config, factory);
     }
 
