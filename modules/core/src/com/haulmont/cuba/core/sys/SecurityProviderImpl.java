@@ -13,10 +13,9 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.jboss.security.SecurityAssociation;
 
 import java.util.UUID;
-
-import org.jboss.security.SecurityAssociation;
 
 public class SecurityProviderImpl extends SecurityProvider
 {

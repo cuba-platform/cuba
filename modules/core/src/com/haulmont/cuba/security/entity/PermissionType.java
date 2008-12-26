@@ -10,6 +10,10 @@
  */
 package com.haulmont.cuba.security.entity;
 
+/**
+ * Type of permission<br>
+ * id - corresponding database value
+ */
 public enum PermissionType
 {
     ACTION(10),
@@ -23,10 +27,12 @@ public enum PermissionType
         this.id = id;
     }
 
+    /** Returns corresponding database value */
     public int getId() {
         return id;
     }
 
+    /** Constructs type from corresponding database value */
     public static PermissionType fromId(int id) {
         for (PermissionType type : PermissionType.values()) {
             if (type.getId() == id) {

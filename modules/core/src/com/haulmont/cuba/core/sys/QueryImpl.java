@@ -12,7 +12,6 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewProperty;
 
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
@@ -20,61 +19,94 @@ import java.util.List;
 import java.util.Date;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
-import org.apache.openjpa.persistence.FetchPlan;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class QueryImpl implements Query
 {
-    private OpenJPAQuery query;
+    private Log log = LogFactory.getLog(QueryImpl.class);
 
-    public QueryImpl(OpenJPAQuery query) {
-        this.query = query;
-        this.query.setFlushMode(FlushModeType.COMMIT);
+    private OpenJPAEntityManager em;
+    private OpenJPAQuery query;
+    private boolean isNative;
+    private String queryString;
+
+    public QueryImpl(OpenJPAEntityManager entityManager, boolean isNative) {
+        this.em = entityManager;
+        this.isNative = isNative;
+    }
+
+    private OpenJPAQuery getQuery() {
+        if (query == null) {
+            if (isNative) {
+                log.trace("Creating SQL query: " + queryString);
+                query = em.createNativeQuery(queryString);
+                query.setFlushMode(FlushModeType.COMMIT);
+            }
+            else {
+                log.trace("Creating JPQL query: " + queryString);
+                query = em.createQuery(queryString);
+                query.setFlushMode(FlushModeType.COMMIT);
+            }
+        }
+        return query;
     }
 
     public List getResultList() {
-        return query.getResultList();
+        return getQuery().getResultList();
     }
 
     public Object getSingleResult() {
-        return query.getSingleResult();
+        return getQuery().getSingleResult();
     }
 
     public int executeUpdate() {
-        return query.executeUpdate();
+        return getQuery().executeUpdate();
     }
 
     public Query setMaxResults(int maxResult) {
-        query.setMaxResults(maxResult);
+        getQuery().setMaxResults(maxResult);
         return this;
     }
 
     public Query setFirstResult(int startPosition) {
-        query.setFirstResult(startPosition);
+        getQuery().setFirstResult(startPosition);
         return this;
     }
 
     public Query setParameter(String name, Object value) {
-        query.setParameter(name, value);
+        getQuery().setParameter(name, value);
         return this;
     }
 
     public Query setParameter(String name, Date value, TemporalType temporalType) {
-        query.setParameter(name, value, temporalType);
+        getQuery().setParameter(name, value, temporalType);
         return this;
     }
 
     public Query setParameter(int position, Object value) {
-        query.setParameter(position, value);
+        getQuery().setParameter(position, value);
         return this;
     }
 
     public Query setParameter(int position, Date value, TemporalType temporalType) {
-        query.setParameter(position, value, temporalType);
+        getQuery().setParameter(position, value, temporalType);
         return this;
     }
 
     public Query setView(View view) {
-        ViewHelper.setView(query.getFetchPlan(), view);
+        ViewHelper.setView(getQuery().getFetchPlan(), view);
         return this;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public void setQueryString(String queryString) {
+        if (query != null)
+            throw new IllegalStateException("Unable to set query string: query is already created");
+        this.queryString = queryString;
     }
 }

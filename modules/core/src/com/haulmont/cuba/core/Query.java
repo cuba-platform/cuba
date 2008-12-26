@@ -18,6 +18,10 @@ import java.util.Date;
 
 public interface Query
 {
+    String getQueryString();
+    
+    void setQueryString(String queryString);
+
     List getResultList();
 
     Object getSingleResult();

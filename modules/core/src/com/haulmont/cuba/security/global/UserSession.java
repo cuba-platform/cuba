@@ -28,6 +28,7 @@ public class UserSession implements Serializable
     private final Locale locale;
 
     private final Map<String, Integer>[] permissions;
+    private final Map<String, List<String>> constraints;
 
     public UserSession(User user, String[] roles, Locale locale) {
         id = UuidProvider.createUuid();
@@ -44,6 +45,8 @@ public class UserSession implements Serializable
         for (int i = 0; i < permissions.length; i++) {
             permissions[i] = new HashMap<String, Integer>();
         }
+
+        constraints = new HashMap<String, List<String>>();
     }
 
     public UUID getId() {
@@ -85,6 +88,20 @@ public class UserSession implements Serializable
     public boolean isPermitted(PermissionType type, String target, int value) {
         Integer p = permissions[type.ordinal()].get(target);
         return p == null || p >= value;
+    }
+
+    public void addConstraint(String entityName, String constraint) {
+        List<String> list = constraints.get(entityName);
+        if (list == null) {
+            list = new ArrayList<String>();
+            constraints.put(entityName, list);
+        }
+        list.add(constraint);
+    }
+
+    public List<String> getConstraints(String entityName) {
+        List<String> list = constraints.get(entityName);
+        return list != null ? list : Collections.<String>emptyList();
     }
 
     public String toString() {

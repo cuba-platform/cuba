@@ -20,11 +20,7 @@ public class Permission extends StandardEntity
 {
     private static final long serialVersionUID = 4188184934170706381L;
 
-    public static int TYPE_ACTION = 10;
-    public static int TYPE_ENTITY_OP = 20;
-    public static int TYPE_ENTITY_ATTR = 30;
-    public static int TYPE_SPECIFIC = 40;
-
+    /** @see com.haulmont.cuba.security.entity.PermissionType PermissionType.getId() */
     @Column(name = "TYPE")
     private Integer type;
 

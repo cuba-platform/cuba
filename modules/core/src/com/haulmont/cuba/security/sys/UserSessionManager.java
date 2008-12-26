@@ -13,6 +13,9 @@ package com.haulmont.cuba.security.sys;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Query;
 
 import java.util.*;
 
@@ -42,6 +45,7 @@ public class UserSessionManager
         }
         UserSession session = new UserSession(user, roleNames.toArray(new String[roleNames.size()]), locale);
         compilePermissions(session, roles);
+        compileConstraints(session, profile.getGroup());
         sessions.add(session);
         return session;
     }
@@ -61,6 +65,19 @@ public class UserSessionManager
                     }
                 }
             }
+        }
+    }
+
+    private void compileConstraints(UserSession session, Group group) {
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
+                "where h.group = ?1");
+        q.setParameter(1, group);
+        List<Constraint> constraints = q.getResultList();
+        List<Constraint> list = new ArrayList<Constraint>(constraints);
+        list.addAll(group.getConstraints());
+        for (Constraint constraint : list) {
+            session.addConstraint(constraint.getEntityName(), constraint.getWhereClause());
         }
     }
 

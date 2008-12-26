@@ -11,8 +11,11 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.core.global.QueryTransformer;
+import com.haulmont.cuba.core.global.QueryTransformerFactory;
 
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class SecurityProvider
 {
@@ -54,5 +57,35 @@ public abstract class SecurityProvider
         return (Arrays.binarySearch(session.getRoles(), role) >= 0);
     }
 
+    public static void applyConstraints(Query query, String entityName) {
+        getInstance().__applyConstraints(query, entityName);
+    }
+
     protected abstract UserSession __currentUserSession();
+
+    protected void __applyConstraints(Query query, String entityName) {
+        List<String> constraints = __currentUserSession().getConstraints(entityName);
+        if (constraints.isEmpty())
+            return;
+
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer(
+                query.getQueryString(), entityName);
+
+        for (String constraint : constraints) {
+            transformer.addWhere(constraint);
+        }
+        query.setQueryString(transformer.getResult());
+        for (String paramName : transformer.getAddedParams()) {
+            setQueryParam(query, paramName);
+        }
+    }
+
+    protected void setQueryParam(Query query, String paramName) {
+        if ("currentUserLogin".equals(paramName)) {
+            query.setParameter("currentUserLogin", __currentUserSession().getLogin());
+        }
+        else if ("currentUserId".equals(paramName)) {
+            query.setParameter("currentUserId", __currentUserSession().getUserId());
+        }
+    }
 }

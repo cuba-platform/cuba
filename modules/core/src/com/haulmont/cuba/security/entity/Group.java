@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.annotation.Listeners;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "sec$Group")
 @Table(name = "SEC_GROUP")
@@ -33,6 +34,9 @@ public class Group extends StandardEntity
     @OneToMany(mappedBy = "group")
     @OrderBy("level")
     private List<GroupHierarchy> hierarchyList;
+
+    @OneToMany(mappedBy = "group")
+    private Set<Constraint> constraints;
 
     public String getName() {
         return name;
@@ -56,6 +60,14 @@ public class Group extends StandardEntity
 
     public void setHierarchyList(List<GroupHierarchy> hierarchyList) {
         this.hierarchyList = hierarchyList;
+    }
+
+    public Set<Constraint> getConstraints() {
+        return constraints;
+    }
+
+    public void setConstraints(Set<Constraint> constraints) {
+        this.constraints = constraints;
     }
 
     public String toString() {

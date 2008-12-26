@@ -155,6 +155,25 @@ alter table SEC_PERMISSION add constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID,
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SEC_CONSTRAINT (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(20),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(20),
+    ENTITY_NAME varchar(50),
+    WHERE_CLAUSE varchar(500),
+    GROUP_ID varchar(36),
+    primary key (ID)
+);
+
+alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP;
+
+------------------------------------------------------------------------------------------------------------
+
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, PASSWORD, NAME)
 values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator');
 

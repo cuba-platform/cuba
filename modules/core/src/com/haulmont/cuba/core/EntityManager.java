@@ -22,7 +22,11 @@ public interface EntityManager
 
     <T extends BaseEntity> T find(Class<T> clazz, Object key);
 
+    Query createQuery();
+
     Query createQuery(String qlStr);
+
+    Query createNativeQuery();
 
     Query createNativeQuery(String sql);
 

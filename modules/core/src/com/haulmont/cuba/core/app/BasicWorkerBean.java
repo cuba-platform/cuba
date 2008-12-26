@@ -15,9 +15,11 @@ import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.SecurityProvider;
 
 import javax.ejb.Stateless;
 import java.util.List;
+import java.util.Map;
 
 @Stateless(name = BasicWorker.JNDI_NAME)
 public class BasicWorkerBean implements BasicWorker
@@ -65,11 +67,18 @@ public class BasicWorkerBean implements BasicWorker
 
     public <T extends BaseEntity> List<T> loadList(BasicInvocationContext ctx) {
         EntityManager em = PersistenceProvider.getEntityManager();
+
         Query query = em.createQuery(ctx.getQueryString());
+        SecurityProvider.applyConstraints(query, ctx.getMetaClass().getName());
+
+        for (Map.Entry<String, Object> entry : ctx.getQueryParams().entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        }
         if (ctx.getView() != null) {
             query.setView(ctx.getView());
         }
         List resultList = query.getResultList();
+
         return resultList;
     }
 }

@@ -14,6 +14,7 @@
         <class>com.haulmont.cuba.security.entity.Profile</class>
         <class>com.haulmont.cuba.security.entity.ProfileRole</class>
         <class>com.haulmont.cuba.security.entity.Permission</class>
+        <class>com.haulmont.cuba.security.entity.Constraint</class>
 
         <properties>
             <property name="openjpa.Log" value="log4j"/>

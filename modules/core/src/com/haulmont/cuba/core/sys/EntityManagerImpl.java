@@ -34,8 +34,6 @@ public class EntityManagerImpl implements EntityManager
         void onClose();
     }
 
-    private Log log = LogFactory.getLog(EntityManagerImpl.class);
-
     private OpenJPAEntityManager jpaEm;
 
     private boolean closed;
@@ -88,14 +86,24 @@ public class EntityManagerImpl implements EntityManager
         return jpaEm.find(clazz, key);
     }
 
+    public Query createQuery() {
+        return new QueryImpl(jpaEm, false);
+    }
+
     public Query createQuery(String qlStr) {
-        log.trace("Creating JPQL query: " + qlStr);
-        return new QueryImpl(jpaEm.createQuery(qlStr));
+        QueryImpl query = new QueryImpl(jpaEm, false);
+        query.setQueryString(qlStr);
+        return query;
+    }
+
+    public Query createNativeQuery() {
+        return new QueryImpl(jpaEm, true);
     }
 
     public Query createNativeQuery(String sql) {
-        log.trace("Creating SQL query: " + sql);
-        return new QueryImpl(jpaEm.createNativeQuery(sql));
+        QueryImpl query = new QueryImpl(jpaEm, true);
+        query.setQueryString(sql);
+        return query;
     }
 
     public void setView(View view) {

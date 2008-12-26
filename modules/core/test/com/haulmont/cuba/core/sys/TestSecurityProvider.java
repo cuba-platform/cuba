@@ -11,13 +11,12 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.SecurityProvider;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.User;
-
-import java.util.UUID;
-import java.util.Locale;
-
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
+
+import java.util.Locale;
+import java.util.UUID;
 
 public class TestSecurityProvider extends SecurityProvider
 {
@@ -29,6 +28,8 @@ public class TestSecurityProvider extends SecurityProvider
         user.setPassword(DigestUtils.md5Hex("test_admin"));
 
         UserSession session = new UserSession(user, new String[]{"Administrators"}, Locale.getDefault());
+        session.addConstraint("sec$Group", "a.createdBy = :currentUserLogin");
+
         return session;
     }
 }
