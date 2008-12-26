@@ -10,9 +10,16 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.sys.LocatorImpl;
+import com.haulmont.cuba.core.app.ResourceRepository;
+import com.haulmont.cuba.core.app.ResourceRepositoryMBean;
 
 import javax.naming.Context;
 
+/**
+ * Locator helps to find EJBs, MBeans and some widely used services.<br>
+ * Also serves as Transaction factory.<p>
+ * Must be used from inside middleware only.
+ */
 public abstract class Locator
 {
     private static Locator instance;
@@ -23,25 +30,36 @@ public abstract class Locator
         }
         return instance;
     }
-    
+
+    /** Returns current JNDI context */
     public static Context getJndiContext() {
         return getInstance().__getJndiContextImpl();
     }
 
+    /** Lookups local EJB by name (without /local suffix)*/
     public static <T> T lookupLocal(String name) {
         return (T) getInstance().__lookupLocal(name);
     }
 
+    /** Lookups remote EJB by name (without /remote suffix) */
     public static <T> T lookupRemote(String name) {
         return (T) getInstance().__lookupRemote(name);
     }
 
+    /** Lookups MBean by object name */
     public static <T> T lookupMBean(Class<T> mbeanClass, String name) {
         return (T) getInstance().__lookupMBean(mbeanClass, name);
     }
 
+    /** Creates a new Transaction */
     public static Transaction createTransaction() {
         return getInstance().__createTransaction();
+    }
+
+    /** Returns reference to ResourceRepository */
+    public static ResourceRepository getResourceRepository() {
+        ResourceRepositoryMBean mbean = getInstance().__lookupMBean(ResourceRepositoryMBean.class, ResourceRepositoryMBean.OBJECT_NAME);
+        return mbean.getImplementation();
     }
 
     protected abstract Context __getJndiContextImpl();

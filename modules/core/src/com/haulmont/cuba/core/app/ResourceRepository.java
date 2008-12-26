@@ -33,11 +33,6 @@ public class ResourceRepository implements ResourceRepositoryMBean
 
     private static final String MSG_UNABLE_TO_LOAD_RESOURCE = "Unable to load resource %s";
 
-    public static ResourceRepository getInstance() {
-        ResourceRepositoryMBean mbean = Locator.lookupMBean(ResourceRepositoryMBean.class, ResourceRepositoryMBean.OBJECT_NAME);
-        return mbean.getImplementation();
-    }
-
     public void create() {
         String confUrl = System.getProperty("jboss.server.config.url");
         if (confUrl == null)

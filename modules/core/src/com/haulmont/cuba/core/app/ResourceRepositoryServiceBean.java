@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 
 import javax.ejb.Stateless;
@@ -23,7 +24,7 @@ public class ResourceRepositoryServiceBean implements ResourceRepositoryService
 
     private ResourceRepository getRepository() {
         if (repository == null)
-            repository = ResourceRepository.getInstance();
+            repository = Locator.getResourceRepository();
         return repository;
     }
 
