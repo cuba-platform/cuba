@@ -17,7 +17,11 @@
           <setting name="EXPLODED_ENABLED" value="false" />
           <setting name="JAR_URL" value="file://" />
           <setting name="JAR_ENABLED" value="false" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
           <containerElement type="module" name="web-war">
@@ -25,6 +29,14 @@
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
         </packaging>
+      </configuration>
+    </facet>
+    <facet type="gwt" name="GWT" implicit="true">
+      <configuration>
+        <setting name="gwtSdkUrl" value="" />
+        <setting name="gwtScriptOutputStyle" value="DETAILED" />
+        <setting name="runGwtCompilerOnMake" value="true" />
+        <setting name="compilerMaxHeapSize" value="128" />
       </configuration>
     </facet>
   </component>
@@ -48,6 +60,8 @@
     </orderEntry>
     <orderEntry type="module" module-name="web" />
     <orderEntry type="module" module-name="gui" />
+    <orderEntry type="library" name="gwt" level="project" />
+    <orderEntryProperties />
   </component>
 </module>
 

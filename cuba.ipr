@@ -1057,6 +1057,15 @@
       <JAVADOC />
       <SOURCES />
     </library>
+    <library name="gwt">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user.jar!/" />
+      </SOURCES>
+    </library>
   </component>
 </project>
 

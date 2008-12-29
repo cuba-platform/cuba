@@ -36,6 +36,8 @@
         <ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="itmill-toolkit" version="${itmill-toolkit.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
+        <ext:install-lib name="gwt-dev-windows" version="${gwt-dev-windows.version}" toDir="${lib.gwt.dir}"/>
 		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-common" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>

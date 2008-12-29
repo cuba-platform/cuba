@@ -10,8 +10,11 @@
 
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
+    <property file="${project.dir}/lib.properties"/>
 
     <property name="web.src.dir" location="${module.dir}/web"/>
+
+    <property name="widgets.out.dir" value="${build.dir}/${module.name}/ITMILL/widgetsets"/>
 
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
@@ -30,7 +33,7 @@
 		<delete dir="${build.dir}/${module.name}"/>
     </target>
 
-    <target name="build-module" depends="compile-module">
+    <target name="build-module">
         <echo>==> building ${project.dir} ${module.name}</echo>
 
         <mkdir dir="${build.dir}"/>
@@ -38,12 +41,25 @@
         <copy todir="${build.dir}/${module.name}">
             <fileset dir="${web.src.dir}" includes="**/*"/>
         </copy>
-        <mkdir dir="${build.dir}/${module.name}/WEB-INF/classes"/>
-        <copy todir="${build.dir}/${module.name}/WEB-INF/classes">
-            <fileset dir="${prod.out.dir}/${module.name}" includes="**/*"/>
-        </copy>
+
+        <antcall target="build-gwt"/>
 
         <jar basedir="${build.dir}/${module.name}" destfile="${build.dir}/${module.jar}"/>
+    </target>
+
+    <target name="build-gwt">
+        <echo>==> building gwt module...</echo>
+        <java classname="com.google.gwt.dev.GWTCompiler" failonerror="yes" fork="yes" maxmemory="128m">
+            <arg value="-out"/>
+            <arg value="${widgets.out.dir}"/>
+            <arg value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>
+            <classpath>
+                <pathelement path="${java.src.dir}"/>
+                <pathelement location="${lib.server.dir}/itmill-toolkit-${itmill-toolkit.version}.jar"/>
+                <pathelement location="${lib.gwt.dir}/gwt-user-${gwt-user.version}.jar"/>
+                <pathelement location="${lib.gwt.dir}/gwt-dev-windows-${gwt-dev-windows.version}.jar"/>
+            </classpath>
+        </java>
     </target>
 
     <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
