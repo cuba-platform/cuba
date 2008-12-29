@@ -208,14 +208,6 @@
 /* IE6 hack */
 * html .i-page-table-scrollposition {
 	background: transparent;
-	/* 
-	AlphaImageLoader uses src attribute relative to host page, not CSS
-	We need multiple different filters because we cannot be sure how host page is served compared to theme resources
-	 */
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
 }
 
 .i-page-length-editor {
