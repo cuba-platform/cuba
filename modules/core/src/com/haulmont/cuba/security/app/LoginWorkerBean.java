@@ -26,6 +26,7 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +49,8 @@ public class LoginWorkerBean implements LoginWorker
         List list = q.getResultList();
         if (list.isEmpty()) {
             log.warn("Failed to authenticate: " + login);
-            throw new LoginException(Messages.getString("LoginException.InvalidLoginOrPassword", locale));
+            throw new LoginException(
+                    String.format(Messages.getString("LoginException.InvalidLoginOrPassword", locale), login));
         }
         else {
             User user = (User) list.get(0);
@@ -56,36 +58,71 @@ public class LoginWorkerBean implements LoginWorker
         }
     }
 
-    public List<Profile> authenticate(String login, String password, Locale locale)
+    private User loadUser(String activeDirectoryUser, Locale locale)
             throws LoginException
     {
-        log.info("Authenticating: " + login);
-        User user = loadUser(login, password, locale);
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query q = em.createQuery(
+                "select u " +
+                " from sec$User u join fetch u.profiles" +
+                " where u.activeDirectoryUser = ?1");
+        q.setParameter(1, activeDirectoryUser);
+        List list = q.getResultList();
+        if (list.isEmpty()) {
+            log.warn("Failed to authenticate: " + activeDirectoryUser);
+            throw new LoginException(
+                    String.format(Messages.getString("LoginException.InvalidActiveDirectoryUser", locale), activeDirectoryUser));
+        }
+        else {
+            User user = (User) list.get(0);
+            return user;
+        }
+    }
 
-        List<Profile> list = new ArrayList<Profile>(user.getProfiles());
-        return list;
+    public UserSession login(String login, String password, Locale locale) throws LoginException {
+        return login(login, password, null, locale);
     }
 
     public UserSession login(String login, String password, String profileName, Locale locale)
             throws LoginException
     {
-        if (profileName == null)
-            throw new IllegalArgumentException("profileName can not be null");
-
         User user = loadUser(login, password, locale);
-        Profile profile = null;
-        for (Profile p : user.getProfiles()) {
-            if (profileName.equals(p.getName())) {
-                profile = p;
-                break;
-            }
-        }
-         if (profile == null)
-            throw new LoginException(Messages.getString("LoginException.InvalidProfile", locale), profileName);
-
-        UserSession session = UserSessionManager.getInstance().createSession(user, profile, locale);
+        UserSession session = findProfile(user, profileName, locale);
         log.info("Logged in: " + session);
         return session;
+    }
+
+    public UserSession loginActiveDirectory(String activeDirectoryUser, Locale locale) throws LoginException {
+        return loginActiveDirectory(activeDirectoryUser, null, locale);
+    }
+
+    public UserSession loginActiveDirectory(String activeDirectoryUser, String profileName, Locale locale) throws LoginException {
+        User user = loadUser(activeDirectoryUser, locale);
+        UserSession session = findProfile(user, profileName, locale);
+        log.info("Logged in: " + session);
+        return session;
+    }
+
+    private UserSession findProfile(User user, String profileName, Locale locale) throws LoginException {
+        Profile profile = null;
+        if (profileName == null) {
+            Iterator<Profile> it = user.getProfiles().iterator();
+            while ((profile == null || !profile.isDefaultProfile()) && it.hasNext()) {
+                profile = it.next();
+            }
+        }
+        else {
+            for (Profile p : user.getProfiles()) {
+                if (profileName.equals(p.getName())) {
+                    profile = p;
+                    break;
+                }
+            }
+        }
+        if (profile == null)
+           throw new LoginException(Messages.getString("LoginException.InvalidProfile", locale), profileName);
+
+        return UserSessionManager.getInstance().createSession(user, profile, locale);
     }
 
     public void logout() {

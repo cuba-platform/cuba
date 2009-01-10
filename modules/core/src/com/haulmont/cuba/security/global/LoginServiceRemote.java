@@ -10,10 +10,7 @@
  */
 package com.haulmont.cuba.security.global;
 
-import com.haulmont.cuba.security.entity.Profile;
-
 import javax.ejb.Remote;
-import java.util.List;
 import java.util.Locale;
 
 @Remote
@@ -21,7 +18,7 @@ public interface LoginServiceRemote
 {
     String JNDI_NAME = "cuba/security/LoginService";
     
-    List<Profile> authenticate(String login, String password, Locale locale) throws LoginException;
+    UserSession login(String login, String password, Locale locale) throws LoginException;
 
     UserSession login(String login, String password, String profileName, Locale locale) throws LoginException;
 

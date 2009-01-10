@@ -29,6 +29,7 @@ create table SEC_USER (
     LOGIN varchar(20),
     PASSWORD varchar(32),
     NAME varchar(255),
+    AD_USER varchar(100),
     primary key (ID)
 );
 
@@ -98,6 +99,7 @@ create table SEC_PROFILE (
     DELETE_TS timestamp,
     DELETED_BY varchar(20),
     NAME varchar(255),
+    IS_DEFAULT smallint,
     USER_ID varchar(36),
     GROUP_ID varchar(36),
     primary key (ID)
@@ -180,11 +182,11 @@ values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', '
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null);
 
-insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, USER_ID, GROUP_ID)
-values ('bf83541f-f610-46f4-a268-dff348347f93', current_timestamp, 0, 'Default', '60885987-1b61-4247-94c7-dff348347f93', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93');
+insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, IS_DEFAULT, USER_ID, GROUP_ID)
+values ('bf83541f-f610-46f4-a268-dff348347f93', current_timestamp, 0, 'Default', 1, '60885987-1b61-4247-94c7-dff348347f93', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93');
 
---insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, USER_ID, GROUP_ID)
---values ('cc1e0bc4-1062-4218-a09f-dff348347f93', current_timestamp, 0, 'Test', '60885987-1b61-4247-94c7-dff348347f93', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93');
+--insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, IS_DEFAULT, USER_ID, GROUP_ID)
+--values ('cc1e0bc4-1062-4218-a09f-dff348347f93', current_timestamp, 0, 'Test', 0, '60885987-1b61-4247-94c7-dff348347f93', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93');
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, IS_SUPER)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 1);

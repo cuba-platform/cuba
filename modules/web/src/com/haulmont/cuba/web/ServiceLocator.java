@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.app.BasicService;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -19,6 +21,7 @@ public class ServiceLocator
     private static ServiceLocator instance;
 
     private Context jndiContext;
+    private BasicService basicService;
 
     private static ServiceLocator getInstance() {
         if (instance == null) {
@@ -29,6 +32,10 @@ public class ServiceLocator
 
     public static <T> T lookup(String jndiName) {
         return (T) getInstance().doLookup(jndiName);
+    }
+
+    public static BasicService getBasicService() {
+        return getInstance().doGetBasicService();
     }
 
     private Context getJndiContext() {
@@ -48,5 +55,12 @@ public class ServiceLocator
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private BasicService doGetBasicService() {
+        if (basicService == null) {
+            basicService = (BasicService) doLookup(BasicService.JNDI_NAME);
+        }
+        return basicService;
     }
 }

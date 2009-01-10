@@ -20,4 +20,45 @@
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
+    <filter>
+        <filter-name>CubaHttpFilter</filter-name>
+        <filter-class>com.haulmont.cuba.web.sys.CubaHttpFilter</filter-class>
+
+        <init-param>
+            <param-name>jcifs.http.domainController</param-name>
+            <param-value>192.168.1.2</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>jcifs.smb.client.domain</param-name>
+            <param-value>HAULMONT</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jcifs.smb.client.username</param-name>
+            <param-value>admanager</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jcifs.smb.client.password</param-name>
+            <param-value>&lt;fhcerCtkYfCer25682</param-value>
+        </init-param>
+
+        <!--<init-param>-->
+            <!--<param-name>jcifs.http.enableBasic</param-name>-->
+            <!--<param-value>true</param-value>-->
+        <!--</init-param>-->
+        <!--<init-param>-->
+            <!--<param-name>jcifs.http.insecureBasic</param-name>-->
+            <!--<param-value>true</param-value>-->
+        <!--</init-param>-->
+        <init-param>
+            <param-name>jcifs.util.loglevel</param-name>
+            <param-value>2</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CubaHttpFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
 </web-app>

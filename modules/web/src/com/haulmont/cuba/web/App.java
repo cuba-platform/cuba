@@ -13,25 +13,30 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.gui.config.ActionsConfig;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.resource.Messages;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.itmill.toolkit.Application;
+import com.itmill.toolkit.ui.Window;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
+import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.gwt.server.WebBrowser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.SystemUtils;
 import org.jboss.security.SecurityAssociation;
 import org.jboss.security.SimplePrincipal;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.List;
 import java.io.InputStream;
 
-public class App extends Application implements ConnectionListener
+public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
 {
     private Log log = LogFactory.getLog(App.class);
 
@@ -60,19 +65,23 @@ public class App extends Application implements ConnectionListener
     public void init() {
         log.debug("Initializing application");
 
-        AppWindow appWindow = createAppWindow();
-        connection.addListener(appWindow);
-
         ApplicationContext appContext = getContext();
-        appContext.addTransactionListener(new RequestListener());
+        appContext.addTransactionListener(this);
+
+        LoginWindow window = createLoginWindow();
+        setMainWindow(window);
     }
 
     public static App getInstance() {
         return currentApp.get();
     }
 
+    protected LoginWindow createLoginWindow() {
+        return new LoginWindow(connection);
+    }
+
     protected AppWindow createAppWindow() {
-        return new AppWindow(this);
+        return new AppWindow(connection);
     }
 
     public AppWindow getAppWindow() {
@@ -126,8 +135,14 @@ public class App extends Application implements ConnectionListener
     }
 
     public void connectionStateChanged(Connection connection) {
-        if (!connection.isConnected()) {
+        if (connection.isConnected()) {
+            Window window = createAppWindow();
+            setMainWindow(window);
+        }
+        else {
             menuConfig = null;
+            Window window = createLoginWindow();
+            setMainWindow(window);
         }
     }
 
@@ -136,41 +151,44 @@ public class App extends Application implements ConnectionListener
         getAppLog().log(event);
     }
 
-    private class RequestListener implements ApplicationContext.TransactionListener
-    {
-        public void transactionStart(Application application, Object transactionData) {
-            if (log.isTraceEnabled()) {
-                HttpServletRequest request = (HttpServletRequest) transactionData;
-                log.trace("requestStart: " + request + " from " + request.getRemoteAddr());
+    public void transactionStart(Application application, Object transactionData) {
+        HttpServletRequest request = (HttpServletRequest) transactionData;
+        if (log.isTraceEnabled()) {
+            log.trace("requestStart: [@" + Integer.toHexString(System.identityHashCode(request)) + "] " +
+                    request.getRequestURI() +
+                    (request.getUserPrincipal() != null ? " [" + request.getUserPrincipal() + "]" : "") +
+                    " from " + request.getRemoteAddr());
+        }
+        if (application == App.this) {
+            currentApp.set((App) application);
+        }
+        Terminal terminal = application.getMainWindow().getTerminal();
+        if (terminal != null) {
+            if (terminal instanceof WebBrowser) {
+                Locale locale = ((WebBrowser) terminal).getLocale();
+                application.setLocale(locale);
             }
-            if (application == App.this) {
-                currentApp.set((App) application);
+            else {
+                log.error("Unsupported terminal type: " + terminal);
             }
+        }
+
+        if (connection.isConnected()) {
             UserSession userSession = connection.getSession();
             if (userSession != null) {
                 SecurityAssociation.setPrincipal(new SimplePrincipal(userSession.getLogin()));
                 SecurityAssociation.setCredential(userSession.getId().toString().toCharArray());
             }
-            Terminal terminal = application.getMainWindow().getTerminal();
-            if (terminal != null) {
-                if (terminal instanceof WebBrowser) {
-                    Locale locale = ((WebBrowser) terminal).getLocale();
-                    application.setLocale(locale);
-                }
-                else {
-                    log.error("Unsupported terminal type: " + terminal);
-                }
-            }
         }
+    }
 
-        public void transactionEnd(Application application, Object transactionData) {
-            if (application == App.this) {
-                currentApp.set(null);
-                currentApp.remove();
-            }
-            if (log.isTraceEnabled()) {
-                log.trace("requestEnd: " + transactionData);
-            }
+    public void transactionEnd(Application application, Object transactionData) {
+        if (application == App.this) {
+            currentApp.set(null);
+            currentApp.remove();
+        }
+        if (log.isTraceEnabled()) {
+            log.trace("requestEnd: [@" + Integer.toHexString(System.identityHashCode(transactionData)) + "]");
         }
     }
 }

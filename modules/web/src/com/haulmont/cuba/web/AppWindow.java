@@ -13,21 +13,24 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.resource.Messages;
 import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.terminal.ExternalResource;
 
 import java.util.Locale;
 
-public class AppWindow extends Window implements ConnectionListener
+public class AppWindow extends Window
 {
+    private Connection connection;
+
     private ExpandLayout rootLayout;
     private TabSheet tabSheet;
 
-    public AppWindow(App app) {
+    public AppWindow(Connection connection) {
         super();
+        this.connection = connection;
         setCaption(getAppCaption());
-        app.setMainWindow(this);
 
-        createRootLayout();
-        initWelcomeLayout();
+        rootLayout = new ExpandLayout(OrderedLayout.ORIENTATION_VERTICAL);
+        initLayout();
         setLayout(rootLayout);
     }
 
@@ -43,19 +46,14 @@ public class AppWindow extends Window implements ConnectionListener
         return tabSheet;
     }
 
-    public App getApp() {
-        return (App) getApplication();
-    }
+    protected void initLayout() {
+        rootLayout.setMargin(true);
+        rootLayout.setSpacing(true);
 
-    protected void initWelcomeLayout() {
-        Label label = new Label(Messages.getString("welcomeLabel", Locale.getDefault()));
-        rootLayout.addComponent(label);
+        ExpandLayout titleLayout = new ExpandLayout(ExpandLayout.ORIENTATION_HORIZONTAL);
+        titleLayout.setSpacing(true);
+        titleLayout.setHeight(-1);
 
-        LoginDialog dialog = new LoginDialog(this, getApp().getConnection());
-        dialog.show();
-    }
-
-    protected void initMainLayout() {
         Button navBtn = new Button(Messages.getString("navBtn"),
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
@@ -65,17 +63,35 @@ public class AppWindow extends Window implements ConnectionListener
                 }
         );
         navBtn.setStyleName(Button.STYLE_LINK);
+        titleLayout.addComponent(navBtn);
 
-        Label label = new Label(String.format(Messages.getString("loggedInLabel"), getApp().getConnection().getSession().getName()));
+        Label label = new Label(String.format(Messages.getString("loggedInLabel"),
+                connection.getSession().getName(), connection.getSession().getProfile()));
+        titleLayout.addComponent(label);
+
+        Button profileBtn = new Button(Messages.getString("profileBtn"),
+                new Button.ClickListener()
+                {
+                    public void buttonClick(Button.ClickEvent event) {
+                        ChangeProfileWindow window = new ChangeProfileWindow();
+                        window.center();
+                        addWindow(window);
+                    }
+                }
+        );
+        profileBtn.setStyleName(Button.STYLE_LINK);
+        titleLayout.addComponent(profileBtn);
 
         Button logoutBtn = new Button(Messages.getString("logoutBtn"),
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
-                        getApp().getConnection().logout();
+                        connection.logout();
+                        open(new ExternalResource(App.getInstance().getURL()));
                     }
                 }
         );
         logoutBtn.setStyleName(Button.STYLE_LINK);
+        titleLayout.addComponent(logoutBtn);
 
         Button viewLogBtn = new Button(Messages.getString("viewLogBtn"),
                 new Button.ClickListener()
@@ -87,14 +103,8 @@ public class AppWindow extends Window implements ConnectionListener
                 }
         );
         viewLogBtn.setStyleName(Button.STYLE_LINK);
-
-        ExpandLayout titleLayout = new ExpandLayout(ExpandLayout.ORIENTATION_HORIZONTAL);
-        titleLayout.setSpacing(true);
-        titleLayout.setHeight(-1);
-        titleLayout.addComponent(navBtn);
-        titleLayout.addComponent(label);
-        titleLayout.addComponent(logoutBtn);
         titleLayout.addComponent(viewLogBtn);
+
         titleLayout.expand(navBtn);
 
         rootLayout.addComponent(titleLayout);
@@ -105,22 +115,4 @@ public class AppWindow extends Window implements ConnectionListener
         rootLayout.expand(tabSheet);
     }
 
-    public void connectionStateChanged(Connection connection) {
-        createRootLayout();
-
-        if (connection.isConnected()) {
-            initMainLayout();
-        }
-        else {
-            initWelcomeLayout();
-        }
-
-        setLayout(rootLayout);
-    }
-
-    private void createRootLayout() {
-        rootLayout = new ExpandLayout(OrderedLayout.ORIENTATION_VERTICAL);
-        rootLayout.setMargin(true);
-        rootLayout.setSpacing(true);
-    }
 }

@@ -17,11 +17,7 @@
           <setting name="EXPLODED_ENABLED" value="false" />
           <setting name="JAR_URL" value="file://" />
           <setting name="JAR_ENABLED" value="false" />
-          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
-          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
           <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
-          <setting name="RUN_JASPER_VALIDATION" value="false" />
-          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
         </building>
         <packaging>
           <containerElement type="module" name="web-war">
@@ -31,12 +27,14 @@
         </packaging>
       </configuration>
     </facet>
-    <facet type="gwt" name="GWT" implicit="true">
+    <facet type="gwt" name="GWT">
       <configuration>
-        <setting name="gwtSdkUrl" value="" />
-        <setting name="gwtScriptOutputStyle" value="DETAILED" />
-        <setting name="runGwtCompilerOnMake" value="true" />
+        <setting name="additionalCompilerParameters" value="" />
         <setting name="compilerMaxHeapSize" value="128" />
+        <setting name="compilerOutputPath" value="" />
+        <setting name="gwtScriptOutputStyle" value="DETAILED" />
+        <setting name="gwtSdkUrl" value="" />
+        <setting name="runGwtCompilerOnMake" value="true" />
       </configuration>
     </facet>
   </component>
@@ -61,7 +59,7 @@
     <orderEntry type="module" module-name="web" />
     <orderEntry type="module" module-name="gui" />
     <orderEntry type="library" name="gwt" level="project" />
-    <orderEntryProperties />
   </component>
+  <component name="libraryTable" />
 </module>
 

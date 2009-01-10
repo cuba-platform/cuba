@@ -11,19 +11,16 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.security.entity.Profile;
+import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.security.app.LoginWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.security.SecurityAssociation;
 
 import javax.ejb.Stateless;
-import java.util.List;
-import java.util.Locale;
 import java.security.Principal;
+import java.util.Locale;
 
 @Stateless(name = LoginServiceRemote.JNDI_NAME)
 public class LoginServiceBean implements LoginService, LoginServiceRemote
@@ -34,21 +31,59 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
         return Locator.lookupLocal(LoginWorker.JNDI_NAME);
     }
 
-    public List<Profile> authenticate(String login, String password, Locale locale) throws LoginException {
+    public UserSession login(String login, String password, String profileName, Locale locale) throws LoginException {
         try {
-            return getLoginWorker().authenticate(login, password, null);
+            return getLoginWorker().login(login, password, profileName, locale);
         } catch (Exception e) {
-            log.error("Authentication error", e);
-            throw new RuntimeException(e);
+            log.error("Login error", e);
+            if (e instanceof LoginException)
+                throw ((LoginException) e);
+            else if (e instanceof RuntimeException)
+                throw ((RuntimeException) e);
+            else
+                throw new RuntimeException(e);
         }
     }
 
-    public UserSession login(String login, String password, String profileName, Locale locale) throws LoginException {
+    public UserSession login(String activeDirectoryUser, String profileName, Locale locale) throws LoginException {
         try {
-            return getLoginWorker().login(login, password, profileName, null);
+            return getLoginWorker().login(activeDirectoryUser, profileName, locale);
         } catch (Exception e) {
             log.error("Login error", e);
-            throw new RuntimeException(e);
+            if (e instanceof LoginException)
+                throw ((LoginException) e);
+            else if (e instanceof RuntimeException)
+                throw ((RuntimeException) e);
+            else
+                throw new RuntimeException(e);
+        }
+    }
+
+    public UserSession loginActiveDirectory(String activeDirectoryUser, Locale locale) throws LoginException {
+        try {
+            return getLoginWorker().loginActiveDirectory(activeDirectoryUser, locale);
+        } catch (Exception e) {
+            log.error("Login error", e);
+            if (e instanceof LoginException)
+                throw ((LoginException) e);
+            else if (e instanceof RuntimeException)
+                throw ((RuntimeException) e);
+            else
+                throw new RuntimeException(e);
+        }
+    }
+
+    public UserSession loginActiveDirectory(String activeDirectoryUser, String profileName, Locale locale) throws LoginException {
+        try {
+            return getLoginWorker().loginActiveDirectory(activeDirectoryUser, profileName, locale);
+        } catch (Exception e) {
+            log.error("Login error", e);
+            if (e instanceof LoginException)
+                throw ((LoginException) e);
+            else if (e instanceof RuntimeException)
+                throw ((RuntimeException) e);
+            else
+                throw new RuntimeException(e);
         }
     }
 

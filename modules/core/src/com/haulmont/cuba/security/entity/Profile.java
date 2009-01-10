@@ -17,6 +17,8 @@ import javax.persistence.*;
 import java.util.Set;
 import java.io.Serializable;
 
+import org.apache.commons.lang.BooleanUtils;
+
 @Entity(name = "sec$Profile")
 @Table(name = "SEC_PROFILE")
 @Listeners({"com.haulmont.cuba.security.listener.ProfileEntityListener"})
@@ -26,6 +28,9 @@ public class Profile extends StandardEntity
 
     @Column(name = "NAME")
     private String name;
+
+    @Column(name = "IS_DEFAULT")
+    private Boolean defaultProfile;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "USER_ID")
@@ -44,6 +49,14 @@ public class Profile extends StandardEntity
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDefaultProfile() {
+        return BooleanUtils.isTrue(defaultProfile);
+    }
+
+    public void setDefaultProfile(boolean defaultProfile) {
+        this.defaultProfile = defaultProfile;
     }
 
     public User getUser() {

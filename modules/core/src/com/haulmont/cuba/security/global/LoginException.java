@@ -12,6 +12,8 @@ package com.haulmont.cuba.security.global;
 
 public class LoginException extends Exception
 {
+    private static final long serialVersionUID = 6144194102176774627L;
+
     public LoginException(String message) {
         super(message);
     }

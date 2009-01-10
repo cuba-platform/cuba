@@ -15,7 +15,7 @@ import com.haulmont.cuba.security.global.LoginServiceRemote;
 import javax.ejb.Local;
 
 @Local
-public interface LoginWorker extends LoginServiceRemote
+public interface LoginWorker extends LoginService
 {
     String JNDI_NAME = "cuba/security/LoginWorker";
 }

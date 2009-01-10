@@ -31,6 +31,9 @@ public class User extends StandardEntity
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "AD_USER", length = 100)
+    private String activeDirectoryUser;
+
     @OneToMany(mappedBy = "user")
     private Set<Profile> profiles;
 
@@ -56,6 +59,14 @@ public class User extends StandardEntity
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getActiveDirectoryUser() {
+        return activeDirectoryUser;
+    }
+
+    public void setActiveDirectoryUser(String activeDirectoryUser) {
+        this.activeDirectoryUser = activeDirectoryUser;
     }
 
     public Set<Profile> getProfiles() {

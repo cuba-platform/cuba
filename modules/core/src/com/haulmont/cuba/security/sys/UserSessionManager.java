@@ -43,7 +43,8 @@ public class UserSessionManager
             roleNames.add(profileRole.getRole().getName());
             roles.add(profileRole.getRole());
         }
-        UserSession session = new UserSession(user, roleNames.toArray(new String[roleNames.size()]), locale);
+        UserSession session = new UserSession(
+                user, profile.getName(), roleNames.toArray(new String[roleNames.size()]), locale);
         compilePermissions(session, roles);
         compileConstraints(session, profile.getGroup());
         sessions.add(session);

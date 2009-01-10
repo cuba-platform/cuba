@@ -10,13 +10,11 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.security.entity.Profile;
+import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.app.LoginService;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Connection
@@ -25,6 +23,8 @@ public class Connection
 
     private boolean connected;
     private UserSession session;
+    private String login;
+    private String password;
 
     public boolean isConnected() {
         return connected;
@@ -34,38 +34,55 @@ public class Connection
         return session;
     }
 
-    public List<Profile> authenticate(String login, String password) {
+    private LoginService getLoginService() {
         LoginService ls = ServiceLocator.lookup(LoginService.JNDI_NAME);
-        List<Profile> profiles;
-        try {
-            profiles = ls.authenticate(login, password, App.getInstance().getLocale());
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        }
-        return profiles;
+        return ls;
     }
 
-    public void login(String login, String password, String profileName) {
-        LoginService ls = ServiceLocator.lookup(LoginService.JNDI_NAME);
-        try {
-            session = ls.login(login, password, profileName, App.getInstance().getLocale());
-        } catch (LoginException e) {
-            throw new RuntimeException(e);
-        }
+    public void login(String login, String password) throws LoginException {
+        login(login, password, null);
+    }
+
+    public void login(String login, String password, String profileName) throws LoginException {
+        session = getLoginService().login(login, password, profileName, App.getInstance().getLocale());
         connected = true;
-        fireListeners();
+        this.login = login;
+        this.password = password;
+        fireConnectionListeners();
+    }
+
+    public void loginActiveDirectory(String activeDirectoryUser) throws LoginException {
+        loginActiveDirectory(activeDirectoryUser, null);
+    }
+
+    public void loginActiveDirectory(String activeDirectoryUser, String profileName) throws LoginException {
+        session = getLoginService().loginActiveDirectory(activeDirectoryUser, profileName, App.getInstance().getLocale());
+        connected = true;
+        this.login = activeDirectoryUser;
+        this.password = null;
+        fireConnectionListeners();
+    }
+
+    public void changeProfile(String profile) throws LoginException {
+        logout();
+        if (password != null) {
+            login(login, password, profile);
+        }
+        else {
+            loginActiveDirectory(login, profile);
+        }
     }
 
     public void logout() {
         if (!connected)
             return;
 
-        LoginService ls = ServiceLocator.lookup(LoginService.JNDI_NAME);
+        LoginService ls = getLoginService();
         ls.logout();
 
         connected = false;
         session = null;
-        fireListeners();
+        fireConnectionListeners();
     }
 
     public void addListener(ConnectionListener listener) {
@@ -76,7 +93,7 @@ public class Connection
         listeners.remove(listener);
     }
 
-    private void fireListeners() {
+    private void fireConnectionListeners() {
         for (ConnectionListener listener : listeners) {
             listener.connectionStateChanged(this);
         }
