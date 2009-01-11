@@ -17,6 +17,7 @@ import com.itmill.toolkit.ui.Panel;
 public class GroupBox extends Panel implements Component, Component.Container, Component.HasCaption {
     private int verticalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
     private int horizontalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
+    private String id;
 
     public GroupBox() {
         setLayout(new OrderedLayout(OrderedLayout.ORIENTATION_VERTICAL));
@@ -37,6 +38,14 @@ public class GroupBox extends Panel implements Component, Component.Container, C
 
     public void remove(Component component) {
         getLayout().removeComponent(ComponentsHelper.unwrap(component));
+    }
+
+    public String getId() {
+        return id;  
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getVerticalAlIlignment() {

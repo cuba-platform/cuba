@@ -18,6 +18,7 @@ public class TextBoxLoader extends ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final TextBox textBox = factory.createComponent("textbox");
 
+        loadId(textBox, element);
         loadFlex(textBox, element);
         loadCaption(textBox, element);
 

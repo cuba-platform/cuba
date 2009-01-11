@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.Component;
 class AbstractContainer extends OrderedLayout implements Component, Component.Container {
     private int verticalAlIlignment = AlignmentHandler.ALIGNMENT_TOP;
     private int horizontalAlIlignment = AlignmentHandler.ALIGNMENT_LEFT;
+    private String id;
 
     public AbstractContainer(int orientation) {
         super(orientation);
@@ -29,6 +30,14 @@ class AbstractContainer extends OrderedLayout implements Component, Component.Co
 
     public void remove(Component component) {
         removeComponent(ComponentsHelper.unwrap(component));
+    }
+
+    public String getId() {
+        return id; 
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getVerticalAlIlignment() {

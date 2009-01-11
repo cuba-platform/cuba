@@ -13,10 +13,19 @@ import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.Layout;
 
 class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Component, Component.Wrapper {
+    private String id;
     protected T component;
 
     private int verticalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
     private int horizontalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public int getVerticalAlIlignment() {
         return verticalAlIlignment;

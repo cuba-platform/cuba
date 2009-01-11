@@ -10,23 +10,32 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.gui.config.Action;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
+import com.haulmont.cuba.gui.xml.data.DsContextLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.web.ui.Screen;
 import com.haulmont.cuba.web.ui.ScreenContext;
 import com.haulmont.cuba.web.ui.ScreenTitlePane;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
-import com.haulmont.cuba.gui.config.Action;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.ui.AbstractLayout;
 import com.itmill.toolkit.ui.ExpandLayout;
 import com.itmill.toolkit.ui.TabSheet;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.List;
 
 public class ScreenManager
 {
@@ -132,15 +141,52 @@ public class ScreenManager
         }
     }
 
+    private Map<String, Document> descriptorsCache = new HashMap<String, Document>();
+
+    protected Document parseDescriptor(String template) {
+        Document document = descriptorsCache.get(template);
+        if (document == null) {
+            final InputStream stream = getClass().getResourceAsStream(template);
+
+            SAXReader reader = new SAXReader();
+            try {
+                document = reader.read(stream);
+            } catch (DocumentException e) {
+                throw new RuntimeException(e);
+            }
+
+            final Element metadataContextElement = document.getRootElement().element("metadataContext");
+            if (metadataContextElement != null) {
+                final List<Element> viewsElements = metadataContextElement.elements("deployViews");
+                for (Element viewsElement : viewsElements) {
+                    final String resource = viewsElement.attributeValue("name");
+                    MetadataProvider.getViewRepository().deployViews(getClass().getResourceAsStream(resource));
+                }
+            }
+
+            descriptorsCache.put(template, document);
+        }
+
+        return document;
+    }
+
     private Screen createScreen(Action action) {
         final Element descriptor = action.getDescriptor();
         String className = descriptor.attributeValue("class");
 
         if (StringUtils.isBlank(className)) {
             final String template = descriptor.attributeValue("template");
-            final LayoutLoader loader = new LayoutLoader(new WebComponentsFactory(), LayoutLoaderConfig.getWindowLoaders());
 
-            return (Screen) loader.loadComponent(getClass().getResource(template));
+            Document document = parseDescriptor(template);
+            final Element rootElement = document.getRootElement();
+
+            final DsContextLoader dsContextLoader = new DsContextLoader(new DatasourceFactoryImpl());
+            final DsContext dsContext = dsContextLoader.loadDatasources(rootElement.element("dsContext"));
+
+            final LayoutLoader layoutLoader = new LayoutLoader(new WebComponentsFactory(), LayoutLoaderConfig.getWindowLoaders(), dsContext);
+            final Screen screen = (Screen) layoutLoader.loadComponent(rootElement.element("layout"));
+
+            return screen;
         } else {
             try {
                 Class c = Thread.currentThread().getContextClassLoader().loadClass(className);

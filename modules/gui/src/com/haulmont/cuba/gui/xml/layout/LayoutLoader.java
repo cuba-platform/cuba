@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -22,10 +23,12 @@ import java.net.URL;
 public class LayoutLoader {
     private ComponentsFactory factory;
     private LayoutLoaderConfig config;
+    private DsContext dsContext;
 
-    public LayoutLoader(ComponentsFactory factory, LayoutLoaderConfig config) {
+    public LayoutLoader(ComponentsFactory factory, LayoutLoaderConfig config, DsContext dsContext) {
         this.factory = factory;
         this.config = config;
+        this.dsContext = dsContext;
     }
 
     public Component loadComponent(URL uri) {
@@ -42,9 +45,7 @@ public class LayoutLoader {
 
             Element element = doc.getRootElement();
 
-            ComponentLoader loader = getLoader(element);
-
-            return loader.loadComponent(factory, element);
+            return loadComponent(element);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -59,8 +60,8 @@ public class LayoutLoader {
         ComponentLoader loader;
         try {
             final Constructor<? extends ComponentLoader> constructor =
-                    loaderClass.getConstructor(LayoutLoaderConfig.class, ComponentsFactory.class);
-            loader = constructor.newInstance(config, factory);
+                    loaderClass.getConstructor(LayoutLoaderConfig.class, ComponentsFactory.class, DsContext.class);
+            loader = constructor.newInstance(config, factory, dsContext);
         } catch (Throwable e) {
             loader = loaderClass.newInstance();
         }

@@ -9,11 +9,14 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
-import org.dom4j.Element;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.data.DsContext;
+import org.dom4j.Element;
 
 public interface ComponentLoader {
 
-    Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException;
+    Component loadComponent(
+            ComponentsFactory factory,
+            Element element
+    ) throws InstantiationException, IllegalAccessException;
 }

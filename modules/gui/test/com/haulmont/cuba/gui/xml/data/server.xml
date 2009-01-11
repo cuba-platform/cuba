@@ -1,0 +1,9 @@
+<datasources>
+    <datasource id="server"
+        class="com.haulmont.cuba.core.entity.Server"
+        view="ServerView"
+        item="${context:server}"
+    >
+        <!--<collection-datasource id="termials" property="terminals" inverseProperty="airport"/>-->
+    </datasource>
+</datasources>

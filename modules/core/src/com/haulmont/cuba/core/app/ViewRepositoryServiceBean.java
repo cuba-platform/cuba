@@ -11,6 +11,9 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.ViewRepositoryServiceRemote;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.chile.core.model.MetaClass;
@@ -24,17 +27,13 @@ import java.io.StringReader;
 
 @Stateless(name = ViewRepositoryService.JNDI_NAME)
 @Interceptors({ServiceInterceptor.class})
-public class ViewRepositoryServiceBean implements ViewRepositoryService
+public class ViewRepositoryServiceBean implements ViewRepositoryService, ViewRepositoryServiceRemote
 {
-    private ViewRepository repository;
-
     private ViewRepository getRepository() {
-        if (repository == null)
-            repository = ViewRepository.getInstance();
-        return repository;
+        return MetadataProvider.getViewRepository();
     }
 
-    public View getView(Class<? extends BaseEntity> entityClass, String name) {
+    public View getView(Class entityClass, String name) {
         return getRepository().getView(entityClass, name);
     }
 

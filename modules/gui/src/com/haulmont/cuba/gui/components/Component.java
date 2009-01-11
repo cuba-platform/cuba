@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import org.dom4j.Element;
+
 public interface Component {
 
     interface AlignInfo {
@@ -19,7 +21,10 @@ public interface Component {
         public static final int ALIGNMENT_HORIZONTAL_CENTER = 16;
         public static final int ALIGNMENT_VERTICAL_CENTER = 32;
     }
-    
+
+    String getId();
+    void setId(String id);
+
     int getVerticalAlIlignment();
     void setVerticalAlIlignment(int verticalAlIlignment);
 
@@ -48,5 +53,10 @@ public interface Component {
     interface Sizable extends Component {
         boolean isFlexible();
         void setFlexible(boolean flexible);
+    }
+
+    interface HasXmlDescriptor {
+        Element getXmlDescriptor();
+        void setXmlDescriptor(Element element);
     }
 }

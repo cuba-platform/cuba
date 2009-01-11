@@ -19,25 +19,49 @@ import java.util.HashMap;
 
 public class BasicInvocationContext implements Serializable
 {
-    private static final long serialVersionUID = -6533204272933592530L;
-
-    private Class<? extends BaseEntity> entityClass;
     private Object id;
-    private String queryString;
-    private Map<String, Object> queryParams = new HashMap<String, Object>();
+
+    private MetaClass metaClass;
     private View view;
+    private Query query;
 
-    public Class<? extends BaseEntity> getEntityClass() {
-        return entityClass;
-    }
+    public class Query {
+        private Map<String, Object> parameters = new HashMap<String, Object>();
+        private String queryString;
 
-    public BasicInvocationContext setEntityClass(Class<? extends BaseEntity> entityClass) {
-        this.entityClass = entityClass;
-        return this;
+        public Query(String queryString) {
+            this.queryString = queryString;
+        }
+
+        public void addParameter(String name, Object value) {
+            parameters.put(name, value);
+        }
+
+        public String getQueryString() {
+            return queryString;
+        }
+
+        public Map<String, Object> getParameters() {
+            return parameters;
+        }
+
+        public void setParameters(Map<String, Object> parameters) {
+            this.parameters.putAll(parameters);
+        }
     }
 
     public MetaClass getMetaClass() {
-        return MetadataProvider.getSession().getClass(entityClass);
+        return metaClass;
+    }
+
+    public BasicInvocationContext setEntityClass(Class<? extends BaseEntity> entityClass) {
+        this.metaClass = MetadataProvider.getSession().getClass(entityClass);
+        return this;
+    }
+
+    public BasicInvocationContext setEntityClass(MetaClass entityClass) {
+        this.metaClass = entityClass;
+        return this;
     }
 
     public Object getId() {
@@ -49,22 +73,18 @@ public class BasicInvocationContext implements Serializable
         return this;
     }
 
-    public String getQueryString() {
-        return queryString;
+    public Query getQuery() {
+        return query;
     }
 
-    public BasicInvocationContext setQueryString(String queryString) {
-        this.queryString = queryString;
-        return this;
+    public void setQuery(Query query) {
+        this.query = query;
     }
 
-    public Map<String, Object> getQueryParams() {
-        return queryParams;
-    }
-
-    public BasicInvocationContext addQueryParam(String name, Object value) {
-        queryParams.put(name, value);
-        return this;
+    public Query setQueryString(String queryString) {
+        final Query query = new Query(queryString);
+        setQuery(query);
+        return query;
     }
 
     public View getView() {

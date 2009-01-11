@@ -21,7 +21,7 @@ public class LayoutLoaderConfig {
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
     static {
-        windowLoaders.registerLoader("window", WindowLoader.class);
+        windowLoaders.registerLoader("layout", WindowLoader.class);
         windowLoaders.registerLoader("hbox", HBoxLoader.class);
         windowLoaders.registerLoader("vbox", VBoxLoader.class);
         windowLoaders.registerLoader("button", ButtonLoader.class);
@@ -29,8 +29,9 @@ public class LayoutLoaderConfig {
         windowLoaders.registerLoader("groupbox", GroupBoxLoader.class);
         windowLoaders.registerLoader("label", LabelLoader.class);
         windowLoaders.registerLoader("textbox", TextBoxLoader.class);
+        windowLoaders.registerLoader("table", TableLoader.class);
 
-        frameLoaders.registerLoader("window", IFrameLoader.class);
+        frameLoaders.registerLoader("layout", IFrameLoader.class);
         frameLoaders.registerLoader("hbox", HBoxLoader.class);
         frameLoaders.registerLoader("vbox", VBoxLoader.class);
         frameLoaders.registerLoader("button", ButtonLoader.class);
@@ -38,6 +39,7 @@ public class LayoutLoaderConfig {
         frameLoaders.registerLoader("groupbox", GroupBoxLoader.class);
         frameLoaders.registerLoader("label", LabelLoader.class);
         frameLoaders.registerLoader("textbox", TextBoxLoader.class);
+        frameLoaders.registerLoader("table", TableLoader.class);
     }
 
     public static LayoutLoaderConfig getWindowLoaders() {

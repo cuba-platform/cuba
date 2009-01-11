@@ -29,6 +29,14 @@
     </facet>
     <facet type="gwt" name="GWT">
       <configuration>
+        <setting name="gwtSdkUrl" value="" />
+        <setting name="gwtScriptOutputStyle" value="DETAILED" />
+        <setting name="runGwtCompilerOnMake" value="true" />
+        <setting name="compilerMaxHeapSize" value="128" />
+      </configuration>
+    </facet>
+    <facet type="gwt" name="GWT">
+      <configuration>
         <setting name="additionalCompilerParameters" value="" />
         <setting name="compilerMaxHeapSize" value="128" />
         <setting name="compilerOutputPath" value="" />

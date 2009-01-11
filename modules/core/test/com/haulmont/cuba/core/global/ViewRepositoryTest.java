@@ -8,10 +8,9 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.app;
+package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.CubaTestCase;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 
 import java.io.InputStream;
@@ -22,7 +21,7 @@ public class ViewRepositoryTest extends CubaTestCase
 
     protected void setUp() throws Exception {
         super.setUp();
-        repository = ViewRepository.getInstance();
+        repository = MetadataProvider.getViewRepository();
 
         InputStream stream = ViewRepositoryTest.class.getResourceAsStream("test.view.xml");
         repository.deployViews(stream);
@@ -31,13 +30,13 @@ public class ViewRepositoryTest extends CubaTestCase
     public void testGetView() {
         View view = repository.getView(User.class, "test");
         assertNotNull(view);
-        assertEquals("name", view.getProperties().get(0).getName());
-        assertEquals("login", view.getProperties().get(1).getName());
-        assertEquals("profiles", view.getProperties().get(2).getName());
+        assertNotNull(view.getProperty("name"));
+        assertNotNull(view.getProperty("login"));
+        assertNotNull(view.getProperty("profiles"));
 
-        View profileView = view.getProperties().get(2).getView();
+        View profileView = view.getProperty("profiles").getView();
         assertNotNull(profileView);
-        assertEquals("name", profileView.getProperties().get(0).getName());
+        assertNotNull(view.getProperty("name"));
     }
 
 }

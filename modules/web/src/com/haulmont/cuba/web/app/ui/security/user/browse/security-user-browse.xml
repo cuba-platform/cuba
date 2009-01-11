@@ -1,11 +1,28 @@
-<window>
-    <vbox>
-        <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse-filter.xml" flex="1"/>
-        <vbox>
-            <hbox>
-                <button id="Prev" caption="Previous"/>
-                <button id="Next" caption="Next"/>
-            </hbox>
-        </vbox>
-    </vbox>
-</window>
+<screen>
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <collection-datasource
+            id="users"
+            class="com.haulmont.cuba.security.entity.User"
+            view="browse"
+        >
+            <query>select u from sec$User u</query>
+        </collection-datasource>
+    </dsContext>
+
+    <layout>
+        <hbox>
+            <vbox>
+                <table>
+                    <columns>    
+                        <column id="name" label="Name"/>
+                    </columns>
+                    <rows datasource="users"/>
+                </table>
+            </vbox>
+        </hbox>
+    </layout>
+</screen>

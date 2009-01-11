@@ -30,6 +30,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put("groupbox", GroupBox.class);
         classes.put("textbox", TextBox.class);
         classes.put("iframe", IFrame.class);
+        classes.put("table", Table.class);
     }
 
     public <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException {

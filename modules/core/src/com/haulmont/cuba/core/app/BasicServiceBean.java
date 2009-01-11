@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.app.BasicWorker;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Instance;
 
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -36,39 +37,36 @@ public class BasicServiceBean implements BasicService, BasicServiceRemote
     }
 
     public <T extends BaseEntity> T create(T entity) {
-        checkPermission(entity.getClass(), "create");
+        checkPermission(((Instance) entity).getMetaClass(), "create");
         return getBasicWorker().create(entity);
     }
 
     public <T extends BaseEntity> T update(T entity) {
-        checkPermission(entity.getClass(), "update");
+        checkPermission(((Instance) entity).getMetaClass(), "update");
         return getBasicWorker().update(entity);
     }
 
     public void delete(BasicInvocationContext ctx) {
-        checkPermission(ctx.getEntityClass(), "delete");
+        checkPermission(ctx.getMetaClass(), "delete");
         getBasicWorker().delete(ctx);
     }
 
     public <T extends BaseEntity> T get(BasicInvocationContext ctx) {
-        checkPermission(ctx.getEntityClass(), "view");
+        checkPermission(ctx.getMetaClass(), "view");
         return (T) getBasicWorker().get(ctx);
     }
 
     public <T extends BaseEntity> T load(BasicInvocationContext ctx) {
-        checkPermission(ctx.getEntityClass(), "view");
+        checkPermission(ctx.getMetaClass(), "view");
         return (T) getBasicWorker().load(ctx);
     }
 
     public <T extends BaseEntity> List<T> loadList(BasicInvocationContext ctx) {
-        checkPermission(ctx.getEntityClass(), "view");
+        checkPermission(ctx.getMetaClass(), "view");
         return getBasicWorker().loadList(ctx);
     }
 
-    private void checkPermission(Class<? extends BaseEntity> entityClass, String operation) {
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
-        if (metaClass == null)
-            throw new IllegalStateException("Meta class not found for " + entityClass);
+    private void checkPermission(MetaClass metaClass, String operation) {
         String target = metaClass.getName() + ":" + operation;
         if (!SecurityProvider.currentUserSession().isPermitted(PermissionType.ENTITY_OP, target))
             throw new AccessDeniedException(PermissionType.ENTITY_OP, target);

@@ -1,0 +1,15 @@
+<datasources>
+    <datasource id="user"
+        class="com.haulmont.cuba.security.entity.User"
+        view="UserView"
+        item="${context:user}"
+    />
+
+    <collection-datasource
+        id="profiles"
+        class="com.haulmont.cuba.security.entity.Profile"
+        view="UserView"
+    >
+        <query>select p from Profile where user = ${ds:user}</query>
+    </collection-datasource>
+</datasources>

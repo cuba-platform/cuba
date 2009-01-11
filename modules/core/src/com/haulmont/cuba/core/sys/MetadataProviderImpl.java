@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
@@ -26,12 +27,22 @@ import org.dom4j.Element;
 public class MetadataProviderImpl extends MetadataProvider
 {
     private Session session;
+    private ViewRepository viewRepository;
 
     protected synchronized Session __getSession() {
         if (session == null) {
             initialize();
         }
+
         return session;
+    }
+
+    protected synchronized ViewRepository __getViewRepository() {
+        if (viewRepository == null) {
+            viewRepository = new ViewRepository();
+        }
+
+        return viewRepository;
     }
 
     private void initialize() {

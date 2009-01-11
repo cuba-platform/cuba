@@ -43,5 +43,10 @@ public abstract class MetadataProvider
         return getInstance().__getSession();
     }
 
+    public static ViewRepository getViewRepository() {
+        return getInstance().__getViewRepository();
+    }
+
     protected abstract Session __getSession();
+    protected abstract ViewRepository __getViewRepository();
 }

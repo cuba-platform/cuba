@@ -14,7 +14,7 @@ import com.itmill.toolkit.ui.TextField;
 
 public class TextBox
     extends
-        AbstractComponent<TextField>
+        AbstractField<TextField>
     implements
         com.haulmont.cuba.gui.components.TextBox, Component.Wrapper {
 

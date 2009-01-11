@@ -133,10 +133,10 @@ public class ConstraintTest extends CubaTestCase
         assertEquals(2, constraints.size());
 
         BasicService bs = Locator.lookupLocal(BasicService.JNDI_NAME);
-        BasicInvocationContext ctx = new BasicInvocationContext()
-                .setEntityClass(Group.class)
-                .setQueryString("select g from sec$Group g where g.createTs <= :createTs")
-                .addQueryParam("createTs", new Date());
+
+        BasicInvocationContext ctx = new BasicInvocationContext().setEntityClass(Group.class);
+        ctx.setQueryString("select g from sec$Group g where g.createTs <= :createTs").addParameter("createTs", new Date());
+
         List<Group> list = bs.loadList(ctx);
         assertTrue(list.size() > 0);
     }

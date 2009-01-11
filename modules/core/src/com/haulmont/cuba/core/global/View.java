@@ -13,8 +13,9 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.entity.BaseEntity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class View implements Serializable
 {
@@ -24,7 +25,7 @@ public class View implements Serializable
 
     private String name;
 
-    private List<ViewProperty> properties = new ArrayList<ViewProperty>();
+    private Map<String, ViewProperty> properties = new HashMap<String, ViewProperty>();
 
     private boolean includeSystemProperties;
 
@@ -46,8 +47,8 @@ public class View implements Serializable
         return name;
     }
 
-    public List<ViewProperty> getProperties() {
-        return properties;
+    public Collection<ViewProperty> getProperties() {
+        return properties.values();
     }
 
     public boolean isIncludeSystemProperties() {
@@ -55,12 +56,12 @@ public class View implements Serializable
     }
 
     public View addProperty(String name, View view) {
-        properties.add(new ViewProperty(name, view));
+        properties.put(name, new ViewProperty(name, view));
         return this;
     }
 
     public View addProperty(String name) {
-        properties.add(new ViewProperty(name, null));
+        properties.put(name, new ViewProperty(name, null));
         return this;
     }
 
@@ -70,10 +71,7 @@ public class View implements Serializable
 
         View view = (View) o;
 
-        if (!entityClass.equals(view.entityClass)) return false;
-        if (!name.equals(view.name)) return false;
-
-        return true;
+        return entityClass.equals(view.entityClass) && name.equals(view.name);
     }
 
     public int hashCode() {
@@ -87,5 +85,9 @@ public class View implements Serializable
                 "entityClass=" + entityClass.getName() +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    public ViewProperty getProperty(String name) {
+        return properties.get(name);
     }
 }

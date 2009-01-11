@@ -76,9 +76,10 @@ public class BasicServiceTest extends CubaTestCase
 
         bs.create(server);
 
-        BasicInvocationContext ctx = new BasicInvocationContext()
-                .setEntityClass(Server.class)
-                .setQueryString("select s from " + PersistenceProvider.getEntityName(Server.class) + " s");
+        BasicInvocationContext ctx = new BasicInvocationContext();
+        ctx.setEntityClass(Server.class);
+        ctx.setQueryString("select s from " + PersistenceProvider.getEntityName(Server.class) + " s");
+        
         List<Server> list = bs.loadList(ctx);
         assertTrue(list.size() > 0);
     }

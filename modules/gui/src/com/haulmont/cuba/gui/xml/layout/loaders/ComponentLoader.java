@@ -21,6 +21,11 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
+    protected void loadId(Component component, Element element) {
+        final String id = element.attributeValue("id");
+        component.setId(id);
+    }
+
     protected void loadCaption(Component.HasCaption component, Element element) {
         final String caption = element.attributeValue("caption");
         component.setCaption(caption);

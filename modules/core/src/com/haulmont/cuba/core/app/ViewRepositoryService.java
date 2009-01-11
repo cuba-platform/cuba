@@ -22,7 +22,7 @@ public interface ViewRepositoryService
 {
     String JNDI_NAME = "cuba/core/ViewRepositoryService";
 
-    View getView(Class<? extends BaseEntity> entityClass, String name);
+    View getView(Class entityClass, String name);
 
     View getView(MetaClass metaClass, String name);
 

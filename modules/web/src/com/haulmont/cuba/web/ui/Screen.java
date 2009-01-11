@@ -18,6 +18,7 @@ import com.itmill.toolkit.ui.ExpandLayout;
 public class Screen extends ExpandLayout implements Window
 {
     protected ScreenContext screenContext;
+    private String id;
 
     public Screen() {
         super(ExpandLayout.ORIENTATION_VERTICAL);
@@ -39,6 +40,14 @@ public class Screen extends ExpandLayout implements Window
 
     public boolean onClose() {
         return true;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getVerticalAlIlignment() {

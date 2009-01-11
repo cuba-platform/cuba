@@ -10,10 +10,14 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.View;
 
 import java.util.Collection;
 
 public interface Datasource<T> {
+    String getId();
+    DsContext getDsContext();
+
     enum State {
         NOT_INITIALIZAED,
         INVALID,
@@ -23,9 +27,18 @@ public interface Datasource<T> {
     State getState();
 
     T getItem();
+    void setItem(T item);
+
+    void invalidate();
+    void refresh();
+
     MetaClass getMetaClass();
+    View getView();
 
     Collection<T> getItemsToCreate();
     Collection<T> getItemsToUpdate();
     Collection<T> getItemsToDelete();
+
+    void addListener(DatasourceListener<T> listener);
+    void removeListener(DatasourceListener<T> listener);
 }

@@ -16,9 +16,11 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.SecurityProvider;
 
 import javax.ejb.Stateless;
 import java.util.List;
+import java.util.Map;
 import java.util.Map;
 
 @Stateless(name = BasicWorker.JNDI_NAME)
@@ -38,7 +40,7 @@ public class BasicWorkerBean implements BasicWorker
 
     public void delete(BasicInvocationContext ctx) {
         EntityManager em = PersistenceProvider.getEntityManager();
-        BaseEntity entity = em.find(ctx.getEntityClass(), ctx.getId());
+        BaseEntity entity = em.find(ctx.getMetaClass().getJavaClass(), ctx.getId());
         em.remove(entity);
     }
 
@@ -47,7 +49,7 @@ public class BasicWorkerBean implements BasicWorker
         if (ctx.getView() != null) {
             em.setView(ctx.getView());
         }
-        BaseEntity result = em.find(ctx.getEntityClass(), ctx.getId());
+        BaseEntity result = em.find(ctx.getMetaClass().getJavaClass(), ctx.getId());
         return (T) result;
     }
 
@@ -55,7 +57,7 @@ public class BasicWorkerBean implements BasicWorker
         EntityManager em = PersistenceProvider.getEntityManager();
         String queryString =
                 "select e from " +
-                PersistenceProvider.getEntityName(ctx.getEntityClass()) + " e where e.id = ?1";
+                PersistenceProvider.getEntityName(ctx.getMetaClass().getJavaClass()) + " e where e.id = ?1";
         Query query = em.createQuery(queryString);
         query.setParameter(1, ctx.getId());
         if (ctx.getView() != null) {
@@ -68,12 +70,12 @@ public class BasicWorkerBean implements BasicWorker
     public <T extends BaseEntity> List<T> loadList(BasicInvocationContext ctx) {
         EntityManager em = PersistenceProvider.getEntityManager();
 
-        Query query = em.createQuery(ctx.getQueryString());
+        Query query = em.createQuery(ctx.getQuery().getQueryString());
         SecurityProvider.applyConstraints(query, ctx.getMetaClass().getName());
-
-        for (Map.Entry<String, Object> entry : ctx.getQueryParams().entrySet()) {
+        for (Map.Entry<String, Object> entry : ctx.getQuery().getParameters().entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
+
         if (ctx.getView() != null) {
             query.setView(ctx.getView());
         }

@@ -20,6 +20,8 @@ public interface CollectionDatasource<T, K> extends Datasource<T> {
     void addItem(T item) throws UnsupportedOperationException;
     void removeItem(T item) throws UnsupportedOperationException;
 
+    boolean containsItem(K itemId);
+
     interface Sortable<K> {
         enum Order {
             ASC,
@@ -34,4 +36,7 @@ public interface CollectionDatasource<T, K> extends Datasource<T> {
         Collection<K> getSortedItemIds();
         void sort(SortInfo[] sortInfos);
     }
+
+    String getQuery();
+    void setQuery(String query);
 }

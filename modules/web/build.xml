@@ -11,9 +11,14 @@
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
 
+    <fileset id="chile-jars" dir="${root.dir}/chile/build">
+        <include name="*.jar"/>
+    </fileset>
+
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
+        <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/core"/>
         <pathelement location="${prod.out.dir}/gui"/>
     </path>
@@ -21,6 +26,7 @@
     <path id="test-compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
+        <fileset refid="chile-jars"/>
     </path>
 
     <target name="build-module" depends="base-mod.build-module">

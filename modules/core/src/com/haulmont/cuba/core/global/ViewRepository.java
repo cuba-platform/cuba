@@ -8,47 +8,30 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.app;
+package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.ViewProperty;
-import com.haulmont.cuba.core.global.ViewNotFoundException;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.InputStreamReader;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.dom4j.io.SAXReader;
+import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.entity.BaseEntity;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
+import org.dom4j.io.SAXReader;
 
-public class ViewRepository implements ViewRepositoryMBean
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ViewRepository
 {
     private Map<MetaClass, Map<String, View>> storage =
             new ConcurrentHashMap<MetaClass, Map<String, View>>();
-
-    public static ViewRepository getInstance() {
-        ViewRepositoryMBean mbean = Locator.lookupMBean(ViewRepositoryMBean.class, ViewRepositoryMBean.OBJECT_NAME);
-        return mbean.getImplementation();
-    }
-
-    public void create() {
-    }
-
-    public ViewRepository getImplementation() {
-        return this;
-    }
 
     public View getView(Class<? extends BaseEntity> entityClass, String name) {
         MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
@@ -141,7 +124,7 @@ public class ViewRepository implements ViewRepositoryMBean
                         );
                 }
             }
-            view.getProperties().add(new ViewProperty(propName, refView));
+            view.addProperty(propName, refView);
         }
         storeView(metaClass, view);
         return view;

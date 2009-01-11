@@ -15,17 +15,18 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
-    public FrameLoader(LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(config, factory);
+    public FrameLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
+        super(config, factory, dsContext);
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final String src = element.attributeValue("src");
-        final LayoutLoader loader = new LayoutLoader(factory, LayoutLoaderConfig.getFrameLoaders());
+        final LayoutLoader loader = new LayoutLoader(factory, LayoutLoaderConfig.getFrameLoaders(), dsContext);
 
         final IFrame frame = (IFrame) loader.loadComponent(getClass().getResource(src));
         loadAlign(frame, element);
