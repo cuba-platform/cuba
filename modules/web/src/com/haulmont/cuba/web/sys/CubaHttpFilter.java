@@ -10,22 +10,42 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.web.Configuration;
+import com.haulmont.cuba.web.Properties;
 import jcifs.http.NtlmHttpFilter;
+import jcifs.Config;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 
+import org.apache.commons.lang.StringUtils;
+
 public class CubaHttpFilter extends NtlmHttpFilter
 {
+    public void init(FilterConfig filterConfig) throws ServletException {
+        String s = System.getProperty(Properties.AD_DOMAIN_CONTROLLER);
+        if (!StringUtils.isBlank(s))
+            Config.setProperty("jcifs.http.domainController", s);
+
+        s = System.getProperty(Properties.AD_DOMAIN);
+        if (!StringUtils.isBlank(s))
+            Config.setProperty("jcifs.smb.client.domain", s);
+
+        s = System.getProperty(Properties.AD_DOMAIN_USER);
+        if (!StringUtils.isBlank(s))
+            Config.setProperty("jcifs.smb.client.username", s);
+
+        s = System.getProperty(Properties.AD_DOMAIN_PASSWORD);
+        if (!StringUtils.isBlank(s))
+            Config.setProperty("jcifs.smb.client.password", s);
+
+        super.init(filterConfig);
+    }
+
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (Configuration.useNtlmAuthentication()) {
+        if (ActiveDirectoryHelper.useActiveDirectory()) {
             HttpServletRequest req = (HttpServletRequest)request;
             HttpServletResponse resp = (HttpServletResponse)response;
 

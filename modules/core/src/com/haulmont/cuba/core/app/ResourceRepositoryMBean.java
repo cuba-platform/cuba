@@ -16,6 +16,8 @@ public interface ResourceRepositoryMBean
 
     void create();
 
+    void start();
+
     ResourceRepository getImplementation();
 
     String getContent();
@@ -25,4 +27,6 @@ public interface ResourceRepositoryMBean
     void evictAll();
 
     String getResAsString(String name);
+
+    String loadSystemProperties();
 }

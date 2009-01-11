@@ -29,10 +29,12 @@
     </facet>
     <facet type="gwt" name="GWT">
       <configuration>
-        <setting name="gwtSdkUrl" value="" />
-        <setting name="gwtScriptOutputStyle" value="DETAILED" />
-        <setting name="runGwtCompilerOnMake" value="true" />
+        <setting name="additionalCompilerParameters" value="" />
         <setting name="compilerMaxHeapSize" value="128" />
+        <setting name="compilerOutputPath" value="" />
+        <setting name="gwtScriptOutputStyle" value="DETAILED" />
+        <setting name="gwtSdkUrl" value="" />
+        <setting name="runGwtCompilerOnMake" value="true" />
       </configuration>
     </facet>
     <facet type="gwt" name="GWT">
@@ -68,6 +70,5 @@
     <orderEntry type="module" module-name="gui" />
     <orderEntry type="library" name="gwt" level="project" />
   </component>
-  <component name="libraryTable" />
 </module>
 

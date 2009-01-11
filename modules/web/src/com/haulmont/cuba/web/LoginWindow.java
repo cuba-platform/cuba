@@ -10,22 +10,30 @@
  */
 package com.haulmont.cuba.web;
 
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.terminal.ExternalResource;
 import com.haulmont.cuba.security.global.LoginException;
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.web.resource.Messages;
+import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.itmill.toolkit.Application;
+import com.itmill.toolkit.service.ApplicationContext;
+import com.itmill.toolkit.terminal.ExternalResource;
+import com.itmill.toolkit.ui.*;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 
-public class LoginWindow extends Window
+import javax.servlet.http.HttpServletRequest;
+
+public class LoginWindow extends Window implements ApplicationContext.TransactionListener
 {
     private Connection connection;
 
     private TextField loginField;
     private TextField passwdField;
 
-    public LoginWindow(Connection connection) {
+    public LoginWindow(App app, Connection connection) {
         super("CUBA Login");
         this.connection = connection;
+
+        app.getContext().addTransactionListener(this);
 
         OrderedLayout layout = new FormLayout();
         layout.setSpacing(true);
@@ -51,29 +59,54 @@ public class LoginWindow extends Window
     }
 
     private void initFields() {
-        String defaultUser = System.getProperty("cuba.LoginDialog.defaultUser");
-        if (!StringUtils.isBlank(defaultUser))
-            loginField.setValue(defaultUser);
-        else
+        if (ActiveDirectoryHelper.useActiveDirectory()) {
             loginField.setValue(null);
+            passwdField.setValue("");
+        }
+        else {
+            String defaultUser = System.getProperty(Properties.DEF_USER);
+            if (!StringUtils.isBlank(defaultUser))
+                loginField.setValue(defaultUser);
+            else
+                loginField.setValue("");
 
-        String defaultPassw = System.getProperty("cuba.LoginDialog.defaultPassword");
-        if (!StringUtils.isBlank(defaultPassw))
-            passwdField.setValue(defaultPassw);
-        else
-            passwdField.setValue(null);
+            String defaultPassw = System.getProperty(Properties.DEF_PASSWORD);
+            if (!StringUtils.isBlank(defaultPassw))
+                passwdField.setValue(defaultPassw);
+            else
+                passwdField.setValue("");
+        }
     }
 
-    private class SubmitListener implements Button.ClickListener
+    public void transactionStart(Application application, Object transactionData) {
+        HttpServletRequest request = (HttpServletRequest) transactionData;
+        if (request.getUserPrincipal() != null
+                && ActiveDirectoryHelper.useActiveDirectory()
+                && loginField.getValue() == null)
+        {
+            loginField.setValue(request.getUserPrincipal().getName());
+        }
+    }
+
+    public void transactionEnd(Application application, Object transactionData) {
+    }
+
+    protected class SubmitListener implements Button.ClickListener
     {
         public void buttonClick(Button.ClickEvent event) {
             String login = (String) loginField.getValue();
-            String passwd = DigestUtils.md5Hex((String) passwdField.getValue());
             try {
-                connection.login(login, passwd);
+                if (ActiveDirectoryHelper.useActiveDirectory()) {
+                    ActiveDirectoryHelper.authenticate(login, (String) passwdField.getValue());
+                    connection.loginActiveDirectory(login);
+                }
+                else {
+                    String passwd = DigestUtils.md5Hex((String) passwdField.getValue());
+                    connection.login(login, passwd);
+                }
                 open(new ExternalResource(App.getInstance().getURL()));
             } catch (LoginException e) {
-                showNotification(e.getMessage());
+                showNotification(Messages.getString("loginWindow.loginFailed"), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
             }
         }
     }

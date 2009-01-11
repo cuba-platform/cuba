@@ -81,10 +81,9 @@ public class ChangeProfileWindow extends Window
     private void fillItems(ListSelect select) {
         BasicService bs = ServiceLocator.getBasicService();
         UserSession userSession = App.getInstance().getConnection().getSession();
-        BasicInvocationContext ctx = new BasicInvocationContext()
-                .setEntityClass(Profile.class)
-                .setQueryString("select p from sec$Profile p where p.user.id = :userId")
-                .addQueryParam("userId", userSession.getUserId());
+        BasicInvocationContext ctx = new BasicInvocationContext().setEntityClass(Profile.class);
+        ctx.setQueryString("select p from sec$Profile p where p.user.id = :userId")
+                .addParameter("userId", userSession.getUserId());
         List<Profile> list = bs.loadList(ctx);
         for (Profile profile : list) {
             if (!profile.getName().equals(userSession.getProfile())) {

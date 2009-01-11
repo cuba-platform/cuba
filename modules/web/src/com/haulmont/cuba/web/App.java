@@ -10,31 +10,28 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.app.ResourceRepositoryService;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.gui.config.ActionsConfig;
 import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.resource.Messages;
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
+import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.itmill.toolkit.Application;
-import com.itmill.toolkit.ui.Window;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
-import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.gwt.server.WebBrowser;
+import com.itmill.toolkit.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.SystemUtils;
 import org.jboss.security.SecurityAssociation;
 import org.jboss.security.SimplePrincipal;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.List;
-import java.io.InputStream;
 
 public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
 {
@@ -50,6 +47,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private AppLog appLog;
 
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
+
+    private boolean principalIsWrong;
 
     static {
         SecurityAssociation.setServer();
@@ -77,7 +76,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     protected LoginWindow createLoginWindow() {
-        return new LoginWindow(connection);
+        return new LoginWindow(this, connection);
     }
 
     protected AppWindow createAppWindow() {
@@ -170,6 +169,20 @@ public class App extends Application implements ConnectionListener, ApplicationC
             }
             else {
                 log.error("Unsupported terminal type: " + terminal);
+            }
+        }
+
+        if (!connection.isConnected()
+                && request.getUserPrincipal() != null
+                && !principalIsWrong
+                && ActiveDirectoryHelper.useActiveDirectory())
+        {
+            String userName = request.getUserPrincipal().getName();
+            try {
+                connection.loginActiveDirectory(userName);
+                principalIsWrong = false;
+            } catch (LoginException e) {
+                principalIsWrong = true;
             }
         }
 
