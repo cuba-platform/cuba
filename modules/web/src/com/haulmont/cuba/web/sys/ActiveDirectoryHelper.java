@@ -11,14 +11,14 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.Properties;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.resource.Messages;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import jcifs.UniAddress;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbSession;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.net.UnknownHostException;
@@ -28,7 +28,8 @@ import java.util.Map;
 public class ActiveDirectoryHelper
 {
     public static boolean useActiveDirectory() {
-        return BooleanUtils.toBoolean(System.getProperty(Properties.USE_AD));
+        WebConfig config = ConfigProvider.getConfig(WebConfig.class);
+        return config.getUseActiveDirectory();
     }
 
     public static void authenticate(String login, String password) throws LoginException {
@@ -54,7 +55,8 @@ public class ActiveDirectoryHelper
     }
 
     private static Map<String, String> getActiveDirectoryDomains() {
-        String s = System.getProperty(Properties.AD_DOMAIN_MAP);
+        WebConfig config = ConfigProvider.getConfig(WebConfig.class);
+        String s = config.getActiveDirectoryDomainMap();
         Map<String, String> map = new HashMap<String, String>();
         if (!StringUtils.isBlank(s)) {
             String[] strings = s.split(",");

@@ -1062,6 +1062,7 @@
     <library name="gwt">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-dev-windows-1.0.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

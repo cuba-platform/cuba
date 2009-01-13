@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.resource.Messages;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
@@ -64,13 +65,15 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
             passwdField.setValue("");
         }
         else {
-            String defaultUser = System.getProperty(Properties.DEF_USER);
+            WebConfig config = ConfigProvider.getConfig(WebConfig.class);
+
+            String defaultUser = config.getLoginDialogDefaultUser();
             if (!StringUtils.isBlank(defaultUser))
                 loginField.setValue(defaultUser);
             else
                 loginField.setValue("");
 
-            String defaultPassw = System.getProperty(Properties.DEF_PASSWORD);
+            String defaultPassw = config.getLoginDialogDefaultPassword();
             if (!StringUtils.isBlank(defaultPassw))
                 passwdField.setValue(defaultPassw);
             else

@@ -43,34 +43,28 @@ public class LoginTest extends CubaTestCase
     public void test() throws Exception {
         LoginWorker lw = Locator.lookupLocal(LoginWorker.JNDI_NAME);
 
-//        List<Profile> profiles = lw.authenticate(ADMIN_NAME, ADMIN_PASSW, Locale.getDefault());
-//        assertNotNull(profiles);
-//        assertTrue(profiles.size() > 0);
-//        Profile profile = profiles.get(0);
+        UserSession userSession = lw.login(ADMIN_NAME, ADMIN_PASSW, "Default", Locale.getDefault());
+        assertNotNull(userSession);
+        UUID sessionId = userSession.getId();
 
-//        UserSession userSession = lw.login(ADMIN_NAME, ADMIN_PASSW, profile.getName(), Locale.getDefault());
-//        assertNotNull(userSession);
-//        UUID sessionId = userSession.getId();
-//
-//
-//        Configuration.setConfiguration(new JaasConfiguration());
-//
-//        LoginContext lc = new LoginContext(
-//                JaasConfiguration.CONTEXT_NAME,
-//                new JaasCallbackHandler(ADMIN_NAME, sessionId)
-//        );
-//        lc.login();
-//
-//        BasicService bs = Locator.lookupLocal(BasicService.JNDI_NAME);
-//        BasicInvocationContext ctx = new BasicInvocationContext()
-//                .setEntityClass(Server.class)
-//                .setQueryString("select u from sec$User u");
-//        List<User> list = bs.loadList(ctx);
-//        assertTrue(list.size() > 0);
-//
-//        assertTrue("Not in role", SecurityProvider.currentUserInRole("Administrators"));
-//
-//        lw.logout();
+
+        Configuration.setConfiguration(new JaasConfiguration());
+
+        LoginContext lc = new LoginContext(
+                JaasConfiguration.CONTEXT_NAME,
+                new JaasCallbackHandler(ADMIN_NAME, sessionId)
+        );
+        lc.login();
+
+        BasicService bs = Locator.lookupLocal(BasicService.JNDI_NAME);
+        BasicInvocationContext ctx = new BasicInvocationContext().setEntityClass(Server.class);
+        ctx.setQueryString("select u from sec$User u");
+        List<User> list = bs.loadList(ctx);
+        assertTrue(list.size() > 0);
+
+        assertTrue("Not in role", SecurityProvider.currentUserInRole("Administrators"));
+
+        lw.logout();
     }
 
 }
