@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.config.type.UuidTypeFactory;
 
 import java.util.UUID;
 
+@Prefix("cuba.test.")
 @Source(type = SourceType.SYSTEM)
 public interface TestConfig extends Config
 {
@@ -58,4 +59,8 @@ public interface TestConfig extends Config
     @Factory(factory = UuidTypeFactory.class)
     UUID getUuidProp();
     void setUuidProp(UUID value);
+
+    @Source(type = SourceType.DATABASE)
+    String getDatabaseProp();
+    void setDatabaseProp(String value);
 }

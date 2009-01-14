@@ -13,23 +13,15 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
-import org.jboss.security.SecurityAssociation;
 
 import java.util.UUID;
 
 public class SecurityProviderImpl extends SecurityProvider
 {
     protected UserSession __currentUserSession() {
-        char[] credential = (char[]) SecurityAssociation.getCredential();
-        if (credential == null)
-            throw new SecurityException("No security context");
-
-        UUID sessionId;
-        try {
-            sessionId = UUID.fromString(String.valueOf(credential));
-        } catch (Exception e) {
-            throw new SecurityException("Invalid session ID", e);
-        }
+        UUID sessionId = ServerSecurityUtils.getSessionId();
+        if (sessionId == null)
+            throw new SecurityException("Session ID not found in security context");
 
         UserSession session = UserSessionManager.getInstance().getSession(sessionId);
         return session;

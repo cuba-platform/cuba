@@ -27,6 +27,4 @@ public interface ResourceRepositoryMBean
     void evictAll();
 
     String getResAsString(String name);
-
-    String loadSystemProperties();
 }

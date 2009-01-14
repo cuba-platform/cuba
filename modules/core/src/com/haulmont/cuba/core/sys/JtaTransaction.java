@@ -27,7 +27,7 @@ public class JtaTransaction implements Transaction
         this.tm = tm;
         try {
             if (tm.getTransaction() == null) {
-                tm.begin();
+                tm.begin(); // TODO KK: may be we should commit transaction only if we actually started it?
             }
         } catch (SystemException e) {
             throw new RuntimeException(e);

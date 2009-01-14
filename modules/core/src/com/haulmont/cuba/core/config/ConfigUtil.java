@@ -291,9 +291,15 @@ public class ConfigUtil
     public static SourceType getSourceType(Class<?> configInterface, Method method) {
         Source source = method.getAnnotation(Source.class);
         if (source == null) {
-            source = configInterface.getAnnotation(Source.class);
-            if (source == null)
-                return SourceType.DATABASE;
+            Method getMethod = getGetMethod(configInterface, method);
+            if (getMethod != null && !method.equals(getMethod)) {
+                source = getMethod.getAnnotation(Source.class);
+            }
+            if (source == null) {
+                source = configInterface.getAnnotation(Source.class);
+                if (source == null)
+                    return SourceType.DATABASE;
+            }
         }
         return source.type();
     }

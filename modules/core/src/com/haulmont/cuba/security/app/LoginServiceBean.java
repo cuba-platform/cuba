@@ -16,10 +16,8 @@ import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.security.SecurityAssociation;
 
 import javax.ejb.Stateless;
-import java.security.Principal;
 import java.util.Locale;
 
 @Stateless(name = LoginServiceRemote.JNDI_NAME)
@@ -97,8 +95,6 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
     }
 
     public void ping() {
-        Principal principal = SecurityAssociation.getPrincipal();
-        Object credential = SecurityAssociation.getCredential();
-        log.debug(principal + " " + credential);
+        log.debug("ping");
     }
 }

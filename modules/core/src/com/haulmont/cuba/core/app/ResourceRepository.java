@@ -11,15 +11,17 @@
 package com.haulmont.cuba.core.app;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.haulmont.cuba.core.Locator;
 
 public class ResourceRepository implements ResourceRepositoryMBean
 {
@@ -37,7 +39,6 @@ public class ResourceRepository implements ResourceRepositoryMBean
     }
 
     public void start() {
-        loadSystemProperties();
     }
 
     public ResourceRepository getImplementation() {
@@ -122,51 +123,5 @@ public class ResourceRepository implements ResourceRepositoryMBean
     private String loadString(String name) {
         byte[] bytes = loadBytes(name);
         return new String(bytes);
-    }
-
-    public String loadSystemProperties() {
-        String confUrl = System.getProperty("jboss.server.config.url");
-        try {
-            StringBuilder sb = new StringBuilder();
-
-            String fileName = URI.create(confUrl).getPath() + "system.properties";
-            File file = new File(fileName);
-            if (file.exists()) {
-                InputStream is = new FileInputStream(fileName);
-                Properties props;
-                try {
-                    props = new Properties();
-                    props.load(is);
-                } finally {
-                    is.close();
-                }
-
-                for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                    if ("".equals(entry.getValue())) {
-                        System.getProperties().remove(entry.getKey());
-                    }
-                    else {
-                        System.getProperties().put(entry.getKey(), entry.getValue());
-                    }
-                }
-                sb.append("Properties from ").append(fileName).append(" loaded succesfully\n\n");
-            }
-            else {
-                sb.append("File ").append(fileName).append(" not found\n\n");
-            }
-
-            List<String> strings = new ArrayList<String>(System.getProperties().size());
-            for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
-                strings.add(entry.getKey().toString() + "=" + entry.getValue().toString());
-            }
-            Collections.sort(strings);
-            sb.append("Current system properties:\n\n");
-            for (String s : strings) {
-                sb.append(StringEscapeUtils.escapeHtml(s)).append("\n");
-            }
-            return sb.toString();
-        } catch (IOException e) {
-            return ExceptionUtils.getStackTrace(e);
-        }
     }
 }

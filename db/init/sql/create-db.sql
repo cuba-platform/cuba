@@ -17,6 +17,22 @@ create table SYS_SERVER (
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SYS_CONFIG (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(20),
+    NAME varchar(255),
+    VALUE varchar(500),
+    primary key (ID)
+);
+
+alter table SYS_CONFIG add constraint SYS_CONFIG_UNIQ_NAME unique (NAME);
+
+------------------------------------------------------------------------------------------------------------
+
 create table SEC_USER (
     ID varchar(36),
     CREATE_TS timestamp,

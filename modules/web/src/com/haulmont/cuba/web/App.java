@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.config.ActionsConfig;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.resource.Messages;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
@@ -26,8 +27,6 @@ import com.itmill.toolkit.terminal.gwt.server.WebBrowser;
 import com.itmill.toolkit.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.security.SecurityAssociation;
-import org.jboss.security.SimplePrincipal;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
@@ -49,10 +48,6 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
 
     private boolean principalIsWrong;
-
-    static {
-        SecurityAssociation.setServer();
-    }
 
     public App() {
         appLog = new AppLog();
@@ -189,8 +184,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         if (connection.isConnected()) {
             UserSession userSession = connection.getSession();
             if (userSession != null) {
-                SecurityAssociation.setPrincipal(new SimplePrincipal(userSession.getLogin()));
-                SecurityAssociation.setCredential(userSession.getId().toString().toCharArray());
+                ServerSecurityUtils.setSecurityAssociation(userSession.getLogin(), userSession.getId());
             }
         }
     }
