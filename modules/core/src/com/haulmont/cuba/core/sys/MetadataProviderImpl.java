@@ -15,9 +15,11 @@ import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
+import com.haulmont.chile.jpa.loader.AnnotationsMetadataLoader;
 
 import java.io.InputStream;
 import java.util.*;
+import java.lang.reflect.Field;
 
 import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
@@ -50,7 +52,18 @@ public class MetadataProviderImpl extends MetadataProvider
         if (packages.size() == 0)
             throw new IllegalStateException("No packages with metadata found");
 
-        JPAMetadataLoader loader = new JPAMetadataLoader();
+        JPAMetadataLoader loader = new JPAMetadataLoader() {
+            @Override
+            protected AnnotationsMetadataLoader createAnnotationsLoader(Session session) {
+                return new AnnotationsMetadataLoader(session) {
+                    @Override
+                    protected boolean isMetaPropertyField(Field field) {
+                        final String name = field.getName();
+                        return !name.startsWith("pc") && !name.startsWith("__") && super.isMetaPropertyField(field);
+                    }
+                };
+            }
+        };
         for (String p : packages) {
             String modelName = p;
             int i = p.lastIndexOf(".");
