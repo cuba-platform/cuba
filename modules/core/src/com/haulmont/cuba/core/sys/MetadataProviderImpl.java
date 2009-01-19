@@ -18,13 +18,18 @@ import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
 import com.haulmont.chile.jpa.loader.AnnotationsMetadataLoader;
 
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.*;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URISyntaxException;
 
 import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.jboss.virtual.VFSUtils;
+import org.jboss.virtual.VFS;
 
 public class MetadataProviderImpl extends MetadataProvider
 {
@@ -60,6 +65,13 @@ public class MetadataProviderImpl extends MetadataProvider
                     protected boolean isMetaPropertyField(Field field) {
                         final String name = field.getName();
                         return !name.startsWith("pc") && !name.startsWith("__") && super.isMetaPropertyField(field);
+                    }
+
+                    protected URL normalize(URL url) throws IOException, URISyntaxException {
+                        if ("vfszip".equals(url.getProtocol())) {
+                            url = VFSUtils.getRealURL(VFS.getCachedFile(url));
+                        }
+                        return super.normalize(url);
                     }
                 };
             }

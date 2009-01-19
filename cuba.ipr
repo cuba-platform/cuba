@@ -1002,20 +1002,23 @@
     <library name="server">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../lib/server/openjpa-1.2.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/commons-collections.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2ee.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3x.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/serp-1.13.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.2.12.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jcifs-1.3.2.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-javaee.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jbosssx.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-vfs.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2se.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/server/src/openjpa-1.2.0-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.2.12.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jcifs-1.3.2-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/jboss-vfs-src.zip!/" />
       </SOURCES>
     </library>
     <library name="common">
@@ -1039,10 +1042,12 @@
     </library>
     <library name="test">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../lib/test/jboss-ejb3-embeddable-ALPHA-9.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/test/jboss-ejb3-embeddable-thirdparty-ALPHA-9.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/test/junit-4.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/test/hibernate3.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../jboss-embedded/lib/hibernate-all.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../jboss-embedded/lib/jboss-embedded-all.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../jboss-embedded/lib/jboss-embedded.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../jboss-embedded/lib/thirdparty-all.jar!/" />
+        <root url="file://$PROJECT_DIR$/../jboss-embedded/bootstrap" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -1050,12 +1055,7 @@
       </SOURCES>
     </library>
     <library name="client">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../lib/client/jboss-ejb3-client.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/client/jboss-remoting.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/client/jboss-aspect-jdk50-client.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/client/jboss-aop-jdk50-client.jar!/" />
-      </CLASSES>
+      <CLASSES />
       <JAVADOC />
       <SOURCES />
     </library>

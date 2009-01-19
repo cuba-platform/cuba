@@ -13,14 +13,10 @@ import junit.framework.TestCase;
 
 import java.io.File;
 
+import org.jboss.embedded.Bootstrap;
+
 public abstract class CubaTestCase extends TestCase
 {
-    protected void setUpDeploymentFiles() {
-        TestContainer.addDeploymentFile("cuba-core-global.jar");
-        TestContainer.addDeploymentFile("20cuba-core.jar");
-        TestContainer.addDeploymentFile("21cuba-core-service.xml");
-    }
-
     protected void setUp() throws Exception {
         super.setUp();
         System.setProperty("cuba.UnitTestMode", "true");
@@ -30,9 +26,8 @@ public abstract class CubaTestCase extends TestCase
         
         System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.sys.TestSecurityProvider");
 
-        if (!TestContainer.isStarted()) {
-            setUpDeploymentFiles();
-            TestContainer.start();
+        if (!Bootstrap.getInstance().isStarted()) {
+            Bootstrap.getInstance().bootstrap();
         }
     }
 }

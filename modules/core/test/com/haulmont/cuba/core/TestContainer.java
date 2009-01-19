@@ -13,8 +13,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.jboss.ejb3.embedded.EJB3StandaloneBootstrap;
-import org.jboss.ejb3.embedded.EJB3StandaloneDeployer;
+//import org.jboss.ejb3.embedded.EJB3StandaloneBootstrap;
+//import org.jboss.ejb3.embedded.EJB3StandaloneDeployer;
 import org.jboss.mx.util.MBeanServerLocator;
 
 import javax.management.*;
@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Deprecated
 public class TestContainer
 {
     private static boolean started;
@@ -102,7 +103,7 @@ public class TestContainer
         if (started)
             return;
 
-        EJB3StandaloneBootstrap.boot(null);
+//        EJB3StandaloneBootstrap.boot(null);
 
         Collections.sort(filesByExt, new ExtensionComparator());
         for (String fileName : filesByExt) {
@@ -124,20 +125,20 @@ public class TestContainer
             deployServiceXml(file);
         }
         else {
-            EJB3StandaloneDeployer deployer = EJB3StandaloneBootstrap.createDeployer();
+//            EJB3StandaloneDeployer deployer = EJB3StandaloneBootstrap.createDeployer();
             URL archive;
             try {
                 archive = file.toURL();
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
-            deployer.getArchives().add(archive);
-            try {
-                deployer.create();
-                deployer.start();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+//            deployer.getArchives().add(archive);
+//            try {
+//                deployer.create();
+//                deployer.start();
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
         }
     }
 
@@ -192,23 +193,10 @@ public class TestContainer
         }
     }
 
-//    private static void setClassPath(File deployDir) {
-//        String deployPath;
-//        try {
-//            deployPath = deployDir.getCanonicalPath();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        String cp = System.getProperty("java.class.path");
-//        if (!cp.contains(deployPath + File.pathSeparator)) {
-//            System.setProperty("java.class.path", deployPath + File.pathSeparator + cp);
-//        }
-//    }
-
     public static void stop() {
         if (!started)
             return;
-        EJB3StandaloneBootstrap.shutdown();
+//        EJB3StandaloneBootstrap.shutdown();
         started = false;
     }
 }

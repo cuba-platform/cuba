@@ -25,9 +25,7 @@
 	<target name="install-lib">
 		<!-- jboss -->
 		<ext:install-jboss version="${jboss.version}" toDir="${jboss.dir}"/>
-		<!-- test libs -->
-        <ext:install-lib name="jboss-ejb3-embeddable" version="${jboss-ejb3-embeddable.version}" toDir="${lib.test.dir}"/>
-        <ext:install-lib name="jboss-ejb3-embeddable-thirdparty" version="${jboss-ejb3-embeddable-thirdparty.version}" toDir="${lib.test.dir}"/>
+        <ext:install-jboss-embedded version="${jboss-embedded.version}" toDir="${jboss-embedded.dir}"/>
         <!-- common libs -->
         <ext:install-lib name="commons-codec" version="${commons-codec.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="commons-io" version="${commons-io.version}" toDir="${lib.common.dir}"/>
@@ -39,23 +37,15 @@
         <ext:install-lib name="jcifs" version="${jcifs.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
         <ext:install-lib name="gwt-dev-windows" version="${gwt-dev-windows.version}" toDir="${lib.gwt.dir}"/>
-		<ext:install-jboss-lib name="commons-collections" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="jboss-common" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-vfs" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-common-core" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="hibernate3" version="${jboss.version}" toDir="${lib.test.dir}"/>
-        <ext:install-jboss-lib name="jboss-j2ee" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="jboss-ejb3x" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-javaee" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-remoting" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jbosssx" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="servlet-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="jboss-annotations-ejb3" path="server/default/deploy/ejb3.deployer" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="jboss-jmx" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-j2se" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <!-- client libs -->
-        <ext:install-jboss-lib name="jboss-ejb3-client" path="client" version="${jboss.version}" toDir="${lib.client.dir}"/>
-        <ext:install-jboss-lib name="jboss-remoting" path="client" version="${jboss.version}" toDir="${lib.client.dir}"/>
-        <ext:install-jboss-lib name="jboss-aop-jdk50-client" path="client" version="${jboss.version}" toDir="${lib.client.dir}"/>
-        <ext:install-jboss-lib name="jboss-aspect-jdk50-client" path="client" version="${jboss.version}" toDir="${lib.client.dir}"/>
 	</target>
 	
 	<target name="compile">
@@ -79,6 +69,12 @@
     <target name="undeploy">
         <antcall target="delegate" inheritAll="false">
             <param name="target" value="undeploy-module"/>
+        </antcall>
+    </target>
+
+    <target name="deploy4test">
+        <antcall target="delegate" inheritAll="false">
+            <param name="target" value="deploy4test-module"/>
         </antcall>
     </target>
 
