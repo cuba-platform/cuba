@@ -37,6 +37,7 @@
         <ext:install-lib name="jcifs" version="${jcifs.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
         <ext:install-lib name="gwt-dev-windows" version="${gwt-dev-windows.version}" toDir="${lib.gwt.dir}"/>
+        <ext:install-lib name="hsqldb" version="${hsqldb.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-vfs" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-common-core" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
