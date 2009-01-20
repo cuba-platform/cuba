@@ -28,8 +28,6 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.VFS;
 
 public class MetadataProviderImpl extends MetadataProvider
 {
@@ -68,10 +66,7 @@ public class MetadataProviderImpl extends MetadataProvider
                     }
 
                     protected URL normalize(URL url) throws IOException, URISyntaxException {
-                        if ("vfszip".equals(url.getProtocol())) {
-                            url = VFSUtils.getRealURL(VFS.getCachedFile(url));
-                        }
-                        return super.normalize(url);
+                        return super.normalize(ServerUtils.translateUrl(url));
                     }
                 };
             }
