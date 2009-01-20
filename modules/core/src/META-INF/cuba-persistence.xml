@@ -18,6 +18,7 @@
         <class>com.haulmont.cuba.security.entity.Constraint</class>
 
         <properties>
+            <property name="openjpa.ManagedRuntime" value="org.apache.openjpa.ee.JNDIManagedRuntime"/>
             <property name="openjpa.Log" value="log4j"/>
             <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72"/>
             <property name="openjpa.jdbc.DBDictionary" value="com.haulmont.cuba.core.sys.persistence.CubaHSQLDictionary(SimulateLocking=true)"/>

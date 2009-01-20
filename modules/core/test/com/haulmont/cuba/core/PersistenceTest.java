@@ -66,7 +66,9 @@ public class PersistenceTest extends CubaTestCase
 
     private void beginTran() {
         try {
-            getTransactionManager().begin();
+            TransactionManager tm = getTransactionManager();
+            if (tm.getStatus() != Status.STATUS_ACTIVE)
+                tm.begin();
         } catch (NotSupportedException e) {
             throw new RuntimeException(e);
         } catch (SystemException e) {
