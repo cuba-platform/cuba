@@ -4,22 +4,18 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 23.12.2008 10:31:32
+ * Created: 21.01.2009 17:33:38
  *
  * $Id$
  */
 package com.haulmont.cuba.core.sys.persistence;
 
-import org.apache.openjpa.jdbc.sql.*;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
-import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
+import org.apache.openjpa.jdbc.sql.Join;
+import org.apache.openjpa.jdbc.sql.Select;
 
-import java.util.*;
-
-import com.haulmont.cuba.core.PersistenceProvider;
-
-public class CubaHSQLDictionary extends HSQLDictionary
+public class CubaMySQLDictionary extends MySQLDictionary
 {
     public SQLBuffer toTraditionalJoin(Join join) {
         return DBDictionaryUtils.toTraditionalJoin(this, join);

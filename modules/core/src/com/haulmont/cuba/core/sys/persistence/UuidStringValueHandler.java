@@ -18,8 +18,10 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 
 import java.util.UUID;
 
-public class UuidValueHandler extends AbstractValueHandler
+public class UuidStringValueHandler extends AbstractValueHandler
 {
+    private static final long serialVersionUID = -8302367450468711877L;
+
     public Column[] map(ValueMapping vm, String name, ColumnIO io, boolean adapt) {
         Column col = new Column();
         col.setName(name);
@@ -27,8 +29,9 @@ public class UuidValueHandler extends AbstractValueHandler
         col.setSize(-1);
         return new Column[]{col};
     }
+
     public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store) {
-        return ((UUID) val).toString();
+        return val.toString();
     }
 
     public Object toObjectValue(ValueMapping vm, Object val) {

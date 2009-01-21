@@ -85,7 +85,7 @@ create table SEC_GROUP (
     primary key (ID)
 );
 
-alter table SEC_GROUP add constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP;
+alter table SEC_GROUP add constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID);
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -99,9 +99,9 @@ create table SEC_GROUP_HIERARCHY (
     primary key (ID)
 );
 
-alter table SEC_GROUP_HIERARCHY add constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP;
+alter table SEC_GROUP_HIERARCHY add constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID);
 
-alter table SEC_GROUP_HIERARCHY add constraint SEC_GROUP_HIERARCHY_PARENT foreign key (PARENT_ID) references SEC_GROUP;
+alter table SEC_GROUP_HIERARCHY add constraint SEC_GROUP_HIERARCHY_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID);
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -121,9 +121,9 @@ create table SEC_PROFILE (
     primary key (ID)
 );
 
-alter table SEC_PROFILE add constraint SEC_PROFILE_USER foreign key (USER_ID) references SEC_USER; 
+alter table SEC_PROFILE add constraint SEC_PROFILE_USER foreign key (USER_ID) references SEC_USER(ID);
 
-alter table SEC_PROFILE add constraint SEC_PROFILE_GROUP foreign key (GROUP_ID) references SEC_GROUP;
+alter table SEC_PROFILE add constraint SEC_PROFILE_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID);
 
 alter table SEC_PROFILE add constraint SEC_PROFILE_UNIQ_NAME unique (USER_ID, NAME, DELETE_TS);
 
@@ -143,9 +143,9 @@ create table SEC_PROFILE_ROLE (
     primary key (ID)
 );
 
-alter table SEC_PROFILE_ROLE add constraint SEC_PROFILE_ROLE_PROFILE foreign key (PROFILE_ID) references SEC_PROFILE;
+alter table SEC_PROFILE_ROLE add constraint SEC_PROFILE_ROLE_PROFILE foreign key (PROFILE_ID) references SEC_PROFILE(ID);
 
-alter table SEC_PROFILE_ROLE add constraint SEC_PROFILE_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE;
+alter table SEC_PROFILE_ROLE add constraint SEC_PROFILE_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID);
 
 alter table SEC_PROFILE_ROLE add constraint SEC_PROFILE_UNIQ_ROLE unique (PROFILE_ID, ROLE_ID, DELETE_TS);
 
@@ -167,7 +167,7 @@ create table SEC_PERMISSION (
     primary key (ID)
 );
 
-alter table SEC_PERMISSION add constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE;
+alter table SEC_PERMISSION add constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID);
 
 alter table SEC_PERMISSION add constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, TYPE, TARGET, DELETE_TS);
 
@@ -188,7 +188,7 @@ create table SEC_CONSTRAINT (
     primary key (ID)
 );
 
-alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP;
+alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID);
 
 ------------------------------------------------------------------------------------------------------------
 
