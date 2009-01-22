@@ -21,11 +21,11 @@ public class BasicInvocationContext implements Serializable
 {
     private Object id;
 
-    private MetaClass metaClass;
+    private String metaClass;
     private View view;
     private Query query;
 
-    public class Query {
+    public class Query implements Serializable {
         private Map<String, Object> parameters = new HashMap<String, Object>();
         private String queryString;
 
@@ -51,16 +51,16 @@ public class BasicInvocationContext implements Serializable
     }
 
     public MetaClass getMetaClass() {
-        return metaClass;
+        return MetadataProvider.getSession().getClass(metaClass);
     }
 
     public BasicInvocationContext setEntityClass(Class<? extends BaseEntity> entityClass) {
-        this.metaClass = MetadataProvider.getSession().getClass(entityClass);
+        this.metaClass = MetadataProvider.getSession().getClass(entityClass).getName();
         return this;
     }
 
     public BasicInvocationContext setEntityClass(MetaClass entityClass) {
-        this.metaClass = entityClass;
+        this.metaClass = entityClass.getName();
         return this;
     }
 
