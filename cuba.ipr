@@ -26,7 +26,7 @@
       <maximumStackSize value="32" />
       <properties />
     </buildFile>
-    <buildFile url="file://$PROJECT_DIR$/db/init/db-build.xml">
+    <buildFile url="file://$PROJECT_DIR$/db/db-build.xml">
       <additionalClassPath />
       <antReference projectDefault="true" />
       <customJdkName value="" />

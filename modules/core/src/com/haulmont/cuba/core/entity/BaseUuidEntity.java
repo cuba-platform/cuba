@@ -25,13 +25,13 @@ public class BaseUuidEntity implements BaseEntity<UUID>
     @Id
     @Column(name = "ID")
     @Persistent
-    private UUID id;
+    protected UUID id;
 
     @Column(name = "CREATE_TS")
-    private Date createTs;
+    protected Date createTs;
 
     @Column(name = "CREATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
-    private String createdBy;
+    protected String createdBy;
 
     public BaseUuidEntity() {
         id = UuidProvider.createUuid();

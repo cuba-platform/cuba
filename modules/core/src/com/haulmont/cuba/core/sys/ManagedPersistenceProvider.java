@@ -130,11 +130,11 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                     new Synchronization()
                     {
                         public void beforeCompletion() {
-                            log.trace("Closing EntityManager for transaction " + tx);
-                            em.close();
                         }
 
                         public void afterCompletion(int i) {
+                            log.trace("Closing EntityManager for transaction " + tx);
+                            em.close();
                             emMap.remove(tx);
                         }
                     }

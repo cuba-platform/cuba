@@ -24,19 +24,19 @@ public class StandardEntity
 {
     @Version
     @Column(name = "VERSION")
-    private Integer version;
+    protected Integer version;
 
     @Column(name = "UPDATE_TS")
-    private Date updateTs;
+    protected Date updateTs;
 
     @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
-    private String updatedBy;
+    protected String updatedBy;
 
     @Column(name = "DELETE_TS")
-    private Date deleteTs;
+    protected Date deleteTs;
 
     @Column(name = "DELETED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
-    private String deletedBy;
+    protected String deletedBy;
 
     public Integer getVersion() {
         return version;

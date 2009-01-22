@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <project name="cuba-db">
     
-    <property name="project.dir" location="../.."/>
+    <property name="project.dir" location=".."/>
     <property name="root.dir" location="${project.dir}/.."/>
 
     <import file="${root.dir}/build-inc-prj.xml"/>
 	<property file="${root.dir}/build.properties"/>
     <property file="${project.dir}/build.properties"/>
 
-    <property name="sql.dir" location="sql"/>
+    <property name="sql.dir" location="init/sql"/>
     <property name="sql.delimiter" value=";"/>
 
     <path id="run-cp">
@@ -17,22 +17,12 @@
 
     <target name="run-hsqldb">
         <mkdir dir="${project.dir}/data"/>
-        <java classpathref="run-cp" fork="true" spawn="true"
-              classname="org.hsqldb.Server" dir="${project.dir}/data">
-            <arg line="-database.0 file:${db.name} -dbname.0 ${db.name}"/>
-        </java>
+        <exec dir="${project.dir}/data" executable="cmd.exe">
+            <arg line="/c start ${project.dir}/db/run-hsqldb.bat ${db.name}"/>
+        </exec>
     </target>
 
-    <target name="stop-hsqldb">
-        <sql classpathref="run-cp"
-            driver="org.hsqldb.jdbcDriver"
-            url="jdbc:hsqldb:hsql://localhost/${db.name}"
-            userid="${db.user}" password="${db.password}" onerror="continue">
-            shutdown
-         </sql>
-    </target>
-
-    <target name="run-hsqlman" depends="run-hsqldb">
+    <target name="run-hsqlman">
         <java classpathref="run-cp" fork="true" spawn="true"
               classname="org.hsqldb.util.DatabaseManagerSwing" dir="${project.dir}/data">
             <arg line="--url jdbc:hsqldb:hsql://localhost/${db.name}"/>

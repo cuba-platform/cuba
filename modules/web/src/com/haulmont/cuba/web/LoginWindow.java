@@ -27,15 +27,21 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
 {
     private Connection connection;
 
-    private TextField loginField;
-    private TextField passwdField;
+    protected TextField loginField;
+    protected TextField passwdField;
 
     public LoginWindow(App app, Connection connection) {
         super("CUBA Login");
         this.connection = connection;
-
         app.getContext().addTransactionListener(this);
 
+        loginField = new TextField();
+        passwdField = new TextField();
+
+        initUI();
+    }
+
+    protected void initUI() {
         OrderedLayout layout = new FormLayout();
         layout.setSpacing(true);
         layout.setMargin(true);
@@ -43,11 +49,11 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
         Label label = new Label("Welcome to CUBA!");
         layout.addComponent(label);
 
-        loginField = new TextField("Login Name");
+        loginField.setCaption("Login Name");
         layout.addComponent(loginField);
         loginField.focus();
 
-        passwdField = new TextField("Password");
+        passwdField.setCaption("Password");
         passwdField.setSecret(true);
         layout.addComponent(passwdField);
 
@@ -59,7 +65,7 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
         setLayout(layout);
     }
 
-    private void initFields() {
+    protected void initFields() {
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             loginField.setValue(null);
             passwdField.setValue("");
@@ -94,7 +100,7 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
     public void transactionEnd(Application application, Object transactionData) {
     }
 
-    protected class SubmitListener implements Button.ClickListener
+    public class SubmitListener implements Button.ClickListener
     {
         public void buttonClick(Button.ClickEvent event) {
             String login = (String) loginField.getValue();

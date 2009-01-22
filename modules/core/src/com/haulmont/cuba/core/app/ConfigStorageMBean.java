@@ -28,5 +28,7 @@ public interface ConfigStorageMBean
 
     String removeProperty(String name);
 
-    String loadSystemProperties();    
+    String loadSystemProperties();
+
+    String test();
 }
