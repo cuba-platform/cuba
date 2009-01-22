@@ -1,4 +1,4 @@
-<screen>
+<window class="com.haulmont.cuba.web.app.ui.security.user.browse.SecurityUserBrowser">
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse.views.xml"/>
     </metadataContext>
@@ -9,20 +9,45 @@
             class="com.haulmont.cuba.security.entity.User"
             view="browse"
         >
-            <query>select u from sec$User u</query>
+            <query>
+                <![CDATA[select u from sec$User u where u.name like <#if ${component:filter.name}?has_content>${component:filter.name}<#else>'%'</#if>]]>
+            </query>
+        </collection-datasource>
+
+        <collection-datasource
+            id="profiles"
+            class="com.haulmont.cuba.security.entity.Profile"
+            view="browse"
+        >
+            <query>select p from sec$Profile p where p.user = ${ds:users}</query>
         </collection-datasource>
     </dsContext>
 
     <layout>
-        <hbox>
-            <vbox>
-                <table>
-                    <columns>    
-                        <column id="name" label="Name"/>
-                    </columns>
-                    <rows datasource="users"/>
-                </table>
-            </vbox>
-        </hbox>
+        <vbox expand="table-panel">
+            <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse-filter.xml"/>
+
+            <hbox id="table-panel" expand="table">
+                <split orientation="horizontal">
+                    <vbox expand="users">
+                        <table id="users">
+                            <columns>
+                                <column id="name" label="Name"/>
+                            </columns>
+                            <rows datasource="users"/>
+                        </table>
+                    </vbox>
+                    <vbox expand="profiles">
+                        <table id="profiles">
+                            <columns>
+                                <column id="name" label="Name"/>
+                                <column id="defaultProfile" label="Default"/>
+                            </columns>
+                            <rows datasource="profiles"/>
+                        </table>
+                    </vbox>
+                </split>
+            </hbox>
+        </vbox>
     </layout>
-</screen>
+</window>

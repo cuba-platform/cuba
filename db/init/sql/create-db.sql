@@ -194,6 +194,8 @@ alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROU
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, PASSWORD, NAME)
 values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator');
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, PASSWORD, NAME)
+values ('40288137-1EF4-11C8-011E-F41247370001', current_timestamp, 0, 'abramov', '402881371EF411C8011EF411C8C50000', 'Dmitry Abramov');
 
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null);
@@ -201,11 +203,25 @@ values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company',
 insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, IS_DEFAULT, USER_ID, GROUP_ID)
 values ('bf83541f-f610-46f4-a268-dff348347f93', current_timestamp, 0, 'Default', 1, '60885987-1b61-4247-94c7-dff348347f93', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93');
 
+insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, IS_DEFAULT, USER_ID, GROUP_ID)
+values ('40288137-1EF4-11C8-011E-F4157FA70002', current_timestamp, 0, 'Default', 1, '40288137-1EF4-11C8-011E-F41247370001', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93');
+
+insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, IS_DEFAULT, USER_ID, GROUP_ID)
+values ('40288137-1EF4-11C8-011E-F415E4FC0004', current_timestamp, 0, 'Administrator', 1, '40288137-1EF4-11C8-011E-F41247370001', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93');
+
 --insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, IS_DEFAULT, USER_ID, GROUP_ID)
 --values ('cc1e0bc4-1062-4218-a09f-dff348347f93', current_timestamp, 0, 'Test', 0, '60885987-1b61-4247-94c7-dff348347f93', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93');
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, IS_SUPER)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 1);
 
+insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, IS_SUPER)
+values ('40288137-1EF4-11C8-011E-F416E4150005', current_timestamp, 0, 'Users', 1);
+
 insert into SEC_PROFILE_ROLE (ID, CREATE_TS, VERSION, PROFILE_ID, ROLE_ID)
 values ('c838be0a-96d0-4ef4-a7c0-dff348347f93', current_timestamp, 0, 'bf83541f-f610-46f4-a268-dff348347f93', '0c018061-b26f-4de2-a5be-dff348347f93');
+
+insert into SEC_PROFILE_ROLE (ID, CREATE_TS, VERSION, PROFILE_ID, ROLE_ID)
+values ('40288137-1EF4-11C8-011E-F41AAA740006', current_timestamp, 0, '40288137-1EF4-11C8-011E-F4157FA70002', '40288137-1EF4-11C8-011E-F416E4150005');
+insert into SEC_PROFILE_ROLE (ID, CREATE_TS, VERSION, PROFILE_ID, ROLE_ID)
+values ('40288137-1EF4-11C8-011E-F41AAA740007', current_timestamp, 0, '40288137-1EF4-11C8-011E-F415E4FC0004', '0c018061-b26f-4de2-a5be-dff348347f93');

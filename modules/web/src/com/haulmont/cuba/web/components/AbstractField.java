@@ -34,4 +34,20 @@ public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends Abstra
         final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
         component.setPropertyDataSource(wrapper.getItemProperty(metaClass.getProperty(property)));
     }
+
+    public <T> T getValue() {
+        return (T) component.getValue();
+    }
+
+    public void setValue(Object value) {
+        component.setValue(value);
+    }
+
+    public String getCaption() {
+        return component.getCaption();
+    }
+
+    public void setCaption(String caption) {
+        component.setCaption(caption);
+    }
 }

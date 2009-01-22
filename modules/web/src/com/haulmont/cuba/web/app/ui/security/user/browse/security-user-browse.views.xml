@@ -3,4 +3,8 @@
         <property name="name"/>
         <property name="login"/>
     </view>
+    <view entity="sec$Profile" name="browse">
+        <property name="name"/>
+        <property name="defaultProfile"/>
+    </view>
 </views>

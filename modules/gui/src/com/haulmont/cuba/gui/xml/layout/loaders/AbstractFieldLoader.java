@@ -10,18 +10,20 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.TextBox;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
 
-public class TextBoxLoader extends ComponentLoader {
+public class AbstractFieldLoader extends ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final TextBox textBox = factory.createComponent("textbox");
+        final Field field = factory.createComponent(element.getName());
 
-        loadId(textBox, element);
-        loadFlex(textBox, element);
-        loadCaption(textBox, element);
+        loadId(field, element);
+        loadCaption(field, element);
 
-        return textBox;
+        loadHeight(field, element);
+        loadWidth(field, element);
+
+        return field;
     }
 }

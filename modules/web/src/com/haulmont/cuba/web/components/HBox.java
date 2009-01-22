@@ -11,11 +11,13 @@ package com.haulmont.cuba.web.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.ExpandLayout;
-import com.itmill.toolkit.ui.OrderedLayout;
-import com.itmill.toolkit.ui.Layout;
 
-public class HBox extends AbstractContainer {
+public class HBox extends AbstractContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
     public HBox() {
         super(ExpandLayout.ORIENTATION_HORIZONTAL);
+    }
+
+    public void expand(Component component, String height, String width) {
+        throw new UnsupportedOperationException();
     }
 }

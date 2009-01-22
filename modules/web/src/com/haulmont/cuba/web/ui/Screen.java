@@ -15,10 +15,15 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.itmill.toolkit.ui.ExpandLayout;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Screen extends ExpandLayout implements Window
 {
     protected ScreenContext screenContext;
     private String id;
+
+    private Map<String, Component> componentByIds = new HashMap<String, Component>();
 
     public Screen() {
         super(ExpandLayout.ORIENTATION_VERTICAL);
@@ -28,10 +33,16 @@ public class Screen extends ExpandLayout implements Window
 
     public void add(Component component) {
         addComponent(ComponentsHelper.unwrap(component));
+        if (component.getId() != null) {
+            componentByIds.put(component.getId(), component);
+        }
     }
 
     public void remove(Component component) {
         removeComponent(ComponentsHelper.unwrap(component));
+        if (component.getId() != null) {
+            componentByIds.remove(component.getId());
+        }
     }
 
     public void init(ScreenContext context) {
@@ -50,6 +61,17 @@ public class Screen extends ExpandLayout implements Window
         this.id = id;
     }
 
+    public void requestFocus() {
+    }
+
+    public <T extends Component> T getOwnComponent(String id) {
+        return (T) componentByIds.get(id);
+    }
+
+    public <T extends Component> T getComponent(String id) {
+        return ComponentsHelper.<T>getComponent(this, id);
+    }
+
     public int getVerticalAlIlignment() {
         return ALIGNMENT_VERTICAL_CENTER;
     }
@@ -61,4 +83,8 @@ public class Screen extends ExpandLayout implements Window
     }
 
     public void setHorizontalAlIlignment(int horizontalAlIlignment) {}
+
+    public void expand(Component component, String height, String width) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

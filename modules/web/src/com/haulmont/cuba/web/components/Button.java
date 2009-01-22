@@ -10,6 +10,8 @@
 package com.haulmont.cuba.web.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Action;
+import org.apache.commons.lang.StringUtils;
 
 public class Button
     extends
@@ -17,10 +19,17 @@ public class Button
     implements 
         com.haulmont.cuba.gui.components.Button, Component.Wrapper
 {
-    private boolean flexible;
+    private Action action;
 
     public Button() {
         component = new com.itmill.toolkit.ui.Button();
+        component.addListener(new com.itmill.toolkit.ui.Button.ClickListener() {
+            public void buttonClick(com.itmill.toolkit.ui.Button.ClickEvent event) {
+                if (action != null) {
+                    action.actionPerform(Button.this);
+                }
+            }
+        });
     }
 
     public String getCaption() {
@@ -31,12 +40,16 @@ public class Button
         component.setCaption(caption);
     }
 
-    public boolean isFlexible() {
-        return flexible;
+    public Action getAction() {
+        return action;
     }
 
-    public void setFlexible(boolean flexible) {
-        this.flexible = flexible;
-        component.setWidth("100%");
+    public void setAction(Action action) {
+        this.action = action;
+
+        final String caption = action.getCaption();
+        if (!StringUtils.isEmpty(caption)) {
+            component.setCaption(caption);
+        }
     }
 }

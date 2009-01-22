@@ -14,12 +14,6 @@ import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
-    protected void loadFlex(Component.Sizable component, Element element) {
-        final String flex = element.attributeValue("flex");
-        if (!StringUtils.isBlank(flex)) {
-            component.setFlexible(Integer.valueOf(flex) > 0);
-        }
-    }
 
     protected void loadId(Component component, Element element) {
         final String id = element.attributeValue("id");
@@ -35,6 +29,20 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         final String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {
             component.setVerticalAlIlignment(loadAlignment(align, true));
+        }
+    }
+
+    protected void loadHeight(Component component, Element element) {
+        final String height = element.attributeValue("height");
+        if (!StringUtils.isBlank(height)) {
+            component.setHeight(height);
+        }
+    }
+
+    protected void loadWidth(Component component, Element element) {
+        final String width = element.attributeValue("width");
+        if (!StringUtils.isBlank(width)) {
+            component.setWidth(width);
         }
     }
 

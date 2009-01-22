@@ -10,19 +10,25 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.Action;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.Context;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.Screen;
-import com.haulmont.cuba.web.ui.ScreenContext;
 import com.haulmont.cuba.web.ui.ScreenTitlePane;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.ui.AbstractLayout;
+import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.ExpandLayout;
 import com.itmill.toolkit.ui.TabSheet;
 import org.apache.commons.lang.StringUtils;
@@ -32,17 +38,20 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public class ScreenManager
 {
     private static class TabInfo
     {
         private ScreenTitlePane titlePane;
-        private LinkedList<Screen> screens = new LinkedList<Screen>();
+        private LinkedList<Window> screens = new LinkedList<Window>();
 
         private TabInfo(ScreenTitlePane titlePane) {
             this.titlePane = titlePane;
@@ -57,18 +66,17 @@ public class ScreenManager
         this.app = app;
     }
 
-    public Screen openScreen(ScreenOpenType type, String actionName) {
+    public Window openScreen(ScreenOpenType type, String actionName) {
         return openScreen(type, actionName, null);
     }
 
-    public Screen openScreen(ScreenOpenType type, String actionName, String tabCaption) {
+    public Window openScreen(ScreenOpenType type, String actionName, String tabCaption) {
         app.getAppLog().debug("Opening screen " + actionName);
         Action action = app.getActionsConfig().getAction(actionName);
         if (tabCaption == null)
             tabCaption = action.getCaption();
 
-        Screen screen = createScreen(action);
-        screen.setSizeFull();
+        Window window = createScreen(action);
 
         if (ScreenOpenType.NEW_TAB.equals(type)) {
             ExpandLayout layout = new ExpandLayout();
@@ -77,20 +85,20 @@ public class ScreenManager
             titlePane.addCaption(action.getCaption());
             layout.addComponent(titlePane);
 
-            layout.addComponent(screen);
-            layout.expand(screen);
+            final Component component = ComponentsHelper.unwrap(window);
+            layout.addComponent(component);
+            layout.expand(component);
 
             TabSheet tabSheet = app.getAppWindow().getTabSheet();
             tabSheet.addTab(layout, tabCaption, null);
             tabSheet.setSelectedTab(layout);
 
             TabInfo tabInfo = new TabInfo(titlePane);
-            tabInfo.screens.add(screen);
+            tabInfo.screens.add(window);
             tabs.put(layout, tabInfo);
 
-            screen.init(new ScreenContext(layout, titlePane));
-        }
-        else if (ScreenOpenType.THIS_TAB.equals(type)) {
+//            window.init(new ScreenContext(layout, titlePane));
+        } else if (ScreenOpenType.THIS_TAB.equals(type)) {
             TabSheet tabSheet = app.getAppWindow().getTabSheet();
             ExpandLayout layout = (ExpandLayout) tabSheet.getSelectedTab();
 
@@ -98,19 +106,18 @@ public class ScreenManager
             if (tabInfo == null)
                 throw new IllegalStateException("Current tab not found");
 
-            layout.removeComponent(tabInfo.screens.getLast());
-            layout.addComponent(screen);
-            layout.expand(screen);
+            layout.removeComponent(ComponentsHelper.unwrap(tabInfo.screens.getLast()));
+            layout.addComponent(ComponentsHelper.unwrap(window));
+            layout.expand(ComponentsHelper.unwrap(window));
 
             tabInfo.titlePane.addCaption(action.getCaption());
-            tabInfo.screens.add(screen);
+            tabInfo.screens.add(window);
 
-            screen.init(new ScreenContext(layout, tabInfo.titlePane));
-        }
-        else
+//            window.init(new ScreenContext(layout, tabInfo.titlePane));
+        } else
             throw new UnsupportedOperationException("Opening type not supported: " + type);
 
-        return screen;
+        return window;
     }
 
     public void closeScreen() {
@@ -121,23 +128,23 @@ public class ScreenManager
         if (tabInfo == null)
             throw new IllegalStateException("Unable to close screen: current tab not found");
 
-        Screen screen = tabInfo.screens.getLast();
-        if (!screen.onClose()) {
-            return;
-        }
+        Window window = tabInfo.screens.getLast();
+
+        final Object res = invokeMethod(window, "close");
+        if (res != null && !Boolean.TRUE.equals(res)) { return; }
+
         tabInfo.screens.removeLast();
 
-        layout.removeComponent(screen);
+        layout.removeComponent(ComponentsHelper.unwrap(window));
         if (tabInfo.screens.isEmpty()) {
             tabSheet.removeComponent(layout);
             tabs.remove(layout);
             app.getMainWindow().open(new ExternalResource(app.getURL())); // TODO fix TabSheet repaint
-        }
-        else {
+        } else {
             tabInfo.titlePane.removeCaption();
-            Screen prevScreen = tabInfo.screens.getLast();
-            layout.addComponent(prevScreen);
-            layout.expand(prevScreen);
+            Window prevScreen = tabInfo.screens.getLast();
+            layout.addComponent(ComponentsHelper.unwrap(prevScreen));
+            layout.expand(ComponentsHelper.unwrap(prevScreen));
         }
     }
 
@@ -170,30 +177,99 @@ public class ScreenManager
         return document;
     }
 
-    private Screen createScreen(Action action) {
+    private Window createScreen(Action action) {
         final Element descriptor = action.getDescriptor();
         String className = descriptor.attributeValue("class");
 
         if (StringUtils.isBlank(className)) {
-            final String template = descriptor.attributeValue("template");
-
-            Document document = parseDescriptor(template);
-            final Element rootElement = document.getRootElement();
-
-            final DsContextLoader dsContextLoader = new DsContextLoader(new DatasourceFactoryImpl());
-            final DsContext dsContext = dsContextLoader.loadDatasources(rootElement.element("dsContext"));
-
-            final LayoutLoader layoutLoader = new LayoutLoader(new WebComponentsFactory(), LayoutLoaderConfig.getWindowLoaders(), dsContext);
-            final Screen screen = (Screen) layoutLoader.loadComponent(rootElement.element("layout"));
-
-            return screen;
+            return createWindowFromTemplate(descriptor);
         } else {
             try {
                 Class c = Thread.currentThread().getContextClassLoader().loadClass(className);
-                return (Screen) c.newInstance();
+                final Window window = (Window) c.newInstance();
+                invokeMethod(window, "init");
+                return window;
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    protected Window createWindowFromTemplate(Element descriptor) {
+        final String template = descriptor.attributeValue("template");
+
+        Document document = parseDescriptor(template);
+        final Element rootElement = document.getRootElement();
+
+        final DsContextLoader dsContextLoader = new DsContextLoader(new DatasourceFactoryImpl());
+        final DsContext dsContext = dsContextLoader.loadDatasources(rootElement.element("dsContext"));
+
+        final LayoutLoader layoutLoader = new LayoutLoader(new WebComponentsFactory(), LayoutLoaderConfig.getWindowLoaders(), dsContext);
+        final Window window = (Screen) layoutLoader.loadComponent(rootElement);
+
+
+        for (Datasource ds : dsContext.getAll()) {
+            if (ds instanceof DatasourceImplementation) {
+                ((DatasourceImplementation) ds).initialized();
+            }
+        }
+
+        dsContext.setContext(new Context() {
+            public <T> T getValue(String property) {
+                final com.haulmont.cuba.gui.components.Component component = window.getComponent(property);
+                if (component instanceof com.haulmont.cuba.gui.components.Component.Field) {
+                    return ((com.haulmont.cuba.gui.components.Component.Field) component).<T>getValue();
+                } else {
+                    return null;
+                }
+            }
+
+            public void setValue(String property, Object value) {
+                final com.haulmont.cuba.gui.components.Component component = window.getComponent(property);
+                if (component instanceof com.haulmont.cuba.gui.components.Component.Field) {
+                    ((com.haulmont.cuba.gui.components.Component.Field) component).setValue(value);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+
+            public void addValueListener(ValueListener listener) {
+            }
+
+            public void removeValueListener(ValueListener listener) {
+            }
+        });
+
+        return wrapByCustomClass(window, rootElement);
+    }
+
+    protected Window wrapByCustomClass(Window window, Element element) {
+        Window res = window;
+        final String screenClass = element.attributeValue("class");
+        if (!StringUtils.isBlank(screenClass)) {
+            try {
+                final Class<?> aClass = Class.forName(screenClass);
+                final Constructor<?> constructor = aClass.getConstructor(Screen.class);
+                res = (Window) constructor.newInstance(window);
+
+                invokeMethod(res, "init");
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            return res;
+        } else {
+            return res;
+        }
+    }
+
+    protected <T> T invokeMethod(Window window, String name) {
+        try {
+            final Method method = window.getClass().getDeclaredMethod(name);
+            method.setAccessible(true);
+            return (T) method.invoke(window);
+        } catch (Throwable e) {
+            return null;
         }
     }
 }

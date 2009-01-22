@@ -9,20 +9,20 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.chile.core.common.ValueListener;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.common.ValueListener;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 
-public class DatasourceImpl<T> implements Datasource<T> {
+public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementation {
     protected DsContext dsContext;
 
     private String id;
@@ -30,10 +30,10 @@ public class DatasourceImpl<T> implements Datasource<T> {
     protected View view;
 
     protected State state = State.NOT_INITIALIZAED;
-    private T item;
+    protected T item;
     private ValueListener listener;
 
-    private List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
+    protected List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
 
     public DatasourceImpl(DsContext dsContext, String id, MetaClass metaClass, String viewName) {
         this.dsContext = dsContext;
@@ -99,9 +99,12 @@ public class DatasourceImpl<T> implements Datasource<T> {
         state = State.VALID;
 
         forceStateChanged(prevStatus);
+        forceItemChanged(prevItem);
+    }
 
+    protected void forceItemChanged(Object prevItem) {
         for (DatasourceListener dsListener : dsListeners) {
-            dsListener.currentChanged(this, prevItem, item);
+            dsListener.itemChanged(this, prevItem, item);
         }
     }
 
@@ -119,11 +122,11 @@ public class DatasourceImpl<T> implements Datasource<T> {
         }
     }
 
-    private void attachListener(Instance item) {
+    protected void attachListener(Instance item) {
         item.addListener(listener);
     }
 
-    private void detatchListener(Instance item) {
+    protected void detatchListener(Instance item) {
         item.removeListener(listener);
     }
 
@@ -147,5 +150,9 @@ public class DatasourceImpl<T> implements Datasource<T> {
 
     public void removeListener(DatasourceListener<T> listener) {
         dsListeners.remove(listener);
+    }
+
+    public void initialized() {
+        state = State.INVALID;
     }
 }

@@ -5,7 +5,7 @@
     <buildFile url="file://$PROJECT_DIR$/build.xml">
       <additionalClassPath />
       <antReference projectDefault="true" />
-      <customJdkName value="" />
+      <customJdkName value="1.6" />
       <maximumHeapSize value="128" />
       <maximumStackSize value="32" />
       <properties />
@@ -933,7 +933,7 @@
       <module fileurl="file://$PROJECT_DIR$/modules/web-war/web-war.iml" filepath="$PROJECT_DIR$/modules/web-war/web-war.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ResourceManagerContainer">
@@ -1031,6 +1031,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/google-collect-snapshot-20080820.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/reflections-0.9.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-io-1.4.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/freemarker-2.3.15.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

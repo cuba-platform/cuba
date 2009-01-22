@@ -12,15 +12,20 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.List;
+import java.util.Set;
 
 public interface Table extends Component {
     <T> T getSingleSelected();
-    List getSelected();
+    Set getSelected();
+
+    void addAction(Action action);
+    void removeAction(Action action);
 
     List<Column> getColumns();
     void addColumn(Column column);
     void removeColumn(Column column);
 
+    CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 
     public class Column {

@@ -25,6 +25,37 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Co
 
     public void setId(String id) {
         this.id = id;
+        component.setDebugId(id);
+    }
+
+    public void requestFocus() {
+        if (component instanceof com.itmill.toolkit.ui.Component.Focusable) {
+            ((com.itmill.toolkit.ui.Component.Focusable) component).focus();
+        }
+    }
+
+    public int getHeight() {
+        return component.getHeight();
+    }
+
+    public int getHeightUnits() {
+        return component.getHeightUnits();
+    }
+
+    public void setHeight(String height) {
+        component.setHeight(height);
+    }
+
+    public int getWidth() {
+        return component.getWidth();
+    }
+
+    public int getWidthUnits() {
+        return component.getWidthUnits();
+    }
+
+    public void setWidth(String width) {
+        component.setWidth(width);
     }
 
     public int getVerticalAlIlignment() {

@@ -9,16 +9,18 @@
  */
 package com.haulmont.cuba.web.components;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.data.CollectionDatasourceWrapper;
-import com.haulmont.chile.core.model.MetaProperty;
-
-import java.util.List;
-import java.util.Collection;
-import java.util.ArrayList;
-
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.event.ItemClickEvent;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.*;
 
 public class Table
     extends
@@ -26,16 +28,76 @@ public class Table
     implements
         com.haulmont.cuba.gui.components.Table, Component.Wrapper
 {
+    protected CollectionDatasource datasource;
+
+    protected List<Action> actionsOrder = new LinkedList<Action>();
+    protected BiMap<Action, com.itmill.toolkit.event.Action> actions =
+            new HashBiMap<Action,com.itmill.toolkit.event.Action>();
+
     public Table() {
         component = new com.itmill.toolkit.ui.Table();
+
+        component.setSelectable(true);
+        component.setMultiSelect(false);
+        component.setNullSelectionAllowed(false);
+        component.setImmediate(true);
+
+        component.addActionHandler(new ActionsAdapter());
+        component.addListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent event) {
+                final Set<Object> itemIds = getSelecetdItemIds();
+                if (itemIds == null || itemIds.isEmpty()) {
+                    datasource.setItem(null);
+                } else if (itemIds.size() == 1) {
+                    final Object id = itemIds.iterator().next();
+                    datasource.setItem(datasource.getItem(id));
+                } else {
+                    datasource.setItem(null);
+                }
+            }
+        });
     }
 
     public <T> T getSingleSelected() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        final Set selected = getSelecetdItemIds();
+        return selected == null || selected.isEmpty() ?
+                null : (T) datasource.getItem(selected.iterator().next());
     }
 
-    public List getSelected() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Set getSelected() {
+        final Set<Object> itemIds = getSelecetdItemIds();
+
+        if (itemIds != null) {
+            final HashSet<Object> res = new HashSet<Object>();
+            for (Object id : itemIds) {
+                final Object o = datasource.getItem(id);
+                res.add(o);
+            }
+            return res;
+        } else {
+            return Collections.emptySet();
+        }
+    }
+
+    public void addAction(final Action action) {
+        actions.put(action, new ActionWrapper(action));
+        actionsOrder.add(action);
+    }
+
+    public void removeAction(Action action) {
+        actions.remove(action);
+        actionsOrder.remove(action);
+    }
+
+    protected Set<Object> getSelecetdItemIds() {
+        final Object value = component.getValue();
+        if (value == null) {
+            return null;
+        } else if (value instanceof Collection) {
+            return (Set) component.getValue();
+        } else {
+            return Collections.singleton(value);
+        }
     }
 
     public List<Column> getColumns() {
@@ -60,13 +122,51 @@ public class Table
         component.removeContainerProperty(column.getId());
     }
 
+    public CollectionDatasource getDatasource() {
+        return datasource;
+    }
+
     public void setDatasource(CollectionDatasource datasource) {
+        this.datasource = datasource;
         final CollectionDatasourceWrapper ds =
                 new CollectionDatasourceWrapper(datasource);
 
         component.setContainerDataSource(ds);
         for (MetaProperty metaProperty : (Collection<MetaProperty>)ds.getContainerPropertyIds()) {
             component.setColumnHeader(metaProperty, StringUtils.capitalize(metaProperty.getName()));
+        }
+    }
+
+    private class ActionsAdapter implements com.itmill.toolkit.event.Action.Handler {
+        public com.itmill.toolkit.event.Action[] getActions(Object target, Object sender) {
+            final List<com.itmill.toolkit.event.Action> res = new ArrayList();
+            for (Action action : actionsOrder) {
+//                if (action.isEnabled()) {
+                    res.add(actions.get(action));
+//                }
+            }
+            return res.toArray(new com.itmill.toolkit.event.Action[]{});
+        }
+
+        public void handleAction(com.itmill.toolkit.event.Action tableAction, Object sender, Object target) {
+            final Action action = actions.inverse().get(tableAction);
+            if (action != null) {
+                action.actionPerform(Table.this);
+            }
+        }
+    }
+
+    private static class ActionWrapper extends com.itmill.toolkit.event.Action {
+        private final Action action;
+
+        public ActionWrapper(Action action) {
+            super(action.getCaption());
+            this.action = action;
+        }
+
+        @Override
+        public String getCaption() {
+            return action.getCaption();
         }
     }
 }

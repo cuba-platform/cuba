@@ -72,8 +72,14 @@ public class BasicWorkerBean implements BasicWorker
 
         Query query = em.createQuery(ctx.getQuery().getQueryString());
         SecurityProvider.applyConstraints(query, ctx.getMetaClass().getName());
+
+        final String queryString = ctx.getQuery().getQueryString();
         for (Map.Entry<String, Object> entry : ctx.getQuery().getParameters().entrySet()) {
-            query.setParameter(entry.getKey(), entry.getValue());
+            final String name = entry.getKey();
+            if (queryString.contains(":" + name)) {
+                final Object value = entry.getValue();
+                query.setParameter(entry.getKey(), value);
+            }
         }
 
         if (ctx.getView() != null) {

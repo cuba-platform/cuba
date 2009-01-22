@@ -13,62 +13,16 @@ import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.Layout;
 import com.itmill.toolkit.ui.OrderedLayout;
 import com.itmill.toolkit.ui.Panel;
+import com.itmill.toolkit.ui.ExpandLayout;
 
-public class GroupBox extends Panel implements Component, Component.Container, Component.HasCaption {
-    private int verticalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
-    private int horizontalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
-    private String id;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
+public class GroupBox extends AbstractPanel implements Component.HasCaption {
 
     public GroupBox() {
-        setLayout(new OrderedLayout(OrderedLayout.ORIENTATION_VERTICAL));
-    }
-
-    public void add(Component component) {
-        final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
-
-        final Layout layout = getLayout();
-        layout.addComponent(itmillComponent);
-        if (layout instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) getLayout()).setComponentAlignment(
-                    itmillComponent,
-                    component.getHorizontalAlIlignment(),
-                    component.getVerticalAlIlignment());
-        }
-    }
-
-    public void remove(Component component) {
-        getLayout().removeComponent(ComponentsHelper.unwrap(component));
-    }
-
-    public String getId() {
-        return id;  
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public int getVerticalAlIlignment() {
-        return verticalAlIlignment;
-    }
-
-    public void setVerticalAlIlignment(int verticalAlIlignment) {
-        this.verticalAlIlignment = verticalAlIlignment;
-        final com.itmill.toolkit.ui.Component component = getParent();
-        if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this, horizontalAlIlignment, verticalAlIlignment);
-        }
-    }
-
-    public int getHorizontalAlIlignment() {
-        return horizontalAlIlignment;
-    }
-
-    public void setHorizontalAlIlignment(int horizontalAlIlignment) {
-        this.horizontalAlIlignment = horizontalAlIlignment;
-        final com.itmill.toolkit.ui.Component component = getParent();
-        if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this, horizontalAlIlignment, verticalAlIlignment);
-        }
+        setLayout(new ExpandLayout(OrderedLayout.ORIENTATION_VERTICAL));
     }
 }

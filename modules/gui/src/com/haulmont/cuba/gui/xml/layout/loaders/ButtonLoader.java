@@ -19,7 +19,6 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
         final Button button = factory.createComponent("button");
 
         loadId(button, element);
-        loadFlex(button, element);
         loadCaption(button, element);
 
         return button;

@@ -9,5 +9,5 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface IFrame extends Component, Component.Container, Component.Sizable {
+public interface IFrame extends OrderedLayout, Component.Container {
 }

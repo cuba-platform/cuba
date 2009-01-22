@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;

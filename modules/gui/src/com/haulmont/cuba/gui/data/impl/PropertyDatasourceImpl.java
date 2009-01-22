@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class PropertyDatasourceImpl<T> implements Datasource<T> {
+public class PropertyDatasourceImpl<T> implements Datasource<T>, DatasourceImplementation {
     private String id;
 
     protected Datasource ds;
@@ -92,5 +92,8 @@ public class PropertyDatasourceImpl<T> implements Datasource<T> {
 
     public void removeListener(DatasourceListener<T> listener) {
         dsListeners.remove(listener);
+    }
+
+    public void initialized() {
     }
 }

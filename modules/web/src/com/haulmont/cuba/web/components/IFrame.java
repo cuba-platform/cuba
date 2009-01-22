@@ -9,23 +9,7 @@
  */
 package com.haulmont.cuba.web.components;
 
-import com.itmill.toolkit.ui.OrderedLayout;
-import com.itmill.toolkit.ui.ExpandLayout;
-import com.haulmont.cuba.gui.components.Component;
-
-public class IFrame extends AbstractContainer implements com.haulmont.cuba.gui.components.IFrame {
-    private boolean flexible;
-
+public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.components.IFrame {
     public IFrame() {
-        super(ExpandLayout.ORIENTATION_VERTICAL);
-    }
-
-    public boolean isFlexible() {
-        return flexible;
-    }
-
-    public void setFlexible(boolean flexible) {
-        this.flexible = flexible;
-        setWidth("100%");
     }
 }

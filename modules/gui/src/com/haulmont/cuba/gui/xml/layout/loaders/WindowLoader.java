@@ -26,7 +26,7 @@ public class WindowLoader extends ContainerLoader implements ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final Window window = factory.createComponent("window");
 
-        loadSubComponents(window, element);
+        loadSubComponents(window, element.element("layout"));
 
         return window;
     }

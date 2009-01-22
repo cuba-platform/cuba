@@ -11,8 +11,9 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
@@ -24,10 +25,17 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final IFrame frame = factory.createComponent("iframe");
+        final String src = element.attributeValue("src");
+        final LayoutLoader loader = new LayoutLoader(factory, LayoutLoaderConfig.getFrameLoaders(), dsContext);
+
+        final IFrame frame = (IFrame) loader.loadComponent(getClass().getResource(src));
 
         loadId(frame, element);
-        loadSubComponents(frame, element);
+        loadAlign(frame, element);
+        loadPack(frame, element);
+
+        loadHeight(frame, element);
+        loadWidth(frame, element);
 
         return frame;
     }

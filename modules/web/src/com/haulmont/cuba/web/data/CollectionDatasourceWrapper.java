@@ -63,13 +63,17 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         }
 
         datasource.addListener(new CollectionDatasourceListener() {
-            public void currentChanged(Datasource ds, Object prevItem, Object item) {}
+            public void itemChanged(Datasource ds, Object prevItem, Object item) {}
 
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                 fireItemSetChanged();
             }
 
             public void valueChanged(Object source, String property, Object prevValue, Object value) {}
+
+            public void collectionChanged(Datasource ds, CollectionOperation operation) {
+                fireItemSetChanged();
+            }
         });
     }
 

@@ -10,6 +10,6 @@
 package com.haulmont.cuba.gui.data;
 
 public interface DatasourceListener<T> extends ValueListener<T> {
-    void currentChanged(Datasource<T> ds, T prevItem, T item);
+    void itemChanged(Datasource<T> ds, T prevItem, T item);
     void stateChanged(Datasource<T> ds, Datasource.State prevState, Datasource.State state);
 }

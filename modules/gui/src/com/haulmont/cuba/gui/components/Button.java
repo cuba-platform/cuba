@@ -9,5 +9,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface Button extends Component, Component.HasCaption, Component.Sizable {
+public interface Button extends Component, Component.HasCaption {
+    Action getAction();
+    void setAction(Action action);
 }

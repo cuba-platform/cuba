@@ -9,13 +9,19 @@
  */
 package com.haulmont.cuba.web.components;
 
-import com.itmill.toolkit.ui.OrderedLayout;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.itmill.toolkit.ui.OrderedLayout;
+import com.itmill.toolkit.ui.ExpandLayout;
 
-class AbstractContainer extends OrderedLayout implements Component, Component.Container {
+import java.util.*;
+
+class AbstractContainer extends OrderedLayout implements Component.Container {
     private int verticalAlIlignment = AlignmentHandler.ALIGNMENT_TOP;
     private int horizontalAlIlignment = AlignmentHandler.ALIGNMENT_LEFT;
-    private String id;
+
+    protected String id;
+    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
 
     public AbstractContainer(int orientation) {
         super(orientation);
@@ -26,10 +32,25 @@ class AbstractContainer extends OrderedLayout implements Component, Component.Co
 
         addComponent(itmillComponent);
         setComponentAlignment(itmillComponent, component.getHorizontalAlIlignment(), component.getVerticalAlIlignment());
+
+        if (component.getId() != null) {
+            componentByIds.put(component.getId(), component);
+        }
     }
 
     public void remove(Component component) {
         removeComponent(ComponentsHelper.unwrap(component));
+        if (component.getId() != null) {
+            componentByIds.remove(component.getId());
+        }
+    }
+
+    public <T extends Component> T getOwnComponent(String id) {
+        return (T) componentByIds.get(id);
+    }
+
+    public <T extends Component> T getComponent(String id) {
+        return ComponentsHelper.<T>getComponent(this, id);
     }
 
     public String getId() {
@@ -38,6 +59,10 @@ class AbstractContainer extends OrderedLayout implements Component, Component.Co
 
     public void setId(String id) {
         this.id = id;
+        setDebugId(id);
+    }
+
+    public void requestFocus() {
     }
 
     public int getVerticalAlIlignment() {

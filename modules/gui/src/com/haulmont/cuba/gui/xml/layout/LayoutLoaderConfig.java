@@ -15,31 +15,33 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class LayoutLoaderConfig {
-    private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders = new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
+    private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders =
+            new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
 
     private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
     static {
-        windowLoaders.registerLoader("layout", WindowLoader.class);
-        windowLoaders.registerLoader("hbox", HBoxLoader.class);
-        windowLoaders.registerLoader("vbox", VBoxLoader.class);
-        windowLoaders.registerLoader("button", ButtonLoader.class);
-        windowLoaders.registerLoader("iframe", FrameLoader.class);
-        windowLoaders.registerLoader("groupbox", GroupBoxLoader.class);
-        windowLoaders.registerLoader("label", LabelLoader.class);
-        windowLoaders.registerLoader("textbox", TextBoxLoader.class);
-        windowLoaders.registerLoader("table", TableLoader.class);
+        windowLoaders.registerLoader("window", WindowLoader.class);
+        registerComponents(windowLoaders);
 
-        frameLoaders.registerLoader("layout", IFrameLoader.class);
-        frameLoaders.registerLoader("hbox", HBoxLoader.class);
-        frameLoaders.registerLoader("vbox", VBoxLoader.class);
-        frameLoaders.registerLoader("button", ButtonLoader.class);
-        frameLoaders.registerLoader("iframe", FrameLoader.class);
-        frameLoaders.registerLoader("groupbox", GroupBoxLoader.class);
-        frameLoaders.registerLoader("label", LabelLoader.class);
-        frameLoaders.registerLoader("textbox", TextBoxLoader.class);
-        frameLoaders.registerLoader("table", TableLoader.class);
+        frameLoaders.registerLoader("frame", FrameLoader.class);
+        registerComponents(frameLoaders);
+    }
+
+    private static void registerComponents(LayoutLoaderConfig config) {
+        config.registerLoader("hbox", HBoxLoader.class);
+        config.registerLoader("vbox", VBoxLoader.class);
+        config.registerLoader("button", ButtonLoader.class);
+        config.registerLoader("group-box", GroupBoxLoader.class);
+        config.registerLoader("label", LabelLoader.class);
+        config.registerLoader("text-field", AbstractFieldLoader.class);
+        config.registerLoader("text-area", AbstractFieldLoader.class);
+        config.registerLoader("date-field", AbstractFieldLoader.class);
+        config.registerLoader("lookup-field", AbstractFieldLoader.class);
+        config.registerLoader("table", TableLoader.class);
+        config.registerLoader("iframe", IFrameLoader.class);
+        config.registerLoader("split", SplitPanelLoader.class);
     }
 
     public static LayoutLoaderConfig getWindowLoaders() {

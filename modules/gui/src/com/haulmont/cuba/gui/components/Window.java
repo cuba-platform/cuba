@@ -9,5 +9,5 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface Window extends Component, Component.Container, Component.HasCaption {
+public interface Window extends IFrame {
 }

@@ -43,4 +43,12 @@ public class PropertyWrapper implements Property{
     public void setReadOnly(boolean newStatus) {
         readOnly = newStatus;
     }
+
+    @Override
+    public String toString() {
+        final Object value = getValue();
+        return metaProperty.getRange().isDatatype() ?
+                metaProperty.getRange().asDatatype().format(value) :
+                value == null ? null : value.toString();
+    }
 }

@@ -25,6 +25,16 @@ public interface Component {
     String getId();
     void setId(String id);
 
+    void requestFocus();
+
+    int getHeight();
+    int getHeightUnits();
+    void setHeight(String height);
+
+    int getWidth();
+    int getWidthUnits();
+    void setWidth(String width);
+
     int getVerticalAlIlignment();
     void setVerticalAlIlignment(int verticalAlIlignment);
 
@@ -34,6 +44,9 @@ public interface Component {
     interface Container extends Component {
         void add(Component component);
         void remove(Component component);
+
+        <T extends Component> T getOwnComponent(String id);
+        <T extends Component> T getComponent(String id);
     }
 
     interface Wrapper {
@@ -48,11 +61,6 @@ public interface Component {
     interface Field extends Component {
         <T> T getValue();
         void setValue(Object value);
-    }
-
-    interface Sizable extends Component {
-        boolean isFlexible();
-        void setFlexible(boolean flexible);
     }
 
     interface HasXmlDescriptor {

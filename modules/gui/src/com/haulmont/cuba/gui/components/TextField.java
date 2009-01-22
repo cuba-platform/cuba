@@ -9,11 +9,5 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.Datasource;
-
-public interface TextBox extends Component, Component.HasCaption, Component.Field, Component.Sizable {
-    Datasource getDatasource();
-    String getProperty();
-
-    void setDatasource(Datasource datasource, String property);
+public interface TextField extends Field {
 }

@@ -1,16 +1,17 @@
-<window>
-    <vbox>
-        <groupbox>
-            <caption label="Filter"/>
-            <hbox flex="1">
-                <label control="name" value="Name:"/>
-                <textbox id="name" flex="1"/>
+<frame>
+    <layout>
+        <vbox id="filter-pane" width="100%">
+            <group-box>
+                <caption label="Filter"/>
+                <hbox id="group-box">
+                    <label control="name" value="Name:"/>
+                    <text-field id="name" width="100%"/>
+                </hbox>
+            </group-box>
+            <hbox align="end" width="500px">
+                <button id="clear" caption="Clear"/>
+                <button id="apply" caption="Apply"/>
             </hbox>
-        </groupbox>
-        <hbox align="end">
-            
-            <button id="Clear" caption="Clear"/>
-            <button id="Apply" caption="Apply"/>
-        </hbox>
-    </vbox>
-</window>
+        </vbox>
+    </layout>
+</frame>
