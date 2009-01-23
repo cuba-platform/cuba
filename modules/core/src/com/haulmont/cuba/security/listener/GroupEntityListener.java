@@ -77,7 +77,7 @@ public class GroupEntityListener implements
 
         Query q = em.createQuery(
                 "select h from sec$GroupHierarchy h join fetch h.group " +
-                "where h.parent = ?1");
+                "where h.parent.id = ?1");
         q.setParameter(1, entity);
         List<GroupHierarchy> list = q.getResultList();
         for (GroupHierarchy hierarchy : list) {

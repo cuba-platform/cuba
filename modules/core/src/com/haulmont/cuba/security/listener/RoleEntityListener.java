@@ -24,7 +24,7 @@ public class RoleEntityListener implements BeforeDeleteEntityListener<Role>
     public void onBeforeDelete(Role entity) {
         EntityManager em = PersistenceProvider.getEntityManager();
 
-        Query query = em.createQuery("select pr from sec$ProfileRole pr where pr.role = ?1");
+        Query query = em.createQuery("select pr from sec$ProfileRole pr where pr.role.id = ?1");
         query.setParameter(1, entity);
         List<ProfileRole> list = query.getResultList();
         for (ProfileRole profileRole : list) {
