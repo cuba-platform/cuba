@@ -92,6 +92,13 @@ public abstract class PersistenceProvider
         return set;
     }
 
+    public static boolean isDetached(BaseEntity entity) {
+        if (entity instanceof PersistenceCapable) 
+            return ((PersistenceCapable) entity).pcIsDetached();
+        else
+            throw new RuntimeException("Entity is not PersistenceCapable: " + entity);
+    }
+
     protected abstract EntityManagerFactory __getEntityManagerFactory();
 
     protected abstract EntityManager __getEntityManager();

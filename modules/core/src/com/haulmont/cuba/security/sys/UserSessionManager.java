@@ -72,7 +72,7 @@ public class UserSessionManager
     private void compileConstraints(UserSession session, Group group) {
         EntityManager em = PersistenceProvider.getEntityManager();
         Query q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
-                "where h.group = ?1");
+                "where h.group.id = ?1");
         q.setParameter(1, group);
         List<Constraint> constraints = q.getResultList();
         List<Constraint> list = new ArrayList<Constraint>(constraints);

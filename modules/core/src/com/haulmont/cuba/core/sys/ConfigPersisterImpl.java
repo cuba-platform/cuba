@@ -27,7 +27,7 @@ public class ConfigPersisterImpl implements ConfigPersister
     private final Log log = LogFactory.getLog(ConfigPersisterImpl.class);
 
     public String getProperty(SourceType sourceType, String name) {
-        log.debug("Getting property '" + name + "', source=" + sourceType.name());
+        log.trace("Getting property '" + name + "', source=" + sourceType.name());
         if (SourceType.SYSTEM.equals(sourceType)) {
             return System.getProperty(name);
         }

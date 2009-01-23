@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module relativePaths="true" type="JAVA_MODULE" version="4">
-  <component name="AntConfiguration" />
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -16,6 +15,5 @@
     <orderEntry type="library" name="server" level="project" />
     <orderEntry type="module" module-name="gui" />
   </component>
-  <component name="libraryTable" />
 </module>
 

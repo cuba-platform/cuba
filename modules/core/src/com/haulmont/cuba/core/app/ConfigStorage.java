@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.core.global.BasicServiceRemote;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.entity.Config;
 import com.haulmont.cuba.core.sys.ConfigWorker;
 import com.haulmont.cuba.security.entity.Profile;
@@ -172,7 +173,8 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
             User user = service.load(ctx);
 
             ctx = new BasicInvocationContext().setEntityClass(Profile.class);
-            ctx.setQueryString("select p from sec$Profile p where p.user = :user").addParameter("user", user);
+            ctx.setView(new View(Profile.class, "test").addProperty("name").addProperty("defaultProfile"));
+            ctx.setQueryString("select p from sec$Profile p where p.user.id = :user").addParameter("user", user);
             List<Profile> profiles = service.loadList(ctx);
 
             boolean b = false;

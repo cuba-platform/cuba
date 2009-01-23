@@ -79,7 +79,6 @@
     <orderEntry type="module" module-name="web" />
     <orderEntry type="module" module-name="gui" />
     <orderEntry type="library" name="gwt" level="project" />
-    <orderEntry type="library" name="gwt-user" level="project" />
   </component>
 </module>
 

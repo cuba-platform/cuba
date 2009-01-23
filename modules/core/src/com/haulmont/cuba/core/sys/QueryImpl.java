@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.View;
 
 import javax.persistence.TemporalType;
@@ -76,6 +77,8 @@ public class QueryImpl implements Query
     }
 
     public Query setParameter(String name, Object value) {
+        if (value instanceof BaseEntity)
+            value = ((BaseEntity) value).getId();
         getQuery().setParameter(name, value);
         return this;
     }
@@ -86,6 +89,8 @@ public class QueryImpl implements Query
     }
 
     public Query setParameter(int position, Object value) {
+        if (value instanceof BaseEntity)
+            value = ((BaseEntity) value).getId();
         getQuery().setParameter(position, value);
         return this;
     }

@@ -95,6 +95,9 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                 em = emMap.get(tx);
                 if (em == null) {
                     log.trace("Creating new EntityManager for transaction " + tx);
+                    if (tx.getStatus() != Status.STATUS_ACTIVE)
+                        throw new RuntimeException("Unable to create an EntityManager: JTA transaction status=" + tx.getStatus());
+                    
                     em = getEntityManagerFactory().createEntityManager();
                     registerSync(tx, em);
                     emMap.put(tx, em);
@@ -130,11 +133,11 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                     new Synchronization()
                     {
                         public void beforeCompletion() {
+                            log.trace("Closing EntityManager for transaction " + tx);
+                            em.close();
                         }
 
                         public void afterCompletion(int i) {
-                            log.trace("Closing EntityManager for transaction " + tx);
-                            em.close();
                             emMap.remove(tx);
                         }
                     }

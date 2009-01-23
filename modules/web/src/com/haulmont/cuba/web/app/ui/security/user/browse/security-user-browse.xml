@@ -19,7 +19,7 @@
             class="com.haulmont.cuba.security.entity.Profile"
             view="browse"
         >
-            <query>select p from sec$Profile p where p.user = ${ds:users}</query>
+            <query>select p from sec$Profile p where p.user.id = ${ds:users}</query>
         </collection-datasource>
     </dsContext>
 

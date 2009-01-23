@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.app.BasicService;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
@@ -47,14 +48,7 @@ public class LoginTest extends CubaTestCase
         assertNotNull(userSession);
         UUID sessionId = userSession.getId();
 
-
-        Configuration.setConfiguration(new JaasConfiguration());
-
-        LoginContext lc = new LoginContext(
-                JaasConfiguration.CONTEXT_NAME,
-                new JaasCallbackHandler(ADMIN_NAME, sessionId)
-        );
-        lc.login();
+        ServerSecurityUtils.setSecurityAssociation(ADMIN_NAME, sessionId);
 
         BasicService bs = Locator.lookupLocal(BasicService.JNDI_NAME);
         BasicInvocationContext ctx = new BasicInvocationContext().setEntityClass(Server.class);

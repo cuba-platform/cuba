@@ -25,6 +25,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.interceptor.Interceptors;
 import java.util.List;
 
@@ -36,31 +38,37 @@ public class BasicServiceBean implements BasicService, BasicServiceRemote
         return Locator.lookupLocal(BasicWorker.JNDI_NAME);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T extends BaseEntity> T create(T entity) {
         checkPermission(((Instance) entity).getMetaClass(), "create");
         return getBasicWorker().create(entity);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T extends BaseEntity> T update(T entity) {
         checkPermission(((Instance) entity).getMetaClass(), "update");
         return getBasicWorker().update(entity);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void delete(BasicInvocationContext ctx) {
         checkPermission(ctx.getMetaClass(), "delete");
         getBasicWorker().delete(ctx);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T extends BaseEntity> T get(BasicInvocationContext ctx) {
         checkPermission(ctx.getMetaClass(), "view");
         return (T) getBasicWorker().get(ctx);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T extends BaseEntity> T load(BasicInvocationContext ctx) {
         checkPermission(ctx.getMetaClass(), "view");
         return (T) getBasicWorker().load(ctx);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T extends BaseEntity> List<T> loadList(BasicInvocationContext ctx) {
         checkPermission(ctx.getMetaClass(), "view");
         return getBasicWorker().loadList(ctx);
