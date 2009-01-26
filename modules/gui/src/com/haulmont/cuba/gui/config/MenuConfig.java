@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,13 +21,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import java.io.InputStream;
 import java.io.StringReader;
 import java.util.*;
-
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.PermissionType;
 
 public class MenuConfig
 {
@@ -32,7 +30,6 @@ public class MenuConfig
     
     private Map<String, List<MenuItem>> rootItems = new HashMap<String, List<MenuItem>>();
 
-    private ActionsConfig actionsConfig;
     private ResourceBundle resourceBundle;
 
     private ClientType clientType;
@@ -52,10 +49,9 @@ public class MenuConfig
         return res;
     }
 
-    public void loadConfig(String moduleName, ActionsConfig actionsConfig, ResourceBundle resourceBundle, String xml) {
+    public void loadConfig(String moduleName, ResourceBundle resourceBundle, String xml) {
         rootItems.clear();
 
-        this.actionsConfig = actionsConfig;
         this.resourceBundle = resourceBundle;
 
         SAXReader reader = new SAXReader();
@@ -78,13 +74,13 @@ public class MenuConfig
             MenuItem menuItem = null;
 
             if ("menu".equals(element.getName())) {
-                String s = element.attributeValue("name");
+                String id = element.attributeValue("id");
 
-                if (StringUtils.isBlank(s)) {
-                    LOG.warn(String.format("Invalid menu-config: 'name' attribute not defined"));
+                if (StringUtils.isBlank(id)) {
+                    LOG.warn(String.format("Invalid menu-config: 'id' attribute not defined"));
                 }
 
-                menuItem = new MenuItem(parentItem, resourceBundle.getString("menu-config." + s));
+                menuItem = new MenuItem(parentItem, resourceBundle.getString("menu-config." + id));
                 menuItem.setDescriptor(element);
 
                 loadMenuItems(element, menuItem);
@@ -94,12 +90,10 @@ public class MenuConfig
                     menuItem = null;
                 }
             } else if ("item".equals(element.getName())) {
-                String actionName = element.attributeValue("action");
-                if (!StringUtils.isBlank(actionName) && isActionPermitted(actionName)) {
-                    Action action = actionsConfig.getAction(actionName);
-                    String menuCaption = getCaption("menu-config." + actionName, action.getCaption());
+                String id = element.attributeValue("id");
+                if (!StringUtils.isBlank(id) && isActionPermitted(id)) {
+                    String menuCaption = getCaption("menu-config." + id, id);
                     menuItem = new MenuItem(parentItem, menuCaption);
-                    menuItem.setAction(action);
                     menuItem.setDescriptor(element);
                 }
             } else {

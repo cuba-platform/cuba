@@ -15,7 +15,7 @@ import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.haulmont.cuba.security.entity.User;
 
 public class SecurityUserBrowser extends AbstractFrame implements Window {
-    public SecurityUserBrowser(Screen frame) {
+    public SecurityUserBrowser(Window frame) {
         super(frame);
     }
 

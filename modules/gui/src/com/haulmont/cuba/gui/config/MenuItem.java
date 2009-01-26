@@ -23,7 +23,6 @@ public class MenuItem
     private String caption;
 
     private Element descriptor;
-    private Action action;
 
     public MenuItem(MenuItem parent, String caption) {
         this.parent = parent;
@@ -40,14 +39,6 @@ public class MenuItem
 
     public String getCaption() {
         return caption;
-    }
-
-    public Action getAction() {
-        return action;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
     }
 
     public String toString() {
