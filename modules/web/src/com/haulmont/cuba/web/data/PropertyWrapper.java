@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.data;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.itmill.toolkit.data.Property;
 
 public class PropertyWrapper implements Property{
@@ -25,11 +26,25 @@ public class PropertyWrapper implements Property{
     }
 
     public Object getValue() {
-        return ((Instance) item).getValue(metaProperty.getName());
+        final Instance instance = getInstance();
+        return instance == null ? null : instance.getValue(metaProperty.getName());
+    }
+
+    protected Instance getInstance() {
+        if (item instanceof Datasource) {
+            final Datasource ds = (Datasource) item;
+            if (Datasource.State.VALID.equals(ds.getState())) {
+                return (Instance) ds.getItem();
+            } else {
+                return null;
+            }
+        } else {
+            return (Instance) item;
+        }
     }
 
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-        ((Instance) item).setValue(metaProperty.getName(), newValue);
+        getInstance().setValue(metaProperty.getName(), newValue);
     }
 
     public Class getType() {

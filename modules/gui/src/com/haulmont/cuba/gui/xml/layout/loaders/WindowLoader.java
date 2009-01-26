@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
-public class WindowLoader extends ContainerLoader implements ComponentLoader {
+public class WindowLoader extends FrameLoader implements ComponentLoader {
 
     public WindowLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
         super(config, factory, dsContext);
@@ -26,6 +26,7 @@ public class WindowLoader extends ContainerLoader implements ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final Window window = factory.createComponent("window");
 
+        loadResourceBundle(window, element);
         loadSubComponents(window, element.element("layout"));
 
         return window;

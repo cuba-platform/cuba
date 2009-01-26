@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.core.global.BasicServiceRemote;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.TemplateHelper;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
@@ -257,7 +258,7 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
             query = query.replaceAll(paramInfo, paramName);
         }
 
-        query = processTemplate(query, parameterValues);
+        query = TemplateHelper.processTemplate(query, parameterValues);
 
         for (ParametersHelper.ParameterInfo info : queryParameters) {
             String paramName = info.getType().getPrefix() + "." + info.getName();
@@ -266,25 +267,6 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
         }
 
         return query;
-    }
-
-    protected String processTemplate(String query, Map<String, Object> parameterValues) {
-        final StringWriter writer = new StringWriter();
-
-        try {
-            final Configuration configuration = new Configuration();
-
-            final StringTemplateLoader templateLoader = new StringTemplateLoader();
-            templateLoader.putTemplate("query", query);
-            configuration.setTemplateLoader(templateLoader);
-
-            final Template template = configuration.getTemplate("query");
-            template.process(parameterValues, writer);
-
-            return writer.toString();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
     }
 
     protected void forceCollectionChanged(CollectionDatasourceListener.CollectionOperation operation) {

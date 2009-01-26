@@ -1,0 +1,6 @@
+<views>
+    <view entity="sec$User" name="edit">
+        <property name="name"/>
+        <property name="login"/>
+    </view>
+</views>

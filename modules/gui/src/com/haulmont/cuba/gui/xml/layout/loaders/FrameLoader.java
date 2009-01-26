@@ -17,6 +17,9 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
+import java.util.ResourceBundle;
+import java.util.Locale;
+
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
     public FrameLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
@@ -27,8 +30,31 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         final IFrame frame = factory.createComponent("iframe");
 
         loadId(frame, element);
+
+        loadResourceBundle(frame, element);
+
         loadSubcomponentsAndExpand(frame, element.element("layout"));
 
         return frame;
+    }
+
+    protected void loadResourceBundle(IFrame frame, Element element) {
+        final String resourceBundleName = element.attributeValue("resourceBundle");
+        final ResourceBundle bundle;
+        
+        if (resourceBundleName != null) {
+            Locale locale = getLocale();
+            bundle = ResourceBundle.getBundle(resourceBundleName, locale);
+        } else {
+            bundle = null;
+        }
+
+        if (bundle != null) {
+            frame.setResourceBundle(bundle);
+            setResourceBundle(bundle);
+        } else {
+            frame.setResourceBundle(this.resourceBundle);
+            setResourceBundle(this.resourceBundle);
+        }
     }
 }

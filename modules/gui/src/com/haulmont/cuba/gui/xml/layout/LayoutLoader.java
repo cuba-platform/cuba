@@ -19,11 +19,15 @@ import org.dom4j.io.SAXReader;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.Locale;
 
 public class LayoutLoader {
     private ComponentsFactory factory;
     private LayoutLoaderConfig config;
     private DsContext dsContext;
+
+    private Locale locale;
 
     public LayoutLoader(ComponentsFactory factory, LayoutLoaderConfig config, DsContext dsContext) {
         this.factory = factory;
@@ -62,6 +66,8 @@ public class LayoutLoader {
             final Constructor<? extends ComponentLoader> constructor =
                     loaderClass.getConstructor(LayoutLoaderConfig.class, ComponentsFactory.class, DsContext.class);
             loader = constructor.newInstance(config, factory, dsContext);
+
+            loader.setLocale(locale);
         } catch (Throwable e) {
             loader = loaderClass.newInstance();
         }
@@ -76,6 +82,14 @@ public class LayoutLoader {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }
 

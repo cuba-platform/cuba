@@ -9,6 +9,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.WindowManager;
+
+import java.util.Map;
+import java.util.ResourceBundle;
+
 public class AbstractFrame implements IFrame, Component.Wrapper {
     protected IFrame frame;
 
@@ -90,5 +95,29 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
 
     public void expand(Component component, String height, String width) {
         frame.expand(component, height, width);
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return frame.getResourceBundle();
+    }
+
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        frame.setResourceBundle(resourceBundle);
+    }
+
+    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
+        return frame.<T>openWindow(descriptor, openType, params);
+    }
+
+    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
+        return frame.<T>openWindow(aclass, openType, params);
+    }
+
+    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType) {
+        return frame.<T>openWindow(descriptor, openType);
+    }
+
+    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType) {
+        return frame.<T>openWindow(aclass, openType);
     }
 }

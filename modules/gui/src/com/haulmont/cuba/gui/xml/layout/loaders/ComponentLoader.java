@@ -13,7 +13,28 @@ import com.haulmont.cuba.gui.components.Component;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+    protected Locale locale;
+    protected ResourceBundle resourceBundle;
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
 
     protected void loadId(Component component, Element element) {
         final String id = element.attributeValue("id");

@@ -25,6 +25,7 @@ import com.itmill.toolkit.ui.TabSheet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Locale;
 
 public class ScreenManager extends WindowManager
 {
@@ -48,23 +49,11 @@ public class ScreenManager extends WindowManager
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
-        Window window = createScreen(descriptor, params);
-        showWindow(window, (String)params.get("caption"), openType);
-        return (T) window;
-    }
-
-    private Window createScreen(String descriptor, Map params) {
+    protected Window createWindow(String descriptor, Map params) {
         return createWindowFromTemplate(descriptor, params);
     }
 
-    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
-        Window window = createScreen(aclass, params);
-        showWindow(window, (String)params.get("caption"), openType);
-        return (T) window;
-    }
-
-    private Window createScreen(Class aclass, Map params) {
+    protected Window createWindow(Class aclass, Map params) {
         try {
             final Window window = (Window) aclass.newInstance();
             invokeMethod(window, "init");
@@ -74,7 +63,7 @@ public class ScreenManager extends WindowManager
         }
     }
 
-    protected Window showWindow(Window window, String caption, OpenType type) {
+    protected void showWindow(Window window, String caption, OpenType type) {
         if (OpenType.NEW_TAB.equals(type)) {
             ExpandLayout layout = new ExpandLayout();
 
@@ -109,8 +98,10 @@ public class ScreenManager extends WindowManager
             tabInfo.screens.add(window);
         } else
             throw new UnsupportedOperationException("Opening type not supported: " + type);
+    }
 
-        return window;
+    protected Locale getLocale() {
+        return App.getInstance().getLocale();
     }
 
     public void closeScreen() {

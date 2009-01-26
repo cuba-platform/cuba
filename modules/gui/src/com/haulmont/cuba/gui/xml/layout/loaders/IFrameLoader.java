@@ -5,7 +5,7 @@
 
  * Author: Dmitry Abramov
  * Created: 19.12.2008 15:27:37
- * $Id$
+ * $Id: IFrameLoader.java 69 2009-01-22 12:19:45Z abramov $
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
@@ -29,6 +29,9 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         final LayoutLoader loader = new LayoutLoader(factory, LayoutLoaderConfig.getFrameLoaders(), dsContext);
 
         final IFrame frame = (IFrame) loader.loadComponent(getClass().getResource(src));
+        if (frame.getResourceBundle() == null) {
+            frame.setResourceBundle(resourceBundle);
+        }
 
         loadId(frame, element);
         loadAlign(frame, element);

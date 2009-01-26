@@ -1,0 +1,26 @@
+<window resourceBundle="com.haulmont.cuba.web.app.ui.security.user.edit.security-user-edit">
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <datasource
+            id="user"
+            class="com.haulmont.cuba.security.entity.User"
+            view="edit"
+        />
+    </dsContext>
+
+    <layout>
+        <hbox>
+            <vbox>
+                <label value="Name"/>
+                <label value="Login"/>
+            </vbox>
+            <vbox>
+                <text-field id="name" datasource="user" property="name"/>
+                <text-field id="login" datasource="user" property="login"/>
+            </vbox>
+        </hbox>
+    </layout>
+</window>

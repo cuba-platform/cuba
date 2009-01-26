@@ -10,13 +10,17 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
-public interface ComponentLoader {
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-    Component loadComponent(
-            ComponentsFactory factory,
-            Element element
-    ) throws InstantiationException, IllegalAccessException;
+public interface ComponentLoader {
+    Locale getLocale();
+    void setLocale(Locale locale);
+
+    ResourceBundle getResourceBundle();
+    void setResourceBundle(ResourceBundle resourceBundle);
+
+    Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException;
 }

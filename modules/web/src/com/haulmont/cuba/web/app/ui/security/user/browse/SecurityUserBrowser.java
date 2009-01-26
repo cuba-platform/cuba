@@ -9,10 +9,13 @@
  */
 package com.haulmont.cuba.web.app.ui.security.user.browse;
 
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.web.ui.Screen;
-import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.components.ComponentsHelper;
+
+import java.util.Collections;
+import java.util.Set;
 
 public class SecurityUserBrowser extends AbstractFrame implements Window {
     public SecurityUserBrowser(Window frame) {
@@ -23,6 +26,26 @@ public class SecurityUserBrowser extends AbstractFrame implements Window {
         final Button button  = getComponent("filter.apply");
         final Table table  = getComponent("users");
 
+        table.addAction(new Action() {
+            public String getCaption() {
+                return "Edit";
+            }
+
+            public boolean isEnabled() {
+                return true;
+            }
+
+            public void actionPerform(Component component) {
+                final Set selected = table.getSelected();
+                if (selected.size() == 1) {
+                    User user = (User) selected.iterator().next();
+                    openWindow(
+                            "/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml",
+                            WindowManager.OpenType.THIS_TAB,
+                            Collections.singletonMap("user", user));
+                }
+            }
+        });
         table.addAction(new Action() {
             public String getCaption() {
                 return "Refresh";

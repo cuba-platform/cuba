@@ -81,9 +81,21 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
     }
 
     public synchronized void setItem(T item) {
-        Object prevItem = this.item;
-        State prevStatus = this.state;
+        if (State.NOT_INITIALIZAED.equals(this.state)) {
+            __setItem(item);
+        } else {
+            Object prevItem = this.item;
+            State prevStatus = this.state;
 
+            __setItem(item);
+            state = State.VALID;
+
+            forceStateChanged(prevStatus);
+            forceItemChanged(prevItem);
+        }
+    }
+
+    protected void __setItem(T item) {
         if (this.item != null) {
             detatchListener((Instance) this.item);
         }
@@ -96,10 +108,6 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
             attachListener((Instance) item);
         }
         this.item = item;
-        state = State.VALID;
-
-        forceStateChanged(prevStatus);
-        forceItemChanged(prevItem);
     }
 
     protected void forceItemChanged(Object prevItem) {

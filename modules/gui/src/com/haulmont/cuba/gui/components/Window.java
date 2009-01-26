@@ -9,5 +9,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.WindowManager;
+
+import java.util.Map;
+
 public interface Window extends IFrame {
 }

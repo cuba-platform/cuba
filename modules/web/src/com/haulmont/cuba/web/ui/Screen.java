@@ -10,13 +10,16 @@
  */
 package com.haulmont.cuba.web.ui;
 
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.itmill.toolkit.ui.ExpandLayout;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 public class Screen extends ExpandLayout implements Window
 {
@@ -24,11 +27,36 @@ public class Screen extends ExpandLayout implements Window
     private String id;
 
     private Map<String, Component> componentByIds = new HashMap<String, Component>();
+    private ResourceBundle resourceBundle;
 
     public Screen() {
         super(ExpandLayout.ORIENTATION_VERTICAL);
         setMargin(true);
         setSpacing(true);
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
+        return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType, params);
+    }
+
+    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
+        return App.getInstance().getScreenManager().<T>openWindow(aclass, openType, params);
+    }
+
+    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType);
+    }
+
+    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openWindow(aclass, openType);
     }
 
     public void add(Component component) {
