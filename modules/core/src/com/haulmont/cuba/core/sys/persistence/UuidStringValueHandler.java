@@ -31,7 +31,7 @@ public class UuidStringValueHandler extends AbstractValueHandler
     }
 
     public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store) {
-        return val.toString();
+        return val == null ? null : val.toString();
     }
 
     public Object toObjectValue(ValueMapping vm, Object val) {

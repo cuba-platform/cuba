@@ -40,24 +40,30 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
 
     public CollectionDatasourceImpl(DsContext context, String id, MetaClass metaClass, String viewName) {
         super(context, id, metaClass, viewName);
-        parentDsListener = new DatasourceListener() {
+        parentDsListener = new CollectionDatasourceListener() {
             public void itemChanged(Datasource ds, Object prevItem, Object item) {
                 refresh();
             }
 
             public void stateChanged(Datasource ds, State prevState, State state) {}
             public void valueChanged(Object source, String property, Object prevValue, Object value) {}
+
+            public void collectionChanged(Datasource ds, CollectionOperation operation) {
+                if (CollectionOperation.Type.REFRESH.equals(operation.getType())) {
+                    refresh();
+                }
+            }
         };
     }
 
     @Override
-    public void invalidate() {
+    public synchronized void invalidate() {
         super.invalidate();
         this.collection = Collections.emptyList();
     }
 
     @Override
-    public void setItem(T item) {
+    public synchronized void setItem(T item) {
         if (State.VALID.equals(state)) {
             Object prevItem = this.item;
 
@@ -83,6 +89,8 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
     @Override
     public synchronized void refresh() {
         invalidate();
+
+        Collection prevIds = collection;
         loadData();
 
         State prevState = state;
@@ -91,10 +99,15 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
             forceStateChanged(prevState);
         }
 
+        // HACK need somehow get id from item
+        if (prevIds != null && !prevIds.contains(this.item)) {
+            setItem(null);
+        }
+
         forceCollectionChanged(new CollectionDatasourceListener.CollectionOperation<T>(CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
     }
 
-    public T getItem(K key) {
+    public synchronized T getItem(K key) {
         if (State.NOT_INITIALIZAED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
@@ -102,7 +115,7 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
         }
     }
 
-    public Collection<K> getItemIds() {
+    public synchronized Collection<K> getItemIds() {
         if (State.NOT_INITIALIZAED.equals(state)) {
             return Collections.emptyList();
         } else {
@@ -110,7 +123,7 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
         }
     }
 
-    public int size() {
+    public synchronized int size() {
         if (State.NOT_INITIALIZAED.equals(state)) {
             return 0;
         } else {
@@ -118,15 +131,15 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
         }
     }
 
-    public void addItem(T item) throws UnsupportedOperationException {
+    public synchronized void addItem(T item) throws UnsupportedOperationException {
         getCollection().add(item);
     }
 
-    public void removeItem(T item) throws UnsupportedOperationException {
+    public synchronized void removeItem(T item) throws UnsupportedOperationException {
         getCollection().remove(item);
     }
 
-    public boolean containsItem(K itemId) {
+    public synchronized boolean containsItem(K itemId) {
         return getCollection().contains(itemId);
     }
 
@@ -134,7 +147,7 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
         return query;
     }
 
-    public void setQuery(String query) {
+    public synchronized void setQuery(String query) {
         if (!ObjectUtils.equals(this.query, query)) {
             this.query = query;
             invalidate();
@@ -178,6 +191,12 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
         ctx.setEntityClass(metaClass);
 
         final Map<String, Object> parameters = getQueryParameters();
+        for (ParametersHelper.ParameterInfo info : queryParameters) {
+            if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
+                final Object value = parameters.get(info.getJPQLName());
+                if (value == null) return Collections.emptyList();
+            }
+        }
 
         final BasicInvocationContext.Query query = ctx.setQueryString(getJPQLQuery(this.query, parameters));
         query.setParameters(parameters);
@@ -192,8 +211,7 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
     private Map<String, Object> getQueryParameters() {
         final Map<String, Object> map = new HashMap<String, Object>();
         for (ParametersHelper.ParameterInfo info : queryParameters) {
-            String name = info.getType().getPrefix() + "." + info.getName();
-            name = name.replaceAll("\\.", "_");
+            String name = info.getJPQLName();
 
             switch (info.getType()) {
                 case DATASOURCE: {

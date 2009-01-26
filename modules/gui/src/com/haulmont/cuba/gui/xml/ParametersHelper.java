@@ -11,15 +11,13 @@ package com.haulmont.cuba.gui.xml;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class ParametersHelper {
     private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile("\\$\\{([\\w\\.:]+)\\}");
 
     public static ParameterInfo[] parseQuery(String query) {
-        List<ParameterInfo> infos = new ArrayList<ParameterInfo>();
+        Set<ParameterInfo> infos = new HashSet<ParameterInfo>();
 
         Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(query);
         while (matcher.find()) {
@@ -62,6 +60,27 @@ public class ParametersHelper {
 
         public String getName() {
             return name;
+        }
+
+        public String getJPQLName() {
+            return (type.getPrefix() + "." + name).replaceAll("\\.", "_");
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ParameterInfo that = (ParameterInfo) o;
+
+            return name.equals(that.name) && type == that.type;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = type.hashCode();
+            result = 31 * result + name.hashCode();
+            return result;
         }
     }
 
