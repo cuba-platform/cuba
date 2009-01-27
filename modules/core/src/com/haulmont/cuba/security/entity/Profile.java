@@ -12,6 +12,8 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -21,7 +23,6 @@ import org.apache.commons.lang.BooleanUtils;
 
 @Entity(name = "sec$Profile")
 @Table(name = "SEC_PROFILE")
-@Listeners({"com.haulmont.cuba.security.listener.ProfileEntityListener"})
 public class Profile extends StandardEntity
 {
     private static final long serialVersionUID = 8037692798864039665L;
@@ -37,6 +38,7 @@ public class Profile extends StandardEntity
     private User user;
 
     @OneToMany(mappedBy = "profile")
+    @OnDelete(DeletePolicy.CASCADE)
     private Set<ProfileRole> profileRoles;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

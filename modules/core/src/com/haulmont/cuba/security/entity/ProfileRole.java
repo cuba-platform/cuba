@@ -11,11 +11,10 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 
 @Entity(name = "sec$ProfileRole")
 @Table(name = "SEC_PROFILE_ROLE")
@@ -23,12 +22,13 @@ public class ProfileRole extends StandardEntity
 {
     private static final long serialVersionUID = 6151402331592361210L;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "PROFILE_ID")
     private Profile profile;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ROLE_ID")
+    @OnDeleteInverse(DeletePolicy.CASCADE)
     private Role role;
 
     public Profile getProfile() {

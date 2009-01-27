@@ -41,6 +41,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         else if (!pc.pcIsNew() && (pc instanceof Updatable)) {
             __beforeUpdate((Updatable) event.getSource());
             if ((pc instanceof DeleteDeferred) && justDeleted((DeleteDeferred) pc)) {
+                processDeletePolicy((BaseEntity) event.getSource());
                 EntityListenerManager.getInstance().fireListener(
                         ((BaseEntity) event.getSource()), EntityListenerType.BEFORE_DELETE);
             }
@@ -81,5 +82,10 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         String user = SecurityProvider.currentUserLogin();
         entity.setUpdatedBy(user);
         entity.setUpdateTs(TimeProvider.currentTimestamp());
+    }
+
+    private void processDeletePolicy(BaseEntity entity) {
+        DeletePolicyHelper helper = new DeletePolicyHelper(entity);
+        helper.process();
     }
 }

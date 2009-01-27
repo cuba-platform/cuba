@@ -10,24 +10,31 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.jpa.loader.AnnotationsMetadataLoader;
+import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ViewRepository;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
-import com.haulmont.chile.jpa.loader.AnnotationsMetadataLoader;
-
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.*;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URISyntaxException;
-
-import org.dom4j.io.SAXReader;
+import org.apache.commons.lang.ArrayUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class MetadataProviderImpl extends MetadataProvider
 {
@@ -80,6 +87,10 @@ public class MetadataProviderImpl extends MetadataProvider
             loader.loadPackage(modelName, p);
         }
         session = loader.getSession();
+
+        for (MetaClass metaClass : session.getClasses()) {
+            initMetaClass(metaClass);
+        }
     }
 
     private Collection<String> getPackageNames() {
@@ -112,5 +123,36 @@ public class MetadataProviderImpl extends MetadataProvider
             }
         }
         return packages;
+    }
+
+    private void initMetaClass(MetaClass metaClass) {
+        for (MetaProperty property : metaClass.getOwnProperties()) {
+            initMetaProperty(metaClass, property);
+        }
+    }
+
+    private void initMetaProperty(MetaClass metaClass, MetaProperty metaProperty) {
+        if (metaProperty.getRange() == null || !metaProperty.getRange().isClass())
+            return;
+
+        Field field = metaProperty.getJavaField();
+        
+        OnDelete onDelete = field.getAnnotation(OnDelete.class);
+        if (onDelete != null) {
+            Map<String, Object> metaAnnotations = metaClass.getAnnotations();
+
+            MetaProperty[] properties = (MetaProperty[]) metaAnnotations.get(OnDelete.class.getName());
+            properties = (MetaProperty[]) ArrayUtils.add(properties, metaProperty);
+            metaAnnotations.put(OnDelete.class.getName(), properties);
+        }
+
+        OnDeleteInverse onDeleteInverse = field.getAnnotation(OnDeleteInverse.class);
+        if (onDeleteInverse != null) {
+            Map<String, Object> metaAnnotations = metaProperty.getRange().asClass().getAnnotations();
+
+            MetaProperty[] properties = (MetaProperty[]) metaAnnotations.get(OnDeleteInverse.class.getName());
+            properties = (MetaProperty[]) ArrayUtils.add(properties, metaProperty);
+            metaAnnotations.put(OnDeleteInverse.class.getName(), properties);
+        }
     }
 }

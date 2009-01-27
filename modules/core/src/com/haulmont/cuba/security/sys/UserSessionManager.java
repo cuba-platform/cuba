@@ -40,8 +40,10 @@ public class UserSessionManager
         List<String> roleNames = new ArrayList<String>();
         List<Role> roles = new ArrayList<Role>();
         for (ProfileRole profileRole : profile.getProfileRoles()) {
-            roleNames.add(profileRole.getRole().getName());
-            roles.add(profileRole.getRole());
+            if (profileRole.getRole() != null) {
+                roleNames.add(profileRole.getRole().getName());
+                roles.add(profileRole.getRole());
+            }
         }
         UserSession session = new UserSession(
                 user, profile.getName(), roleNames.toArray(new String[roleNames.size()]), locale);
