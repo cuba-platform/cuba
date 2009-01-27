@@ -24,8 +24,8 @@ import com.itmill.toolkit.ui.TabSheet;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Locale;
+import java.util.Map;
 
 public class ScreenManager extends WindowManager
 {
@@ -48,20 +48,6 @@ public class ScreenManager extends WindowManager
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    protected Window createWindow(String descriptor, Map params) {
-        return createWindowFromTemplate(descriptor, params);
-    }
-
-    protected Window createWindow(Class aclass, Map params) {
-        try {
-            final Window window = (Window) aclass.newInstance();
-            invokeMethod(window, "init");
-            return window;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     protected void showWindow(Window window, String caption, OpenType type) {
         if (OpenType.NEW_TAB.equals(type)) {
@@ -113,9 +99,6 @@ public class ScreenManager extends WindowManager
             throw new IllegalStateException("Unable to close screen: current tab not found");
 
         Window window = tabInfo.screens.getLast();
-
-        final Object res = invokeMethod(window, "close");
-        if (res != null && !Boolean.TRUE.equals(res)) { return; }
 
         tabInfo.screens.removeLast();
 

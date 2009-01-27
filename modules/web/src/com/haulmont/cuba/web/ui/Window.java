@@ -12,16 +12,16 @@ package com.haulmont.cuba.web.ui;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.itmill.toolkit.ui.ExpandLayout;
+import com.itmill.toolkit.ui.Layout;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class Screen extends ExpandLayout implements Window
+public class Window implements com.haulmont.cuba.gui.components.Window, Component.Wrapper
 {
     protected ScreenContext screenContext;
     private String id;
@@ -29,10 +29,12 @@ public class Screen extends ExpandLayout implements Window
     private Map<String, Component> componentByIds = new HashMap<String, Component>();
     private ResourceBundle resourceBundle;
 
-    public Screen() {
-        super(ExpandLayout.ORIENTATION_VERTICAL);
-        setMargin(true);
-        setSpacing(true);
+    protected ExpandLayout layout;
+
+    public Window() {
+        layout = new ExpandLayout(ExpandLayout.ORIENTATION_VERTICAL);
+        layout.setMargin(true);
+        layout.setSpacing(true);
     }
 
     public ResourceBundle getResourceBundle() {
@@ -43,31 +45,31 @@ public class Screen extends ExpandLayout implements Window
         this.resourceBundle = resourceBundle;
     }
 
-    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
         return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType, params);
     }
 
-    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
         return App.getInstance().getScreenManager().<T>openWindow(aclass, openType, params);
     }
 
-    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String descriptor, WindowManager.OpenType openType) {
         return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType);
     }
 
-    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(Class aclass, WindowManager.OpenType openType) {
         return App.getInstance().getScreenManager().<T>openWindow(aclass, openType);
     }
 
     public void add(Component component) {
-        addComponent(ComponentsHelper.unwrap(component));
+        layout.addComponent(ComponentsHelper.unwrap(component));
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
         }
     }
 
     public void remove(Component component) {
-        removeComponent(ComponentsHelper.unwrap(component));
+        layout.removeComponent(ComponentsHelper.unwrap(component));
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
@@ -92,6 +94,30 @@ public class Screen extends ExpandLayout implements Window
     public void requestFocus() {
     }
 
+    public int getHeight() {
+        return layout.getHeight();
+    }
+
+    public int getHeightUnits() {
+        return layout.getHeightUnits();
+    }
+
+    public void setHeight(String height) {
+        layout.setHeight(height);
+    }
+
+    public int getWidth() {
+        return layout.getWidth();
+    }
+
+    public int getWidthUnits() {
+        return layout.getWidthUnits();
+    }
+
+    public void setWidth(String width) {
+        layout.setWidth(width);
+    }
+
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);
     }
@@ -101,18 +127,27 @@ public class Screen extends ExpandLayout implements Window
     }
 
     public int getVerticalAlIlignment() {
-        return ALIGNMENT_VERTICAL_CENTER;
+        return Layout.AlignmentHandler.ALIGNMENT_VERTICAL_CENTER;
     }
 
     public void setVerticalAlIlignment(int verticalAlIlignment) {}
 
     public int getHorizontalAlIlignment() {
-        return ALIGNMENT_HORIZONTAL_CENTER;
+        return Layout.AlignmentHandler.ALIGNMENT_HORIZONTAL_CENTER;
     }
 
     public void setHorizontalAlIlignment(int horizontalAlIlignment) {}
 
     public void expand(Component component, String height, String width) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public <T> T getComponent() {
+        return (T) layout;
+    }
+
+    public boolean close() {
+        App.getInstance().getScreenManager().closeScreen();
+        return true;
     }
 }

@@ -11,9 +11,12 @@ package com.haulmont.cuba.web.data;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.itmill.toolkit.data.Property;
+
+import java.text.ParseException;
 
 public class PropertyWrapper implements Property{
     private boolean readOnly;
@@ -44,7 +47,28 @@ public class PropertyWrapper implements Property{
     }
 
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-        getInstance().setValue(metaProperty.getName(), newValue);
+        final Instance instance = getInstance();
+        if (instance == null) throw new IllegalStateException("Instance is null");
+        
+        instance.setValue(metaProperty.getName(), getValue(newValue));
+    }
+
+    protected Object getValue(Object newValue) throws Property.ConversionException{
+        final Range range = metaProperty.getRange();
+        if (range == null) {
+            return newValue;
+        } else {
+            if (range.isDatatype() && newValue instanceof String) {
+                try {
+                    final Object value = range.asDatatype().parse((String) newValue);
+                    return value;
+                } catch (ParseException e) {
+                    throw new Property.ConversionException(e);
+                }
+            } else {
+                return newValue;
+            }
+        }
     }
 
     public Class getType() {

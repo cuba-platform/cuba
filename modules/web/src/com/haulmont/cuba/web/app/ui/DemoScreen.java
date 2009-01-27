@@ -10,25 +10,22 @@
  */
 package com.haulmont.cuba.web.app.ui;
 
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.ScreenOpenType;
-import com.haulmont.cuba.web.ui.Screen;
-import com.haulmont.cuba.web.ui.ScreenContext;
+import com.haulmont.cuba.web.ui.*;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.terminal.Sizeable;
 
-public class DemoScreen extends Screen
+public class DemoScreen extends com.haulmont.cuba.web.ui.Window
 {
     public void init(ScreenContext context) {
         super.init(context);
 
-        getWindow().showNotification("Opening screen", Window.Notification.TYPE_TRAY_NOTIFICATION);
+        layout.getWindow().showNotification("Opening screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
 
         final OrderedLayout vbox = new OrderedLayout(OrderedLayout.ORIENTATION_VERTICAL);
         vbox.addComponent(createIFrame());
         vbox.addComponent(createVBox());
 
-        addComponent(vbox);
+        layout.addComponent(vbox);
     }
 
     private Component createVBox() {
@@ -84,7 +81,7 @@ public class DemoScreen extends Screen
     }
 
     public boolean onClose() {
-        getWindow().showNotification("Closing screen", Window.Notification.TYPE_TRAY_NOTIFICATION);
+        layout.getWindow().showNotification("Closing screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
         return true;
     }
 }

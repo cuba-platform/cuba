@@ -120,4 +120,12 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType) {
         return frame.<T>openWindow(aclass, openType);
     }
+
+    public boolean close() {
+        if (frame instanceof Window) {
+            return ((Window) frame).close();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

@@ -9,10 +9,10 @@
  */
 package com.haulmont.cuba.web.app.ui;
 
-import com.haulmont.cuba.web.ui.Screen;
+import com.haulmont.cuba.web.ui.Window;
 
-public class TableDemoScreen  extends Screen {
+public class TableDemoScreen  extends Window {
     protected void init() {
-        addComponent(new TableExample());
+        layout.addComponent(new TableExample());
     }
 }

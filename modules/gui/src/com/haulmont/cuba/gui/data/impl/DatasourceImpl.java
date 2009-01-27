@@ -58,6 +58,10 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
         return dsContext;
     }
 
+    public void commit() {
+        throw new UnsupportedOperationException();
+    }
+
     public MetaClass getMetaClass() {
         return metaClass;
     }

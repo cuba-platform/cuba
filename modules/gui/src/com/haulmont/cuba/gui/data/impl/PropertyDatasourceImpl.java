@@ -62,6 +62,10 @@ public class PropertyDatasourceImpl<T> implements Datasource<T>, DatasourceImple
         return ds.getDsContext();
     }
 
+    public void commit() {
+        throw new UnsupportedOperationException();
+    }
+
     public void refresh() {
     }
 

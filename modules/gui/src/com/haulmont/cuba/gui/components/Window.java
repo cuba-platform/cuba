@@ -14,4 +14,9 @@ import com.haulmont.cuba.gui.WindowManager;
 import java.util.Map;
 
 public interface Window extends IFrame {
+    boolean close();
+
+    interface EditorWidow extends Window {
+        void commit();
+    }
 }

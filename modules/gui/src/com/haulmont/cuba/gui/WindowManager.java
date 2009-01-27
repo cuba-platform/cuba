@@ -31,6 +31,7 @@ import org.dom4j.io.SAXReader;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public abstract class WindowManager {
@@ -40,61 +41,7 @@ public abstract class WindowManager {
         DIALOG
     }
 
-    protected abstract Window createWindow(String descriptor, Map params);
-    protected abstract Window createWindow(Class aclass, Map params);
-
-    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
-        Window window = createWindow(descriptor, params);
-
-        String caption = getCaption(window, params);
-
-        showWindow(window, caption, openType);
-        return (T) window;
-    }
-
-    protected <T extends Window> String getCaption(Window window, Map params) {
-        String caption = (String) params.get("caption");
-        if (StringUtils.isEmpty(caption)) {
-            final ResourceBundle resourceBundle = window.getResourceBundle();
-            if (resourceBundle != null) {
-                try {
-                    caption = resourceBundle.getString("caption");
-                } catch (MissingResourceException e) {
-                    caption = null;
-                }
-            }
-        }
-
-        if (caption != null) {
-            caption = TemplateHelper.processTemplate(caption, params);
-        }
-
-        return caption;
-    }
-
-    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
-        Window window = createWindow(aclass, params);
-
-        String caption = getCaption(window, params);
-
-        showWindow(window, caption, openType);
-        return (T) window;
-    }
-
-    public <T extends Window> T openWindow(String descriptor, OpenType openType) {
-        return (T)openWindow(descriptor, openType, Collections.emptyMap());
-    }
-
-    public <T extends Window> T openWindow(Class aclass, OpenType openType) {
-        return (T)openWindow(aclass, openType, Collections.emptyMap());
-    }
-
-    protected abstract void showWindow(Window window, String caption, OpenType openType);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    protected Window createWindowFromTemplate(String template, Map params) {
+    protected Window createWindow(String template, Map params) {
         Document document = parseDescriptor(template, params);
         final Element rootElement = document.getRootElement();
 
@@ -145,6 +92,79 @@ public abstract class WindowManager {
 
         return wrapByCustomClass(window, rootElement);
     }
+
+    protected Window createWindow(Class aclass, Map params) {
+        try {
+            final Window window = (Window) aclass.newInstance();
+            try {
+                invokeMethod(window, "init", params);
+            } catch (NoSuchMethodException e) {
+                invokeMethod(window, "init");
+            }
+            return window;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
+        Window window = createWindow(descriptor, params);
+
+        String caption = getCaption(window, params);
+
+        showWindow(window, caption, openType);
+        return (T) window;
+    }
+
+    protected <T extends Window> String getCaption(Window window, Map params) {
+        String caption = (String) params.get("caption");
+        if (StringUtils.isEmpty(caption)) {
+            final ResourceBundle resourceBundle = window.getResourceBundle();
+            if (resourceBundle != null) {
+                try {
+                    caption = resourceBundle.getString("caption");
+                } catch (MissingResourceException e) {
+                    caption = null;
+                }
+            }
+        }
+
+        if (caption != null) {
+            caption = TemplateHelper.processTemplate(caption, params);
+        } else {
+            try {
+                caption = invokeMethod(window, "getCaption");
+                caption = TemplateHelper.processTemplate(caption, params);
+            } catch (NoSuchMethodException e) {
+                // Do nothing
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return caption;
+    }
+
+    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
+        Window window = createWindow(aclass, params);
+
+        String caption = getCaption(window, params);
+
+        showWindow(window, caption, openType);
+        return (T) window;
+    }
+
+    public <T extends Window> T openWindow(String descriptor, OpenType openType) {
+        return (T)openWindow(descriptor, openType, Collections.emptyMap());
+    }
+
+    public <T extends Window> T openWindow(Class aclass, OpenType openType) {
+        return (T)openWindow(aclass, openType, Collections.emptyMap());
+    }
+
+    protected abstract void showWindow(Window window, String caption, OpenType openType);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected abstract Locale getLocale();
     protected abstract ComponentsFactory createComponentFactory();
@@ -202,13 +222,43 @@ public abstract class WindowManager {
         return document;
     }
 
-    protected <T> T invokeMethod(Window window, String name) {
+    protected <T> T invokeMethod(Window window, String name) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        final Class<? extends Window> aClass = window.getClass();
+        Method method;
         try {
-            final Method method = window.getClass().getDeclaredMethod(name);
-            method.setAccessible(true);
-            return (T) method.invoke(window);
-        } catch (Throwable e) {
-            return null;
+            method = aClass.getDeclaredMethod(name);
+        } catch (NoSuchMethodException e) {
+            method = aClass.getMethod(name);
         }
+        method.setAccessible(true);
+        return (T) method.invoke(window);
+    }
+
+    protected <T> T invokeMethod(Window window, String name, Object...params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<Class> paramClasses = new ArrayList<Class>();
+        for (Object param : params) {
+            if (param == null) throw new IllegalStateException("Null parameter");
+
+            final Class<? extends Object> aClass = param.getClass();
+            if (List.class.isAssignableFrom(aClass)) {
+                paramClasses.add(List.class);
+            } else if (Set.class.isAssignableFrom(aClass)) {
+                paramClasses.add(Set.class);
+            } else if (Map.class.isAssignableFrom(aClass)) {
+                paramClasses.add(Map.class);
+            } else {
+                paramClasses.add(aClass);
+            }
+        }
+
+        final Class<? extends Window> aClass = window.getClass();
+        Method method;
+        try {
+            method = aClass.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[]{}));
+        } catch (NoSuchMethodException e) {
+            method = aClass.getMethod(name, paramClasses.toArray(new Class<?>[]{}));
+        }
+        method.setAccessible(true);
+        return (T) method.invoke(window, params);
     }
 }

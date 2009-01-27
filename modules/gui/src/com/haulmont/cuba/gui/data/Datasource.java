@@ -18,6 +18,8 @@ public interface Datasource<T> {
     String getId();
     DsContext getDsContext();
 
+    void commit();
+
     enum State {
         NOT_INITIALIZAED,
         INVALID,

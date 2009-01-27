@@ -21,8 +21,12 @@ import org.apache.commons.lang.ObjectUtils;
 
 public class ComponentsHelper {
     public static Component unwrap(com.haulmont.cuba.gui.components.Component component) {
-        return (com.itmill.toolkit.ui.Component) (component instanceof com.haulmont.cuba.gui.components.Component.Wrapper ?
-                ((com.haulmont.cuba.gui.components.Component.Wrapper) component).getComponent() : component);
+        Object comp = component;
+        while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
+            comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComponent();
+        }
+
+        return  (com.itmill.toolkit.ui.Component) comp;
     }
 
     public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(

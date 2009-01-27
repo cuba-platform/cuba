@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.components.ComponentsHelper;
+import com.haulmont.cuba.web.app.ui.GenericEditor;
 
 import java.util.Collections;
 import java.util.Set;
@@ -39,10 +40,11 @@ public class SecurityUserBrowser extends AbstractFrame implements Window {
                 final Set selected = table.getSelected();
                 if (selected.size() == 1) {
                     User user = (User) selected.iterator().next();
-                    openWindow(
-                            "/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml",
-                            WindowManager.OpenType.THIS_TAB,
-                            Collections.singletonMap("user", user));
+                    openWindow(GenericEditor.class, WindowManager.OpenType.THIS_TAB, Collections.singletonMap("item", user));
+//                    openWindow(
+//                            "/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml",
+//                            WindowManager.OpenType.THIS_TAB,
+//                            Collections.singletonMap("user", user));
                 }
             }
         });
@@ -76,9 +78,9 @@ public class SecurityUserBrowser extends AbstractFrame implements Window {
         });
     }
 
-    protected boolean close() {
+    public boolean close() {
         final com.itmill.toolkit.ui.Window window = ComponentsHelper.unwrap(this).getWindow();
         window.showNotification("Closing screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
-        return true;
+        return super.close();
     }
 }

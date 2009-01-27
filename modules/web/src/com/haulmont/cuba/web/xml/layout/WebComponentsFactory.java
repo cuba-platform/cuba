@@ -11,7 +11,7 @@ package com.haulmont.cuba.web.xml.layout;
 
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.web.ui.Screen;
+import com.haulmont.cuba.web.ui.Window;
 import com.haulmont.cuba.web.components.*;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ public class WebComponentsFactory implements ComponentsFactory {
     private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<?extends Component>>();
 
     static {
-        classes.put("window", Screen.class);
+        classes.put("window", Window.class);
         classes.put("hbox", HBox.class);
         classes.put("vbox", VBox.class);
         classes.put("expandable-hbox", ExpandableHBox.class);
