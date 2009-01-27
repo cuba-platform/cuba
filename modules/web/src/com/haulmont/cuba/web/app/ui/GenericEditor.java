@@ -23,6 +23,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.ui.*;
+import com.sun.xml.internal.ws.util.StringUtils;
 
 import java.util.*;
 import java.text.Format;
@@ -168,7 +169,7 @@ public class GenericEditor
 
             if (field != null) {
                 final String caption = metaProperty.getCaption();
-                field.setCaption(caption == null ? metaProperty.getName() : caption);
+                field.setCaption(StringUtils.capitalize(caption == null ? metaProperty.getName() : caption));
             }
 
             return field;
