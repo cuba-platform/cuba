@@ -93,6 +93,7 @@ public class GenericEditor
 
         final Collection<MetaProperty> properties = getProperties(item);
         form.setItemDataSource(new ItemWrapper(item, properties));
+        form.setVisibleItemProperties(properties);
 
         for (MetaProperty metaProperty : properties) {
             final com.itmill.toolkit.ui.Field field = form.getField(metaProperty);

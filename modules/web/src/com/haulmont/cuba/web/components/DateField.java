@@ -19,5 +19,6 @@ public class DateField
 
     public DateField() {
         this.component = new com.itmill.toolkit.ui.DateField();
+        component.setImmediate(true);
     }
 }

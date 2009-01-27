@@ -20,5 +20,6 @@ public class LookupField
 
     public LookupField() {
         this.component = new Select();
+        component.setImmediate(true);
     }
 }

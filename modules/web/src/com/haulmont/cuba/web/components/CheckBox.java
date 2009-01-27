@@ -19,5 +19,6 @@ public class CheckBox
 
     public CheckBox() {
         this.component = new com.itmill.toolkit.ui.CheckBox();
+        component.setImmediate(true);
     }
 }
