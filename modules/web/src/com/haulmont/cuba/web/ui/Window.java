@@ -23,7 +23,6 @@ import java.util.ResourceBundle;
 
 public class Window implements com.haulmont.cuba.gui.components.Window, Component.Wrapper
 {
-    protected ScreenContext screenContext;
     private String id;
 
     private Map<String, Component> componentByIds = new HashMap<String, Component>();
@@ -73,10 +72,6 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
-    }
-
-    public void init(ScreenContext context) {
-        screenContext = context;
     }
 
     public boolean onClose() {

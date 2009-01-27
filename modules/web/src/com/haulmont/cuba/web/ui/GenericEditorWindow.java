@@ -7,31 +7,30 @@
  * Created: 27.01.2009 11:06:56
  * $Id$
  */
-package com.haulmont.cuba.web.app.ui;
+package com.haulmont.cuba.web.ui;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.app.BasicService;
+import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.data.ItemWrapper;
-import com.haulmont.cuba.core.app.BasicService;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.ui.*;
 import com.sun.xml.internal.ws.util.StringUtils;
 
-import java.util.*;
-import java.text.Format;
 import java.text.FieldPosition;
-import java.text.ParsePosition;
+import java.text.Format;
 import java.text.ParseException;
+import java.text.ParsePosition;
+import java.util.*;
 
-public class GenericEditor
+public class GenericEditorWindow
     extends
         com.haulmont.cuba.web.ui.Window
     implements

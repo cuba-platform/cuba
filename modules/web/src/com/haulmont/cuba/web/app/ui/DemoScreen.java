@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.web.app.ui;
 
-import com.haulmont.cuba.web.ui.*;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.terminal.Sizeable;
 
