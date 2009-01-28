@@ -15,16 +15,14 @@ import com.itmill.toolkit.terminal.Sizeable;
 
 public class DemoScreen extends com.haulmont.cuba.web.ui.Window
 {
-    public void init(ScreenContext context) {
-        super.init(context);
-
-        layout.getWindow().showNotification("Opening screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
+    public void init() {
+        component.getWindow().showNotification("Opening screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
 
         final OrderedLayout vbox = new OrderedLayout(OrderedLayout.ORIENTATION_VERTICAL);
         vbox.addComponent(createIFrame());
         vbox.addComponent(createVBox());
 
-        layout.addComponent(vbox);
+        ((ComponentContainer) component).addComponent(vbox);
     }
 
     private Component createVBox() {
@@ -80,7 +78,7 @@ public class DemoScreen extends com.haulmont.cuba.web.ui.Window
     }
 
     public boolean onClose() {
-        layout.getWindow().showNotification("Closing screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
+        component.getWindow().showNotification("Closing screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
         return true;
     }
 }

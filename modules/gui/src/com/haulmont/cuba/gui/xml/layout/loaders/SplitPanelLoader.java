@@ -25,6 +25,7 @@ public class SplitPanelLoader extends ContainerLoader{
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final SplitPanel component = factory.createComponent("split");
 
+        assignXmlDescriptor(component, element);
         loadId(component, element);
         loadSubComponents(component, element);
 

@@ -46,6 +46,7 @@ public class TableLoader extends ComponentLoader {
     {
         final Table table = factory.createComponent("table");
 
+        assignXmlDescriptor(table, element);
         loadId(table, element);
 
         final Element columnsElement = element.element("columns");

@@ -10,30 +10,51 @@
  */
 package com.haulmont.cuba.web.ui;
 
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.app.BasicService;
+import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.components.ComponentsHelper;
-import com.itmill.toolkit.ui.ExpandLayout;
-import com.itmill.toolkit.ui.Layout;
+import com.itmill.toolkit.ui.*;
+import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class Window implements com.haulmont.cuba.gui.components.Window, Component.Wrapper
+public class Window implements com.haulmont.cuba.gui.components.Window, Component.Wrapper, Component.HasXmlDescriptor
 {
     private String id;
 
     private Map<String, Component> componentByIds = new HashMap<String, Component>();
     private ResourceBundle resourceBundle;
 
-    protected ExpandLayout layout;
+    protected com.itmill.toolkit.ui.Component component;
+    private Element element;
+
+    private DsContext dsContext;
 
     public Window() {
-        layout = new ExpandLayout(ExpandLayout.ORIENTATION_VERTICAL);
+        component = createLayout();
+    }
+
+    protected com.itmill.toolkit.ui.Component createLayout() {
+        ExpandLayout layout = new ExpandLayout(ExpandLayout.ORIENTATION_VERTICAL);
         layout.setMargin(true);
         layout.setSpacing(true);
+
+        return layout;
+    }
+
+    protected ComponentContainer getContainer() {
+        return (ComponentContainer) component;
     }
 
     public ResourceBundle getResourceBundle() {
@@ -43,6 +64,8 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
     }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
         return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType, params);
@@ -60,15 +83,51 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         return App.getInstance().getScreenManager().<T>openWindow(aclass, openType);
     }
 
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map params) {
+        return App.getInstance().getScreenManager().<T>openEditor(descriptor, item, openType, params);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map params) {
+        return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType, params);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openEditor(descriptor, item, openType);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType);
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public DsContext getDsContext() {
+        return dsContext;
+    }
+
+    public void setDsContext(DsContext dsContext) {
+        this.dsContext = dsContext;
+    }
+
+    public Element getXmlDescriptor() {
+        return element;
+    }
+
+    public void setXmlDescriptor(Element element) {
+        this.element = element;
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public void add(Component component) {
-        layout.addComponent(ComponentsHelper.unwrap(component));
+        getContainer().addComponent(ComponentsHelper.unwrap(component));
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
         }
     }
 
     public void remove(Component component) {
-        layout.removeComponent(ComponentsHelper.unwrap(component));
+        getContainer().removeComponent(ComponentsHelper.unwrap(component));
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
@@ -90,27 +149,27 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     }
 
     public int getHeight() {
-        return layout.getHeight();
+        return component.getHeight();
     }
 
     public int getHeightUnits() {
-        return layout.getHeightUnits();
+        return component.getHeightUnits();
     }
 
     public void setHeight(String height) {
-        layout.setHeight(height);
+        component.setHeight(height);
     }
 
     public int getWidth() {
-        return layout.getWidth();
+        return component.getWidth();
     }
 
     public int getWidthUnits() {
-        return layout.getWidthUnits();
+        return component.getWidthUnits();
     }
 
     public void setWidth(String width) {
-        layout.setWidth(width);
+        component.setWidth(width);
     }
 
     public <T extends Component> T getOwnComponent(String id) {
@@ -138,11 +197,88 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     }
 
     public <T> T getComponent() {
-        return (T) layout;
+        return (T) component;
     }
 
     public boolean close() {
         App.getInstance().getScreenManager().closeScreen();
         return true;
+    }
+
+    public static class Editor extends Window implements com.haulmont.cuba.gui.components.Window.Editor {
+        protected Object item;
+
+        public Object getItem() {
+            return item;
+        }
+
+        @Override
+        protected com.itmill.toolkit.ui.Component createLayout() {
+            final Form form = new Form();
+
+            Layout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+            okbar.setHeight("25px");
+
+            okbar.addComponent(new Button("OK", this, "commit"));
+            okbar.addComponent(new Button("Cancel", this, "close"));
+
+            form.setFooter(okbar);
+
+            return form;
+        }
+
+        @Override
+        protected ComponentContainer getContainer() {
+            return ((Form) component).getLayout();
+        }
+
+        public void setItem(Object item) {
+            this.item = item;
+
+            final Element element = getXmlDescriptor();
+
+            final String datasourceName = element.attributeValue("datasource");
+            if (!StringUtils.isEmpty(datasourceName)) {
+                final DsContext context = getDsContext();
+                if (context != null) {
+                    final Datasource ds = context.get(datasourceName);
+                    if (ds != null) {
+                        ds.setItem(item);
+                    } else {
+                        throw new IllegalStateException();
+                    }
+                }
+            }
+        }
+
+        protected MetaClass getMetaClass(Object item) {
+            final MetaClass metaClass;
+            if (item instanceof Datasource) {
+                metaClass = ((Datasource) item).getMetaClass();
+            } else {
+                metaClass = ((Instance) item).getMetaClass();
+            }
+            return metaClass;
+        }
+
+        protected Instance getInstance(Object item) {
+            if (item instanceof Datasource) {
+                return (Instance) ((Datasource) item).getItem();
+            } else {
+                return (Instance) item;
+            }
+        }
+
+        public void commit() {
+            ((Form) component).commit();
+            if (item instanceof Datasource) {
+                final Datasource ds = (Datasource) item;
+                ds.commit();
+            } else {
+                BasicService service = Locator.lookupLocal(BasicService.JNDI_NAME);
+                service.update((BaseEntity) item);
+            }
+            close();
+        }
     }
 }

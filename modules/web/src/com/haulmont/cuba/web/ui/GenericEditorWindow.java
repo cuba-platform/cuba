@@ -11,18 +11,13 @@ package com.haulmont.cuba.web.ui;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.BasicService;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.data.ItemWrapper;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.ui.*;
-import com.sun.xml.internal.ws.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.text.FieldPosition;
 import java.text.Format;
@@ -32,12 +27,8 @@ import java.util.*;
 
 public class GenericEditorWindow
     extends
-        com.haulmont.cuba.web.ui.Window
-    implements
-        com.haulmont.cuba.gui.components.Window.EditorWidow
+        Window.Editor
 {
-    protected Object item;
-    private Form form;
     private String caption;
 
     public String getCaption() {
@@ -48,41 +39,14 @@ public class GenericEditorWindow
         this.caption = caption;
     }
 
-    protected void init(Map params) {
-        form = createForm();
-        
-        layout.addComponent(form);
-        layout.expand(form);
+    @Override
+    protected Component createLayout() {
+        final Form form = (Form) super.createLayout();
 
-        final Object item = params.get("item");
-        if (item != null) {
-            setItem(item);
-        }
-    }
-
-    protected Form createForm() {
-        final Form form = new Form();
-
-        Layout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
-        okbar.setHeight("25px");
-
-        okbar.addComponent(new Button("OK", this, "commit"));
-        okbar.addComponent(new Button("Cancel", this, "close"));
-
-//        final Layout footer = form.getFooter();
-        form.setFooter(okbar);
-//        footer.addComponent(okbar);
-//        if (footer instanceof Layout.AlignmentHandler) {
-//            ((Layout.AlignmentHandler) footer).setComponentAlignment(okbar, Layout.AlignmentHandler.ALIGNMENT_RIGHT, Layout.AlignmentHandler.ALIGNMENT_VERTICAL_CENTER);
-//        }
         form.setFieldFactory(new FieldFactory());
         form.setImmediate(true);
 
         return form;
-    }
-
-    public Object getItem() {
-        return item;
     }
 
     public void setItem(Object item) {
@@ -92,11 +56,11 @@ public class GenericEditorWindow
         setCaption("Edit " + metaClass.getName());
 
         final Collection<MetaProperty> properties = getProperties(item);
-        form.setItemDataSource(new ItemWrapper(item, properties));
-        form.setVisibleItemProperties(properties);
+        ((Form) component).setItemDataSource(new ItemWrapper(item, properties));
+        ((Form) component).setVisibleItemProperties(properties);
 
         for (MetaProperty metaProperty : properties) {
-            final com.itmill.toolkit.ui.Field field = form.getField(metaProperty);
+            final com.itmill.toolkit.ui.Field field = ((Form) component).getField(metaProperty);
             if (field != null) {
                 field.setRequired(metaProperty.isMandatory());
             }
@@ -120,28 +84,6 @@ public class GenericEditorWindow
         });
 
         return res;
-    }
-
-    protected MetaClass getMetaClass(Object item) {
-        final MetaClass metaClass;
-        if (item instanceof Datasource) {
-            metaClass = ((Datasource) item).getMetaClass();
-        } else {
-            metaClass = ((Instance) item).getMetaClass();
-        }
-        return metaClass;
-    }
-
-    public void commit() {
-        form.commit();
-        if (item instanceof Datasource) {
-            final Datasource ds = (Datasource) item;
-            ds.commit();
-        } else {
-            BasicService service = Locator.lookupLocal(BasicService.JNDI_NAME);
-            service.update((BaseEntity) item);
-        }
-        close();
     }
 
     private static class FieldFactory extends BaseFieldFactory {

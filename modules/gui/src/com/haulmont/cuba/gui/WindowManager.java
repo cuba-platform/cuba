@@ -10,8 +10,8 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Context;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -30,8 +30,8 @@ import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public abstract class WindowManager {
@@ -41,24 +41,22 @@ public abstract class WindowManager {
         DIALOG
     }
 
-    protected Window createWindow(String template, Map params) {
+    protected Window createWindow(String template, Map params, LayoutLoaderConfig layoutConfig) {
         Document document = parseDescriptor(template, params);
-        final Element rootElement = document.getRootElement();
+        final Element element = document.getRootElement();
 
-        final DsContextLoader dsContextLoader = new DsContextLoader(new DatasourceFactoryImpl());
-        final DsContext dsContext = dsContextLoader.loadDatasources(rootElement.element("dsContext"));
+        final DsContext dsContext = loadDsContext(element);
+        final Window window = loadLayout(element, dsContext, layoutConfig);
 
-        final LayoutLoader layoutLoader = new LayoutLoader(createComponentFactory(), LayoutLoaderConfig.getWindowLoaders(), dsContext);
-        layoutLoader.setLocale(getLocale());
+        initialize(window, dsContext, params);
 
-        final Window window = (Window) layoutLoader.loadComponent(rootElement);
+        return wrapByCustomClass(window, element);
+    }
+
+    protected void initialize(final Window window, DsContext dsContext, Map params) {
+        window.setDsContext(dsContext);
 
         for (Datasource ds : dsContext.getAll()) {
-            final Object value = params.get(ds.getId());
-            if (value != null) {
-                ds.setItem(value);
-            }
-
             if (ds instanceof DatasourceImplementation) {
                 ((DatasourceImplementation) ds).initialized();
             }
@@ -89,8 +87,20 @@ public abstract class WindowManager {
             public void removeValueListener(ValueListener listener) {
             }
         });
+    }
 
-        return wrapByCustomClass(window, rootElement);
+    protected Window loadLayout(Element rootElement, DsContext dsContext, LayoutLoaderConfig layoutConfig) {
+        final LayoutLoader layoutLoader = new LayoutLoader(createComponentFactory(), layoutConfig, dsContext);
+        layoutLoader.setLocale(getLocale());
+
+        final Window window = (Window) layoutLoader.loadComponent(rootElement);
+        return window;
+    }
+
+    protected DsContext loadDsContext(Element rootElement) {
+        final DsContextLoader dsContextLoader = new DsContextLoader(new DatasourceFactoryImpl());
+        final DsContext dsContext = dsContextLoader.loadDatasources(rootElement.element("dsContext"));
+        return dsContext;
     }
 
     protected Window createWindow(Class aclass, Map params) {
@@ -108,7 +118,7 @@ public abstract class WindowManager {
     }
 
     public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
-        Window window = createWindow(descriptor, params);
+        Window window = createWindow(descriptor, params, LayoutLoaderConfig.getWindowLoaders());
 
         String caption = getCaption(window, params);
 
@@ -152,6 +162,42 @@ public abstract class WindowManager {
 
         showWindow(window, caption, openType);
         return (T) window;
+    }
+
+    public <T extends Window> T openEditor(String descriptor, Object item, OpenType openType, Map params) {
+        Window window = createWindow(descriptor, params, LayoutLoaderConfig.getEditorLoaders());
+        ((Window.Editor) window).setItem(item);
+
+        params = new HashMap(params);
+        params.put("item", item);
+
+        String caption = getCaption(window, params);
+
+        showWindow(window, caption, openType);
+        return (T) window;
+    }
+
+    public <T extends Window> T openEditor(Class aclass, Object item, OpenType openType, Map params) {
+        Window window = createWindow(aclass, params);
+        ((Window.Editor) window).setItem(item);
+
+        params = new HashMap(params);
+        params.put("item", item);
+        String caption = getCaption(window, params);
+
+        showWindow(window, caption, openType);
+        return (T) window;
+    }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public <T extends Window> T openEditor(String descriptor, Object item, OpenType openType) {
+        return (T)openEditor(descriptor, item, openType, Collections.emptyMap());
+    }
+
+    public <T extends Window> T openEditor(Class aclass, Object item, OpenType openType) {
+        return (T)openEditor(aclass, item, openType, Collections.emptyMap());
     }
 
     public <T extends Window> T openWindow(String descriptor, OpenType openType) {

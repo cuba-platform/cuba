@@ -29,6 +29,7 @@ public class HBoxLoader extends ContainerLoader implements ComponentLoader {
                         factory.<OrderedLayout>createComponent("hbox") :
                         factory.<OrderedLayout>createComponent("expandable-hbox");
 
+        assignXmlDescriptor(component, element);
         loadId(component, element);
         loadAlign(component, element);
         loadPack(component, element);

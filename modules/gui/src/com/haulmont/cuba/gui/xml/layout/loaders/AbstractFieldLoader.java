@@ -32,6 +32,7 @@ public class AbstractFieldLoader extends ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final Field field = factory.createComponent(element.getName());
 
+        assignXmlDescriptor(field, element);
         loadId(field, element);
         loadCaption(field, element);
 

@@ -33,6 +33,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
             frame.setResourceBundle(resourceBundle);
         }
 
+        assignXmlDescriptor(frame, element);
         loadId(frame, element);
         loadAlign(frame, element);
         loadPack(frame, element);

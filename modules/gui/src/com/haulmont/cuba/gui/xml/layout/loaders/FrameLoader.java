@@ -29,10 +29,10 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final IFrame frame = factory.createComponent("iframe");
 
+        assignXmlDescriptor(frame, element);
         loadId(frame, element);
 
         loadResourceBundle(frame, element);
-
         loadSubcomponentsAndExpand(frame, element.element("layout"));
 
         return frame;

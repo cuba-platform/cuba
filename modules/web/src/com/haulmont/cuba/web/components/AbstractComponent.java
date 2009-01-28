@@ -11,13 +11,15 @@ package com.haulmont.cuba.web.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.Layout;
+import org.dom4j.Element;
 
-class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Component, Component.Wrapper {
+class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Component, Component.Wrapper, Component.HasXmlDescriptor {
     private String id;
     protected T component;
 
     private int verticalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
     private int horizontalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
+    private Element element;
 
     public String getId() {
         return id;
@@ -84,5 +86,13 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Co
 
     public <T> T getComponent() {
         return (T) component;
+    }
+
+    public Element getXmlDescriptor() {
+        return element;
+    }
+
+    public void setXmlDescriptor(Element element) {
+        this.element = element;
     }
 }

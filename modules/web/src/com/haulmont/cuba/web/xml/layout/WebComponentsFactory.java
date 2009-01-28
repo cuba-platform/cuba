@@ -23,6 +23,7 @@ public class WebComponentsFactory implements ComponentsFactory {
 
     static {
         classes.put("window", Window.class);
+        classes.put("window.editor", Window.Editor.class);
         classes.put("hbox", HBox.class);
         classes.put("vbox", VBox.class);
         classes.put("expandable-hbox", ExpandableHBox.class);

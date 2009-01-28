@@ -29,6 +29,7 @@ public class VBoxLoader extends ContainerLoader implements ComponentLoader {
                         factory.<OrderedLayout>createComponent("vbox") :
                         factory.<OrderedLayout>createComponent("expandable-vbox");
 
+        assignXmlDescriptor(component, element);
         loadId(component, element);
         loadAlign(component, element);
         loadPack(component, element);

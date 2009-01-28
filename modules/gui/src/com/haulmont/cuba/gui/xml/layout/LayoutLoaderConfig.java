@@ -11,19 +11,23 @@ package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class LayoutLoaderConfig {
     private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders =
             new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
 
     private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
+    private static LayoutLoaderConfig editorLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
     static {
         windowLoaders.registerLoader("window", WindowLoader.class);
         registerComponents(windowLoaders);
+
+        editorLoaders.registerLoader("window", WindowLoader.Editor.class);
+        registerComponents(editorLoaders);
 
         frameLoaders.registerLoader("frame", FrameLoader.class);
         registerComponents(frameLoaders);
@@ -46,6 +50,10 @@ public class LayoutLoaderConfig {
 
     public static LayoutLoaderConfig getWindowLoaders() {
         return windowLoaders;
+    }
+
+    public static LayoutLoaderConfig getEditorLoaders() {
+        return editorLoaders;
     }
 
     public static LayoutLoaderConfig getFrameLoaders() {

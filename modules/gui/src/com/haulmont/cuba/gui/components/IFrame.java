@@ -21,6 +21,12 @@ public interface IFrame extends OrderedLayout, Component.Container {
     <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params);
     <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params);
 
+    <T extends Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map params);
+    <T extends Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map params);
+
     <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType);
     <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType);
+
+    <T extends Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType);
+    <T extends Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType);
 }

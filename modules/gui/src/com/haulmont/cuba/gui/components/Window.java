@@ -9,14 +9,18 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.WindowManager;
-
-import java.util.Map;
+import com.haulmont.cuba.gui.data.DsContext;
 
 public interface Window extends IFrame {
+    DsContext getDsContext();
+    void setDsContext(DsContext dsContext);
+
     boolean close();
 
-    interface EditorWidow extends Window {
+    interface Editor extends Window {
+        Object getItem();
+        void setItem(Object item);
+
         void commit();
     }
 }

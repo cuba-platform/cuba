@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -119,6 +120,22 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
 
     public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType) {
         return frame.<T>openWindow(aclass, openType);
+    }
+
+    public <T extends Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map params) {
+        return frame.<T>openEditor(descriptor, item, openType, params);
+    }
+
+    public <T extends Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map params) {
+        return frame.<T>openEditor(aclass, item, openType, params);
+    }
+
+    public <T extends Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType) {
+        return frame.<T>openEditor(aclass, item, openType, Collections.emptyMap());
+    }
+
+    public <T extends Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType) {
+        return frame.<T>openEditor(descriptor, item, openType, Collections.emptyMap());
     }
 
     public boolean close() {

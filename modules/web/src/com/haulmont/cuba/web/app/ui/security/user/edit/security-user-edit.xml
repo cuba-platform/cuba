@@ -1,4 +1,7 @@
-<window resourceBundle="com.haulmont.cuba.web.app.ui.security.user.edit.security-user-edit">
+<window
+    resourceBundle="com.haulmont.cuba.web.app.ui.security.user.edit.security-user-edit"
+    datasource="user"
+>
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.views.xml"/>
     </metadataContext>

@@ -15,10 +15,9 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.GenericEditorWindow;
 
-import java.util.Collections;
 import java.util.Set;
 
-public class SecurityUserBrowser extends AbstractFrame implements Window {
+public class SecurityUserBrowser extends AbstractWindow {
     public SecurityUserBrowser(Window frame) {
         super(frame);
     }
@@ -40,11 +39,9 @@ public class SecurityUserBrowser extends AbstractFrame implements Window {
                 final Set selected = table.getSelected();
                 if (selected.size() == 1) {
                     User user = (User) selected.iterator().next();
-                    openWindow(GenericEditorWindow.class, WindowManager.OpenType.THIS_TAB, Collections.singletonMap("item", user));
-//                    openWindow(
-//                            "/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml",
-//                            WindowManager.OpenType.THIS_TAB,
-//                            Collections.singletonMap("user", user));
+//                    openEditor(GenericEditorWindow.class, user, WindowManager.OpenType.THIS_TAB);
+                    openEditor("/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml",
+                            user, WindowManager.OpenType.THIS_TAB);
                 }
             }
         });

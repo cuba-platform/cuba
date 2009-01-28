@@ -10,9 +10,10 @@
 package com.haulmont.cuba.web.app.ui;
 
 import com.haulmont.cuba.web.ui.Window;
+import com.itmill.toolkit.ui.ComponentContainer;
 
 public class TableDemoScreen  extends Window {
     protected void init() {
-        layout.addComponent(new TableExample());
+        ((ComponentContainer) component).addComponent(new TableExample());
     }
 }

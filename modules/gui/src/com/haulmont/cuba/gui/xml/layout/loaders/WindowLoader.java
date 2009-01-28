@@ -24,12 +24,27 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final Window window = factory.createComponent("window");
+        final Window window = createComponent(factory);
 
+        assignXmlDescriptor(window, element);
         loadResourceBundle(window, element);
         loadSubComponents(window, element.element("layout"));
 
         return window;
     }
 
+    protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+        return factory.createComponent("window");
+    }
+
+    public static class Editor extends WindowLoader {
+        public Editor(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
+            super(config, factory, dsContext);
+        }
+
+        @Override
+        protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+            return factory.createComponent("window.editor");
+        }
+    }
 }

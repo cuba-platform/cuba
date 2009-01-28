@@ -38,6 +38,22 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
         return App.getInstance().getScreenManager().<T>openWindow(aclass, openType, params);
     }
 
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map params) {
+        return App.getInstance().getScreenManager().<T>openEditor(descriptor, item, openType, params);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map params) {
+        return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType, params);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openEditor(descriptor, item, openType);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType);
+    }
+
     public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType) {
         return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType);
     }
