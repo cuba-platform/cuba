@@ -42,13 +42,19 @@
             <fileset dir="${web.src.dir}" includes="**/*"/>
         </copy>
 
+        <condition property="do-build-gwt" value="true">
+            <not>
+                <available file="${widgets.out.dir}"/>
+            </not>
+        </condition>
+
         <antcall target="build-gwt"/>
 
         <jar basedir="${build.dir}/${module.name}" destfile="${build.dir}/${module.jar}"/>
     </target>
 
-    <target name="build-gwt">
-        <echo>==> building gwt module...</echo>
+    <target name="build-gwt" if="do-build-gwt">
+        <echo>==> building GWT module</echo>
         <java classname="com.google.gwt.dev.GWTCompiler" failonerror="yes" fork="yes" maxmemory="128m">
             <arg value="-out"/>
             <arg value="${widgets.out.dir}"/>
