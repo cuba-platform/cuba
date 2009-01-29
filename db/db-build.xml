@@ -17,7 +17,7 @@
 
     <target name="run-hsqldb">
         <mkdir dir="${project.dir}/data"/>
-        <exec dir="${project.dir}/data" executable="cmd.exe">
+        <exec dir="${project.dir}/data" executable="cmd.exe" spawn="true">
             <arg line="/c start ${project.dir}/db/run-hsqldb.bat ${db.name}"/>
         </exec>
     </target>
