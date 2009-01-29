@@ -58,11 +58,11 @@ public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.
     public void requestFocus() {
     }
 
-    public int getVerticalAlIlignment() {
+    public int getVerticalAlignment() {
         return verticalAlIlignment;
     }
 
-    public void setVerticalAlIlignment(int verticalAlIlignment) {
+    public void setVerticalAlignment(int verticalAlIlignment) {
         this.verticalAlIlignment = verticalAlIlignment;
         final com.itmill.toolkit.ui.Component component = getParent();
         if (component instanceof AlignmentHandler) {
@@ -70,11 +70,11 @@ public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.
         }
     }
 
-    public int getHorizontalAlIlignment() {
+    public int getHorizontalAlignment() {
         return horizontalAlIlignment;
     }
 
-    public void setHorizontalAlIlignment(int horizontalAlIlignment) {
+    public void setHorizontalAlignment(int horizontalAlIlignment) {
         this.horizontalAlIlignment = horizontalAlIlignment;
         final com.itmill.toolkit.ui.Component component = getParent();
         if (component instanceof AlignmentHandler) {

@@ -180,17 +180,17 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         return ComponentsHelper.<T>getComponent(this, id);
     }
 
-    public int getVerticalAlIlignment() {
+    public int getVerticalAlignment() {
         return Layout.AlignmentHandler.ALIGNMENT_VERTICAL_CENTER;
     }
 
-    public void setVerticalAlIlignment(int verticalAlIlignment) {}
+    public void setVerticalAlignment(int verticalAlIlignment) {}
 
-    public int getHorizontalAlIlignment() {
+    public int getHorizontalAlignment() {
         return Layout.AlignmentHandler.ALIGNMENT_HORIZONTAL_CENTER;
     }
 
-    public void setHorizontalAlIlignment(int horizontalAlIlignment) {}
+    public void setHorizontalAlignment(int horizontalAlIlignment) {}
 
     public void expand(Component component, String height, String width) {
         //To change body of implemented methods use File | Settings | File Templates.

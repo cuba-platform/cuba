@@ -61,7 +61,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadAlign(Component component, Element element) {
         final String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {
-            component.setVerticalAlIlignment(loadAlignment(align, true));
+            component.setVerticalAlignment(loadAlignment(align, true));
         }
     }
 
@@ -106,7 +106,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadPack(Component component, Element element) {
         final String align = element.attributeValue("pack");
         if (!StringUtils.isBlank(align)) {
-            component.setVerticalAlIlignment(loadAlignment(align, false));
+            component.setVerticalAlignment(loadAlignment(align, false));
         }
     }
 }

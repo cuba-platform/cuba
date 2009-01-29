@@ -35,11 +35,11 @@ public interface Component {
     int getWidthUnits();
     void setWidth(String width);
 
-    int getVerticalAlIlignment();
-    void setVerticalAlIlignment(int verticalAlIlignment);
+    int getVerticalAlignment();
+    void setVerticalAlignment(int verticalAlignment);
 
-    int getHorizontalAlIlignment();
-    void setHorizontalAlIlignment(int horizontalAlIlignment);
+    int getHorizontalAlignment();
+    void setHorizontalAlignment(int horizontalAlignment);
 
     interface Container extends Component {
         void add(Component component);

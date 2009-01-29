@@ -17,8 +17,8 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Co
     private String id;
     protected T component;
 
-    private int verticalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
-    private int horizontalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
+    private int verticalAlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
+    private int horizontalAlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
     private Element element;
 
     public String getId() {
@@ -60,27 +60,27 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Co
         component.setWidth(width);
     }
 
-    public int getVerticalAlIlignment() {
-        return verticalAlIlignment;
+    public int getVerticalAlignment() {
+        return verticalAlignment;
     }
 
-    public void setVerticalAlIlignment(int verticalAlIlignment) {
-        this.verticalAlIlignment = verticalAlIlignment;
+    public void setVerticalAlignment(int verticalAlIlignment) {
+        this.verticalAlignment = verticalAlIlignment;
         final com.itmill.toolkit.ui.Component component = this.component.getParent();
         if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, horizontalAlIlignment, verticalAlIlignment);
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, horizontalAlignment, verticalAlIlignment);
         }
     }
 
-    public int getHorizontalAlIlignment() {
-        return horizontalAlIlignment;
+    public int getHorizontalAlignment() {
+        return horizontalAlignment;
     }
 
-    public void setHorizontalAlIlignment(int horizontalAlIlignment) {
-        this.horizontalAlIlignment = horizontalAlIlignment;
+    public void setHorizontalAlignment(int horizontalAlIlignment) {
+        this.horizontalAlignment = horizontalAlIlignment;
         final com.itmill.toolkit.ui.Component component = this.component.getParent();
         if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, horizontalAlIlignment, verticalAlIlignment);
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, horizontalAlIlignment, verticalAlignment);
         }
     }
 

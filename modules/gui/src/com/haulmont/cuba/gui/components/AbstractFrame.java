@@ -58,20 +58,20 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setWidth(width);
     }
 
-    public int getVerticalAlIlignment() {
-        return frame.getVerticalAlIlignment();
+    public int getVerticalAlignment() {
+        return frame.getVerticalAlignment();
     }
 
-    public void setVerticalAlIlignment(int verticalAlIlignment) {
-        frame.setVerticalAlIlignment(verticalAlIlignment);
+    public void setVerticalAlignment(int verticalAlIlignment) {
+        frame.setVerticalAlignment(verticalAlIlignment);
     }
 
-    public int getHorizontalAlIlignment() {
-        return frame.getHorizontalAlIlignment();
+    public int getHorizontalAlignment() {
+        return frame.getHorizontalAlignment();
     }
 
-    public void setHorizontalAlIlignment(int horizontalAlIlignment) {
-        frame.setHorizontalAlIlignment(horizontalAlIlignment);
+    public void setHorizontalAlignment(int horizontalAlIlignment) {
+        frame.setHorizontalAlignment(horizontalAlIlignment);
     }
 
     public void add(Component component) {

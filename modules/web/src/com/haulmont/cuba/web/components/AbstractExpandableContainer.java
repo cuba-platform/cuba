@@ -10,8 +10,6 @@
 package com.haulmont.cuba.web.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
-import com.itmill.toolkit.ui.OrderedLayout;
 import com.itmill.toolkit.ui.ExpandLayout;
 import com.itmill.toolkit.ui.Layout;
 
@@ -34,7 +32,7 @@ class AbstractExpandableContainer extends ExpandLayout implements Component, Com
         final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
 
         addComponent(itmillComponent);
-        setComponentAlignment(itmillComponent, component.getHorizontalAlIlignment(), component.getVerticalAlIlignment());
+        setComponentAlignment(itmillComponent, component.getHorizontalAlignment(), component.getVerticalAlignment());
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
@@ -67,11 +65,11 @@ class AbstractExpandableContainer extends ExpandLayout implements Component, Com
     public void requestFocus() {
     }
 
-    public int getVerticalAlIlignment() {
+    public int getVerticalAlignment() {
         return verticalAlIlignment;
     }
 
-    public void setVerticalAlIlignment(int verticalAlIlignment) {
+    public void setVerticalAlignment(int verticalAlIlignment) {
         this.verticalAlIlignment = verticalAlIlignment;
         final com.itmill.toolkit.ui.Component component = getParent();
         if (component instanceof AlignmentHandler) {
@@ -79,11 +77,11 @@ class AbstractExpandableContainer extends ExpandLayout implements Component, Com
         }
     }
 
-    public int getHorizontalAlIlignment() {
+    public int getHorizontalAlignment() {
         return horizontalAlIlignment;
     }
 
-    public void setHorizontalAlIlignment(int horizontalAlIlignment) {
+    public void setHorizontalAlignment(int horizontalAlIlignment) {
         this.horizontalAlIlignment = horizontalAlIlignment;
         final com.itmill.toolkit.ui.Component component = getParent();
         if (component instanceof AlignmentHandler) {
