@@ -1,6 +1,7 @@
 <menu-config>
     <menu id="security">
         <item id="sec$User.browse" template="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse.xml"/>
+        <item id="sec$Group.browse" template="/com/haulmont/cuba/web/app/ui/security/group/browse/security-group-browse.xml"/>
         <item id="sec$Role.browse" class="com.haulmont.cuba.web.app.ui.TableDemoScreen"/>
     </menu>
     <menu id="administration">

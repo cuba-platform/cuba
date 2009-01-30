@@ -1,0 +1,45 @@
+<window class="com.haulmont.cuba.web.app.ui.security.group.browse.SecurityGroupBrowser">
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/browse/security-group-browse.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <collection-datasource
+            id="groups"
+            class="com.haulmont.cuba.security.entity.Group"
+            view="group-browse">
+            <query>
+                <![CDATA[select g from sec$Group g]]>
+            </query>
+        </collection-datasource>
+
+        <collection-datasource
+            id="profiles"
+            class="com.haulmont.cuba.security.entity.Profile"
+            view="group-browse">
+            <query>select p from sec$Profile p join fetch p.user where p.group.id = ${ds:groups}</query>
+        </collection-datasource>
+    </dsContext>
+
+    <layout>
+        <hbox id="tree-panel" expand="table">
+            <split orientation="horizontal">
+                <vbox>
+                    <tree id="groups">
+                        <treechildren datasource="groups" property="name" parent="parent"/>
+                    </tree>
+                </vbox>
+                <vbox expand="profiles">
+                    <table id="profiles">
+                        <columns>
+                            <column id="user" label="User"/>
+                            <column id="name" label="Profile"/>
+                            <column id="defaultProfile" label="Default"/>
+                        </columns>
+                        <rows datasource="profiles"/>
+                    </table>
+                </vbox>
+            </split>
+        </hbox>
+    </layout>
+</window>

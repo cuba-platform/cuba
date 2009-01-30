@@ -76,4 +76,8 @@ public class User extends StandardEntity
     public void setProfiles(Set<Profile> profiles) {
         this.profiles = profiles;
     }
+
+    public String toString() {
+        return name;
+    }
 }

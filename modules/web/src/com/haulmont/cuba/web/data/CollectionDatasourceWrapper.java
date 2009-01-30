@@ -25,7 +25,8 @@ import com.haulmont.chile.core.model.Range;
 import java.util.*;
 
 public class CollectionDatasourceWrapper implements Container, Container.ItemSetChangeNotifier {
-    private CollectionDatasource datasource;
+
+    protected CollectionDatasource datasource;
     private Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
 
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();

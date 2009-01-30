@@ -82,7 +82,7 @@ public class TableLoader extends ComponentLoader {
         final String id = columnElement.attributeValue("id");
 
         final MetaClass metaClass = ds.getMetaClass();
-        final MetaProperty metaProperty = metaClass.getProperty(id);
+        final MetaProperty metaProperty = metaClass.getPropertyEx(id);
         final Table.Column column = new Table.Column(metaProperty);
 
         column.setType(MetadataHelper.getPropertyTypeClass(metaProperty));
