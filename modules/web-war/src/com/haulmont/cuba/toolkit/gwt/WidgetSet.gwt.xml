@@ -3,6 +3,7 @@
 
     <stylesheet src="css/link/link.css"/>
     <stylesheet src="css/pagingtable/pagingtable.css"/>
+    <stylesheet src="css/menubar/menubar.css"/>
 
     <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet"/>
 </module>

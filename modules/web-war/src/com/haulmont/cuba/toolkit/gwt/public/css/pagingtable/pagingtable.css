@@ -194,20 +194,68 @@
 
 
 /* rowe in column selector */
-.i-on div {
+.i-page-table-column-on div {
 	background-image: url(img/check.gif);
 	background-repeat: no-repeat;
 	background-position: 2px center;
 	text-indent: 6px;
 }
-.i-off div {
+
+.i-page-table-column-off div {
 	text-indent: 6px;
 }
 
+.i-page-table-columns-apply {
+    padding: 0 5px;
+    margin: 0 10px 5px; 
+}
+
+.i-page-table-menu {
+	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+	background-color: #f6f7f7;
+	color: #464f52;
+	font-size: 12px;
+	line-height: 14px;
+}
+.i-page-table-menu .gwt-MenuBar {
+	border-right: 2px solid #c6cbcc;
+	border-bottom: 2px solid #c6cbcc;
+	border-top: 1px solid #d0d4d5;
+	border-left: 1px solid #d0d4d5;
+}
+.i-page-table-menu .gwt-MenuItem {
+	padding: 2px 0;
+	cursor: pointer;
+	vertical-align: middle;
+}
+.i-page-table-menu .gwt-MenuItem div {
+	/*border: 1px solid #f6f7f7;*/
+	padding: 1px 20px 1px 8px;
+	cursor: pointer;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+.i-page-table-menu table {
+	border-collapse:collapse;
+	margin:0;
+	padding:0;
+}
+.i-page-table-menu .gwt-MenuItem img {
+	margin-right: 10px;
+	vertical-align: middle;
+}
 
 /* IE6 hack */
 * html .i-page-table-scrollposition {
 	background: transparent;
+	/* 
+	AlphaImageLoader uses src attribute relative to host page, not CSS
+	We need multiple different filters because we cannot be sure how host page is served compared to theme resources
+	 */
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/demo/table/img/scroll-position-bg.png", sizingMethod="scale");
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/demo/table/img/scroll-position-bg.png", sizingMethod="scale");
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/demo/table/img/scroll-position-bg.png", sizingMethod="scale");
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ITMILL/themes/demo/table/img/scroll-position-bg.png", sizingMethod="scale");
 }
 
 .i-page-length-editor {

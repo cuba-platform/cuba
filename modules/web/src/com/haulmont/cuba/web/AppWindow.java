@@ -12,16 +12,25 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.resource.Messages;
+import com.haulmont.cuba.web.toolkit.ui.MenuBar;
+import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.WindowManager;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.terminal.ExternalResource;
+import com.itmill.toolkit.event.ItemClickEvent;
 
 import java.util.Locale;
+import java.util.List;
+import java.util.Collections;
+
+import org.dom4j.Element;
 
 public class AppWindow extends Window
 {
     private Connection connection;
 
     private ExpandLayout rootLayout;
+    private MenuBar menuBar;
     private TabSheet tabSheet;
 
     public AppWindow(Connection connection) {
@@ -54,16 +63,16 @@ public class AppWindow extends Window
         titleLayout.setSpacing(true);
         titleLayout.setHeight(-1);
 
-        Button navBtn = new Button(Messages.getString("navBtn"),
-                new Button.ClickListener() {
-                    public void buttonClick(Button.ClickEvent event) {
-                        Navigator navigator = new Navigator(AppWindow.this);
-                        addWindow(navigator);
-                    }
-                }
-        );
-        navBtn.setStyleName(Button.STYLE_LINK);
-        titleLayout.addComponent(navBtn);
+//        Button navBtn = new Button(Messages.getString("navBtn"),
+//                new Button.ClickListener() {
+//                    public void buttonClick(Button.ClickEvent event) {
+//                        Navigator navigator = new Navigator(AppWindow.this);
+//                        addWindow(navigator);
+//                    }
+//                }
+//        );
+//        navBtn.setStyleName(Button.STYLE_LINK);
+//        titleLayout.addComponent(navBtn);
 
         Label label = new Label(String.format(Messages.getString("loggedInLabel"),
                 connection.getSession().getName(), connection.getSession().getProfile()));
@@ -105,9 +114,13 @@ public class AppWindow extends Window
         viewLogBtn.setStyleName(Button.STYLE_LINK);
         titleLayout.addComponent(viewLogBtn);
 
-        titleLayout.expand(navBtn);
+//        titleLayout.expand(navBtn);
 
         rootLayout.addComponent(titleLayout);
+
+        menuBar = new MenuBar();
+        initMenuBar();
+        rootLayout.addComponent(menuBar);
 
         tabSheet = new TabSheet();
         tabSheet.setSizeFull();
@@ -115,4 +128,55 @@ public class AppWindow extends Window
         rootLayout.expand(tabSheet);
     }
 
+    private void initMenuBar() {
+        List<MenuItem> rootItems = App.getInstance().getMenuConfig().getRootItems();
+        for (MenuItem menuItem : rootItems) {
+            createMenuItem(menuItem, null);
+        }
+        menuBar.addListener(new ItemClickEvent.ItemClickListener() {
+            public void itemClick(ItemClickEvent event) {
+                MenuItem menuItem = (MenuItem) event.getItemId();
+
+                final String caption = menuItem.getCaption();
+
+                final Element element = menuItem.getDescriptor();
+                final String template = element.attributeValue("template");
+
+                if (template != null) {
+                    App.getInstance().getScreenManager().openWindow(
+                            template,
+                            WindowManager.OpenType.NEW_TAB,
+                            Collections.singletonMap("caption", caption));
+                } else {
+                    final String className = element.attributeValue("class");
+                    if (className != null) {
+                        try {
+                            App.getInstance().getScreenManager().openWindow(
+                                    Class.forName(className),
+                                    WindowManager.OpenType.NEW_TAB,
+                                    Collections.singletonMap("caption", caption));
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void createMenuItem(MenuItem menuItem, MenuItem parenItem) {
+        menuBar.addItem(menuItem);
+        if (parenItem != null) {
+            menuBar.setParent(menuItem, parenItem);
+        }
+        if (menuItem.getChildren().size() == 0) {
+            menuBar.setChildrenAllowed(menuItem, false);
+        }
+        else {
+            menuBar.setChildrenAllowed(menuItem, true);
+            for (MenuItem item : menuItem.getChildren()) {
+                createMenuItem(item, menuItem);
+            }
+        }
+    }
 }

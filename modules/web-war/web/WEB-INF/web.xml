@@ -13,6 +13,10 @@
             <param-name>application</param-name>
             <param-value>com.haulmont.cuba.web.App</param-value>
         </init-param>
+        <init-param>
+            <param-name>widgetset</param-name>
+            <param-value>com.haulmont.cuba.toolkit.gwt.WidgetSet</param-value>
+        </init-param>
     </servlet>
 
     <servlet-mapping>

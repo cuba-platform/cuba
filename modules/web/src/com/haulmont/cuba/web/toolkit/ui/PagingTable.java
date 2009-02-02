@@ -32,6 +32,7 @@ public class PagingTable extends AbstractSelect {
     private static final int CELL_FIRSTCOL = 4;
 
     private final List visibleColumns = new LinkedList();
+    private final Set collapsedColumns = new HashSet();
 
     private final Map columnHeaders = new HashMap();
 
@@ -42,10 +43,16 @@ public class PagingTable extends AbstractSelect {
 
     private boolean showPageLengthEditor = false;
 
+    private boolean columnsCollapsingAllowed = true;
+
     private Object[][] pageBuffer = null;
 
     public PagingTable(String caption, Container dataSource) {
         super(caption, dataSource);
+    }
+
+    public Object[] getAvailableColumns() {
+        return getContainerPropertyIds().toArray();
     }
 
     public void setVisibleColumns(Object[] columns) {
@@ -189,7 +196,7 @@ public class PagingTable extends AbstractSelect {
             if (cols > 0) {
                 for (int colIndex = 0; colIndex < cols; colIndex++)
                 {
-                    Object value = new String("");
+                    Object value = "";
                     final Property p = getContainerProperty(id, colIds[colIndex]);
                     if (p != null) {
                         value = p.getValue();

@@ -7,4 +7,5 @@
     <menu id="administration">
         <item id="core$Server.browse" class="com.haulmont.cuba.web.app.ui.DemoScreen"/>
     </menu>
+    <item id="demo$table" class="com.haulmont.cuba.web.app.ui.DemoTableScreen"/>
 </menu-config>

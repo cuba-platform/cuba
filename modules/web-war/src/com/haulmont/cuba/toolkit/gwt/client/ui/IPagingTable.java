@@ -7,6 +7,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.itmill.toolkit.terminal.gwt.client.*;
 import com.itmill.toolkit.terminal.gwt.client.ui.Table;
+import com.itmill.toolkit.terminal.gwt.client.ui.ActionOwner;
+import com.itmill.toolkit.terminal.gwt.client.ui.Action;
+import com.itmill.toolkit.terminal.gwt.client.ui.IContextMenu;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 import java.util.*;
@@ -67,6 +70,8 @@ public class IPagingTable
 
     private String height = null;
     private String width = null;
+
+    private Set visibleColumns = new HashSet(); //Contains visible columns ids. They need for a header and a body rendering 
 
     private static Console log = ApplicationConnection.getConsole();
 
@@ -344,7 +349,7 @@ public class IPagingTable
         }
 
         //todo мин ширина колонки 50пкс
-        //todo разрулить вариант когда ширина таблицы больше свободного места
+        //todo разрулить вариант когда ширина таблицы больше свободного места 
 
 
         // last loop: set possibly modified values or reset if new tBody
@@ -501,13 +506,15 @@ public class IPagingTable
         }
     }
 
-    class TableHeader extends Panel {
+    class TableHeader extends Panel implements ActionOwner {
 
         private final Element headerBody = DOM.createDiv();
         private final Element columnsSelector = DOM.createDiv();
 
         private final Map availableCells = new HashMap();
         private final Vector visibleCells = new Vector();
+
+        private VisibleColumnsMenu columnsMenu = null;
 
         TableHeader() {
             setElement(DOM.createDiv());
@@ -525,9 +532,9 @@ public class IPagingTable
 
         public void updateHeaderFromUIDL(UIDL uidl) {
             final Iterator it = uidl.getChildIterator();
-//            visibleColumns.clear();
-//        int colIndex = (rowHeaders ? 1 : 0);
-//            visibleCells.clear();
+
+            visibleColumns.clear(); //clear visible columns 
+
             while (it.hasNext()) {
                 final UIDL col = (UIDL) it.next();
                 if (!col.hasAttribute("collapsed")) {
@@ -542,9 +549,9 @@ public class IPagingTable
                     } else {
                         c.setCaption(caption);
                     }
-                }
 
-//            colIndex++;
+                    visibleColumns.add(c.getCid());
+                }
             }
         }
 
@@ -556,6 +563,13 @@ public class IPagingTable
 
         public int getColumnsSelectorWidth() {
             return DOM.getElementPropertyInt(columnsSelector, "offsetWidth");
+        }
+
+        private VisibleColumnsMenu getColumnsMenu() {
+            if (columnsMenu == null) {
+                columnsMenu = new VisibleColumnsMenu();
+            }
+            return columnsMenu;
         }
 
         public boolean remove(Widget child) {
@@ -574,12 +588,104 @@ public class IPagingTable
 
         public void onBrowserEvent(Event event) {
             if (DOM.compare(DOM.eventGetTarget(event), columnsSelector)) {
-                Window.alert("Columns menu will be here");
-//                    final int left = DOM.getAbsoluteLeft(columnSelector);
-//                    final int top = DOM.getAbsoluteTop(columnSelector)
-//                            + DOM.getElementPropertyInt(columnSelector,
-//                                    "offsetHeight");
-//                    client.getContextMenu().showAt(this, left, top);
+                final int left = DOM.getAbsoluteLeft(columnsSelector);
+                final int top = DOM.getAbsoluteTop(columnsSelector)
+                        + DOM.getElementPropertyInt(columnsSelector,
+                        "offsetHeight");
+                getColumnsMenu().showAt(this, left, top);
+            }
+        }
+
+        public Action[] getActions() {
+            final Action[] actions = new Action[availableCells.size() + 1];
+
+            final Iterator it = availableCells.values().iterator();
+            int i = 0;
+            while (it.hasNext()) {
+                final Cell cell = (Cell) it.next();
+                final Action a = new VisibleColumnAction(cell.getCid(), false);
+                a.setCaption(cell.getCaption());
+
+                actions[i++] = a;
+            }
+            actions[i] = new ApplyVisibleColumnsAction("Apply");
+
+            return actions;
+        }
+
+        public ApplicationConnection getClient() {
+            return client;
+        }
+
+        public String getPaintableId() {
+            return uidlId;
+        }
+
+        class VisibleColumnAction
+                extends Action
+        {
+            private String cid;
+            private boolean collapsed;
+
+            VisibleColumnAction(String cid, boolean collapsed) {
+                super(TableHeader.this);
+                this.cid = cid;
+                this.collapsed = collapsed;
+            }
+
+            public void execute() {
+                Window.alert("Column " + cid + " click");
+            }
+
+            public String getCid() {
+                return cid;
+            }
+
+            public boolean isCollapsed() {
+                return collapsed;
+            }
+
+            public String getHTML() {
+                final StringBuffer sb = new StringBuffer();
+                if (collapsed) {
+                    sb.append("<span class=\"" + CLASSNAME + "-column-off\">");
+                } else {
+                    sb.append("<span class=\"" + CLASSNAME + "-column-on\">");
+                }
+                sb.append(super.getHTML());
+                sb.append("</span>");
+
+                return sb.toString();
+            }
+        }
+
+        class ApplyVisibleColumnsAction
+                extends Action
+        {
+            ApplyVisibleColumnsAction(String caption) {
+                super(TableHeader.this);
+                setCaption(caption);
+            }
+
+            public void execute() {
+                getColumnsMenu().hide();
+                Window.alert("Apply clicked");
+            }
+
+            public String getHTML() {
+                return "<button class=\""
+                        + CLASSNAME
+                        + "-columns-apply\">"
+                        + getCaption()
+                        + "</button>";
+            }
+        }
+
+        class VisibleColumnsMenu extends IContextMenu {
+            VisibleColumnsMenu() {
+                super();
+                setActionOwner(TableHeader.this);
+                setStyleName(CLASSNAME + "-menu");
             }
         }
 
@@ -619,7 +725,7 @@ public class IPagingTable
             public void setCaption(String newCaption) {
                 if (!caption.equals(newCaption)) {
                     this.caption = newCaption;
-                    DOM.setInnerHTML(captionContainer,
+                    DOM.setInnerHTML(captionContainer, 
                             "<span class=\""
                                     + CLASSNAME
                                     + "-caption\">"
@@ -698,7 +804,7 @@ public class IPagingTable
         public int availableWidth() {
             return DOM.getElementPropertyInt(sizer, "offsetWidth");
         }
-
+        
         public void updateBodyFromUIDL(UIDL uidl) {
             final Iterator it = uidl.getChildIterator();
 //            rows.clear();
