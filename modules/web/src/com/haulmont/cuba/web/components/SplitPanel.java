@@ -52,7 +52,7 @@ public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.
 
     public void setId(String id) {
         this.id = id;
-        setDebugId(id);
+//        setDebugId(id);
     }
 
     public void requestFocus() {

@@ -27,7 +27,7 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Co
 
     public void setId(String id) {
         this.id = id;
-        component.setDebugId(id);
+//        component.setDebugId(id);
     }
 
     public void requestFocus() {

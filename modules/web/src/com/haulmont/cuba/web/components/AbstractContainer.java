@@ -57,7 +57,7 @@ class AbstractContainer extends OrderedLayout implements Component.Container {
 
     public void setId(String id) {
         this.id = id;
-        setDebugId(id);
+//        setDebugId(id);
     }
 
     public void requestFocus() {
