@@ -10,16 +10,20 @@
 package com.haulmont.cuba.gui.components;
 
 import java.util.List;
+import java.util.Collection;
 
 public interface Tabsheet extends Component {
+    void addTab(String name, Component component);
+    void removeTab(String name);
+
     Tab getTab();
     void setTab(Tab tab);
     void setTab(String name);
 
-    List<Tab> getTabs();
+    Collection<Tab> getTabs();
 
     interface Tab {
         String getName();
-        void setName(); 
+        void setName(String name);
     }
 }

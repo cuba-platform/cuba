@@ -47,6 +47,7 @@ public class LayoutLoaderConfig {
         config.registerLoader("iframe", IFrameLoader.class);
         config.registerLoader("split", SplitPanelLoader.class);
         config.registerLoader("tree", TreeLoader.class);
+        config.registerLoader("tabsheet", TabsheetLoader.class);
     }
 
     public static LayoutLoaderConfig getWindowLoaders() {

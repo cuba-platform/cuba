@@ -39,6 +39,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put("lookup-field", LookupField.class);
         classes.put("split", SplitPanel.class);
         classes.put("tree", Tree.class);
+        classes.put("tabsheet", Tabsheet.class);
     }
 
     public <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException {

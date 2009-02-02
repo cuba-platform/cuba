@@ -11,9 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OrderedLayout;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Constructor;
 
 public abstract class ContainerLoader extends ComponentLoader {
     protected ComponentsFactory factory;
@@ -76,5 +75,26 @@ public abstract class ContainerLoader extends ComponentLoader {
             }
         }
         return null;
+    }
+
+
+    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
+        Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
+        if (loaderClass == null) {
+            throw new IllegalStateException(String.format("Unknown component '%s'", name));
+        }
+
+        com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
+        try {
+            final Constructor<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> constructor =
+                    loaderClass.getConstructor(LayoutLoaderConfig.class, ComponentsFactory.class, DsContext.class);
+            loader = constructor.newInstance(config, factory, dsContext);
+
+            loader.setLocale(locale);
+        } catch (Throwable e) {
+            loader = loaderClass.newInstance();
+        }
+
+        return loader;
     }
 }
