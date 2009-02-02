@@ -13,6 +13,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,6 +49,7 @@ public class Connection
         connected = true;
         this.login = login;
         this.password = password;
+        ServerSecurityUtils.setSecurityAssociation(session.getLogin(), session.getId());
         fireConnectionListeners();
     }
 
