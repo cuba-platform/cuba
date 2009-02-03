@@ -10,6 +10,9 @@
 package com.haulmont.cuba.web.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.data.CollectionDatasourceWrapper;
 import com.itmill.toolkit.ui.Select;
 
 public class LookupField
@@ -21,5 +24,9 @@ public class LookupField
     public LookupField() {
         this.component = new Select();
         component.setImmediate(true);
+    }
+
+    public void setLookupDatasource(CollectionDatasource datasource) {
+        component.setContainerDataSource(new CollectionDatasourceWrapper(datasource, true));
     }
 }

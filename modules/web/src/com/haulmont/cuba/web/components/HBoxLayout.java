@@ -12,10 +12,9 @@ package com.haulmont.cuba.web.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.ExpandLayout;
 
-public class VBox extends AbstractContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
-
-    public VBox() {
-        super(ExpandLayout.ORIENTATION_VERTICAL);
+public class HBoxLayout extends AbstractContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
+    public HBoxLayout() {
+        super(ExpandLayout.ORIENTATION_HORIZONTAL);
     }
 
     public void expand(Component component, String height, String width) {

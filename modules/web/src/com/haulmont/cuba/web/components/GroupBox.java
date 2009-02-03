@@ -24,5 +24,6 @@ public class GroupBox extends AbstractPanel implements Component.HasCaption {
 
     public GroupBox() {
         setLayout(new ExpandLayout(OrderedLayout.ORIENTATION_VERTICAL));
+        setStyleName(Panel.STYLE_EMPHASIZE);
     }
 }

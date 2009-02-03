@@ -3,4 +3,7 @@
         <property name="name"/>
         <property name="login"/>
     </view>
+    <view entity="sec$Group" name="lookup">
+        <property name="name"/>
+    </view>
 </views>

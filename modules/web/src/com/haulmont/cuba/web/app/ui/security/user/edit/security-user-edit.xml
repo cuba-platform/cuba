@@ -12,18 +12,42 @@
             class="com.haulmont.cuba.security.entity.User"
             view="edit"
         />
+
+        <collection-datasource
+            id="groups"
+            class="com.haulmont.cuba.security.entity.Group"
+            view="lookup"
+        >
+            <query>select g from sec$Group g</query>
+        </collection-datasource>
     </dsContext>
 
     <layout>
-        <hbox>
-            <vbox>
-                <label value="Name"/>
-                <label value="Login"/>
-            </vbox>
-            <vbox>
-                <text-field id="name" datasource="user" property="name"/>
-                <text-field id="login" datasource="user" property="login"/>
-            </vbox>
-        </hbox>
+        <tabsheet>
+            <tab id="general" caption="General">
+                <grid>
+                    <columns>
+                        <column/>
+                        <column/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="Name"/>
+                            <text-field id="name" datasource="user" property="name"/>
+                        </row>
+                        <row>
+                            <label value="Login"/>
+                            <hbox>
+                                <text-field id="login" datasource="user" property="login"/>
+                                <button caption="Browse..."/>
+                           </hbox>
+                        </row>
+                    </rows>
+                </grid>
+            </tab>
+            <tab id="additional" caption="Additional">
+                <lookup-field id="groups" lookupDatasource="groups"/>
+            </tab>
+        </tabsheet>
     </layout>
 </window>

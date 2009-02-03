@@ -36,13 +36,14 @@ public class LayoutLoaderConfig {
     private static void registerComponents(LayoutLoaderConfig config) {
         config.registerLoader("hbox", HBoxLoader.class);
         config.registerLoader("vbox", VBoxLoader.class);
+        config.registerLoader("grid", GridLoader.class);
         config.registerLoader("button", ButtonLoader.class);
         config.registerLoader("group-box", GroupBoxLoader.class);
         config.registerLoader("label", LabelLoader.class);
         config.registerLoader("text-field", AbstractFieldLoader.class);
         config.registerLoader("text-area", AbstractFieldLoader.class);
         config.registerLoader("date-field", AbstractFieldLoader.class);
-        config.registerLoader("lookup-field", AbstractFieldLoader.class);
+        config.registerLoader("lookup-field", LookupFieldLoader.class);
         config.registerLoader("table", TableLoader.class);
         config.registerLoader("iframe", IFrameLoader.class);
         config.registerLoader("split", SplitPanelLoader.class);

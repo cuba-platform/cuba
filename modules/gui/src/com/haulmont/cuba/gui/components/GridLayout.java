@@ -4,14 +4,17 @@
  * Use is subject to license terms.
 
  * Author: Dmitry Abramov
- * Created: 16.01.2009 17:31:02
+ * Created: 03.02.2009 13:01:37
  * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+public interface GridLayout extends Component.Container {
+    void add(Component component, int col, int row);
 
-public interface LookupField extends Field {
-    void setLookupDatasource(CollectionDatasource datasource);
+    int getRows();
+    void setRows(int rows);
+
+    int getColumns();
+    void setColumns(int columns);
 }

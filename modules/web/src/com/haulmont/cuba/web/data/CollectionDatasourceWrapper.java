@@ -26,13 +26,22 @@ import java.util.*;
 
 public class CollectionDatasourceWrapper implements Container, Container.ItemSetChangeNotifier {
 
-    protected CollectionDatasource datasource;
-    private Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
+    protected boolean autoRefresh;
+    protected boolean ignoreListeners;
 
+    protected CollectionDatasource datasource;
+
+    private Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
 
     public CollectionDatasourceWrapper(CollectionDatasource datasource) {
+        this(datasource, false);
+    }
+
+    public CollectionDatasourceWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         this.datasource = datasource;
+        this.autoRefresh = autoRefresh;
+
         final View view = datasource.getView();
         final MetaClass metaClass = datasource.getMetaClass();
 
@@ -67,18 +76,30 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
             public void itemChanged(Datasource ds, Object prevItem, Object item) {}
 
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                fireItemSetChanged();
+                final boolean prevIgnoreListeners = ignoreListeners;
+                try {
+                    fireItemSetChanged();
+                } finally {
+                    ignoreListeners = prevIgnoreListeners;
+                }
             }
 
             public void valueChanged(Object source, String property, Object prevValue, Object value) {}
 
             public void collectionChanged(Datasource ds, CollectionOperation operation) {
-                fireItemSetChanged();
+                final boolean prevIgnoreListeners = ignoreListeners;
+                try {
+                    fireItemSetChanged();
+                } finally {
+                    ignoreListeners = prevIgnoreListeners;
+                }
             }
         });
     }
 
     protected void fireItemSetChanged() {
+        if (ignoreListeners) return;
+
         for (ItemSetChangeListener listener : itemSetChangeListeners) {
             listener.containerItemSetChange(new ItemSetChangeEvent() {
                 public Container getContainer() {
@@ -109,7 +130,8 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         return properties;
     }
 
-    public Collection getItemIds() {
+    public synchronized Collection getItemIds() {
+        __autoRefreshInvalid();
         return datasource.getItemIds();
     }
 
@@ -123,11 +145,13 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         return MetadataHelper.getPropertyTypeClass(metaProperty);
     }
 
-    public int size() {
+    public synchronized int size() {
+        __autoRefreshInvalid();
         return datasource.size();
     }
 
-    public boolean containsId(Object itemId) {
+    public synchronized boolean containsId(Object itemId) {
+        __autoRefreshInvalid();
         return datasource.containsItem(itemId);
     }
 
@@ -161,5 +185,11 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
 
     public void removeListener(ItemSetChangeListener listener) {
         this.itemSetChangeListeners.remove(listener);
+    }
+
+    protected void __autoRefreshInvalid() {
+        if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
+            datasource.refresh();
+        }
     }
 }

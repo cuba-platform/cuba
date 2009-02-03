@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.List;
@@ -32,10 +33,19 @@ public class TabsheetLoader extends ContainerLoader {
 
         final List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
-            final String name = tabElement.attributeValue("name");
+            final String name = tabElement.attributeValue("id");
 
             final ComponentLoader loader = getLoader("vbox");
-            component.addTab(name, loader.loadComponent(factory, tabElement));
+
+            final Tabsheet.Tab tab = component.addTab(name, loader.loadComponent(factory, tabElement));
+            String caption = tabElement.attributeValue("caption");
+
+            if (!StringUtils.isEmpty(caption)) {
+                if (caption.startsWith("res://") && resourceBundle != null) {
+                    caption = resourceBundle.getString(caption.substring(6));
+                }
+                tab.setCaption(caption);
+            }
         }
 
         return component;

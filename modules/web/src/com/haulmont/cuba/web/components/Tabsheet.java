@@ -46,16 +46,28 @@ public class Tabsheet
             this.name = name;
         }
 
+        public String getCaption() {
+            return Tabsheet.this.component.getTabCaption(ComponentsHelper.unwrap(component));
+        }
+
+        public void setCaption(String caption) {
+            Tabsheet.this.component.setTabCaption(ComponentsHelper.unwrap(component), caption);
+        }
+
         public Component getComponent() {
             return component;
         }
     }
 
-    public void addTab(String name, Component component) {
-        this.tabs.put(name, new Tab(name, component));
+    public com.haulmont.cuba.gui.components.Tabsheet.Tab addTab(String name, Component component) {
+        final Tab tab = new Tab(name, component);
+
+        this.tabs.put(name, tab);
         this.components.put(component, name);
 
         this.component.addTab(ComponentsHelper.unwrap(component));
+
+        return tab;
     }
 
     public void removeTab(String name) {

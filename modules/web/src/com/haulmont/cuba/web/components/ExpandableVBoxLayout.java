@@ -13,9 +13,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.ExpandLayout;
 import org.apache.commons.lang.StringUtils;
 
-public class ExpandableVBox extends AbstractExpandableContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
+public class ExpandableVBoxLayout extends AbstractExpandableContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
 
-    public ExpandableVBox() {
+    public ExpandableVBoxLayout() {
         super(ExpandLayout.ORIENTATION_VERTICAL);
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Collection;
 
 public interface Tabsheet extends Component {
-    void addTab(String name, Component component);
+    Tab addTab(String name, Component component);
     void removeTab(String name);
 
     Tab getTab();
@@ -25,5 +25,8 @@ public interface Tabsheet extends Component {
     interface Tab {
         String getName();
         void setName(String name);
+
+        String getCaption();
+        void setCaption(String caption);
     }
 }

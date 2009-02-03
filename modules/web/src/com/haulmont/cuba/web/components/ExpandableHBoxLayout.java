@@ -13,8 +13,8 @@ import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.ExpandLayout;
 import org.apache.commons.lang.StringUtils;
 
-public class ExpandableHBox extends AbstractExpandableContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
-    public ExpandableHBox() {
+public class ExpandableHBoxLayout extends AbstractExpandableContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
+    public ExpandableHBoxLayout() {
         super(ExpandLayout.ORIENTATION_HORIZONTAL);
     }
 }

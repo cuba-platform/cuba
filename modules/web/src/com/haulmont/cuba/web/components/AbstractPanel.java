@@ -23,6 +23,10 @@ public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.compon
     private String id;
     private Component component;
 
+    public AbstractPanel() {
+        setStyleName(Panel.STYLE_LIGHT);
+    }
+
     public void add(Component component) {
         final com.itmill.toolkit.ui.Component comp = ComponentsHelper.unwrap(component);
         if (comp instanceof Layout) {
