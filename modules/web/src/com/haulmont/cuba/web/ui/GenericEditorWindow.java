@@ -29,16 +29,6 @@ public class GenericEditorWindow
     extends
         Window.Editor
 {
-    private String caption;
-
-    public String getCaption() {
-        return caption;
-    }
-
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
-
     @Override
     protected Component createLayout() {
         final Form form = (Form) super.createLayout();

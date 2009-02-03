@@ -48,4 +48,20 @@ public class AbstractWindow extends AbstractFrame implements Window, Component.H
             throw new UnsupportedOperationException();
         }
     }
+
+    public String getCaption() {
+        if (frame instanceof Window) {
+            return ((Window) frame).getCaption();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void setCaption(String caption) {
+        if (frame instanceof Window) {
+            ((Window) frame).setCaption(caption);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

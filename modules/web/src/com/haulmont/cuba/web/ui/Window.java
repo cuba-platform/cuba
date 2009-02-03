@@ -40,6 +40,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     private Element element;
 
     private DsContext dsContext;
+    private String caption;
 
     public Window() {
         component = createLayout();
@@ -203,6 +204,14 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     public boolean close() {
         App.getInstance().getScreenManager().closeScreen();
         return true;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public static class Editor extends Window implements com.haulmont.cuba.gui.components.Window.Editor {

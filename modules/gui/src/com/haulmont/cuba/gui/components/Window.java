@@ -11,7 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.DsContext;
 
-public interface Window extends IFrame {
+public interface Window extends IFrame, Component.HasCaption {
     DsContext getDsContext();
     void setDsContext(DsContext dsContext);
 

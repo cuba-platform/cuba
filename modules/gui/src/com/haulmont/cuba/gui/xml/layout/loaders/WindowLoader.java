@@ -28,6 +28,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         assignXmlDescriptor(window, element);
         loadResourceBundle(window, element);
+        loadCaption(window, element);
+
         loadSubComponents(window, element.element("layout"));
 
         return window;

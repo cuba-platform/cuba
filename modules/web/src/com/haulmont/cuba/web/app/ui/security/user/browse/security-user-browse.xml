@@ -10,7 +10,7 @@
             view="browse"
         >
             <query>
-                <![CDATA[select u from sec$User u where u.name like <#if ${component:filter.name}?has_content>${component:filter.name}<#else>'%'</#if>]]>
+                <![CDATA[select u from sec$User u where u.name like $[component:filter.name]]]>
             </query>
         </collection-datasource>
 
@@ -19,14 +19,13 @@
             class="com.haulmont.cuba.security.entity.Profile"
             view="browse"
         >
-            <query>select p from sec$Profile p where p.user.id = ${ds:users}</query>
+            <query>select p from sec$Profile p where p.user.id = $[ds:users]</query>
         </collection-datasource>
     </dsContext>
 
     <layout>
         <vbox expand="table-panel">
             <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse-filter.xml"/>
-
             <hbox id="table-panel" expand="table">
                 <split orientation="horizontal">
                     <vbox expand="users">

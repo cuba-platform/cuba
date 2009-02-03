@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import java.util.*;
 
 public class ParametersHelper {
-    private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile("\\$\\{([\\w\\.:]+)\\}");
+    private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile("\\$\\[([\\w\\.:]+)\\]");
 
     public static ParameterInfo[] parseQuery(String query) {
         Set<ParameterInfo> infos = new HashSet<ParameterInfo>();
@@ -85,7 +85,7 @@ public class ParametersHelper {
     }
 
     public static ParameterInfo parse(String parameterInfo) {
-        if (parameterInfo.startsWith("${") && parameterInfo.endsWith("}")) {
+        if (parameterInfo.startsWith("$[") && parameterInfo.endsWith("]")) {
             final String param = parameterInfo.substring(2, parameterInfo.length() - 1);
 
             final String[] strings = param.split(":");

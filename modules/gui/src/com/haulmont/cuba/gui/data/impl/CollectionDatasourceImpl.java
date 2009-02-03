@@ -261,9 +261,11 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
         query = TemplateHelper.processTemplate(query, parameterValues);
 
         for (ParametersHelper.ParameterInfo info : queryParameters) {
+            final String paramInfo = "\\$\\[" + info.getType().getPrefix() + "\\:" + info.getName() + "\\]";
+
             String paramName = info.getType().getPrefix() + "." + info.getName();
             paramName = paramName.replaceAll("\\.", "_");
-            query = query.replaceAll(paramName, ":" + paramName);
+            query = query.replaceAll(paramInfo, ":" + paramName);
         }
 
         return query;

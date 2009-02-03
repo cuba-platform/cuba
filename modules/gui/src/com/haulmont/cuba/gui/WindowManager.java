@@ -23,16 +23,21 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
+import java.io.StringReader;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public abstract class WindowManager {
     public enum OpenType {
@@ -42,8 +47,10 @@ public abstract class WindowManager {
     }
 
     protected Window createWindow(String template, Map params, LayoutLoaderConfig layoutConfig) {
-        Document document = parseDescriptor(template, params);
+        Document document = parseDescriptor(template, params, true);
         final Element element = document.getRootElement();
+
+        deployViews(document);
 
         final DsContext dsContext = loadDsContext(element);
         final Window window = loadLayout(element, dsContext, layoutConfig);
@@ -51,6 +58,17 @@ public abstract class WindowManager {
         initialize(window, dsContext, params);
 
         return wrapByCustomClass(window, element);
+    }
+
+    protected void deployViews(Document document) {
+        final Element metadataContextElement = document.getRootElement().element("metadataContext");
+        if (metadataContextElement != null) {
+            final List<Element> viewsElements = metadataContextElement.elements("deployViews");
+            for (Element viewsElement : viewsElements) {
+                final String resource = viewsElement.attributeValue("name");
+                MetadataProvider.getViewRepository().deployViews(getClass().getResourceAsStream(resource));
+            }
+        }
     }
 
     protected void initialize(final Window window, DsContext dsContext, Map params) {
@@ -120,14 +138,17 @@ public abstract class WindowManager {
     public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
         Window window = createWindow(descriptor, params, LayoutLoaderConfig.getWindowLoaders());
 
-        String caption = getCaption(window, params);
+        String caption = loadCaption(window, params);
 
         showWindow(window, caption, openType);
         return (T) window;
     }
 
-    protected <T extends Window> String getCaption(Window window, Map params) {
-        String caption = (String) params.get("caption");
+    protected <T extends Window> String loadCaption(Window window, Map params) {
+        String caption = window.getCaption();
+        if (!StringUtils.isEmpty(caption)) return caption;
+
+        caption = (String) params.get("caption");
         if (StringUtils.isEmpty(caption)) {
             final ResourceBundle resourceBundle = window.getResourceBundle();
             if (resourceBundle != null) {
@@ -144,7 +165,9 @@ public abstract class WindowManager {
         } else {
             try {
                 caption = invokeMethod(window, "getCaption");
-                caption = TemplateHelper.processTemplate(caption, params);
+                if (!StringUtils.isEmpty(caption)) {
+                    caption = TemplateHelper.processTemplate(caption, params);
+                }
             } catch (NoSuchMethodException e) {
                 // Do nothing
             } catch (Throwable e) {
@@ -152,38 +175,41 @@ public abstract class WindowManager {
             }
         }
 
+        window.setCaption(caption);
+
         return caption;
     }
 
     public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
         Window window = createWindow(aclass, params);
 
-        String caption = getCaption(window, params);
+        String caption = loadCaption(window, params);
 
         showWindow(window, caption, openType);
         return (T) window;
     }
 
     public <T extends Window> T openEditor(String descriptor, Object item, OpenType openType, Map params) {
-        Window window = createWindow(descriptor, params, LayoutLoaderConfig.getEditorLoaders());
-        ((Window.Editor) window).setItem(item);
-
         params = new HashMap(params);
         params.put("item", item);
 
-        String caption = getCaption(window, params);
+        Window window = createWindow(descriptor, params, LayoutLoaderConfig.getEditorLoaders());
+        ((Window.Editor) window).setItem(item);
+
+        String caption = loadCaption(window, params);
 
         showWindow(window, caption, openType);
         return (T) window;
     }
 
     public <T extends Window> T openEditor(Class aclass, Object item, OpenType openType, Map params) {
+        params = new HashMap(params);
+        params.put("item", item);
+
         Window window = createWindow(aclass, params);
         ((Window.Editor) window).setItem(item);
 
-        params = new HashMap(params);
-        params.put("item", item);
-        String caption = getCaption(window, params);
+        String caption = loadCaption(window, params);
 
         showWindow(window, caption, openType);
         return (T) window;
@@ -241,30 +267,58 @@ public abstract class WindowManager {
         return false;
     }
 
-    protected Document parseDescriptor(String template, Map params) {
-        Document document = descriptorsCache.get(template);
-        if (document == null || !isDescriptorCacheEnabled()) {
-            final InputStream stream = getClass().getResourceAsStream(template);
+    private static final Pattern DS_CONTEXT_PATTERN = Pattern.compile("<dsContext>(\\p{ASCII}+)</dsContext>");
 
-            SAXReader reader = new SAXReader();
+    protected Document parseDescriptor(String resourcePath, Map params, boolean isTemplate) {
+        Document document;
+        if (isTemplate) {
+            final InputStream stream = getClass().getResourceAsStream(resourcePath);
             try {
-                document = reader.read(stream);
-            } catch (DocumentException e) {
-                throw new RuntimeException(e);
-            }
+                String template = IOUtils.toString(stream);
+                Matcher matcher = DS_CONTEXT_PATTERN.matcher(template);
+                if (matcher.find()) {
+                    final String dsContext = matcher.group(1);
 
-            final Element metadataContextElement = document.getRootElement().element("metadataContext");
-            if (metadataContextElement != null) {
-                final List<Element> viewsElements = metadataContextElement.elements("deployViews");
-                for (Element viewsElement : viewsElements) {
-                    final String resource = viewsElement.attributeValue("name");
-                    MetadataProvider.getViewRepository().deployViews(getClass().getResourceAsStream(resource));
+                    template = DS_CONTEXT_PATTERN.matcher(template).replaceFirst("");
+                    template = TemplateHelper.processTemplate(template, params);
+
+                    document = loadDocument(template);
+                    final Document dsContextDocument = loadDocument("<dsContext>" + dsContext + "</dsContext>");
+                    document.getRootElement().add(dsContextDocument.getRootElement());
+                } else {
+                    template = TemplateHelper.processTemplate(template, params);
+                    document = loadDocument(template);
                 }
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
             }
+        } else {
+            document = descriptorsCache.get(resourcePath);
+            if (document == null || !isDescriptorCacheEnabled()) {
+                final InputStream stream = getClass().getResourceAsStream(resourcePath);
 
-            descriptorsCache.put(template, document);
+                SAXReader reader = new SAXReader();
+                try {
+                    document = reader.read(stream);
+                } catch (DocumentException e) {
+                    throw new RuntimeException(e);
+                }
+
+                descriptorsCache.put(resourcePath, document);
+            }
         }
 
+        return document;
+    }
+
+    protected Document loadDocument(String template) {
+        Document document;
+        SAXReader reader = new SAXReader();
+        try {
+            document = reader.read(new StringReader(template));
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
         return document;
     }
 

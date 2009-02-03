@@ -17,7 +17,7 @@
             id="profiles"
             class="com.haulmont.cuba.security.entity.Profile"
             view="group-browse">
-            <query>select p from sec$Profile p join fetch p.user where p.group.id = ${ds:groups}</query>
+            <query>select p from sec$Profile p join fetch p.user where p.group.id = $[ds:groups]</query>
         </collection-datasource>
     </dsContext>
 
