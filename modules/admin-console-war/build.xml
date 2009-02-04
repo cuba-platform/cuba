@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<project xmlns:ext="http://haulmont.com/schema/ant"
+	name="admin-console-war" default="build-module" basedir=".">
+
+	<property name="project.dir" location="../.."/>
+	<property name="root.dir" location="${project.dir}/.."/>
+	
+	<property name="module.name" value="admin-console-war"/>
+	<property name="module.jar" value="29admin-console.war"/>
+
+    <import file="${root.dir}/build-inc-mod.xml"/>
+    <property file="${root.dir}/build.properties"/>
+    <property file="${project.dir}/lib.properties"/>
+
+    <property name="web.src.dir" location="${module.dir}/web"/>
+
+    <path id="compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
+        <pathelement location="${prod.out.dir}/core"/>
+    </path>
+
+    <path id="test-compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="server-lib-fs"/>
+    </path>
+
+    <target name="clean-module" depends="base-mod.clean-module">
+		<delete dir="${build.dir}/${module.name}"/>
+    </target>
+
+    <target name="build-module">
+        <echo>==> building ${project.dir} ${module.name}</echo>
+
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dir}/${module.name}"/>
+        <copy todir="${build.dir}/${module.name}">
+            <fileset dir="${web.src.dir}" includes="**/*"/>
+        </copy>
+
+        <jar basedir="${build.dir}/${module.name}" destfile="${build.dir}/${module.jar}"/>
+    </target>
+
+    <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
+
+</project>

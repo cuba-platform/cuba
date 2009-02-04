@@ -50,6 +50,14 @@
       <maximumStackSize value="32" />
       <properties />
     </buildFile>
+    <buildFile url="file://$PROJECT_DIR$/modules/admin-console-war/build.xml">
+      <additionalClassPath />
+      <antReference projectDefault="true" />
+      <customJdkName value="" />
+      <maximumHeapSize value="128" />
+      <maximumStackSize value="32" />
+      <properties />
+    </buildFile>
   </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
@@ -925,6 +933,7 @@
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/modules/cuba-monitor-war/admin-console-war.iml" filepath="$PROJECT_DIR$/modules/cuba-monitor-war/admin-console-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/client/client.iml" filepath="$PROJECT_DIR$/modules/client/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/gui/gui.iml" filepath="$PROJECT_DIR$/modules/gui/gui.iml" />
@@ -1032,6 +1041,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/reflections-0.9.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-io-1.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/freemarker-2.3.15.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/perf4j-0.9.10.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -1039,6 +1049,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-codec-1.3-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/reflections-0.9-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-io-1.4-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/perf4j-0.9.10-src.zip!/" />
       </SOURCES>
     </library>
     <library name="test">

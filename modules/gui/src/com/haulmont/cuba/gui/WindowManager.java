@@ -22,22 +22,24 @@ import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class WindowManager {
     public enum OpenType {
@@ -47,17 +49,32 @@ public abstract class WindowManager {
     }
 
     protected Window createWindow(String template, Map params, LayoutLoaderConfig layoutConfig) {
+        StopWatch stopWatch = new Log4JStopWatch("WindowManager.createWindow");
+
+        StopWatch parseDescriptorStopWatch = new Log4JStopWatch("WindowManager.createWindow (parseDescriptor)");
         Document document = parseDescriptor(template, params, true);
+        parseDescriptorStopWatch.stop();
+
         final Element element = document.getRootElement();
 
+        StopWatch deployViewsStopWatch = new Log4JStopWatch("WindowManager.createWindow (deployViews)");
         deployViews(document);
+        deployViewsStopWatch.stop();
 
+        StopWatch loadDsContextStopWatch = new Log4JStopWatch("WindowManager.createWindow (loadDsContext)");
         final DsContext dsContext = loadDsContext(element);
+        loadDsContextStopWatch.stop();
+
+        StopWatch loadLayoutStopWatch = new Log4JStopWatch("WindowManager.createWindow (loadLayout)");
         final Window window = loadLayout(element, dsContext, layoutConfig);
+        loadLayoutStopWatch.stop();
 
         initialize(window, dsContext, params);
 
-        return wrapByCustomClass(window, element);
+        final Window wrapedWindow = wrapByCustomClass(window, element);
+        stopWatch.stop();
+
+        return wrapedWindow;
     }
 
     protected void deployViews(Document document) {

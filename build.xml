@@ -14,6 +14,7 @@
         <ant dir="modules/gui" target="${target}" inheritAll="false"/>
 		<ant dir="modules/web" target="${target}" inheritAll="false"/>
         <ant dir="modules/web-war" target="${target}" inheritAll="false"/>
+        <ant dir="modules/admin-console-war" target="${target}" inheritAll="false"/>
 	</target>
 
 	<target name="clean">
@@ -31,6 +32,7 @@
         <ext:install-lib name="commons-io" version="${commons-io.version}" toDir="${lib.common.dir}"/>
         <ext:install-jboss-lib name="log4j" version="${jboss.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="freemarker" version="${freemarker.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib name="perf4j" version="${perf4j.version}" toDir="${lib.common.dir}"/>
 		<!-- server libs -->
         <ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.server.dir}"/>
