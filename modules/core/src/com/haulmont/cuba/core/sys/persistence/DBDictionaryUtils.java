@@ -113,20 +113,24 @@ public class DBDictionaryUtils
             else {
                 columns = sel.getSelects();
             }
-            for (Object item : columns) {
-                if (item instanceof Column) {
-                    Column col = (Column) item;
-                    for (String s : (Collection<String>) sel.getTableAliases()) {
-                        int i = s.indexOf(' ');
-                        String tableName = s.substring(0, i);
-                        if (col.getTable().getName().equals(tableName)) {
-                            if (col.getTable().containsColumn(DELETE_TS_COL))
-                                tables.put(col.getTable(), s.substring(i + 1));
-                            break;
+
+            if (columns != null) {
+                for (Object item : columns) {
+                    if (item instanceof Column) {
+                        Column col = (Column) item;
+                        for (String s : (Collection<String>) sel.getTableAliases()) {
+                            int i = s.indexOf(' ');
+                            String tableName = s.substring(0, i);
+                            if (col.getTable().getName().equals(tableName)) {
+                                if (col.getTable().containsColumn(DELETE_TS_COL))
+                                    tables.put(col.getTable(), s.substring(i + 1));
+                                break;
+                            }
                         }
                     }
                 }
             }
+
             StringBuilder sb = new StringBuilder();
             for (String alias : tables.values()) {
                 sb.append(alias).append(".").append(DELETE_TS_COL).append(" IS NULL");

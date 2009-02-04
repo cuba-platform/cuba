@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import java.util.*;
 
 public class ParametersHelper {
-    private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile("\\$\\[([\\w\\.:]+)\\]");
+    private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile(":([\\w\\.\\$]+)");
 
     public static ParameterInfo[] parseQuery(String query) {
         Set<ParameterInfo> infos = new HashSet<ParameterInfo>();
@@ -47,10 +47,10 @@ public class ParametersHelper {
         }
 
         private Type type;
-        private String name;
+        private String path;
 
         ParameterInfo(String name, Type type) {
-            this.name = name;
+            this.path = name;
             this.type = type;
         }
 
@@ -58,12 +58,16 @@ public class ParametersHelper {
             return type;
         }
 
-        public String getName() {
-            return name;
+        public String getPath() {
+            return path;
         }
 
-        public String getJPQLName() {
-            return (type.getPrefix() + "." + name).replaceAll("\\.", "_");
+        public String getName() {
+            return (type.getPrefix() + "$" + path);
+        }
+
+        public String getFlatName() {
+            return (type.getPrefix() + "." + path).replaceAll("\\.", "_");
         }
 
         @Override
@@ -73,22 +77,22 @@ public class ParametersHelper {
 
             ParameterInfo that = (ParameterInfo) o;
 
-            return name.equals(that.name) && type == that.type;
+            return path.equals(that.path) && type == that.type;
         }
 
         @Override
         public int hashCode() {
             int result = type.hashCode();
-            result = 31 * result + name.hashCode();
+            result = 31 * result + path.hashCode();
             return result;
         }
     }
 
     public static ParameterInfo parse(String parameterInfo) {
-        if (parameterInfo.startsWith("$[") && parameterInfo.endsWith("]")) {
-            final String param = parameterInfo.substring(2, parameterInfo.length() - 1);
+        if (parameterInfo.startsWith(":")) {
+            final String param = parameterInfo.substring(1);
 
-            final String[] strings = param.split(":");
+            final String[] strings = param.split("\\$");
             if (strings.length != 2) {
                 throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
             }

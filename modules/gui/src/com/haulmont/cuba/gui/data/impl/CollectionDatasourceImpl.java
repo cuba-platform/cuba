@@ -14,7 +14,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.BasicService;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
-import com.haulmont.cuba.core.global.BasicServiceRemote;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.gui.TemplateHelper;
@@ -24,13 +23,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
-import java.io.StringWriter;
-import java.io.IOException;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.cache.StringTemplateLoader;
 
 public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements CollectionDatasource<T, K> {
     private String query;
@@ -157,9 +149,9 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
             for (ParametersHelper.ParameterInfo info : queryParameters) {
                 final ParametersHelper.ParameterInfo.Type type = info.getType();
                 if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(type)) {
-                    final String name = info.getName();
+                    final String path = info.getPath();
 
-                    final String[] strings = name.split("\\.");
+                    final String[] strings = path.split("\\.");
                     String source = strings[0];
 
                     final Datasource ds = dsContext.get(source);
@@ -194,7 +186,7 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
         final Map<String, Object> parameters = getQueryParameters();
         for (ParametersHelper.ParameterInfo info : queryParameters) {
             if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
-                final Object value = parameters.get(info.getJPQLName());
+                final Object value = parameters.get(info.getFlatName());
                 if (value == null) return Collections.emptyList();
             }
         }
@@ -212,11 +204,11 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
     private Map<String, Object> getQueryParameters() {
         final Map<String, Object> map = new HashMap<String, Object>();
         for (ParametersHelper.ParameterInfo info : queryParameters) {
-            String name = info.getJPQLName();
+            String name = info.getFlatName();
 
             switch (info.getType()) {
                 case DATASOURCE: {
-                    final Datasource datasource = dsContext.get(info.getName());
+                    final Datasource datasource = dsContext.get(info.getPath());
                     if (Datasource.State.VALID.equals(datasource.getState())) {
                         map.put(name, datasource.getItem());
                     } else {
@@ -228,14 +220,14 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
                 case CONTEXT: {
                     final Object value =
                             dsContext.getContext() == null ?
-                                    null : dsContext.getContext().getValue(info.getName());
+                                    null : dsContext.getContext().getValue(info.getPath());
                     map.put(name, value);
                     break;
                 }
                 case COMPONENT: {
                     final Object value =
                             dsContext.getContext() == null ?
-                                    null : dsContext.getContext().getValue(info.getName());
+                                    null : dsContext.getContext().getValue(info.getPath());
                     map.put(name, value);
                     break;
                 }
@@ -250,23 +242,13 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
 
     private String getJPQLQuery(String query, Map<String, Object> parameterValues) {
         for (ParametersHelper.ParameterInfo info : queryParameters) {
-            final String paramInfo = "\\$\\{" + info.getType().getPrefix() + "\\:" + info.getName() + "\\}";
+            final String paramName = info.getName();
+            final String jpaParamName = info.getFlatName();
 
-            String paramName = info.getType().getPrefix() + "." + info.getName();
-            paramName = paramName.replaceAll("\\.", "_");
-
-            query = query.replaceAll(paramInfo, paramName);
+            query = query.replaceAll(paramName.replaceAll("\\$", "\\\\\\$"), jpaParamName);
         }
 
         query = TemplateHelper.processTemplate(query, parameterValues);
-
-        for (ParametersHelper.ParameterInfo info : queryParameters) {
-            final String paramInfo = "\\$\\[" + info.getType().getPrefix() + "\\:" + info.getName() + "\\]";
-
-            String paramName = info.getType().getPrefix() + "." + info.getName();
-            paramName = paramName.replaceAll("\\.", "_");
-            query = query.replaceAll(paramInfo, ":" + paramName);
-        }
 
         return query;
     }

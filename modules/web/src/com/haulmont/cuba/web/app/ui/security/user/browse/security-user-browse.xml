@@ -10,7 +10,7 @@
             view="browse"
         >
             <query>
-                <![CDATA[select u from sec$User u where u.name like $[component:filter.name]]]>
+                <![CDATA[select u from sec$User u where <#if component$filter.name?has_content>u.name like :component$filter.name<#else>1=1</#if>]]>
             </query>
         </collection-datasource>
 
@@ -19,7 +19,7 @@
             class="com.haulmont.cuba.security.entity.Profile"
             view="browse"
         >
-            <query>select p from sec$Profile p where p.user.id = $[ds:users]</query>
+            <query>select p from sec$Profile p where p.user.id = :ds$users</query>
         </collection-datasource>
     </dsContext>
 

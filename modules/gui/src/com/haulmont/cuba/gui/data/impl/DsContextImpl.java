@@ -75,10 +75,10 @@ public class DsContextImpl implements DsContext {
 
     public void registerListener(ParametersHelper.ParameterInfo item, Datasource datasource) {
         if (ParametersHelper.ParameterInfo.Type.CONTEXT.equals(item.getType())) {
-            Collection<Datasource> collection = contextListeners.get(item.getName());
+            Collection<Datasource> collection = contextListeners.get(item.getPath());
             if (collection == null) {
                 collection = new ArrayList<Datasource>();
-                contextListeners.put(item.getName(), collection);
+                contextListeners.put(item.getPath(), collection);
             }
             collection.add(datasource);
         } else {
