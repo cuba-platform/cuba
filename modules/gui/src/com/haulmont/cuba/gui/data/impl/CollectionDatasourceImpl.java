@@ -31,8 +31,12 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
 
     private Collection<T> collection = Collections.emptyList();
 
-    public CollectionDatasourceImpl(DsContext context, String id, MetaClass metaClass, String viewName) {
-        super(context, id, metaClass, viewName);
+    public CollectionDatasourceImpl(
+            DsContext context, DataService dataservice,
+                String id, MetaClass metaClass, String viewName)
+    {
+        super(context, dataservice, id, metaClass, viewName);
+        
         parentDsListener = new CollectionDatasourceListener() {
             public void itemChanged(Datasource ds, Object prevItem, Object item) {
                 refresh();
@@ -178,8 +182,6 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
     }
 
     protected Collection<T> loadData() {
-        BasicService service = Locator.lookupLocal(BasicService.JNDI_NAME);
-
         final BasicInvocationContext ctx = new BasicInvocationContext();
         ctx.setEntityClass(metaClass);
 
@@ -193,10 +195,9 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
 
         final BasicInvocationContext.Query query = ctx.setQueryString(getJPQLQuery(this.query, parameters));
         query.setParameters(parameters);
-
         ctx.setView(view);
 
-        collection = (Collection) service.loadList(ctx);
+        collection = (Collection) dataservice.loadList(ctx);
 
         return collection;
     }

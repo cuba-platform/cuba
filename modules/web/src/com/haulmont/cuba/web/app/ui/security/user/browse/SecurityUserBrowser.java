@@ -17,7 +17,7 @@ import com.haulmont.cuba.web.ui.GenericEditorWindow;
 
 import java.util.Set;
 
-public class SecurityUserBrowser extends AbstractWindow {
+public class SecurityUserBrowser extends AbstractLookup {
     public SecurityUserBrowser(Window frame) {
         super(frame);
     }

@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -18,6 +19,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.event.ItemClickEvent;
+import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.ui.Button;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -131,7 +134,31 @@ public class Table
         final CollectionDatasourceWrapper ds =
                 new CollectionDatasourceWrapper(datasource);
 
+        for (MetaProperty metaProperty : (Collection<MetaProperty>)ds.getContainerPropertyIds()) {
+            if (metaProperty.getRange().isClass()) {
+                component.addGeneratedColumn(metaProperty, new com.itmill.toolkit.ui.Table.ColumnGenerator() {
+                    public com.itmill.toolkit.ui.Component generateCell(com.itmill.toolkit.ui.Table source, Object itemId, Object columnId) {
+                        Property property = source.getItem(itemId).getItemProperty(columnId);
+                        final Object value = property.getValue();
+
+                        final com.itmill.toolkit.ui.Button component = new com.itmill.toolkit.ui.Button();
+                        component.setData(value);
+                        component.setCaption(value == null ? "" : value.toString());
+                        component.setStyleName("link");
+                        component.addListener(new com.itmill.toolkit.ui.Button.ClickListener() {
+                            public void buttonClick(Button.ClickEvent event) {
+                                //To change body of implemented methods use File | Settings | File Templates.
+                            }
+                        });
+
+                        return component;
+                    }
+                });
+            }
+        }
+
         component.setContainerDataSource(ds);
+
         for (MetaProperty metaProperty : (Collection<MetaProperty>)ds.getContainerPropertyIds()) {
             component.setColumnHeader(metaProperty, StringUtils.capitalize(metaProperty.getName()));
         }

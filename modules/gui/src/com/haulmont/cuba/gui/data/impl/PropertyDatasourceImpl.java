@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.DataService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,6 +61,10 @@ public class PropertyDatasourceImpl<T> implements Datasource<T>, DatasourceImple
 
     public DsContext getDsContext() {
         return ds.getDsContext();
+    }
+
+    public DataService getDataService() {
+        return ds.getDataService();
     }
 
     public void commit() {

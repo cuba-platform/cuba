@@ -1,9 +1,0 @@
-<datasources>
-    <datasource id="user"
-        class="com.haulmont.cuba.security.entity.User"
-        view="UserView"
-        item="${context:user}"
-    >
-        <collection-datasource id="profiles" property="profiles" inverseProperty="user"/>
-    </datasource>
-</datasources>

@@ -11,6 +11,7 @@ package com.haulmont.cuba.web.components;
 
 import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.ComponentContainer;
+import com.itmill.toolkit.ui.Form;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import org.apache.commons.lang.ObjectUtils;
 
 public class ComponentsHelper {
+
     public static Component unwrap(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
@@ -32,7 +34,12 @@ public class ComponentsHelper {
     public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(
             com.haulmont.cuba.gui.components.Component.Container comp, String id)
     {
-        final ComponentContainer container = (ComponentContainer) unwrap(comp);
+        final Component unwrapedComponent = unwrap(comp);
+        final ComponentContainer container =
+                unwrapedComponent instanceof Form ?
+                        ((Form)unwrapedComponent).getLayout() :
+                        (ComponentContainer) unwrapedComponent;
+
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             final com.haulmont.cuba.gui.components.Component component =
@@ -63,6 +70,18 @@ public class ComponentsHelper {
 
             if (c instanceof com.haulmont.cuba.gui.components.Component.Container) {
                 component = ((com.haulmont.cuba.gui.components.Component.Container) c).getComponent(id);
+                if (component != null) return (T) component;
+            } else if (c instanceof ComponentEx) {
+                component = ((ComponentEx) c).asComponent();
+                if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
+                    component = ((com.haulmont.cuba.gui.components.Component.Container) component).getComponent(id);
+                    if (component != null) return (T) component;
+                }
+            } else if (c instanceof ComponentContainer) {
+                component = getComponentByIterate(((ComponentContainer) c), id);
+                if (component != null) return (T) component;
+            } else if (c instanceof Form) {
+                component = getComponentByIterate(((Form) c).getLayout(), id);
                 if (component != null) return (T) component;
             }
         }

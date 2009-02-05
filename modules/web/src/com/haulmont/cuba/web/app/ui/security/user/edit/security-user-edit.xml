@@ -1,7 +1,8 @@
 <window
     resourceBundle="com.haulmont.cuba.web.app.ui.security.user.edit.security-user-edit"
     datasource="user"
-    caption="Edit User '${item.name}'"
+    caption="Edit User '${parameter$item.name}'"
+    class="com.haulmont.cuba.web.app.ui.security.user.edit.SecurityUserEditor"
 >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.views.xml"/>
@@ -40,7 +41,7 @@
                             <label value="Login"/>
                             <hbox>
                                 <text-field id="login" datasource="user" property="login"/>
-                                <button caption="Browse..."/>
+                                <button id="browse" caption="Browse..."/>
                            </hbox>
                         </row>
                     </rows>

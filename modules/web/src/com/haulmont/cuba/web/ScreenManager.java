@@ -10,8 +10,13 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.app.BasicService;
+import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.ScreenTitlePane;
@@ -22,10 +27,7 @@ import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.ExpandLayout;
 import com.itmill.toolkit.ui.TabSheet;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class ScreenManager extends WindowManager
 {
@@ -48,6 +50,11 @@ public class ScreenManager extends WindowManager
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    protected DataService createDefaultDataService() {
+        return new BasicServiceWrapper();
+    }
 
     protected void showWindow(Window window, String caption, OpenType type) {
         if (OpenType.NEW_TAB.equals(type)) {
@@ -117,5 +124,37 @@ public class ScreenManager extends WindowManager
 
     protected ComponentsFactory createComponentFactory() {
         return new WebComponentsFactory();
+    }
+
+    private class BasicServiceWrapper implements DataService {
+        protected BasicService service;
+
+        private BasicServiceWrapper() {
+            service = Locator.lookupLocal(BasicService.JNDI_NAME);
+        }
+
+        public <T> T create(T entity) {
+            return (T)service.create((BaseEntity)entity);
+        }
+
+        public <T> T update(T entity) {
+            return (T) service.update((BaseEntity)entity);
+        }
+
+        public void delete(BasicInvocationContext ctx) {
+            service.delete(ctx);
+        }
+
+        public <T> T get(BasicInvocationContext ctx) {
+            return (T)service.get(ctx);
+        }
+
+        public <T> T load(BasicInvocationContext ctx) {
+            return (T)service.load(ctx);
+        }
+
+        public <T> List<T> loadList(BasicInvocationContext ctx) {
+            return (List)service.loadList(ctx);
+        }
     }
 }

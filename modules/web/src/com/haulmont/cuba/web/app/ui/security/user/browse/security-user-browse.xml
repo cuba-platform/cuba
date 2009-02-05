@@ -1,4 +1,7 @@
-<window class="com.haulmont.cuba.web.app.ui.security.user.browse.SecurityUserBrowser">
+<window
+    class="com.haulmont.cuba.web.app.ui.security.user.browse.SecurityUserBrowser"
+    lookupComponent="users"
+>
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse.views.xml"/>
     </metadataContext>

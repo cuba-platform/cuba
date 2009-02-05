@@ -9,19 +9,21 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.gui.data.DatasourceFactory;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.chile.core.model.MetaClass;
 
 public class DatasourceFactoryImpl implements DatasourceFactory {
-    public Datasource createDatasource(DsContext dsContext, String id, MetaClass metaClass, String viewName) {
-        return new DatasourceImpl(dsContext, id, metaClass, viewName);
+    public Datasource createDatasource(
+            DsContext dsContext, DataService dataservice,
+                String id, MetaClass metaClass, String viewName)
+    {
+        return new DatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
     }
 
-    public CollectionDatasource createCollectionDatasource(DsContext dsContext, String id, MetaClass metaClass, String viewName) {
-        return new CollectionDatasourceImpl(dsContext, id, metaClass, viewName);
+    public CollectionDatasource createCollectionDatasource(
+            DsContext dsContext, DataService dataservice,
+                String id, MetaClass metaClass, String viewName) {
+        return new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
     }
 
     public Datasource createDatasource(String id, Datasource ds, String property) {

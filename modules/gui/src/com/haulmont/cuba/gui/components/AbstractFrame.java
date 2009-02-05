@@ -106,11 +106,11 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setResourceBundle(resourceBundle);
     }
 
-    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
+    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map<String, Object> params) {
         return frame.<T>openWindow(descriptor, openType, params);
     }
 
-    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
+    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map<String, Object> params) {
         return frame.<T>openWindow(aclass, openType, params);
     }
 
@@ -122,20 +122,42 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return frame.<T>openWindow(aclass, openType);
     }
 
-    public <T extends Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map params) {
+    public <T extends Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
         return frame.<T>openEditor(descriptor, item, openType, params);
     }
 
-    public <T extends Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map params) {
+    public <T extends Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
         return frame.<T>openEditor(aclass, item, openType, params);
     }
 
     public <T extends Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType) {
-        return frame.<T>openEditor(aclass, item, openType, Collections.emptyMap());
+        return frame.<T>openEditor(aclass, item, openType, Collections.<String, Object>emptyMap());
     }
 
     public <T extends Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType) {
-        return frame.<T>openEditor(descriptor, item, openType, Collections.emptyMap());
+        return frame.<T>openEditor(descriptor, item, openType, Collections.<String, Object>emptyMap());
+    }
+
+    public <T extends Window> T openLookup(
+            String descriptor, Window.Lookup.Handler handler,
+                WindowManager.OpenType openType, Map<String, Object> params)
+    {
+        return frame.<T>openLookup(descriptor, handler, openType, params);
+    }
+
+    public <T extends Window> T openLookup(
+            Class aclass, Window.Lookup.Handler handler,
+                WindowManager.OpenType openType, Map<String, Object> params)
+    {
+        return frame.<T>openLookup(aclass, handler, openType, params);
+    }
+
+    public <T extends Window> T openLookup(String descriptor, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return frame.<T>openLookup(descriptor, handler, openType, Collections.<String, Object>emptyMap());
+    }
+
+    public <T extends Window> T openLookup(Class aclass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return frame.<T>openLookup(aclass, handler, openType, Collections.<String, Object>emptyMap());
     }
 
     public boolean close() {

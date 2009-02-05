@@ -58,7 +58,7 @@ public class Navigator extends Window
                     App.getInstance().getScreenManager().openWindow(
                             template,
                             WindowManager.OpenType.NEW_TAB,
-                            Collections.singletonMap("caption", caption));
+                            Collections.<String, Object>singletonMap("caption", caption));
                     parentWindow.removeWindow(Navigator.this);
                 } else {
                     final String className = element.attributeValue("class");
@@ -67,7 +67,7 @@ public class Navigator extends Window
                             App.getInstance().getScreenManager().openWindow(
                                     Class.forName(className),
                                     WindowManager.OpenType.NEW_TAB,
-                                    Collections.singletonMap("caption", caption));
+                                    Collections.<String, Object>singletonMap("caption", caption));
                         } catch (ClassNotFoundException e) {
                             throw new RuntimeException(e);
                         }

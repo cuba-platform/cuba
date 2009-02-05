@@ -12,6 +12,8 @@ package com.haulmont.cuba.gui.data;
 import java.util.Collection;
 
 public interface DsContext {
+    DataService getDataService();
+
     <T extends Datasource> T get(String name);
     Collection<Datasource> getAll();
 

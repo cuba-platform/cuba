@@ -11,6 +11,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.DsContext;
 
+import java.util.Collection;
+
 public interface Window extends IFrame, Component.HasCaption {
     DsContext getDsContext();
     void setDsContext(DsContext dsContext);
@@ -22,5 +24,17 @@ public interface Window extends IFrame, Component.HasCaption {
         void setItem(Object item);
 
         void commit();
+    }
+
+    interface Lookup extends Window {
+        Component getLookupComponent();
+        void setLookupComponent(Component lookupComponent);
+
+        interface Handler {
+            void handleLookup(Collection items);
+        }
+
+        Handler getLookupHandler();
+        void setLookupHandler(Handler handler);
     }
 }

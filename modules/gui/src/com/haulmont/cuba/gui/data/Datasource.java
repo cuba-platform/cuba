@@ -16,7 +16,9 @@ import java.util.Collection;
 
 public interface Datasource<T> {
     String getId();
+
     DsContext getDsContext();
+    DataService getDataService();
 
     void commit();
 

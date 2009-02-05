@@ -49,4 +49,15 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
             return factory.createComponent("window.editor");
         }
     }
+
+    public static class Lookup extends WindowLoader {
+        public Lookup(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
+            super(config, factory, dsContext);
+        }
+
+        @Override
+        protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+            return factory.createComponent("window.lookup");
+        }
+    }
 }

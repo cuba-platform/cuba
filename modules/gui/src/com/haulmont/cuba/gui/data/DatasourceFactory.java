@@ -12,8 +12,8 @@ package com.haulmont.cuba.gui.data;
 import com.haulmont.chile.core.model.MetaClass;
 
 public interface DatasourceFactory {
-    Datasource createDatasource(DsContext dsContext, String id, MetaClass metaClass, String viewName);
-    CollectionDatasource createCollectionDatasource(DsContext dsContext, String id, MetaClass metaClass, String viewName);
+    Datasource createDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName);
+    CollectionDatasource createCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName);
 
     Datasource createDatasource(String id, Datasource ds, String property);
     CollectionDatasource createCollectionDatasource(String id, Datasource ds, String property);

@@ -23,14 +23,16 @@ import java.util.*;
 
 public class DsContextLoader {
     private DatasourceFactory factory;
+    private DataService dataservice;
     private DsContextImpl datasources;
 
-    public DsContextLoader(DatasourceFactory factory) {
+    public DsContextLoader(DatasourceFactory factory, DataService dataservice) {
         this.factory = factory;
+        this.dataservice = dataservice;
     }
 
     public DsContext loadDatasources(Element element) {
-        datasources = new DsContextImpl();
+        datasources = new DsContextImpl(dataservice);
 
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
@@ -52,7 +54,7 @@ public class DsContextLoader {
             final String viewName = element.attributeValue("view");
 
             final Datasource datasource =
-                    factory.createDatasource(datasources, id, metaClass, viewName);
+                    factory.createDatasource(datasources, dataservice, id, metaClass, viewName);
 
             String item = element.attributeValue("item");
             if (!StringUtils.isBlank(item)) {
@@ -136,7 +138,7 @@ public class DsContextLoader {
             final String viewName = element.attributeValue("view");
 
             final CollectionDatasource datasource =
-                    factory.createCollectionDatasource(datasources, id, metaClass, viewName);
+                    factory.createCollectionDatasource(datasources, dataservice, id, metaClass, viewName);
 
             final String query = element.elementText("query");
             if (!StringUtils.isBlank(query)) {

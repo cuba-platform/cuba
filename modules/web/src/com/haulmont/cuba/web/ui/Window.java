@@ -17,17 +17,16 @@ import com.haulmont.cuba.core.app.BasicService;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.components.ComponentsHelper;
 import com.itmill.toolkit.ui.*;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class Window implements com.haulmont.cuba.gui.components.Window, Component.Wrapper, Component.HasXmlDescriptor
 {
@@ -68,11 +67,11 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map<String, Object> params) {
         return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map<String, Object> params) {
         return App.getInstance().getScreenManager().<T>openWindow(aclass, openType, params);
     }
 
@@ -84,11 +83,11 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         return App.getInstance().getScreenManager().<T>openWindow(aclass, openType);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map params) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
         return App.getInstance().getScreenManager().<T>openEditor(descriptor, item, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map params) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
         return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType, params);
     }
 
@@ -100,7 +99,23 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType);
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String descriptor, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        return App.getInstance().getScreenManager().<T>openLookup(descriptor, handler, openType, params);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(Class aclass, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        return App.getInstance().getScreenManager().<T>openLookup(aclass, handler, openType, params);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String descriptor, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openLookup(descriptor, handler, openType);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(Class aclass, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openLookup(aclass, handler, openType);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public DsContext getDsContext() {
         return dsContext;
@@ -216,6 +231,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
     public static class Editor extends Window implements com.haulmont.cuba.gui.components.Window.Editor {
         protected Object item;
+        private Form form;
 
         public Object getItem() {
             return item;
@@ -223,7 +239,9 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
         @Override
         protected com.itmill.toolkit.ui.Component createLayout() {
-            final Form form = new Form();
+            ExpandLayout layout = new ExpandLayout();
+
+            form = new Form();
 
             Layout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
             okbar.setHeight("25px");
@@ -231,14 +249,17 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             okbar.addComponent(new Button("OK", this, "commit"));
             okbar.addComponent(new Button("Cancel", this, "close"));
 
-            form.setFooter(okbar);
+            layout.addComponent(form);
+            layout.addComponent(okbar);
 
-            return form;
+            layout.expand(form);
+
+            return layout;
         }
 
         @Override
         protected ComponentContainer getContainer() {
-            return ((Form) component).getLayout();
+            return form.getLayout();
         }
 
         public void setItem(Object item) {
@@ -279,7 +300,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         }
 
         public void commit() {
-            ((Form) component).commit();
+            form.commit();
             if (item instanceof Datasource) {
                 final Datasource ds = (Datasource) item;
                 ds.commit();
@@ -288,6 +309,76 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
                 service.update((BaseEntity) item);
             }
             close();
+        }
+    }
+
+    public static class Lookup extends Window implements com.haulmont.cuba.gui.components.Window.Lookup {
+        private Handler handler;
+
+        private Component lookupComponent;
+        private ExpandLayout contaiter;
+
+        public com.haulmont.cuba.gui.components.Component getLookupComponent() {
+            return lookupComponent;
+        }
+
+        public void setLookupComponent(Component lookupComponent) {
+            this.lookupComponent = lookupComponent;
+        }
+
+        public Handler getLookupHandler() {
+            return handler;
+        }
+
+        public void setLookupHandler(Handler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        protected ComponentContainer getContainer() {
+            return contaiter;
+        }
+
+        @Override
+        protected com.itmill.toolkit.ui.Component createLayout() {
+            final ExpandLayout form = new ExpandLayout();
+
+            contaiter = new ExpandLayout();
+
+            OrderedLayout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+            okbar.setHeight("25px");
+
+            final Button selectButton = new Button("Select");
+            selectButton.addListener(new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent event) {
+                    final com.haulmont.cuba.gui.components.Component lookupComponent = getLookupComponent();
+
+                    if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table ) {
+                        final Set selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
+                        handler.handleLookup(selected);
+                    } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
+                        final Object selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
+                        handler.handleLookup(Collections.singleton(selected));
+                    } else if (lookupComponent instanceof LookupField) {
+                        final Object value = ((LookupField) lookupComponent).getValue();
+                        handler.handleLookup(Collections.singleton(value));
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+            });
+
+            final Button cancelButton = new Button("Cancel", this, "close");
+
+            okbar.addComponent(selectButton);
+            okbar.addComponent(cancelButton);
+
+            form.addComponent(contaiter);
+            form.addComponent(okbar);
+
+            form.expand(contaiter);
+
+            return form;
         }
     }
 }

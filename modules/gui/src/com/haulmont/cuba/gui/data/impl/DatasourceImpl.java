@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.DataService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementation {
     protected DsContext dsContext;
+    protected DataService dataservice;
 
     private String id;
     protected MetaClass metaClass;
@@ -35,8 +37,13 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
 
     protected List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
 
-    public DatasourceImpl(DsContext dsContext, String id, MetaClass metaClass, String viewName) {
+    public DatasourceImpl(
+            DsContext dsContext, DataService dataservice,
+                String id, MetaClass metaClass, String viewName)
+    {
         this.dsContext = dsContext;
+        this.dataservice = dataservice;
+
         this.id = id;
         this.metaClass = metaClass;
         this.view = MetadataProvider.getViewRepository().getView(metaClass, viewName);
@@ -56,6 +63,10 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
 
     public DsContext getDsContext() {
         return dsContext;
+    }
+
+    public DataService getDataService() {
+        return dataservice;
     }
 
     public void commit() {

@@ -12,22 +12,45 @@ package com.haulmont.cuba.web.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.TabSheet;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Collection;
 
 public class Tabsheet
     extends
         AbstractComponent<TabSheet>
     implements
-        com.haulmont.cuba.gui.components.Tabsheet, Component.Wrapper
+        com.haulmont.cuba.gui.components.Tabsheet, Component.Wrapper, Component.Container
 {
     public Tabsheet() {
-        component = new TabSheet();
+        component = new TabSheetEx(this);
     }
 
     protected Map<String, Tab> tabs = new HashMap<String, Tab>();
     protected Map<Component, String> components = new HashMap<Component, String>();
+
+    public void add(Component component) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void remove(Component component) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T extends Component> T getOwnComponent(String id) {
+        for (Tab tab : tabs.values()) {
+            if (tab.getComponent() instanceof Container) {
+                final Component component = ComponentsHelper.getComponent((Container) tab.getComponent(), id);
+                if (component != null) return (T) component;
+            }
+        }
+
+        return null;
+    }
+
+    public <T extends Component> T getComponent(String id) {
+        return ComponentsHelper.<T>getComponent(this, id);
+    }
 
     protected class Tab implements com.haulmont.cuba.gui.components.Tabsheet.Tab {
         private String name;
@@ -97,4 +120,17 @@ public class Tabsheet
     public Collection<com.haulmont.cuba.gui.components.Tabsheet.Tab> getTabs() {
         return (Collection)tabs.values();
     }
+
+    private static class TabSheetEx extends TabSheet implements ComponentEx {
+        private Component component;
+
+        private TabSheetEx(Component component) {
+            this.component = component;
+        }
+
+        public Component asComponent() {
+            return component;
+        }
+    }
+
 }

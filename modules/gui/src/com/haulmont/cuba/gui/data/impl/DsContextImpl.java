@@ -9,10 +9,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.Context;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 
 import java.util.Collection;
@@ -22,12 +19,17 @@ import java.util.ArrayList;
 
 public class DsContextImpl implements DsContext {
     private Context context;
+    private DataService dataservice;
 
     private Map<String, Datasource> datasourceMap =
             new HashMap<String, Datasource>();
 
     private Map<String, Collection<Datasource>> contextListeners =
             new HashMap<String, Collection<Datasource>>();
+
+    public DsContextImpl(DataService dataservice) {
+        this.dataservice = dataservice;
+    }
 
     public Context getContext() {
         return context;
@@ -60,7 +62,11 @@ public class DsContextImpl implements DsContext {
             }
         });
     }
-    
+
+    public DataService getDataService() {
+        return dataservice;
+    }
+
     public <T extends Datasource> T get(String id) {
         return (T) datasourceMap.get(id);
     }

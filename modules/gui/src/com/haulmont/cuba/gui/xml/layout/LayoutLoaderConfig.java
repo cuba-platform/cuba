@@ -20,6 +20,7 @@ public class LayoutLoaderConfig {
 
     private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig editorLoaders = new LayoutLoaderConfig();
+    private static LayoutLoaderConfig lookupLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
     static {
@@ -28,6 +29,9 @@ public class LayoutLoaderConfig {
 
         editorLoaders.registerLoader("window", WindowLoader.Editor.class);
         registerComponents(editorLoaders);
+
+        lookupLoaders.registerLoader("window", WindowLoader.Lookup.class);
+        registerComponents(lookupLoaders);
 
         frameLoaders.registerLoader("frame", FrameLoader.class);
         registerComponents(frameLoaders);
@@ -61,6 +65,10 @@ public class LayoutLoaderConfig {
 
     public static LayoutLoaderConfig getFrameLoaders() {
         return frameLoaders;
+    }
+
+    public static LayoutLoaderConfig getLookupLoaders() {
+        return lookupLoaders;
     }
 
     public Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> getLoader(String name) {

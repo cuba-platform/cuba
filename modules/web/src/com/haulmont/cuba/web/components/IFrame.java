@@ -30,19 +30,19 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
         this.resourceBundle = resourceBundle;
     }
 
-    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map params) {
+    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map<String, Object> params) {
         return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType, params);
     }
 
-    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map params) {
+    public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map<String, Object> params) {
         return App.getInstance().getScreenManager().<T>openWindow(aclass, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map params) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
         return App.getInstance().getScreenManager().<T>openEditor(descriptor, item, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map params) {
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
         return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType, params);
     }
 
@@ -60,5 +60,21 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
 
     public <T extends Window> T openWindow(Class aclass, WindowManager.OpenType openType) {
         return App.getInstance().getScreenManager().<T>openWindow(aclass, openType);
+    }
+
+    public <T extends Window> T openLookup(String descriptor, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        return App.getInstance().getScreenManager().<T>openLookup(descriptor, handler, openType, params);
+    }
+
+    public <T extends Window> T openLookup(Class aclass, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        return App.getInstance().getScreenManager().<T>openLookup(aclass, handler, openType, params);
+    }
+
+    public <T extends Window> T openLookup(String descriptor, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openLookup(descriptor, handler, openType);
+    }
+
+    public <T extends Window> T openLookup(Class aclass, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return App.getInstance().getScreenManager().<T>openLookup(aclass, handler, openType);
     }
 }
