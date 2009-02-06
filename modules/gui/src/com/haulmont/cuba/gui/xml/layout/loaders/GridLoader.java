@@ -11,7 +11,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -21,8 +20,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class GridLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
-    public GridLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
-        super(config, factory, dsContext);
+    public GridLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context, config, factory);
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
@@ -49,7 +48,7 @@ public class GridLoader extends ContainerLoader implements com.haulmont.cuba.gui
     }
 
     protected void loadSubComponents(GridLayout component, Element element, int row) {
-        final LayoutLoader loader = new LayoutLoader(factory, config, dsContext);
+        final LayoutLoader loader = new LayoutLoader(context, factory, config);
         int col = 0;
         for (Element subElement : (Collection<Element>)element.elements()) {
             final Component subComponent = loader.loadComponent(subElement);

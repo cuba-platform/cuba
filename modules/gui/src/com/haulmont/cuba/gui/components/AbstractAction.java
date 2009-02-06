@@ -4,15 +4,19 @@
  * Use is subject to license terms.
 
  * Author: Dmitry Abramov
- * Created: 20.01.2009 11:33:34
+ * Created: 06.02.2009 12:21:48
  * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
-public interface Action {
-    String getId();
-    String getCaption();
+public abstract class AbstractAction implements Action {
+    private String id;
 
-    boolean isEnabled();
-    void actionPerform(Component component);
+    protected AbstractAction(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

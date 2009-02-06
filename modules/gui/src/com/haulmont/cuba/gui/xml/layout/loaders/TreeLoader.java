@@ -13,7 +13,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
@@ -22,13 +21,12 @@ import org.dom4j.Element;
 public class TreeLoader extends ComponentLoader
 {
     protected ComponentsFactory factory;
-    protected DsContext dsContext;
     protected LayoutLoaderConfig config;
 
-    public TreeLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
+    public TreeLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context);
         this.config = config;
         this.factory = factory;
-        this.dsContext = dsContext;
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element)
@@ -42,7 +40,7 @@ public class TreeLoader extends ComponentLoader
         Element itemsElem = element.element("treechildren");
         String datasource = itemsElem.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
-            CollectionDatasource ds = dsContext.get(datasource);
+            CollectionDatasource ds = context.getDSContext().get(datasource);
             String showProperty = itemsElem.attributeValue("property");
             String parentProperty = itemsElem.attributeValue("parent");
 

@@ -11,15 +11,14 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SplitPanel;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class SplitPanelLoader extends ContainerLoader{
-    public SplitPanelLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
-        super(config, factory, dsContext);
+    public SplitPanelLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context, config, factory);
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {

@@ -23,6 +23,15 @@ import java.lang.reflect.Constructor;
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected Locale locale;
     protected ResourceBundle resourceBundle;
+    protected Context context;
+
+    protected ComponentLoader(Context context) {
+        this.context = context;
+    }
+
+    public Context getContext() {
+        return context;
+    }
 
     public Locale getLocale() {
         return locale;

@@ -30,13 +30,12 @@ import java.util.HashSet;
 
 public class TableLoader extends ComponentLoader {
     protected ComponentsFactory factory;
-    protected DsContext dsContext;
     protected LayoutLoaderConfig config;
 
-    public TableLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
+    public TableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context);
         this.config = config;
         this.factory = factory;
-        this.dsContext = dsContext;
     }
 
     public Component loadComponent(
@@ -55,7 +54,7 @@ public class TableLoader extends ComponentLoader {
         final String datasource = rowsElement.attributeValue("datasource");
 
         if (!StringUtils.isBlank(datasource)) {
-            final CollectionDatasource ds = dsContext.get(datasource);
+            final CollectionDatasource ds = context.getDSContext().get(datasource);
             table.setDatasource(ds);
 
             if (columnsElement != null) {

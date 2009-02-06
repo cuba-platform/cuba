@@ -32,6 +32,9 @@
             <hbox id="table-panel" expand="table">
                 <split orientation="horizontal">
                     <vbox expand="users">
+                        <hbox>
+                            <button action="users.edit"/>
+                        </hbox>
                         <table id="users">
                             <columns>
                                 <column id="name" label="Name"/>

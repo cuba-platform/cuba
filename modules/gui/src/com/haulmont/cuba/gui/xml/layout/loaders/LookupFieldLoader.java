@@ -20,8 +20,8 @@ import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
 public class LookupFieldLoader extends AbstractFieldLoader {
-    public LookupFieldLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
-        super(config, factory, dsContext);
+    public LookupFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context, config, factory);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class LookupFieldLoader extends AbstractFieldLoader {
         
         final String datasource = element.attributeValue("lookupDatasource");
         if (!StringUtils.isEmpty(datasource)) {
-            final Datasource ds = dsContext.get(datasource);
+            final Datasource ds = context.getDSContext().get(datasource);
             component.setLookupDatasource((CollectionDatasource) ds);
         }
 

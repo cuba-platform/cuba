@@ -11,10 +11,14 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.*;
 import org.dom4j.Element;
 
 public class LabelLoader extends ComponentLoader {
+    public LabelLoader(Context context) {
+        super(context);
+    }
+
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final Label label = factory.createComponent("label");
 

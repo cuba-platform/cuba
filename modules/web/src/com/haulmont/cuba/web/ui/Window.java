@@ -239,15 +239,20 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
         @Override
         protected com.itmill.toolkit.ui.Component createLayout() {
-            ExpandLayout layout = new ExpandLayout();
+            ExpandLayout layout = new ExpandLayout(OrderedLayout.ORIENTATION_VERTICAL);
 
             form = new Form();
 
-            Layout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+            OrderedLayout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
             okbar.setHeight("25px");
 
-            okbar.addComponent(new Button("OK", this, "commit"));
-            okbar.addComponent(new Button("Cancel", this, "close"));
+            Layout buttonsContainer = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+
+            buttonsContainer.addComponent(new Button("OK", this, "commit"));
+            buttonsContainer.addComponent(new Button("Cancel", this, "close"));
+
+            okbar.addComponent(buttonsContainer);
+            okbar.setComponentAlignment(buttonsContainer, Layout.AlignmentHandler.ALIGNMENT_LEFT, Layout.AlignmentHandler.ALIGNMENT_VERTICAL_CENTER);
 
             layout.addComponent(form);
             layout.addComponent(okbar);
@@ -353,18 +358,19 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
                 public void buttonClick(Button.ClickEvent event) {
                     final com.haulmont.cuba.gui.components.Component lookupComponent = getLookupComponent();
 
+                    Collection selected;
                     if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table ) {
-                        final Set selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
-                        handler.handleLookup(selected);
+                        selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
                     } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
-                        final Object selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
-                        handler.handleLookup(Collections.singleton(selected));
+                        selected = Collections.singleton(((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected());
                     } else if (lookupComponent instanceof LookupField) {
-                        final Object value = ((LookupField) lookupComponent).getValue();
-                        handler.handleLookup(Collections.singleton(value));
+                        selected = Collections.singleton(((LookupField) lookupComponent).getValue());
                     } else {
                         throw new UnsupportedOperationException();
                     }
+
+                    close();
+                    handler.handleLookup(selected);
                 }
             });
 

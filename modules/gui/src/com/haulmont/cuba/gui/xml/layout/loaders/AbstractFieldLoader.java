@@ -11,22 +11,20 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.Datasource;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class AbstractFieldLoader extends ComponentLoader {
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
-    protected DsContext dsContext;
 
-    public AbstractFieldLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
+    public AbstractFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context);
         this.config = config;
         this.factory = factory;
-        this.dsContext = dsContext;
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
@@ -38,7 +36,7 @@ public class AbstractFieldLoader extends ComponentLoader {
 
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
-            final Datasource ds = dsContext.get(datasource);
+            final Datasource ds = context.getDSContext().get(datasource);
 
             final String property = element.attributeValue("property");
             if (StringUtils.isEmpty(property))

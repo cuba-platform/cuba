@@ -14,12 +14,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import java.util.List;
 import java.util.Set;
 
-public interface Table extends Component {
+public interface Table extends Component, Component.ActionsOwner {
     <T> T getSingleSelected();
     Set getSelected();
-
-    void addAction(Action action);
-    void removeAction(Action action);
 
     List<Column> getColumns();
     void addColumn(Column column);

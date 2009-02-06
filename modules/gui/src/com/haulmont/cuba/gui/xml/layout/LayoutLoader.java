@@ -10,7 +10,6 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -19,20 +18,19 @@ import org.dom4j.io.SAXReader;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.ResourceBundle;
 import java.util.Locale;
 
 public class LayoutLoader {
+    protected ComponentLoader.Context context;
     private ComponentsFactory factory;
     private LayoutLoaderConfig config;
-    private DsContext dsContext;
 
     private Locale locale;
 
-    public LayoutLoader(ComponentsFactory factory, LayoutLoaderConfig config, DsContext dsContext) {
+    public LayoutLoader(ComponentLoader.Context context, ComponentsFactory factory, LayoutLoaderConfig config) {
+        this.context = context;
         this.factory = factory;
         this.config = config;
-        this.dsContext = dsContext;
     }
 
     public Component loadComponent(URL uri) {
@@ -55,7 +53,7 @@ public class LayoutLoader {
         }
     }
 
-    protected ComponentLoader getLoader(Element element) throws InstantiationException, IllegalAccessException {
+    protected ComponentLoader getLoader(Element element) {
         Class<? extends ComponentLoader> loaderClass = config.getLoader(element.getName());
         if (loaderClass == null) {
             throw new IllegalStateException(String.format("Unknown component '%s'", element.getName()));
@@ -64,12 +62,17 @@ public class LayoutLoader {
         ComponentLoader loader;
         try {
             final Constructor<? extends ComponentLoader> constructor =
-                    loaderClass.getConstructor(LayoutLoaderConfig.class, ComponentsFactory.class, DsContext.class);
-            loader = constructor.newInstance(config, factory, dsContext);
+                    loaderClass.getConstructor(ComponentLoader.Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
+            loader = constructor.newInstance(context, config, factory);
 
             loader.setLocale(locale);
         } catch (Throwable e) {
-            loader = loaderClass.newInstance();
+            try {
+                final Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor(ComponentLoader.Context.class);
+                loader = constructor.newInstance(context);
+            } catch (Throwable e1) {
+                throw new RuntimeException(e1);
+            }
         }
 
         return loader;

@@ -11,12 +11,13 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -74,13 +75,18 @@ public abstract class WindowManager {
         final DsContext dsContext = loadDsContext(element);
         loadDsContextStopWatch.stop();
 
+        final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext);
+
         StopWatch loadLayoutStopWatch = new Log4JStopWatch("WindowManager.createWindow (loadLayout)");
-        final Window window = loadLayout(element, dsContext, layoutConfig);
+        final Window window = loadLayout(element, componentLoaderContext, layoutConfig);
         loadLayoutStopWatch.stop();
 
+        componentLoaderContext.setWindow(window);
         initialize(window, dsContext, params);
 
         final Window wrapedWindow = wrapByCustomClass(window, element, params);
+        componentLoaderContext.setWindow(wrapedWindow);
+        componentLoaderContext.executeLazyTasks();
         stopWatch.stop();
 
         return wrapedWindow;
@@ -133,8 +139,8 @@ public abstract class WindowManager {
         });
     }
 
-    protected Window loadLayout(Element rootElement, DsContext dsContext, LayoutLoaderConfig layoutConfig) {
-        final LayoutLoader layoutLoader = new LayoutLoader(createComponentFactory(), layoutConfig, dsContext);
+    protected Window loadLayout(Element rootElement, ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {
+        final LayoutLoader layoutLoader = new LayoutLoader(context, createComponentFactory(), layoutConfig);
         layoutLoader.setLocale(getLocale());
 
         final Window window = (Window) layoutLoader.loadComponent(rootElement);
@@ -451,5 +457,38 @@ public abstract class WindowManager {
         }
         method.setAccessible(true);
         return (T) method.invoke(window, params);
+    }
+
+    protected static class ComponentLoaderContext implements ComponentLoader.Context {
+        protected DsContext dsContext;
+        protected Window window;
+
+        protected List<ComponentLoader.LazyTask> lazyTasks = new ArrayList<ComponentLoader.LazyTask>();
+
+        public ComponentLoaderContext(DsContext dsContext) {
+            this.dsContext = dsContext;
+        }
+
+        public DsContext getDSContext() {
+            return dsContext;
+        }
+
+        public Window getWindow() {
+            return window;
+        }
+
+        public void setWindow(Window window) {
+            this.window = window;
+        }
+
+        public void addLazyTask(ComponentLoader.LazyTask task) {
+            lazyTasks.add(task);
+        }
+
+        public void executeLazyTasks() {
+            for (ComponentLoader.LazyTask task : lazyTasks) {
+                task.execute(this, window);
+            }
+        }
     }
 }

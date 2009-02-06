@@ -14,16 +14,15 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
-import java.util.ResourceBundle;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
-    public FrameLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
-        super(config, factory, dsContext);
+    public FrameLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context, config, factory);
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {

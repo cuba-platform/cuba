@@ -10,12 +10,27 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public interface ComponentLoader {
+    public interface Context {
+        DsContext getDSContext();
+
+        void addLazyTask(LazyTask task);
+        void executeLazyTasks();
+    }
+
+    public interface LazyTask {
+        void execute(Context context, Window window);
+    }
+
+    Context getContext();
+
     Locale getLocale();
     void setLocale(Locale locale);
 

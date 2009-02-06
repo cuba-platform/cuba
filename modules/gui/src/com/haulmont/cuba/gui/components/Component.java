@@ -11,6 +11,8 @@ package com.haulmont.cuba.gui.components;
 
 import org.dom4j.Element;
 
+import java.util.Collection;
+
 public interface Component {
 
     interface AlignInfo {
@@ -66,5 +68,14 @@ public interface Component {
     interface HasXmlDescriptor {
         Element getXmlDescriptor();
         void setXmlDescriptor(Element element);
+    }
+
+    interface ActionsOwner {
+        void addAction(Action action);
+        void removeAction(Action action);
+
+        Collection<Action> getActions();
+
+        Action getAction(String id);
     }
 }

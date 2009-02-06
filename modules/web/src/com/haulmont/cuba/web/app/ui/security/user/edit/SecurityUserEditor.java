@@ -11,6 +11,7 @@ package com.haulmont.cuba.web.app.ui.security.user.edit;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.security.entity.User;
 
 import java.util.Collection;
 
@@ -21,7 +22,7 @@ public class SecurityUserEditor extends AbstractEditor {
 
     protected void init() {
         Button button = getComponent("browse");
-        button.setAction(new Action() {
+        button.setAction(new AbstractAction("Browse") {
             public String getCaption() {
                 return "Browse...";
             }
@@ -33,7 +34,11 @@ public class SecurityUserEditor extends AbstractEditor {
             public void actionPerform(Component component) {
                 openLookup("/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse.xml", new Lookup.Handler() {
                     public void handleLookup(Collection items) {
-                        //To change body of implemented methods use File | Settings | File Templates.
+                        if (items.size() == 1) {
+                            final User item = (User) items.iterator().next();
+                            final Field field = getComponent("name");
+                            field.setValue(item.getName());
+                        }
                     }
                 }, WindowManager.OpenType.THIS_TAB);
             }

@@ -11,32 +11,32 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OrderedLayout;
-import com.haulmont.cuba.gui.xml.layout.*;
-import com.haulmont.cuba.gui.data.DsContext;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.ArrayList;
 import java.util.List;
-import java.lang.reflect.Constructor;
 
 public abstract class ContainerLoader extends ComponentLoader {
     protected ComponentsFactory factory;
-    protected DsContext dsContext;
     protected LayoutLoaderConfig config;
 
-    public ContainerLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
+    public ContainerLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context);
         this.config = config;
         this.factory = factory;
-        this.dsContext = dsContext;
     }
 
     protected Collection<Component> loadSubComponents(Component component, Element element, String ...exceptTags) {
         final List<Component> res = new ArrayList<Component>();
 
-        final LayoutLoader loader = new LayoutLoader(factory, config, dsContext);
+        final LayoutLoader loader = new LayoutLoader(context, factory, config);
         for (Element subElement : (Collection<Element>)element.elements()) {
             final String name = subElement.getName();
             if (exceptTags != null && Arrays.binarySearch(exceptTags, name) < 0) {
@@ -87,8 +87,8 @@ public abstract class ContainerLoader extends ComponentLoader {
         com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
         try {
             final Constructor<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> constructor =
-                    loaderClass.getConstructor(LayoutLoaderConfig.class, ComponentsFactory.class, DsContext.class);
-            loader = constructor.newInstance(config, factory, dsContext);
+                    loaderClass.getConstructor(Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
+            loader = constructor.newInstance(context, config, factory);
 
             loader.setLocale(locale);
         } catch (Throwable e) {

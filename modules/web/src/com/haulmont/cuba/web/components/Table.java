@@ -9,19 +9,17 @@
  */
 package com.haulmont.cuba.web.components;
 
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.data.CollectionDatasourceWrapper;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.data.CollectionDatasourceWrapper;
 import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.event.ItemClickEvent;
-import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
@@ -90,6 +88,19 @@ public class Table
     public void removeAction(Action action) {
         actions.remove(action);
         actionsOrder.remove(action);
+    }
+
+    public Collection<Action> getActions() {
+        return actions.keySet();
+    }
+
+    public Action getAction(String id) {
+        for (Action action : getActions()) {
+            if (ObjectUtils.equals(action.getId(), id)) {
+                return action;
+            }
+        }
+        return null;
     }
 
     protected Set<Object> getSelecetdItemIds() {

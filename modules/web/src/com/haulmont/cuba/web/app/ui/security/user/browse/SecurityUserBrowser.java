@@ -26,7 +26,7 @@ public class SecurityUserBrowser extends AbstractLookup {
         final Button button  = getComponent("filter.apply");
         final Table table  = getComponent("users");
 
-        table.addAction(new Action() {
+        table.addAction(new AbstractAction("edit") {
             public String getCaption() {
                 return "Edit";
             }
@@ -45,7 +45,7 @@ public class SecurityUserBrowser extends AbstractLookup {
                 }
             }
         });
-        table.addAction(new Action() {
+        table.addAction(new AbstractAction("refresh") {
             public String getCaption() {
                 return "Refresh";
             }
@@ -60,7 +60,7 @@ public class SecurityUserBrowser extends AbstractLookup {
             }
         });
 
-        button.setAction(new Action() {
+        button.setAction(new AbstractAction("refresh") {
             public String getCaption() {
                 return null;
             }

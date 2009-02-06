@@ -11,16 +11,15 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
 public class WindowLoader extends FrameLoader implements ComponentLoader {
 
-    public WindowLoader(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
-        super(config, factory, dsContext);
+    public WindowLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context, config, factory);
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
@@ -40,8 +39,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     public static class Editor extends WindowLoader {
-        public Editor(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
-            super(config, factory, dsContext);
+        public Editor(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+            super(context, config, factory);
         }
 
         @Override
@@ -51,8 +50,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     public static class Lookup extends WindowLoader {
-        public Lookup(LayoutLoaderConfig config, ComponentsFactory factory, DsContext dsContext) {
-            super(config, factory, dsContext);
+        public Lookup(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+            super(context, config, factory);
         }
 
         @Override
