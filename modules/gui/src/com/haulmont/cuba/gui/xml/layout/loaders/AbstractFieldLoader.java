@@ -28,11 +28,12 @@ public class AbstractFieldLoader extends ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final Field field = factory.createComponent(element.getName());
+        final Field component = factory.createComponent(element.getName());
 
-        assignXmlDescriptor(field, element);
-        loadId(field, element);
-        loadCaption(field, element);
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
+        loadCaption(component, element);
+        loadEditable(component, element);
 
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
@@ -44,14 +45,16 @@ public class AbstractFieldLoader extends ComponentLoader {
                         String.format(
                                 "Can't set assign datasource '%s' for component '%s' due 'property' " +
                                 "attribute is not defined",
-                                datasource, field.getId()));
+                                datasource, component.getId()));
 
-            field.setDatasource(ds, property);
+            component.setDatasource(ds, property);
         }
 
-        loadHeight(field, element);
-        loadWidth(field, element);
+        loadHeight(component, element);
+        loadWidth(component, element);
 
-        return field;
+        addAssignWindowTask(component);
+        
+        return component;
     }
 }

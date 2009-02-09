@@ -31,7 +31,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
 
     protected CollectionDatasource datasource;
 
-    private Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
+    protected Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
 
     public CollectionDatasourceWrapper(CollectionDatasource datasource) {
@@ -45,6 +45,12 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         final View view = datasource.getView();
         final MetaClass metaClass = datasource.getMetaClass();
 
+        createProperties(view, metaClass);
+
+        datasource.addListener(new DataSourceRefreshListener());
+    }
+
+    protected void createProperties(View view, MetaClass metaClass) {
         if (view != null) {
             for (ViewProperty property : view.getProperties()) {
                 final String name = property.getName();
@@ -71,30 +77,6 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
                 }
             }
         }
-
-        datasource.addListener(new CollectionDatasourceListener() {
-            public void itemChanged(Datasource ds, Object prevItem, Object item) {}
-
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                final boolean prevIgnoreListeners = ignoreListeners;
-                try {
-                    fireItemSetChanged();
-                } finally {
-                    ignoreListeners = prevIgnoreListeners;
-                }
-            }
-
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {}
-
-            public void collectionChanged(Datasource ds, CollectionOperation operation) {
-                final boolean prevIgnoreListeners = ignoreListeners;
-                try {
-                    fireItemSetChanged();
-                } finally {
-                    ignoreListeners = prevIgnoreListeners;
-                }
-            }
-        });
     }
 
     protected void fireItemSetChanged() {
@@ -119,11 +101,15 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
     protected synchronized Item getItemWrapper(Object item) {
         ItemWrapper wrapper = itemsCache.get(item);
         if (wrapper == null) {
-            wrapper = new ItemWrapper(item, properties);
+            wrapper = createItemWrapper(item);
             itemsCache.put(item, wrapper);
         }
 
         return wrapper;
+    }
+
+    protected ItemWrapper createItemWrapper(Object item) {
+        return new ItemWrapper(item, properties);
     }
 
     public Collection getContainerPropertyIds() {
@@ -190,6 +176,30 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
     protected void __autoRefreshInvalid() {
         if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
             datasource.refresh();
+        }
+    }
+
+    private class DataSourceRefreshListener implements CollectionDatasourceListener {
+        public void itemChanged(Datasource ds, Object prevItem, Object item) {}
+
+        public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+            final boolean prevIgnoreListeners = ignoreListeners;
+            try {
+                fireItemSetChanged();
+            } finally {
+                ignoreListeners = prevIgnoreListeners;
+            }
+        }
+
+        public void valueChanged(Object source, String property, Object prevValue, Object value) {}
+
+        public void collectionChanged(Datasource ds, CollectionOperation operation) {
+            final boolean prevIgnoreListeners = ignoreListeners;
+            try {
+                fireItemSetChanged();
+            } finally {
+                ignoreListeners = prevIgnoreListeners;
+            }
         }
     }
 }

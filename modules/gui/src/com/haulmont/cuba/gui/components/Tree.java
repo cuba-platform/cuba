@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-public interface Tree extends Component
+public interface Tree extends Component, Component.BelongToWindow
 {
     <T> T getSelected();
 

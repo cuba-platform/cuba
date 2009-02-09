@@ -11,7 +11,10 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.Datasource;
 
-public interface Field extends Component, Component.HasCaption, Component.Field {
+public interface Field
+    extends
+        Component, Component.HasCaption, Component.Field, Component.Editable, Component.BelongToWindow
+{
     Datasource getDatasource();
     String getProperty();
 

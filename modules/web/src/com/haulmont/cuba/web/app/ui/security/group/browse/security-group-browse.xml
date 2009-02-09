@@ -32,7 +32,7 @@
                 <vbox expand="profiles">
                     <table id="profiles">
                         <columns>
-                            <column id="user" label="User"/>
+                            <column id="user" label="User" onClick="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml"/>
                             <column id="name" label="Profile"/>
                             <column id="defaultProfile" label="Default"/>
                         </columns>

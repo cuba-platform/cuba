@@ -14,7 +14,12 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import java.util.List;
 import java.util.Set;
 
-public interface Table extends Component, Component.ActionsOwner {
+import org.dom4j.Element;
+
+public interface Table
+    extends
+        Component, Component.ActionsOwner, Component.Editable, Component.BelongToWindow 
+{
     <T> T getSingleSelected();
     Set getSelected();
 
@@ -25,11 +30,13 @@ public interface Table extends Component, Component.ActionsOwner {
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 
-    public class Column {
+    public class Column implements HasXmlDescriptor, HasCaption {
         protected Object id;
         protected String caption;
+        protected boolean editable;
 
         protected Class type;
+        private Element element;
 
         public Column(Object id) {
             this.id = id;
@@ -45,6 +52,14 @@ public interface Table extends Component, Component.ActionsOwner {
 
         public void setCaption(String caption) {
             this.caption = caption;
+        }
+
+        public boolean isEditable() {
+            return editable;
+        }
+
+        public void setEditable(boolean editable) {
+            this.editable = editable;
         }
 
         public Class getType() {
@@ -69,6 +84,14 @@ public interface Table extends Component, Component.ActionsOwner {
         @Override
         public int hashCode() {
             return id.hashCode();
+        }
+
+        public Element getXmlDescriptor() {
+            return element;
+        }
+
+        public void setXmlDescriptor(Element element) {
+            this.element = element;
         }
     }
 }

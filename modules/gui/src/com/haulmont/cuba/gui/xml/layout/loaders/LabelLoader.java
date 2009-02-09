@@ -20,13 +20,15 @@ public class LabelLoader extends ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final Label label = factory.createComponent("label");
+        final Label component = factory.createComponent("label");
 
-        assignXmlDescriptor(label, element);
-        loadId(label, element);
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
         final String caption = element.attributeValue("value");
-        label.setValue(caption);
+        component.setValue(caption);
 
-        return label;
+        addAssignWindowTask(component);
+
+        return component;
     }
 }

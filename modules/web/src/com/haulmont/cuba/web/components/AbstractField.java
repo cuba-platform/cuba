@@ -16,6 +16,7 @@ import com.haulmont.cuba.web.data.ItemWrapper;
 public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends AbstractComponent<T>{
     private Datasource datasource;
     private String property;
+    private boolean editable;
 
     public Datasource getDatasource() {
         return datasource;
@@ -49,5 +50,14 @@ public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends Abstra
 
     public void setCaption(String caption) {
         component.setCaption(caption);
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        component.setReadOnly(!editable);
     }
 }

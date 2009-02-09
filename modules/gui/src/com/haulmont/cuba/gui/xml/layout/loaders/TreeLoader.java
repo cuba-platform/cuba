@@ -32,10 +32,10 @@ public class TreeLoader extends ComponentLoader
     public Component loadComponent(ComponentsFactory factory, Element element)
             throws InstantiationException, IllegalAccessException
     {
-        Tree tree = factory.createComponent("tree");
+        Tree component = factory.createComponent("tree");
 
-        assignXmlDescriptor(tree, element);
-        loadId(tree, element);
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
 
         Element itemsElem = element.element("treechildren");
         String datasource = itemsElem.attributeValue("datasource");
@@ -44,9 +44,11 @@ public class TreeLoader extends ComponentLoader
             String showProperty = itemsElem.attributeValue("property");
             String parentProperty = itemsElem.attributeValue("parent");
 
-            tree.setDatasource(ds, showProperty, parentProperty);
+            component.setDatasource(ds, showProperty, parentProperty);
         }
 
-        return tree;
+        addAssignWindowTask(component);
+
+        return component;
     }
 }

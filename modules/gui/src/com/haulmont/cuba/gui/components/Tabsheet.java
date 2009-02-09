@@ -12,7 +12,10 @@ package com.haulmont.cuba.gui.components;
 import java.util.List;
 import java.util.Collection;
 
-public interface Tabsheet extends Component {
+public interface Tabsheet 
+    extends
+        Component, Component.BelongToWindow
+{
     Tab addTab(String name, Component component);
     void removeTab(String name);
 

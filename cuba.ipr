@@ -933,7 +933,7 @@
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/modules/cuba-monitor-war/admin-console-war.iml" filepath="$PROJECT_DIR$/modules/cuba-monitor-war/admin-console-war.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" filepath="$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/client/client.iml" filepath="$PROJECT_DIR$/modules/client/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/gui/gui.iml" filepath="$PROJECT_DIR$/modules/gui/gui.iml" />

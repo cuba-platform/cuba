@@ -47,6 +47,8 @@ public class TabsheetLoader extends ContainerLoader {
             }
         }
 
+        addAssignWindowTask(component);
+
         return component;
     }
 }

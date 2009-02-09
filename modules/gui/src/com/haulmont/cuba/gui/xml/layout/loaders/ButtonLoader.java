@@ -27,6 +27,8 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
         loadCaption(component, element);
         loadAction(component, element);
 
+        addAssignWindowTask(component);
+
         return component;
     }
 

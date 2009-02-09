@@ -35,7 +35,7 @@
                         <hbox>
                             <button action="users.edit"/>
                         </hbox>
-                        <table id="users">
+                        <table id="users" editable="false">
                             <columns>
                                 <column id="name" label="Name"/>
                             </columns>

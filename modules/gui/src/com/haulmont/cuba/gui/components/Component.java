@@ -14,7 +14,6 @@ import org.dom4j.Element;
 import java.util.Collection;
 
 public interface Component {
-
     interface AlignInfo {
         public static final int ALIGNMENT_LEFT = 1;
         public static final int ALIGNMENT_RIGHT = 2;
@@ -54,13 +53,18 @@ public interface Component {
     interface Wrapper {
         <T> T getComponent();
     }
+    
+    interface BelongToWindow extends Component {
+        Window getWindow();
+        void setWindow(Window window);
+    }
 
     interface HasCaption {
         String getCaption();
         void setCaption(String caption);
     }
 
-    interface Field extends Component {
+    interface Field extends Editable, BelongToWindow {
         <T> T getValue();
         void setValue(Object value);
     }
@@ -70,12 +74,17 @@ public interface Component {
         void setXmlDescriptor(Element element);
     }
 
-    interface ActionsOwner {
+    interface ActionsOwner extends Component {
         void addAction(Action action);
         void removeAction(Action action);
 
         Collection<Action> getActions();
 
         Action getAction(String id);
+    }
+
+    interface Editable extends Component {
+        boolean isEditable();
+        void setEditable(boolean editable);
     }
 }

@@ -22,8 +22,12 @@ public class ItemWrapper implements Item {
 
     public ItemWrapper(Object item, Collection<MetaProperty> properties) {
         for (MetaProperty property : properties) {
-            this.properties.put(property, new PropertyWrapper(item, property));
+            this.properties.put(property, createPropertyWrapper(item, property));
         }
+    }
+
+    protected PropertyWrapper createPropertyWrapper(Object item, MetaProperty property) {
+        return new PropertyWrapper(item, property);
     }
 
     public Property getItemProperty(Object id) {

@@ -10,16 +10,29 @@
 package com.haulmont.cuba.web.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
 import com.itmill.toolkit.ui.Layout;
 import org.dom4j.Element;
 
-class AbstractComponent<T extends com.itmill.toolkit.ui.Component> implements Component, Component.Wrapper, Component.HasXmlDescriptor {
+class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
+    implements
+        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToWindow
+{
     private String id;
     protected T component;
 
     private int verticalAlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
     private int horizontalAlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
     private Element element;
+    private Window window;
+
+    public Window getWindow() {
+        return window;
+    }
+
+    public void setWindow(Window window) {
+        this.window = window;
+    }
 
     public String getId() {
         return id;

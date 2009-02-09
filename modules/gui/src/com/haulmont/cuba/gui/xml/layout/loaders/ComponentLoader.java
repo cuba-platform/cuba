@@ -10,15 +10,13 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.data.DsContext;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.components.Window;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.lang.reflect.Constructor;
 
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected Locale locale;
@@ -57,6 +55,15 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void assignXmlDescriptor(Component component, Element element) {
         if (component instanceof Component.HasXmlDescriptor) {
             ((Component.HasXmlDescriptor) component).setXmlDescriptor(element);
+        }
+    }
+
+    protected void loadEditable(Component component, Element element) {
+        if (component instanceof Component.Editable) {
+            final String editable = element.attributeValue("editable");
+            if (!StringUtils.isEmpty(editable)) {
+                ((Component.Editable) component).setEditable(BooleanUtils.toBoolean(editable));
+            }
         }
     }
 
@@ -121,5 +128,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (!StringUtils.isBlank(align)) {
             component.setVerticalAlignment(loadAlignment(align, false));
         }
+    }
+
+    protected void addAssignWindowTask(final Component.BelongToWindow component) {
+        context.addLazyTask(new LazyTask() {
+            public void execute(Context context, Window window) {
+                component.setWindow(window);
+            }
+        });
     }
 }

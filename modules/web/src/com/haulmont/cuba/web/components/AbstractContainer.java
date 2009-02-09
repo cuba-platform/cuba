@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
 import com.itmill.toolkit.ui.OrderedLayout;
 
 import java.util.*;

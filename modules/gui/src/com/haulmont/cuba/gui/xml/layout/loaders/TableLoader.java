@@ -9,24 +9,22 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 public class TableLoader extends ComponentLoader {
     protected ComponentsFactory factory;
@@ -38,15 +36,13 @@ public class TableLoader extends ComponentLoader {
         this.factory = factory;
     }
 
-    public Component loadComponent(
-            ComponentsFactory factory,
-            Element element
-    ) throws InstantiationException, IllegalAccessException
+    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException
     {
-        final Table table = factory.createComponent("table");
+        final Table component = factory.createComponent("table");
 
-        assignXmlDescriptor(table, element);
-        loadId(table, element);
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
+        loadEditable(component, element);
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
@@ -55,35 +51,43 @@ public class TableLoader extends ComponentLoader {
 
         if (!StringUtils.isBlank(datasource)) {
             final CollectionDatasource ds = context.getDSContext().get(datasource);
-            table.setDatasource(ds);
+            Set<Table.Column> availableColumns = new HashSet<Table.Column>();
 
             if (columnsElement != null) {
-                Set<Table.Column> availableColumns = new HashSet<Table.Column>();
                 for (Element columnElement : (Collection<Element>)columnsElement.elements("column")) {
                     availableColumns.add(loadColumn(columnElement, ds));
                 }
-
-                final List<Table.Column> columns = table.getColumns();
-                for (Table.Column column : columns) {
-                    if (!availableColumns.contains(column)) {
-                        table.removeColumn(column);
-                    }
-                }
             }
+
+            for (Table.Column column : availableColumns) {
+                component.addColumn(column);
+            }
+
+            component.setDatasource(ds);
         } else {
             throw new UnsupportedOperationException();
         }
+        
+        addAssignWindowTask(component);
 
-        return table;
+        return component;
     }
 
-    private Table.Column loadColumn(Element columnElement, Datasource ds) {
-        final String id = columnElement.attributeValue("id");
+    private Table.Column loadColumn(Element element, Datasource ds) {
+        final String id = element.attributeValue("id");
 
         final MetaClass metaClass = ds.getMetaClass();
         final MetaProperty metaProperty = metaClass.getPropertyEx(id);
         final Table.Column column = new Table.Column(metaProperty);
 
+        final String editable = element.attributeValue("editable");
+        if (!StringUtils.isEmpty(editable)) {
+            column.setEditable(BooleanUtils.toBoolean(editable));
+        }
+
+        loadCaption(column, element);
+
+        column.setXmlDescriptor(element);
         column.setType(MetadataHelper.getPropertyTypeClass(metaProperty));
 
         return column;

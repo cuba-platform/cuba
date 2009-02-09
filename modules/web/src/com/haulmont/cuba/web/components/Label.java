@@ -37,4 +37,12 @@ public class Label
     public void setValue(Object value) {
         component.setValue(value);
     }
+
+    public boolean isEditable() {
+        return false;
+    }
+
+    public void setEditable(boolean editable) {
+        // Do nothing
+    }
 }
