@@ -164,7 +164,16 @@ public class Table
         component.setContainerDataSource(ds);
 
         for (MetaProperty metaProperty : (Collection<MetaProperty>)ds.getContainerPropertyIds()) {
-            component.setColumnHeader(metaProperty, StringUtils.capitalize(metaProperty.getName()));
+            final Column column = columns.get(metaProperty);
+
+            final String caption;
+            if (column != null) {
+                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : metaProperty.getName());
+            } else {
+                caption = StringUtils.capitalize(metaProperty.getName());
+            }
+
+            component.setColumnHeader(metaProperty, caption);
         }
 
         final Collection<MetaProperty> collection = component.getContainerPropertyIds();

@@ -37,7 +37,7 @@
                         </hbox>
                         <table id="users" editable="false">
                             <columns>
-                                <column id="name" label="Name"/>
+                                <column id="name" caption="Name"/>
                             </columns>
                             <rows datasource="users"/>
                         </table>
@@ -45,8 +45,8 @@
                     <vbox expand="profiles">
                         <table id="profiles">
                             <columns>
-                                <column id="name" label="Name"/>
-                                <column id="defaultProfile" label="Default"/>
+                                <column id="name" caption="Name"/>
+                                <column id="defaultProfile" caption="Default"/>
                             </columns>
                             <rows datasource="profiles"/>
                         </table>
