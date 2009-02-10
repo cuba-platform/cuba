@@ -34,9 +34,13 @@ public class GridLayout extends com.itmill.toolkit.ui.GridLayout implements com.
     }
 
     public void add(Component component, int col, int row) {
+        add(component, col, row, col, row);
+    }
+
+    public void add(Component component, int col, int row, int col2, int row2) {
         final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
 
-        addComponent(itmillComponent, col, row);
+        addComponent(itmillComponent, col, row, col2, row2);
         setComponentAlignment(itmillComponent, component.getHorizontalAlignment(), component.getVerticalAlignment());
 
         if (component.getId() != null) {

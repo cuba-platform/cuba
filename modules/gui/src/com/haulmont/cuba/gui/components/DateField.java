@@ -10,4 +10,16 @@
 package com.haulmont.cuba.gui.components;
 
 public interface DateField extends Field {
+    public enum Resolution {
+        MSEC,
+        SEC,
+        MIN,
+        HOUR,
+        DAY,
+        MONTH,
+        YEAR
+    }
+
+    Resolution getResolution();
+    void setResolution(Resolution resolution);
 }

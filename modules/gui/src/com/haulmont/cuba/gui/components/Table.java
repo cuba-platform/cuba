@@ -20,6 +20,9 @@ public interface Table
     extends
         Component, Component.ActionsOwner, Component.Editable, Component.BelongToWindow 
 {
+    boolean isMultiSelect();
+    void setMultiSelect(boolean multiselect);
+
     <T> T getSingleSelected();
     Set getSelected();
 

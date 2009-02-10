@@ -67,7 +67,10 @@ public class TableLoader extends ComponentLoader {
         } else {
             throw new UnsupportedOperationException();
         }
-        
+
+        final String multiselect = element.attributeValue("multiselect");
+        component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
+
         addAssignWindowTask(component);
 
         return component;

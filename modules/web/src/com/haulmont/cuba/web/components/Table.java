@@ -68,6 +68,14 @@ public class Table
         });
     }
 
+    public boolean isMultiSelect() {
+        return component.isMultiSelect();
+    }
+
+    public void setMultiSelect(boolean multiselect) {
+        component.setMultiSelect(multiselect);
+    }
+
     public <T> T getSingleSelected() {
         final Set selected = getSelecetdItemIds();
         return selected == null || selected.isEmpty() ?
