@@ -19,6 +19,8 @@
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
+        <pathelement location="${lib.gwt.dir}/gwt-user-1.0.jar"/>
+        <pathelement location="${lib.gwt.dir}/gwt-dev-windows-1.0.jar"/>
         <pathelement location="${prod.out.dir}/core"/>
         <pathelement location="${prod.out.dir}/gui"/>
         <pathelement location="${prod.out.dir}/web"/>
@@ -33,10 +35,15 @@
 		<delete dir="${build.dir}/${module.name}"/>
     </target>
 
-    <target name="build-module">
+    <target name="build-module" depends="base-mod.compile-module">
         <echo>==> building ${project.dir} ${module.name}</echo>
 
         <mkdir dir="${build.dir}"/>
+
+        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/web-toolkit.jar">
+            <include name="**/*"/>
+        </jar>
+
         <mkdir dir="${build.dir}/${module.name}"/>
         <copy todir="${build.dir}/${module.name}">
             <fileset dir="${web.src.dir}" includes="**/*"/>

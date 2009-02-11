@@ -138,11 +138,11 @@ create table SEC_SUBJECT (
     START_DATE datetime,
     END_DATE datetime,
     primary key (ID)
-);
+)^
 
-alter table SEC_SUBJECT add constraint SEC_SUBJECT_USER foreign key (USER_ID) references SEC_USER(ID);
+alter table SEC_SUBJECT add constraint SEC_SUBJECT_USER foreign key (USER_ID) references SEC_USER(ID)^
 
-alter table SEC_SUBJECT add constraint SEC_SUBJECT_PROFILE foreign key (PROFILE_ID) references SEC_PROFILE(ID);
+alter table SEC_SUBJECT add constraint SEC_SUBJECT_PROFILE foreign key (PROFILE_ID) references SEC_PROFILE(ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -231,7 +231,7 @@ insert into SEC_PROFILE (ID, CREATE_TS, VERSION, NAME, GROUP_ID)
 values (to_id('bf83541f-f610-46f4-a268-dff348347f93'), current_timestamp, 0, 'Default', to_id('0fa2b1a5-1d68-4d69-9fbd-dff348347f93'))^
 
 insert into SEC_SUBJECT (ID, CREATE_TS, VERSION, IS_DEFAULT, USER_ID, PROFILE_ID)
-values (to_id('05d9d689-da68-4622-8952-f94dfb36ca07'), current_timestamp, 0, 1, to_id('60885987-1b61-4247-94c7-dff348347f93'), to_id('bf83541f-f610-46f4-a268-dff348347f93'));
+values (to_id('05d9d689-da68-4622-8952-f94dfb36ca07'), current_timestamp, 0, 1, to_id('60885987-1b61-4247-94c7-dff348347f93'), to_id('bf83541f-f610-46f4-a268-dff348347f93'))^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, IS_SUPER)
 values (to_id('0c018061-b26f-4de2-a5be-dff348347f93'), current_timestamp, 0, 'Administrators', 1)^
