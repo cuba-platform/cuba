@@ -75,7 +75,7 @@ public class EntityManagerImpl implements EntityManager
     public void remove(BaseEntity entity) {
         if (entity instanceof DeleteDeferred) {
             ((DeleteDeferred) entity).setDeleteTs(TimeProvider.currentTimestamp());
-            ((DeleteDeferred) entity).setDeletedBy(SecurityProvider.currentUserLogin());
+            ((DeleteDeferred) entity).setDeletedBy(SecurityProvider.currentUserSession().getSubjectId());
         }
         else {
             jpaEm.remove(entity);

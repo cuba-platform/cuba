@@ -30,7 +30,7 @@ public class PermissionTest extends CubaTestCase
     private static final String PERM_TARGET_ATTR = "core$Server:address";
 
     private UUID role1Id, permission1Id, role2Id, permission2Id, userId, groupId,
-            profileId, profileRole1Id, profileRole2Id;
+            profileId, profileRole1Id, profileRole2Id, subjectId;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -82,7 +82,6 @@ public class PermissionTest extends CubaTestCase
             Profile profile = new Profile();
             profileId = profile.getId();
             profile.setName(PROFILE_NAME);
-            profile.setUser(user);
             profile.setGroup(group);
             em.persist(profile);
 
@@ -98,6 +97,12 @@ public class PermissionTest extends CubaTestCase
             profileRole2.setRole(role2);
             em.persist(profileRole2);
 
+            Subject subject = new Subject();
+            subjectId = subject.getId();
+            subject.setUser(user);
+            subject.setProfile(profile);
+            em.persist(subject);
+
             tx.commit();
         } finally {
             tx.end();
@@ -109,7 +114,11 @@ public class PermissionTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createNativeQuery("delete from SEC_PROFILE_ROLE where ID = ? or ID = ?");
+            Query q = em.createNativeQuery("delete from SEC_SUBJECT where ID = ?");
+            q.setParameter(1, subjectId.toString());
+            q.executeUpdate();
+
+            q = em.createNativeQuery("delete from SEC_PROFILE_ROLE where ID = ? or ID = ?");
             q.setParameter(1, profileRole1Id.toString());
             q.setParameter(2, profileRole2Id.toString());
             q.executeUpdate();

@@ -59,7 +59,6 @@ public class RelationsTest extends CubaTestCase
             Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
 
             Profile profile = new Profile();
-            profile.setUser(user);
             profile.setGroup(group);
             profile.setName("RelationTest");
             em.persist(profile);
@@ -68,6 +67,11 @@ public class RelationsTest extends CubaTestCase
             profileRole.setProfile(profile);
             profileRole.setRole(role);
             em.persist(profileRole);
+
+            Subject subject = new Subject();
+            subject.setUser(user);
+            subject.setProfile(profile);
+            em.persist(subject);
 
             tx.commit();
 

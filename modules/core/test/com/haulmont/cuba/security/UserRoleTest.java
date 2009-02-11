@@ -39,7 +39,6 @@ public class UserRoleTest extends CubaTestCase
 
             Profile profile = new Profile();
             profile.setName("testProfile");
-            profile.setUser(user);
             profile.setGroup(group);
             em.persist(profile);
 
@@ -48,15 +47,20 @@ public class UserRoleTest extends CubaTestCase
             profileRole.setRole(role);
             em.persist(profileRole);
 
+            Subject subject = new Subject();
+            subject.setUser(user);
+            subject.setProfile(profile);
+            em.persist(subject);
+
             tx.commitRetaining();
 
             em = PersistenceProvider.getEntityManager();
             user = em.find(User.class, userId);
-            Set<Profile> profiles = user.getProfiles();
-            assertEquals(1, profiles.size());
-            for (Profile p : profiles) {
-                assertEquals(profile.getName(), p.getName());
-                Set<ProfileRole> roles = p.getProfileRoles();
+            Set<Subject> subjects = user.getSubjects();
+            assertEquals(1, subjects.size());
+            for (Subject s : subjects) {
+                assertEquals(profile.getName(), s.getProfile().getName());
+                Set<ProfileRole> roles = s.getProfile().getProfileRoles();
                 assertEquals(1, roles.size());
                 for (ProfileRole pr : roles) {
                     Role r = pr.getRole();

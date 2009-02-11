@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.entity;
 
 import java.util.Date;
+import java.util.UUID;
 
 public interface Updatable
 {
@@ -18,7 +19,7 @@ public interface Updatable
 
     void setUpdateTs(Date updateTs);
 
-    String getUpdatedBy();
+    UUID getUpdatedBy();
 
-    void setUpdatedBy(String updatedBy);
+    void setUpdatedBy(UUID updatedBy);
 }

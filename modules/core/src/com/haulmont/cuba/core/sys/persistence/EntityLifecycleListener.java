@@ -69,7 +69,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
     }
 
     private void __beforePersist(BaseEntity entity) {
-        entity.setCreatedBy(SecurityProvider.currentUserLogin());
+        entity.setCreatedBy(SecurityProvider.currentUserSession().getSubjectId());
         Date ts = TimeProvider.currentTimestamp();
         entity.setCreateTs(ts);
 
@@ -79,8 +79,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
     }
 
     private void __beforeUpdate(Updatable entity) {
-        String user = SecurityProvider.currentUserLogin();
-        entity.setUpdatedBy(user);
+        entity.setUpdatedBy(SecurityProvider.currentUserSession().getSubjectId());
         entity.setUpdateTs(TimeProvider.currentTimestamp());
     }
 

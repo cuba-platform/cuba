@@ -18,6 +18,7 @@ import com.haulmont.cuba.web.log.LogLevel;
 import com.haulmont.cuba.core.app.BasicService;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.security.entity.Profile;
+import com.haulmont.cuba.security.entity.Subject;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.LoginException;
 
@@ -81,13 +82,13 @@ public class ChangeProfileWindow extends Window
     private void fillItems(ListSelect select) {
         BasicService bs = ServiceLocator.getBasicService();
         UserSession userSession = App.getInstance().getConnection().getSession();
-        BasicInvocationContext ctx = new BasicInvocationContext().setEntityClass(Profile.class);
-        ctx.setQueryString("select p from sec$Profile p where p.user.id = :userId")
+        BasicInvocationContext ctx = new BasicInvocationContext().setEntityClass(Subject.class);
+        ctx.setQueryString("select s from sec$Subject s where s.user.id = :userId")
                 .addParameter("userId", userSession.getUserId());
-        List<Profile> list = bs.loadList(ctx);
-        for (Profile profile : list) {
-            if (!profile.getName().equals(userSession.getProfile())) {
-                select.addItem(profile.getName());
+        List<Subject> list = bs.loadList(ctx);
+        for (Subject subject : list) {
+            if (!subject.getId().equals(userSession.getSubjectId())) {
+                select.addItem(subject.getProfile().getName());
             }
         }
         if (!select.getItemIds().isEmpty()) {

@@ -8,9 +8,13 @@
         <property name="name"/>
     </view>
 
+    <view entity="sec$Subject" name="group-browse">
+        <property name="defaultSubject"/>
+        <property name="user" view="group-browse"/>
+        <property name="profile" view="group-browse"/>
+    </view>
+
     <view entity="sec$Profile" name="group-browse">
         <property name="name"/>
-        <property name="defaultProfile"/>
-        <property name="user" view="group-browse"/>
     </view>
 </views>

@@ -17,6 +17,9 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import java.util.Date;
+import java.util.UUID;
+
+import org.apache.openjpa.persistence.Persistent;
 
 @Entity(name = "core$Config")
 @Table(name = "SYS_CONFIG")
@@ -31,8 +34,9 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable
     @Column(name = "UPDATE_TS")
     private Date updateTs;
 
-    @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
-    private String updatedBy;
+    @Persistent
+    @Column(name = "UPDATED_BY")
+    private UUID updatedBy;
 
     @Column(name = "NAME")
     private String name;
@@ -56,11 +60,11 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable
         this.updateTs = updateTs;
     }
 
-    public String getUpdatedBy() {
+    public UUID getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(UUID updatedBy) {
         this.updatedBy = updatedBy;
     }
 

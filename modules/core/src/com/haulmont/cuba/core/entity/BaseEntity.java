@@ -23,7 +23,7 @@ public interface BaseEntity<T> extends Serializable
 
     void setCreateTs(Date date);
 
-    String getCreatedBy();
+    UUID getCreatedBy();
 
-    void setCreatedBy(String createdBy);
+    void setCreatedBy(UUID createdBy);
 }

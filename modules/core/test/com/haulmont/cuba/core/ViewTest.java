@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.Subject;
 
 import java.util.UUID;
 
@@ -37,15 +38,23 @@ public class ViewTest extends CubaTestCase
 
             Profile profile = new Profile();
             profile.setName("testProfile1");
-            profile.setUser(user);
             profile.setGroup(group);
             em.persist(profile);
 
+            Subject subject = new Subject();
+            subject.setUser(user);
+            subject.setProfile(profile);
+            em.persist(subject);
+
             profile = new Profile();
             profile.setName("testProfile2");
-            profile.setUser(user);
             profile.setGroup(group);
             em.persist(profile);
+
+            subject = new Subject();
+            subject.setUser(user);
+            subject.setProfile(profile);
+            em.persist(subject);
 
             tx.commit();
         } finally {
@@ -66,9 +75,9 @@ public class ViewTest extends CubaTestCase
             View view = new View(User.class, "testUserView")
                     .addProperty("name")
                     .addProperty("login")
-                    .addProperty("profiles",
-                            new View(Profile.class, "testProfileView")
-                                .addProperty("name")
+                    .addProperty("subjects",
+                            new View(Subject.class, "testSubjectView")
+                                .addProperty("profile")
                     );
             q.setView(view);
 
@@ -77,7 +86,7 @@ public class ViewTest extends CubaTestCase
             tx.commit();
 
             assertNull(user.getPassword());
-            assertEquals(2, user.getProfiles().size());
+            assertEquals(2, user.getSubjects().size());
         } finally {
             tx.end();
         }
@@ -93,9 +102,9 @@ public class ViewTest extends CubaTestCase
             View view = new View(User.class, "testUserView")
                     .addProperty("name")
                     .addProperty("login")
-                    .addProperty("profiles",
-                            new View(Profile.class, "testProfileView")
-                                .addProperty("name")
+                    .addProperty("subjects",
+                            new View(Subject.class, "testSubjectView")
+                                .addProperty("profile")
                     );
             em.setView(view);
 
@@ -104,7 +113,7 @@ public class ViewTest extends CubaTestCase
             tx.commit();
 
             assertNull(user.getPassword());
-            assertEquals(2, user.getProfiles().size());
+            assertEquals(2, user.getSubjects().size());
         } finally {
             tx.end();
         }

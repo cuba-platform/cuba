@@ -13,10 +13,7 @@ package com.haulmont.cuba.security;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
 import com.haulmont.cuba.core.app.BasicService;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.Profile;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.Constraint;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.LoginException;
@@ -34,7 +31,7 @@ public class ConstraintTest extends CubaTestCase
     private static final String ADMIN_PASSW = DigestUtils.md5Hex("admin");
     private static final String PROFILE_NAME = "testProfile";
 
-    private UUID constraintId, parentConstraintId, groupId, parentGroupId, profileId;
+    private UUID constraintId, parentConstraintId, groupId, parentGroupId, profileId, subjectId;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -76,9 +73,14 @@ public class ConstraintTest extends CubaTestCase
             Profile profile = new Profile();
             profileId = profile.getId();
             profile.setName(PROFILE_NAME);
-            profile.setUser(user);
             profile.setGroup(group);
             em.persist(profile);
+
+            Subject subject = new Subject();
+            subjectId = subject.getId();
+            subject.setUser(user);
+            subject.setProfile(profile);
+            em.persist(subject);
 
             tx.commit();
         } finally {
@@ -91,7 +93,11 @@ public class ConstraintTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createNativeQuery("delete from SEC_PROFILE where ID = ?");
+            Query q = em.createNativeQuery("delete from SEC_SUBJECT where ID = ?");
+            q.setParameter(1, subjectId.toString());
+            q.executeUpdate();
+
+            q = em.createNativeQuery("delete from SEC_PROFILE where ID = ?");
             q.setParameter(1, profileId.toString());
             q.executeUpdate();
 

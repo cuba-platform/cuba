@@ -24,6 +24,7 @@ public class UserSession implements Serializable
     private final UUID userId;
     private final String login;
     private final String name;
+    private final UUID subjectId;
     private final String profile;
     private final String[] roles;
     private final Locale locale;
@@ -31,12 +32,13 @@ public class UserSession implements Serializable
     private final Map<String, Integer>[] permissions;
     private final Map<String, List<String>> constraints;
 
-    public UserSession(User user, String profile, String[] roles, Locale locale) {
+    public UserSession(User user, Subject subject, String[] roles, Locale locale) {
         this.id = UuidProvider.createUuid();
         this.userId = user.getId();
         this.login = user.getLogin();
         this.name = user.getName();
-        this.profile = profile;
+        this.subjectId = subject.getId();
+        this.profile = subject.getProfile().getName();
 
         this.roles = roles;
         Arrays.sort(this.roles);
@@ -65,6 +67,10 @@ public class UserSession implements Serializable
 
     public String getName() {
         return name;
+    }
+
+    public UUID getSubjectId() {
+        return subjectId;
     }
 
     public String getProfile() {

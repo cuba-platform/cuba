@@ -160,35 +160,4 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
             return ExceptionUtils.getStackTrace(e);
         }
     }
-
-    public String test() {
-//        Transaction tx = Locator.createTransaction();
-        try {
-            login();
-
-            BasicServiceRemote service = Locator.lookupRemote(BasicService.JNDI_NAME);
-//            BasicService service = Locator.lookupLocal(BasicService.JNDI_NAME);
-            BasicInvocationContext ctx = new BasicInvocationContext()
-                    .setEntityClass(User.class).setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
-            User user = service.load(ctx);
-
-            ctx = new BasicInvocationContext().setEntityClass(Profile.class);
-            ctx.setView(new View(Profile.class, "test").addProperty("name").addProperty("defaultProfile"));
-            ctx.setQueryString("select p from sec$Profile p where p.user.id = :user").addParameter("user", user);
-            List<Profile> profiles = service.loadList(ctx);
-
-            boolean b = false;
-            if (!profiles.isEmpty()) {
-                b = profiles.get(0).isDefaultProfile();
-            }
-
-//            tx.commit();
-            return "Done: " + b;
-        } catch (Exception e) {
-            return ExceptionUtils.getStackTrace(e);
-        } finally {
-//            tx.end();
-            logout();
-        }
-    }
 }

@@ -13,6 +13,7 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.Subject;
 import com.haulmont.cuba.core.global.View;
 
 import java.util.UUID;
@@ -25,6 +26,8 @@ public class DeletedCollectionItemTest extends CubaTestCase
     private UUID userId;
     private UUID profile1Id;
     private UUID profile2Id;
+    private UUID subject1Id;
+    private UUID subject2Id;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -47,16 +50,26 @@ public class DeletedCollectionItemTest extends CubaTestCase
             Profile profile1 = new Profile();
             profile1Id = profile1.getId();
             profile1.setName("testProfile1");
-            profile1.setUser(user);
             profile1.setGroup(group);
             em.persist(profile1);
 
             Profile profile2 = new Profile();
             profile2Id = profile2.getId();
             profile2.setName("testProfile2");
-            profile2.setUser(user);
             profile2.setGroup(group);
             em.persist(profile2);
+
+            Subject subject1 = new Subject();
+            subject1Id = subject1.getId();
+            subject1.setUser(user);
+            subject1.setProfile(profile1);
+            em.persist(subject1);
+
+            Subject subject2 = new Subject();
+            subject2Id = subject2.getId();
+            subject2.setUser(user);
+            subject2.setProfile(profile2);
+            em.persist(subject2);
 
             tx.commitRetaining();
 
@@ -80,7 +93,12 @@ public class DeletedCollectionItemTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createNativeQuery("delete from SEC_PROFILE where ID = ? or ID = ?");
+            Query q = em.createNativeQuery("delete from SEC_SUBJECT where ID = ? or ID = ?");
+            q.setParameter(1, subject1Id.toString());
+            q.setParameter(2, subject2Id.toString());
+            q.executeUpdate();
+
+            q = em.createNativeQuery("delete from SEC_PROFILE where ID = ? or ID = ?");
             q.setParameter(1, profile1Id.toString());
             q.setParameter(2, profile2Id.toString());
             q.executeUpdate();
@@ -139,18 +157,17 @@ public class DeletedCollectionItemTest extends CubaTestCase
                     new View(User.class, "testView")
                             .addProperty("name")
                             .addProperty("login")
-                            .addProperty("profiles",
-                                    new View(Profile.class, "testView")
-                                            .addProperty("name")
+                            .addProperty("subjects",
+                                    new View(Subject.class, "testView")
+                                            .addProperty("profile")
                             )
             );
             User user = em.find(User.class, userId);
 
-            Set<Profile> profiles = user.getProfiles();
-            assertEquals(1, profiles.size());
-            for (Profile profile : profiles) {
-                System.out.println(profile.getName());
-                assertEquals("testProfile1", profile.getName());
+            Set<Subject> subjects = user.getSubjects();
+            assertEquals(2, subjects.size());
+            for (Subject subject : subjects) {
+                System.out.println(subject.getProfile().getName());
             }
 
             tx.commit();
@@ -169,17 +186,17 @@ public class DeletedCollectionItemTest extends CubaTestCase
                     new View(User.class, "testView")
                             .addProperty("name")
                             .addProperty("login")
-                            .addProperty("profiles",
-                                    new View(Profile.class, "testView")
-                                            .addProperty("name")
+                            .addProperty("subjects",
+                                    new View(Subject.class, "testView")
+                                            .addProperty("profile")
                             )
             );
             User user = em.find(User.class, userId);
 
-            Set<Profile> profiles = user.getProfiles();
-            assertEquals(2, profiles.size());
-            for (Profile profile : profiles) {
-                System.out.println(profile.getName());
+            Set<Subject> subjects = user.getSubjects();
+            assertEquals(2, subjects.size());
+            for (Subject subject : subjects) {
+                System.out.println(subject.getProfile().getName());
             }
 
             tx.commit();
@@ -197,11 +214,10 @@ public class DeletedCollectionItemTest extends CubaTestCase
             q.setParameter(1, userId);
             User user = (User) q.getSingleResult();
 
-            Set<Profile> profiles = user.getProfiles();
-            assertEquals(1, profiles.size());
-            for (Profile profile : profiles) {
-                System.out.println(profile.getName());
-                assertEquals("testProfile1", profile.getName());
+            Set<Subject> subjects = user.getSubjects();
+            assertEquals(2, subjects.size());
+            for (Subject subject : subjects) {
+                System.out.println(subject.getProfile().getName());
             }
 
             tx.commit();
@@ -215,15 +231,14 @@ public class DeletedCollectionItemTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createQuery("select u from sec$User u join fetch u.profiles where u.id = ?1");
+            Query q = em.createQuery("select u from sec$User u join fetch u.subjects where u.id = ?1");
             q.setParameter(1, userId);
             User user = (User) q.getSingleResult();
 
-            Set<Profile> profiles = user.getProfiles();
-            assertEquals(1, profiles.size());
-            for (Profile profile : profiles) {
-                System.out.println(profile.getName());
-                assertEquals("testProfile1", profile.getName());
+            Set<Subject> subjects = user.getSubjects();
+            assertEquals(2, subjects.size());
+            for (Subject subject : subjects) {
+                System.out.println(subject.getProfile().getName());
             }
 
             tx.commit();

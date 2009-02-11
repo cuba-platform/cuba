@@ -15,6 +15,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.Subject;
 import com.haulmont.cuba.security.resource.Messages;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import com.haulmont.cuba.core.PersistenceProvider;
@@ -25,8 +26,6 @@ import com.haulmont.cuba.core.SecurityProvider;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +41,7 @@ public class LoginWorkerBean implements LoginWorker
         EntityManager em = PersistenceProvider.getEntityManager();
         Query q = em.createQuery(
                 "select u " +
-                " from sec$User u join fetch u.profiles" +
+                " from sec$User u join fetch u.subjects" +
                 " where u.login = ?1 and u.password = ?2");
         q.setParameter(1, login);
         q.setParameter(2, password);
@@ -64,7 +63,7 @@ public class LoginWorkerBean implements LoginWorker
         EntityManager em = PersistenceProvider.getEntityManager();
         Query q = em.createQuery(
                 "select u " +
-                " from sec$User u join fetch u.profiles" +
+                " from sec$User u join fetch u.subjects" +
                 " where u.activeDirectoryUser = ?1");
         q.setParameter(1, activeDirectoryUser);
         List list = q.getResultList();
@@ -104,25 +103,28 @@ public class LoginWorkerBean implements LoginWorker
     }
 
     private UserSession findProfile(User user, String profileName, Locale locale) throws LoginException {
-        Profile profile = null;
+        Subject subject = null;
         if (profileName == null) {
-            Iterator<Profile> it = user.getProfiles().iterator();
-            while ((profile == null || !profile.isDefaultProfile()) && it.hasNext()) {
-                profile = it.next();
+            for (Subject s : user.getSubjects()) {
+                subject = s;
+                if (subject.isDefaultSubject())
+                    break;
             }
+            if (subject == null)
+               throw new LoginException(Messages.getString("LoginException.NoProfile", locale));
         }
         else {
-            for (Profile p : user.getProfiles()) {
-                if (profileName.equals(p.getName())) {
-                    profile = p;
+            for (Subject s : user.getSubjects()) {
+                if (profileName.equals(s.getProfile().getName())) {
+                    subject = s;
                     break;
                 }
             }
+            if (subject == null)
+               throw new LoginException(Messages.getString("LoginException.InvalidProfile", locale), profileName);
         }
-        if (profile == null)
-           throw new LoginException(Messages.getString("LoginException.InvalidProfile", locale), profileName);
 
-        return UserSessionManager.getInstance().createSession(user, profile, locale);
+        return UserSessionManager.getInstance().createSession(user, subject, locale);
     }
 
     public void logout() {

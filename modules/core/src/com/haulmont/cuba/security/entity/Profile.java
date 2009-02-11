@@ -30,13 +30,6 @@ public class Profile extends StandardEntity
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "IS_DEFAULT")
-    private Boolean defaultProfile;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "USER_ID")
-    private User user;
-
     @OneToMany(mappedBy = "profile")
     @OnDelete(DeletePolicy.CASCADE)
     private Set<ProfileRole> profileRoles;
@@ -51,22 +44,6 @@ public class Profile extends StandardEntity
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isDefaultProfile() {
-        return BooleanUtils.isTrue(defaultProfile);
-    }
-
-    public void setDefaultProfile(boolean defaultProfile) {
-        this.defaultProfile = defaultProfile;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Set<ProfileRole> getProfileRoles() {

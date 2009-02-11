@@ -36,7 +36,8 @@ public class UserSessionManager
         sessions = new UserSessionsCache();
     }
 
-    public UserSession createSession(User user, Profile profile, Locale locale) {
+    public UserSession createSession(User user, Subject subject, Locale locale) {
+        Profile profile = subject.getProfile();
         List<String> roleNames = new ArrayList<String>();
         List<Role> roles = new ArrayList<Role>();
         for (ProfileRole profileRole : profile.getProfileRoles()) {
@@ -46,7 +47,7 @@ public class UserSessionManager
             }
         }
         UserSession session = new UserSession(
-                user, profile.getName(), roleNames.toArray(new String[roleNames.size()]), locale);
+                user, subject, roleNames.toArray(new String[roleNames.size()]), locale);
         compilePermissions(session, roles);
         compileConstraints(session, profile.getGroup());
         sessions.add(session);

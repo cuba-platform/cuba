@@ -11,7 +11,6 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.PersistenceProvider;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -22,20 +21,20 @@ public class User extends StandardEntity
 {
     private static final long serialVersionUID = 5007187642916030394L;
 
-    @Column(name = "LOGIN", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "LOGIN", length = 20)
     private String login;
 
     @Column(name = "PASSWORD", length = 32)
     private String password;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", length = 100)
     private String name;
 
     @Column(name = "AD_USER", length = 100)
     private String activeDirectoryUser;
 
     @OneToMany(mappedBy = "user")
-    private Set<Profile> profiles;
+    private Set<Subject> subjects;
 
     public String getLogin() {
         return login;
@@ -69,12 +68,12 @@ public class User extends StandardEntity
         this.activeDirectoryUser = activeDirectoryUser;
     }
 
-    public Set<Profile> getProfiles() {
-        return profiles;
+    public Set<Subject> getSubjects() {
+        return subjects;
     }
 
-    public void setProfiles(Set<Profile> profiles) {
-        this.profiles = profiles;
+    public void setSubjects(Set<Subject> subjects) {
+        this.subjects = subjects;
     }
 
     public String toString() {

@@ -10,7 +10,7 @@
         <collection-datasource
             id="users"
             class="com.haulmont.cuba.security.entity.User"
-            view="browse"
+            view="user-browse"
         >
             <query>
                 <![CDATA[select u from sec$User u where <#if component$filter.name?has_content>u.name like :component$filter.name<#else>1=1</#if>]]>
@@ -18,11 +18,11 @@
         </collection-datasource>
 
         <collection-datasource
-            id="profiles"
-            class="com.haulmont.cuba.security.entity.Profile"
-            view="browse"
+            id="subjects"
+            class="com.haulmont.cuba.security.entity.Subject"
+            view="user-browse"
         >
-            <query>select p from sec$Profile p where p.user.id = :ds$users</query>
+            <query>select s from sec$Subject s where s.user.id = :ds$users</query>
         </collection-datasource>
     </dsContext>
 
@@ -42,13 +42,12 @@
                             <rows datasource="users"/>
                         </table>
                     </vbox>
-                    <vbox expand="profiles">
-                        <table id="profiles">
+                    <vbox expand="subjects">
+                        <table id="subjects">
                             <columns>
-                                <column id="name" caption="Name"/>
-                                <column id="defaultProfile" caption="Default"/>
+                                <column id="defaultSubject" caption="Default"/>
                             </columns>
-                            <rows datasource="profiles"/>
+                            <rows datasource="subjects"/>
                         </table>
                     </vbox>
                 </split>

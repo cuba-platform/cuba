@@ -27,8 +27,8 @@ public class BaseLongIdEntity implements BaseEntity<Long>
     @Column(name = "CREATE_TS")
     private Date createTs;
 
-    @Column(name = "CREATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
-    private String createdBy;
+    @Column(name = "CREATED_BY")
+    private UUID createdBy;
 
     public Long getId() {
         return id;
@@ -54,11 +54,11 @@ public class BaseLongIdEntity implements BaseEntity<Long>
         this.createTs = createTs;
     }
 
-    public String getCreatedBy() {
+    public UUID getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(String createdBy) {
+    public void setCreatedBy(UUID createdBy) {
         this.createdBy = createdBy;
     }
 }

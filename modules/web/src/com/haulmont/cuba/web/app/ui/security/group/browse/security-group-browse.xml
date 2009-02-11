@@ -17,7 +17,14 @@
             id="profiles"
             class="com.haulmont.cuba.security.entity.Profile"
             view="group-browse">
-            <query>select p from sec$Profile p join fetch p.user where p.group.id = :ds$groups</query>
+            <query>select p from sec$Profile p where p.group.id = :ds$groups</query>
+        </collection-datasource>
+
+        <collection-datasource
+            id="subjects"
+            class="com.haulmont.cuba.security.entity.Subject"
+            view="group-browse">
+            <query>select s from sec$Subject s join fetch s.user where s.profile.id = :ds$profiles</query>
         </collection-datasource>
     </dsContext>
 
@@ -29,16 +36,21 @@
                         <treechildren datasource="groups" property="name" parent="parent"/>
                     </tree>
                 </vbox>
-                <vbox expand="profiles">
+                <split orientation="vertical">
                     <table id="profiles">
                         <columns>
-                            <column id="user" caption="User" onClick="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml"/>
                             <column id="name" caption="Profile"/>
-                            <column id="defaultProfile" caption="Default"/>
                         </columns>
                         <rows datasource="profiles"/>
                     </table>
-                </vbox>
+                    <table id="subjects">
+                        <columns>
+                            <column id="user" caption="User" onClick="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml"/>
+                            <column id="defaultSubject" caption="Default"/>
+                        </columns>
+                        <rows datasource="subjects"/>
+                    </table>
+                </split>
             </split>
         </hbox>
     </layout>

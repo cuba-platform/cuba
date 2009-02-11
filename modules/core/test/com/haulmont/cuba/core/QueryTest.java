@@ -24,7 +24,7 @@ public class QueryTest extends CubaTestCase
 
             User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
-            Query query = em.createQuery("select p from sec$Profile p where p.user.id = :user");
+            Query query = em.createQuery("select s from sec$Subject s where s.user.id = :user");
             query.setParameter("user", user);
             List list = query.getResultList();
 
