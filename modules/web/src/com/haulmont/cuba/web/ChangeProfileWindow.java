@@ -10,17 +10,16 @@
  */
 package com.haulmont.cuba.web;
 
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.terminal.Sizeable;
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.haulmont.cuba.web.resource.Messages;
-import com.haulmont.cuba.web.log.LogLevel;
-import com.haulmont.cuba.core.app.BasicService;
-import com.haulmont.cuba.core.global.BasicInvocationContext;
-import com.haulmont.cuba.security.entity.Profile;
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.security.entity.Subject;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.log.LogLevel;
+import com.haulmont.cuba.web.resource.Messages;
+import com.itmill.toolkit.terminal.ExternalResource;
+import com.itmill.toolkit.terminal.Sizeable;
+import com.itmill.toolkit.ui.*;
 
 import java.util.List;
 
@@ -80,12 +79,13 @@ public class ChangeProfileWindow extends Window
     }
 
     private void fillItems(ListSelect select) {
-        BasicService bs = ServiceLocator.getBasicService();
+        DataService bs = ServiceLocator.getDataService();
         UserSession userSession = App.getInstance().getConnection().getSession();
-        BasicInvocationContext ctx = new BasicInvocationContext().setEntityClass(Subject.class);
-        ctx.setQueryString("select s from sec$Subject s where s.user.id = :userId")
-                .addParameter("userId", userSession.getUserId());
-        List<Subject> list = bs.loadList(ctx);
+
+        final DataServiceRemote.CollectionLoadContext context = new DataServiceRemote.CollectionLoadContext(Subject.class);
+        context.setQueryString("select s from sec$Subject s where s.user.id = :userId").addParameter("userId", userSession.getUserId());
+        List<Subject> list = bs.loadList(context);
+
         for (Subject subject : list) {
             if (!subject.getId().equals(userSession.getSubjectId())) {
                 select.addItem(subject.getProfile().getName());

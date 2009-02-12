@@ -10,12 +10,11 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.global.BasicServiceRemote;
+import com.haulmont.cuba.core.global.DataServiceRemote;
 
 import javax.ejb.Local;
 
 @Local
-public interface BasicService extends BasicServiceRemote
+public interface DataService extends DataServiceRemote
 {
-    String JNDI_NAME = "cuba/core/BasicService";
 }

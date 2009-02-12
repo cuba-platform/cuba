@@ -9,23 +9,21 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.entity.DeleteDeferred;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.DeleteDeferred;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class EntityManagerImpl implements EntityManager
 {
@@ -64,15 +62,15 @@ public class EntityManagerImpl implements EntityManager
         }
     }
 
-    public void persist(BaseEntity entity) {
+    public void persist(Entity entity) {
         jpaEm.persist(entity);
     }
 
-    public <T extends BaseEntity> T merge(T entity) {
+    public <T extends Entity> T merge(T entity) {
         return jpaEm.merge(entity);
     }
 
-    public void remove(BaseEntity entity) {
+    public void remove(Entity entity) {
         if (entity instanceof DeleteDeferred) {
             ((DeleteDeferred) entity).setDeleteTs(TimeProvider.currentTimestamp());
             ((DeleteDeferred) entity).setDeletedBy(SecurityProvider.currentUserSession().getSubjectId());
@@ -82,7 +80,7 @@ public class EntityManagerImpl implements EntityManager
         }
     }
 
-    public <T extends BaseEntity> T find(Class<T> clazz, Object key) {
+    public <T extends Entity> T find(Class<T> clazz, Object key) {
         return jpaEm.find(clazz, key);
     }
 

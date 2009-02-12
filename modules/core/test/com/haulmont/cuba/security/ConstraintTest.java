@@ -12,7 +12,8 @@ package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.BasicInvocationContext;
-import com.haulmont.cuba.core.app.BasicService;
+import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.global.UserSession;
@@ -138,9 +139,9 @@ public class ConstraintTest extends CubaTestCase
         List<String> constraints = userSession.getConstraints("core$Server");
         assertEquals(2, constraints.size());
 
-        BasicService bs = Locator.lookupLocal(BasicService.JNDI_NAME);
+        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
 
-        BasicInvocationContext ctx = new BasicInvocationContext().setEntityClass(Group.class);
+        DataService.CollectionLoadContext ctx = new DataService.CollectionLoadContext(Group.class);
         ctx.setQueryString("select g from sec$Group g where g.createTs <= :createTs").addParameter("createTs", new Date());
 
         List<Group> list = bs.loadList(ctx);

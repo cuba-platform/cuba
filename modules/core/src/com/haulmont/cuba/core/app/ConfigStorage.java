@@ -11,13 +11,8 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.BasicInvocationContext;
-import com.haulmont.cuba.core.global.BasicServiceRemote;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.entity.Config;
 import com.haulmont.cuba.core.sys.ConfigWorker;
-import com.haulmont.cuba.security.entity.Profile;
-import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 

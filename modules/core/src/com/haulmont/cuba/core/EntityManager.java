@@ -10,17 +10,18 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
 public interface EntityManager
 {
-    void persist(BaseEntity entity);
+    void persist(Entity entity);
 
-    <T extends BaseEntity> T merge(T entity);
+    <T extends Entity> T merge(T entity);
 
-    void remove(BaseEntity entity);
+    void remove(Entity entity);
 
-    <T extends BaseEntity> T find(Class<T> clazz, Object key);
+    <T extends Entity> T find(Class<T> clazz, Object key);
 
     Query createQuery();
 

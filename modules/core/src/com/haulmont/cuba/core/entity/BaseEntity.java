@@ -13,10 +13,8 @@ import java.io.Serializable;
 import java.util.UUID;
 import java.util.Date;
 
-public interface BaseEntity<T> extends Serializable
+public interface BaseEntity<T> extends Entity<T>
 {
-    T getId();
-
     UUID getUuid();
 
     Date getCreateTs();

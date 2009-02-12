@@ -12,12 +12,11 @@ package com.haulmont.cuba.web.ui;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.BasicService;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
@@ -310,8 +309,8 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
                 final Datasource ds = (Datasource) item;
                 ds.commit();
             } else {
-                BasicService service = Locator.lookupLocal(BasicService.JNDI_NAME);
-                service.update((BaseEntity) item);
+                DataService service = getDsContext().getDataService();
+                service.commit((Entity) item);
             }
             close();
         }

@@ -10,18 +10,19 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.app.BasicService;
-import com.haulmont.cuba.core.global.BasicInvocationContext;
-import com.haulmont.cuba.core.global.BasicServiceRemote;
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.core.global.DataServiceRemote;
 
-import java.util.UUID;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class BasicServiceTest extends CubaTestCase
 {
     public void test() {
-        BasicService bs = Locator.lookupLocal(BasicService.JNDI_NAME);
+        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
 
         Server server = new Server();
         UUID id = server.getId();
@@ -29,30 +30,32 @@ public class BasicServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.create(server);
+        bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
 
-        server = bs.get(new BasicInvocationContext().setEntityClass(Server.class).setId(id));
+        final DataServiceRemote.LoadContext loadContext = new DataServiceRemote.LoadContext(Server.class);
+        loadContext.setId(id);
+
+        server = bs.load(loadContext);
         assertEquals("localhost", server.getName());
 
         server.setName("krivopustov");
-        bs.update(server);
+        bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
     }
 
-    public void testRemoteWithException() {
-        BasicServiceRemote bs = Locator.lookupRemote(BasicService.JNDI_NAME);
-
-        Object id = "some key";
-        try {
-            bs.get(new BasicInvocationContext().setEntityClass(Server.class).setId(id));
-            fail();
-        } catch (Exception e) {
-            System.out.println("Done");
-        }
-
-    }
+//    public void testRemoteWithException() {
+//        DataServiceRemote bs = Locator.lookupRemote(DataService.JNDI_NAME);
+//
+//        Object id = "some key";
+//        try {
+//            bs.get(new BasicInvocationContext().setEntityClass(Server.class).setId(id));
+//            fail();
+//        } catch (Exception e) {
+//            System.out.println("Done");
+//        }
+//    }
 
     public void testLoad() {
-        BasicService bs = Locator.lookupLocal(BasicService.JNDI_NAME);
+        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
 
         Server server = new Server();
         UUID id = server.getId();
@@ -60,27 +63,30 @@ public class BasicServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.create(server);
+        bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
 
-        server = bs.load(new BasicInvocationContext().setEntityClass(Server.class).setId(id));
+        final DataServiceRemote.LoadContext loadContext = new DataServiceRemote.LoadContext(Server.class);
+        loadContext.setId(id);
+
+        server = bs.load(loadContext);
         assertEquals("localhost", server.getName());
     }
 
     public void testLoadList() {
-        BasicService bs = Locator.lookupLocal(BasicService.JNDI_NAME);
+        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
 
         Server server = new Server();
         server.setName("localhost");
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.create(server);
+        bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
 
-        BasicInvocationContext ctx = new BasicInvocationContext();
-        ctx.setEntityClass(Server.class);
-        ctx.setQueryString("select s from " + PersistenceProvider.getEntityName(Server.class) + " s");
+        final DataServiceRemote.CollectionLoadContext loadContext =
+                new DataServiceRemote.CollectionLoadContext(Server.class);
+        loadContext.setQueryString("select s from " + PersistenceProvider.getEntityName(Server.class) + " s");
         
-        List<Server> list = bs.loadList(ctx);
+        List<Server> list = bs.loadList(loadContext);
         assertTrue(list.size() > 0);
     }
 }

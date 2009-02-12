@@ -9,20 +9,18 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.BasicService;
-import com.haulmont.cuba.core.global.BasicInvocationContext;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
-import com.haulmont.cuba.gui.TemplateHelper;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements CollectionDatasource<T, K> {
     private String query;
@@ -182,8 +180,8 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
     }
 
     protected Collection<T> loadData() {
-        final BasicInvocationContext ctx = new BasicInvocationContext();
-        ctx.setEntityClass(metaClass);
+        final DataServiceRemote.CollectionLoadContext context =
+                new DataServiceRemote.CollectionLoadContext(metaClass);
 
         final Map<String, Object> parameters = getQueryParameters();
         for (ParametersHelper.ParameterInfo info : queryParameters) {
@@ -193,11 +191,10 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
             }
         }
 
-        final BasicInvocationContext.Query query = ctx.setQueryString(getJPQLQuery(this.query, parameters));
-        query.setParameters(parameters);
-        ctx.setView(view);
+        context.setQueryString(getJPQLQuery(this.query, parameters)).setParameters(parameters);
+        context.setView(view);
 
-        collection = (Collection) dataservice.loadList(ctx);
+        collection = (Collection) dataservice.loadList(context);
 
         return collection;
     }

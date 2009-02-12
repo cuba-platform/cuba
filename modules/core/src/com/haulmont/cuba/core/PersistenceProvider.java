@@ -9,17 +9,19 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.sys.ManagedPersistenceProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
-
-import javax.persistence.Entity;
-import java.lang.annotation.Annotation;
-import java.util.*;
-
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.sys.ManagedPersistenceProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
+
+import java.lang.annotation.Annotation;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class PersistenceProvider
 {
@@ -61,10 +63,10 @@ public abstract class PersistenceProvider
     }
 
     public static String getEntityName(Class entityClass) {
-        Annotation annotation = entityClass.getAnnotation(Entity.class);
+        Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
         if (annotation == null)
             throw new IllegalArgumentException("Class " + entityClass + " is not an entity");
-        String name = ((Entity) annotation).name();
+        String name = ((javax.persistence.Entity) annotation).name();
         if (!StringUtils.isEmpty(name))
             return name;
         else
@@ -90,11 +92,18 @@ public abstract class PersistenceProvider
         return set;
     }
 
-    public static boolean isDetached(BaseEntity entity) {
-        if (entity instanceof PersistenceCapable) 
-            return ((PersistenceCapable) entity).pcIsDetached();
+//    public static boolean isDetached(Entity entity) {
+//        if (entity instanceof PersistenceCapable)
+//            return ((PersistenceCapable) entity).pcIsDetached();
+//        else
+//            throw new RuntimeException("Entity is not PersistenceCapable: " + entity);
+//    }
+
+    public static boolean isNew(Entity entity) {
+        if (entity instanceof PersistenceCapable)
+            return ((PersistenceCapable) entity).pcIsDetached() == null;
         else
-            throw new RuntimeException("Entity is not PersistenceCapable: " + entity);
+            return entity.getId() != null;
     }
 
     protected abstract EntityManagerFactory __getEntityManagerFactory();
