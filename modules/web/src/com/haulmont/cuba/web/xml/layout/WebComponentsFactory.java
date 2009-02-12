@@ -34,13 +34,13 @@ public class WebComponentsFactory implements ComponentsFactory {
 
         classes.put("button", Button.class);
         classes.put("label", Label.class);
-        classes.put("group-box", GroupBox.class);
-        classes.put("text-field", TextField.class);
-        classes.put("text-area", TextArea.class);
+        classes.put("groupBox", GroupBox.class);
+        classes.put("textField", TextField.class);
+        classes.put("textArea", TextArea.class);
         classes.put("iframe", IFrame.class);
         classes.put("table", Table.class);
-        classes.put("date-field", DateField.class);
-        classes.put("lookup-field", LookupField.class);
+        classes.put("dateField", DateField.class);
+        classes.put("lookupField", LookupField.class);
         classes.put("split", SplitPanel.class);
         classes.put("tree", Tree.class);
         classes.put("tabsheet", Tabsheet.class);

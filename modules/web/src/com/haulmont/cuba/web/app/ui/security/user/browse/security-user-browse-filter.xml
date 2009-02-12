@@ -1,13 +1,13 @@
 <frame>
     <layout>
         <vbox id="filter-pane" width="100%">
-            <group-box>
+            <groupBox>
                 <caption label="Filter"/>
                 <hbox id="group-box">
                     <label control="name" value="Name:"/>
-                    <text-field id="name" width="100%"/>
+                    <textField id="name" width="100%"/>
                 </hbox>
-            </group-box>
+            </groupBox>
             <hbox align="end" width="500px">
                 <button id="clear" caption="Clear"/>
                 <button id="apply" caption="Apply"/>

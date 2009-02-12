@@ -7,7 +7,7 @@
     </metadataContext>
 
     <dsContext>
-        <collection-datasource
+        <collectionDatasource
             id="users"
             class="com.haulmont.cuba.security.entity.User"
             view="user-browse"
@@ -15,15 +15,15 @@
             <query>
                 <![CDATA[select u from sec$User u where <#if component$filter.name?has_content>u.name like :component$filter.name<#else>1=1</#if>]]>
             </query>
-        </collection-datasource>
+        </collectionDatasource>
 
-        <collection-datasource
+        <collectionDatasource
             id="subjects"
             class="com.haulmont.cuba.security.entity.Subject"
             view="user-browse"
         >
             <query>select s from sec$Subject s where s.user.id = :ds$users</query>
-        </collection-datasource>
+        </collectionDatasource>
     </dsContext>
 
     <layout>

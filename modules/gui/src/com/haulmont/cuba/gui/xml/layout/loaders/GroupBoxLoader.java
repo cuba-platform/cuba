@@ -21,7 +21,7 @@ public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cub
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final OrderedLayout component = factory.createComponent("group-box");
+        final OrderedLayout component = factory.createComponent("groupBox");
 
         final Element captionElement = element.element("caption");
         if (captionElement != null) {

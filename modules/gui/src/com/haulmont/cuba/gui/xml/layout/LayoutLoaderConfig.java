@@ -42,12 +42,12 @@ public class LayoutLoaderConfig {
         config.registerLoader("vbox", VBoxLoader.class);
         config.registerLoader("grid", GridLoader.class);
         config.registerLoader("button", ButtonLoader.class);
-        config.registerLoader("group-box", GroupBoxLoader.class);
+        config.registerLoader("groupBox", GroupBoxLoader.class);
         config.registerLoader("label", LabelLoader.class);
-        config.registerLoader("text-field", AbstractFieldLoader.class);
-        config.registerLoader("text-area", AbstractFieldLoader.class);
-        config.registerLoader("date-field", AbstractFieldLoader.class);
-        config.registerLoader("lookup-field", LookupFieldLoader.class);
+        config.registerLoader("textField", AbstractFieldLoader.class);
+        config.registerLoader("textArea", AbstractFieldLoader.class);
+        config.registerLoader("dateField", AbstractFieldLoader.class);
+        config.registerLoader("lookupField", LookupFieldLoader.class);
         config.registerLoader("table", TableLoader.class);
         config.registerLoader("iframe", IFrameLoader.class);
         config.registerLoader("split", SplitPanelLoader.class);

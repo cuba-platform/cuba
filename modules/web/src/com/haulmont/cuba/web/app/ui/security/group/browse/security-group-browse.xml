@@ -4,28 +4,28 @@
     </metadataContext>
 
     <dsContext>
-        <collection-datasource
+        <collectionDatasource
             id="groups"
             class="com.haulmont.cuba.security.entity.Group"
             view="group-browse">
             <query>
                 <![CDATA[select g from sec$Group g]]>
             </query>
-        </collection-datasource>
+        </collectionDatasource>
 
-        <collection-datasource
+        <collectionDatasource
             id="profiles"
             class="com.haulmont.cuba.security.entity.Profile"
             view="group-browse">
             <query>select p from sec$Profile p where p.group.id = :ds$groups</query>
-        </collection-datasource>
+        </collectionDatasource>
 
-        <collection-datasource
+        <collectionDatasource
             id="subjects"
             class="com.haulmont.cuba.security.entity.Subject"
             view="group-browse">
             <query>select s from sec$Subject s join fetch s.user where s.profile.id = :ds$profiles</query>
-        </collection-datasource>
+        </collectionDatasource>
     </dsContext>
 
     <layout>

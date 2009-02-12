@@ -15,13 +15,13 @@
             view="edit"
         />
 
-        <collection-datasource
+        <collectionDatasource
             id="groups"
             class="com.haulmont.cuba.security.entity.Group"
             view="lookup"
         >
             <query>select g from sec$Group g</query>
-        </collection-datasource>
+        </collectionDatasource>
     </dsContext>
 
     <layout>
@@ -35,12 +35,12 @@
                     <rows>
                         <row>
                             <label value="Name"/>
-                            <text-field id="name" datasource="user" property="name"/>
+                            <textField id="name" datasource="user" property="name"/>
                         </row>
                         <row>
                             <label value="Login"/>
                             <hbox>
-                                <text-field id="login" datasource="user" property="login"/>
+                                <textField id="login" datasource="user" property="login"/>
                                 <button id="browse" caption="Browse..."/>
                            </hbox>
                         </row>
@@ -48,7 +48,7 @@
                 </grid>
             </tab>
             <tab id="additional" caption="Additional">
-                <lookup-field id="groups" lookupDatasource="groups"/>
+                <lookupField id="groups" lookupDatasource="groups"/>
             </tab>
         </tabsheet>
     </layout>

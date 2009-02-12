@@ -39,7 +39,7 @@ public class DsContextLoader {
             datasources.register(loadDatasource(ds));
         }
 
-        elements = element.elements("collection-datasource");
+        elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
             datasources.register(loadCollectionDatasource(ds));
         }
@@ -77,7 +77,7 @@ public class DsContextLoader {
             datasources.register(loadDatasource(ds, datasource, property));
         }
 
-        elements = element.elements("collection-datasource");
+        elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
             datasources.register(loadCollectionDatasource(ds, datasource, property));
