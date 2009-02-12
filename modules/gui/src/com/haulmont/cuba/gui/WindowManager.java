@@ -95,10 +95,15 @@ public abstract class WindowManager {
     protected void deployViews(Document document) {
         final Element metadataContextElement = document.getRootElement().element("metadataContext");
         if (metadataContextElement != null) {
-            final List<Element> viewsElements = metadataContextElement.elements("deployViews");
-            for (Element viewsElement : viewsElements) {
-                final String resource = viewsElement.attributeValue("name");
+            List<Element> fileElements = metadataContextElement.elements("deployViews");
+            for (Element fileElement : fileElements) {
+                final String resource = fileElement.attributeValue("name");
                 MetadataProvider.getViewRepository().deployViews(getClass().getResourceAsStream(resource));
+            }
+
+            List<Element> viewElements = metadataContextElement.elements("view");
+            for (Element viewElement : viewElements) {
+                MetadataProvider.getViewRepository().deployView(metadataContextElement, viewElement);
             }
         }
     }

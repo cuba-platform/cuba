@@ -75,7 +75,7 @@ public class ViewRepository
             return views.get(name);
     }
 
-    private View deployView(Element rootElem, Element viewElem) {
+    public View deployView(Element rootElem, Element viewElem) {
         String viewName = viewElem.attributeValue("name");
         String entity = viewElem.attributeValue("entity");
         if (StringUtils.isBlank(viewName) || StringUtils.isBlank(entity))
