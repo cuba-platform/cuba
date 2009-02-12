@@ -21,13 +21,20 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class AppLog
 {
     private LinkedList<LogItem> items = new LinkedList<LogItem>();
 
     private int capacity = 100;
 
+    private Log log = LogFactory.getLog(AppLog.class);
+
     public void log(LogItem item) {
+        log.debug(item.getLevel() + ": " + item.getMessage(), item.getThrowable());
+        
         if (items.size() >= capacity) {
             items.removeLast();
         }
