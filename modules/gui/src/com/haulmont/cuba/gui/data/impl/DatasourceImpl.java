@@ -61,7 +61,7 @@ public class DatasourceImpl<T extends Entity>
     }
 
     public CommitMode getCommitMode() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return CommitMode.DATASTORE;
     }
 
     public void commit() {

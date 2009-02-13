@@ -42,6 +42,11 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     @Override
+    public CommitMode getCommitMode() {
+        return CommitMode.DATASTORE;
+    }
+
+    @Override
     public synchronized void invalidate() {
         super.invalidate();
         this.collection = Collections.emptyList();

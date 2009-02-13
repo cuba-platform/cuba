@@ -69,7 +69,8 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public CommitMode getCommitMode() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        // TODO support embedded
+        return CommitMode.DATASTORE;
     }
 
     public void commit() {
@@ -91,6 +92,7 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public void commited(Map<Entity, Entity> map) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        modified = false;
+        clearCommitLists();
     }
 }

@@ -10,11 +10,13 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     extends
@@ -67,5 +69,21 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
 
     public void setQuery(String query) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CommitMode getCommitMode() {
+        final MetaProperty.Type type = metaProperty.getType();
+        return MetaProperty.Type.AGGREGATION.equals(type) ? CommitMode.NOT_SUPPORTED : CommitMode.DATASTORE;
+    }
+
+    @Override
+    public void commited(Map<Entity, Entity> map) {
+        if (CommitMode.DATASTORE.equals(getCommitMode())) {
+            throw new UnsupportedOperationException();
+        }
+
+        modified = false;
+        clearCommitLists();
     }
 }

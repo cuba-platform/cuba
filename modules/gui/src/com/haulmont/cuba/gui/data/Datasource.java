@@ -27,7 +27,7 @@ public interface Datasource<T extends Entity> {
     enum CommitMode {
         NOT_SUPPORTED,
         DATASTORE,
-        DATASOURCE
+        PARENT
     }
 
     CommitMode getCommitMode();
