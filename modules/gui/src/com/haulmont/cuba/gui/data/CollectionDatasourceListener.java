@@ -9,9 +9,11 @@
  */
 package com.haulmont.cuba.gui.data;
 
+import com.haulmont.cuba.core.entity.Entity;
+
 import java.util.Collection;
 
-public interface CollectionDatasourceListener<T> extends DatasourceListener<T> {
+public interface CollectionDatasourceListener<T extends Entity> extends DatasourceListener<T> {
     class CollectionOperation<T> {
         public enum Type {
             REFRESH,

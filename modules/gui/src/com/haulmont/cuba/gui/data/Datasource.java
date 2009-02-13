@@ -11,15 +11,26 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Collection;
 
-public interface Datasource<T> {
+public interface Datasource<T extends Entity> {
     String getId();
 
     DsContext getDsContext();
+    //Datasource getParent();
     DataService getDataService();
 
+    boolean isModified();
+
+    enum CommitMode {
+        NOT_SUPPORTED,
+        DATASTORE,
+        DATASOURCE
+    }
+
+    CommitMode getCommitMode();
     void commit();
 
     enum State {
@@ -38,10 +49,6 @@ public interface Datasource<T> {
 
     MetaClass getMetaClass();
     View getView();
-
-    Collection<T> getItemsToCreate();
-    Collection<T> getItemsToUpdate();
-    Collection<T> getItemsToDelete();
 
     void addListener(DatasourceListener<T> listener);
     void removeListener(DatasourceListener<T> listener);

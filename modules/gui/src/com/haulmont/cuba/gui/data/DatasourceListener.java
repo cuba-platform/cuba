@@ -9,7 +9,9 @@
  */
 package com.haulmont.cuba.gui.data;
 
-public interface DatasourceListener<T> extends ValueListener<T> {
+import com.haulmont.cuba.core.entity.Entity;
+
+public interface DatasourceListener<T extends Entity> extends ValueListener<T> {
     void itemChanged(Datasource<T> ds, T prevItem, T item);
     void stateChanged(Datasource<T> ds, Datasource.State prevState, Datasource.State state);
 }

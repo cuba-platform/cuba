@@ -9,16 +9,23 @@
  */
 package com.haulmont.cuba.gui.data;
 
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+
 import java.util.Collection;
 
 public interface DsContext {
+    Context getContext();
+    void setContext(Context context);
+
     DataService getDataService();
 
     <T extends Datasource> T get(String name);
     Collection<Datasource> getAll();
 
-//    <T> T wrapAs(Datasource datasource, String target);
+    boolean isModified();
 
-    Context getContext();
-    void setContext(Context context);
+    void refresh();
+    void commit();
+
+    void regirterDependency(Datasource ds, Datasource dependFrom);
 }

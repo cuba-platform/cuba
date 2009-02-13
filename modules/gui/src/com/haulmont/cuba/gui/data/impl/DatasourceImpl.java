@@ -12,22 +12,25 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.DataService;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
-public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementation {
+public class DatasourceImpl<T extends Entity>
+    extends
+        AbstractDataSource<T>
+    implements
+        DatasourceImplementation<T>
+{
     protected DsContext dsContext;
     protected DataService dataservice;
 
-    private String id;
     protected MetaClass metaClass;
     protected View view;
 
@@ -35,30 +38,18 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
     protected T item;
     private ValueListener listener;
 
-    protected List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
-
     public DatasourceImpl(
             DsContext dsContext, DataService dataservice,
                 String id, MetaClass metaClass, String viewName)
     {
+        super(id);
         this.dsContext = dsContext;
         this.dataservice = dataservice;
 
-        this.id = id;
         this.metaClass = metaClass;
         this.view = MetadataProvider.getViewRepository().getView(metaClass, viewName);
 
-        this.listener = new ValueListener() {
-            public void propertyChanged(String property, Object prevValue, Object value) {
-                for (DatasourceListener dsListener : dsListeners) {
-                    dsListener.valueChanged(null, property, prevValue, value);
-                }
-            }
-        };
-    }
-
-    public String getId() {
-        return id;
+        this.listener = new ItemListener();
     }
 
     public DsContext getDsContext() {
@@ -67,6 +58,10 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
 
     public DataService getDataService() {
         return dataservice;
+    }
+
+    public CommitMode getCommitMode() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void commit() {
@@ -127,7 +122,7 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
 
     protected void forceItemChanged(Object prevItem) {
         for (DatasourceListener dsListener : dsListeners) {
-            dsListener.itemChanged(this, prevItem, item);
+            dsListener.itemChanged(this, (Entity) prevItem, item);
         }
     }
 
@@ -153,29 +148,21 @@ public class DatasourceImpl<T> implements Datasource<T>, DatasourceImplementatio
         item.removeListener(listener);
     }
 
-    public Collection<T> getItemsToCreate() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<T> getItemsToUpdate() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<T> getItemsToDelete() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void addListener(DatasourceListener<T> listener) {
-        if (dsListeners.indexOf(listener) < 0) {
-            dsListeners.add(listener);
-        }
-    }
-
-    public void removeListener(DatasourceListener<T> listener) {
-        dsListeners.remove(listener);
-    }
-
     public void initialized() {
         state = State.INVALID;
     }
+
+    public void commited(Map<Entity, Entity> map) {
+        if (map.containsKey(item)) {
+            item = (T) map.get(item);
+        }
+
+        modified = false;
+        clearCommitLists();
+    }
+
+    public DatasourceListener getParentDSListener() {
+        return null;
+    }
+
 }

@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -179,8 +180,8 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         }
     }
 
-    private class DataSourceRefreshListener implements CollectionDatasourceListener {
-        public void itemChanged(Datasource ds, Object prevItem, Object item) {}
+    private class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
+        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {}
 
         public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
             final boolean prevIgnoreListeners = ignoreListeners;
@@ -191,7 +192,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
             }
         }
 
-        public void valueChanged(Object source, String property, Object prevValue, Object value) {}
+        public void valueChanged(Entity source, String property, Object prevValue, Object value) {}
 
         public void collectionChanged(Datasource ds, CollectionOperation operation) {
             final boolean prevIgnoreListeners = ignoreListeners;

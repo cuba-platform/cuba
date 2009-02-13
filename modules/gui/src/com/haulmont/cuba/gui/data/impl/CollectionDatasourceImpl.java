@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
@@ -22,10 +23,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements CollectionDatasource<T, K> {
+public class CollectionDatasourceImpl<T extends Entity, K>
+    extends 
+        DatasourceImpl<T>
+    implements
+        CollectionDatasource<T, K>
+{
     private String query;
     private ParametersHelper.ParameterInfo[] queryParameters;
-    private DatasourceListener parentDsListener;
 
     private Collection<T> collection = Collections.emptyList();
 
@@ -34,21 +39,6 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
                 String id, MetaClass metaClass, String viewName)
     {
         super(context, dataservice, id, metaClass, viewName);
-        
-        parentDsListener = new CollectionDatasourceListener() {
-            public void itemChanged(Datasource ds, Object prevItem, Object item) {
-                refresh();
-            }
-
-            public void stateChanged(Datasource ds, State prevState, State state) {}
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {}
-
-            public void collectionChanged(Datasource ds, CollectionOperation operation) {
-                if (CollectionOperation.Type.REFRESH.equals(operation.getType())) {
-                    refresh();
-                }
-            }
-        };
     }
 
     @Override
@@ -158,7 +148,7 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
 
                     final Datasource ds = dsContext.get(source);
                     if (ds != null) {
-                        ds.addListener(parentDsListener);
+                        dsContext.regirterDependency(this, ds);
                     } else {
                         // TODO create lazy task
                         throw new UnsupportedOperationException();
@@ -167,6 +157,16 @@ public class CollectionDatasourceImpl<T, K> extends DatasourceImpl<T> implements
             }
 
         }
+    }
+
+    public void commited(Map<Entity, Entity> map) {
+        if (map.containsKey(item)) {
+            item = (T) map.get(item);
+            // TODO update collection elements
+        }
+
+        modified = false;
+        clearCommitLists();
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

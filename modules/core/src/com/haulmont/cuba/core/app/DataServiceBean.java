@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.security.entity.PermissionType;
 
@@ -40,7 +41,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
         checkPermissions(context);
 
         for (Entity entity : context.getCommitInstances()) {
-            if (PersistenceProvider.isNew(entity)) {
+            if (PersistenceHelper.isNew(entity)) {
                 em.persist(entity);
                 res.put(entity, entity);
             } else {
@@ -130,7 +131,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
             MetaClass metaClass = entity instanceof Instance ? ((Instance) entity).getMetaClass() : null;
             if (metaClass == null) continue;
 
-            if (PersistenceProvider.isNew(entity)) {
+            if (PersistenceHelper.isNew(entity)) {
                 checkPermission(checkedUpdateRights, metaClass, "update");
             } else {
                 checkPermission(checkedCreateRights, metaClass, "create");

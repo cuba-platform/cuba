@@ -11,8 +11,6 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.BasicInvocationContext;
-import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.app.LoginWorker;

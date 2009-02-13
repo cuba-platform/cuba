@@ -9,6 +9,17 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-public interface DatasourceImplementation {
+import com.haulmont.cuba.core.entity.Entity;
+
+import java.util.Map;
+import java.util.Collection;
+
+public interface DatasourceImplementation<T extends Entity> {
     void initialized();
+
+    Collection<T> getItemsToCreate();
+    Collection<T> getItemsToUpdate();
+    Collection<T> getItemsToDelete();
+
+    void commited(Map<Entity, Entity> map);
 }

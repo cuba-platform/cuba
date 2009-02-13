@@ -277,7 +277,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
                 if (context != null) {
                     final Datasource ds = context.get(datasourceName);
                     if (ds != null) {
-                        ds.setItem(item);
+                        ds.setItem((Entity) item);
                     } else {
                         throw new IllegalStateException();
                     }

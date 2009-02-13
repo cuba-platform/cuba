@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -22,17 +23,21 @@ import com.haulmont.cuba.gui.data.DataService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-public class PropertyDatasourceImpl<T> implements Datasource<T>, DatasourceImplementation {
-    private String id;
-
+public class PropertyDatasourceImpl<T extends Entity>
+    extends
+        AbstractDataSource<T>
+    implements
+        Datasource<T>, DatasourceImplementation<T>
+{
     protected Datasource ds;
     protected MetaProperty metaProperty;
 
     private List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
 
     public PropertyDatasourceImpl(String id, Datasource ds, String property) {
-        this.id = id;
+        super(id);
         this.ds = ds;
         metaProperty = ds.getMetaClass().getProperty(property);
     }
@@ -55,16 +60,16 @@ public class PropertyDatasourceImpl<T> implements Datasource<T>, DatasourceImple
         return property == null ? null : property.getView();
     }
 
-    public String getId() {
-        return id;
-    }
-
     public DsContext getDsContext() {
         return ds.getDsContext();
     }
 
     public DataService getDataService() {
         return ds.getDataService();
+    }
+
+    public CommitMode getCommitMode() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void commit() {
@@ -81,28 +86,11 @@ public class PropertyDatasourceImpl<T> implements Datasource<T>, DatasourceImple
     public void invalidate() {
     }
 
-    public Collection<T> getItemsToCreate() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<T> getItemsToUpdate() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Collection<T> getItemsToDelete() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void addListener(DatasourceListener<T> listener) {
-        if (dsListeners.indexOf(listener) < 0) {
-            dsListeners.add(listener);
-        }
-    }
-
-    public void removeListener(DatasourceListener<T> listener) {
-        dsListeners.remove(listener);
-    }
 
     public void initialized() {
+    }
+
+    public void commited(Map<Entity, Entity> map) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

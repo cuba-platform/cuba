@@ -99,13 +99,6 @@ public abstract class PersistenceProvider
 //            throw new RuntimeException("Entity is not PersistenceCapable: " + entity);
 //    }
 
-    public static boolean isNew(Entity entity) {
-        if (entity instanceof PersistenceCapable)
-            return ((PersistenceCapable) entity).pcIsDetached() == null;
-        else
-            return entity.getId() != null;
-    }
-
     protected abstract EntityManagerFactory __getEntityManagerFactory();
 
     protected abstract EntityManager __getEntityManager();

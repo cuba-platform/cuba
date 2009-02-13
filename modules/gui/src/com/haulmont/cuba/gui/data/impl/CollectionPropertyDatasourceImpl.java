@@ -9,13 +9,19 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.chile.core.model.Instance;
 
 import java.util.Collection;
 
-public class CollectionPropertyDatasourceImpl<T, K> extends PropertyDatasourceImpl<T> implements CollectionDatasource<T, K> {
+public class CollectionPropertyDatasourceImpl<T extends Entity, K>
+    extends
+        PropertyDatasourceImpl<T>
+    implements
+        CollectionDatasource<T, K>
+{
     public CollectionPropertyDatasourceImpl(String id, Datasource ds, String property) {
         super(id, ds, property);
     }
@@ -56,10 +62,10 @@ public class CollectionPropertyDatasourceImpl<T, K> extends PropertyDatasourceIm
     }
 
     public String getQuery() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void setQuery(String query) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 }
