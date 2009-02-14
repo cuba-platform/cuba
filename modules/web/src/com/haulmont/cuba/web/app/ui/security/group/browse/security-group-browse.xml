@@ -45,7 +45,7 @@
                     </table>
                     <table id="subjects">
                         <columns>
-                            <column id="user" caption="User" onClick="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml"/>
+                            <column id="user" caption="User" onClick="sec$User.edit"/>
                             <column id="defaultSubject" caption="Default"/>
                         </columns>
                         <rows datasource="subjects"/>

@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.DataService;
@@ -70,48 +71,29 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(Class aclass, WindowManager.OpenType openType, Map<String, Object> params) {
-        return App.getInstance().getScreenManager().<T>openWindow(aclass, openType, params);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String screenId, WindowManager.OpenType openType) {
+        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
+        return App.getInstance().getScreenManager().<T>openWindow(screenInfo, openType);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String descriptor, WindowManager.OpenType openType) {
-        return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String screenId, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
+        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
+        return App.getInstance().getScreenManager().<T>openEditor(screenInfo, item, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(Class aclass, WindowManager.OpenType openType) {
-        return App.getInstance().getScreenManager().<T>openWindow(aclass, openType);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String screenId, Object item, WindowManager.OpenType openType) {
+        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
+        return App.getInstance().getScreenManager().<T>openEditor(screenInfo, item, openType);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return App.getInstance().getScreenManager().<T>openEditor(descriptor, item, openType, params);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String screenId, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
+        return App.getInstance().getScreenManager().<T>openLookup(screenInfo, handler, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType, params);
-    }
-
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType) {
-        return App.getInstance().getScreenManager().<T>openEditor(descriptor, item, openType);
-    }
-
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(Class aclass, Object item, WindowManager.OpenType openType) {
-        return App.getInstance().getScreenManager().<T>openEditor(aclass, item, openType);
-    }
-
-    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String descriptor, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        return App.getInstance().getScreenManager().<T>openLookup(descriptor, handler, openType, params);
-    }
-
-    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(Class aclass, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        return App.getInstance().getScreenManager().<T>openLookup(aclass, handler, openType, params);
-    }
-
-    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String descriptor, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        return App.getInstance().getScreenManager().<T>openLookup(descriptor, handler, openType);
-    }
-
-    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(Class aclass, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        return App.getInstance().getScreenManager().<T>openLookup(aclass, handler, openType);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String screenId, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
+        return App.getInstance().getScreenManager().<T>openLookup(screenInfo, handler, openType);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

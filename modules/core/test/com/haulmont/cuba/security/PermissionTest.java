@@ -54,7 +54,7 @@ public class PermissionTest extends CubaTestCase
             Permission permission1 = new Permission();
             permission1Id = permission1.getId();
             permission1.setRole(role1);
-            permission1.setType(PermissionType.ACTION.getId());
+            permission1.setType(PermissionType.SCREEN.getId());
             permission1.setTarget(PERM_TARGET_SCREEN);
             permission1.setValue(0);
             em.persist(permission1);
@@ -158,10 +158,10 @@ public class PermissionTest extends CubaTestCase
         UserSession userSession = lw.login(USER_NAME, USER_PASSW, PROFILE_NAME, Locale.getDefault());
         assertNotNull(userSession);
 
-        boolean permitted = userSession.isPermitted(PermissionType.ACTION, PERM_TARGET_SCREEN);
+        boolean permitted = userSession.isPermitted(PermissionType.SCREEN, PERM_TARGET_SCREEN);
         assertFalse(permitted);
 
-        permitted = userSession.isPermitted(PermissionType.ACTION, "some action");
+        permitted = userSession.isPermitted(PermissionType.SCREEN, "some action");
         assertTrue(permitted); // permitted all if not explicitly denied
 
         permitted = userSession.isPermitted(PermissionType.ENTITY_ATTR, PERM_TARGET_ATTR);

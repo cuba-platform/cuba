@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.config.ScreenInfo;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -173,6 +174,23 @@ public abstract class WindowManager {
         }
     }
 
+    public <T extends Window> T openWindow(ScreenInfo screenInfo,
+                                           WindowManager.OpenType openType, 
+                                           Map<String, Object> params)
+    {
+        String template = screenInfo.getTemplate();
+        if (template != null) {
+            return (T) openWindow(template, openType, params);
+        }
+        else {
+            Class screenClass = screenInfo.getScreenClass();
+            if (screenClass != null)
+                return (T) openWindow(screenClass, openType, params);
+            else
+                return null;
+        }
+    }
+
     public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map<String, Object> params) {
         Window window = createWindow(descriptor, params, LayoutLoaderConfig.getWindowLoaders());
 
@@ -227,11 +245,22 @@ public abstract class WindowManager {
         return (T) window;
     }
 
-    public <T extends Window> T openEditor(String descriptor, Object item, OpenType openType, Map<String, Object> params) {
+    public <T extends Window> T openEditor(ScreenInfo screenInfo, Object item, OpenType openType, Map<String, Object> params) {
         params = createParametersMap(params);
         params.put("parameter$item", item);
 
-        Window window = createWindow(descriptor, params, LayoutLoaderConfig.getEditorLoaders());
+        String template = screenInfo.getTemplate();
+        Window window;
+        if (template != null) {
+            window = createWindow(template, params, LayoutLoaderConfig.getEditorLoaders());
+        }
+        else {
+            Class screenClass = screenInfo.getScreenClass();
+            if (screenClass != null)
+                window = createWindow(screenClass, params);
+            else
+                throw new IllegalStateException("Invalid ScreenInfo: " + screenInfo);
+        }
         ((Window.Editor) window).setItem(item);
 
         String caption = loadCaption(window, params);
@@ -241,12 +270,23 @@ public abstract class WindowManager {
     }
 
     public <T extends Window> T openLookup(
-            String descriptor, Window.Lookup.Handler handler,
+            ScreenInfo screenInfo, Window.Lookup.Handler handler,
                 OpenType openType, Map<String, Object> params)
     {
         params = createParametersMap(params);
 
-        Window window = createWindow(descriptor, params, LayoutLoaderConfig.getLookupLoaders());
+        String template = screenInfo.getTemplate();
+        Window window;
+        if (template != null) {
+            window = createWindow(template, params, LayoutLoaderConfig.getEditorLoaders());
+        }
+        else {
+            Class screenClass = screenInfo.getScreenClass();
+            if (screenClass != null)
+                window = createWindow(screenClass, params);
+            else
+                throw new IllegalStateException("Invalid ScreenInfo: " + screenInfo);
+        }
 
         final Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
         final String lookupComponent = element.attributeValue("lookupComponent");
@@ -271,19 +311,6 @@ public abstract class WindowManager {
         return map;
     }
 
-    public <T extends Window> T openEditor(Class aclass, Object item, OpenType openType, Map<String, Object> params) {
-        params = createParametersMap(params);
-        params.put("parameter$item", item);
-
-        Window window = createWindow(aclass, params);
-        ((Window.Editor) window).setItem(item);
-
-        String caption = loadCaption(window, params);
-
-        showWindow(window, caption, openType);
-        return (T) window;
-    }
-
     public <T extends Window> T openLookup(
             Class aclass, Window.Lookup.Handler handler,
                 OpenType openType, Map<String, Object> params)
@@ -301,28 +328,16 @@ public abstract class WindowManager {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public <T extends Window> T openEditor(String descriptor, Object item, OpenType openType) {
-        return (T)openEditor(descriptor, item, openType, Collections.<String, Object>emptyMap());
+    public <T extends Window> T openEditor(ScreenInfo screenInfo, Object item, OpenType openType) {
+        return (T)openEditor(screenInfo, item, openType, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends Window> T openEditor(Class aclass, Object item, OpenType openType) {
-        return (T)openEditor(aclass, item, openType, Collections.<String, Object>emptyMap());
+    public <T extends Window> T openWindow(ScreenInfo screenInfo, OpenType openType) {
+        return (T)openWindow(screenInfo, openType, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends Window> T openWindow(String descriptor, OpenType openType) {
-        return (T)openWindow(descriptor, openType, Collections.<String, Object>emptyMap());
-    }
-
-    public <T extends Window> T openWindow(Class aclass, OpenType openType) {
-        return (T)openWindow(aclass, openType, Collections.<String, Object>emptyMap());
-    }
-
-    public <T extends Window> T openLookup(String descriptor, Window.Lookup.Handler handler, OpenType openType) {
-        return (T)openLookup(descriptor, handler, openType, Collections.<String, Object>emptyMap());
-    }
-
-    public <T extends Window> T openLookup(Class aclass, Window.Lookup.Handler handler, OpenType openType) {
-        return (T)openLookup(aclass, handler, openType, Collections.<String, Object>emptyMap());
+    public <T extends Window> T openLookup(ScreenInfo screenInfo, Window.Lookup.Handler handler, OpenType openType) {
+        return (T)openLookup(screenInfo, handler, openType, Collections.<String, Object>emptyMap());
     }
 
     protected abstract void showWindow(Window window, String caption, OpenType openType);

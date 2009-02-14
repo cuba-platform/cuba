@@ -13,6 +13,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.gui.config.ScreenConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
@@ -36,6 +37,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private Log log = LogFactory.getLog(App.class);
 
     private Connection connection;
+
+    private ScreenConfig screenConfig;
 
     private MenuConfig menuConfig;
 
@@ -84,12 +87,25 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return connection;
     }
 
+    public ScreenConfig getScreenConfig() {
+        if (screenConfig == null) {
+            screenConfig = new ScreenConfig();
+            screenConfig.loadConfig(getScreenConfigXml());
+        }
+        return screenConfig;
+    }
+
+    protected String getScreenConfigXml() {
+        ResourceRepositoryService rrs = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
+        return rrs.getResAsString("cuba/client/web/screen-config.xml");
+    }
+
     public MenuConfig getMenuConfig() {
         if (menuConfig == null) {
             if (!connection.isConnected())
                 throw new RuntimeException("Not connected");
             menuConfig = new MenuConfig(ClientType.WEB, connection.getSession());
-            menuConfig.loadConfig(getClass().getName(), getResourceBundle(), getMenuConfigXml());
+            menuConfig.loadConfig(getResourceBundle(), getMenuConfigXml());
         }
 
         return menuConfig;

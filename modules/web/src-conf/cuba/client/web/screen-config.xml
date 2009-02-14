@@ -1,0 +1,18 @@
+<screen-config>
+
+    <screen id="core$Server.browse"
+            class="com.haulmont.cuba.web.app.ui.DemoScreen"/>
+
+    <screen id="sec$User.browse"
+            template="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse.xml"/>
+
+    <screen id="sec$User.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml"/>
+
+    <screen id="sec$Group.browse"
+            template="/com/haulmont/cuba/web/app/ui/security/group/browse/security-group-browse.xml"/>
+
+    <screen id="sec$Role.browse"
+            class="com.haulmont.cuba.web.app.ui.TableDemoScreen"/>
+
+</screen-config>

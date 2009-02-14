@@ -1,11 +1,10 @@
 <menu-config>
     <menu id="security">
-        <item id="sec$User.browse" template="/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse.xml"/>
-        <item id="sec$Group.browse" template="/com/haulmont/cuba/web/app/ui/security/group/browse/security-group-browse.xml"/>
-        <item id="sec$Role.browse" class="com.haulmont.cuba.web.app.ui.TableDemoScreen"/>
+        <item id="sec$User.browse"/>
+        <item id="sec$Group.browse"/>
+        <item id="sec$Role.browse"/>
     </menu>
     <menu id="administration">
-        <item id="core$Server.browse" class="com.haulmont.cuba.web.app.ui.DemoScreen"/>
+        <item id="core$Server.browse"/>
     </menu>
-    <item id="demo$table" class="com.haulmont.cuba.web.app.ui.DemoTableScreen"/>
 </menu-config>

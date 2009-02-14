@@ -12,6 +12,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.web.resource.Messages;
 import com.itmill.toolkit.event.ItemClickEvent;
 import com.itmill.toolkit.ui.Tree;
@@ -48,32 +49,14 @@ public class Navigator extends Window
         tree.addListener(new ItemClickEvent.ItemClickListener() {
             public void itemClick(ItemClickEvent event) {
                 MenuItem menuItem = (MenuItem) event.getItemId();
-
-                final String caption = menuItem.getCaption();
-
-                final Element element = menuItem.getDescriptor();
-                final String template = element.attributeValue("template");
-
-                if (template != null) {
-                    App.getInstance().getScreenManager().openWindow(
-                            template,
+                String caption = menuItem.getCaption();
+                ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(menuItem.getId());
+                App.getInstance().getScreenManager().openWindow(
+                            screenInfo,
                             WindowManager.OpenType.NEW_TAB,
-                            Collections.<String, Object>singletonMap("caption", caption));
-                    parentWindow.removeWindow(Navigator.this);
-                } else {
-                    final String className = element.attributeValue("class");
-                    if (className != null) {
-                        try {
-                            App.getInstance().getScreenManager().openWindow(
-                                    Class.forName(className),
-                                    WindowManager.OpenType.NEW_TAB,
-                                    Collections.<String, Object>singletonMap("caption", caption));
-                        } catch (ClassNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        parentWindow.removeWindow(Navigator.this);
-                    }
-                }
+                            Collections.<String, Object>singletonMap("caption", caption)
+                );
+                parentWindow.removeWindow(Navigator.this);
             }
         });
 

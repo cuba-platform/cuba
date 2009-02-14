@@ -26,9 +26,9 @@ import java.util.*;
 
 public class MenuConfig
 {
-    private Log LOG = LogFactory.getLog(MenuConfig.class);
+    private Log log = LogFactory.getLog(MenuConfig.class);
     
-    private Map<String, List<MenuItem>> rootItems = new HashMap<String, List<MenuItem>>();
+    private List<MenuItem> rootItems = new ArrayList<MenuItem>();
 
     private ResourceBundle resourceBundle;
 
@@ -41,15 +41,10 @@ public class MenuConfig
     }
 
     public List<MenuItem> getRootItems() {
-        final List<MenuItem> res = new ArrayList<MenuItem>();
-        for (Map.Entry<String, List<MenuItem>> entry : rootItems.entrySet()) {
-            res.addAll(entry.getValue());
-        }
-
-        return res;
+        return Collections.unmodifiableList(rootItems);
     }
 
-    public void loadConfig(String moduleName, ResourceBundle resourceBundle, String xml) {
+    public void loadConfig(ResourceBundle resourceBundle, String xml) {
         rootItems.clear();
 
         this.resourceBundle = resourceBundle;
@@ -64,12 +59,10 @@ public class MenuConfig
 
         Element rootElem = doc.getRootElement();
 
-        rootItems.put(moduleName, loadMenuItems(rootElem, null));
+        loadMenuItems(rootElem, null);
     }
 
-    private List<MenuItem> loadMenuItems(Element parentElement, MenuItem parentItem) {
-        List<MenuItem> res = new ArrayList<MenuItem>();
-
+    private void loadMenuItems(Element parentElement, MenuItem parentItem) {
         for (Element element : ((List<Element>) parentElement.elements())) {
             MenuItem menuItem = null;
 
@@ -77,10 +70,10 @@ public class MenuConfig
                 String id = element.attributeValue("id");
 
                 if (StringUtils.isBlank(id)) {
-                    LOG.warn(String.format("Invalid menu-config: 'id' attribute not defined"));
+                    log.warn(String.format("Invalid menu-config: 'id' attribute not defined"));
                 }
 
-                menuItem = new MenuItem(parentItem, resourceBundle.getString("menu-config." + id));
+                menuItem = new MenuItem(parentItem, id, resourceBundle.getString("menu-config." + id));
                 menuItem.setDescriptor(element);
 
                 loadMenuItems(element, menuItem);
@@ -91,32 +84,27 @@ public class MenuConfig
                 }
             } else if ("item".equals(element.getName())) {
                 String id = element.attributeValue("id");
-                if (!StringUtils.isBlank(id) && isActionPermitted(id)) {
+                if (!StringUtils.isBlank(id) && isScreenPermitted(id)) {
                     String menuCaption = getCaption("menu-config." + id, id);
-                    menuItem = new MenuItem(parentItem, menuCaption);
+                    menuItem = new MenuItem(parentItem, id, menuCaption);
                     menuItem.setDescriptor(element);
                 }
             } else {
-                LOG.warn(String.format("Unknown tag '%s' in menu-config", element.getName()));
+                log.warn(String.format("Unknown tag '%s' in menu-config", element.getName()));
             }
 
-            if (menuItem != null) {
-                res.add(menuItem);
+            if (parentItem != null) {
+                parentItem.getChildren().add(menuItem);
             }
-
+            else {
+                rootItems.add(menuItem);
+            }
         }
-
-        if (parentItem != null) {
-            parentItem.getChildren().addAll(res);
-        }
-
-        return res;
     }
 
-    private boolean isActionPermitted(String actionName) {
-        return userSession.isPermitted(PermissionType.ACTION, clientType.getId() + ":" + actionName);
+    private boolean isScreenPermitted(String screenId) {
+        return userSession.isPermitted(PermissionType.SCREEN, clientType.getId() + ":" + screenId);
     }
-
 
     private String getCaption(String key, String def) {
         try {

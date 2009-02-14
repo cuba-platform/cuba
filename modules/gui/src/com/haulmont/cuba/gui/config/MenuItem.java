@@ -20,12 +20,14 @@ public class MenuItem
     private MenuItem parent;
     private List<MenuItem> children = new ArrayList<MenuItem>();
 
+    private String id;
     private String caption;
 
     private Element descriptor;
 
-    public MenuItem(MenuItem parent, String caption) {
+    public MenuItem(MenuItem parent, String id, String caption) {
         this.parent = parent;
+        this.id = id;
         this.caption = caption;
     }
 
@@ -35,6 +37,10 @@ public class MenuItem
 
     public List<MenuItem> getChildren() {
         return children;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getCaption() {
