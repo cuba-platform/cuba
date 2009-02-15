@@ -13,11 +13,10 @@ package com.haulmont.cuba.web.app.ui.security.group.browse;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Tree;
-import com.haulmont.cuba.gui.data.Datasource;
 
-public class SecurityGroupBrowser extends AbstractWindow
+public class GroupBrowser extends AbstractWindow
 {
-    public SecurityGroupBrowser(Window frame) {
+    public GroupBrowser(Window frame) {
         super(frame);
     }
 

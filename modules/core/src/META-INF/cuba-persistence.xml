@@ -10,11 +10,9 @@
         <class>com.haulmont.cuba.core.entity.Config</class>
         <class>com.haulmont.cuba.security.entity.User</class>
         <class>com.haulmont.cuba.security.entity.Role</class>
+        <class>com.haulmont.cuba.security.entity.UserRole</class>
         <class>com.haulmont.cuba.security.entity.Group</class>
         <class>com.haulmont.cuba.security.entity.GroupHierarchy</class>
-        <class>com.haulmont.cuba.security.entity.Profile</class>
-        <class>com.haulmont.cuba.security.entity.ProfileRole</class>
-        <class>com.haulmont.cuba.security.entity.Subject</class>
         <class>com.haulmont.cuba.security.entity.Permission</class>
         <class>com.haulmont.cuba.security.entity.Constraint</class>
 

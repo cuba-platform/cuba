@@ -11,23 +11,21 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.Subject;
+import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.core.global.View;
 
 import java.util.UUID;
-import java.util.List;
 import java.util.Set;
 
 public class DeletedCollectionItemTest extends CubaTestCase
 {
     private UUID groupId;
     private UUID userId;
-    private UUID profile1Id;
-    private UUID profile2Id;
-    private UUID subject1Id;
-    private UUID subject2Id;
+    private UUID role2Id;
+    private UUID userRole1Id;
+    private UUID userRole2Id;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -45,47 +43,42 @@ public class DeletedCollectionItemTest extends CubaTestCase
             userId = user.getId();
             user.setName("testUser");
             user.setLogin("testLogin");
+            user.setGroup(group);
             em.persist(user);
 
-            Profile profile1 = new Profile();
-            profile1Id = profile1.getId();
-            profile1.setName("testProfile1");
-            profile1.setGroup(group);
-            em.persist(profile1);
+            Role role1 = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
 
-            Profile profile2 = new Profile();
-            profile2Id = profile2.getId();
-            profile2.setName("testProfile2");
-            profile2.setGroup(group);
-            em.persist(profile2);
+            UserRole userRole1 = new UserRole();
+            userRole1Id = userRole1.getId();
+            userRole1.setUser(user);
+            userRole1.setRole(role1);
+            em.persist(userRole1);
 
-            Subject subject1 = new Subject();
-            subject1Id = subject1.getId();
-            subject1.setUser(user);
-            subject1.setProfile(profile1);
-            em.persist(subject1);
+            Role role2 = new Role();
+            role2Id = role2.getId();
+            role2.setName("role2");
+            em.persist(role2);
 
-            Subject subject2 = new Subject();
-            subject2Id = subject2.getId();
-            subject2.setUser(user);
-            subject2.setProfile(profile2);
-            em.persist(subject2);
-
+            UserRole userRole2 = new UserRole();
+            userRole2Id = userRole2.getId();
+            userRole2.setUser(user);
+            userRole2.setRole(role2);
+            em.persist(userRole2);
+            
             tx.commitRetaining();
 
             em = PersistenceProvider.getEntityManager();
 
-            Profile profile = em.find(Profile.class, profile2Id);
-            em.remove(profile);
+            UserRole ur = em.find(UserRole.class, userRole2Id);
+            em.remove(ur);
 
-            Group g = em.find(Group.class, groupId);
-            em.remove(g);
+            Role r = em.find(Role.class, role2Id);
+            em.remove(r);
 
             tx.commit();
         } finally {
             tx.end();
         }
-
     }
 
     protected void tearDown() throws Exception {
@@ -93,14 +86,15 @@ public class DeletedCollectionItemTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createNativeQuery("delete from SEC_SUBJECT where ID = ? or ID = ?");
-            q.setParameter(1, subject1Id.toString());
-            q.setParameter(2, subject2Id.toString());
+            Query q;
+
+            q = em.createNativeQuery("delete from SEC_USER_ROLE where ID = ? or ID = ?");
+            q.setParameter(1, userRole1Id.toString());
+            q.setParameter(2, userRole2Id.toString());
             q.executeUpdate();
 
-            q = em.createNativeQuery("delete from SEC_PROFILE where ID = ? or ID = ?");
-            q.setParameter(1, profile1Id.toString());
-            q.setParameter(2, profile2Id.toString());
+            q = em.createNativeQuery("delete from SEC_ROLE where ID = ?");
+            q.setParameter(1, role2Id.toString());
             q.executeUpdate();
 
             q = em.createNativeQuery("delete from SEC_USER where ID = ?");
@@ -123,8 +117,8 @@ public class DeletedCollectionItemTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Group group = em.find(Group.class, groupId);
-            assertNull(group);
+            Role role = em.find(Role.class, role2Id);
+            assertNull(role);
 
             tx.commit();
         } finally {
@@ -138,9 +132,9 @@ public class DeletedCollectionItemTest extends CubaTestCase
             EntityManager em = PersistenceProvider.getEntityManager();
             em.setDeleteDeferred(false);
 
-            Group group = em.find(Group.class, groupId);
-            assertNotNull(group);
-            assertTrue(group.isDeleted());
+            Role role = em.find(Role.class, role2Id);
+            assertNotNull(role);
+            assertTrue(role.isDeleted());
 
             tx.commit();
         } finally {
@@ -157,17 +151,18 @@ public class DeletedCollectionItemTest extends CubaTestCase
                     new View(User.class, "testView")
                             .addProperty("name")
                             .addProperty("login")
-                            .addProperty("subjects",
-                                    new View(Subject.class, "testView")
-                                            .addProperty("profile")
-                            )
+                            .addProperty("userRoles",
+                                new View(UserRole.class, "testView")
+                                    .addProperty("role",
+                                        new View(Role.class, "testView")
+                                            .addProperty("name")))
             );
             User user = em.find(User.class, userId);
 
-            Set<Subject> subjects = user.getSubjects();
-            assertEquals(2, subjects.size());
-            for (Subject subject : subjects) {
-                System.out.println(subject.getProfile().getName());
+            Set<UserRole> userRoles = user.getUserRoles();
+            assertEquals(1, userRoles.size());
+            for (UserRole ur : userRoles) {
+                assertNotNull(ur.getRole());
             }
 
             tx.commit();
@@ -186,17 +181,18 @@ public class DeletedCollectionItemTest extends CubaTestCase
                     new View(User.class, "testView")
                             .addProperty("name")
                             .addProperty("login")
-                            .addProperty("subjects",
-                                    new View(Subject.class, "testView")
-                                            .addProperty("profile")
-                            )
+                            .addProperty("userRoles",
+                                new View(UserRole.class, "testView")
+                                    .addProperty("role",
+                                        new View(Role.class, "testView")
+                                            .addProperty("name")))
             );
             User user = em.find(User.class, userId);
 
-            Set<Subject> subjects = user.getSubjects();
-            assertEquals(2, subjects.size());
-            for (Subject subject : subjects) {
-                System.out.println(subject.getProfile().getName());
+            Set<UserRole> userRoles = user.getUserRoles();
+            assertEquals(2, userRoles.size());
+            for (UserRole ur : userRoles) {
+                assertNotNull(ur.getRole());
             }
 
             tx.commit();
@@ -214,10 +210,10 @@ public class DeletedCollectionItemTest extends CubaTestCase
             q.setParameter(1, userId);
             User user = (User) q.getSingleResult();
 
-            Set<Subject> subjects = user.getSubjects();
-            assertEquals(2, subjects.size());
-            for (Subject subject : subjects) {
-                System.out.println(subject.getProfile().getName());
+            Set<UserRole> userRoles = user.getUserRoles();
+            assertEquals(1, userRoles.size());
+            for (UserRole ur : userRoles) {
+                assertNotNull(ur.getRole());
             }
 
             tx.commit();
@@ -231,14 +227,14 @@ public class DeletedCollectionItemTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createQuery("select u from sec$User u join fetch u.subjects where u.id = ?1");
+            Query q = em.createQuery("select u from sec$User u join fetch u.userRoles where u.id = ?1");
             q.setParameter(1, userId);
             User user = (User) q.getSingleResult();
 
-            Set<Subject> subjects = user.getSubjects();
-            assertEquals(2, subjects.size());
-            for (Subject subject : subjects) {
-                System.out.println(subject.getProfile().getName());
+            Set<UserRole> userRoles = user.getUserRoles();
+            assertEquals(1, userRoles.size());
+            for (UserRole ur : userRoles) {
+                assertNotNull(ur.getRole());
             }
 
             tx.commit();
@@ -247,26 +243,26 @@ public class DeletedCollectionItemTest extends CubaTestCase
         }
     }
 
-    public void testManyToOne() {
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-
-            em.setView(
-                    new View(Profile.class, "testView")
-                            .addProperty("name")
-                            .addProperty("group",
-                                    new View(Group.class, "testView")
-                                        .addProperty("name")
-                            )
-            );
-            Profile profile = em.find(Profile.class, profile1Id);
-            assertNotNull(profile.getGroup());
-            assertTrue(profile.getGroup().isDeleted());
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-    }
+//    public void testManyToOne() {
+//        Transaction tx = Locator.createTransaction();
+//        try {
+//            EntityManager em = PersistenceProvider.getEntityManager();
+//
+//            em.setView(
+//                    new View(Profile.class, "testView")
+//                            .addProperty("name")
+//                            .addProperty("group",
+//                                    new View(Group.class, "testView")
+//                                        .addProperty("name")
+//                            )
+//            );
+//            Profile profile = em.find(Profile.class, profile1Id);
+//            assertNotNull(profile.getGroup());
+//            assertTrue(profile.getGroup().isDeleted());
+//
+//            tx.commit();
+//        } finally {
+//            tx.end();
+//        }
+//    }
 }

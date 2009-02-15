@@ -25,6 +25,8 @@ import java.util.Set;
 
 public abstract class PersistenceProvider
 {
+    public static final int LOGIN_FIELD_LEN = 20;
+
     private static PersistenceProvider instance;
 
     public static final String PERSISTENCE_XML = "cuba.PersistenceXml";

@@ -28,7 +28,7 @@ public class BaseLongIdEntity implements BaseEntity<Long>
     private Date createTs;
 
     @Column(name = "CREATED_BY")
-    private UUID createdBy;
+    private String createdBy;
 
     public Long getId() {
         return id;
@@ -54,11 +54,11 @@ public class BaseLongIdEntity implements BaseEntity<Long>
         this.createTs = createTs;
     }
 
-    public UUID getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(UUID createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 }

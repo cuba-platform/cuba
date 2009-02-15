@@ -1,0 +1,43 @@
+<window class="com.haulmont.cuba.web.app.ui.security.group.browse.GroupBrowser">
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/browse/group-browse.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource
+            id="groups"
+            class="com.haulmont.cuba.security.entity.Group"
+            view="group-browse">
+            <query>
+                <![CDATA[select g from sec$Group g]]>
+            </query>
+        </collectionDatasource>
+
+        <collectionDatasource
+            id="users"
+            class="com.haulmont.cuba.security.entity.User"
+            view="group-browse">
+            <query>select u from sec$User u where u.group.id = :ds$groups</query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <hbox id="tree-panel" expand="table">
+            <split orientation="horizontal">
+                <vbox>
+                    <tree id="groups">
+                        <treechildren datasource="groups" property="name" parent="parent"/>
+                    </tree>
+                </vbox>
+                <table id="users">
+                    <columns>
+                        <column id="name" caption="Name"/>
+                        <column id="login" caption="Login"/>
+                        <column id="activeDirectoryUser" caption="ActiveDirectory User"/>
+                    </columns>
+                    <rows datasource="users"/>
+                </table>
+            </split>
+        </hbox>
+    </layout>
+</window>

@@ -2,7 +2,7 @@
     resourceBundle="com.haulmont.cuba.web.app.ui.security.user.edit.security-user-edit"
     datasource="user"
     caption="Edit User '${parameter$item.name}'"
-    class="com.haulmont.cuba.web.app.ui.security.user.edit.SecurityUserEditor"
+    class="com.haulmont.cuba.web.app.ui.security.user.edit.UserEditor"
 >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.views.xml"/>

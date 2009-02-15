@@ -34,9 +34,8 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable
     @Column(name = "UPDATE_TS")
     private Date updateTs;
 
-    @Persistent
-    @Column(name = "UPDATED_BY")
-    private UUID updatedBy;
+    @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    private String updatedBy;
 
     @Column(name = "NAME")
     private String name;
@@ -60,11 +59,11 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable
         this.updateTs = updateTs;
     }
 
-    public UUID getUpdatedBy() {
+    public String getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(UUID updatedBy) {
+    public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 

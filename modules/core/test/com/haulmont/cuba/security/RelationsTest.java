@@ -17,22 +17,6 @@ import java.util.UUID;
 
 public class RelationsTest extends CubaTestCase
 {
-    public void testProfile() {
-        UUID profileId = createProfile();
-
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-
-            Profile profile = em.find(Profile.class, profileId);
-            em.remove(profile);
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-    }
-
     public void testRole() {
         UUID roleId = createRole();
 
@@ -49,53 +33,21 @@ public class RelationsTest extends CubaTestCase
         }
     }
 
-    public UUID createProfile() {
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-
-            User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
-            Role role = em.find(Role.class, UUID.fromString("0c018061-b26f-4de2-a5be-dff348347f93"));
-            Group group = em.find(Group.class, UUID.fromString("0fa2b1a5-1d68-4d69-9fbd-dff348347f93"));
-
-            Profile profile = new Profile();
-            profile.setGroup(group);
-            profile.setName("RelationTest");
-            em.persist(profile);
-
-            ProfileRole profileRole = new ProfileRole();
-            profileRole.setProfile(profile);
-            profileRole.setRole(role);
-            em.persist(profileRole);
-
-            Subject subject = new Subject();
-            subject.setUser(user);
-            subject.setProfile(profile);
-            em.persist(subject);
-
-            tx.commit();
-
-            return profile.getId();
-        } finally {
-            tx.end();
-        }
-    }
-
     public UUID createRole() {
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Profile profile = em.find(Profile.class, UUID.fromString("bf83541f-f610-46f4-a268-dff348347f93"));
+            User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
             Role role = new Role();
             role.setName("RelationTest");
             em.persist(role);
 
-            ProfileRole profileRole = new ProfileRole();
-            profileRole.setProfile(profile);
-            profileRole.setRole(role);
-            em.persist(profileRole);
+            UserRole userRole = new UserRole();
+            userRole.setUser(user);
+            userRole.setRole(role);
+            em.persist(userRole);
 
             tx.commit();
 

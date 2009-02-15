@@ -45,7 +45,7 @@ public class Connection
     }
 
     public void login(String login, String password, String profileName) throws LoginException {
-        session = getLoginService().login(login, password, profileName, App.getInstance().getLocale());
+        session = getLoginService().login(login, password, App.getInstance().getLocale());
         connected = true;
         this.login = login;
         this.password = password;
@@ -58,7 +58,7 @@ public class Connection
     }
 
     public void loginActiveDirectory(String activeDirectoryUser, String profileName) throws LoginException {
-        session = getLoginService().loginActiveDirectory(activeDirectoryUser, profileName, App.getInstance().getLocale());
+        session = getLoginService().loginActiveDirectory(activeDirectoryUser, App.getInstance().getLocale());
         connected = true;
         this.login = activeDirectoryUser;
         this.password = null;

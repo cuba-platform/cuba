@@ -16,27 +16,28 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 
-@Entity(name = "sec$ProfileRole")
-@Table(name = "SEC_PROFILE_ROLE")
-public class ProfileRole extends StandardEntity
+@Entity(name = "sec$UserRole")
+@Table(name = "SEC_USER_ROLE")
+public class UserRole extends StandardEntity
 {
-    private static final long serialVersionUID = 6151402331592361210L;
+    private static final long serialVersionUID = 8543853035155300992L;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "PROFILE_ID")
-    private Profile profile;
+    @JoinColumn(name = "USER_ID")
+    @OnDeleteInverse(DeletePolicy.CASCADE)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ROLE_ID")
     @OnDeleteInverse(DeletePolicy.CASCADE)
     private Role role;
 
-    public Profile getProfile() {
-        return profile;
+    public User getUser() {
+        return user;
     }
 
-    public void setProfile(Profile profile) {
-        this.profile = profile;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Role getRole() {

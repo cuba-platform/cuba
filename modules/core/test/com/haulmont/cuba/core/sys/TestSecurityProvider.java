@@ -12,8 +12,6 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.Subject;
-import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -29,17 +27,8 @@ public class TestSecurityProvider extends SecurityProvider
         user.setName("Test Administrator");
         user.setPassword(DigestUtils.md5Hex("test_admin"));
 
-        Profile profile = new Profile();
-        profile.setId(UUID.fromString("bf83541f-f610-46f4-a268-dff348347f93"));
-        profile.setName("Default");
-
-        Subject subject = new Subject();
-        subject.setId(UUID.fromString("05d9d689-da68-4622-8952-f94dfb36ca07"));
-        subject.setUser(user);
-        subject.setProfile(profile);
-        
-        UserSession session = new UserSession(user, subject, new String[]{"Administrators"}, Locale.getDefault());
-        session.addConstraint("sec$Group", "a.createdBy = :currentSubjectId");
+        UserSession session = new UserSession(user, new String[]{"Administrators"}, Locale.getDefault());
+        session.addConstraint("sec$Group", "a.createdBy = :currentUserLogin");
 
         return session;
     }

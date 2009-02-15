@@ -15,8 +15,8 @@ import com.haulmont.cuba.security.entity.User;
 
 import java.util.Collection;
 
-public class SecurityUserEditor extends AbstractEditor {
-    public SecurityUserEditor(Window frame) {
+public class UserEditor extends AbstractEditor {
+    public UserEditor(Window frame) {
         super(frame);
     }
 
@@ -32,7 +32,7 @@ public class SecurityUserEditor extends AbstractEditor {
             }
 
             public void actionPerform(Component component) {
-                openLookup("/com/haulmont/cuba/web/app/ui/security/user/browse/security-user-browse.xml", new Lookup.Handler() {
+                openLookup("/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.xml", new Lookup.Handler() {
                     public void handleLookup(Collection items) {
                         if (items.size() == 1) {
                             final User item = (User) items.iterator().next();

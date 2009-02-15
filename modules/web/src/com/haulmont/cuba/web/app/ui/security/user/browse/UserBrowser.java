@@ -13,12 +13,11 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.components.ComponentsHelper;
-import com.haulmont.cuba.web.ui.GenericEditorWindow;
 
 import java.util.Set;
 
-public class SecurityUserBrowser extends AbstractLookup {
-    public SecurityUserBrowser(Window frame) {
+public class UserBrowser extends AbstractLookup {
+    public UserBrowser(Window frame) {
         super(frame);
     }
 
@@ -40,8 +39,7 @@ public class SecurityUserBrowser extends AbstractLookup {
                 if (selected.size() == 1) {
                     User user = (User) selected.iterator().next();
 //                    openEditor(GenericEditorWindow.class, user, WindowManager.OpenType.THIS_TAB);
-                    openEditor("/com/haulmont/cuba/web/app/ui/security/user/edit/security-user-edit.xml",
-                            user, WindowManager.OpenType.THIS_TAB);
+                    openEditor("sec$User.edit", user, WindowManager.OpenType.THIS_TAB);
                 }
             }
         });

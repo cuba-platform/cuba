@@ -1,0 +1,7 @@
+<views>
+    <view entity="sec$User" name="user-browse">
+        <property name="name"/>
+        <property name="login"/>
+        <property name="activeDirectoryUser"/>
+    </view>
+</views>

@@ -11,7 +11,6 @@
 package com.haulmont.cuba.core.entity;
 
 import java.util.Date;
-import java.util.UUID;
 
 public interface DeleteDeferred extends Updatable
 {
@@ -21,7 +20,7 @@ public interface DeleteDeferred extends Updatable
 
     void setDeleteTs(Date deleteTs);
 
-    UUID getDeletedBy();
+    String getDeletedBy();
 
-    void setDeletedBy(UUID deletedBy);
+    void setDeletedBy(String deletedBy);
 }

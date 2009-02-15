@@ -81,10 +81,7 @@ public abstract class SecurityProvider
     }
 
     protected void setQueryParam(Query query, String paramName) {
-        if ("currentSubjectId".equals(paramName)) {
-            query.setParameter("currentSubjectId", __currentUserSession().getSubjectId());
-        }
-        else if ("currentUserLogin".equals(paramName)) {
+        if ("currentUserLogin".equals(paramName)) {
             query.setParameter("currentUserLogin", __currentUserSession().getLogin());
         }
         else if ("currentUserId".equals(paramName)) {

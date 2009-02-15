@@ -30,9 +30,8 @@ public class BaseUuidEntity implements BaseEntity<UUID>
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Persistent
-    @Column(name = "CREATED_BY")
-    protected UUID createdBy;
+    @Column(name = "CREATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    protected String createdBy;
 
     public BaseUuidEntity() {
         id = UuidProvider.createUuid();
@@ -58,11 +57,11 @@ public class BaseUuidEntity implements BaseEntity<UUID>
         this.createTs = createTs;
     }
 
-    public UUID getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(UUID createdBy) {
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 

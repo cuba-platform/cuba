@@ -21,7 +21,7 @@ public interface BaseEntity<T> extends Entity<T>
 
     void setCreateTs(Date date);
 
-    UUID getCreatedBy();
+    String getCreatedBy();
 
-    void setCreatedBy(UUID createdBy);
+    void setCreatedBy(String createdBy);
 }

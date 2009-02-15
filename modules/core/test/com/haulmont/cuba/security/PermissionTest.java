@@ -30,7 +30,7 @@ public class PermissionTest extends CubaTestCase
     private static final String PERM_TARGET_ATTR = "core$Server:address";
 
     private UUID role1Id, permission1Id, role2Id, permission2Id, userId, groupId,
-            profileId, profileRole1Id, profileRole2Id, subjectId;
+            userRole1Id, userRole2Id;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -67,41 +67,30 @@ public class PermissionTest extends CubaTestCase
             permission2.setValue(1);
             em.persist(permission2);
 
-            User user = new User();
-            userId = user.getId();
-            user.setName(USER_NAME);
-            user.setLogin(USER_NAME);
-            user.setPassword(USER_PASSW);
-            em.persist(user);
-
             Group group = new Group();
             groupId = group.getId();
             group.setName("testGroup");
             em.persist(group);
 
-            Profile profile = new Profile();
-            profileId = profile.getId();
-            profile.setName(PROFILE_NAME);
-            profile.setGroup(group);
-            em.persist(profile);
+            User user = new User();
+            userId = user.getId();
+            user.setName(USER_NAME);
+            user.setLogin(USER_NAME);
+            user.setPassword(USER_PASSW);
+            user.setGroup(group);
+            em.persist(user);
 
-            ProfileRole profileRole1 = new ProfileRole();
-            profileRole1Id = profileRole1.getId();
-            profileRole1.setProfile(profile);
-            profileRole1.setRole(role1);
-            em.persist(profileRole1);
+            UserRole userRole1 = new UserRole();
+            userRole1Id = userRole1.getId();
+            userRole1.setUser(user);
+            userRole1.setRole(role1);
+            em.persist(userRole1);
 
-            ProfileRole profileRole2 = new ProfileRole();
-            profileRole2Id = profileRole2.getId();
-            profileRole2.setProfile(profile);
-            profileRole2.setRole(role2);
-            em.persist(profileRole2);
-
-            Subject subject = new Subject();
-            subjectId = subject.getId();
-            subject.setUser(user);
-            subject.setProfile(profile);
-            em.persist(subject);
+            UserRole userRole2 = new UserRole();
+            userRole2Id = userRole2.getId();
+            userRole2.setUser(user);
+            userRole2.setRole(role2);
+            em.persist(userRole2);
 
             tx.commit();
         } finally {
@@ -114,17 +103,11 @@ public class PermissionTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createNativeQuery("delete from SEC_SUBJECT where ID = ?");
-            q.setParameter(1, subjectId.toString());
-            q.executeUpdate();
+            Query q;
 
-            q = em.createNativeQuery("delete from SEC_PROFILE_ROLE where ID = ? or ID = ?");
-            q.setParameter(1, profileRole1Id.toString());
-            q.setParameter(2, profileRole2Id.toString());
-            q.executeUpdate();
-
-            q = em.createNativeQuery("delete from SEC_PROFILE where ID = ?");
-            q.setParameter(1, profileId.toString());
+            q = em.createNativeQuery("delete from SEC_USER_ROLE where ID = ? or ID = ?");
+            q.setParameter(1, userRole1Id.toString());
+            q.setParameter(2, userRole2Id.toString());
             q.executeUpdate();
 
             q = em.createNativeQuery("delete from SEC_USER where ID = ?");
@@ -155,7 +138,7 @@ public class PermissionTest extends CubaTestCase
     public void test() throws LoginException {
         LoginWorker lw = Locator.lookupLocal(LoginWorker.JNDI_NAME);
 
-        UserSession userSession = lw.login(USER_NAME, USER_PASSW, PROFILE_NAME, Locale.getDefault());
+        UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
         boolean permitted = userSession.isPermitted(PermissionType.SCREEN, PERM_TARGET_SCREEN);

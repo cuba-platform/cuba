@@ -29,20 +29,6 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
         return Locator.lookupLocal(LoginWorker.JNDI_NAME);
     }
 
-    public UserSession login(String login, String password, String profileName, Locale locale) throws LoginException {
-        try {
-            return getLoginWorker().login(login, password, profileName, locale);
-        } catch (Exception e) {
-            log.error("Login error", e);
-            if (e instanceof LoginException)
-                throw ((LoginException) e);
-            else if (e instanceof RuntimeException)
-                throw ((RuntimeException) e);
-            else
-                throw new RuntimeException(e);
-        }
-    }
-
     public UserSession login(String activeDirectoryUser, String profileName, Locale locale) throws LoginException {
         try {
             return getLoginWorker().login(activeDirectoryUser, profileName, locale);
@@ -60,20 +46,6 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
     public UserSession loginActiveDirectory(String activeDirectoryUser, Locale locale) throws LoginException {
         try {
             return getLoginWorker().loginActiveDirectory(activeDirectoryUser, locale);
-        } catch (Exception e) {
-            log.error("Login error", e);
-            if (e instanceof LoginException)
-                throw ((LoginException) e);
-            else if (e instanceof RuntimeException)
-                throw ((RuntimeException) e);
-            else
-                throw new RuntimeException(e);
-        }
-    }
-
-    public UserSession loginActiveDirectory(String activeDirectoryUser, String profileName, Locale locale) throws LoginException {
-        try {
-            return getLoginWorker().loginActiveDirectory(activeDirectoryUser, profileName, locale);
         } catch (Exception e) {
             log.error("Login error", e);
             if (e instanceof LoginException)

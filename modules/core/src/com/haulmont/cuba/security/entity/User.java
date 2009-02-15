@@ -11,6 +11,8 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -33,8 +35,13 @@ public class User extends StandardEntity
     @Column(name = "AD_USER", length = 100)
     private String activeDirectoryUser;
 
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "GROUP_ID")
+    @OnDeleteInverse(DeletePolicy.DENY)
+    private Group group;
+
     @OneToMany(mappedBy = "user")
-    private Set<Subject> subjects;
+    private Set<UserRole> userRoles;
 
     public String getLogin() {
         return login;
@@ -68,15 +75,23 @@ public class User extends StandardEntity
         this.activeDirectoryUser = activeDirectoryUser;
     }
 
-    public Set<Subject> getSubjects() {
-        return subjects;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setSubjects(Set<Subject> subjects) {
-        this.subjects = subjects;
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Set<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
     public String toString() {
-        return name;
+        return login;
     }
 }

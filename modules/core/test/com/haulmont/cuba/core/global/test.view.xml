@@ -3,14 +3,14 @@
     <view entity="sec$User" name="test">
         <property name="name"/>
         <property name="login"/>
-        <property name="subjects" view="test"/>
+        <property name="userRoles" view="test"/>
     </view>
 
-    <view entity="sec$Subject" name="test">
-        <property name="profile" view="test"/>
+    <view entity="sec$UserRole" name="test">
+        <property name="role" view="test"/>
     </view>
 
-    <view entity="sec$Profile" name="test">
+    <view entity="sec$Role" name="test">
         <property name="name"/>
     </view>
 

@@ -16,9 +16,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
 import javax.persistence.Version;
 import java.util.Date;
-import java.util.UUID;
-
-import org.apache.openjpa.persistence.Persistent;
 
 @MappedSuperclass
 public class StandardEntity
@@ -32,16 +29,14 @@ public class StandardEntity
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
 
-    @Persistent
-    @Column(name = "UPDATED_BY")
-    protected UUID updatedBy;
+    @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    protected String updatedBy;
 
     @Column(name = "DELETE_TS")
     protected Date deleteTs;
 
-    @Persistent
-    @Column(name = "DELETED_BY")
-    protected UUID deletedBy;
+    @Column(name = "DELETED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    protected String deletedBy;
 
     public Integer getVersion() {
         return version;
@@ -59,11 +54,11 @@ public class StandardEntity
         this.updateTs = updateTs;
     }
 
-    public UUID getUpdatedBy() {
+    public String getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(UUID updatedBy) {
+    public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -79,11 +74,11 @@ public class StandardEntity
         this.deleteTs = deleteTs;
     }
 
-    public UUID getDeletedBy() {
+    public String getDeletedBy() {
         return deletedBy;
     }
 
-    public void setDeletedBy(UUID deletedBy) {
+    public void setDeletedBy(String deletedBy) {
         this.deletedBy = deletedBy;
     }
 }

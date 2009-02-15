@@ -13,9 +13,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
-import com.haulmont.cuba.security.entity.Profile;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.Subject;
 import com.haulmont.cuba.security.resource.Messages;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import com.haulmont.cuba.core.PersistenceProvider;
@@ -40,9 +38,8 @@ public class LoginWorkerBean implements LoginWorker
     {
         EntityManager em = PersistenceProvider.getEntityManager();
         Query q = em.createQuery(
-                "select u " +
-                " from sec$User u join fetch u.subjects" +
-                " where u.login = ?1 and u.password = ?2");
+                "select u from sec$User u " +
+                "where u.login = ?1 and u.password = ?2");
         q.setParameter(1, login);
         q.setParameter(2, password);
         List list = q.getResultList();
@@ -62,9 +59,8 @@ public class LoginWorkerBean implements LoginWorker
     {
         EntityManager em = PersistenceProvider.getEntityManager();
         Query q = em.createQuery(
-                "select u " +
-                " from sec$User u join fetch u.subjects" +
-                " where u.activeDirectoryUser = ?1");
+                "select u from sec$User u " +
+                "where u.activeDirectoryUser = ?1");
         q.setParameter(1, activeDirectoryUser);
         List list = q.getResultList();
         if (list.isEmpty()) {
@@ -78,53 +74,20 @@ public class LoginWorkerBean implements LoginWorker
         }
     }
 
-    public UserSession login(String login, String password, Locale locale) throws LoginException {
-        return login(login, password, null, locale);
-    }
-
-    public UserSession login(String login, String password, String profileName, Locale locale)
+    public UserSession login(String login, String password, Locale locale)
             throws LoginException
     {
         User user = loadUser(login, password, locale);
-        UserSession session = findProfile(user, profileName, locale);
+        UserSession session = UserSessionManager.getInstance().createSession(user, locale);
         log.info("Logged in: " + session);
         return session;
     }
 
     public UserSession loginActiveDirectory(String activeDirectoryUser, Locale locale) throws LoginException {
-        return loginActiveDirectory(activeDirectoryUser, null, locale);
-    }
-
-    public UserSession loginActiveDirectory(String activeDirectoryUser, String profileName, Locale locale) throws LoginException {
         User user = loadUser(activeDirectoryUser, locale);
-        UserSession session = findProfile(user, profileName, locale);
+        UserSession session = UserSessionManager.getInstance().createSession(user, locale);
         log.info("Logged in: " + session);
         return session;
-    }
-
-    private UserSession findProfile(User user, String profileName, Locale locale) throws LoginException {
-        Subject subject = null;
-        if (profileName == null) {
-            for (Subject s : user.getSubjects()) {
-                subject = s;
-                if (subject.isDefaultSubject())
-                    break;
-            }
-            if (subject == null)
-               throw new LoginException(Messages.getString("LoginException.NoProfile", locale));
-        }
-        else {
-            for (Subject s : user.getSubjects()) {
-                if (profileName.equals(s.getProfile().getName())) {
-                    subject = s;
-                    break;
-                }
-            }
-            if (subject == null)
-               throw new LoginException(Messages.getString("LoginException.InvalidProfile", locale), profileName);
-        }
-
-        return UserSessionManager.getInstance().createSession(user, subject, locale);
     }
 
     public void logout() {

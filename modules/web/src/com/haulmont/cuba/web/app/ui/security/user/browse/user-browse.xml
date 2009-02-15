@@ -1,0 +1,39 @@
+<window
+    class="com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser"
+    lookupComponent="users"
+>
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource
+            id="users"
+            class="com.haulmont.cuba.security.entity.User"
+            view="user-browse"
+        >
+            <query>
+                <![CDATA[select u from sec$User u where <#if component$filter.name?has_content>u.name like :component$filter.name<#else>1=1</#if>]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox expand="table-panel">
+            <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
+            <vbox id="table-panel" expand="users">
+                <hbox>
+                    <button action="users.edit"/>
+                </hbox>
+                <table id="users" editable="false">
+                    <columns>
+                        <column id="name" caption="Name"/>
+                        <column id="login" caption="Login"/>
+                        <column id="activeDirectoryUser" caption="ActiveDirectory User"/>
+                    </columns>
+                    <rows datasource="users"/>
+                </table>
+            </vbox>
+        </vbox>
+    </layout>
+</window>

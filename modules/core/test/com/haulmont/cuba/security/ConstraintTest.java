@@ -26,11 +26,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class ConstraintTest extends CubaTestCase
 {
-    private static final String ADMIN_NAME = "admin";
-    private static final String ADMIN_PASSW = DigestUtils.md5Hex("admin");
-    private static final String PROFILE_NAME = "testProfile";
+    private static final String USER_LOGIN = "testUser";
+    private static final String USER_PASSW = DigestUtils.md5Hex("testUser");
 
-    private UUID constraintId, parentConstraintId, groupId, parentGroupId, profileId, subjectId;
+    private UUID constraintId, parentConstraintId, groupId, parentGroupId, userId;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -38,8 +37,6 @@ public class ConstraintTest extends CubaTestCase
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-
-            User user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
             Group parentGroup = new Group();
             parentGroupId = parentGroup.getId();
@@ -69,17 +66,12 @@ public class ConstraintTest extends CubaTestCase
             constraint.setGroup(group);
             em.persist(constraint);
 
-            Profile profile = new Profile();
-            profileId = profile.getId();
-            profile.setName(PROFILE_NAME);
-            profile.setGroup(group);
-            em.persist(profile);
-
-            Subject subject = new Subject();
-            subjectId = subject.getId();
-            subject.setUser(user);
-            subject.setProfile(profile);
-            em.persist(subject);
+            User user = new User();
+            userId = user.getId();
+            user.setLogin(USER_LOGIN);
+            user.setPassword(USER_PASSW);
+            user.setGroup(group);
+            em.persist(user);
 
             tx.commit();
         } finally {
@@ -92,12 +84,10 @@ public class ConstraintTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createNativeQuery("delete from SEC_SUBJECT where ID = ?");
-            q.setParameter(1, subjectId.toString());
-            q.executeUpdate();
+            Query q;
 
-            q = em.createNativeQuery("delete from SEC_PROFILE where ID = ?");
-            q.setParameter(1, profileId.toString());
+            q = em.createNativeQuery("delete from SEC_USER where ID = ?");
+            q.setParameter(1, userId.toString());
             q.executeUpdate();
 
             q = em.createNativeQuery("delete from SEC_CONSTRAINT where ID = ? or ID = ?");
@@ -131,18 +121,18 @@ public class ConstraintTest extends CubaTestCase
     public void test() throws LoginException {
         LoginWorker lw = Locator.lookupLocal(LoginWorker.JNDI_NAME);
 
-        UserSession userSession = lw.login(ADMIN_NAME, ADMIN_PASSW, PROFILE_NAME, Locale.getDefault());
+        UserSession userSession = lw.login(USER_LOGIN, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
         List<String> constraints = userSession.getConstraints("core$Server");
         assertEquals(2, constraints.size());
 
-        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
-
-        DataService.CollectionLoadContext ctx = new DataService.CollectionLoadContext(Group.class);
-        ctx.setQueryString("select g from sec$Group g where g.createTs <= :createTs").addParameter("createTs", new Date());
-
-        List<Group> list = bs.loadList(ctx);
-        assertTrue(list.size() > 0);
+//        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
+//
+//        DataService.CollectionLoadContext ctx = new DataService.CollectionLoadContext(Group.class);
+//        ctx.setQueryString("select g from sec$Group g where g.createTs <= :createTs").addParameter("createTs", new Date());
+//
+//        List<Group> list = bs.loadList(ctx);
+//        assertTrue(list.size() > 0);
     }
 }

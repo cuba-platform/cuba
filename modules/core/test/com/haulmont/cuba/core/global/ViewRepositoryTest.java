@@ -32,15 +32,15 @@ public class ViewRepositoryTest extends CubaTestCase
         assertNotNull(view);
         assertNotNull(view.getProperty("name"));
         assertNotNull(view.getProperty("login"));
-        assertNotNull(view.getProperty("subjects"));
+        assertNotNull(view.getProperty("userRoles"));
 
-        View subjectView = view.getProperty("subjects").getView();
-        assertNotNull(subjectView);
-        assertNotNull(subjectView.getProperty("profile"));
+        View userRolesView = view.getProperty("userRoles").getView();
+        assertNotNull(userRolesView);
+        assertNotNull(userRolesView.getProperty("role"));
 
-        View profileView = subjectView.getProperty("profile").getView();
-        assertNotNull(profileView);
-        assertNotNull(profileView.getProperty("name"));
+        View roleView = userRolesView.getProperty("role").getView();
+        assertNotNull(roleView);
+        assertNotNull(roleView.getProperty("name"));
 
     }
 

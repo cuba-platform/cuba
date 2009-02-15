@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.security.global.LoginServiceRemote;
-
 import javax.ejb.Local;
 
 @Local

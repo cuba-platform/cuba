@@ -20,8 +20,6 @@ public interface LoginServiceRemote
     
     UserSession login(String login, String password, Locale locale) throws LoginException;
 
-    UserSession login(String login, String password, String profileName, Locale locale) throws LoginException;
-
     void logout();
 
     void ping();

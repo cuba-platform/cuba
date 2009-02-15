@@ -24,8 +24,6 @@ import java.util.Locale;
 import java.util.List;
 import java.util.Collections;
 
-import org.dom4j.Element;
-
 public class AppWindow extends Window
 {
     private Connection connection;
@@ -64,33 +62,12 @@ public class AppWindow extends Window
         titleLayout.setSpacing(true);
         titleLayout.setHeight(-1);
 
-//        Button navBtn = new Button(Messages.getString("navBtn"),
-//                new Button.ClickListener() {
-//                    public void buttonClick(Button.ClickEvent event) {
-//                        Navigator navigator = new Navigator(AppWindow.this);
-//                        addWindow(navigator);
-//                    }
-//                }
-//        );
-//        navBtn.setStyleName(Button.STYLE_LINK);
-//        titleLayout.addComponent(navBtn);
+        Label logoLabel = new Label(Messages.getString("logoLabel"));
+        titleLayout.addComponent(logoLabel);
 
-        Label label = new Label(String.format(Messages.getString("loggedInLabel"),
-                connection.getSession().getName(), connection.getSession().getProfile()));
-        titleLayout.addComponent(label);
-
-        Button profileBtn = new Button(Messages.getString("profileBtn"),
-                new Button.ClickListener()
-                {
-                    public void buttonClick(Button.ClickEvent event) {
-                        ChangeProfileWindow window = new ChangeProfileWindow();
-                        window.center();
-                        addWindow(window);
-                    }
-                }
-        );
-        profileBtn.setStyleName(Button.STYLE_LINK);
-        titleLayout.addComponent(profileBtn);
+        Label loggedInLabel = new Label(String.format(Messages.getString("loggedInLabel"),
+                connection.getSession().getName()));
+        titleLayout.addComponent(loggedInLabel);
 
         Button logoutBtn = new Button(Messages.getString("logoutBtn"),
                 new Button.ClickListener() {
@@ -115,7 +92,7 @@ public class AppWindow extends Window
         viewLogBtn.setStyleName(Button.STYLE_LINK);
         titleLayout.addComponent(viewLogBtn);
 
-//        titleLayout.expand(navBtn);
+        titleLayout.expand(logoLabel);
 
         rootLayout.addComponent(titleLayout);
 

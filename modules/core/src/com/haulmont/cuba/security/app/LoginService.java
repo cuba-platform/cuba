@@ -13,16 +13,12 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.Profile;
 
 import javax.ejb.Local;
-import java.util.List;
 import java.util.Locale;
 
 @Local
 public interface LoginService extends LoginServiceRemote
 {
     UserSession loginActiveDirectory(String activeDirectoryUser, Locale locale) throws LoginException;
-
-    UserSession loginActiveDirectory(String activeDirectoryUser, String profileName, Locale locale) throws LoginException;
 }

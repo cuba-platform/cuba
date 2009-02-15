@@ -1,0 +1,33 @@
+<window
+        class="com.haulmont.cuba.web.app.ui.security.role.browse.RoleBrowser">
+
+    <metadataContext>
+        <view entity="sec$Role" name="role-browse">
+            <property name="name"/>
+        </view>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource
+                id="roles" class="com.haulmont.cuba.security.entity.Role" view="role-browse">
+            <query>
+                select r from sec$Role r
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox id="table-panel" expand="roles">
+            <hbox>
+                <button action="roles.edit"/>
+                <button action="roles.refresh"/>
+            </hbox>
+            <table id="roles" editable="false">
+                <columns>
+                    <column id="name" caption="Name"/>
+                </columns>
+                <rows datasource="roles"/>
+            </table>
+        </vbox>
+    </layout>
+</window>
