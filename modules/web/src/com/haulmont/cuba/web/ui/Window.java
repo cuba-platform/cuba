@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.ui;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.gui.components.Component;
@@ -249,8 +250,35 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         }
 
         public void setItem(Object item) {
-            this.item = item;
+            final Datasource ds = getDatasource();
+            if (ds == null) throw new IllegalStateException("Can't find main datasource");
 
+            Entity entity = getEntity(item, ds);
+
+            this.item = item;
+            ds.setItem(entity);
+        }
+
+        protected Entity getEntity(Object item, Datasource ds) {
+            Entity entity;
+            if (item instanceof Datasource) {
+                final Datasource itemDs = (Datasource) item;
+                entity = itemDs.getItem();
+
+                if (!PersistenceHelper.isNew(entity)) {
+                    // TODO (abramov) refactor this trick
+                    if (Datasource.CommitMode.DATASTORE.equals(itemDs.getCommitMode())) {
+                        final DataService dataservice = ds.getDataService();
+                        entity = dataservice.reload(entity, ds.getView());
+                    }
+                }
+            } else {
+                entity = (Entity) item;
+            }
+            return entity;
+        }
+
+        protected Datasource getDatasource() {
             final Element element = getXmlDescriptor();
 
             final String datasourceName = element.attributeValue("datasource");
@@ -258,12 +286,12 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
                 final DsContext context = getDsContext();
                 if (context != null) {
                     final Datasource ds = context.get(datasourceName);
-                    if (ds != null) {
-                        ds.setItem((Entity) item);
-                    } else {
-                        throw new IllegalStateException();
-                    }
+                    return ds;
+                } else {
+                    return null;
                 }
+            } else {
+                return null;
             }
         }
 
@@ -287,12 +315,18 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
         public void commit() {
             form.commit();
-            if (item instanceof Datasource) {
-                final Datasource ds = (Datasource) item;
-                ds.commit();
+
+            final DsContext context = getDsContext();
+            if (context != null) {
+                context.commit();
             } else {
-                DataService service = getDsContext().getDataService();
-                service.commit((Entity) item);
+                if (item instanceof Datasource) {
+                    final Datasource ds = (Datasource) item;
+                    ds.commit();
+                } else {
+                    DataService service = getDsContext().getDataService();
+                    service.commit((Entity) item);
+                }
             }
             close();
         }

@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.Map;
 
@@ -65,7 +66,15 @@ public class DatasourceImpl<T extends Entity>
     }
 
     public void commit() {
-        throw new UnsupportedOperationException();
+        if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
+            final DataService service = getDataService();
+            item = service.commit(item);
+
+            clearCommitLists();
+            modified = false;
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public MetaClass getMetaClass() {

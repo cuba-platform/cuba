@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.DataService;
 
 import java.util.Collections;
@@ -31,6 +32,14 @@ public class GenericDataService implements DataService {
         } else {
             this.service = Locator.lookupLocal(DataServiceRemote.JNDI_NAME);
         }
+    }
+
+    public <A extends Entity> A reload(A entity, View view) {
+        final LoadContext context = new LoadContext(entity.getClass());
+        context.setId(entity.getId());
+        context.setView(view);
+
+        return (A)load(context);
     }
 
     public <A extends Entity> A commit(A instance) {

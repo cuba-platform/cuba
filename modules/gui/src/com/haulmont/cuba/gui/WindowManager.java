@@ -174,9 +174,7 @@ public abstract class WindowManager {
         }
     }
 
-    public <T extends Window> T openWindow(ScreenInfo screenInfo,
-                                           WindowManager.OpenType openType, 
-                                           Map<String, Object> params)
+    public <T extends Window> T openWindow(ScreenInfo screenInfo, WindowManager.OpenType openType, Map<String, Object> params)
     {
         String template = screenInfo.getTemplate();
         if (template != null) {
@@ -247,7 +245,7 @@ public abstract class WindowManager {
 
     public <T extends Window> T openEditor(ScreenInfo screenInfo, Object item, OpenType openType, Map<String, Object> params) {
         params = createParametersMap(params);
-        params.put("parameter$item", item);
+        params.put("parameter$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
         String template = screenInfo.getTemplate();
         Window window;
@@ -279,8 +277,7 @@ public abstract class WindowManager {
         Window window;
         if (template != null) {
             window = createWindow(template, params, LayoutLoaderConfig.getEditorLoaders());
-        }
-        else {
+        } else {
             Class screenClass = screenInfo.getScreenClass();
             if (screenClass != null)
                 window = createWindow(screenClass, params);

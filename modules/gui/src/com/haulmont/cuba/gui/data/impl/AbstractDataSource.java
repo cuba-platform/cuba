@@ -15,10 +15,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.chile.core.common.ValueListener;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public abstract class AbstractDataSource<T extends Entity>
     implements
@@ -29,9 +26,9 @@ public abstract class AbstractDataSource<T extends Entity>
 
     protected List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
 
-    protected Collection<T> itemToCreate;
-    protected Collection<T> itemToUpdate;
-    protected Collection<T> itemToDelete;
+    protected Collection<T> itemToCreate = new HashSet<T>();
+    protected Collection<T> itemToUpdate = new HashSet<T>();
+    protected Collection<T> itemToDelete = new HashSet<T>();
 
     public AbstractDataSource(String id) {
         this.id = id;
@@ -76,7 +73,7 @@ public abstract class AbstractDataSource<T extends Entity>
     protected class ItemListener implements ValueListener {
         public void propertyChanged(Object item, String property, Object prevValue, Object value) {
             for (DatasourceListener dsListener : dsListeners) {
-                dsListener.valueChanged(null, property, prevValue, value);
+                dsListener.valueChanged(item, property, prevValue, value);
             }
 
             if (PersistenceHelper.isNew((Entity) item)) {

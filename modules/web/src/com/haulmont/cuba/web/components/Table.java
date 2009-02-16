@@ -132,7 +132,7 @@ public class Table
     }
 
     public List<Column> getColumns() {
-        // TODO implement column order
+        // TODO (abramov) implement column order
         return new ArrayList<Column>(columns.values());
     }
 

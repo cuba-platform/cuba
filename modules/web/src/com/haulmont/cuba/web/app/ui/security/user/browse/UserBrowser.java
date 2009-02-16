@@ -39,7 +39,7 @@ public class UserBrowser extends AbstractLookup {
                 if (selected.size() == 1) {
                     User user = (User) selected.iterator().next();
 //                    openEditor(GenericEditorWindow.class, user, WindowManager.OpenType.THIS_TAB);
-                    openEditor("sec$User.edit", user, WindowManager.OpenType.THIS_TAB);
+                    openEditor("sec$User.edit", table.getDatasource(), WindowManager.OpenType.THIS_TAB);
                 }
             }
         });
