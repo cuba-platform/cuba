@@ -10,9 +10,12 @@
 package com.haulmont.cuba.web.app.ui.security.user.browse;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.components.ComponentsHelper;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Set;
 
@@ -24,6 +27,22 @@ public class UserBrowser extends AbstractLookup {
     protected void init() {
         final Button button  = getComponent("filter.apply");
         final Table table  = getComponent("users");
+
+        table.addAction(new AbstractAction("create") {
+            public String getCaption() {
+                return "Create";
+            }
+
+            public boolean isEnabled() {
+                return true;
+            }
+
+            public void actionPerform(Component component) {
+                final CollectionDatasource ds = table.getDatasource();
+                final DataService dataservice = ds.getDataService();
+                openEditor("sec$User.edit", dataservice.<Entity>newInstance(ds.getMetaClass()), WindowManager.OpenType.THIS_TAB);
+            }
+        });
 
         table.addAction(new AbstractAction("edit") {
             public String getCaption() {
@@ -43,6 +62,7 @@ public class UserBrowser extends AbstractLookup {
                 }
             }
         });
+
         table.addAction(new AbstractAction("refresh") {
             public String getCaption() {
                 return "Refresh";

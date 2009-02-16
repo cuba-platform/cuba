@@ -9,15 +9,14 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.LookupField;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class LookupFieldLoader extends AbstractFieldLoader {
     public LookupFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -25,15 +24,13 @@ public class LookupFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final LookupField component = (LookupField) super.loadComponent(factory, element);
-        
+    protected void loadDatasource(Field component, Element element) {
         final String datasource = element.attributeValue("lookupDatasource");
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDSContext().get(datasource);
-            component.setLookupDatasource((CollectionDatasource) ds);
+            ((LookupField) component).setLookupDatasource((CollectionDatasource) ds);
         }
 
-        return component;
+        super.loadDatasource(component, element);
     }
 }

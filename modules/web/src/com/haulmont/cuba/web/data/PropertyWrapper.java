@@ -18,7 +18,7 @@ import com.itmill.toolkit.data.Property;
 
 import java.text.ParseException;
 
-public class PropertyWrapper implements Property{
+public class PropertyWrapper implements Property {
     private boolean readOnly;
     private Object item;
     private MetaProperty metaProperty;

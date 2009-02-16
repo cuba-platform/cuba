@@ -15,6 +15,9 @@ public interface Field
     extends
         Component, Component.HasCaption, Component.Field, Component.Editable, Component.BelongToWindow
 {
+    boolean isRequired();
+    void setRequired(boolean required);
+
     Datasource getDatasource();
     String getProperty();
 

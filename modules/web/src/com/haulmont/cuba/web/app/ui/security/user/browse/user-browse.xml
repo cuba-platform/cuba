@@ -23,6 +23,7 @@
             <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
             <vbox id="table-panel" expand="users">
                 <hbox>
+                    <button action="users.create"/>
                     <button action="users.edit"/>
                 </hbox>
                 <table id="users" editable="false">

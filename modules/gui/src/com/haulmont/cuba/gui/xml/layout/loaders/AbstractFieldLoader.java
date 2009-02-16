@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -35,6 +37,17 @@ public class AbstractFieldLoader extends ComponentLoader {
         loadCaption(component, element);
         loadEditable(component, element);
 
+        loadDatasource(component, element);
+
+        loadHeight(component, element);
+        loadWidth(component, element);
+
+        addAssignWindowTask(component);
+        
+        return component;
+    }
+
+    protected void loadDatasource(Field component, Element element) {
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDSContext().get(datasource);
@@ -49,12 +62,5 @@ public class AbstractFieldLoader extends ComponentLoader {
 
             component.setDatasource(ds, property);
         }
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-
-        addAssignWindowTask(component);
-        
-        return component;
     }
 }

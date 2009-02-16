@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.data.ItemWrapper;
 
@@ -31,9 +32,20 @@ public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends Abstra
         this.property = property;
 
         final MetaClass metaClass = datasource.getMetaClass();
+        final MetaProperty metaProperty = metaClass.getProperty(property);
 
         final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
-        component.setPropertyDataSource(wrapper.getItemProperty(metaClass.getProperty(property)));
+        component.setPropertyDataSource(wrapper.getItemProperty(metaProperty));
+
+        component.setRequired(metaProperty.isMandatory());
+    }
+
+    public boolean isRequired() {
+        return component.isRequired();
+    }
+
+    public void setRequired(boolean required) {
+        component.setRequired(required);
     }
 
     public <T> T getValue() {

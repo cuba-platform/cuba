@@ -61,4 +61,21 @@ public class BaseLongIdEntity implements BaseEntity<Long>
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BaseLongIdEntity that = (BaseLongIdEntity) o;
+
+        return !(id != null ? !id.equals(that.id) : that.id != null) && uuid.equals(that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + uuid.hashCode();
+        return result;
+    }
 }

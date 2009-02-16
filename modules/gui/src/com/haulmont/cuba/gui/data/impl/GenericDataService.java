@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.chile.core.model.MetaClass;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +32,17 @@ public class GenericDataService implements DataService {
             this.service = Locator.lookupRemote(DataServiceRemote.JNDI_NAME);
         } else {
             this.service = Locator.lookupLocal(DataServiceRemote.JNDI_NAME);
+        }
+    }
+
+    public <A extends Entity> A newInstance(MetaClass metaClass) {
+        try {
+            final Class aClass = metaClass.getJavaClass();
+            return (A) aClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

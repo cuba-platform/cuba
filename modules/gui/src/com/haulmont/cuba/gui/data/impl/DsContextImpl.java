@@ -83,6 +83,8 @@ public class DsContextImpl implements DsContext {
             }
         }
 
+        if (datasources.isEmpty()) return;
+
         final DataService dataservice = getDataService();
         final Set<DataService> services = commitDatasources.keySet();
 

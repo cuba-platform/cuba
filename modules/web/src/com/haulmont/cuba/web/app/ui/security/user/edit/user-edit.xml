@@ -1,7 +1,7 @@
 <window
     resourceBundle="com.haulmont.cuba.web.app.ui.security.user.edit.user-edit"
     datasource="user"
-    caption="Edit User '${parameter$item.name}'"
+    caption="Edit User '${parameter$item.name!'New User'}'"
     class="com.haulmont.cuba.web.app.ui.security.user.edit.UserEditor"
 >
     <metadataContext>
@@ -25,31 +25,28 @@
     </dsContext>
 
     <layout>
-        <tabsheet>
-            <tab id="general" caption="General">
-                <grid>
-                    <columns>
-                        <column/>
-                        <column/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="Name"/>
-                            <textField id="name" datasource="user" property="name"/>
-                        </row>
-                        <row>
-                            <label value="Login"/>
-                            <hbox>
-                                <textField id="login" datasource="user" property="login"/>
-                                <button id="browse" caption="Browse..."/>
-                           </hbox>
-                        </row>
-                    </rows>
-                </grid>
-            </tab>
-            <tab id="additional" caption="Additional">
-                <lookupField id="groups" lookupDatasource="groups"/>
-            </tab>
-        </tabsheet>
+        <grid>
+            <columns>
+                <column/>
+                <column/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="Name"/>
+                    <textField id="name" datasource="user" property="name"/>
+                </row>
+                <row>
+                    <label value="Login"/>
+                    <hbox>
+                        <textField id="login" datasource="user" property="login"/>
+                        <button id="browse" caption="Browse..."/>
+                   </hbox>
+                </row>
+                <row>
+                    <label value="Group"/>
+                    <lookupField id="group" datasource="user" property="group" lookupDatasource="groups"/>
+                </row>
+            </rows>
+        </grid>
     </layout>
 </window>
