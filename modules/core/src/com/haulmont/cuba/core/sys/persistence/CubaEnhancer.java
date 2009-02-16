@@ -176,25 +176,26 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
 
         code.aload().setThis();
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
-        code.ifnull().setOffset(49);
+        code.ifnull().setOffset(50);
 
         code.aload().setThis();
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
         code.invokeinterface().setMethod(Collection.class, "iterator", Iterator.class, new Class[]{});
-        code.astore().setLocal(4);
-        code.aload().setLocal(4);
-        code.invokeinterface().setMethod(Iterator.class, "hasNext", boolean.class, new Class[]{});
-        code.ifeq().setOffset(28);
-        code.aload().setLocal(4);
-        code.invokeinterface().setMethod(Iterator.class, "next", Object.class, new Class[]{});
-        code.checkcast().setType(ValueListener.class);
         code.astore().setLocal(5);
         code.aload().setLocal(5);
+        code.invokeinterface().setMethod(Iterator.class, "hasNext", boolean.class, new Class[]{});
+        code.ifeq().setOffset(29);
+        code.aload().setLocal(5);
+        code.invokeinterface().setMethod(Iterator.class, "next", Object.class, new Class[]{});
+        code.checkcast().setType(ValueListener.class);
+        code.astore().setLocal(4);
+        code.aload().setLocal(4);
+        code.aload().setThis();
         code.aload().setParam(0);
         code.aload().setParam(1);
         code.aload().setParam(2);
-        code.invokeinterface().setMethod(ValueListener.class, "propertyChanged", void.class, new Class[]{String.class,Object.class,Object.class});
-        code.go2().setOffset(-32);
+        code.invokeinterface().setMethod(ValueListener.class, "propertyChanged", void.class, new Class[]{Object.class,String.class,Object.class,Object.class});
+        code.go2().setOffset(-33);
 
         code.vreturn();
 
