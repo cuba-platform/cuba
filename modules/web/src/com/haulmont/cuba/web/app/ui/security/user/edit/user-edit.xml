@@ -1,7 +1,7 @@
 <window
     resourceBundle="com.haulmont.cuba.web.app.ui.security.user.edit.user-edit"
     datasource="user"
-    caption="Edit User '${parameter$item.name!'New User'}'"
+    caption="res://caption"
     class="com.haulmont.cuba.web.app.ui.security.user.edit.UserEditor"
 >
     <metadataContext>

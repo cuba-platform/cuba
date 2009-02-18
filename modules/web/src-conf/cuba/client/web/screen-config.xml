@@ -3,14 +3,14 @@
     <screen id="core$Server.browse"
             class="com.haulmont.cuba.web.app.ui.TableDemoScreen"/>
 
-    <!--<screen id="sec$User.browse"-->
-            <!--template="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.xml"/>-->
+    <screen id="sec$User.browse"
+            template="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.xml"/>
 
-    <screen id="sec$User.browse" class="com.haulmont.cuba.web.gui.GenericBrowserWindow">
-        <params>
-            <param name="metaClass" value="sec$User"/>
-        </params>
-    </screen>
+    <!--<screen id="sec$User.browse" class="com.haulmont.cuba.web.gui.GenericBrowserWindow">-->
+        <!--<params>-->
+            <!--<param name="metaClass" value="sec$User"/>-->
+        <!--</params>-->
+    <!--</screen>-->
 
     <screen id="sec$User.edit"
             template="/com/haulmont/cuba/web/app/ui/security/user/edit/user-edit.xml"/>

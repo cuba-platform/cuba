@@ -176,9 +176,12 @@ public abstract class WindowManager {
 
     protected <T extends Window> String loadCaption(Window window, Map<String, Object> params) {
         String caption = window.getCaption();
-        if (!StringUtils.isEmpty(caption)) return caption;
+        if (!StringUtils.isEmpty(caption)) {
+            caption = TemplateHelper.processTemplate(caption, params);
+            return caption;
+        }
 
-        caption = (String) params.get("caption");
+        caption = (String) params.get("parameter$caption");
         if (StringUtils.isEmpty(caption)) {
             final ResourceBundle resourceBundle = window.getResourceBundle();
             if (resourceBundle != null) {
@@ -192,18 +195,19 @@ public abstract class WindowManager {
 
         if (caption != null) {
             caption = TemplateHelper.processTemplate(caption, params);
-        } else {
-            try {
-                caption = invokeMethod(window, "getCaption");
-                if (!StringUtils.isEmpty(caption)) {
-                    caption = TemplateHelper.processTemplate(caption, params);
-                }
-            } catch (NoSuchMethodException e) {
-                // Do nothing
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
         }
+//        } else {
+//            try {
+//                caption = invokeMethod(window, "getCaption");
+//                if (!StringUtils.isEmpty(caption)) {
+//                    caption = TemplateHelper.processTemplate(caption, params);
+//                }
+//            } catch (NoSuchMethodException e) {
+//                // Do nothing
+//            } catch (Throwable e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
 
         window.setCaption(caption);
 
