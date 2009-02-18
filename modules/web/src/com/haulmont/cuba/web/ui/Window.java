@@ -68,33 +68,34 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map<String, Object> params) {
-        return App.getInstance().getScreenManager().<T>openWindow(descriptor, openType, params);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openWindow(windowInfo, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String screenId, WindowManager.OpenType openType) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openWindow(screenInfo, openType);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openWindow(windowInfo, openType);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String screenId, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openEditor(screenInfo, item, openType, params);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openEditor(windowInfo, item, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String screenId, Object item, WindowManager.OpenType openType) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openEditor(screenInfo, item, openType);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openEditor(windowInfo, item, openType);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String screenId, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openLookup(screenInfo, handler, openType, params);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String windowAlias, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openLookup(windowInfo, handler, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String screenId, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openLookup(screenInfo, handler, openType);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String windowAlias, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openLookup(windowInfo, handler, openType);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -369,25 +370,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             okbar.setHeight("25px");
 
             final Button selectButton = new Button("Select");
-            selectButton.addListener(new Button.ClickListener() {
-                public void buttonClick(Button.ClickEvent event) {
-                    final com.haulmont.cuba.gui.components.Component lookupComponent = getLookupComponent();
-
-                    Collection selected;
-                    if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table ) {
-                        selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
-                    } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
-                        selected = Collections.singleton(((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected());
-                    } else if (lookupComponent instanceof LookupField) {
-                        selected = Collections.singleton(((LookupField) lookupComponent).getValue());
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    close();
-                    handler.handleLookup(selected);
-                }
-            });
+            selectButton.addListener(new SelectAction(this));
 
             final Button cancelButton = new Button("Cancel", this, "close");
 

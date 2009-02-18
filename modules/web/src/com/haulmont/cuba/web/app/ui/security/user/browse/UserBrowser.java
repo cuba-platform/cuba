@@ -9,15 +9,8 @@
  */
 package com.haulmont.cuba.web.app.ui.security.user.browse;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.components.ComponentsHelper;
-import com.haulmont.cuba.core.entity.Entity;
-
-import java.util.Set;
 
 public class UserBrowser extends AbstractLookup {
     public UserBrowser(Window frame) {
@@ -28,69 +21,12 @@ public class UserBrowser extends AbstractLookup {
         final Button button  = getComponent("filter.apply");
         final Table table  = getComponent("users");
 
-        table.addAction(new AbstractAction("create") {
-            public String getCaption() {
-                return "Create";
-            }
+        final TableActionsHelper helper = new TableActionsHelper(this, table);
+        helper.createCreateAction();
+        helper.createEditAction();
 
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                final CollectionDatasource ds = table.getDatasource();
-                final DataService dataservice = ds.getDataService();
-                openEditor("sec$User.edit", dataservice.<Entity>newInstance(ds.getMetaClass()), WindowManager.OpenType.THIS_TAB);
-            }
-        });
-
-        table.addAction(new AbstractAction("edit") {
-            public String getCaption() {
-                return "Edit";
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                final Set selected = table.getSelected();
-                if (selected.size() == 1) {
-                    User user = (User) selected.iterator().next();
-//                    openEditor(GenericEditorWindow.class, user, WindowManager.OpenType.THIS_TAB);
-                    openEditor("sec$User.edit", table.getDatasource(), WindowManager.OpenType.THIS_TAB);
-                }
-            }
-        });
-
-        table.addAction(new AbstractAction("refresh") {
-            public String getCaption() {
-                return "Refresh";
-            }
-
-            public boolean isEnabled() {
-                final User user = table.getSingleSelected();
-                return user != null && user.getName().equals("Administrator");
-            }
-
-            public void actionPerform(Component component) {
-                table.getDatasource().refresh();
-            }
-        });
-
-        button.setAction(new AbstractAction("refresh") {
-            public String getCaption() {
-                return null;
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                table.getDatasource().refresh();
-            }
-        });
+        final Action refreshAction = helper.createRefreshAction();
+        button.setAction(refreshAction);
     }
 
     public boolean close() {

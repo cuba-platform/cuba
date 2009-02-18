@@ -20,23 +20,23 @@ public interface IFrame extends OrderedLayout, Component.Container {
     void setResourceBundle(ResourceBundle resourceBundle);
 
     <T extends Window> T openWindow(
-            String screenId, WindowManager.OpenType openType, Map<String, Object> params);
+            String windowAlias, WindowManager.OpenType openType, Map<String, Object> params);
 
     <T extends Window> T openWindow(
-            String screenId, WindowManager.OpenType openType);
+            String windowAlias, WindowManager.OpenType openType);
 
     <T extends Window> T openEditor(
-            String screenId, Object item,
+            String windowAlias, Object item,
             WindowManager.OpenType openType, Map<String, Object> params);
 
     <T extends Window> T openEditor(
-            String screenId, Object item, WindowManager.OpenType openType);
+            String windowAlias, Object item, WindowManager.OpenType openType);
 
     <T extends Window> T openLookup(
-            String screenId, Window.Lookup.Handler handler,
+            String windowAlias, Window.Lookup.Handler handler,
             WindowManager.OpenType openType, Map<String, Object> params);
 
     <T extends Window> T openLookup(
-            String screenId, Window.Lookup.Handler handler, WindowManager.OpenType openType);
+            String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType);
 
 }

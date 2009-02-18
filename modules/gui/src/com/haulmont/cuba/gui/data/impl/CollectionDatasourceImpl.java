@@ -177,26 +177,26 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Collection<T> getCollection() {
-        if (query == null) {
-            throw new IllegalStateException();
-        } else {
-            return collection;
-        }
+        return collection;
     }
 
     protected Collection<T> loadData() {
         final DataServiceRemote.CollectionLoadContext context =
                 new DataServiceRemote.CollectionLoadContext(metaClass);
 
-        final Map<String, Object> parameters = getQueryParameters();
-        for (ParametersHelper.ParameterInfo info : queryParameters) {
-            if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
-                final Object value = parameters.get(info.getFlatName());
-                if (value == null) return Collections.emptyList();
+        if (query != null && queryParameters != null) {
+            final Map<String, Object> parameters = getQueryParameters();
+            for (ParametersHelper.ParameterInfo info : queryParameters) {
+                if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
+                    final Object value = parameters.get(info.getFlatName());
+                    if (value == null) return Collections.emptyList();
+                }
             }
+            context.setQueryString(getJPQLQuery(this.query, parameters)).setParameters(parameters);
+        } else {
+            context.setQueryString("select e from " + metaClass.getName() + " e");
         }
 
-        context.setQueryString(getJPQLQuery(this.query, parameters)).setParameters(parameters);
         context.setView(view);
 
         collection = (Collection) dataservice.loadList(context);

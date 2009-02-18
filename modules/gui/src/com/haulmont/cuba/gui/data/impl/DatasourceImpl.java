@@ -23,6 +23,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 public class DatasourceImpl<T extends Entity>
     extends
         AbstractDataSource<T>
@@ -48,7 +50,7 @@ public class DatasourceImpl<T extends Entity>
         this.dataservice = dataservice;
 
         this.metaClass = metaClass;
-        this.view = MetadataProvider.getViewRepository().getView(metaClass, viewName);
+        this.view = StringUtils.isEmpty(viewName) ? null : MetadataProvider.getViewRepository().getView(metaClass, viewName);
 
         this.listener = new ItemListener();
     }

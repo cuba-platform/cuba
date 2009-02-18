@@ -31,33 +31,33 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
         this.resourceBundle = resourceBundle;
     }
 
-    public <T extends Window> T openWindow(String screenId, WindowManager.OpenType openType, Map<String, Object> params) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
+    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
+        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
         return App.getInstance().getScreenManager().<T>openWindow(screenInfo, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String screenId, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openEditor(screenInfo, item, openType, params);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openEditor(windowInfo, item, openType, params);
     }
 
-    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String screenId, Object item, WindowManager.OpenType openType) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openEditor(screenInfo, item, openType);
+    public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openEditor(windowInfo, item, openType);
     }
 
-    public <T extends Window> T openWindow(String screenId, WindowManager.OpenType openType) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openWindow(screenInfo, openType);
+    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openWindow(windowInfo, openType);
     }
 
-    public <T extends Window> T openLookup(String screenId, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openLookup(screenInfo, handler, openType, params);
+    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openLookup(windowInfo, handler, openType, params);
     }
 
-    public <T extends Window> T openLookup(String screenId, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(screenId);
-        return App.getInstance().getScreenManager().<T>openLookup(screenInfo, handler, openType);
+    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
+        return App.getInstance().getScreenManager().<T>openLookup(windowInfo, handler, openType);
     }
 }

@@ -58,6 +58,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
 
                 final MetaProperty metaProperty = metaClass.getProperty(name);
                 final Range range = metaProperty.getRange();
+                if (range == null) continue;
 
                 final Range.Cardinality cardinality = range.getCardinality();
                 if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
@@ -69,6 +70,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         } else {
             for (MetaProperty metaProperty : metaClass.getProperties()) {
                 final Range range = metaProperty.getRange();
+                if (range == null) continue;
 
                 final Range.Cardinality cardinality = range.getCardinality();
                 if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||

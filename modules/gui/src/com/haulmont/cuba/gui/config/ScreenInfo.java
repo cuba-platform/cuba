@@ -41,6 +41,7 @@ public class ScreenInfo
                     throw new RuntimeException(e);
                 }
         }
+
         return screenClass;
     }
 
