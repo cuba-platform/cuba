@@ -11,8 +11,8 @@ package com.haulmont.cuba.web.xml.layout;
 
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.web.ui.Window;
-import com.haulmont.cuba.web.components.*;
+import com.haulmont.cuba.web.gui.Window;
+import com.haulmont.cuba.web.gui.components.*;
 
 import java.util.Map;
 import java.util.HashMap;

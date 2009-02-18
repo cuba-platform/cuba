@@ -228,11 +228,16 @@ public abstract class WindowManager {
         if (template != null) {
             window = createWindow(template, params, LayoutLoaderConfig.getEditorLoaders());
         } else {
-            Class screenClass = windowInfo.getScreenClass();
-            if (screenClass != null)
-                window = createWindow(screenClass, params);
-            else
+            Class windowClass = windowInfo.getScreenClass();
+            if (windowClass != null) {
+                window = createWindow(windowClass, params);
+                if (!(window instanceof Window.Editor)) {
+                    throw new IllegalStateException(
+                            String.format("Class %s does't implement Window.Editor interface", windowClass));
+                }
+            } else {
                 throw new IllegalStateException("Invalid ScreenInfo: " + windowInfo);
+            }
         }
         ((Window.Editor) window).setItem(item);
 
@@ -250,26 +255,31 @@ public abstract class WindowManager {
 
         String template = windowInfo.getTemplate();
         Window window;
+
         if (template != null) {
             window = createWindow(template, params, LayoutLoaderConfig.getEditorLoaders());
-        } else {
-            Class screenClass = windowInfo.getScreenClass();
-            if (screenClass != null)
-                window = createWindow(screenClass, params);
-            else
-                throw new IllegalStateException("Invalid ScreenInfo: " + windowInfo);
-        }
 
-        final Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
-        final String lookupComponent = element.attributeValue("lookupComponent");
-        if (!StringUtils.isEmpty(lookupComponent)) {
-            final Component component = window.getComponent(lookupComponent);
-            ((Window.Lookup) window).setLookupComponent(component);
+            final Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
+            final String lookupComponent = element.attributeValue("lookupComponent");
+            if (!StringUtils.isEmpty(lookupComponent)) {
+                final Component component = window.getComponent(lookupComponent);
+                ((Window.Lookup) window).setLookupComponent(component);
+            }
+        } else {
+            Class windowClass = windowInfo.getScreenClass();
+            if (windowClass != null) {
+                window = createWindow(windowClass, params);
+                if (!(window instanceof Window.Lookup)) {
+                    throw new IllegalStateException(
+                            String.format("Class %s does't implement Window.Lookup interface", windowClass));
+                }
+            } else {
+                throw new IllegalStateException("Invalid ScreenInfo: " + windowInfo);
+            }
         }
         ((Window.Lookup) window).setLookupHandler(handler);
 
         String caption = loadCaption(window, params);
-
         showWindow(window, caption, openType);
 
         return (T) window;

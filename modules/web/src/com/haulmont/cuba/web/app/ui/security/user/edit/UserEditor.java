@@ -32,7 +32,7 @@ public class UserEditor extends AbstractEditor {
             }
 
             public void actionPerform(Component component) {
-                openLookup("/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.xml", new Lookup.Handler() {
+                openLookup("sec$User.browse", new Lookup.Handler() {
                     public void handleLookup(Collection items) {
                         if (items.size() == 1) {
                             final User item = (User) items.iterator().next();

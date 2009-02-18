@@ -10,7 +10,7 @@
 package com.haulmont.cuba.web.app.ui.security.user.browse;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.web.components.ComponentsHelper;
+import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 
 public class UserBrowser extends AbstractLookup {
     public UserBrowser(Window frame) {

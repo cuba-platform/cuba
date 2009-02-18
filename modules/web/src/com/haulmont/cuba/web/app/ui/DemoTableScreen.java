@@ -10,7 +10,7 @@
 package com.haulmont.cuba.web.app.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.PagingTable;
-import com.haulmont.cuba.web.ui.Window;
+import com.haulmont.cuba.web.gui.Window;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.data.util.BeanItem;

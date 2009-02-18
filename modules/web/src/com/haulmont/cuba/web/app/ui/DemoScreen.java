@@ -13,7 +13,7 @@ package com.haulmont.cuba.web.app.ui;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.terminal.Sizeable;
 
-public class DemoScreen extends com.haulmont.cuba.web.ui.Window
+public class DemoScreen extends com.haulmont.cuba.web.gui.Window
 {
     public void init() {
         component.getWindow().showNotification("Opening screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);

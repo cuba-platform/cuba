@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.components.ComponentsHelper;
+import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.ScreenTitlePane;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.itmill.toolkit.terminal.ExternalResource;
