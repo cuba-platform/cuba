@@ -37,7 +37,7 @@ public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends Abstra
         final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
         component.setPropertyDataSource(wrapper.getItemProperty(metaProperty));
 
-        component.setRequired(metaProperty.isMandatory());
+        setRequired(metaProperty.isMandatory());
     }
 
     public boolean isRequired() {

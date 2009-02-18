@@ -28,4 +28,10 @@ public class LookupField
     public void setLookupDatasource(CollectionDatasource datasource) {
         component.setContainerDataSource(new CollectionDatasourceWrapper(datasource, true));
     }
+
+    @Override
+    public void setRequired(boolean required) {
+        super.setRequired(required);
+        component.setNullSelectionAllowed(!required);
+    }
 }
