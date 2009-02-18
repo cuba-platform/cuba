@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.security.entity.Role;
 
 import java.util.Set;
+import java.util.Map;
 
 public class RoleBrowser extends AbstractWindow
 {
@@ -22,7 +23,7 @@ public class RoleBrowser extends AbstractWindow
         super(frame);
     }
 
-    protected void init() {
+    protected void init(Map<String, Object> params) {
         final Table table  = getComponent("roles");
 
         table.addAction(

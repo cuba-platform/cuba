@@ -12,6 +12,8 @@ package com.haulmont.cuba.gui.components;
 import org.dom4j.Element;
 import com.haulmont.cuba.gui.data.DsContext;
 
+import java.util.Map;
+
 public class AbstractWindow extends AbstractFrame implements Window, Component.HasXmlDescriptor {
     public AbstractWindow(IFrame frame) {
         super(frame);
@@ -63,5 +65,9 @@ public class AbstractWindow extends AbstractFrame implements Window, Component.H
         } else {
             throw new UnsupportedOperationException();
         }
+    }
+
+    protected void init(Map<String, Object> params) {
+
     }
 }

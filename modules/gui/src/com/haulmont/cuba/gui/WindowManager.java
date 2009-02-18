@@ -142,7 +142,7 @@ public abstract class WindowManager {
             try {
                 invokeMethod(window, "init", params);
             } catch (NoSuchMethodException e) {
-                invokeMethod(window, "init");
+                // Do nothing
             }
             return window;
         } catch (Throwable e) {
@@ -349,7 +349,7 @@ public abstract class WindowManager {
                 try {
                     invokeMethod(res, "init", params);
                 } catch (NoSuchMethodException e) {
-                    invokeMethod(res, "init");
+                    // do nothing
                 }
             } catch (Throwable e) {
                 throw new RuntimeException(e);

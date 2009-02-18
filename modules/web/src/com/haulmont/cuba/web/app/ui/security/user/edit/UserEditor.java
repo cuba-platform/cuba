@@ -14,13 +14,14 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.security.entity.User;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class UserEditor extends AbstractEditor {
     public UserEditor(Window frame) {
         super(frame);
     }
 
-    protected void init() {
+    protected void init(Map<String, Object> params) {
         Button button = getComponent("browse");
         button.setAction(new AbstractAction("Browse") {
             public String getCaption() {

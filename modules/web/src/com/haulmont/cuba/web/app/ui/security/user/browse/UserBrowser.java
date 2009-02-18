@@ -12,12 +12,14 @@ package com.haulmont.cuba.web.app.ui.security.user.browse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 
+import java.util.Map;
+
 public class UserBrowser extends AbstractLookup {
     public UserBrowser(Window frame) {
         super(frame);
     }
 
-    protected void init() {
+    protected void init(Map<String, Object> params) {
         final Button button  = getComponent("filter.apply");
         final Table table  = getComponent("users");
 
