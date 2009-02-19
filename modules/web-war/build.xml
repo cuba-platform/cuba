@@ -77,4 +77,8 @@
 
     <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
 
+    <target name="deploy4test-module">
+        <!-- do nothing -->
+    </target>
+    
 </project>
