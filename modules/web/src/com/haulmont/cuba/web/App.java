@@ -128,7 +128,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return appLog;
     }
 
-    public void connectionStateChanged(Connection connection) {
+    public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
             Window window = createAppWindow();
             setMainWindow(window);

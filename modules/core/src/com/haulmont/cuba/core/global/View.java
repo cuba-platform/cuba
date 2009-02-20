@@ -29,6 +29,14 @@ public class View implements Serializable
 
     private boolean includeSystemProperties;
 
+    public View(Class<? extends BaseEntity> entityClass) {
+        this(entityClass, "", true);
+    }
+
+    public View(Class<? extends BaseEntity> entityClass, boolean includeSystemProperties) {
+        this(entityClass, "", includeSystemProperties);
+    }
+
     public View(Class<? extends BaseEntity> entityClass, String name) {
         this(entityClass, name, true);
     }

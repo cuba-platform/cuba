@@ -18,8 +18,13 @@ import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class Connection
 {
+    private Log log = LogFactory.getLog(Connection.class);
+
     private Set<ConnectionListener> listeners = new HashSet<ConnectionListener>();
 
     private boolean connected;
@@ -84,7 +89,11 @@ public class Connection
 
         connected = false;
         session = null;
-        fireConnectionListeners();
+        try {
+            fireConnectionListeners();
+        } catch (LoginException e) {
+            log.warn("Exception on logout:", e);
+        }
     }
 
     public void addListener(ConnectionListener listener) {
@@ -95,7 +104,7 @@ public class Connection
         listeners.remove(listener);
     }
 
-    private void fireConnectionListeners() {
+    private void fireConnectionListeners() throws LoginException {
         for (ConnectionListener listener : listeners) {
             listener.connectionStateChanged(this);
         }

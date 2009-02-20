@@ -12,8 +12,8 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.resource.Messages;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.resource.Messages;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.ExternalResource;
@@ -22,16 +22,24 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ResourceBundle;
+import java.util.Locale;
 
 public class LoginWindow extends Window implements ApplicationContext.TransactionListener
 {
+    protected ResourceBundle resourceBundle;
+
     private Connection connection;
 
     protected TextField loginField;
     protected TextField passwdField;
 
     public LoginWindow(App app, Connection connection) {
-        super("CUBA Login");
+        super();
+        Locale locale = app.getLocale();
+        resourceBundle = ResourceBundle.getBundle(getResourceBundleName(), locale);
+
+        setCaption(resourceBundle.getString("loginWindow.caption"));
         this.connection = connection;
         app.getContext().addTransactionListener(this);
 
@@ -46,20 +54,20 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
         layout.setSpacing(true);
         layout.setMargin(true);
 
-        Label label = new Label("Welcome to CUBA!");
+        Label label = new Label(resourceBundle.getString("loginWindow.welcomeLabel"));
         layout.addComponent(label);
 
-        loginField.setCaption("Login Name");
+        loginField.setCaption(resourceBundle.getString("loginWindow.loginField"));
         layout.addComponent(loginField);
         loginField.focus();
 
-        passwdField.setCaption("Password");
+        passwdField.setCaption(resourceBundle.getString("loginWindow.passwordField"));
         passwdField.setSecret(true);
         layout.addComponent(passwdField);
 
         initFields();
 
-        Button okButton = new Button("Submit", new SubmitListener());
+        Button okButton = new Button(resourceBundle.getString("loginWindow.okButton"), new SubmitListener());
         layout.addComponent(okButton);
 
         setLayout(layout);
@@ -118,5 +126,9 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
                 showNotification(Messages.getString("loginWindow.loginFailed"), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
             }
         }
+    }
+
+    protected String getResourceBundleName() {
+        return "com.haulmont.cuba.web.resource.messages";
     }
 }

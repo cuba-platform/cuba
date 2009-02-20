@@ -25,7 +25,7 @@ import java.util.Locale;
 
 public class AppWindow extends Window
 {
-    private Connection connection;
+    protected Connection connection;
     private TabSheet tabSheet;
 
     public AppWindow(Connection connection) {
@@ -128,7 +128,7 @@ public class AppWindow extends Window
         viewLogBtn.setStyleName(Button.STYLE_LINK);
 
         logoLabel.setSizeFull();
-        
+
         titleLayout.addComponent(logoLabel);
         titleLayout.setExpandRatio(logoLabel, 1);
 

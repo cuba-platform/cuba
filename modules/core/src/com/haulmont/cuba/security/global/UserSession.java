@@ -14,14 +14,15 @@ import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.security.entity.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.io.Serializable;
 
 public class UserSession implements Serializable
 {
     private static final long serialVersionUID = -8248326616891177382L;
 
-    private final UUID id;
     private final UUID userId;
+    private final UUID id;
     private final String login;
     private final String name;
     private final String[] roles;
@@ -29,6 +30,8 @@ public class UserSession implements Serializable
 
     private final Map<String, Integer>[] permissions;
     private final Map<String, List<String>> constraints;
+
+    private final Map<String, Serializable> attributes;
 
     public UserSession(User user, String[] roles, Locale locale) {
         this.id = UuidProvider.createUuid();
@@ -47,6 +50,7 @@ public class UserSession implements Serializable
         }
 
         constraints = new HashMap<String, List<String>>();
+        attributes = new ConcurrentHashMap<String, Serializable>();
     }
 
     public UUID getId() {
@@ -102,6 +106,14 @@ public class UserSession implements Serializable
     public List<String> getConstraints(String entityName) {
         List<String> list = constraints.get(entityName);
         return list != null ? list : Collections.<String>emptyList();
+    }
+
+    public <T extends Serializable> T getAttribute(String name) {
+        return (T) attributes.get(name);
+    }
+
+    public void setAttribute(String name, Serializable value) {
+        attributes.put(name, value);
     }
 
     public String toString() {
