@@ -15,8 +15,6 @@ import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.resource.Messages;
-import com.haulmont.cuba.web.toolkit.ui.MenuBar;
-import com.itmill.toolkit.event.ItemClickEvent;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
@@ -90,21 +88,8 @@ public class AppWindow extends Window
 
         List<MenuItem> rootItems = App.getInstance().getMenuConfig().getRootItems();
         for (MenuItem menuItem : rootItems) {
-            createMenuItem(menuBar, menuItem, null);
+            createMenuBarItem(menuBar, menuItem);
         }
-
-        menuBar.addListener(new ItemClickEvent.ItemClickListener() {
-            public void itemClick(ItemClickEvent event) {
-                MenuItem menuItem = (MenuItem) event.getItemId();
-                String caption = menuItem.getCaption();
-                ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(menuItem.getId());
-                App.getInstance().getScreenManager().openWindow(
-                            screenInfo,
-                            WindowManager.OpenType.NEW_TAB,
-                            Collections.<String, Object>singletonMap("caption", caption)
-                );
-            }
-        });
 
         return menuBar;
     }
@@ -154,19 +139,37 @@ public class AppWindow extends Window
         return titleLayout;
     }
 
-    private void createMenuItem(MenuBar menuBar, MenuItem menuItem, MenuItem parenItem) {
-        menuBar.addItem(menuItem);
-        if (parenItem != null) {
-            menuBar.setParent(menuItem, parenItem);
-        }
-        if (menuItem.getChildren().size() == 0) {
-            menuBar.setChildrenAllowed(menuItem, false);
-        }
-        else {
-            menuBar.setChildrenAllowed(menuItem, true);
-            for (MenuItem item : menuItem.getChildren()) {
-                createMenuItem(menuBar, item, menuItem);
+    private void createMenuBarItem(MenuBar menuBar, MenuItem item) {
+        MenuBar.MenuItem menuItem = menuBar.addItem(item.getCaption(), null);
+
+        if (!item.getChildren().isEmpty()) {
+            for (final MenuItem childItem : item.getChildren()) {
+                createMenuItem(menuItem, childItem);
             }
         }
+    }
+
+    private void createMenuItem(MenuBar.MenuItem menuItem, MenuItem item) {
+        menuItem.addItem(item.getCaption(), createMenuBarCommand(item));
+
+        if (!item.getChildren().isEmpty()) {
+            for (final MenuItem childItem : item.getChildren()) {
+                createMenuItem(menuItem, childItem);
+            }
+        }
+    }
+
+    private MenuBar.Command createMenuBarCommand(final MenuItem item) {
+        return new MenuBar.Command() {
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                String caption = item.getCaption();
+                ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(item.getId());
+                App.getInstance().getScreenManager().openWindow(
+                        screenInfo,
+                        WindowManager.OpenType.NEW_TAB,
+                        Collections.<String, Object>singletonMap("caption", caption)
+                );
+            }
+        };
     }
 }

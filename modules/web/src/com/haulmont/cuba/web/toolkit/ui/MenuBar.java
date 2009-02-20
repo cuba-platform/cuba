@@ -19,6 +19,9 @@ import com.itmill.toolkit.ui.AbstractSelect;
 
 import java.util.*;
 
+/**
+ * @deprecated
+ */
 public class MenuBar extends AbstractSelect
         implements Container.Hierarchical, ItemClickEvent.ItemClickSource
 {

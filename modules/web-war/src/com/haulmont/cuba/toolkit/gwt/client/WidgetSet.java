@@ -9,30 +9,28 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client;
 
-import com.itmill.toolkit.terminal.gwt.client.DefaultWidgetSet;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IPagingTable;
-import com.haulmont.cuba.toolkit.gwt.client.ui.IMenuBar;
+import com.itmill.toolkit.terminal.gwt.client.DefaultWidgetSet;
+import com.itmill.toolkit.terminal.gwt.client.Paintable;
+import com.itmill.toolkit.terminal.gwt.client.UIDL;
 
 public class WidgetSet extends DefaultWidgetSet {
-    protected String resolveWidgetTypeName(UIDL uidl) {
+    protected Class resolveWidgetType(UIDL uidl) {
         final String tag = uidl.getTag();
         if ("pagingtable".equals(tag)) {
-            return "com.haulmont.cuba.toolkit.gwt.client.ui.IPagingTable";
-        } else if ("menubar".equals(tag)) {
-            return "com.haulmont.cuba.toolkit.gwt.client.ui.IMenuBar";
+            return IPagingTable.class;
+//        } else if ("menubar".equals(tag)) {
+//            return "com.haulmont.cuba.toolkit.gwt.client.ui.IMenuBar";
         }
-        return super.resolveWidgetTypeName(uidl);
+        return super.resolveWidgetType(uidl);
     }
 
     public Paintable createWidget(UIDL uidl) {
-        final String className = resolveWidgetTypeName(uidl);
-        if ("com.haulmont.cuba.toolkit.gwt.client.ui.IPagingTable".equals(className)) {
+        final Class classType = resolveWidgetType(uidl);
+        if (IPagingTable.class.equals(classType)) {
             return new IPagingTable();
-        } else if ("com.haulmont.cuba.toolkit.gwt.client.ui.IMenuBar".equals(className)) {
-            return new IMenuBar();
+//        } else if ("com.haulmont.cuba.toolkit.gwt.client.ui.IMenuBar".equals(className)) {
+//            return new IMenuBar();
         }
         return super.createWidget(uidl);
     }

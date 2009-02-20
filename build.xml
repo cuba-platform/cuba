@@ -85,7 +85,7 @@
     <target name="clean-build-deploy" depends="clean,build,deploy"/>
     
     <target name="run">
-        <exec dir="${root.dir}/jboss/bin" executable="cmd.exe">
+        <exec dir="${root.dir}/jboss/bin" executable="cmd.exe" spawn="true">
             <arg line="/c start debug.bat"/>
         </exec>
     </target>

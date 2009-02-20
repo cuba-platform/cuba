@@ -12,11 +12,10 @@ package com.haulmont.cuba.web.ui;
 
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.resource.Messages;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.ExpandLayout;
-import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.ui.HorizontalLayout;
 import com.itmill.toolkit.terminal.Sizeable;
+import com.itmill.toolkit.ui.Button;
+import com.itmill.toolkit.ui.HorizontalLayout;
+import com.itmill.toolkit.ui.Label;
 
 import java.util.Iterator;
 import java.util.LinkedList;
