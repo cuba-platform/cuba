@@ -113,7 +113,7 @@ public class AppWindow extends Window
         HorizontalLayout titleLayout = new HorizontalLayout();
 
         titleLayout.setWidth(100, Sizeable.UNITS_PERCENTAGE);
-        titleLayout.setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
+        titleLayout.setHeight(20, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
 
         titleLayout.setSpacing(true);
 

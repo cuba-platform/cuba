@@ -51,21 +51,24 @@ public abstract class ContainerLoader extends ComponentLoader {
 
     protected void loadSubcomponentsAndExpand(OrderedLayout layout, Element element, String ...exceptTags) {
         final Collection<Component> components = loadSubComponents(layout, element, exceptTags);
+        if (components.size() == 1) {
+            layout.expand(components.iterator().next(), null, null);
+        } else {
+            final String expand = element.attributeValue("expand");
+            if (!StringUtils.isEmpty(expand)) {
+                final String[] parts = expand.split(";");
+                final Component componentToExpand = ((Component.Container) layout).getComponent(parts[0]);
 
-//        final String expand = element.attributeValue("expand");
-//        if (!StringUtils.isEmpty(expand)) {
-//            final String[] parts = expand.split(";");
-//            final Component componentToExpand = ((Component.Container) layout).getComponent(parts[0]);
-//
-//            if (componentToExpand != null) {
-//                String height = find(parts, "height");
-//                String width = find(parts, "width");
-//                layout.expand(
-//                        componentToExpand,
-//                        height == null && width == null ? "100%" : height,
-//                        height == null && width == null ? "100%" : width);
-//            }
-//        }
+                if (componentToExpand != null) {
+                    String height = find(parts, "height");
+                    String width = find(parts, "width");
+                    layout.expand(
+                            componentToExpand,
+                            height == null && width == null ? "100%" : height,
+                            height == null && width == null ? "100%" : width);
+                }
+            }
+        }
     }
 
     private String find(String[] parts, String name) {

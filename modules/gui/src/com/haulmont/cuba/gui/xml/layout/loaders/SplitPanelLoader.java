@@ -16,6 +16,8 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.util.Collection;
+
 public class SplitPanelLoader extends ContainerLoader{
     public SplitPanelLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
@@ -26,7 +28,12 @@ public class SplitPanelLoader extends ContainerLoader{
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
-        loadSubComponents(component, element);
+
+        final Collection<Component> components = loadSubComponents(component, element);
+        for (Component c : components) {
+            c.setWidth("100%");
+            c.setHeight("100%");
+        }
 
         final String orientation = element.attributeValue("orientation");
         if (StringUtils.isEmpty(orientation)) {

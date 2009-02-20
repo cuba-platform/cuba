@@ -15,18 +15,21 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
+import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class Window implements com.haulmont.cuba.gui.components.Window, Component.Wrapper, Component.HasXmlDescriptor
 {
@@ -193,10 +196,9 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     public void setHorizontalAlignment(int horizontalAlIlignment) {}
 
     public void expand(Component component, String height, String width) {
-        final com.itmill.toolkit.ui.Component comp = ComponentsHelper.unwrap(component);
-        if (height == null && width == null) {
-            comp.setSizeFull();
-            ((AbstractOrderedLayout) getContainer()).setExpandRatio(comp, 1);
+        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+        if (getContainer() instanceof AbstractOrderedLayout) {
+            ComponentsHelper.expand((AbstractOrderedLayout) getContainer(), expandedComponent, height, width);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -229,25 +231,30 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
         @Override
         protected com.itmill.toolkit.ui.Component createLayout() {
-            ExpandLayout layout = new ExpandLayout(OrderedLayout.ORIENTATION_VERTICAL);
+            VerticalLayout layout = new VerticalLayout();
 
             form = new Form();
 
-            OrderedLayout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
-            okbar.setHeight("25px");
+            HorizontalLayout okbar = new HorizontalLayout();
+            okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
 
-            Layout buttonsContainer = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+            HorizontalLayout buttonsContainer = new HorizontalLayout();
+            HorizontalLayout filler = new HorizontalLayout();
 
             buttonsContainer.addComponent(new Button("OK", this, "commit"));
             buttonsContainer.addComponent(new Button("Cancel", this, "close"));
 
+            okbar.addComponent(filler);
             okbar.addComponent(buttonsContainer);
-            okbar.setComponentAlignment(buttonsContainer, Layout.AlignmentHandler.ALIGNMENT_LEFT, Layout.AlignmentHandler.ALIGNMENT_VERTICAL_CENTER);
+
+            filler.setSizeFull();
+            okbar.setExpandRatio(filler, 1);
 
             layout.addComponent(form);
             layout.addComponent(okbar);
 
-            layout.expand(form);
+            form.setSizeFull();
+            layout.setExpandRatio(form, 1);
 
             return layout;
         }

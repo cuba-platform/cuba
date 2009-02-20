@@ -18,6 +18,7 @@ public class HBoxLayout extends AbstractContainer implements com.haulmont.cuba.g
     }
 
     public void expand(Component component, String height, String width) {
-        throw new UnsupportedOperationException();
+        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+        ComponentsHelper.expand(this, expandedComponent, height, width);
     }
 }

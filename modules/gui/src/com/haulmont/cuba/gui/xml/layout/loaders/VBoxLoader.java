@@ -31,8 +31,7 @@ public class VBoxLoader extends ContainerLoader implements ComponentLoader {
         loadAlign(component, element);
         loadPack(component, element);
 
-        final Collection<Component> components = loadSubComponents(component, element);
-        if (components.size() == 1) component.expand(components.iterator().next(), null, null); 
+        loadSubcomponentsAndExpand(component, element);
 
         loadHeight(component, element);
         loadWidth(component, element);

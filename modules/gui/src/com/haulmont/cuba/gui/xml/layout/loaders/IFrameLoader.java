@@ -37,7 +37,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         loadAlign(frame, element);
         loadPack(frame, element);
 
-        loadHeight(frame, element);
+        loadHeight(frame, element, "-1px");
         loadWidth(frame, element);
 
         return frame;

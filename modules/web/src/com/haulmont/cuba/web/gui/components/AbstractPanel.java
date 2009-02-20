@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.ExpandLayout;
 import com.itmill.toolkit.ui.Layout;
 import com.itmill.toolkit.ui.Panel;
+import com.itmill.toolkit.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -105,19 +106,11 @@ public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.compon
     }
 
     public void expand(Component component, String height, String width) {
-        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
-        if (getLayout() instanceof ExpandLayout) {
-            ((ExpandLayout) getLayout()).expand(expandedComponent);
-
-            if (!StringUtils.isEmpty(height)) {
-                expandedComponent.setHeight(height);
-            }
-
-            if (!StringUtils.isEmpty(width)) {
-                expandedComponent.setWidth(width);
-            }
-        } else {
-            throw new UnsupportedOperationException();
-        }
+//        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+//        if (getLayout() instanceof AbstractOrderedLayout) {
+//            ComponentsHelper.expand((AbstractOrderedLayout) getLayout(), expandedComponent, height, width);
+//        } else {
+//            throw new UnsupportedOperationException();
+//        }
     }
 }

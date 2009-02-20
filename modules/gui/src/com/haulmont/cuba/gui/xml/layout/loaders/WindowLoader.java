@@ -31,8 +31,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         loadResourceBundle(window, element);
         loadCaption(window, element);
 
-        final Collection<Component> components = loadSubComponents(window, element.element("layout"));
-        if (components.size() == 1) window.expand(components.iterator().next(), null, null); 
+        loadSubcomponentsAndExpand(window, element.element("layout"));
 
         return window;
     }

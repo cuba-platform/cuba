@@ -86,16 +86,28 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected void loadHeight(Component component, Element element) {
+        loadHeight(component, element, null);
+    }
+
+    protected void loadHeight(Component component, Element element, String defaultValue) {
         final String height = element.attributeValue("height");
         if (!StringUtils.isBlank(height)) {
             component.setHeight(height);
+        } else if (!StringUtils.isBlank(defaultValue)) {
+            component.setHeight(defaultValue);
         }
     }
 
     protected void loadWidth(Component component, Element element) {
+        loadWidth(component, element, null);
+    }
+
+    protected void loadWidth(Component component, Element element, String defaultValue) {
         final String width = element.attributeValue("width");
         if (!StringUtils.isBlank(width)) {
             component.setWidth(width);
+        } else if (!StringUtils.isBlank(defaultValue)) {
+            component.setWidth(defaultValue);
         }
     }
 

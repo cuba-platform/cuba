@@ -12,11 +12,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.ComponentContainer;
 import com.itmill.toolkit.ui.Form;
+import com.itmill.toolkit.ui.AbstractOrderedLayout;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Arrays;
+
+import org.apache.commons.lang.StringUtils;
 
 public class ComponentsHelper {
 
@@ -85,5 +88,20 @@ public class ComponentsHelper {
         }
 
         return null;
+    }
+
+    public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {
+        if (StringUtils.isEmpty(height) && StringUtils.isEmpty(width)) {
+            component.setSizeFull();
+        } else {
+            if (!StringUtils.isEmpty(height)) {
+                component.setHeight(height);
+            }
+
+            if (!StringUtils.isEmpty(width)) {
+                component.setWidth(width);
+            }
+        }
+        layout.setExpandRatio(component, 1);
     }
 }

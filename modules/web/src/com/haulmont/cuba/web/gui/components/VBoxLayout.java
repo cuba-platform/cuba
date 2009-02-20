@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.itmill.toolkit.ui.AbstractOrderedLayout;
 
 public class VBoxLayout extends AbstractContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
 
@@ -23,12 +24,7 @@ public class VBoxLayout extends AbstractContainer implements com.haulmont.cuba.g
     }
 
     public void expand(Component component, String height, String width) {
-        final com.itmill.toolkit.ui.Component comp = ComponentsHelper.unwrap(component);
-        if (height == null && width == null) {
-            comp.setSizeFull();
-            setExpandRatio(comp, 1);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+        ComponentsHelper.expand(this, expandedComponent, height, width);
     }
 }
