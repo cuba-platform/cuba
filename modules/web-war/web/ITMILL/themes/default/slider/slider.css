@@ -5,11 +5,12 @@
 .i-slider {
 	border-top: 1px solid #cccfd0;
 	border-bottom: 1px solid #cccfd0;
-	height: 3px;
 	margin: 5px 0;
+	width:200px;	
 }
 
 .i-slider-base {
+	/* changing the borders will require adjustments to ISlider.java */
 	height: 2px;
 	border-top: 1px solid #cbcdce;
 	background: #f3f3f4;
@@ -106,11 +107,19 @@
 
 }
 
+/* Disabled by default
 .i-slider-error .i-slider-base {
 	background:transparent;
 	background-color: #FFE0E0;
 }
+*/
 
+/* Disabled by default
+.i-slider-required .i-slider-base {
+	background:transparent;
+	background-color: #FFE0E0;
+}
+*/
 
 /* IE specific styles */
 

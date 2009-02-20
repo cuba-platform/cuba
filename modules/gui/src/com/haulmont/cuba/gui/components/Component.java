@@ -28,11 +28,11 @@ public interface Component {
 
     void requestFocus();
 
-    int getHeight();
+    float getHeight();
     int getHeightUnits();
     void setHeight(String height);
 
-    int getWidth();
+    float getWidth();
     int getWidthUnits();
     void setWidth(String width);
 

@@ -49,7 +49,7 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
         }
     }
 
-    public int getHeight() {
+    public float getHeight() {
         return component.getHeight();
     }
 
@@ -61,7 +61,7 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
         component.setHeight(height);
     }
 
-    public int getWidth() {
+    public float getWidth() {
         return component.getWidth();
     }
 

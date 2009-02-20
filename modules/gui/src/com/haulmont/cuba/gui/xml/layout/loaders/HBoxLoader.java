@@ -23,10 +23,7 @@ public class HBoxLoader extends ContainerLoader implements ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final OrderedLayout component =
-                StringUtils.isEmpty(element.attributeValue("expand")) ?
-                        factory.<OrderedLayout>createComponent("hbox") :
-                        factory.<OrderedLayout>createComponent("expandable-hbox");
+        final OrderedLayout component = factory.<OrderedLayout>createComponent("hbox");
 
         assignXmlDescriptor(component, element);
         loadId(component, element);

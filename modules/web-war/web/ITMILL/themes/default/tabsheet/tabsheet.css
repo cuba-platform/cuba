@@ -131,6 +131,7 @@
 	margin: 0 -1px 0 9px;
 	height: 18px;
 	padding: 16px 16px 14px 7px;
+	overflow: visible;
 }
 
 .i-tabsheet-content {
@@ -138,6 +139,7 @@
 	background-color: #fff;
 	border-bottom: 1px solid #dee2e3;
 	border-top: none;
+	position: relative;
 }
 
 .i-tabsheet-hidetabs .i-tabsheet-content {
@@ -163,21 +165,15 @@
 
 /* Progress indication */
 
-.i-tabsheet-loading .i-tabsheet-tabs .i-tabsheet-tabitem-selected span {
-	background: transparent url(../common/img/ajax-loader.gif) no-repeat;
-	display: block;
+.i-tabsheet-loading .i-tabsheet-tabitem-selected .i-captiontext {
+	background: transparent url(../common/img/ajax-loader.gif) no-repeat top right;
 	margin-left: -10px;
 	padding-left: 10px;
+	margin-right: -10px;
+	padding-right: 10px;
 	margin-top: -12px;
 	padding-top: 12px;
 }
-
-.i-tabsheet-loading .i-tabsheet-content * {
-	visibility: hidden;
-	overflow: hidden;
-}
-
-
 
 
 /* IE specific styles */
@@ -189,7 +185,7 @@
 	height: 46px;
 }
 
-* html .i-tabsheet-tabs .i-tabsheet-tabitem-selected {
+* html .i-tabsheet-tabitem-selected {
 	border: 1px solid #babfc0;
 	border-bottom: none;
 	background: #fff;
@@ -199,7 +195,7 @@
 	cursor: default;
 	color: #ee5311;
 }
-*+html .i-tabsheet-tabs .i-tabsheet-tabitem-selected {
+*+html .i-tabsheet-tabitem-selected {
 	border: 1px solid #babfc0;
 	border-bottom: none;
 	background: #fff;
@@ -210,12 +206,12 @@
 	color: #ee5311;
 }
 
-* html .i-tabsheet-tabs .i-tabsheet-tabitem-selected .i-caption {
+* html .i-tabsheet-tabitem-selected .i-caption {
 	background: transparent;
 	padding: 0;
 	margin: 0;
 }
-*+html .i-tabsheet-tabs .i-tabsheet-tabitem-selected .i-caption {
+*+html .i-tabsheet-tabitem-selected .i-caption {
 	background: transparent;
 	padding: 0;
 	margin: 0;
@@ -239,4 +235,175 @@
 	background: #babfc0;
 	overflow: hidden;
 	margin: 0;
+	width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Inline style */
+
+.i-tabsheet-light .i-tabsheet-tabcontainer {
+	height: 32px;
+}
+
+.i-tabsheet-tabs-light {
+	height: 32px;
+	width: 100%;
+	overflow:hidden;
+	background: transparent url(img/inline-tab-bg.png) repeat-x;
+}
+
+.i-tabsheet-light .i-tabsheet-spacertd div {
+	height: 31px;
+	border: none;
+	border-bottom: 1px solid #b6bbbc;
+	background: transparent;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem {
+	border: none;
+	border-bottom: 1px solid #b6bbbc;
+	height: 30px;
+	padding: 0;
+	margin-top: 0;
+	color: #656d73;
+	font-size: 12px;
+	line-height: normal;
+	background: transparent;
+	cursor: pointer;
+	text-shadow: #fff 0 1px 0;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitemcell-first .i-caption {
+	margin-left: 6px;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem .i-caption {
+	height: 24px;
+	padding: 8px 9px 0 9px;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	margin: 0;
+	padding: 0;
+	height: 32px;
+	cursor: default;
+	color: #ee5311;
+	text-shadow: none;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem:hover {
+	color: #4b5257;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem-selected:hover {
+	color: #ee5311;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem-selected .i-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	margin: 0;
+	height: 23px;
+	padding: 9px 11px 0 11px;
+	overflow: visible;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitemcell-first .i-tabsheet-tabitem-selected .i-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -3px 0;
+	padding-left: 15px;
+}
+
+.i-tabsheet-light .i-tabsheet-content {
+	border: none;
+	background: transparent;
+}
+
+.i-tabsheet-light .i-tabsheet-hidetabs .i-tabsheet-content {
+	border: none;
+}
+
+.i-tabsheet-deco-light {
+	height: 0;
+	overflow: hidden;
+}
+
+.i-tabsheet-deco-light:before {
+	display: none;
+}
+
+
+/* Scroller */
+
+.i-tabsheet-light .i-tabsheet-scrollerPrev,
+.i-tabsheet-light .i-tabsheet-scrollerNext {
+	margin-top: 2px;
+	height: 34px;
+}
+.i-tabsheet-light .i-tabsheet-scrollerPrev-disabled,
+.i-tabsheet-light .i-tabsheet-scrollerNext-disabled {
+	margin-top: 2px;
+	height: 34px;
+}
+
+
+
+
+/* Progress indication */
+
+.i-tabsheet-loading .i-tabsheet-tabs-light .i-tabsheet-tabitem-selected .i-captiontext {
+	margin-left: -3px;
+	padding-left: 3px;
+}
+
+
+
+/* IE specific styles */
+
+* html .i-tabsheet-tabs-light {
+	height: 32px;
+}
+*+html .i-tabsheet-tabs-light {
+	height: 32px;
+}
+
+* html .i-tabsheet-light .i-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	padding: 0;
+	height: 32px;
+}
+*+html .i-tabsheet-light .i-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	padding: 0;
+	height: 32px;
+}
+
+* html .i-tabsheet-light .i-tabsheet-tabitem-selected .i-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	padding: 9px 11px 0 11px;
+}
+*+html .i-tabsheet-light .i-tabsheet-tabitem-selected .i-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	padding: 9px 11px 0 11px;
+}
+
+* html .i-tabsheet-deco-light {
+	height: 0;
+}
+*+html .i-tabsheet-deco-light {
+	height: 0;
 }

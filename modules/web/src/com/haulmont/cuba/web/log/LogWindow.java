@@ -10,10 +10,7 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.itmill.toolkit.ui.Window;
-import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.ExpandLayout;
+import com.itmill.toolkit.ui.*;
 import com.haulmont.cuba.web.resource.Messages;
 import com.haulmont.cuba.web.App;
 
@@ -34,13 +31,14 @@ public class LogWindow extends Window
     }
 
     private void initUI() {
-        ExpandLayout layout = new ExpandLayout(ExpandLayout.ORIENTATION_VERTICAL);
+        VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
         setLayout(layout);
 
         final Label label = new Label();
         label.setContentMode(Label.CONTENT_UIDL);
         label.setValue(writeLog());
+        label.setSizeFull();
 
         Button refreshBtn = new Button(Messages.getString("logWindow.refreshBtn"),
                 new Button.ClickListener()
@@ -53,7 +51,7 @@ public class LogWindow extends Window
 
         addComponent(refreshBtn);
         addComponent(label);
-        layout.expand(label);
+
     }
 
     private String writeLog() {

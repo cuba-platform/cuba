@@ -46,9 +46,11 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     }
 
     protected com.itmill.toolkit.ui.Component createLayout() {
-        ExpandLayout layout = new ExpandLayout(ExpandLayout.ORIENTATION_VERTICAL);
+        VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
+
+        layout.setSizeFull();
 
         return layout;
     }
@@ -146,7 +148,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     public void requestFocus() {
     }
 
-    public int getHeight() {
+    public float getHeight() {
         return component.getHeight();
     }
 
@@ -158,7 +160,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         component.setHeight(height);
     }
 
-    public int getWidth() {
+    public float getWidth() {
         return component.getWidth();
     }
 
@@ -191,7 +193,13 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     public void setHorizontalAlignment(int horizontalAlIlignment) {}
 
     public void expand(Component component, String height, String width) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        final com.itmill.toolkit.ui.Component comp = ComponentsHelper.unwrap(component);
+        if (height == null && width == null) {
+            comp.setSizeFull();
+            ((AbstractOrderedLayout) getContainer()).setExpandRatio(comp, 1);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public <T> T getComponent() {
@@ -336,7 +344,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         private Handler handler;
 
         private Component lookupComponent;
-        private ExpandLayout contaiter;
+        private VerticalLayout contaiter;
 
         public com.haulmont.cuba.gui.components.Component getLookupComponent() {
             return lookupComponent;
@@ -361,11 +369,11 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
         @Override
         protected com.itmill.toolkit.ui.Component createLayout() {
-            final ExpandLayout form = new ExpandLayout();
+            final VerticalLayout form = new VerticalLayout();
 
-            contaiter = new ExpandLayout();
+            contaiter = new VerticalLayout();
 
-            OrderedLayout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+            HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight("25px");
 
             final Button selectButton = new Button("Select");
@@ -379,7 +387,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             form.addComponent(contaiter);
             form.addComponent(okbar);
 
-            form.expand(contaiter);
+            contaiter.setSizeFull();
 
             return form;
         }

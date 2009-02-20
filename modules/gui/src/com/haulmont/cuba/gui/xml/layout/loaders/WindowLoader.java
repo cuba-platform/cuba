@@ -16,6 +16,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 
+import java.util.Collection;
+
 public class WindowLoader extends FrameLoader implements ComponentLoader {
 
     public WindowLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -29,7 +31,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         loadResourceBundle(window, element);
         loadCaption(window, element);
 
-        loadSubComponents(window, element.element("layout"));
+        final Collection<Component> components = loadSubComponents(window, element.element("layout"));
+        if (components.size() == 1) window.expand(components.iterator().next(), null, null); 
 
         return window;
     }

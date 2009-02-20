@@ -22,7 +22,7 @@
     </dsContext>
 
     <layout>
-        <hbox id="tree-panel" expand="table">
+        <vbox>
             <split orientation="horizontal">
                 <vbox>
                     <tree id="groups">
@@ -38,6 +38,6 @@
                     <rows datasource="users"/>
                 </table>
             </split>
-        </hbox>
+        </vbox>
     </layout>
 </window>

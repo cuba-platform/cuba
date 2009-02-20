@@ -10,15 +10,25 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.ExpandLayout;
 
 public class VBoxLayout extends AbstractContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
 
     public VBoxLayout() {
-        super(ExpandLayout.ORIENTATION_VERTICAL);
+        setWidth("100%");
+    }
+
+    @Override
+    public String getTag() {
+        return "verticallayout";
     }
 
     public void expand(Component component, String height, String width) {
-        throw new UnsupportedOperationException();
+        final com.itmill.toolkit.ui.Component comp = ComponentsHelper.unwrap(component);
+        if (height == null && width == null) {
+            comp.setSizeFull();
+            setExpandRatio(comp, 1);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 }

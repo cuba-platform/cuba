@@ -1,7 +1,13 @@
 .i-accordion {
+	position: relative;
 	outline: none;
 	overflow: hidden;
 	text-align: left /* Force default alignment */
+}
+
+.i-accordion-item {
+	position: relative; 
+	background-color: #fff;
 }
 
 .i-accordion-item-caption {
@@ -26,11 +32,12 @@
 	border-bottom-color: #bfc9d4;
 	text-shadow: #fafafa 1px 1px 0;
 	border-bottom: 1px solid #c8cccd;
-}
-
-.i-accordion-item-open .i-accordion-item-caption .i-caption {
 	cursor: default;
 }
 
+
 .i-accordion-item-content {
+	position: absolute;
+	overflow: auto;
+	width: 100%;
 }

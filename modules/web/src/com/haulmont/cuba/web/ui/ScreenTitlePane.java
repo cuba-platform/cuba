@@ -15,11 +15,13 @@ import com.haulmont.cuba.web.resource.Messages;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.ExpandLayout;
 import com.itmill.toolkit.ui.Label;
+import com.itmill.toolkit.ui.HorizontalLayout;
+import com.itmill.toolkit.terminal.Sizeable;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class ScreenTitlePane extends ExpandLayout
+public class ScreenTitlePane extends HorizontalLayout
 {
     private LinkedList<String> captions = new LinkedList<String>();
 
@@ -27,20 +29,22 @@ public class ScreenTitlePane extends ExpandLayout
     private Button closeBtn;
 
     public ScreenTitlePane() {
-        super(ExpandLayout.ORIENTATION_HORIZONTAL);
-        setHeight(-1);
         setMargin(true);
+        setWidth(100, Sizeable.UNITS_PERCENTAGE);
+//        setHeight(20, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
 
         label = new Label();
-        addComponent(label);
-
         closeBtn = new Button(Messages.getString("closeBtn"), new Button.ClickListener()
         {
             public void buttonClick(Button.ClickEvent event) {
                 App.getInstance().getScreenManager().closeScreen();
             }
         });
+
         closeBtn.setStyleName(Button.STYLE_LINK);
+
+        label.setWidth(100, Sizeable.UNITS_PERCENTAGE);
+        addComponent(label);
         addComponent(closeBtn);
     }
 

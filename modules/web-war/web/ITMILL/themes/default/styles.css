@@ -1,8 +1,16 @@
 /* Automatically compiled css file from subdirectories. */
+
+/* ./WebContent/ITMILL/themes/default/accordion/accordion.css */
 .i-accordion {
+	position: relative;
 	outline: none;
 	overflow: hidden;
 	text-align: left /* Force default alignment */
+}
+
+.i-accordion-item {
+	position: relative; 
+	background-color: #fff;
 }
 
 .i-accordion-item-caption {
@@ -27,33 +35,59 @@
 	border-bottom-color: #bfc9d4;
 	text-shadow: #fafafa 1px 1px 0;
 	border-bottom: 1px solid #c8cccd;
-}
-
-.i-accordion-item-open .i-accordion-item-caption .i-caption {
 	cursor: default;
 }
 
+
 .i-accordion-item-content {
+	position: absolute;
+	overflow: auto;
+	width: 100%;
 }
+
+/* ./WebContent/ITMILL/themes/default/button/button.css */
 .i-button {
 	cursor: pointer;
 	font-size: 13px;
+	white-space: nowrap;
+	margin: 0px;
 }
-
-.i-button img {
+.i-checkbox input {
+	vertical-align: middle;
+}
+.i-button img, .i-checkbox img {
 	display:inline;
+	vertical-align: middle;
+	margin-right: 3px;
+}
+.i-button span, .i-checkbox label {
+	vertical-align: middle;
 }
 
 .i-button-link {
 	border: none;
 	text-align: left;
-	text-decoration: underline;
 	background: none;
 	padding: 0;
+}
+.i-sa .i-button-link:focus {
+	outline-offset: -3px;
 }
 .i-button-link span {
 	text-decoration: underline;
 }
+
+.i-checkbox {
+	white-space: nowrap;	
+}
+	
+.i-checkbox .i-errorindicator {
+	float: none;
+	display:inline;
+	padding-left: 10px;
+	background-position:left;
+}
+
 
 /* fixes streched buttons in IE6 */
 * html .i-button {
@@ -62,22 +96,21 @@
 	padding-left: 10px;
 	padding-right: 10px;
 }
+
 /* fixes streched buttons in IE7 */
 *+html .i-button {
 	overflow: visible;
 	padding-left: 10px;
 	padding-right: 10px;
-	width: expression(this.offsetWidth + "px");
 }
 
-	
 /* Error indicator on checkbox fix for IE6 */
 * html .i-checkbox * { display: block; float: left;}
-* html .i-checkbox .i-errorindicator {padding-right:4px;}
+* html .i-checkbox .i-errorindicator {background-position:right;display: block; float: left; padding-left: 0px; padding-right:4px;}
 
 /* Error indicator on checkbox fix for IE7 */
 *+ html .i-checkbox * { display: block; float: left;}
-*+ html .i-checkbox .i-errorindicator {padding-right:7px;}
+*+ html .i-checkbox .i-errorindicator {background-position:right;display: block; float: left; padding-left: 0px;;padding-right:7px;}
 
 /* Error indicator on button fix for IE7 */
 *+ html button .i-errorindicator { display:inline; padding-right:5px; }
@@ -86,10 +119,21 @@
 * html button .i-errorindicator { display:inline; padding-right:5px;}
 
 
+/* Disabled by default
 .i-checkbox-error {
 	background:transparent;
 	background-color: #FFE0E0;
 }
+*/
+
+/* Disabled by default
+.i-checkbox-required {
+	background:transparent;
+	background-color: #FFE0E0;
+}
+*/
+
+/* ./WebContent/ITMILL/themes/default/caption/caption.css */
 /* Provide some extra whitespace for wrapped elements
    (these elements usually need the extra space, since 
    they aren't even handling their own caption) */
@@ -98,13 +142,18 @@
 	text-align: left /* Force default alignment */
 }
 
+.i-caption {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
 .i-errorindicator {
-	width: 10px;
+	width: 12px;
 	height: 16px;
-	padding-right:13px;
-	display: inline;
+	float: left;
 	background: transparent url(icons/16/error.png) no-repeat top right;
 }
+
 * html .i-errorindicator {
 	background: transparent none;
 	/* gif for transparency */
@@ -113,30 +162,30 @@
 *+html .i-errorindicator {
 	margin-left:-3px;
 }
-	
 .i-caption .i-icon {
 	padding-right: 2px;
 	vertical-align: middle;
+	float: left;
+}
+.i-caption .i-captiontext {
+	float: left;
+	overflow: hidden;
+	vertical-align: middle;
 }
 
-.i-errormessage {
-	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
-	color: #464f52;
-	font-size: 13px;
-	line-height: 18px;
-	padding: 7px;
-	background-color: #FFE0E0;
-	border: 1px solid #FFB0B0;
-	overflow: auto;
+.i-caption .i-required-field-indicator {
+	float: left;
 }
+
+/* ./WebContent/ITMILL/themes/default/common/common.css */
 /* body tag created by servlet */
 .i-generated-body {
 	background: #e9eced;
-	width:100%;
-	height:100%;
-	border:0;
-	margin:0;
-	overflow:hidden;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	margin: 0;
+	overflow: hidden;
 }
 
 .i-app {
@@ -157,55 +206,57 @@
 .i-view {
 	height: 100%;
 	width: 100%;
-	overflow: auto; 
+	overflow: auto;
 	/* avoid scrollbars with margins in root layout */
 	outline: none;
-	margin-top:-1px;
-	border-top:1px solid transparent;
+	margin-top: -1px;
+	border-top: 1px solid transparent;
+	position: relative;
 }
-
 
 /**
  * Try to cope printing somehow. Reasonable printing support 
  * needs application specific planning and CSS tuning.
  */
 @media print {
-	
 	.i-generated-body {
 		height: auto;
 		min-height: 20cm;
 		overflow: visible;
 	}
-
 	.i-app {
-		height:auto;
+		height: auto;
 		min-height: 20cm;
 	}
-	
 	.i-view {
 		overflow: visible;
 	}
-	
 	.i-gridlayout {
 		overflow: visible !important;
 	}
-	
 }
 
-.i-view:active, .i-view:focus { 
+.i-view:active,
+.i-view:focus {
 	outline: none;
 }
 
-.i-app input, 
-.i-window input, 
-.i-app select, 
-.i-window select, 
-.i-app textarea, 
-.i-window textarea, 
+/* Global font styles */
+.i-app input,
+.i-app select,
 .i-app button,
-.i-window button {
+.i-app textarea,
+.i-window input,
+.i-window select,
+.i-window button,
+.i-window textarea,
+.i-popupview-popup input,
+.i-popupview-popup select,
+.i-popupview-popup button,
+.i-popupview-popup textarea {
 	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
 	color: #464f52;
+	font-size: 13px;
 }
 
 .i-app select,
@@ -214,26 +265,38 @@
 	margin: 0;
 }
 
-.i-disabled {
+.i-disabled,
+.i-app .i-disabled,
+.i-window .i-disabled {
 	opacity: 0.3;
-	filter: Alpha(opacity=30);
+	filter: Alpha(opacity = 30);
+	cursor: default;
 }
+
+.i-disabled *,
+.i-app .i-disabled *,
+.i-window .i-disabled * {
+	cursor: default;
+}
+
 * html .i-disabled {
 	zoom: 1;
 }
+
 *+html .i-disabled {
 	zoom: 1;
 }
+
 .i-disabled .i-disabled {
 	opacity: 1.0;
-	filter: Alpha(opacity=100);
 }
+
 .i-required-field-indicator {
-	padding-left:2px;
+	padding-left: 2px;
 	color: red;
 }
 
-/* Field modified */
+/* Field modified */ /* Disabled by default
 input.i-modified,
 .i-richtextarea.i-modified iframe.gwt-RichTextArea,
 .i-checkbox.i-modified,
@@ -247,34 +310,57 @@ input.i-modified,
 	background:transparent;
 	background-color: #FFFFE0;
 }
-
+*/
 
 /**
- * Custom toolktip
+ * Custom tooltip
  */
- .i-tooltip {
- 	background-color: #ffffcc;
- 	border: 1px solid #464f52;
- 	font-size: 12px;
- 	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
-	color: #464f52;
- }
+.i-tooltip {
+	background-color: #fffcdd;
+	border: 1px solid #b8b295;
+	border-top-color: #d5d2c1;
+	border-left-color: #d5d2c1;
+	font-size: 11px;
+	line-height: 13px;
+	font-family: arial, helvetica, tahoma, verdana, sans-serif;
+	color: #5d5444;
+	cursor: default;
+}
 
 .i-tooltip-text {
-	margin: 4px;
+	padding: 2px 4px;
+	border: none;
+	border-top: 1px solid #fffef5;
+	border-bottom: 1px solid #fbf8d9;
 	overflow: auto;
 }
 
- .i-tooltip .i-errormessage {
-	padding: 4px;
-	border-width: 0  0 1px 0;
+.i-tooltip .i-errormessage {
+	padding: 3px 4px 3px 4px;
+	background: #ffecc6;
+	color: #b74100;
+	border: none;
+	border-top: 1px solid #fff3dc;
+	border-bottom: 1px solid #ead7b1;
 	overflow: auto;
- }
+}
+
+.i-tooltip .i-errormessage h2 {
+	font-size: 16px;
+	font-weight: normal;
+	color: #ab3101;
+	margin: 2px 0 8px 0;
+}
+
+.i-tooltip .i-errormessage h3 {
+	font-size: 13px;
+	font-weight: bold;
+	margin: 1px 0 4px 0;
+}
 
 /**
  * Context menu styles 
  */
-
 .i-contextmenu {
 	background: #e9eced url(tabsheet/img/tab-bg.png);
 	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
@@ -285,8 +371,8 @@ input.i-modified,
 }
 
 .i-contextmenu .gwt-MenuBar {
-	border-right: 2px solid #c6cbcc;
-	border-bottom: 2px solid #c6cbcc;
+	border-right: 1px solid #c6cbcc;
+	border-bottom: 1px solid #c6cbcc;
 	border-top: 1px solid #d0d4d5;
 	border-left: 1px solid #d0d4d5;
 }
@@ -297,8 +383,7 @@ input.i-modified,
 	vertical-align: middle;
 }
 
-.i-contextmenu .gwt-MenuItem div {
-	/*border: 1px solid #f6f7f7;*/
+.i-contextmenu .gwt-MenuItem div { /*border: 1px solid #f6f7f7;*/
 	padding: 1px 20px 1px 8px;
 	cursor: pointer;
 	vertical-align: middle;
@@ -311,32 +396,26 @@ input.i-modified,
 }
 
 .i-contextmenu table {
-	border-collapse:collapse;
-	margin:0;
-	padding:0;
+	border-collapse: collapse;
+	margin: 0;
+	padding: 0;
 }
+
 .i-contextmenu .gwt-MenuItem img {
 	margin-right: 10px;
 	vertical-align: middle;
-}
-
-
-/**
- * Link component styles 
- * (useless to move into a separate file)
- */
-
-.i-link span {
-	text-decoration: underline;
-	cursor:pointer;
 }
 
 /**
  * Label has tiny paddings to include contents margins.
  */
 .i-label {
-	padding-top:1px;
+	padding-top: 1px;
 	padding-bottom: 1px;
+}
+
+.i-label-undef-w {
+	white-space: nowrap;
 }
 
 /* Loading indicator states
@@ -350,12 +429,77 @@ input.i-modified,
 	height: 31px;
 	background: transparent url(common/img/loading-indicator.gif);
 }
+
 .i-loading-indicator-delay {
 	background: transparent url(common/img/loading-indicator-delay.gif);
 }
+
 .i-loading-indicator-wait {
 	background: transparent url(common/img/loading-indicator-wait.gif);
 }
+.i-loading-indicator,
+.i-loading-indicator-delay,
+.i-loading-indicator-wait {
+	position: absolute;
+	top:6px;
+	right: 5px;	
+	z-index:30000;
+}
+
+/* debug dialog */
+.i-debug-console {
+	background: white;
+	opacity: 0.85;
+	border: 1px solid black;
+	font-family: sans-serif;
+}
+
+.i-debug-console-caption {
+	background: black;
+	border-bottom: 1px solid grey;
+	color: white;
+	font-weight: bold;
+}
+
+.i-debug-console-content {
+	font-size: x-small;
+	overflow: auto;
+}
+
+.i-debug-console-content input {
+	font-size: xx-small;
+}
+
+/* Debug style */
+.i-app .invalidlayout,
+.i-app .invalidlayout * {
+	background: #f99 !important;
+}
+
+/* Fix for liferay. #2384 */
+.i-app input[type="text"],
+.i-app input[type="password"],
+.i-app input[type="reset"],
+.i-app select,
+.i-app textarea {
+	padding: 2px;
+}
+
+/* ./WebContent/ITMILL/themes/default/customcomponent/customcomponent.css */
+.i-customcomponent {
+	overflow: hidden;
+}
+
+/* ./WebContent/ITMILL/themes/default/customlayout/customlayout.css */
+.i-customlayout {
+	overflow: hidden;
+}
+
+/* ./WebContent/ITMILL/themes/default/datefield/datefield.css */
+.i-datefield {
+	white-space: nowrap;
+}
+
 .i-datefield-textfield {
 	vertical-align: top;
 }
@@ -536,11 +680,21 @@ input.i-modified,
 	margin: 0;
 }
 
+/* Disabled by default
 .i-datefield-error .i-textfield,
 .i-datefield-error .i-datefield-calendarpanel {
 	background:transparent;
 	background-color: #FFE0E0;
 }
+*/
+
+/* Disabled by default
+.i-datefield-required .i-textfield,
+.i-datefield-required .i-datefield-calendarpanel {
+	background:transparent;
+	background-color: #FFE0E0;
+}
+*/
 
 .i-datefield-rendererror .i-textfield {
 	background: #ff9999;
@@ -567,49 +721,8 @@ input.i-modified,
 	filter: alpha(opacity=30);
 }
 
-.i-expandlayout-lo-table {
-	margin:0;
-	padding:0;
-	height:100%;
-	border:0;
-	border-spacing: 0;
-}
-.i-expandlayout-lo-td {
-	margin:0;
-	padding:0;
-	height:100%;
-	border:0;
-}
 
-.i-expandlayout-valign {
-	margin:0;
-	padding:0;
-	border:0;
-	border-collapse:collapse;
-	border-spacing:0;
-	height:100%;
-	width:100%;
-}
-
-.i-expandlayout-margin-top {
-	padding-top: 15px;
-}
-.i-expandlayout-margin-right {
-	padding-right: 18px;
-}
-.i-expandlayout-margin-bottom {
-	padding-bottom: 15px;
-}
-.i-expandlayout-margin-left {
-	padding-left: 18px;
-}
-
-.i-expandlayout-vspacing {
-	margin-top: 8px;
-}
-.i-expandlayout-hspacing {
-	margin-left: 8px;
-}
+/* ./WebContent/ITMILL/themes/default/formlayout/formlayout.css */
 .i-formlayout-cell .i-errorindicator {
 	width: 10px;
 	height: 16px;
@@ -618,6 +731,18 @@ input.i-modified,
 }
 .i-formlayout-captioncell {
 	text-align:right;
+	white-space: nowrap;
+}
+.i-formlayout-captioncell .i-caption {
+	overflow: visible;
+}
+
+.i-formlayout-contentcell {
+}
+
+.i-formlayout-error-indicator {
+	/* fix width so layout is not jumpy when error disapear */
+	width: 12px;
 }
 
 .i-formlayout-spacing .i-formlayout-row .i-formlayout-captioncell, 
@@ -662,6 +787,24 @@ input.i-modified,
 * html .i-form-errormessage {
 	height: 20px
 }
+
+.i-form fieldset {
+	border: none;
+	border-top: 1px solid #babfc0;
+}
+
+.i-form legend {
+	margin: 0;
+	padding: 0 4px 0.3em 4px;
+	font-weight: bold;
+}
+
+.i-formlayout-captioncell .i-caption .i-required-field-indicator {
+	float: none;
+}
+
+/* ./WebContent/ITMILL/themes/default/gridlayout/gridlayout.css */
+/* Margin values if defined from server side */
 .i-gridlayout-margin-top {
 	padding-top: 15px;
 }
@@ -675,34 +818,120 @@ input.i-modified,
 	padding-right: 18px;
 }
 
-.i-gridlayout-grid {
-	margin:0;
-	padding:0;
-	border-collapse: collapse;
-	border:0;
-}
-
-.i-gridlayout-cell {
-	margin:0;
-	padding:0;
-}
-
-/* spacing value used by css detector */
-.i-gridlayout-spacing-element {
+/* 
+ * Spacing values used by IGridLayout. (element does not exist in DOM)
+ * Use padding-left for horizontal spacing and padding-top for vertical.
+ */
+.i-gridlayout-spacing-on {
 	padding-left:8px;
+	padding-top:8px;
+	overflow:hidden;
+}
+.i-gridlayout-spacing-off {
+	padding-left:0px;
+	padding-top:0px;
+	overflow:hidden;
 }
 
-.i-gridlayout-spacing .i-gridlayout-cell {
-	padding-left: 8px;
-	padding-top: 8px;
+.i-gridlayout-spacing,
+.i-gridlayout-spacing-off {
+	padding-left:0px;
+	padding-top:0px;
 }
 
-.i-gridlayout-spacing .i-gridlayout-firstcol {
-	padding-left: 0;
+.i-gridlayout {
+	overflow:hidden;
 }
-.i-gridlayout-spacing .i-gridlayout-firstrow {
-	padding-top: 0;
+
+
+/* ./WebContent/ITMILL/themes/default/link/link.css */
+/**
+ * Link component styles 
+ * (useless to move into a separate file)
+ */
+.i-link {
+	white-space: nowrap;	
 }
+
+.i-link a {
+	color: #464f52;
+	vertical-align: middle;
+	text-decoration: none;
+}
+
+.i-link span {
+	text-decoration: underline;
+	vertical-align: middle;
+}
+
+.i-disabled a {
+	cursor: default;
+}
+
+.i-link img {
+	vertical-align: middle;
+	border:none;
+}
+
+/* ./WebContent/ITMILL/themes/default/menubar/menubar.css */
+/*
+ *MenuBar styles
+ */
+ 
+/*Top menu */
+.i-menubar table {
+	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+
+	border-style:ridge;
+	border-width:thin;
+	border-color:	#D3D3D3;
+
+ 	background-color : white;
+ 	white-space: nowrap;
+ 
+}
+
+.i-menubar .menuitem{
+	 cursor : default;
+	
+	 padding : 0px 10px;
+	 margin : 0px 10px;
+	
+	 background-color : white;
+ }
+
+.i-menubar .menuitem-selected {
+	 background-color : 	#EEEEFF;
+ }
+
+/*Submenu*/
+.i-menubar-submenu {
+	 font-size: 13px;
+	 padding : 3px;
+	 
+	 font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+	 background-color : white;
+	 white-space: nowrap;
+		
+	 border-style:ridge;
+	 border-width:thin;
+	 border-color:	#D3D3D3;
+	 
+
+}
+
+.i-menubar-submenu .menuitem { 
+    cursor                      :   default;
+
+    background-color            :   white;
+    padding                     :   2px 10px;
+}
+
+.i-menubar-submenu .menuitem-selected {
+	background-color : 	#EEEEFF;
+}
+
+/* ./WebContent/ITMILL/themes/default/notification/notification.css */
 
 .i-Notification {
 	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
@@ -784,25 +1013,39 @@ input.i-modified,
 .i-Notification.system p {
 	white-space: nowrap;
 }
-.i-orderedlayout-margin-top {
+
+/* ./WebContent/ITMILL/themes/default/orderedlayout/orderedlayout.css */
+.i-orderedlayout, .i-horizontallayout, .i-verticallayout {
+	overflow: hidden;
+}
+
+.i-orderedlayout-margin-top, .i-horizontallayout-margin-top, .i-verticallayout-margin-top {
 	padding-top: 15px;
 }
-.i-orderedlayout-margin-right {
+
+.i-orderedlayout-margin-right, .i-horizontallayout-margin-right, .i-verticallayout-margin-right {
 	padding-right: 18px;
 }
-.i-orderedlayout-margin-bottom {
+
+.i-orderedlayout-margin-bottom, .i-horizontallayout-margin-bottom, .i-verticallayout-margin-bottom {
 	padding-bottom: 15px;
 }
-.i-orderedlayout-margin-left {
+
+.i-orderedlayout-margin-left, .i-horizontallayout-margin-left, .i-verticallayout-margin-left {
 	padding-left: 18px;
 }
 
-.i-orderedlayout-vspacing {
-	margin-top: 8px;
-}
-.i-orderedlayout-hspacing {
+.i-orderedlayout-spacing-on, .i-horizontallayout-spacing-on, .i-verticallayout-spacing-on {
+	padding-top: 8px;
 	padding-left: 8px;
 }
+/** This can be used to define spacing if spacing is off server side */
+.i-orderedlayout-spacing-off, .i-horizontallayout-spacing-off, .i-verticallayout-spacing-off {
+	padding-top: 0px;
+	padding-left: 0px;
+}
+
+/* ./WebContent/ITMILL/themes/default/panel/panel.css */
 .i-panel,
 .i-panel-caption,
 .i-panel-content,
@@ -821,12 +1064,18 @@ input.i-modified,
 
 .i-panel-caption .i-errorindicator {
 	float: none;
-	padding-right:18px;
+	padding-right:20px;
 	display:inline;
+	background: transparent url(icons/16/error.png) no-repeat bottom center;
+	
 }
 
 .i-panel-caption .i-icon {
 	display:inline;
+	vertical-align: middle;
+}
+.i-panel-caption span {
+	vertical-align: middle;
 }
 
 .i-panel-caption,
@@ -958,13 +1207,31 @@ input.i-modified,
 	height: 0;
 	overflow: hidden;
 }
-.i-progressindicator {
-	background: #dfe2e4 url(progressindicator/img/base.gif);
-	height: 9px;
-	border: 1px solid #b6bbbc;
-	overflow: hidden; /* for IE6 */
+
+/* ./WebContent/ITMILL/themes/default/popupview/popupview.css */
+.i-popupview-popup {
+	border: 1px solid #babfc0;
+	border-bottom: 1px solid #dee2e3;
+	background: #fff;
+	overflow: auto;
+	padding: 3px;
 }
 
+.i-popupview {
+	cursor: pointer;
+}
+
+/* ./WebContent/ITMILL/themes/default/progressindicator/progressindicator.css */
+.i-progressindicator {
+	background: #dfe2e4 url(progressindicator/img/base.gif);
+	overflow: hidden; /* for IE6 */
+	width: 150px;
+}
+.i-progressindicator-wrapper {
+	border: 1px solid #b6bbbc;
+	overflow: hidden; /* for IE6 */
+	height: 9px;
+}
 .i-progressindicator-disabled {
 	background: #dfe2e4 url(progressindicator/img/disabled.gif);
 	height: 9px;
@@ -972,7 +1239,7 @@ input.i-modified,
 	overflow: hidden; /* for IE6 */
 }
 
-.i-progressindicator div {
+.i-progressindicator-indicator {
 	background: #f7f9f9 url(progressindicator/img/progress.png);
 	height: 9px;
 	overflow: hidden; /* for IE6 */
@@ -984,12 +1251,23 @@ input.i-modified,
 	width: 16px;
 	overflow: hidden; /* for IE6 */
 }
-.i-progressindicator-disabled-indeterminate {
+
+/* Hide obsolete elements in indeterminate mode */
+.i-progressindicator-indeterminate .i-progressindicator-wrapper,
+.i-progressindicator-indeterminate .i-progressindicator-indicator,
+.i-progressindicator-indeterminate-disabled .i-progressindicator-wrapper,
+.i-progressindicator-indeterminate-disabled .i-progressindicator-indicator {
+	display: none;
+}
+
+.i-progressindicator-indeterminate-disabled {
 	background: #dfe2e4 url(common/img/blank.gif);
 	height: 16px;
 	width: 16px;
 	overflow: hidden; /* for IE6 */
 }
+
+/* ./WebContent/ITMILL/themes/default/select/select.css */
 .i-select {
 	text-align: left /* Force default alignment */
 }
@@ -1004,6 +1282,8 @@ input.i-modified,
 .i-select-optiongroup .i-select-option {
 	display: block;
 	white-space: nowrap;
+	/* really mean block for IE */
+	zoom: 1;
 }
 
 .i-select-select {
@@ -1060,34 +1340,45 @@ input.i-modified,
 
 .i-filterselect {
 	height: 23px;
-	background: transparent url(select/img/bg-left-filter.png) no-repeat;
-	margin-right: 1px;
 	white-space: nowrap;
-	text-align: left /* Force default alignment */
+	text-align: left; /* Force default alignment */
+	background: transparent url(select/img/bg-left-filter.png) no-repeat;
+	padding-left: 4px;
 }
-
-.i-filterselect-input {
-	width: 99%;
+.i-filterselect .i-icon {
+	float: left;
+}
+.i-app .i-filterselect .i-filterselect-input,
+.i-window .i-filterselect .i-filterselect-input,
+.i-popupview-popup .i-filterselect .i-filterselect-input {
+	background: transparent url(select/img/bg-center-filter.png) no-repeat 1px 0;
+	float: left;
 	border: none;
-	background: transparent;
 	height: 20px;
-	margin: 0;
-	padding: 3px 0 0 4px;
+	margin: 0px;
+	padding: 3px 0 0 2px;
 	font-size: 13px;
 }
 .i-filterselect-input:focus {
-	/* button clips safari outline otherwise (#1684) */
-	outline-offset: -1px; 
+	/* remove safari/mac outline from this element */
+	outline: 0px;
+}
+.i-filterselect-focus {
+	outline: 1px solid #5daee8;
+	outline-offset: -1px;
+}
+.i-sa .i-filterselect-focus {
+	/* place safari focus outline around the whole thing */
+	outline: 5px auto -webkit-focus-ring-color;
+	outline-offset: -4px;
 }
 
 .i-filterselect-button {
 	float: right;
-	margin: -23px -1px 0 0;
 	width: 25px;
 	height: 23px;
 	cursor: pointer;
 	background: transparent url(select/img/bg-right-filter.png);
-	position: relative;
 }
 .i-filterselect-button:hover {
 	background-position: bottom left;
@@ -1095,6 +1386,15 @@ input.i-modified,
 .i-disabled .i-filterselect-button:hover,
 .i-readonly .i-filterselect-button:hover {
 	background-position: top left;
+}
+
+.i-filterselect.i-readonly .i-filterselect-button {
+	display: none;
+}
+
+.i-filterselect.i-readonly .i-filterselect-input {
+	background: transparent;
+	color: black;
 }
 
 .i-filterselect-suggestpopup {
@@ -1106,14 +1406,24 @@ input.i-modified,
 	line-height: 18px;
 	margin-top: -1px;
 }
-.i-filterselect-suggestmenu {
-	margin-left: -2px;
+.i-filterselect-suggestmenu table {
+	border-collapse: collapse;
+	border: none;
 }
 .i-filterselect-suggestmenu .gwt-MenuItem {
-	padding: 1px 5px;
+	padding: 1px 6px;
 	cursor: pointer;
 	height: 18px;
 	white-space: nowrap;
+}
+
+.i-filterselect-suggestmenu .gwt-MenuItem .i-icon {
+	margin-right: 3px;
+	vertical-align: middle;
+}
+
+.i-filterselect-suggestmenu .gwt-MenuItem span {
+	vertical-align: middle;
 }
 
 .i-filterselect-suggestmenu .gwt-MenuItem-selected {
@@ -1182,12 +1492,20 @@ input.i-modified,
 	border-top: 1px solid #b6bbbc;
 }
 
+
+/* Error styles (disabled by default)
+   ----------------------------------
+   
 .i-filterselect-error {
-	background: transparent url(select/img/bg-left-filter-error.png) no-repeat;
+	background-image: url(select/img/bg-left-filter-error.png);
+}
+
+.i-filterselect-error .i-filterselect-input {
+	background-image: url(select/img/bg-center-filter-error.png);
 }
 
 .i-filterselect-error .i-filterselect-button {
-	background: transparent url(select/img/bg-right-filter-error.png);
+	background-image: url(select/img/bg-right-filter-error.png);
 }
 
 .i-select-error .i-select-option,
@@ -1197,96 +1515,86 @@ input.i-modified,
 	background:transparent;
 	background-color: #FFE0E0;
 }
+*/
 
-/* IE specific styles */
-
-* html .i-filterselect {
-
+/*  Required field styles (disabled by default)
+   --------------------------------------------
+   
+.i-select-required .i-select-option,
+.i-select-required .i-select-select,
+.i-select-required .i-select-twincol-selections,
+.i-select-required .i-select-twincol-options {
+	background:transparent;
+	background-color: #FFE0E0;
 }
-* html .i-filterselect-input {
-	margin-top: -1px;
-}
+*/
 
-*+html .i-filterselect-input {
-	margin-top: -1px;
-}
-* html .i-filterselect-button {
-	position: static;
-	margin-top: -24px;
-}
-*+html .i-filterselect-button {
-	position: static;
-	margin-top: -24px;
-}
-
-
+/* ./WebContent/ITMILL/themes/default/shadow/shadow.css */
 .i-shadow {
 	position: absolute;
-	overflow: auto;
 }
 
 .i-shadow .top-left {
     position: absolute; overflow: hidden;
-    top: 0;             left: 0;
+    top: -3px;             left: -4px;
     width: 8px;         height: 8px;
     background: transparent url(shadow/img/top-left.png);
 }
 
 .i-shadow .top {
     position: absolute; overflow: hidden;
-    top: 0;             left: 8px;
-    height: 8px;
-    right: 8px;
+    top: -3px;             left: 4px;
+    height: 8px;           right: 4px;
     background: transparent url(shadow/img/top.png);
 }
 
 .i-shadow .top-right {
     position: absolute; overflow: hidden;
-    top: 0;             right: 0;
+    top: -3px;             right: -4px;
     width: 8px;         height: 8px;
     background: transparent url(shadow/img/top-right.png);
 }
 
 .i-shadow .left {
     position: absolute; overflow: hidden;
-    top: 8px;           left: 0;
+    top: 5px;           left: -4px;
     width: 8px;
-    bottom: 8px;
+    bottom: 3px;
     background: transparent url(shadow/img/left.png);
 }
 
 .i-shadow .center {
     position: absolute; overflow: hidden;
-    top: 8px;           left: 8px;
-    bottom: 8px;        right: 8px;
+    top: 5px;           left: 4px;
+    bottom: 3px;        right: 4px;
     background: transparent url(shadow/img/center.png);
 }
 
 .i-shadow .right {
     position: absolute; overflow: hidden;
-    top: 8px;           right: 0;
+    top: 5px;           right: -4px;
     width: 8px;
-    bottom: 8px;
+    bottom: 3px;
     background: transparent url(shadow/img/right.png);
 }
 
 .i-shadow .bottom-left {
     position: absolute; overflow: hidden;
-    bottom: 0;           left: 0;
+    bottom: -5px;           left: -4px;
     width: 8px;          height: 8px;
     background: transparent url(shadow/img/bottom-left.png);
 }
 
 .i-shadow .bottom {
     position: absolute; overflow: hidden;
-    bottom: 0;           left: 8px;
-    right: 8px;          height: 8px;
+    bottom: -5px;           left: 4px;
+    right: 4px;          height: 8px;
     background: transparent url(shadow/img/bottom.png);
 }
 
 .i-shadow .bottom-right {
     position: absolute; overflow: hidden;
-    bottom: 0;           right: 0;
+    bottom: -5px;           right: -4px;
     width: 8px;          height: 8px;
     background: transparent url(shadow/img/bottom-right.png);
 }
@@ -1295,76 +1603,20 @@ input.i-modified,
 
 
 
-/* And all the same for IE6 (transparent png's) */
+/* For IE6 (no transparent png's, we use a blur filter) */
 
-* html .i-shadow .top-left {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/top-left.png", sizingMethod='crop');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/top-left.png", sizingMethod='crop');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/top-left.png", sizingMethod='crop');
+* html .i-shadow * {
+	display: none;
 }
 
-* html .i-shadow .top {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/top.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/top.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/top.png", sizingMethod='scale');
-    width: expression((this.parentNode.offsetWidth - this.previousSibling.offsetWidth - this.nextSibling.offsetWidth) + "px");
-}
+* html .i-shadow {
+	background: #000;
+	filter: progid:DXImageTransform.Microsoft.Blur(pixelRadius=2) alpha(opacity=20);
+	margin-top: -3px;
+	margin-left: -4px;
+}  
 
-* html .i-shadow .top-right {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/top-right.png", sizingMethod='crop');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/top-right.png", sizingMethod='crop');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/top-right.png", sizingMethod='crop');
-}
-
-* html .i-shadow .left {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/left.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/left.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/left.png", sizingMethod='scale');
-    height: expression((this.parentNode.offsetHeight - this.parentNode.firstChild.offsetHeight - this.parentNode.childNodes[6].offsetHeight) + "px");
-}
-
-* html .i-shadow .center {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/center.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/center.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/center.png", sizingMethod='scale');
-    height: expression(this.parentNode.offsetHeight - this.parentNode.firstChild.offsetHeight - this.parentNode.childNodes[6].offsetHeight);
-    width: expression((this.parentNode.offsetWidth - this.previousSibling.offsetWidth - this.nextSibling.offsetWidth) + "px");
-}
-
-* html .i-shadow .right {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/right.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/right.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/right.png", sizingMethod='scale');
-    height: expression((this.parentNode.offsetHeight - this.parentNode.firstChild.offsetHeight - this.parentNode.childNodes[6].offsetHeight) + "px");
-}
-
-* html .i-shadow .bottom-left {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/bottom-left.png", sizingMethod='crop');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/bottom-left.png", sizingMethod='crop');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/bottom-left.png", sizingMethod='crop');
-}
-
-* html .i-shadow .bottom {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/bottom.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/bottom.png", sizingMethod='scale');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/bottom.png", sizingMethod='scale');
-    width: expression((this.parentNode.offsetWidth - this.previousSibling.offsetWidth - this.nextSibling.offsetWidth) + "px");
-}
-
-* html .i-shadow .bottom-right {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/shadow/img/bottom-right.png", sizingMethod='crop');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/shadow/img/bottom-right.png", sizingMethod='crop');
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/shadow/img/bottom-right.png", sizingMethod='crop');
-}
+/* ./WebContent/ITMILL/themes/default/slider/slider.css */
 /*--------------------------
   Default (horizontal) styles
   --------------------------*/
@@ -1372,11 +1624,12 @@ input.i-modified,
 .i-slider {
 	border-top: 1px solid #cccfd0;
 	border-bottom: 1px solid #cccfd0;
-	height: 3px;
 	margin: 5px 0;
+	width:200px;	
 }
 
 .i-slider-base {
+	/* changing the borders will require adjustments to ISlider.java */
 	height: 2px;
 	border-top: 1px solid #cbcdce;
 	background: #f3f3f4;
@@ -1473,11 +1726,19 @@ input.i-modified,
 
 }
 
+/* Disabled by default
 .i-slider-error .i-slider-base {
 	background:transparent;
 	background-color: #FFE0E0;
 }
+*/
 
+/* Disabled by default
+.i-slider-required .i-slider-base {
+	background:transparent;
+	background-color: #FFE0E0;
+}
+*/
 
 /* IE specific styles */
 
@@ -1491,6 +1752,8 @@ input.i-modified,
 * html .i-slider-vertical .i-slider-handle {
 	margin: 0 -1px;
 }
+
+/* ./WebContent/ITMILL/themes/default/splitpanel/splitpanel.css */
 .i-splitpanel-horizontal, .i-splitpanel-vertical {
 	overflow: hidden;
 }
@@ -1544,13 +1807,14 @@ input.i-modified,
 	margin: 0;
 }
 
+
+/* ./WebContent/ITMILL/themes/default/table/table.css */
 .i-table {
-	border: 1px solid #b6bbbc;
 	overflow: hidden;
 	text-align: left /* Force default alignment */
 }
 
-.i-table.table-inline {
+.i-table.table-inline .i-table-header-wrap {
 	border-left: none;
 	border-right: none;
 	/*margin: -16px -18px 0 -18px;*/
@@ -1559,7 +1823,8 @@ input.i-modified,
 .i-table-header-wrap {
 	height: 36px;
 	background: #e7edf3 url(table/img/header-bg.png) repeat-x;
-	border-bottom: 1px solid #b6bbbc;
+	border: 1px solid #b6bbbc;
+	border-bottom: none;
 	overflow: hidden;
 }
 
@@ -1619,6 +1884,7 @@ input.i-modified,
 
 .i-table-body {
 	background: #fff;
+	border: 1px solid #b6bbbc;
 }
 
 .i-table-row-spacer {
@@ -1642,8 +1908,8 @@ input.i-modified,
 	background-color: #edeeee;
 }
 .i-table .i-selected {
-	background: #d5dde0;
-	color: #456572;
+	background: #57a7ed;
+	color: #fff;
 }
 .i-table-row td,
 .i-table-row-odd td {
@@ -1658,7 +1924,7 @@ input.i-modified,
 }
 
 /* Fix textfield size to correspond label size inside table */
-.i-table-cell-content input.i-textfield,
+.i-table-cell-content .i-textfield,
 .i-table-cell-content .i-button {
 	margin: -2px 0 -2px -3px;
 }
@@ -1746,6 +2012,9 @@ input.i-modified,
 	text-indent: 6px;
 }
 
+.i-table .i-link {
+	display: inline;
+}
 
 /* IE6 hack */
 * html .i-table-scrollposition {
@@ -1760,6 +2029,8 @@ input.i-modified,
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
 }
+
+/* ./WebContent/ITMILL/themes/default/tabsheet/tabsheet.css */
 .i-tabsheet,
 .i-tabsheet-content,
 .i-tabsheet-deco {
@@ -1893,6 +2164,7 @@ input.i-modified,
 	margin: 0 -1px 0 9px;
 	height: 18px;
 	padding: 16px 16px 14px 7px;
+	overflow: visible;
 }
 
 .i-tabsheet-content {
@@ -1900,6 +2172,7 @@ input.i-modified,
 	background-color: #fff;
 	border-bottom: 1px solid #dee2e3;
 	border-top: none;
+	position: relative;
 }
 
 .i-tabsheet-hidetabs .i-tabsheet-content {
@@ -1925,21 +2198,15 @@ input.i-modified,
 
 /* Progress indication */
 
-.i-tabsheet-loading .i-tabsheet-tabs .i-tabsheet-tabitem-selected span {
-	background: transparent url(common/img/ajax-loader.gif) no-repeat;
-	display: block;
+.i-tabsheet-loading .i-tabsheet-tabitem-selected .i-captiontext {
+	background: transparent url(common/img/ajax-loader.gif) no-repeat top right;
 	margin-left: -10px;
 	padding-left: 10px;
+	margin-right: -10px;
+	padding-right: 10px;
 	margin-top: -12px;
 	padding-top: 12px;
 }
-
-.i-tabsheet-loading .i-tabsheet-content * {
-	visibility: hidden;
-	overflow: hidden;
-}
-
-
 
 
 /* IE specific styles */
@@ -1951,7 +2218,7 @@ input.i-modified,
 	height: 46px;
 }
 
-* html .i-tabsheet-tabs .i-tabsheet-tabitem-selected {
+* html .i-tabsheet-tabitem-selected {
 	border: 1px solid #babfc0;
 	border-bottom: none;
 	background: #fff;
@@ -1961,7 +2228,7 @@ input.i-modified,
 	cursor: default;
 	color: #ee5311;
 }
-*+html .i-tabsheet-tabs .i-tabsheet-tabitem-selected {
+*+html .i-tabsheet-tabitem-selected {
 	border: 1px solid #babfc0;
 	border-bottom: none;
 	background: #fff;
@@ -1972,12 +2239,12 @@ input.i-modified,
 	color: #ee5311;
 }
 
-* html .i-tabsheet-tabs .i-tabsheet-tabitem-selected .i-caption {
+* html .i-tabsheet-tabitem-selected .i-caption {
 	background: transparent;
 	padding: 0;
 	margin: 0;
 }
-*+html .i-tabsheet-tabs .i-tabsheet-tabitem-selected .i-caption {
+*+html .i-tabsheet-tabitem-selected .i-caption {
 	background: transparent;
 	padding: 0;
 	margin: 0;
@@ -2001,7 +2268,180 @@ input.i-modified,
 	background: #babfc0;
 	overflow: hidden;
 	margin: 0;
+	width: 100%;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Inline style */
+
+.i-tabsheet-light .i-tabsheet-tabcontainer {
+	height: 32px;
+}
+
+.i-tabsheet-tabs-light {
+	height: 32px;
+	width: 100%;
+	overflow:hidden;
+	background: transparent url(tabsheet/img/inline-tab-bg.png) repeat-x;
+}
+
+.i-tabsheet-light .i-tabsheet-spacertd div {
+	height: 31px;
+	border: none;
+	border-bottom: 1px solid #b6bbbc;
+	background: transparent;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem {
+	border: none;
+	border-bottom: 1px solid #b6bbbc;
+	height: 30px;
+	padding: 0;
+	margin-top: 0;
+	color: #656d73;
+	font-size: 12px;
+	line-height: normal;
+	background: transparent;
+	cursor: pointer;
+	text-shadow: #fff 0 1px 0;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitemcell-first .i-caption {
+	margin-left: 6px;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem .i-caption {
+	height: 24px;
+	padding: 8px 9px 0 9px;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(tabsheet/img/inline-tab-right.png) no-repeat right top;
+	margin: 0;
+	padding: 0;
+	height: 32px;
+	cursor: default;
+	color: #ee5311;
+	text-shadow: none;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem:hover {
+	color: #4b5257;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem-selected:hover {
+	color: #ee5311;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitem-selected .i-caption {
+	background: transparent url(tabsheet/img/inline-tab-left.png) no-repeat -7px 0;
+	margin: 0;
+	height: 23px;
+	padding: 9px 11px 0 11px;
+	overflow: visible;
+}
+
+.i-tabsheet-light .i-tabsheet-tabitemcell-first .i-tabsheet-tabitem-selected .i-caption {
+	background: transparent url(tabsheet/img/inline-tab-left.png) no-repeat -3px 0;
+	padding-left: 15px;
+}
+
+.i-tabsheet-light .i-tabsheet-content {
+	border: none;
+	background: transparent;
+}
+
+.i-tabsheet-light .i-tabsheet-hidetabs .i-tabsheet-content {
+	border: none;
+}
+
+.i-tabsheet-deco-light {
+	height: 0;
+	overflow: hidden;
+}
+
+.i-tabsheet-deco-light:before {
+	display: none;
+}
+
+
+/* Scroller */
+
+.i-tabsheet-light .i-tabsheet-scrollerPrev,
+.i-tabsheet-light .i-tabsheet-scrollerNext {
+	margin-top: 2px;
+	height: 34px;
+}
+.i-tabsheet-light .i-tabsheet-scrollerPrev-disabled,
+.i-tabsheet-light .i-tabsheet-scrollerNext-disabled {
+	margin-top: 2px;
+	height: 34px;
+}
+
+
+
+
+/* Progress indication */
+
+.i-tabsheet-loading .i-tabsheet-tabs-light .i-tabsheet-tabitem-selected .i-captiontext {
+	margin-left: -3px;
+	padding-left: 3px;
+}
+
+
+
+/* IE specific styles */
+
+* html .i-tabsheet-tabs-light {
+	height: 32px;
+}
+*+html .i-tabsheet-tabs-light {
+	height: 32px;
+}
+
+* html .i-tabsheet-light .i-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(tabsheet/img/inline-tab-right.png) no-repeat right top;
+	padding: 0;
+	height: 32px;
+}
+*+html .i-tabsheet-light .i-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(tabsheet/img/inline-tab-right.png) no-repeat right top;
+	padding: 0;
+	height: 32px;
+}
+
+* html .i-tabsheet-light .i-tabsheet-tabitem-selected .i-caption {
+	background: transparent url(tabsheet/img/inline-tab-left.png) no-repeat -7px 0;
+	padding: 9px 11px 0 11px;
+}
+*+html .i-tabsheet-light .i-tabsheet-tabitem-selected .i-caption {
+	background: transparent url(tabsheet/img/inline-tab-left.png) no-repeat -7px 0;
+	padding: 9px 11px 0 11px;
+}
+
+* html .i-tabsheet-deco-light {
+	height: 0;
+}
+*+html .i-tabsheet-deco-light {
+	height: 0;
+}
+
+/* ./WebContent/ITMILL/themes/default/textfield/textfield.css */
 .i-textfield {
 	background: #fff url(textfield/img/bg.png) repeat-x;
 	padding: 2px;
@@ -2043,6 +2483,13 @@ input.i-modified,
 	border: 1px solid #b6b6b6;
 	overflow: hidden;
 }
+.i-richtextarea .gwt-RichTextToolbar .gwt-ToggleButton,
+.i-richtextarea .gwt-RichTextToolbar .gwt-PushButton {
+	float:left;
+}
+.i-richtextarea .gwt-RichTextToolbar {
+	white-space: nowrap;
+}
 .i-richtextarea .gwt-RichTextArea {
 	background: #fff url(textfield/img/bg.png) repeat-x;
 }
@@ -2050,35 +2497,33 @@ input.i-modified,
 	border: 0;
 }
 
+/* Disabled by default
 .i-textarea-error,
 .i-textfield-error,
 .i-richtextarea-error iframe.gwt-RichTextArea {
 	background:transparent;
 	background-color: #FFE0E0;	
 }
+*/
+
+/* Disabled by default
+.i-textarea-required,
+.i-textfield-required,
+.i-richtextarea-required iframe.gwt-RichTextArea {
+	background:transparent;
+	background-color: #FFE0E0;	
+}
+*/
+
+/* Safari focus glow fix */
+.i-sa input:focus, 
+.i-sa textarea:focus{
+	outline-width: medium;
+}
+
+/* ./WebContent/ITMILL/themes/default/tree/tree.css */
 .i-tree {
 	text-align: left /* Force default alignment */
-}
-
-/* ie6compatnode is hidden from non ie6 browsers, for ie6 
- * uses weird hack to sink all events properly 
- */
-.i-tree-node-ie6compatnode {
-	display: none;
-}
-
-* html .i-tree-node-ie6compatnode {
-	display: inline;
-	float:left;
-	background: orange;
-	margin:0;
-	width:14px;
-	height:10px;
-	padding:1px;
-	filter: Alpha(opacity=0);
-}
-* html .i-tree-node {
-	clear: both;
 }
 
 .i-tree-node {
@@ -2108,104 +2553,106 @@ input.i-modified,
 .i-tree-node-children {
 	padding-left: 16px;
 }
-.i-window {
-	color: #464f52;
-	font-size: 13px;
-	line-height: 18px;
-	background: transparent url(window/img/top-left.png) no-repeat top left;
+
+
+/* ie6compatnode is hidden from non ie6 browsers, for ie6 
+ * uses weird hack to sink all events properly 
+ */
+.i-tree-node-ie6compatnode {
+	display: none;
 }
 
-.i-window:before {
-	display: block;
-	content: "";
-	background: transparent url(window/img/top-right.png) repeat-x right top;
-	height: 21px;
-	margin-left: 21px;
+/* IMPORTANT keep the offsetWidth of this element the same as the margin-left of i-tree-node-caption */
+.i-ie6 .i-tree-node-ie6compatnode {
+	display: inline;
+	float: left;
+	background: orange;
+	margin: 0;
+	width: 14px;
+	height: 10px;
+	padding: 1px;
+	filter: Alpha(opacity=0);
+}
+.i-ie6 .i-tree-node,
+.i-ie6 .i-tree-node-children {
+	clear: left;
+}
+
+/* ./WebContent/ITMILL/themes/default/window/window.css */
+.i-window {
+	color: #464f52;
+	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+	font-size: 13px;
+	line-height: 18px;
+	background: transparent url(window/img/bottom-left.png) no-repeat left bottom;
 }
 
 .i-window-wrap {
-	padding-left: 20px;
-	background: transparent url(window/img/left-bg.png) repeat-y;
-	/* somehow this won't inherit from .i-window */
-	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
-}
-
-.i-window-wrap2 {
-	padding-right: 20px;
-	background: transparent url(window/img/right-bg.png) repeat-y top right;
+	background: transparent url(window/img/top-left.png) no-repeat;
 }
 
 .i-window-outerheader {
-	height: 18px;
-	padding: 8px 34px 14px 12px;
-	background: #fff;
+	height: 23px;
+	margin-left: 9px;
+	padding: 15px 40px 11px 12px;
+	background: transparent url(window/img/top-right.png) no-repeat right top;
+	cursor: move;
 }
 
 .i-window-header {
 	font-size: 18px;
-	line-height: 18px;
+	line-height: 1.2;
 	font-weight: normal;
 	letter-spacing: -0.03em;
 	color: #f14c1a;
 	white-space: nowrap;
-	cursor: move;
-	text-overflow:ellipsis;
-	overflow:hidden;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	text-shadow: 0 1px 0 #fff;
+}
+
+* html .i-window-header {
+	width: 100%;
 }
 
 .i-window-header .i-icon {
-	vertical-align: bottom;
+	vertical-align: middle; /* This has to be 'middle', not 'bottom', to allow larger icons than 16px */
 }
 
 .i-window-contents {
 	background: #fff;
-	border: 1px solid #babfc0;
-	font-size: 13px;
-	line-height: 18px;
+	border: 2px solid #acb2b3;
+	border-top: none;
+	border-bottom: none;
 }
 
 /* Partial fix for bug #1106 */
-/* Target Firefox 2 (somehow this will force almost all window borders on top of a flash object) */
+/* Target Firefox 2 (somehow this will force almost all window borders on top of a Flash object) */
 .i-window-contents, x:-moz-any-link {
 	overflow: hidden;
 }
-/* Target Firefox 3 (it doesn't need any trickery) */
+/* Target Firefox 3 (it doesn't need any trickery, so revert the previous) */
 .i-window-contents, x:-moz-any-link, x:default {
 	overflow: visible;
 }
 
 .i-window-footer {
-	height: 0;
-	font-size: 0px;
-	/* Occupy more height to prevent scrollbars in Mac FF */
-	margin-bottom: 46px;
-}
-
-.i-window-footer:before {
-	display: block;
-	content: "";
-	width: 21px;
-	height: 46px;
-	background: transparent url(window/img/bottom-left.png);
-	margin-left: -20px;
-}
-
-.i-window-footer:after {
-	display: block;
-	content: "";
-	height: 46px;
-	background: transparent url(window/img/bottom-right.png) no-repeat top right;
-	margin: -46px -20px 0 1px;
+	height: 8px;
+	margin-left: 9px;
+	background: transparent url(window/img/bottom-right.png) no-repeat right top;
+	/* IE7 bug fix */
+	position:relative;
 }
 
 .i-window-resizebox {
-	position:absolute;
-	bottom: 24px;
-	right: 0;
-	width: 25px;
-	height: 21px;
+	position: absolute; /* Needed to position the element over ScrollPanel, which is also relatively positioned */
+	right: 5px;
+	width: 10px;
+	height: 10px;
+	margin-top: -7px;
 	cursor: se-resize;
 	background: transparent url(window/img/resize.png);
+	overflow: hidden;
 }
 
 .i-window-resizebox-disabled {
@@ -2214,84 +2661,124 @@ input.i-modified,
 }
 
 .i-window-closebox {
-	position:absolute;
-	top: 33px;
-	right: 36px;
+	position: absolute;
+	top: 21px;
+	right: 24px;
 	width: 12px;
-	height: 11px;
+	height: 12px;
 	background: transparent url(window/img/close.png);
 	cursor: pointer;
 	overflow: hidden;
 }
 .i-window-closebox:hover {
-	background-position: 0 -11px;
+	background-position: 0 -12px;
 }
 
 .i-window-modalitycurtain {
-	top:0;
-	left:0;
-	background:white;
+	top: 0;
+	left: 0;
+	background: white;
 	opacity: 0.5;
-	position:fixed;
-	width:100%;
-	height:100%;
+	position: fixed;
+	width: 100%;
+	height: 100%;
 	filter: alpha(opacity=50);
 }
 
 /* IE6 workaround for position:fixed; */
 * html .i-window-modalitycurtain { 
 	position: absolute;
-	top: expression((ignoreMe = document.documentElement.scrollTop) + "px"); 
+	top: expression(document.documentElement.scrollTop + "px"); 
 }
 
 /* IE specific styles */
 
 * html .i-window {
-	width: 0;
+	width: 0; /* min-size for IE6 */
 }
 
-* html .i-window-wrap {
-	padding: 12px;
-	border: 1px solid #e8e9e9;
-	background: #d8dee0;
-	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/widgetsets/com.itmill.toolkit.terminal.gwt.DefaultWidgetSet/default/window/img/bg-color.png", sizingMethod="scale");*/
-	/*zoom: 1;  to gain hasLayout, IE won't apply filter otherwise */
-}
-*+html .i-window-wrap {
-	padding: 12px;
-	border: 1px solid #e8e9e9;
-	background: transparent url(window/img/bg-color.png) repeat;
+/* Shadow for window */
+
+.i-shadow-window {
+	position: absolute;
 }
 
-* html .i-window-wrap2 {
-	padding: 6px;
-	border: 1px solid #babfc0;
-	background: #fff;
-}
-*+html .i-window-wrap2 {
-	padding: 6px;
-	border: 1px solid #babfc0;
-	background: #fff;
+.i-shadow-window .top-left {
+    position: absolute; overflow: hidden;
+    top: -13px;             left: -20px;
+    width: 39px;         height: 39px;
+    background: transparent url(window/img/shadow/top-left.png);
 }
 
-* html .i-window-footer {
-	margin-bottom: 0;
-}
-*+html .i-window-footer {
-	margin-bottom: 0;
+.i-shadow-window .top {
+    position: absolute; overflow: hidden;
+    top: -13px;             left: 19px;
+    height: 39px;
+    right: 19px;
+    background: transparent url(window/img/shadow/top.png);
 }
 
-* html .i-window-resizebox {
-	bottom: 1px;
-	right:  1px;
-	width: 15px;
-	height: 12px;
-	background: url(window/img/resize.png);
+.i-shadow-window .top-right {
+    position: absolute; overflow: hidden;
+    top: -13px;             right: -20px;
+    width: 39px;         height: 39px;
+    background: transparent url(window/img/shadow/top-right.png);
 }
-* html .i-window-resizebox-disabled {
-	background: transparent;
+
+.i-shadow-window .left {
+    position: absolute; overflow: hidden;
+    top: 26px;           left: -20px;
+    width: 39px;
+    bottom: 12px;
+    background: transparent url(window/img/shadow/left.png);
 }
-*+html .i-window-resizebox {
-	bottom: 0;
-	background-position: 3px 3px;
+
+.i-shadow-window .center {
+    position: absolute; overflow: hidden;
+    top: 26px;           left: 19px;
+    bottom: 12px;        right: 19px;
+    background: transparent url(window/img/shadow/center.png);
+}
+
+.i-shadow-window .right {
+    position: absolute; overflow: hidden;
+    top: 26px;           right: -20px;
+    width: 39px;
+    bottom: 12px;
+    background: transparent url(window/img/shadow/right.png);
+}
+
+.i-shadow-window .bottom-left {
+    position: absolute; overflow: hidden;
+    bottom: -27px;           left: -20px;
+    width: 39px;          height: 39px;
+    background: transparent url(window/img/shadow/bottom-left.png);
+}
+
+.i-shadow-window .bottom {
+    position: absolute; overflow: hidden;
+    bottom: -27px;           left: 19px;
+    right: 19px;          height: 39px;
+    background: transparent url(window/img/shadow/bottom.png);
+}
+
+.i-shadow-window .bottom-right {
+    position: absolute; overflow: hidden;
+    bottom: -27px;           right: -20px;
+    width: 39px;          height: 39px;
+    background: transparent url(window/img/shadow/bottom-right.png);
+}
+
+
+/* For IE6 (no transparent png's, we use a blur filter) */
+
+* html .i-shadow-window * {
+	display: none;
+}
+
+* html .i-shadow-window {
+	background: #000;
+	filter: progid:DXImageTransform.Microsoft.Blur(pixelRadius=5) alpha(opacity=20);
+	margin-top: 2px;
+	margin-left: 2px;
 }

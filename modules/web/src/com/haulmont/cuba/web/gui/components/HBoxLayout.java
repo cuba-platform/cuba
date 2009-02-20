@@ -10,11 +10,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.ExpandLayout;
 
 public class HBoxLayout extends AbstractContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
-    public HBoxLayout() {
-        super(ExpandLayout.ORIENTATION_HORIZONTAL);
+    @Override
+    public String getTag() {
+        return "horizontallayout";
     }
 
     public void expand(Component component, String height, String width) {

@@ -34,7 +34,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.requestFocus();
     }
 
-    public int getHeight() {
+    public float getHeight() {
         return frame.getHeight();
     }
 
@@ -46,7 +46,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setHeight(height);
     }
 
-    public int getWidth() {
+    public float getWidth() {
         return frame.getWidth();
     }
 

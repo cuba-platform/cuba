@@ -11,19 +11,16 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.OrderedLayout;
+import com.itmill.toolkit.ui.AbstractOrderedLayout;
 
 import java.util.*;
 
-class AbstractContainer extends OrderedLayout implements Component.Container {
+class AbstractContainer extends AbstractOrderedLayout implements Component.Container {
     private int verticalAlignment = AlignmentHandler.ALIGNMENT_TOP;
     private int horizontalAlignment = AlignmentHandler.ALIGNMENT_LEFT;
 
     protected String id;
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
-
-    public AbstractContainer(int orientation) {
-        super(orientation);
-    }
 
     public void add(Component component) {
         final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
@@ -58,6 +55,14 @@ class AbstractContainer extends OrderedLayout implements Component.Container {
     public void setId(String id) {
         this.id = id;
 //        setDebugId(id);
+    }
+
+    public float getWidth() {
+        return super.getWidth();
+    }
+
+    public float getHeight() {
+        return super.getHeight();
     }
 
     public void requestFocus() {

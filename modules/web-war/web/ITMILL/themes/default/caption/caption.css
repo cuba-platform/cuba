@@ -6,13 +6,18 @@
 	text-align: left /* Force default alignment */
 }
 
+.i-caption {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
 .i-errorindicator {
-	width: 10px;
+	width: 12px;
 	height: 16px;
-	padding-right:13px;
-	display: inline;
+	float: left;
 	background: transparent url(../icons/16/error.png) no-repeat top right;
 }
+
 * html .i-errorindicator {
 	background: transparent none;
 	/* gif for transparency */
@@ -21,19 +26,17 @@
 *+html .i-errorindicator {
 	margin-left:-3px;
 }
-	
 .i-caption .i-icon {
 	padding-right: 2px;
 	vertical-align: middle;
+	float: left;
+}
+.i-caption .i-captiontext {
+	float: left;
+	overflow: hidden;
+	vertical-align: middle;
 }
 
-.i-errormessage {
-	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
-	color: #464f52;
-	font-size: 13px;
-	line-height: 18px;
-	padding: 7px;
-	background-color: #FFE0E0;
-	border: 1px solid #FFB0B0;
-	overflow: auto;
+.i-caption .i-required-field-indicator {
+	float: left;
 }

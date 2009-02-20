@@ -28,8 +28,6 @@ public class WebComponentsFactory implements ComponentsFactory {
 
         classes.put("hbox", HBoxLayout.class);
         classes.put("vbox", VBoxLayout.class);
-        classes.put("expandable-hbox", ExpandableHBoxLayout.class);
-        classes.put("expandable-vbox", ExpandableVBoxLayout.class);
         classes.put("grid", GridLayout.class);
 
         classes.put("button", Button.class);

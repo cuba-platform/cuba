@@ -16,11 +16,15 @@
 
     <property name="widgets.out.dir" value="${build.dir}/${module.name}/ITMILL/widgetsets"/>
 
+    <fileset id="gwt-lib-fs" dir="${lib.gwt.dir}">
+        <include name="*.jar"/>
+    </fileset>
+
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
-        <pathelement location="${lib.gwt.dir}/gwt-user-1.0.jar"/>
-        <pathelement location="${lib.gwt.dir}/gwt-dev-windows-1.0.jar"/>
+        <fileset refid="gwt-lib-fs"/>
+
         <pathelement location="${prod.out.dir}/core"/>
         <pathelement location="${prod.out.dir}/gui"/>
         <pathelement location="${prod.out.dir}/web"/>

@@ -22,10 +22,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.Button;
-import com.itmill.toolkit.ui.Component;
-import com.itmill.toolkit.ui.ExpandLayout;
-import com.itmill.toolkit.ui.OrderedLayout;
-import com.itmill.toolkit.ui.Layout;
+import com.itmill.toolkit.ui.*;
 
 import java.util.Map;
 import java.util.Collection;
@@ -37,22 +34,17 @@ public class GenericBrowserWindow extends Window
 
     @Override
     protected Component createLayout() {
-        final ExpandLayout layout = new ExpandLayout(ExpandLayout.ORIENTATION_VERTICAL);
+        final VerticalLayout layout = new VerticalLayout();
 
         table = createTable();
         actionsToolbar = createActionsToolbar(table);
 
         final Component component = ComponentsHelper.unwrap(table);
-
-        final ExpandLayout componentContainer =
-                new ExpandLayout(ExpandLayout.ORIENTATION_VERTICAL);
-        componentContainer.addComponent(component);
-        componentContainer.expand(component);
+        component.setSizeFull();
 
         layout.addComponent(actionsToolbar);
-        layout.addComponent(componentContainer);
+        layout.addComponent(component);
 
-        layout.expand(componentContainer);
         layout.setMargin(true);
         layout.setSpacing(true);
 
