@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.xml.layout.*;
 import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 
 public class LabelLoader extends ComponentLoader {
     public LabelLoader(Context context) {
@@ -24,8 +25,14 @@ public class LabelLoader extends ComponentLoader {
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
-        final String caption = element.attributeValue("value");
-        component.setValue(caption);
+
+        String caption = element.attributeValue("value");
+        if (!StringUtils.isEmpty(caption)) {
+            if (caption.startsWith("res://") && resourceBundle != null) {
+                caption = resourceBundle.getString(caption.substring(6));
+            }
+            component.setCaption(caption);
+        }
 
         addAssignWindowTask(component);
 
