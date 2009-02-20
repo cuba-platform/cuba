@@ -381,7 +381,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             contaiter = new VerticalLayout();
 
             HorizontalLayout okbar = new HorizontalLayout();
-            okbar.setHeight("25px");
+            okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
 
             final Button selectButton = new Button("Select");
             selectButton.addListener(new SelectAction(this));
@@ -395,6 +395,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             form.addComponent(okbar);
 
             contaiter.setSizeFull();
+            form.setExpandRatio(contaiter, 1);
 
             return form;
         }

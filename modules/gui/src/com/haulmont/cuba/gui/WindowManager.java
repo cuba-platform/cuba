@@ -261,7 +261,7 @@ public abstract class WindowManager {
         Window window;
 
         if (template != null) {
-            window = createWindow(template, params, LayoutLoaderConfig.getEditorLoaders());
+            window = createWindow(template, params, LayoutLoaderConfig.getLookupLoaders());
 
             final Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
             final String lookupComponent = element.attributeValue("lookupComponent");
