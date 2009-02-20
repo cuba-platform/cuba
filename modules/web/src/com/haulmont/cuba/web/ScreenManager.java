@@ -77,7 +77,7 @@ public class ScreenManager extends WindowManager
             tabs.put(layout, tabInfo);
         } else if (OpenType.THIS_TAB.equals(type)) {
             TabSheet tabSheet = app.getAppWindow().getTabSheet();
-            Layout layout = (Layout) tabSheet.getSelectedTab();
+            VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
 
             TabInfo tabInfo = tabs.get(layout);
             if (tabInfo == null)
@@ -88,6 +88,7 @@ public class ScreenManager extends WindowManager
             final Component component = ComponentsHelper.unwrap(window);
             layout.addComponent(component);
             component.setSizeFull();
+            layout.setExpandRatio(component, 1);
 
             tabInfo.titlePane.addCaption(caption);
             tabInfo.screens.add(window);
@@ -101,7 +102,7 @@ public class ScreenManager extends WindowManager
 
     public void closeScreen() {
         TabSheet tabSheet = app.getAppWindow().getTabSheet();
-        Layout layout = (Layout) tabSheet.getSelectedTab();
+        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
 
         TabInfo tabInfo = tabs.get(layout);
         if (tabInfo == null)
@@ -124,6 +125,7 @@ public class ScreenManager extends WindowManager
             component.setSizeFull();
 
             layout.addComponent(component);
+            layout.setExpandRatio(component, 1);
 //            layout.expand(ComponentsHelper.unwrap(prevScreen));
         }
     }

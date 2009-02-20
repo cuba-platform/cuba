@@ -31,7 +31,7 @@ public class ScreenTitlePane extends HorizontalLayout
     public ScreenTitlePane() {
         setMargin(true);
         setWidth(100, Sizeable.UNITS_PERCENTAGE);
-//        setHeight(20, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
+        setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
 
         label = new Label();
         closeBtn = new Button(Messages.getString("closeBtn"), new Button.ClickListener()
@@ -43,9 +43,11 @@ public class ScreenTitlePane extends HorizontalLayout
 
         closeBtn.setStyleName(Button.STYLE_LINK);
 
-        label.setWidth(100, Sizeable.UNITS_PERCENTAGE);
         addComponent(label);
         addComponent(closeBtn);
+
+        label.setSizeFull();
+        setExpandRatio(label, 1);
     }
 
     public String getCurrentCaption() {
