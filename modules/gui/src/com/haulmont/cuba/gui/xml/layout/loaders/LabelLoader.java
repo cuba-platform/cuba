@@ -28,9 +28,7 @@ public class LabelLoader extends ComponentLoader {
 
         String caption = element.attributeValue("value");
         if (!StringUtils.isEmpty(caption)) {
-            if (caption.startsWith("res://") && resourceBundle != null) {
-                caption = resourceBundle.getString(caption.substring(6));
-            }
+            caption = loadResourceString(caption);
             component.setCaption(caption);
         }
 

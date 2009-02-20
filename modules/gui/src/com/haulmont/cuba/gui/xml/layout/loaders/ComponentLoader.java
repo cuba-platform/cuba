@@ -71,11 +71,31 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         String caption = element.attributeValue("caption");
 
         if (!StringUtils.isEmpty(caption)) {
-            if (caption.startsWith("res://") && resourceBundle != null) {
-                caption = resourceBundle.getString(caption.substring(6));
-            }
+            caption = loadResourceString(caption);
             component.setCaption(caption);
         }
+    }
+
+    protected String loadResourceString(String caption) {
+        if (caption.startsWith("res://")) {
+            String path = caption.substring(6);
+            final String[] strings = path.split("/");
+            if (strings.length == 1) {
+                if (resourceBundle != null) {
+                    caption = resourceBundle.getString(strings[0]);
+                }
+            } else if (strings.length == 2) {
+                try {
+                    final ResourceBundle bundle = ResourceBundle.getBundle(strings[0], getLocale());
+                    bundle.getString(strings[1]);
+                } catch (Throwable e) {
+                    // Do nothing
+                }
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+        return caption;
     }
 
     protected void loadAlign(Component component, Element element) {
