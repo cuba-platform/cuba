@@ -28,7 +28,6 @@ public class HBoxLoader extends ContainerLoader implements ComponentLoader {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadAlign(component, element);
-        loadPack(component, element);
 
         loadSubcomponentsAndExpand(component, element);
 

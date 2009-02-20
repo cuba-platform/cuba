@@ -21,10 +21,9 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
     private String id;
     protected T component;
 
-    private int verticalAlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
-    private int horizontalAlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
     private Element element;
     private Window window;
+    private Alignment alignment = Alignment.TOP_LEFT;
 
     public Window getWindow() {
         return window;
@@ -73,27 +72,15 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
         component.setWidth(width);
     }
 
-    public int getVerticalAlignment() {
-        return verticalAlignment;
+    public Alignment getAlignment() {
+        return alignment;
     }
 
-    public void setVerticalAlignment(int verticalAlIlignment) {
-        this.verticalAlignment = verticalAlIlignment;
+    public void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
         final com.itmill.toolkit.ui.Component component = this.component.getParent();
         if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, horizontalAlignment, verticalAlIlignment);
-        }
-    }
-
-    public int getHorizontalAlignment() {
-        return horizontalAlignment;
-    }
-
-    public void setHorizontalAlignment(int horizontalAlIlignment) {
-        this.horizontalAlignment = horizontalAlIlignment;
-        final com.itmill.toolkit.ui.Component component = this.component.getParent();
-        if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, horizontalAlIlignment, verticalAlignment);
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, ComponentsHelper.convertAlignment(alignment));
         }
     }
 

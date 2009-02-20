@@ -18,11 +18,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.components.OrderedLayout, Component.Container {
-    private int verticalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_TOP;
-    private int horizontalAlIlignment = Layout.AlignmentHandler.ALIGNMENT_LEFT;
-
     private String id;
     private Component component;
+    private Alignment alignment = Alignment.TOP_LEFT;
 
     public AbstractPanel() {
         setStyleName(Panel.STYLE_LIGHT);
@@ -81,27 +79,15 @@ public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.compon
         }
     }
 
-    public int getVerticalAlignment() {
-        return verticalAlIlignment;
+    public Alignment getAlignment() {
+        return alignment;
     }
 
-    public void setVerticalAlignment(int verticalAlIlignment) {
-        this.verticalAlIlignment = verticalAlIlignment;
+    public void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
         final com.itmill.toolkit.ui.Component component = getParent();
         if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this, horizontalAlIlignment, verticalAlIlignment);
-        }
-    }
-
-    public int getHorizontalAlignment() {
-        return horizontalAlIlignment;
-    }
-
-    public void setHorizontalAlignment(int horizontalAlIlignment) {
-        this.horizontalAlIlignment = horizontalAlIlignment;
-        final com.itmill.toolkit.ui.Component component = getParent();
-        if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this, horizontalAlIlignment, verticalAlIlignment);
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this, ComponentsHelper.convertAlignment(alignment));
         }
     }
 

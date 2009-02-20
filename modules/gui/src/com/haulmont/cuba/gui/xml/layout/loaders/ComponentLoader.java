@@ -81,7 +81,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadAlign(Component component, Element element) {
         final String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {
-            component.setVerticalAlignment(loadAlignment(align, true));
+            component.setAlignment(Component.Alignment.valueOf(align));
         }
     }
 
@@ -108,37 +108,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             component.setWidth(width);
         } else if (!StringUtils.isBlank(defaultValue)) {
             component.setWidth(defaultValue);
-        }
-    }
-
-    private int loadAlignment(String align, boolean horizontal) {
-        if (!horizontal) {
-            if ("start".equals(align)) {
-                return Component.AlignInfo.ALIGNMENT_TOP;
-            } else if ("center".equals(align)) {
-                return Component.AlignInfo.ALIGNMENT_VERTICAL_CENTER;
-            } else if ("end".equals(align)) {
-                return Component.AlignInfo.ALIGNMENT_BOTTOM;
-            } else {
-                return Component.AlignInfo.ALIGNMENT_TOP;
-            }
-        } else {
-            if ("start".equals(align)) {
-                return Component.AlignInfo.ALIGNMENT_LEFT;
-            } else if ("center".equals(align)) {
-                return Component.AlignInfo.ALIGNMENT_HORIZONTAL_CENTER;
-            } else if ("end".equals(align)) {
-                return Component.AlignInfo.ALIGNMENT_RIGHT;
-            } else {
-                return Component.AlignInfo.ALIGNMENT_LEFT;
-            }
-        }
-    }
-
-    protected void loadPack(Component component, Element element) {
-        final String align = element.attributeValue("pack");
-        if (!StringUtils.isBlank(align)) {
-            component.setVerticalAlignment(loadAlignment(align, false));
         }
     }
 

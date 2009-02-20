@@ -8,7 +8,7 @@
                     <textField id="name"/>
                 </hbox>
             </groupBox>
-            <hbox align="end">
+            <hbox align="MIDDLE_RIGHT">
                 <button id="clear" caption="Clear"/>
                 <button id="apply" caption="Apply"/>
             </hbox>

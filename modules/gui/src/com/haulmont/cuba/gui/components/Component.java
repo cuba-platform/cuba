@@ -14,13 +14,16 @@ import org.dom4j.Element;
 import java.util.Collection;
 
 public interface Component {
-    interface AlignInfo {
-        public static final int ALIGNMENT_LEFT = 1;
-        public static final int ALIGNMENT_RIGHT = 2;
-        public static final int ALIGNMENT_TOP = 4;
-        public static final int ALIGNMENT_BOTTOM = 8;
-        public static final int ALIGNMENT_HORIZONTAL_CENTER = 16;
-        public static final int ALIGNMENT_VERTICAL_CENTER = 32;
+    enum Alignment {
+        TOP_RIGHT,
+        TOP_LEFT,
+        TOP_CENTER,
+        MIDDLE_RIGHT,
+        MIDDLE_LEFT,
+        MIDDLE_CENTER,
+        BOTTOM_RIGHT,
+        BOTTOM_LEFT,
+        BOTTOM_CENTER
     }
 
     String getId();
@@ -36,11 +39,8 @@ public interface Component {
     int getWidthUnits();
     void setWidth(String width);
 
-    int getVerticalAlignment();
-    void setVerticalAlignment(int verticalAlignment);
-
-    int getHorizontalAlignment();
-    void setHorizontalAlignment(int horizontalAlignment);
+    Alignment getAlignment();
+    void setAlignment(Alignment alignment);
 
     interface Container extends Component {
         void add(Component component);

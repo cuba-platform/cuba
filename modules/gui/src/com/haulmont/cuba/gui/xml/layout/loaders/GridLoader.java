@@ -37,9 +37,25 @@ public class GridLoader extends ContainerLoader implements com.haulmont.cuba.gui
 
         final List<Element> columnElements = columnsElement.elements("column");
         component.setColumns(columnElements.size());
+        int i = 0;
+        for (Element columnElement : columnElements) {
+            final String flex = columnElement.attributeValue("flex");
+            if (!StringUtils.isEmpty(flex)) {
+                component.setColumnExpandRatio(i, Float.parseFloat(flex));
+            }
+            i++;
+        }
 
         final List<Element> rowElements = rowsElement.elements("row");
         component.setRows(rowElements.size());
+        int j = 0;
+        for (Element rowElement : rowElements) {
+            final String flex = rowElement.attributeValue("flex");
+            if (!StringUtils.isEmpty(flex)) {
+                component.setRowExpandRatio(j, Float.parseFloat(flex));
+            }
+            j++;
+        }
 
         spanMatrix = new boolean[columnElements.size()][rowElements.size()];
 

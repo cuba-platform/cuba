@@ -35,7 +35,6 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         assignXmlDescriptor(frame, element);
         loadId(frame, element);
         loadAlign(frame, element);
-        loadPack(frame, element);
 
         loadHeight(frame, element, "-1px");
         loadWidth(frame, element);

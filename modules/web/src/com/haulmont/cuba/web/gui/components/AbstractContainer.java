@@ -12,21 +12,20 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.OrderedLayout;
 import com.itmill.toolkit.ui.AbstractOrderedLayout;
+import com.itmill.toolkit.ui.Layout;
 
 import java.util.*;
 
 class AbstractContainer extends AbstractOrderedLayout implements Component.Container {
-    private int verticalAlignment = AlignmentHandler.ALIGNMENT_TOP;
-    private int horizontalAlignment = AlignmentHandler.ALIGNMENT_LEFT;
-
     protected String id;
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+    private Alignment alignment = Alignment.TOP_LEFT;
 
     public void add(Component component) {
         final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
 
         addComponent(itmillComponent);
-        setComponentAlignment(itmillComponent, component.getHorizontalAlignment(), component.getVerticalAlignment());
+        setComponentAlignment(itmillComponent, ComponentsHelper.convertAlignment(component.getAlignment()));
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
@@ -68,27 +67,15 @@ class AbstractContainer extends AbstractOrderedLayout implements Component.Conta
     public void requestFocus() {
     }
 
-    public int getVerticalAlignment() {
-        return verticalAlignment;
+    public Alignment getAlignment() {
+        return alignment;
     }
 
-    public void setVerticalAlignment(int verticalAlIlignment) {
-        this.verticalAlignment = verticalAlIlignment;
-        final com.itmill.toolkit.ui.Component component = getParent();
-        if (component instanceof AlignmentHandler) {
-            ((AlignmentHandler) component).setComponentAlignment(this, horizontalAlignment, verticalAlIlignment);
-        }
-    }
-
-    public int getHorizontalAlignment() {
-        return horizontalAlignment;
-    }
-
-    public void setHorizontalAlignment(int horizontalAlIlignment) {
-        this.horizontalAlignment = horizontalAlIlignment;
-        final com.itmill.toolkit.ui.Component component = getParent();
-        if (component instanceof AlignmentHandler) {
-            ((AlignmentHandler) component).setComponentAlignment(this, horizontalAlIlignment, verticalAlignment);
+    public void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
+        final com.itmill.toolkit.ui.Component component = this.getParent();
+        if (component instanceof Layout.AlignmentHandler) {
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this, ComponentsHelper.convertAlignment(alignment));
         }
     }
 }

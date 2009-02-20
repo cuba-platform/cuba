@@ -10,16 +10,15 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.itmill.toolkit.ui.Layout;
 
 import java.util.Map;
 import java.util.HashMap;
 
 public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.haulmont.cuba.gui.components.SplitPanel {
-    private int verticalAlIlignment = AlignmentHandler.ALIGNMENT_TOP;
-    private int horizontalAlIlignment = AlignmentHandler.ALIGNMENT_LEFT;
-
     protected String id;
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+    private Alignment alignment = Alignment.TOP_LEFT;
 
     public void add(Component component) {
         final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
@@ -58,27 +57,15 @@ public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.
     public void requestFocus() {
     }
 
-    public int getVerticalAlignment() {
-        return verticalAlIlignment;
+    public Alignment getAlignment() {
+        return alignment;
     }
 
-    public void setVerticalAlignment(int verticalAlIlignment) {
-        this.verticalAlIlignment = verticalAlIlignment;
+    public void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
         final com.itmill.toolkit.ui.Component component = getParent();
-        if (component instanceof AlignmentHandler) {
-            ((AlignmentHandler) component).setComponentAlignment(this, horizontalAlIlignment, verticalAlIlignment);
-        }
-    }
-
-    public int getHorizontalAlignment() {
-        return horizontalAlIlignment;
-    }
-
-    public void setHorizontalAlignment(int horizontalAlIlignment) {
-        this.horizontalAlIlignment = horizontalAlIlignment;
-        final com.itmill.toolkit.ui.Component component = getParent();
-        if (component instanceof AlignmentHandler) {
-            ((AlignmentHandler) component).setComponentAlignment(this, horizontalAlIlignment, verticalAlIlignment);
+        if (component instanceof Layout.AlignmentHandler) {
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this, ComponentsHelper.convertAlignment(alignment));
         }
     }
 }

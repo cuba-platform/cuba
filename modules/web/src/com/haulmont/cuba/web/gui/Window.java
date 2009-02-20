@@ -183,17 +183,11 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         return ComponentsHelper.<T>getComponent(this, id);
     }
 
-    public int getVerticalAlignment() {
-        return Layout.AlignmentHandler.ALIGNMENT_VERTICAL_CENTER;
+    public Alignment getAlignment() {
+        return Alignment.MIDDLE_CENTER; 
     }
 
-    public void setVerticalAlignment(int verticalAlIlignment) {}
-
-    public int getHorizontalAlignment() {
-        return Layout.AlignmentHandler.ALIGNMENT_HORIZONTAL_CENTER;
-    }
-
-    public void setHorizontalAlignment(int horizontalAlIlignment) {}
+    public void setAlignment(Alignment alignment) {}
 
     public void expand(Component component, String height, String width) {
         final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
@@ -239,22 +233,18 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
 
             HorizontalLayout buttonsContainer = new HorizontalLayout();
-            HorizontalLayout filler = new HorizontalLayout();
 
             buttonsContainer.addComponent(new Button("OK", this, "commit"));
             buttonsContainer.addComponent(new Button("Cancel", this, "close"));
 
-            okbar.addComponent(filler);
             okbar.addComponent(buttonsContainer);
-
-            filler.setSizeFull();
-            okbar.setExpandRatio(filler, 1);
 
             layout.addComponent(form);
             layout.addComponent(okbar);
 
             form.setSizeFull();
             layout.setExpandRatio(form, 1);
+            layout.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
 
             return layout;
         }
@@ -396,6 +386,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
             contaiter.setSizeFull();
             form.setExpandRatio(contaiter, 1);
+            form.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.MIDDLE_RIGHT);
 
             return form;
         }

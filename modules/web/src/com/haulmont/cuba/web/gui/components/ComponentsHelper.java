@@ -9,11 +9,9 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Component;
-import com.itmill.toolkit.ui.ComponentContainer;
-import com.itmill.toolkit.ui.Form;
-import com.itmill.toolkit.ui.AbstractOrderedLayout;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -103,5 +101,22 @@ public class ComponentsHelper {
             }
         }
         layout.setExpandRatio(component, 1);
+    }
+
+    public static Alignment convertAlignment(com.haulmont.cuba.gui.components.Component.Alignment  alignment) {
+        if (alignment == null) return null;
+
+        switch (alignment) {
+            case TOP_LEFT: {return Alignment.TOP_LEFT;}
+            case TOP_CENTER: {return Alignment.TOP_CENTER;}
+            case TOP_RIGHT: {return Alignment.TOP_RIGHT;}
+            case MIDDLE_LEFT: {return Alignment.MIDDLE_LEFT;}
+            case MIDDLE_CENTER: {return Alignment.MIDDLE_CENTER;}
+            case MIDDLE_RIGHT: {return Alignment.MIDDLE_RIGHT;}
+            case BOTTOM_LEFT: {return Alignment.BOTTOM_LEFT;}
+            case BOTTOM_CENTER: {return Alignment.BOTTOM_CENTER;}
+            case BOTTOM_RIGHT: {return Alignment.BOTTOM_RIGHT;}
+            default: {throw new UnsupportedOperationException();}
+        }
     }
 }

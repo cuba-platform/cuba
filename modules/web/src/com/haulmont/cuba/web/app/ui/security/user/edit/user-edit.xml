@@ -27,8 +27,8 @@
     <layout>
         <grid>
             <columns>
-                <column/>
-                <column/>
+                <column flex="1"/>
+                <column flex="3"/>
             </columns>
             <rows>
                 <row>

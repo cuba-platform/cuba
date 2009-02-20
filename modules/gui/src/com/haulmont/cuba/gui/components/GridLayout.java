@@ -10,8 +10,14 @@
 package com.haulmont.cuba.gui.components;
 
 public interface GridLayout extends Component.Container {
+    float getColumnExpandRatio(int col);
+    void setColumnExpandRatio(int col, float ratio);
+
+    float getRowExpandRatio(int col);
+    void setRowExpandRatio(int col, float ratio);
+
     void add(Component component, int col, int row);
-    void add(Component subComponent, int col, int row, int col2, int row2);
+    void add(Component component, int col, int row, int col2, int row2);
 
     int getRows();
     void setRows(int rows);
