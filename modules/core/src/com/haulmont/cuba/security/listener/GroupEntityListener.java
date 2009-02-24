@@ -47,6 +47,9 @@ public class GroupEntityListener implements
         else {
             entity.getHierarchyList().clear();
         }
+
+        parent = em.find(Group.class, parent.getId()); // refresh parent in case of detached
+
         int level = 0;
         for (GroupHierarchy hierarchy : parent.getHierarchyList()) {
             GroupHierarchy h = new GroupHierarchy();
