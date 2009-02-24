@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.OrderedLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 
 public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     public GroupBoxLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -25,8 +26,11 @@ public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cub
 
         final Element captionElement = element.element("caption");
         if (captionElement != null) {
-            final String caption = captionElement.attributeValue("label");
-            ((Component.HasCaption) component).setCaption(caption);
+            String caption = captionElement.attributeValue("label");
+            if (!StringUtils.isEmpty(caption)) {
+                caption = loadResourceString(caption);
+                ((Component.HasCaption) component).setCaption(caption);
+            }
         }
 
         loadAlign(component, element);

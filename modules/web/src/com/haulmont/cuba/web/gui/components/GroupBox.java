@@ -13,11 +13,17 @@ import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.OrderedLayout;
 import com.itmill.toolkit.ui.Panel;
 import com.itmill.toolkit.ui.ExpandLayout;
+import com.itmill.toolkit.ui.VerticalLayout;
 
 public class GroupBox extends AbstractPanel implements Component.HasCaption {
 
     public GroupBox() {
-        setLayout(new ExpandLayout(OrderedLayout.ORIENTATION_VERTICAL));
+        setLayout(new VerticalLayout());
 //        setStyleName(Panel.STYLE_EMPHASIZE);
+    }
+
+    public void expand(Component component, String height, String width) {
+        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+        expandedComponent.setSizeFull();
     }
 }
