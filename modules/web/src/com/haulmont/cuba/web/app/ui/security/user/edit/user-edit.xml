@@ -6,6 +6,7 @@
 >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/edit/user-edit.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
     </metadataContext>
 
     <dsContext>

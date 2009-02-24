@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -27,9 +28,7 @@ import com.itmill.toolkit.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class Window implements com.haulmont.cuba.gui.components.Window, Component.Wrapper, Component.HasXmlDescriptor
 {
@@ -43,6 +42,8 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
     private DsContext dsContext;
     private String caption;
+
+    private List listeners = new ArrayList();
 
     public Window() {
         component = createLayout();
@@ -112,6 +113,14 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         this.dsContext = dsContext;
     }
 
+    public void addListener(CloseListener listener) {
+        if (!listeners.contains(listener)) listeners.add(listener);
+    }
+
+    public void removeListener(CloseListener listener) {
+        listeners.remove(listener);
+    }
+
     public Element getXmlDescriptor() {
         return element;
     }
@@ -136,8 +145,17 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         }
     }
 
-    public boolean onClose() {
+    public boolean onClose(String actionId) {
+        fireWindowClosed(actionId);
         return true;
+    }
+
+    protected void fireWindowClosed(String actionId) {
+        for (Object listener : listeners) {
+            if (listener instanceof CloseListener) {
+                ((CloseListener) listener).windowClosed(actionId);
+            }
+        }
     }
 
     public String getId() {
@@ -202,9 +220,9 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         return (T) component;
     }
 
-    public boolean close() {
+    public boolean close(String actionId) {
         App.getInstance().getScreenManager().closeScreen();
-        return true;
+        return onClose(actionId);
     }
 
     public String getCaption() {
@@ -215,9 +233,17 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         this.caption = caption;
     }
 
+    public <A extends IFrame> A getFrame() {
+        return (A) this;
+    }
+
+    public void setFrame(IFrame frame) {
+        throw new UnsupportedOperationException();
+    }
+
     public static class Editor extends Window implements com.haulmont.cuba.gui.components.Window.Editor {
         protected Object item;
-        private Form form;
+        protected Form form;
 
         public Object getItem() {
             return item;
@@ -235,7 +261,11 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             HorizontalLayout buttonsContainer = new HorizontalLayout();
 
             buttonsContainer.addComponent(new Button("OK", this, "commit"));
-            buttonsContainer.addComponent(new Button("Cancel", this, "close"));
+            buttonsContainer.addComponent(new Button("Cancel", new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent event) {
+                    close("cancel");
+                }
+            }));
 
             okbar.addComponent(buttonsContainer);
 
@@ -329,11 +359,20 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
                     final Datasource ds = (Datasource) item;
                     ds.commit();
                 } else {
-                    DataService service = getDsContext().getDataService();
+                    DataService service = getDataService();
                     service.commit((Entity) item);
                 }
             }
-            close();
+            close("commit");
+        }
+
+        protected DataService getDataService() {
+            final DsContext context = getDsContext();
+            if (context == null) {
+                throw new UnsupportedOperationException();
+            } else {
+                return context.getDataService();
+            }
         }
     }
 
@@ -376,7 +415,11 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             final Button selectButton = new Button("Select");
             selectButton.addListener(new SelectAction(this));
 
-            final Button cancelButton = new Button("Cancel", this, "close");
+            final Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent event) {
+                    close("cancel");
+                }
+            });
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);

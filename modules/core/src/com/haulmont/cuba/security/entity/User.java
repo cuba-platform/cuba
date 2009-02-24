@@ -13,6 +13,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.chile.core.annotations.Aggregation;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class User extends StandardEntity
     private Group group;
 
     @OneToMany(mappedBy = "user")
+    @Aggregation
     private Set<UserRole> userRoles;
 
     public String getLogin() {

@@ -21,5 +21,6 @@ public class TextArea
     public TextArea() {
         this.component = new RichTextArea();
         component.setImmediate(true);
+        component.setNullRepresentation("");
     }
 }

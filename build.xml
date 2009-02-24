@@ -97,4 +97,5 @@
     </target>
 
     <target name="clean-build-deploy-run" depends="clean,build,deploy,run"/>
+    <target name="deploy-run" depends="deploy,run"/>
 </project>

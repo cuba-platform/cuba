@@ -1,0 +1,5 @@
+<views>
+    <view entity="sec$Group" name="lookup">
+        <property name="name"/>
+    </view>
+</views>

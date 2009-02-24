@@ -27,7 +27,11 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
         final Button selectButton = new Button("Select");
         selectButton.addListener(new SelectAction(this));
 
-        final Button cancelButton = new Button("Cancel", this, "close");
+        final Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                close("cancel");
+            }
+        });
 
         okbar.addComponent(selectButton);
         okbar.addComponent(cancelButton);

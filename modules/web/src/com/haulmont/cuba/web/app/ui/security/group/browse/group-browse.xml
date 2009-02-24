@@ -1,4 +1,7 @@
-<window class="com.haulmont.cuba.web.app.ui.security.group.browse.GroupBrowser">
+<window
+    resourceBundle="com.haulmont.cuba.web.app.ui.security.group.browse.group-browse"
+    class="com.haulmont.cuba.web.app.ui.security.group.browse.GroupBrowser"
+>
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/browse/group-browse.views.xml"/>
     </metadataContext>
@@ -23,20 +26,44 @@
 
     <layout>
         <vbox>
-            <split orientation="horizontal">
+            <split orientation="horizontal" pos="30">
                 <vbox>
                     <tree id="groups">
                         <treechildren datasource="groups" property="name" parent="parent"/>
                     </tree>
                 </vbox>
-                <table id="users">
-                    <columns>
-                        <column id="name" caption="Name"/>
-                        <column id="login" caption="Login"/>
-                        <column id="activeDirectoryUser" caption="ActiveDirectory User"/>
-                    </columns>
-                    <rows datasource="users"/>
-                </table>
+                <vbox expand="group-editor">
+                    <!--<hbox>-->
+                        <!--<label value="res://group.name"/>-->
+                        <!--<textField id="group.name" datasource="groups" property="name"/>-->
+                    <!--</hbox>-->
+                    <tabsheet id="group-editor">
+                        <tab id="users" caption="res://tabsheet.users">
+                            <vbox expand="users">
+                                <hbox>
+                                    <checkBox id="showDescendants"/>
+                                    <label value="res://showDescendants"/>
+                                </hbox>
+                                <hbox>
+                                    <button id="users.create" action="users.create"/>
+                                    <button id="users.edit" action="users.edit"/>
+                                    <!--<button id="users.moveTo" action="users.moveTo"/>-->
+                                </hbox>
+                                <table id="users">
+                                    <columns>
+                                        <column id="name" caption="Name"/>
+                                        <column id="login" caption="Login"/>
+                                        <column id="activeDirectoryUser" caption="ActiveDirectory User"/>
+                                    </columns>
+                                    <rows datasource="users"/>
+                                </table>
+                            </vbox>
+                        </tab>
+                        <tab id="constraints" caption="res://tabsheet.constraints">
+
+                        </tab>
+                    </tabsheet>
+                </vbox>
             </split>
         </vbox>
     </layout>

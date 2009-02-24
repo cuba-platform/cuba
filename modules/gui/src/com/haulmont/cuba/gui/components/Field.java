@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 
 public interface Field
     extends
-        Component, Component.HasCaption, Component.Field, Component.Editable, Component.BelongToWindow
+        Component, Component.HasCaption, Component.Field, Component.Editable, Component.BelongToFrame
 {
     boolean isRequired();
     void setRequired(boolean required);

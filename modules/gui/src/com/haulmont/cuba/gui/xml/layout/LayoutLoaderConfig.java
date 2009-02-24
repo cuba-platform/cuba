@@ -43,6 +43,7 @@ public class LayoutLoaderConfig {
         config.registerLoader("grid", GridLoader.class);
         config.registerLoader("button", ButtonLoader.class);
         config.registerLoader("groupBox", GroupBoxLoader.class);
+        config.registerLoader("checkBox", AbstractFieldLoader.class);
         config.registerLoader("label", LabelLoader.class);
         config.registerLoader("textField", AbstractFieldLoader.class);
         config.registerLoader("textArea", AbstractFieldLoader.class);

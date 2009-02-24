@@ -38,7 +38,7 @@ class SelectAction implements Button.ClickListener {
 
         final com.haulmont.cuba.gui.components.Window.Lookup.Handler lookupHandler = window.getLookupHandler();
 
-        window.close();
+        window.close("select");
         lookupHandler.handleLookup(selected);
     }
 }

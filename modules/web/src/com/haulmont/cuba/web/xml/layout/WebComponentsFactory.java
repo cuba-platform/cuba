@@ -32,6 +32,7 @@ public class WebComponentsFactory implements ComponentsFactory {
 
         classes.put("button", Button.class);
         classes.put("label", Label.class);
+        classes.put("checkBox", CheckBox.class);
         classes.put("groupBox", GroupBox.class);
         classes.put("textField", TextField.class);
         classes.put("textArea", TextArea.class);

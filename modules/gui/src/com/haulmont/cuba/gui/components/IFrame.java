@@ -10,12 +10,16 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.config.ScreenInfo;
 
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public interface IFrame extends OrderedLayout, Component.Container {
+public interface IFrame extends OrderedLayout, Component.Container, Component.BelongToFrame {
+    DsContext getDsContext();
+    void setDsContext(DsContext dsContext);
+
     ResourceBundle getResourceBundle();
     void setResourceBundle(ResourceBundle resourceBundle);
 

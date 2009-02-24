@@ -14,18 +14,44 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DatasourceListener;
+import com.haulmont.cuba.core.entity.Entity;
 import com.itmill.toolkit.data.Property;
 
 import java.text.ParseException;
+import java.util.List;
+import java.util.ArrayList;
 
-public class PropertyWrapper implements Property {
+public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
     private boolean readOnly;
     private Object item;
     private MetaProperty metaProperty;
 
+    private List<ValueChangeListener> listeners = new ArrayList<ValueChangeListener>();
+
     public PropertyWrapper(Object item, MetaProperty metaProperty) {
         this.item = item;
         this.metaProperty = metaProperty;
+        if (item instanceof Datasource) {
+            ((Datasource) item).addListener(new DatasourceListener<Entity>() {
+                public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
+                    fireValueChangeEvent();
+                }
+
+                public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {}
+
+                public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                    fireValueChangeEvent();
+                }
+            });
+        }
+    }
+
+    protected void fireValueChangeEvent() {
+        final ValueChangeEvent changeEvent = new ValueChangeEvent();
+        for (ValueChangeListener listener : listeners) {
+            listener.valueChange(changeEvent);
+        }
     }
 
     public Object getValue() {
@@ -89,5 +115,19 @@ public class PropertyWrapper implements Property {
         return metaProperty.getRange().isDatatype() ?
                 metaProperty.getRange().asDatatype().format(value) :
                 value == null ? null : value.toString();
+    }
+
+    public void addListener(ValueChangeListener listener) {
+        if (!listeners.contains(listener)) listeners.add(listener);
+    }
+
+    public void removeListener(ValueChangeListener listener) {
+        listeners.remove(listener);
+    }
+
+    private class ValueChangeEvent implements Property.ValueChangeEvent {
+        public Property getProperty() {
+            return PropertyWrapper.this;
+        }
     }
 }

@@ -37,6 +37,9 @@ public abstract class ContainerLoader extends ComponentLoader {
         final List<Component> res = new ArrayList<Component>();
 
         final LayoutLoader loader = new LayoutLoader(context, factory, config);
+        loader.setLocale(getLocale());
+        loader.setResourceBundle(getResourceBundle());
+        
         for (Element subElement : (Collection<Element>)element.elements()) {
             final String name = subElement.getName();
             if (exceptTags != null && Arrays.binarySearch(exceptTags, name) < 0) {
@@ -94,8 +97,11 @@ public abstract class ContainerLoader extends ComponentLoader {
             loader = constructor.newInstance(context, config, factory);
 
             loader.setLocale(locale);
+            loader.setResourceBundle(resourceBundle);
         } catch (Throwable e) {
             loader = loaderClass.newInstance();
+            loader.setLocale(locale);
+            loader.setResourceBundle(resourceBundle);
         }
 
         return loader;

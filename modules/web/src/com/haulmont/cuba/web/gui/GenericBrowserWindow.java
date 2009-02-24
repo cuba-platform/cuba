@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
-import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.TableActionsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
@@ -44,6 +44,7 @@ public class GenericBrowserWindow extends Window
 
         layout.addComponent(actionsToolbar);
         layout.addComponent(component);
+        layout.setExpandRatio(component, 1);
 
         layout.setMargin(true);
         layout.setSpacing(true);
@@ -126,7 +127,7 @@ public class GenericBrowserWindow extends Window
         final GenericDataService dataservice = new GenericDataService(false);
         final DsContextImpl context = new DsContextImpl(dataservice);
 
-        context.setContext(new WindowContext(this));
+        context.setContext(new FrameContext(this));
 
         final CollectionDatasource ds = createDatasource(context, metaClass, view);
         context.register(ds);

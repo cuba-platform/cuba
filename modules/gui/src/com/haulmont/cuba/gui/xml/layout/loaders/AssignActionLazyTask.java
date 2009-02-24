@@ -24,13 +24,13 @@ public class AssignActionLazyTask implements com.haulmont.cuba.gui.xml.layout.Co
         this.actionName = actionName;
     }
 
-    public void execute(ComponentLoader.Context context, Window window) {
+    public void execute(ComponentLoader.Context context, IFrame frame) {
         final String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {
             final String id = elements[elements.length - 1];
 
             final List<String> subpath = Arrays.asList(elements).subList(0, elements.length - 1);
-            final Component component = window.getComponent(ValuePathHelper.format(subpath.toArray(new String[]{})));
+            final Component component = frame.getComponent(ValuePathHelper.format(subpath.toArray(new String[]{})));
             if (component != null) {
                 if (component instanceof Component.ActionsOwner) {
                     final Action action = ((Component.ActionsOwner) component).getAction(id);

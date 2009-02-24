@@ -51,6 +51,22 @@ public class AbstractWindow extends AbstractFrame implements Window, Component.H
         }
     }
 
+    public void addListener(CloseListener listener) {
+        if (frame instanceof Window) {
+            ((Window) frame).addListener(listener);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void removeListener(CloseListener listener) {
+        if (frame instanceof Window) {
+            ((Window) frame).removeListener(listener);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     public String getCaption() {
         if (frame instanceof Window) {
             return ((Window) frame).getCaption();

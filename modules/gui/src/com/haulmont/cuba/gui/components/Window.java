@@ -14,10 +14,10 @@ import com.haulmont.cuba.gui.data.DsContext;
 import java.util.Collection;
 
 public interface Window extends IFrame, Component.HasCaption {
-    DsContext getDsContext();
-    void setDsContext(DsContext dsContext);
+    void addListener(CloseListener listener);
+    void removeListener(CloseListener listener);
 
-    boolean close();
+    boolean close(String actionId);
 
     interface Editor extends Window {
         Object getItem();
@@ -36,5 +36,9 @@ public interface Window extends IFrame, Component.HasCaption {
 
         Handler getLookupHandler();
         void setLookupHandler(Handler handler);
+    }
+
+    interface CloseListener {
+        void windowClosed(String actionId);
     }
 }

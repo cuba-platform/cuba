@@ -44,6 +44,11 @@ public class SplitPanelLoader extends ContainerLoader{
             component.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
         }
 
+        final String pos = element.attributeValue("pos");
+        if (!StringUtils.isEmpty(pos)) {
+            component.setSplitPosition(Integer.valueOf(pos), Component.UNITS_PERCENTAGE);
+        }
+
         return component;
     }
 }

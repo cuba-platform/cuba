@@ -15,6 +15,11 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.gui.data.impl.DsContextImpl;
+import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.core.entity.Entity;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.ui.*;
 import org.apache.commons.lang.StringUtils;
@@ -29,14 +34,20 @@ public class GenericEditorWindow
     extends
         Window.Editor
 {
+    private DataService dataservice;
+
+    public GenericEditorWindow() {
+        dataservice = new GenericDataService(false);
+    }
+
     @Override
     protected Component createLayout() {
-        final Form form = (Form) super.createLayout();
+        final Component layout = super.createLayout();
 
         form.setFieldFactory(new FieldFactory());
         form.setImmediate(true);
 
-        return form;
+        return layout;
     }
 
     public void setItem(Object item) {
@@ -46,15 +57,19 @@ public class GenericEditorWindow
         setCaption("Edit " + metaClass.getName());
 
         final Collection<MetaProperty> properties = getProperties(item);
-        ((Form) component).setItemDataSource(new ItemWrapper(item, properties));
-        ((Form) component).setVisibleItemProperties(properties);
+        form.setItemDataSource(new ItemWrapper(item, properties));
+        form.setVisibleItemProperties(properties);
 
         for (MetaProperty metaProperty : properties) {
-            final com.itmill.toolkit.ui.Field field = ((Form) component).getField(metaProperty);
+            final com.itmill.toolkit.ui.Field field = form.getField(metaProperty);
             if (field != null) {
                 field.setRequired(metaProperty.isMandatory());
             }
         }
+    }
+
+    protected DataService getDataService() {
+        return dataservice;
     }
 
     private Collection<MetaProperty> getProperties(Object item) {

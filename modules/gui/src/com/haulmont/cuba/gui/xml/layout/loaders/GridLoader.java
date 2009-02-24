@@ -70,6 +70,9 @@ public class GridLoader extends ContainerLoader implements com.haulmont.cuba.gui
 
     protected void loadSubComponents(GridLayout component, Element element, int row) {
         final LayoutLoader loader = new LayoutLoader(context, factory, config);
+        loader.setLocale(getLocale());
+        loader.setResourceBundle(getResourceBundle());
+
         int col = 0;
 
         for (Element subElement : (Collection<Element>)element.elements()) {

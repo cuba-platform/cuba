@@ -89,7 +89,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     public ScreenConfig getScreenConfig() {
         if (screenConfig == null) {
-            screenConfig = new ScreenConfig();
+            screenConfig = new WindowConfig();
             screenConfig.loadConfig(getScreenConfigXml());
         }
         return screenConfig;
@@ -198,4 +198,5 @@ public class App extends Application implements ConnectionListener, ApplicationC
             log.trace("requestEnd: [@" + Integer.toHexString(System.identityHashCode(transactionData)) + "]");
         }
     }
+
 }

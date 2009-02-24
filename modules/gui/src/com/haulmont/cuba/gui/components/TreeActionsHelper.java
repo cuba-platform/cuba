@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 16.02.2009 17:18:03
- * $Id$
- */
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
@@ -18,9 +9,9 @@ import com.haulmont.cuba.gui.data.DataService;
 import java.util.Collections;
 import java.util.Map;
 
-public class TableActionsHelper extends ListActionsHelper<Table>{
-    public TableActionsHelper(IFrame frame, Table table) {
-        super(frame, table);
+public class TreeActionsHelper extends ListActionsHelper<Tree>{
+    public TreeActionsHelper(IFrame frame, Tree tree) {
+        super(frame, tree);
     }
 
     public Action createCreateAction(final ValueProvider valueProvider, final WindowManager.OpenType openType) {
@@ -34,11 +25,17 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
             }
 
             public void actionPerform(Component component) {
-                final CollectionDatasource datasource = TableActionsHelper.this.component.getDatasource();
+                final CollectionDatasource datasource = TreeActionsHelper.this.component.getDatasource();
+                final String hierarchyProperty = TreeActionsHelper.this.component.getHierarchyProperty();
                 final DataService dataservice = datasource.getDataService();
-                final String windowID = datasource.getMetaClass().getName() + ".edit";
+
+                final Entity parentItem = datasource.getItem();
+                if (parentItem == null) return;
 
                 final Entity item = dataservice.<Entity>newInstance(datasource.getMetaClass());
+                ((Instance) item).setValue(hierarchyProperty, parentItem);
+
+                final String windowID = datasource.getMetaClass().getName() + ".edit";
                 for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
                     ((Instance) item).setValue(entry.getKey(), entry.getValue());
                 }
@@ -52,8 +49,8 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                 });
             }
         };
-        TableActionsHelper.this.component.addAction(action);
-
+        
+        TreeActionsHelper.this.component.addAction(action);
         return action;
     }
 }

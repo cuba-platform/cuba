@@ -1,9 +1,11 @@
 <window
     class="com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser"
+    resourceBundle="com.haulmont.cuba.web.app.ui.security.user.browse.user-browse"
     lookupComponent="users"
 >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
     </metadataContext>
 
     <dsContext>

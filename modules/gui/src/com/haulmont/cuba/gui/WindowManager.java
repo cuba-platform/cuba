@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.gui.config.ScreenInfo;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -82,11 +83,11 @@ public abstract class WindowManager {
         final Window window = loadLayout(element, componentLoaderContext, layoutConfig);
         loadLayoutStopWatch.stop();
 
-        componentLoaderContext.setWindow(window);
+        componentLoaderContext.setFrame(window);
         initialize(window, dsContext, params);
 
         final Window wrapedWindow = wrapByCustomClass(window, element, params);
-        componentLoaderContext.setWindow(wrapedWindow);
+        componentLoaderContext.setFrame(wrapedWindow);
         componentLoaderContext.executeLazyTasks();
         stopWatch.stop();
 
@@ -118,7 +119,7 @@ public abstract class WindowManager {
             }
         }
 
-        dsContext.setContext(new WindowContext(window));
+        dsContext.setContext(new FrameContext(window));
     }
 
     protected Window loadLayout(Element rootElement, ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {
@@ -198,7 +199,7 @@ public abstract class WindowManager {
         }
 //        } else {
 //            try {
-//                caption = invokeMethod(window, "getCaption");
+//                caption = invokeMethod(frame, "getCaption");
 //                if (!StringUtils.isEmpty(caption)) {
 //                    caption = TemplateHelper.processTemplate(caption, params);
 //                }
@@ -465,39 +466,6 @@ public abstract class WindowManager {
         }
         method.setAccessible(true);
         return (T) method.invoke(window, params);
-    }
-
-    protected static class ComponentLoaderContext implements ComponentLoader.Context {
-        protected DsContext dsContext;
-        protected Window window;
-
-        protected List<ComponentLoader.LazyTask> lazyTasks = new ArrayList<ComponentLoader.LazyTask>();
-
-        public ComponentLoaderContext(DsContext dsContext) {
-            this.dsContext = dsContext;
-        }
-
-        public DsContext getDSContext() {
-            return dsContext;
-        }
-
-        public Window getWindow() {
-            return window;
-        }
-
-        public void setWindow(Window window) {
-            this.window = window;
-        }
-
-        public void addLazyTask(ComponentLoader.LazyTask task) {
-            lazyTasks.add(task);
-        }
-
-        public void executeLazyTasks() {
-            for (ComponentLoader.LazyTask task : lazyTasks) {
-                task.execute(this, window);
-            }
-        }
     }
 
 }

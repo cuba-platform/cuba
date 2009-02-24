@@ -25,7 +25,10 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final String src = element.attributeValue("src");
+
         final LayoutLoader loader = new LayoutLoader(context, factory, LayoutLoaderConfig.getFrameLoaders());
+        loader.setLocale(getLocale());
+        loader.setResourceBundle(getResourceBundle());
 
         final IFrame frame = (IFrame) loader.loadComponent(getClass().getResource(src));
         if (frame.getResourceBundle() == null) {

@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.App;
@@ -19,8 +20,18 @@ import java.util.ResourceBundle;
 
 public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.components.IFrame {
     private ResourceBundle resourceBundle;
+    private DsContext dsContext;
+    private com.haulmont.cuba.gui.components.IFrame frame;
 
     public IFrame() {
+    }
+
+    public DsContext getDsContext() {
+        return dsContext == null ? getFrame().getDsContext() : dsContext;
+    }
+
+    public void setDsContext(DsContext dsContext) {
+        this.dsContext = dsContext;
     }
 
     public ResourceBundle getResourceBundle() {
@@ -59,5 +70,13 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
         return App.getInstance().getScreenManager().<T>openLookup(windowInfo, handler, openType);
+    }
+
+    public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {
+        return (A) frame;
+    }
+
+    public void setFrame(com.haulmont.cuba.gui.components.IFrame frame) {
+        this.frame = frame;
     }
 }

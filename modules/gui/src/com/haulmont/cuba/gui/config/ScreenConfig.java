@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.dom.DOMElement;
 import org.dom4j.io.SAXReader;
 
 import java.io.StringReader;
@@ -23,9 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.haulmont.cuba.core.global.MetadataProvider;
+
 public class ScreenConfig
 {
-    private Map<String, ScreenInfo> screens = new HashMap<String, ScreenInfo>();
+    protected Map<String, ScreenInfo> screens = new HashMap<String, ScreenInfo>();
 
     private Log log = LogFactory.getLog(ScreenConfig.class);
 

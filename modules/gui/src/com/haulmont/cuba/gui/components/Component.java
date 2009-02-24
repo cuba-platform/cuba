@@ -26,6 +26,9 @@ public interface Component {
         BOTTOM_CENTER
     }
 
+    public static final int UNITS_PIXELS = 0;
+    public static final int UNITS_PERCENTAGE = 8;
+
     String getId();
     void setId(String id);
 
@@ -53,10 +56,10 @@ public interface Component {
     interface Wrapper {
         <T> T getComponent();
     }
-    
-    interface BelongToWindow extends Component {
-        Window getWindow();
-        void setWindow(Window window);
+
+    interface BelongToFrame extends Component {
+        <A extends IFrame> A getFrame();
+        void setFrame(IFrame frame);
     }
 
     interface HasCaption {
@@ -64,7 +67,7 @@ public interface Component {
         void setCaption(String caption);
     }
 
-    interface Field extends Editable, BelongToWindow {
+    interface Field extends Editable, BelongToFrame {
         <T> T getValue();
         void setValue(Object value);
     }

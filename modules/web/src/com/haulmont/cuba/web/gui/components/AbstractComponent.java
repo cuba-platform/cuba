@@ -9,28 +9,28 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.itmill.toolkit.ui.Layout;
 import org.dom4j.Element;
 
 class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
     implements
-        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToWindow
+        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame
 {
     private String id;
     protected T component;
 
     private Element element;
-    private Window window;
+    private com.haulmont.cuba.gui.components.IFrame frame;
     private Alignment alignment = Alignment.TOP_LEFT;
 
-    public Window getWindow() {
-        return window;
+    public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {
+        return (A) frame;
     }
 
-    public void setWindow(Window window) {
-        this.window = window;
+    public void setFrame(IFrame frame) {
+        this.frame = frame;
     }
 
     public String getId() {

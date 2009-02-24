@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.data.*;
@@ -123,10 +124,16 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
     public synchronized void addItem(T item) throws UnsupportedOperationException {
         getCollection().add(item);
+        if (PersistenceHelper.isNew(item)) {
+            itemToCreate.add(item);
+        }
     }
 
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
         getCollection().remove(item);
+        if (PersistenceHelper.isNew(item)) {
+            itemToCreate.remove(item);
+        }
     }
 
     public synchronized boolean containsItem(K itemId) {

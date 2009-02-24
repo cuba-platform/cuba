@@ -12,12 +12,10 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-public interface Tree extends Component, Component.BelongToWindow
+public interface Tree extends List
 {
-    <T> T getSelected();
-
     void expandTree();
 
-    CollectionDatasource getDatasource();
+    String getHierarchyProperty();
     void setDatasource(CollectionDatasource datasource, String showProperty, String parentProperty);
 }

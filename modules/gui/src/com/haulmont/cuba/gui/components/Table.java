@@ -18,19 +18,12 @@ import org.dom4j.Element;
 
 public interface Table
     extends
-        Component, Component.ActionsOwner, Component.Editable, Component.BelongToWindow 
+        com.haulmont.cuba.gui.components.List, Component.Editable 
 {
-    boolean isMultiSelect();
-    void setMultiSelect(boolean multiselect);
-
-    <T> T getSingleSelected();
-    Set getSelected();
-
     List<Column> getColumns();
     void addColumn(Column column);
     void removeColumn(Column column);
 
-    CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 
     public class Column implements HasXmlDescriptor, HasCaption {

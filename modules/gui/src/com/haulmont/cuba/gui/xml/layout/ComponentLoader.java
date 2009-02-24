@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
@@ -26,7 +27,7 @@ public interface ComponentLoader {
     }
 
     public interface LazyTask {
-        void execute(Context context, Window window);
+        void execute(Context context, IFrame frame);
     }
 
     Context getContext();

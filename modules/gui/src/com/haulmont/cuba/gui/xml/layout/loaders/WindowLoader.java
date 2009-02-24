@@ -16,8 +16,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 
-import java.util.Collection;
-
 public class WindowLoader extends FrameLoader implements ComponentLoader {
 
     public WindowLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {

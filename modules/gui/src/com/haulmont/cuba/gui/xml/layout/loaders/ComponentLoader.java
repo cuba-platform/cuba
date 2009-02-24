@@ -10,7 +10,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -29,6 +29,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     public Context getContext() {
         return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public Locale getLocale() {
@@ -87,7 +91,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             } else if (strings.length == 2) {
                 try {
                     final ResourceBundle bundle = ResourceBundle.getBundle(strings[0], getLocale());
-                    bundle.getString(strings[1]);
+                    caption = bundle.getString(strings[1]);
                 } catch (Throwable e) {
                     // Do nothing
                 }
@@ -131,10 +135,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
-    protected void addAssignWindowTask(final Component.BelongToWindow component) {
+    protected void addAssignWindowTask(final Component.BelongToFrame component) {
         context.addLazyTask(new LazyTask() {
-            public void execute(Context context, Window window) {
-                component.setWindow(window);
+            public void execute(Context context, IFrame frame) {
+                component.setFrame(frame);
             }
         });
     }

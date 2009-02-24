@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.chile.core.annotations.Aggregation;
 
 import javax.persistence.*;
 import java.util.List;
@@ -38,6 +39,7 @@ public class Group extends StandardEntity
     private List<GroupHierarchy> hierarchyList;
 
     @OneToMany(mappedBy = "group")
+    @Aggregation()
     @OnDelete(DeletePolicy.CASCADE)
     private Set<Constraint> constraints;
 

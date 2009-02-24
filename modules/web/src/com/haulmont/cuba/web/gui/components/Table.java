@@ -9,21 +9,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Label;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -31,18 +28,12 @@ import java.util.*;
 
 public class Table
     extends
-        AbstractComponent<com.itmill.toolkit.ui.Table>
+        AbstractListComponent<com.itmill.toolkit.ui.Table> 
     implements
         com.haulmont.cuba.gui.components.Table, Component.Wrapper
 {
-    protected CollectionDatasource datasource;
-
     protected Map<MetaProperty, Table.Column> columns = new HashMap<MetaProperty, Column>();
-
-    protected List<Action> actionsOrder = new LinkedList<Action>();
-    protected BiMap<Action, com.itmill.toolkit.event.Action> actions = new HashBiMap<Action,com.itmill.toolkit.event.Action>();
-
-    private boolean editable;
+    protected boolean editable;
 
     public Table() {
         component = new com.itmill.toolkit.ui.Table();
@@ -68,69 +59,6 @@ public class Table
         });
     }
 
-    public boolean isMultiSelect() {
-        return component.isMultiSelect();
-    }
-
-    public void setMultiSelect(boolean multiselect) {
-        component.setMultiSelect(multiselect);
-    }
-
-    public <T> T getSingleSelected() {
-        final Set selected = getSelecetdItemIds();
-        return selected == null || selected.isEmpty() ?
-                null : (T) datasource.getItem(selected.iterator().next());
-    }
-
-    public Set getSelected() {
-        final Set<Object> itemIds = getSelecetdItemIds();
-
-        if (itemIds != null) {
-            final HashSet<Object> res = new HashSet<Object>();
-            for (Object id : itemIds) {
-                final Object o = datasource.getItem(id);
-                res.add(o);
-            }
-            return res;
-        } else {
-            return Collections.emptySet();
-        }
-    }
-
-    public void addAction(final Action action) {
-        actions.put(action, new ActionWrapper(action));
-        actionsOrder.add(action);
-    }
-
-    public void removeAction(Action action) {
-        actions.remove(action);
-        actionsOrder.remove(action);
-    }
-
-    public Collection<Action> getActions() {
-        return actions.keySet();
-    }
-
-    public Action getAction(String id) {
-        for (Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
-                return action;
-            }
-        }
-        return null;
-    }
-
-    protected Set<Object> getSelecetdItemIds() {
-        final Object value = component.getValue();
-        if (value == null) {
-            return null;
-        } else if (value instanceof Collection) {
-            return (Set) component.getValue();
-        } else {
-            return Collections.singleton(value);
-        }
-    }
-
     public List<Column> getColumns() {
         // TODO (abramov) implement column order
         return new ArrayList<Column>(columns.values());
@@ -154,7 +82,8 @@ public class Table
         this.datasource = datasource;
         final CollectionDatasourceWrapper ds = new TableDatasourceWrapper(datasource);
 
-        for (MetaProperty metaProperty : (Collection<MetaProperty>)ds.getContainerPropertyIds()) {
+        final Collection<MetaProperty> properties = (Collection<MetaProperty>) ds.getContainerPropertyIds();
+        for (MetaProperty metaProperty : properties) {
             final Column column = columns.get(metaProperty);
             if (column != null && !column.isEditable()) {
                 if (metaProperty.getRange().isClass()) {
@@ -171,7 +100,7 @@ public class Table
 
         component.setContainerDataSource(ds);
 
-        for (MetaProperty metaProperty : (Collection<MetaProperty>)ds.getContainerPropertyIds()) {
+        for (MetaProperty metaProperty : properties) {
             final Column column = columns.get(metaProperty);
 
             final String caption;
@@ -191,39 +120,6 @@ public class Table
                     component.removeContainerProperty(metaProperty);
                 }
             }
-        }
-    }
-
-    private class ActionsAdapter implements com.itmill.toolkit.event.Action.Handler {
-        public com.itmill.toolkit.event.Action[] getActions(Object target, Object sender) {
-            final List<com.itmill.toolkit.event.Action> res = new ArrayList();
-            for (Action action : actionsOrder) {
-//                if (action.isEnabled()) {
-                    res.add(actions.get(action));
-//                }
-            }
-            return res.toArray(new com.itmill.toolkit.event.Action[]{});
-        }
-
-        public void handleAction(com.itmill.toolkit.event.Action tableAction, Object sender, Object target) {
-            final Action action = actions.inverse().get(tableAction);
-            if (action != null) {
-                action.actionPerform(Table.this);
-            }
-        }
-    }
-
-    private static class ActionWrapper extends com.itmill.toolkit.event.Action {
-        private final Action action;
-
-        public ActionWrapper(Action action) {
-            super(action.getCaption());
-            this.action = action;
-        }
-
-        @Override
-        public String getCaption() {
-            return action.getCaption();
         }
     }
 
@@ -297,7 +193,7 @@ public class Table
 
                     final String onClickAction = element.attributeValue("onClick");
                     if (!StringUtils.isEmpty(onClickAction)) {
-                        final com.haulmont.cuba.gui.components.Window window = Table.this.getWindow();
+                        final com.haulmont.cuba.gui.components.Window window = Table.this.getFrame();
                         window.openEditor(onClickAction, value, WindowManager.OpenType.THIS_TAB);
                     }
                 }

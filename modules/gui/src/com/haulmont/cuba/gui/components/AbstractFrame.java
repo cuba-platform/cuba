@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.data.DsContext;
 
 import java.util.Collections;
 import java.util.Map;
@@ -90,6 +91,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.expand(component, height, width);
     }
 
+    public DsContext getDsContext() {
+        return frame.getDsContext();
+    }
+
+    public void setDsContext(DsContext dsContext) {
+        frame.setDsContext(dsContext);
+    }
+
     public ResourceBundle getResourceBundle() {
         return frame.getResourceBundle();
     }
@@ -125,11 +134,19 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return frame.<T>openLookup(descriptor, handler, openType, Collections.<String, Object>emptyMap());
     }
 
-    public boolean close() {
+    public boolean close(String actionId) {
         if (frame instanceof Window) {
-            return ((Window) frame).close();
+            return ((Window) frame).close(actionId);
         } else {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public <A extends IFrame> A getFrame() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setFrame(IFrame frame) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -40,9 +40,7 @@ public class TabsheetLoader extends ContainerLoader {
             String caption = tabElement.attributeValue("caption");
 
             if (!StringUtils.isEmpty(caption)) {
-                if (caption.startsWith("res://") && resourceBundle != null) {
-                    caption = resourceBundle.getString(caption.substring(6));
-                }
+                caption = loadResourceString(caption);
                 tab.setCaption(caption);
             }
         }

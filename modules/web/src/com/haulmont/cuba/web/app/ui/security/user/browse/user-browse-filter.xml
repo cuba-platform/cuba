@@ -1,16 +1,35 @@
 <frame>
+    <dsContext>
+        <collectionDatasource
+            id="groups"
+            class="com.haulmont.cuba.security.entity.Group"
+            view="lookup"
+        >
+            <query>select g from sec$Group g</query>
+        </collectionDatasource>
+    </dsContext>
+
     <layout>
         <vbox id="filter-pane">
             <groupBox>
                 <caption label="Filter"/>
                 <hbox id="group-box">
-                    <label control="name" value="Name:"/>
+                    <label control="name" value="res://name"/>
                     <textField id="name"/>
+
+                    <label control="login" value="res://login"/>
+                    <textField id="login"/>
+
+                    <label control="email" value="res://email"/>      
+                    <textField id="email"/>
+
+                    <label control="group" value="res://group"/>      
+                    <lookupField id="group" lookupDatasource="groups"/>
                 </hbox>
             </groupBox>
             <hbox align="MIDDLE_RIGHT">
-                <button id="clear" caption="Clear"/>
-                <button id="apply" caption="Apply"/>
+                <button id="clear" caption="res://com.haulmont.cuba.web.gui.gui/clear"/>
+                <button id="apply" caption="res://com.haulmont.cuba.web.gui.gui/apply"/>
             </hbox>
         </vbox>
     </layout>

@@ -31,9 +31,9 @@ public class UserBrowser extends AbstractLookup {
         button.setAction(refreshAction);
     }
 
-    public boolean close() {
+    public boolean close(String actionId) {
         final com.itmill.toolkit.ui.Window window = ComponentsHelper.unwrap(this).getWindow();
         window.showNotification("Closing screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
-        return super.close();
+        return super.close(actionId);
     }
 }

@@ -29,7 +29,7 @@ public class LabelLoader extends ComponentLoader {
         String caption = element.attributeValue("value");
         if (!StringUtils.isEmpty(caption)) {
             caption = loadResourceString(caption);
-            component.setCaption(caption);
+            component.setValue(caption);
         }
 
         addAssignWindowTask(component);

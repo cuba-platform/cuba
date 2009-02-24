@@ -15,4 +15,7 @@ public interface SplitPanel extends Component.Container {
 
     int getOrientation();
     void setOrientation(int orientation);
+
+    void setSplitPosition(int pos);
+    void setSplitPosition(int pos, int unit);
 }

@@ -77,7 +77,7 @@ public class DemoScreen extends com.haulmont.cuba.web.gui.Window
         return vbox;
     }
 
-    public boolean onClose() {
+    public boolean onClose(String actionId) {
         component.getWindow().showNotification("Closing screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
         return true;
     }

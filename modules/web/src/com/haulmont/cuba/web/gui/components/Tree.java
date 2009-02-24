@@ -10,40 +10,43 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.TreeDatasourceWrapper;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.itmill.toolkit.data.Property;
 
+import java.util.Set;
+
 public class Tree
-        extends AbstractComponent<com.itmill.toolkit.ui.Tree>
-        implements com.haulmont.cuba.gui.components.Tree, Component.Wrapper
+    extends
+        AbstractListComponent<com.itmill.toolkit.ui.Tree>
+    implements
+        com.haulmont.cuba.gui.components.Tree, Component.Wrapper
 {
-    protected CollectionDatasource datasource;
+    private String hierarchyProperty;
 
     public Tree() {
         component = new com.itmill.toolkit.ui.Tree();
         component.setMultiSelect(false);
         component.setImmediate(true);
+
+        component.addActionHandler(new ActionsAdapter());
         component.addListener(
                 new Property.ValueChangeListener()
                 {
                     public void valueChange(Property.ValueChangeEvent event) {
-                        Object itemId = getSelected();
-                        if (itemId == null) {
+                        Set itemIds = getSelected();
+                        if (itemIds.isEmpty()) {
                             datasource.setItem(null);
-                        }
-                        else {
-                            datasource.setItem(datasource.getItem(itemId));
+                        } else if (itemIds.size() == 1) {
+                            datasource.setItem(datasource.getItem(itemIds.iterator().next()));
+                        } else {
+                            throw new UnsupportedOperationException();
                         }
                     }
                 }
         );
-    }
-
-    public <T> T getSelected() {
-        return (T) component.getValue();
     }
 
     public void expandTree() {
@@ -56,21 +59,25 @@ public class Tree
         }
     }
 
+    public String getHierarchyProperty() {
+        return hierarchyProperty;
+    }
+
     public CollectionDatasource getDatasource() {
         return datasource;
     }
 
-    public void setDatasource(CollectionDatasource datasource, String showProperty, String parentProperty)
+    public void setDatasource(CollectionDatasource datasource, String showProperty, String hierarchyProperty)
     {
         this.datasource = datasource;
-        parentProperty = parentProperty != null ? parentProperty : "parent";
+        this.hierarchyProperty = hierarchyProperty != null ? hierarchyProperty : "parent";
 
         // if showProperty is null, the Tree will use itemId.toString
         MetaProperty metaProperty = showProperty == null ? null : datasource.getMetaClass().getProperty(showProperty);
         component.setItemCaptionPropertyId(metaProperty);
 
         TreeDatasourceWrapper wrapper =
-                new TreeDatasourceWrapper(datasource, parentProperty);
+                new TreeDatasourceWrapper(datasource, hierarchyProperty);
         component.setContainerDataSource(wrapper);
     }
 }
