@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -21,6 +22,19 @@ import org.dom4j.Element;
 public class LookupFieldLoader extends AbstractFieldLoader {
     public LookupFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
+    }
+
+    @Override
+    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+        final LookupField component = (LookupField) super.loadComponent(factory, element);
+
+        String captionProperty = element.attributeValue("captionProperty");
+        if (!StringUtils.isEmpty(captionProperty)) {
+            component.setCaptionMode(LookupField.CaptionMode.PROPERTY);
+            component.setCaptionProperty(captionProperty);
+        }
+
+        return component;
     }
 
     @Override

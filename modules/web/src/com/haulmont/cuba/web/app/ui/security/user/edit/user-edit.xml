@@ -45,7 +45,7 @@
                 </row>
                 <row>
                     <label value="Group"/>
-                    <lookupField id="group" datasource="user" property="group" lookupDatasource="groups"/>
+                    <lookupField id="group" datasource="user" property="group" lookupDatasource="groups" captionProperty="name"/>
                 </row>
             </rows>
         </grid>

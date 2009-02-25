@@ -27,6 +27,8 @@ public class LookupField
     implements
         com.haulmont.cuba.gui.components.LookupField, Component.Wrapper {
     private CollectionDatasource lookupDatasource;
+    private CaptionMode captionMode = CaptionMode.ITEM;
+    private String captionProperty;
 
     public LookupField() {
         this.component = new Select();
@@ -76,9 +78,45 @@ public class LookupField
         setRequired(metaProperty.isMandatory());
     }
 
+    public CaptionMode getCaptionMode() {
+        return captionMode;
+    }
+
+    public void setCaptionMode(CaptionMode captionMode) {
+        this.captionMode = captionMode;
+        switch (captionMode) {
+            case ITEM: {
+                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
+                break;
+            }
+            case PROPERTY: {
+                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
+                break;
+            }
+            default :{
+                throw new UnsupportedOperationException();
+            }
+        }
+    }
+
+    public String getCaptionProperty() {
+        return captionProperty;
+    }
+
+    public void setCaptionProperty(String captionProperty) {
+        this.captionProperty = captionProperty;
+        if (lookupDatasource != null) {
+            component.setItemCaptionPropertyId(lookupDatasource.getMetaClass().getProperty(captionProperty));
+        }
+    }
+
     public void setLookupDatasource(CollectionDatasource datasource) {
         lookupDatasource = datasource;
         component.setContainerDataSource(new CollectionDatasourceWrapper(datasource, true));
+
+        if (captionProperty != null) {
+            component.setItemCaptionPropertyId(lookupDatasource.getMetaClass().getProperty(captionProperty));
+        }
     }
 
     @Override

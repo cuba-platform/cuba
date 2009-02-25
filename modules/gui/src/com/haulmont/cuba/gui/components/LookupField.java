@@ -13,5 +13,16 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 public interface LookupField extends Field {
+    enum CaptionMode {
+        ITEM,
+        PROPERTY
+    }
+
+    CaptionMode getCaptionMode();
+    void setCaptionMode(CaptionMode captionMode);
+
+    String getCaptionProperty();
+    void setCaptionProperty(String captionProperty);
+
     void setLookupDatasource(CollectionDatasource datasource);
 }
