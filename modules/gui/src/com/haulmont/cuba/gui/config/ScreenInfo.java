@@ -11,6 +11,7 @@
 package com.haulmont.cuba.gui.config;
 
 import org.dom4j.Element;
+import com.haulmont.chile.core.ReflectionHelper;
 
 public class ScreenInfo
 {
@@ -35,11 +36,7 @@ public class ScreenInfo
         if (screenClass == null) {
             String className = descriptor.attributeValue("class");
             if (className != null)
-                try {
-                    screenClass = Class.forName(className);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+                screenClass = ReflectionHelper.getClass(className);
         }
 
         return screenClass;

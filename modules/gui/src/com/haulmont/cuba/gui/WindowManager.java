@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.gui.config.ScreenInfo;
+import com.haulmont.chile.core.ReflectionHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -341,7 +342,7 @@ public abstract class WindowManager {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
-                final Class<?> aClass = Class.forName(screenClass);
+                final Class<?> aClass = ReflectionHelper.getClass(screenClass);
                 Constructor<?> constructor;
                 try {
                     constructor = aClass.getConstructor(Window.class);

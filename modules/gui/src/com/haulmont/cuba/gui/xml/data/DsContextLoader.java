@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.ReflectionHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
@@ -48,26 +49,22 @@ public class DsContextLoader {
     }
 
     protected Datasource loadDatasource(Element element) {
-        try {
-            final String id = element.attributeValue("id");
-            final MetaClass metaClass = loadMetaClass(element);
-            final String viewName = element.attributeValue("view");
+        final String id = element.attributeValue("id");
+        final MetaClass metaClass = loadMetaClass(element);
+        final String viewName = element.attributeValue("view");
 
-            final Datasource datasource =
-                    factory.createDatasource(datasources, dataservice, id, metaClass, viewName);
+        final Datasource datasource =
+                factory.createDatasource(datasources, dataservice, id, metaClass, viewName);
 
-            String item = element.attributeValue("item");
-            if (!StringUtils.isBlank(item)) {
-                final ParametersHelper.ParameterInfo info = ParametersHelper.parse(item);
-                datasources.registerListener(info, datasource);
-            }
-
-            loadDatasources(element, datasource);
-
-            return datasource;
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        String item = element.attributeValue("item");
+        if (!StringUtils.isBlank(item)) {
+            final ParametersHelper.ParameterInfo info = ParametersHelper.parse(item);
+            datasources.registerListener(info, datasource);
         }
+
+        loadDatasources(element, datasource);
+
+        return datasource;
     }
 
     private void loadDatasources(Element element, Datasource datasource) {
@@ -120,9 +117,9 @@ public class DsContextLoader {
         return datasource;
     }
 
-    private MetaClass loadMetaClass(Element element) throws ClassNotFoundException {
+    private MetaClass loadMetaClass(Element element) {
         final String className = element.attributeValue("class");
-        final Class<?> aClass = Class.forName(className);
+        final Class<?> aClass = ReflectionHelper.getClass(className);
         final MetaClass metaClass = MetadataProvider.getSession().getClass(aClass);
 
         if (metaClass == null) 
@@ -133,23 +130,19 @@ public class DsContextLoader {
 
     protected CollectionDatasource loadCollectionDatasource(Element element) {
         final String id = element.attributeValue("id");
-        try {
-            final MetaClass metaClass = loadMetaClass(element);
-            final String viewName = element.attributeValue("view");
+        final MetaClass metaClass = loadMetaClass(element);
+        final String viewName = element.attributeValue("view");
 
-            final CollectionDatasource datasource =
-                    factory.createCollectionDatasource(datasources, dataservice, id, metaClass, viewName);
+        final CollectionDatasource datasource =
+                factory.createCollectionDatasource(datasources, dataservice, id, metaClass, viewName);
 
-            final String query = element.elementText("query");
-            if (!StringUtils.isBlank(query)) {
-                datasource.setQuery(query);
-            }
-
-            loadDatasources(element, datasource);
-
-            return datasource;
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        final String query = element.elementText("query");
+        if (!StringUtils.isBlank(query)) {
+            datasource.setQuery(query);
         }
+
+        loadDatasources(element, datasource);
+
+        return datasource;
     }
 }

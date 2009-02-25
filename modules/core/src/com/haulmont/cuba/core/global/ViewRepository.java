@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.chile.core.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
@@ -77,13 +78,24 @@ public class ViewRepository
 
     public View deployView(Element rootElem, Element viewElem) {
         String viewName = viewElem.attributeValue("name");
-        String entity = viewElem.attributeValue("entity");
-        if (StringUtils.isBlank(viewName) || StringUtils.isBlank(entity))
-            throw new IllegalStateException("Invalid view definition");
-
+        if (StringUtils.isBlank(viewName))
+            throw new IllegalStateException("Invalid view definition: no 'name' attribute");
 
         Session session = MetadataProvider.getSession();
-        MetaClass metaClass = session.getClass(entity);
+        MetaClass metaClass;
+
+        String entity = viewElem.attributeValue("entity");
+        if (StringUtils.isBlank(entity)) {
+            String className = viewElem.attributeValue("class");
+            if (StringUtils.isBlank(className))
+                throw new IllegalStateException("Invalid view definition: no 'entity' or 'class' attribute");
+            Class entityClass = ReflectionHelper.getClass(className);
+            metaClass = session.getClass(entityClass);
+        }
+        else {
+            metaClass = session.getClass(entity);
+        }
+
         View v = findView(metaClass, viewName);
         if (v != null)
             return v;
