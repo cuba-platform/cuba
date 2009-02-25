@@ -78,9 +78,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
     @Override
     public synchronized void refresh() {
+        Collection prevIds = data.itemIds;
         invalidate();
 
-        Collection prevIds = data.itemIds;
         data = loadData();
 
         State prevState = state;
@@ -92,6 +92,8 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         // HACK need somehow get id from item
         if (prevIds != null && this.item != null && !prevIds.contains(this.item.getId())) {
             setItem(null);
+        } else if (this.item != null) {
+            setItem(getItem((K) this.item.getId()));
         }
 
         forceCollectionChanged(new CollectionDatasourceListener.CollectionOperation<T>(CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));

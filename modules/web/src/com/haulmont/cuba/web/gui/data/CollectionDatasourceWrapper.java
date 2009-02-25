@@ -84,6 +84,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
 
     protected void fireItemSetChanged() {
         if (ignoreListeners) return;
+        ignoreListeners = true;
 
         for (ItemSetChangeListener listener : itemSetChangeListeners) {
             listener.containerItemSetChange(new ItemSetChangeEvent() {
@@ -188,6 +189,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
+                itemsCache.clear();
                 fireItemSetChanged();
             } finally {
                 ignoreListeners = prevIgnoreListeners;
@@ -199,6 +201,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         public void collectionChanged(Datasource ds, CollectionOperation operation) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
+                itemsCache.clear();
                 fireItemSetChanged();
             } finally {
                 ignoreListeners = prevIgnoreListeners;
