@@ -72,4 +72,8 @@ public abstract class AbstractListComponent<T extends AbstractSelect>
         }
         component.setValue(itemIds.size() == 1 ? itemIds.iterator().next() : itemIds);
     }
+
+    public void refresh() {
+        datasource.refresh();
+    }
 }

@@ -26,40 +26,11 @@ public class RoleBrowser extends AbstractWindow
     protected void init(Map<String, Object> params) {
         final Table table  = getComponent("roles");
 
-        table.addAction(
-                new AbstractAction("edit")
-                {
-                    public String getCaption() {
-                        return "Edit";
-                    }
+        final TableActionsHelper helper = new TableActionsHelper(this, table);
+        helper.createCreateAction();
+        helper.createEditAction();
+        helper.createRefreshAction();
 
-                    public boolean isEnabled() {
-                        return true;
-                    }
-
-                    public void actionPerform(Component component) {
-                        final Set selected = table.getSelected();
-                        if (selected.size() == 1) {
-                            Role user = (Role) selected.iterator().next();
-                            openEditor("sec$Role.edit", user, WindowManager.OpenType.THIS_TAB);
-                        }
-                    }
-                });
-        table.addAction(
-                new AbstractAction("refresh")
-                {
-                    public String getCaption() {
-                        return "Refresh";
-                    }
-
-                    public boolean isEnabled() {
-                        return true;
-                    }
-
-                    public void actionPerform(Component component) {
-                        table.getDatasource().refresh();
-                    }
-                });
-
+        table.refresh();
     }
 }

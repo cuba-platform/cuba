@@ -17,4 +17,6 @@ public interface List  extends Component, Component.BelongToFrame, Component.Act
     void setSelected(Collection<Entity> items);
 
     CollectionDatasource getDatasource();
+
+    void refresh();
 }
