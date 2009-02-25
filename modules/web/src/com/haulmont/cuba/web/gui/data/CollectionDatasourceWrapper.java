@@ -30,7 +30,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
 
-    protected CollectionDatasource datasource;
+    protected CollectionDatasource<Entity, Object> datasource;
 
     protected Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();

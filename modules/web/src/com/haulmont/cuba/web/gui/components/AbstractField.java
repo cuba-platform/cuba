@@ -15,8 +15,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 
 public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends AbstractComponent<T>{
-    private Datasource datasource;
-    private String property;
+    protected Datasource datasource;
+    protected String property;
     private boolean editable;
 
     public Datasource getDatasource() {

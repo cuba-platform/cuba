@@ -13,7 +13,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.data.TreeDatasourceWrapper;
+import com.haulmont.cuba.web.gui.data.HierarchicalDatasourceWrapper;
+import com.haulmont.cuba.core.entity.Entity;
 import com.itmill.toolkit.data.Property;
 
 import java.util.Set;
@@ -36,11 +37,11 @@ public class Tree
                 new Property.ValueChangeListener()
                 {
                     public void valueChange(Property.ValueChangeEvent event) {
-                        Set itemIds = getSelected();
-                        if (itemIds.isEmpty()) {
+                        Set items = getSelected();
+                        if (items.isEmpty()) {
                             datasource.setItem(null);
-                        } else if (itemIds.size() == 1) {
-                            datasource.setItem(datasource.getItem(itemIds.iterator().next()));
+                        } else if (items.size() == 1) {
+                            datasource.setItem((Entity) items.iterator().next());
                         } else {
                             throw new UnsupportedOperationException();
                         }
@@ -76,8 +77,8 @@ public class Tree
         MetaProperty metaProperty = showProperty == null ? null : datasource.getMetaClass().getProperty(showProperty);
         component.setItemCaptionPropertyId(metaProperty);
 
-        TreeDatasourceWrapper wrapper =
-                new TreeDatasourceWrapper(datasource, hierarchyProperty);
+        HierarchicalDatasourceWrapper wrapper =
+                new HierarchicalDatasourceWrapper(datasource, hierarchyProperty);
         component.setContainerDataSource(wrapper);
     }
 }

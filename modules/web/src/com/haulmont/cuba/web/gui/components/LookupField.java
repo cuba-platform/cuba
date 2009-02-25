@@ -11,21 +11,73 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.itmill.toolkit.ui.Select;
+import com.itmill.toolkit.ui.AbstractSelect;
+import com.itmill.toolkit.data.Property;
 
 public class LookupField
     extends
         AbstractField<Select>
     implements
         com.haulmont.cuba.gui.components.LookupField, Component.Wrapper {
+    private CollectionDatasource lookupDatasource;
 
     public LookupField() {
         this.component = new Select();
         component.setImmediate(true);
+        component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
+    }
+
+    public void setDatasource(Datasource datasource, String property) {
+        this.datasource = datasource;
+        this.property = property;
+
+        final MetaClass metaClass = datasource.getMetaClass();
+        final MetaProperty metaProperty = metaClass.getProperty(property);
+
+        final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
+        final Property itemProperty = wrapper.getItemProperty(metaProperty);
+        component.setPropertyDataSource(new Property() {
+            public Object getValue() {
+                final Object value = itemProperty.getValue();
+                return (value instanceof Entity) ? ((Entity) value).getId() : value;
+            }
+
+            public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                if (newValue instanceof Entity) {
+                    itemProperty.setValue(newValue);
+                } else {
+                    if (lookupDatasource != null) {
+                        newValue = lookupDatasource.getItem(newValue);
+                    }
+                }
+                itemProperty.setValue(newValue);
+            }
+
+            public Class getType() {
+                return itemProperty.getType();
+            }
+
+            public boolean isReadOnly() {
+                return itemProperty.isReadOnly();
+            }
+
+            public void setReadOnly(boolean newStatus) {
+                itemProperty.setReadOnly(newStatus);
+            }
+        });
+
+        setRequired(metaProperty.isMandatory());
     }
 
     public void setLookupDatasource(CollectionDatasource datasource) {
+        lookupDatasource = datasource;
         component.setContainerDataSource(new CollectionDatasourceWrapper(datasource, true));
     }
 

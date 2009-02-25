@@ -3,6 +3,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.itmill.toolkit.ui.AbstractSelect;
 import com.haulmont.cuba.gui.components.List;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -25,7 +26,7 @@ public abstract class AbstractListComponent<T extends AbstractSelect>
         component.setMultiSelect(multiselect);
     }
 
-    public <T> T getSingleSelected() {
+    public <T extends Entity> T getSingleSelected() {
         final Set selected = getSelecetdItemIds();
         return selected == null || selected.isEmpty() ?
                 null : (T) datasource.getItem(selected.iterator().next());
@@ -55,5 +56,20 @@ public abstract class AbstractListComponent<T extends AbstractSelect>
         } else {
             return Collections.singleton(value);
         }
+    }
+
+    public void setSelected(Entity item) {
+        setSelected(Collections.singletonList(item));
+    }
+
+    public void setSelected(Collection<Entity> items) {
+        Set itemIds = new HashSet();
+        for (Entity item : items) {
+            if (!datasource.containsItem(item.getId())) {
+                throw new IllegalStateException("Datasource doen't contain items");
+            }
+            itemIds.add(item.getId());
+        }
+        component.setValue(itemIds.size() == 1 ? itemIds.iterator().next() : itemIds);
     }
 }

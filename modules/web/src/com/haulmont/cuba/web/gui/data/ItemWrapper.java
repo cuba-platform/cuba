@@ -23,10 +23,15 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
     private Map<MetaProperty, PropertyWrapper> properties = new HashMap<MetaProperty, PropertyWrapper>();
     private List<PropertySetChangeListener> listeners = new ArrayList<PropertySetChangeListener>();
 
+    protected Object item;
+
     public ItemWrapper(Object item, Collection<MetaProperty> properties) {
+        this.item = item;
+
         for (MetaProperty property : properties) {
             this.properties.put(property, createPropertyWrapper(item, property));
         }
+
         if (item instanceof CollectionDatasource) {
             ((CollectionDatasource) item).addListener(new CollectionDatasourceListener<Entity>() {
                 public void collectionChanged(Datasource<Entity> ds, CollectionOperation operation) {}
@@ -77,5 +82,11 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
         public Item getItem() {
             return ItemWrapper.this;
         }
+    }
+
+    @Override
+    public String toString() {
+        final Entity entity = item instanceof Datasource ? ((Datasource) item).getItem() : (Entity) item;
+        return entity == null ? "" : entity.toString();
     }
 }

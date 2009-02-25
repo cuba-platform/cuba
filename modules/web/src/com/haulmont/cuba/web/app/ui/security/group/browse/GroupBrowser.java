@@ -12,9 +12,11 @@ package com.haulmont.cuba.web.app.ui.security.group.browse;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collection;
 
 public class GroupBrowser extends AbstractWindow
 {
@@ -24,8 +26,15 @@ public class GroupBrowser extends AbstractWindow
 
     protected void init(Map<String, Object> params) {
         final Tree tree = getComponent("groups");
-        tree.getDatasource().refresh();
+
+        final CollectionDatasource treeDS = tree.getDatasource();
+        treeDS.refresh();
         tree.expandTree();
+
+        final Collection itemIds = treeDS.getItemIds();
+        if (!itemIds.isEmpty()) {
+            tree.setSelected(treeDS.getItem(itemIds.iterator().next()));
+        }
 
         final TreeActionsHelper helper = new TreeActionsHelper(this, tree);
         helper.createCreateAction(WindowManager.OpenType.DIALOG);

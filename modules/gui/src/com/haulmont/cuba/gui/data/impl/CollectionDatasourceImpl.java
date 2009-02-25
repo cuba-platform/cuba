@@ -19,10 +19,7 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CollectionDatasourceImpl<T extends Entity, K>
     extends 
@@ -33,7 +30,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     private String query;
     private ParametersHelper.ParameterInfo[] queryParameters;
 
-    private Collection<T> collection = Collections.emptyList();
+    protected Data data;
+//    private Collection<K> itemIds = Collections.emptyList();
+//    private Map<K, T> itemsByKey = Collections.emptyMap();
 
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
@@ -50,7 +49,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     @Override
     public synchronized void invalidate() {
         super.invalidate();
-        this.collection = Collections.emptyList();
+        this.data = new Data(Collections.<K>emptyList(), Collections.<K, T>emptyMap());
     }
 
     @Override
@@ -81,8 +80,8 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     public synchronized void refresh() {
         invalidate();
 
-        Collection prevIds = collection;
-        loadData();
+        Collection prevIds = data.itemIds;
+        data = loadData();
 
         State prevState = state;
         if (!prevState.equals(State.VALID)) {
@@ -91,7 +90,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         }
 
         // HACK need somehow get id from item
-        if (prevIds != null && !prevIds.contains(this.item)) {
+        if (prevIds != null && this.item != null && !prevIds.contains(this.item.getId())) {
             setItem(null);
         }
 
@@ -102,7 +101,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         if (State.NOT_INITIALIZAED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
-            return (T) key;
+            return (T) data.itemsByKey.get(key);
         }
     }
 
@@ -110,7 +109,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         if (State.NOT_INITIALIZAED.equals(state)) {
             return Collections.emptyList();
         } else {
-            return (Collection<K>) getCollection();
+            return (Collection<K>) data.itemIds;
         }
     }
 
@@ -118,26 +117,30 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         if (State.NOT_INITIALIZAED.equals(state)) {
             return 0;
         } else {
-            return getCollection().size();
+            return data.itemIds.size();
         }
     }
 
     public synchronized void addItem(T item) throws UnsupportedOperationException {
-        getCollection().add(item);
+        data.itemIds.add((K) item.getId());
+        data.itemsByKey.put((K)item.getId(), item);
+
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.add(item);
         }
     }
 
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
-        getCollection().remove(item);
+        data.itemIds.remove((K) item.getId());
+        data.itemsByKey.remove((K)item.getId());
+
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.remove(item);
         }
     }
 
     public synchronized boolean containsItem(K itemId) {
-        return getCollection().contains(itemId);
+        return data.itemIds.contains(itemId);
     }
 
     public String getQuery() {
@@ -183,11 +186,17 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    protected Collection<T> getCollection() {
-        return collection;
+    protected class Data {
+        protected Collection<K> itemIds = Collections.emptyList();
+        protected Map<K, T> itemsByKey = Collections.emptyMap();
+
+        public Data(Collection<K> itemIds, Map<K, T> itemsByKey) {
+            this.itemIds = itemIds;
+            this.itemsByKey = itemsByKey;
+        }
     }
 
-    protected Collection<T> loadData() {
+    protected Data loadData() {
         final DataServiceRemote.CollectionLoadContext context =
                 new DataServiceRemote.CollectionLoadContext(metaClass);
 
@@ -196,7 +205,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
             for (ParametersHelper.ParameterInfo info : queryParameters) {
                 if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
                     final Object value = parameters.get(info.getFlatName());
-                    if (value == null) return Collections.emptyList();
+                    if (value == null) return new Data(Collections.<K>emptyList(), Collections.<K,T>emptyMap());
                 }
             }
             context.setQueryString(getJPQLQuery(this.query, parameters)).setParameters(parameters);
@@ -206,9 +215,18 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
         context.setView(view);
 
-        collection = (Collection) dataservice.loadList(context);
+        final Collection<T> entities = (Collection) dataservice.loadList(context);
 
-        return collection;
+        List<K> ids = new ArrayList<K>();
+        Map<K, T> itemsById = new HashMap<K,T>();
+
+        for (T entity : entities) {
+            final K id = (K) entity.getId();
+            ids.add(id);
+            itemsById.put(id, entity);
+        }
+
+        return new Data(ids, itemsById);
     }
 
     private Map<String, Object> getQueryParameters() {
