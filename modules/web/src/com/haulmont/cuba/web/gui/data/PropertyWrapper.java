@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
     private boolean readOnly;
     private Object item;
-    private MetaProperty metaProperty;
+    protected MetaProperty metaProperty;
 
     private List<ValueChangeListener> listeners = new ArrayList<ValueChangeListener>();
 

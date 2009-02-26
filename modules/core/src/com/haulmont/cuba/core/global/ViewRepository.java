@@ -44,7 +44,7 @@ public class ViewRepository
     public View getView(MetaClass metaClass, String name) {
         if (metaClass == null)
             throw new IllegalArgumentException("MetaClass is null");
-        
+
         View view = findView(metaClass, name);
         if (view == null)
             throw new ViewNotFoundException(String.format("View %s/%s not found", metaClass.getName(), name));
@@ -97,25 +97,38 @@ public class ViewRepository
         }
 
         View v = findView(metaClass, viewName);
-        if (v != null)
-            return v;
+        if (v != null) return v;
 
         View view = new View(metaClass.getJavaClass(), viewName);
+        loadView(rootElem, viewElem, view);
+        storeView(metaClass, view);
+
+        return view;
+    }
+
+    protected void loadView(Element rootElem, Element viewElem, View view) {
+        Session session = MetadataProvider.getSession();
+
+        final MetaClass metaClass = session.getClass(view.getEntityClass());
+        final String viewName = view.getName();
+
         for (Element propElem : (List<Element>) viewElem.elements("property")) {
-            String propName = propElem.attributeValue("name");
-            MetaProperty metaProperty = metaClass.getProperty(propName);
+            String propertyName = propElem.attributeValue("name");
+
+            MetaProperty metaProperty = metaClass.getProperty(propertyName);
             if (metaProperty == null)
                 throw new IllegalStateException(
-                        String.format("View %s/%s definition error: property %s doesn't exists", entity, viewName, propName)
+                        String.format("View %s/%s definition error: property %s doesn't exists", metaClass.getName(), viewName, propertyName)
                 );
 
             View refView = null;
             String refViewName = propElem.attributeValue("view");
+
             if (refViewName != null) {
                 Range range = metaProperty.getRange();
                 if (!range.isClass())
                     throw new IllegalStateException(
-                            String.format("View %s/%s definition error: property %s is not an entity", entity, viewName, propName)
+                            String.format("View %s/%s definition error: property %s is not an entity", metaClass.getName(), viewName, propertyName)
                     );
 
                 refView = findView(range.asClass(), refViewName);
@@ -128,18 +141,28 @@ public class ViewRepository
                             break;
                         }
                     }
+
                     if (refView == null)
                         throw new IllegalStateException(
                                 String.format(
                                         "View %s/%s definition error: unable to find/deploy referenced view %s/%s",
-                                        entity, viewName, range.asClass().getName(), refViewName)
+                                        metaClass.getName(), viewName, range.asClass().getName(), refViewName)
                         );
                 }
             }
-            view.addProperty(propName, refView);
+
+            Range range = metaProperty.getRange();
+            // try to import anonimus veiws
+            if (range.isClass() && refView == null) {
+                final List<Element> propertyElements = propElem.elements("property");
+                if (!propertyElements.isEmpty()) {
+                    refView = new View(range.asClass().getJavaClass());
+                    loadView(rootElem, propElem, refView);
+                }
+            }
+
+            view.addProperty(propertyName, refView);
         }
-        storeView(metaClass, view);
-        return view;
     }
 
     private void storeView(MetaClass metaClass, View view) {
@@ -147,6 +170,7 @@ public class ViewRepository
         if (views == null) {
             views = new ConcurrentHashMap<String, View>();
         }
+
         views.put(view.getName(), view);
         storage.put(metaClass, views);
     }

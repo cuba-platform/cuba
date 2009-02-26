@@ -3,6 +3,7 @@
         <property name="name"/>
         <property name="login"/>
         <property name="group" view="lookup"/>
+        <property name="userRoles" view="user.edit"/>
     </view>
 
     <view entity="sec$UserRole" name="user.edit">

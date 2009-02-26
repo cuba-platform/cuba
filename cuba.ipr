@@ -718,6 +718,7 @@
       </TABLE_DATA>
       <libraries>
         <library>
+          <attribute name="URI" value="" />
           <url>jar://$PROJECT_DIR$/../lib/server/hsqldb-1.8.0.9.jar!/</url>
         </library>
       </libraries>
@@ -1010,7 +1011,6 @@
       </map>
     </option>
     <option name="myVersion" value="124" />
-    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />

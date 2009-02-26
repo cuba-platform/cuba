@@ -11,6 +11,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
@@ -86,8 +87,14 @@ public class Table
         for (MetaProperty metaProperty : properties) {
             final Column column = columns.get(metaProperty);
             if (column != null && !column.isEditable()) {
+                final String clickAction =
+                        column.getXmlDescriptor() == null ?
+                                null : column.getXmlDescriptor().attributeValue("clickAction");
+
                 if (metaProperty.getRange().isClass()) {
-                    component.addGeneratedColumn(metaProperty, new ReadOnlyAssociationGenerator(column));
+                    if (!StringUtils.isEmpty(clickAction)) {
+                        component.addGeneratedColumn(metaProperty, new ReadOnlyAssociationGenerator(column));
+                    }
                 } else if (metaProperty.getRange().isDatatype()) {
                     if (editable) {
                         component.addGeneratedColumn(metaProperty, new ReadOnlyDatatypeGenerator());
@@ -160,15 +167,53 @@ public class Table
             return new ItemWrapper(item, properties) {
                 @Override
                 protected PropertyWrapper createPropertyWrapper(Object item, MetaProperty property) {
-                    final PropertyWrapper wrapper = new PropertyWrapper(item, property);
-                    final Column column = Table.this.columns.get(property);
-                    if (column != null) {
-                        wrapper.setReadOnly(!column.isEditable());
-                    }
+                    final PropertyWrapper wrapper = new TablePropertyWrapper(item, property);
 
                     return wrapper;
                 }
             };
+        }
+
+        private class TablePropertyWrapper extends PropertyWrapper {
+            private final MetaProperty property;
+
+            public TablePropertyWrapper(Object item, MetaProperty property) {
+                super(item, property);
+                this.property = property;
+            }
+
+            @Override
+            public boolean isReadOnly() {
+                final Column column = Table.this.columns.get(property);
+                if (column != null) {
+                    return !column.isEditable();
+                } else {
+                    return super.isReadOnly();
+                }
+            }
+
+            @Override
+            public void setReadOnly(boolean newStatus) {
+                super.setReadOnly(newStatus);
+            }
+
+            @Override
+            public String toString() {
+                final Column column = Table.this.columns.get(property);
+                if (column != null && column.getXmlDescriptor() != null) {
+                    String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
+                    if (!StringUtils.isEmpty(captionProperty)) {
+                        final Object value = getValue();
+                        return metaProperty.getRange().isDatatype() ?
+                                metaProperty.getRange().asDatatype().format(value) :
+                                value == null ? null : String.valueOf(((Instance) value).getValue(captionProperty));
+                    } else {
+                        return super.toString();
+                    }
+                } else {
+                    return super.toString();
+                }
+            }
         }
     }
 
@@ -185,16 +230,21 @@ public class Table
 
             final Button component = new Button();
             component.setData(value);
-            component.setCaption(value == null ? "" : value.toString());
+            component.setCaption(value == null ? "" : property.toString());
             component.setStyleName("link");
+
             component.addListener(new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     final Element element = column.getXmlDescriptor();
 
-                    final String onClickAction = element.attributeValue("onClick");
-                    if (!StringUtils.isEmpty(onClickAction)) {
-                        final com.haulmont.cuba.gui.components.Window window = Table.this.getFrame();
-                        window.openEditor(onClickAction, value, WindowManager.OpenType.THIS_TAB);
+                    final String clickAction = element.attributeValue("clickAction");
+                    if (!StringUtils.isEmpty(clickAction)) {
+                        if (clickAction.startsWith("open:")) {
+                            final com.haulmont.cuba.gui.components.Window window = Table.this.getFrame();
+                            window.openEditor(clickAction.substring("open:".length()), value, WindowManager.OpenType.THIS_TAB);
+                        } else {
+                            throw new UnsupportedOperationException();
+                        }
                     }
                 }
             });

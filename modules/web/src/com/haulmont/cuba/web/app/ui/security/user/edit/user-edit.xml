@@ -14,7 +14,9 @@
             id="user"
             class="com.haulmont.cuba.security.entity.User"
             view="user.edit"
-        />
+        >
+            <collectionDatasource id="roles" property="userRoles"/>
+        </datasource>
 
         <collectionDatasource
             id="groups"
@@ -22,14 +24,6 @@
             view="lookup"
         >
             <query>select g from sec$Group g</query>
-        </collectionDatasource>
-
-        <collectionDatasource
-            id="roles"
-            class="com.haulmont.cuba.security.entity.UserRole"
-            view="user.edit"
-        >
-            <query>select r from sec$UserRole r where r.user.id=:ds$user</query>
         </collectionDatasource>
     </dsContext>
 
@@ -62,7 +56,7 @@
                 </hbox>
                 <table id="roles">
                     <columns>
-                        <column id="role" caption="Role"/>
+                        <column id="role" caption="Role" captionProperty="name" clickAction="open:sec$Role.edit"/>
                     </columns>
                     <rows datasource="roles"/>
                 </table>
