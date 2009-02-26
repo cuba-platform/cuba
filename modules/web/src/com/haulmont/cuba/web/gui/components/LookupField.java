@@ -127,7 +127,7 @@ public class LookupField
             final Object key = super.getValue();
             return (T) lookupDatasource.getItem(key);
         } else {
-            return super.getValue();
+            return super.<T>getValue();
         }
     }
 
