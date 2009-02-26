@@ -43,4 +43,13 @@ public interface IFrame extends OrderedLayout, Component.Container, Component.Be
     <T extends Window> T openLookup(
             String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType);
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    enum MessageType {
+        CONFIRMATION,
+        WARNING
+    }
+    
+    void showMessageDialog(String title, String message, MessageType messageType);
+    Action showOptionDialog(String title, String message, MessageType messageType, Action[] actions);
 }

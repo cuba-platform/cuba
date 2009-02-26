@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -469,4 +470,8 @@ public abstract class WindowManager {
         return (T) method.invoke(window, params);
     }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
+    public abstract Action showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
 }

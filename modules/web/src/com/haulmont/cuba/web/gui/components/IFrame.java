@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.web.App;
 
 import java.util.Map;
@@ -70,6 +71,14 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
         return App.getInstance().getScreenManager().<T>openLookup(windowInfo, handler, openType);
+    }
+
+    public void showMessageDialog(String title, String message, MessageType messageType) {
+        App.getInstance().getScreenManager().showMessageDialog(title, message, messageType);
+    }
+
+    public Action showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
+        return App.getInstance().getScreenManager().showOptionDialog(title, message, messageType, actions);
     }
 
     public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {

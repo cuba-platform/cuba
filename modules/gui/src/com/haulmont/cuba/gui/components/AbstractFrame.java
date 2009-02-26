@@ -134,6 +134,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return frame.<T>openLookup(descriptor, handler, openType, Collections.<String, Object>emptyMap());
     }
 
+    public void showMessageDialog(String title, String message, MessageType messageType) {
+        frame.showMessageDialog(title, message, messageType);
+    }
+
+    public Action showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
+        return frame.showOptionDialog(title, message, messageType, actions);
+    }
+
     public boolean close(String actionId) {
         if (frame instanceof Window) {
             return ((Window) frame).close(actionId);

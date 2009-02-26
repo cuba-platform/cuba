@@ -92,4 +92,27 @@ abstract class ListActionsHelper<T extends List> {
 
         return action;
     }
+
+    public Action createRemoveAction() {
+        final Action action = new AbstractAction("remove") {
+            public String getCaption() {
+                return "Remove";
+            }
+
+            public boolean isEnabled() {
+                return true;
+            }
+
+            public void actionPerform(Component component) {
+                final Set selected = ListActionsHelper.this.component.getSelected();
+                
+                for (Object o : selected) {
+
+                }
+            }
+        };
+        ListActionsHelper.this.component.addAction(action);
+
+        return action;
+    }
 }

@@ -12,6 +12,8 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -132,5 +134,15 @@ public class ScreenManager extends WindowManager
 
     protected ComponentsFactory createComponentFactory() {
         return new WebComponentsFactory();
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Action showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

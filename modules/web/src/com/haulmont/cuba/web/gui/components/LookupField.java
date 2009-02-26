@@ -25,7 +25,8 @@ public class LookupField
     extends
         AbstractField<Select>
     implements
-        com.haulmont.cuba.gui.components.LookupField, Component.Wrapper {
+        com.haulmont.cuba.gui.components.LookupField, Component.Wrapper
+{
     private CollectionDatasource lookupDatasource;
     private CaptionMode captionMode = CaptionMode.ITEM;
     private String captionProperty;
@@ -45,6 +46,7 @@ public class LookupField
 
         final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
         final Property itemProperty = wrapper.getItemProperty(metaProperty);
+
         component.setPropertyDataSource(new Property() {
             public Object getValue() {
                 final Object value = itemProperty.getValue();
@@ -117,6 +119,22 @@ public class LookupField
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(lookupDatasource.getMetaClass().getProperty(captionProperty));
         }
+    }
+
+    @Override
+    public <T> T getValue() {
+        if (lookupDatasource != null) {
+            final Object key = super.getValue();
+            return (T) lookupDatasource.getItem(key);
+        } else {
+            return super.getValue();
+        }
+    }
+
+    @Override
+    public void setValue(Object value) {
+        // TODO (abramov) need to be changed
+        super.setValue(((Entity) value).getId());
     }
 
     @Override
