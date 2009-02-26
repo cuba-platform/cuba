@@ -105,7 +105,11 @@ public class DataServiceBean implements DataService, DataServiceRemote
             final String name = entry.getKey();
             if (queryString.contains(":" + name)) {
                 final Object value = entry.getValue();
-                query.setParameter(entry.getKey(), value);
+                if (value instanceof Entity) {
+                    query.setParameter(entry.getKey(), ((Entity) value).getId());
+                } else {
+                    query.setParameter(entry.getKey(), value);
+                }
             }
         }
 

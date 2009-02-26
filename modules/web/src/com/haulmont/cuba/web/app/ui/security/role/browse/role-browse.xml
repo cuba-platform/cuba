@@ -1,5 +1,7 @@
 <window
-        class="com.haulmont.cuba.web.app.ui.security.role.browse.RoleBrowser">
+    class="com.haulmont.cuba.web.app.ui.security.role.browse.RoleBrowser"
+    lookupComponent="users"
+>
 
     <metadataContext>
         <view entity="sec$Role" name="role-browse">
@@ -19,6 +21,7 @@
     <layout>
         <vbox id="table-panel" expand="roles">
             <hbox>
+                <button action="roles.create"/>
                 <button action="roles.edit"/>
                 <button action="roles.refresh"/>
             </hbox>

@@ -27,7 +27,7 @@ public class AbstractActionOwnerComponent<T extends com.itmill.toolkit.ui.Compon
     }
 
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
-        return actions.keySet();
+        return actionsOrder;
     }
 
     public com.haulmont.cuba.gui.components.Action getAction(String id) {

@@ -10,18 +10,19 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.Layout;
-import com.itmill.toolkit.ui.OrderedLayout;
-import com.itmill.toolkit.ui.Button;
+import com.haulmont.chile.core.model.MetaClass;
+import com.itmill.toolkit.ui.*;
+
+import java.util.Map;
 
 public class GenericLookupWindow extends GenericBrowserWindow implements com.haulmont.cuba.gui.components.Window.Lookup {
     private Handler handler;
 
     @Override
     protected com.itmill.toolkit.ui.Component createLayout() {
-        final Layout layout = (Layout) super.createLayout();
+        final VerticalLayout layout = (VerticalLayout) super.createLayout();
 
-        OrderedLayout okbar = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+        HorizontalLayout okbar = new HorizontalLayout();
         okbar.setHeight("25px");
 
         final Button selectButton = new Button("Select");
@@ -37,8 +38,18 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
         okbar.addComponent(cancelButton);
         
         layout.addComponent(okbar);
+        layout.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
 
         return layout;
+    }
+
+    @Override
+    protected void init(Map<String, Object> params) {
+        super.init(params);   
+    }
+
+    protected void initCaption(MetaClass metaClass) {
+        setCaption("Lookup " + metaClass.getName());
     }
 
     public Component getLookupComponent() {

@@ -13,7 +13,7 @@
         <datasource
             id="user"
             class="com.haulmont.cuba.security.entity.User"
-            view="edit"
+            view="user.edit"
         />
 
         <collectionDatasource
@@ -23,31 +23,50 @@
         >
             <query>select g from sec$Group g</query>
         </collectionDatasource>
+
+        <collectionDatasource
+            id="roles"
+            class="com.haulmont.cuba.security.entity.UserRole"
+            view="user.edit"
+        >
+            <query>select r from sec$UserRole r where r.user.id=:ds$user</query>
+        </collectionDatasource>
     </dsContext>
 
     <layout>
-        <grid>
-            <columns>
-                <column flex="1"/>
-                <column flex="3"/>
-            </columns>
-            <rows>
-                <row>
-                    <label value="Name"/>
-                    <textField id="name" datasource="user" property="name"/>
-                </row>
-                <row>
-                    <label value="Login"/>
-                    <hbox>
+        <vbox expand="roles-pane">
+            <grid>
+                <columns>
+                    <column flex="1"/>
+                    <column flex="3"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="Name"/>
+                        <textField id="name" datasource="user" property="name"/>
+                    </row>
+                    <row>
+                        <label value="Login"/>
                         <textField id="login" datasource="user" property="login"/>
-                        <button id="browse" caption="Browse..."/>
-                   </hbox>
-                </row>
-                <row>
-                    <label value="Group"/>
-                    <lookupField id="group" datasource="user" property="group" lookupDatasource="groups" captionProperty="name"/>
-                </row>
-            </rows>
-        </grid>
+                    </row>
+                    <row>
+                        <label value="Group"/>
+                        <lookupField id="group" datasource="user" property="group" lookupDatasource="groups" captionProperty="name"/>
+                    </row>
+                </rows>
+            </grid>
+            <vbox id="roles-pane" expand="roles">
+                <hbox>
+                    <button action="roles.include"/>
+                    <button action="roles.exclude"/>
+                </hbox>
+                <table id="roles">
+                    <columns>
+                        <column id="role" caption="Role"/>
+                    </columns>
+                    <rows datasource="roles"/>
+                </table>
+            </vbox>
+        </vbox>
     </layout>
 </window>

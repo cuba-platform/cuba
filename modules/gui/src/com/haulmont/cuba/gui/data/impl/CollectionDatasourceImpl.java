@@ -30,9 +30,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     private String query;
     private ParametersHelper.ParameterInfo[] queryParameters;
 
-    protected Data data;
-//    private Collection<K> itemIds = Collections.emptyList();
-//    private Map<K, T> itemsByKey = Collections.emptyMap();
+    protected Data data = new Data(Collections.<K>emptyList(), Collections.<K,T>emptyMap());
 
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
@@ -247,7 +245,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
                     
                     break;
                 }
-                case CONTEXT: {
+                case PARAM: {
                     final Object value =
                             dsContext.getContext() == null ?
                                     null : dsContext.getContext().getValue(info.getPath());

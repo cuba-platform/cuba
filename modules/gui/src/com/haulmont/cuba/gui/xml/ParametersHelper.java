@@ -33,7 +33,7 @@ public class ParametersHelper {
         public enum Type {
             DATASOURCE("ds"),
             COMPONENT("component"),
-            CONTEXT("context");
+            PARAM("param");
 
             private String prefix;
 
@@ -101,8 +101,8 @@ public class ParametersHelper {
 
             if (ParameterInfo.Type.DATASOURCE.prefix.equals(source)) {
                 return new ParameterInfo(name, ParameterInfo.Type.DATASOURCE);
-            } else if (ParameterInfo.Type.CONTEXT.prefix.equals(source)) {
-                return new ParameterInfo(name, ParameterInfo.Type.CONTEXT);
+            } else if (ParameterInfo.Type.PARAM.prefix.equals(source)) {
+                return new ParameterInfo(name, ParameterInfo.Type.PARAM);
             } else if (ParameterInfo.Type.COMPONENT.prefix.equals(source)) {
                 return new ParameterInfo(name, ParameterInfo.Type.COMPONENT);
             } else

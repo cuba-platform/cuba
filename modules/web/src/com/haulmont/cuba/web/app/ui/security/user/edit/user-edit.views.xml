@@ -1,8 +1,14 @@
 <views>
-    <view entity="sec$User" name="edit">
+    <view entity="sec$User" name="user.edit">
         <property name="name"/>
         <property name="login"/>
         <property name="group" view="lookup"/>
+    </view>
+
+    <view entity="sec$UserRole" name="user.edit">
+        <property name="role">
+            <property name="name"/>
+        </property>
     </view>
 
 </views>

@@ -18,7 +18,7 @@
     <screen id="sec$Group.browse"
             template="/com/haulmont/cuba/web/app/ui/security/group/browse/group-browse.xml"/>
 
-    <screen id="sec$Role.browse"
-            template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>
+    <!--<screen id="sec$Role.browse"-->
+            <!--template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>-->
 
 </screen-config>

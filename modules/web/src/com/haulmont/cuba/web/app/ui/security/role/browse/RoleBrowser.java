@@ -17,7 +17,7 @@ import com.haulmont.cuba.security.entity.Role;
 import java.util.Set;
 import java.util.Map;
 
-public class RoleBrowser extends AbstractWindow
+public class RoleBrowser extends AbstractLookup
 {
     public RoleBrowser(IFrame frame) {
         super(frame);

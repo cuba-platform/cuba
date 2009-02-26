@@ -65,7 +65,8 @@ public class GenericBrowserWindow extends Window
     }
 
     protected Layout createActionsToolbar(Table table) {
-        final OrderedLayout layout = new OrderedLayout(OrderedLayout.ORIENTATION_HORIZONTAL);
+        final HorizontalLayout layout = new HorizontalLayout();
+
         final Collection<Action> actions = table.getActions();
         for (Action action : actions) {
             final Button button = new Button();
@@ -82,7 +83,7 @@ public class GenericBrowserWindow extends Window
         View view = getView(params);
 
         if (metaClass == null) throw new UnsupportedOperationException();
-        setCaption("Browse " + metaClass.getName());
+        initCaption(metaClass);
 
         final DsContextImpl context = createDsContext(metaClass, view);
         setDsContext(context);
@@ -91,6 +92,10 @@ public class GenericBrowserWindow extends Window
         ds.refresh();
 
         table.setDatasource(ds);
+    }
+
+    protected void initCaption(MetaClass metaClass) {
+        setCaption("Browse " + metaClass.getName());
     }
 
     protected View getView(Map<String, Object> params) {
