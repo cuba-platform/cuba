@@ -16,12 +16,17 @@ import com.haulmont.cuba.core.global.QueryTransformerFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import java.io.Serializable;
 
 public abstract class SecurityProvider
 {
     public static final String IMPL_PROP = "cuba.SecurityProvider.impl";
 
     private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.SecurityProviderImpl";
+
+    public static final String CONSTRAINT_PARAM_USER_LOGIN = "currentUserLogin";
+    public static final String CONSTRAINT_PARAM_USER_ID = "currentUserId";
+    public static final String CONSTRAINT_PARAM_SESSION_ATTR = "session_";
 
     private static SecurityProvider instance;
 
@@ -81,11 +86,16 @@ public abstract class SecurityProvider
     }
 
     protected void setQueryParam(Query query, String paramName) {
-        if ("currentUserLogin".equals(paramName)) {
-            query.setParameter("currentUserLogin", __currentUserSession().getLogin());
+        if (CONSTRAINT_PARAM_USER_LOGIN.equals(paramName)) {
+            query.setParameter(paramName, __currentUserSession().getLogin());
         }
-        else if ("currentUserId".equals(paramName)) {
-            query.setParameter("currentUserId", __currentUserSession().getUserId());
+        else if (CONSTRAINT_PARAM_USER_ID.equals(paramName)) {
+            query.setParameter(paramName, __currentUserSession().getUserId());
+        }
+        else if (paramName.startsWith(CONSTRAINT_PARAM_SESSION_ATTR)) {
+            String attrName = paramName.substring(CONSTRAINT_PARAM_SESSION_ATTR.length());
+            Serializable value = __currentUserSession().getAttribute(attrName);
+            query.setParameter(paramName, value);
         }
     }
 }
