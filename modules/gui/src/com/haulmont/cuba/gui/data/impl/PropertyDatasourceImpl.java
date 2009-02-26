@@ -34,8 +34,6 @@ public class PropertyDatasourceImpl<T extends Entity>
     protected Datasource ds;
     protected MetaProperty metaProperty;
 
-    private List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
-
     public PropertyDatasourceImpl(String id, Datasource ds, String property) {
         super(id);
         this.ds = ds;

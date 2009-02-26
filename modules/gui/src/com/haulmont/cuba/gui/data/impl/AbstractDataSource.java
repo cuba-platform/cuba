@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.chile.core.common.ValueListener;
+import com.haulmont.chile.core.model.Instance;
 
 import java.util.*;
 
@@ -29,9 +30,11 @@ public abstract class AbstractDataSource<T extends Entity>
     protected Collection<T> itemToCreate = new HashSet<T>();
     protected Collection<T> itemToUpdate = new HashSet<T>();
     protected Collection<T> itemToDelete = new HashSet<T>();
+    protected ValueListener listener;
 
     public AbstractDataSource(String id) {
         this.id = id;
+        listener = new ItemListener();
     }
 
     public String getId() {
@@ -68,6 +71,26 @@ public abstract class AbstractDataSource<T extends Entity>
         itemToCreate.clear();
         itemToUpdate.clear();
         itemToDelete.clear();
+    }
+
+    protected void attachListener(Instance item) {
+        item.addListener(listener);
+    }
+
+    protected void detatchListener(Instance item) {
+        item.removeListener(listener);
+    }
+
+    protected void forceItemChanged(Object prevItem) {
+        for (DatasourceListener dsListener : dsListeners) {
+            dsListener.itemChanged(this, (Entity) prevItem, getItem());
+        }
+    }
+
+    protected void forceStateChanged(State prevStatus) {
+        for (DatasourceListener dsListener : dsListeners) {
+            dsListener.stateChanged(this, prevStatus, getState());
+        }
     }
 
     protected class ItemListener implements ValueListener {

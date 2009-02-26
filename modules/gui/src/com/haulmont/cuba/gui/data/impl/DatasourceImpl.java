@@ -39,7 +39,6 @@ public class DatasourceImpl<T extends Entity>
 
     protected State state = State.NOT_INITIALIZAED;
     protected T item;
-    private ValueListener listener;
 
     public DatasourceImpl(
             DsContext dsContext, DataService dataservice,
@@ -52,7 +51,6 @@ public class DatasourceImpl<T extends Entity>
         this.metaClass = metaClass;
         this.view = StringUtils.isEmpty(viewName) ? null : MetadataProvider.getViewRepository().getView(metaClass, viewName);
 
-        this.listener = new ItemListener();
     }
 
     public DsContext getDsContext() {
@@ -131,32 +129,12 @@ public class DatasourceImpl<T extends Entity>
         this.item = item;
     }
 
-    protected void forceItemChanged(Object prevItem) {
-        for (DatasourceListener dsListener : dsListeners) {
-            dsListener.itemChanged(this, (Entity) prevItem, item);
-        }
-    }
-
-    protected void forceStateChanged(State prevStatus) {
-        for (DatasourceListener dsListener : dsListeners) {
-            dsListener.stateChanged(this, prevStatus, state);
-        }
-    }
-
     public void invalidate() {
         if (State.NOT_INITIALIZAED != this.state) {
             final State prevStatus = this.state;
             this.state = State.INVALID;
             forceStateChanged(prevStatus);
         }
-    }
-
-    protected void attachListener(Instance item) {
-        item.addListener(listener);
-    }
-
-    protected void detatchListener(Instance item) {
-        item.removeListener(listener);
     }
 
     public void initialized() {

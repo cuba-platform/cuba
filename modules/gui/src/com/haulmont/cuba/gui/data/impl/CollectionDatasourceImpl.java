@@ -122,21 +122,35 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public synchronized void addItem(T item) throws UnsupportedOperationException {
+        if (!ObjectUtils.equals(state, State.VALID)) throw new IllegalStateException("Datasource have state" + state);
+
         data.itemIds.add((K) item.getId());
         data.itemsByKey.put((K)item.getId(), item);
 
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.add(item);
         }
+
+        modified = true;
+        forceCollectionChanged(
+                new CollectionDatasourceListener.CollectionOperation<T>(
+                        CollectionDatasourceListener.CollectionOperation.Type.ADD, null));
     }
 
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
+        if (!ObjectUtils.equals(state, State.VALID)) throw new IllegalStateException("Datasource have state" + state);
+
         data.itemIds.remove((K) item.getId());
         data.itemsByKey.remove((K)item.getId());
 
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.remove(item);
         }
+        
+        modified = true;
+        forceCollectionChanged(
+                new CollectionDatasourceListener.CollectionOperation<T>(
+                    CollectionDatasourceListener.CollectionOperation.Type.REMOVE, null));
     }
 
     public synchronized boolean containsItem(K itemId) {
