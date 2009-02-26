@@ -50,7 +50,8 @@ public class DataServiceBean implements DataService, DataServiceRemote
         }
 
         for (Entity entity : context.getRemoveInstances()) {
-            em.remove(entity);
+            Entity e = em.merge(entity);
+            em.remove(e);
         }
 
         return res;

@@ -146,6 +146,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.remove(item);
         }
+        else {
+            itemToDelete.add(item);
+        }
         
         modified = true;
         forceCollectionChanged(
