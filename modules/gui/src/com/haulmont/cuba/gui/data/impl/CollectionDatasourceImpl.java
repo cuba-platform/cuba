@@ -11,9 +11,9 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
@@ -145,11 +145,10 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.remove(item);
-        }
-        else {
+        } else {
             itemToDelete.add(item);
         }
-        
+
         modified = true;
         forceCollectionChanged(
                 new CollectionDatasourceListener.CollectionOperation<T>(
@@ -188,6 +187,25 @@ public class CollectionDatasourceImpl<T extends Entity, K>
                 }
             }
 
+        }
+    }
+
+    @Override
+    public void commit() {
+        if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
+            final DataService service = getDataService();
+            Set<Entity> commitInstances = new HashSet<Entity>();
+            Set<Entity> deleteInstances = new HashSet<Entity>();
+
+            commitInstances.addAll(itemToCreate);
+            commitInstances.addAll(itemToUpdate);
+            deleteInstances.addAll(itemToDelete);
+
+            final Map<Entity, Entity> map =
+                    service.commit(new DataServiceRemote.CommitContext<Entity>(commitInstances, deleteInstances));
+            commited(map);
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 

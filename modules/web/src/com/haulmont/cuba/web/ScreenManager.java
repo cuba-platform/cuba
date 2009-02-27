@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.ScreenTitlePane;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.itmill.toolkit.terminal.ExternalResource;
+import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 
 import java.util.HashMap;
@@ -139,10 +140,59 @@ public class ScreenManager extends WindowManager
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        final com.itmill.toolkit.ui.Window window = new com.itmill.toolkit.ui.Window(title);
+
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true);
+        window.setLayout(layout);
+
+        Label desc = new Label(message);
+        window.addComponent(layout);
+
+        window.setWidth(400, Sizeable.UNITS_PIXELS);
+        window.setResizable(false);
+        window.setModal(true);
+
+        App.getInstance().getMainWindow().addWindow(window);
     }
 
-    public Action showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
+        final com.itmill.toolkit.ui.Window window = new com.itmill.toolkit.ui.Window(title);
+
+        Label messageBox = new Label(message);
+
+        window.setWidth(400, Sizeable.UNITS_PIXELS);
+        window.setResizable(false);
+        window.setModal(true);
+
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true);
+        window.setLayout(layout);
+
+        HorizontalLayout actionsBar = new HorizontalLayout();
+        actionsBar.setHeight(-1, Sizeable.UNITS_PIXELS);
+
+        HorizontalLayout buttonsContainer = new HorizontalLayout();
+
+        for (final Action action : actions) {
+            buttonsContainer.addComponent(new Button(action.getCaption(), new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent event) {
+                    action.actionPerform(null);
+                    App.getInstance().getMainWindow().removeWindow(window);
+                }
+            }));
+        }
+
+        actionsBar.addComponent(buttonsContainer);
+
+        layout.addComponent(messageBox);
+        layout.addComponent(actionsBar);
+
+        messageBox.setSizeFull();
+        layout.setExpandRatio(messageBox, 1);
+        layout.setComponentAlignment(actionsBar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
+
+        App.getInstance().getMainWindow().addWindow(window);
+        window.center();
     }
 }

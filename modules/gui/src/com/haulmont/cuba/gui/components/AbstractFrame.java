@@ -138,8 +138,8 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.showMessageDialog(title, message, messageType);
     }
 
-    public Action showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
-        return frame.showOptionDialog(title, message, messageType, actions);
+    public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
+        frame.showOptionDialog(title, message, messageType, actions);
     }
 
     public boolean close(String actionId) {
@@ -151,10 +151,9 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     public <A extends IFrame> A getFrame() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return (A) this;
     }
 
     public void setFrame(IFrame frame) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -59,6 +59,7 @@ public class GenericBrowserWindow extends Window
 
         helper.createCreateAction();
         helper.createEditAction();
+        helper.createRemoveAction();
         helper.createRefreshAction();
 
         return table;

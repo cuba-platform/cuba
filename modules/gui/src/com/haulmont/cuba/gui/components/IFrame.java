@@ -51,5 +51,5 @@ public interface IFrame extends OrderedLayout, Component.Container, Component.Be
     }
     
     void showMessageDialog(String title, String message, MessageType messageType);
-    Action showOptionDialog(String title, String message, MessageType messageType, Action[] actions);
+    void showOptionDialog(String title, String message, MessageType messageType, Action[] actions);
 }

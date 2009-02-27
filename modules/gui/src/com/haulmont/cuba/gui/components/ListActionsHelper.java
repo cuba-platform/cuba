@@ -2,6 +2,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Set;
 import java.util.Map;
@@ -105,9 +106,40 @@ abstract class ListActionsHelper<T extends List> {
 
             public void actionPerform(Component component) {
                 final Set selected = ListActionsHelper.this.component.getSelected();
-                
-                for (Object o : selected) {
+                if (!selected.isEmpty()) {
+                    frame.showOptionDialog(
+                            "Confirmation",
+                            "Are you sure you want to delete selected entities?",
+                            IFrame.MessageType.CONFIRMATION,
+                            new Action[]{new AbstractAction("ok") {
+                                public String getCaption() {
+                                    return "Ok";
+                                }
 
+                                public boolean isEnabled() {
+                                    return true;
+                                }
+
+                                public void actionPerform(Component component) {
+                                    final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
+                                    for (Object item : selected) {
+                                        ds.removeItem((Entity) item);
+                                    }
+
+                                    ds.commit();
+                                }
+                            }, new AbstractAction("cancel") {
+                                public String getCaption() {
+                                    return "Cancel";
+                                }
+
+                                public boolean isEnabled() {
+                                    return true;
+                                }
+
+                                public void actionPerform(Component component) {
+                                }
+                            }});
                 }
             }
         };

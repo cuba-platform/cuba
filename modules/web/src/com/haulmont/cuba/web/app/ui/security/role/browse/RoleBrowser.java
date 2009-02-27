@@ -29,6 +29,7 @@ public class RoleBrowser extends AbstractLookup
         final TableActionsHelper helper = new TableActionsHelper(this, table);
         helper.createCreateAction();
         helper.createEditAction();
+        helper.createRemoveAction();
         helper.createRefreshAction();
 
         table.refresh();

@@ -108,8 +108,8 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         App.getInstance().getScreenManager().showMessageDialog(title, message, messageType);
     }
 
-    public Action showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
-        return App.getInstance().getScreenManager().showOptionDialog(title, message, messageType, actions);
+    public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
+        App.getInstance().getScreenManager().showOptionDialog(title, message, messageType, actions);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

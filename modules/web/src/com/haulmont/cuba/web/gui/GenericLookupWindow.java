@@ -10,8 +10,12 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.TableActionsHelper;
+import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.ui.Button;
+import com.itmill.toolkit.ui.Table;
 
 import java.util.Map;
 
@@ -41,6 +45,17 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
         layout.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
 
         return layout;
+    }
+
+    protected com.haulmont.cuba.web.gui.components.Table createTable() {
+        final com.haulmont.cuba.web.gui.components.Table table = new com.haulmont.cuba.web.gui.components.Table();
+
+        final TableActionsHelper helper = new TableActionsHelper(this, table);
+
+        helper.createEditAction();
+        helper.createRefreshAction();
+
+        return table;
     }
 
     @Override
