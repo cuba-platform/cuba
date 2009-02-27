@@ -47,6 +47,8 @@ public class Table
         component.addActionHandler(new ActionsAdapter());
         component.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
+                if (datasource == null) return;
+
                 final Set<Object> itemIds = getSelecetdItemIds();
                 if (itemIds == null || itemIds.isEmpty()) {
                     datasource.setItem(null);

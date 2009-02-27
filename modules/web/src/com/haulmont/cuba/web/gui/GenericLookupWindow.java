@@ -49,6 +49,7 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
 
     protected com.haulmont.cuba.web.gui.components.Table createTable() {
         final com.haulmont.cuba.web.gui.components.Table table = new com.haulmont.cuba.web.gui.components.Table();
+        table.setMultiSelect(true);
 
         final TableActionsHelper helper = new TableActionsHelper(this, table);
 
