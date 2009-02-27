@@ -54,6 +54,7 @@ public class GenericBrowserWindow extends Window
 
     protected Table createTable() {
         final Table table = new Table();
+        table.setMultiSelect(true);
 
         final TableActionsHelper helper = new TableActionsHelper(this, table);
 
