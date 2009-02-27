@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -49,14 +50,11 @@ public class Table
             public void valueChange(Property.ValueChangeEvent event) {
                 if (datasource == null) return;
 
-                final Set<Object> itemIds = getSelecetdItemIds();
-                if (itemIds == null || itemIds.isEmpty()) {
+                final Set selected = getSelected();
+                if (selected.isEmpty()) {
                     datasource.setItem(null);
-                } else if (itemIds.size() == 1) {
-                    final Object id = itemIds.iterator().next();
-                    datasource.setItem(datasource.getItem(id));
                 } else {
-                    datasource.setItem(null);
+                    datasource.setItem((Entity) selected.iterator().next());
                 }
             }
         });

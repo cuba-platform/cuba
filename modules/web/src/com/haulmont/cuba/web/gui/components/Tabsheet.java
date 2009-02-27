@@ -88,7 +88,10 @@ public class Tabsheet
         this.tabs.put(name, tab);
         this.components.put(component, name);
 
-        this.component.addTab(ComponentsHelper.unwrap(component));
+        final com.itmill.toolkit.ui.Component tabComponent = ComponentsHelper.unwrap(component);
+        tabComponent.setSizeFull();
+        
+        this.component.addTab(tabComponent);
 
         return tab;
     }

@@ -10,9 +10,10 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.AbstractOrderedLayout;
+import com.haulmont.cuba.gui.components.Layout;
+import com.haulmont.cuba.gui.components.BoxLayout;
 
-public class VBoxLayout extends AbstractContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
+public class VBoxLayout extends AbstractContainer implements BoxLayout {
 
     public VBoxLayout() {
         setWidth("100%");

@@ -10,8 +10,10 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Layout;
+import com.haulmont.cuba.gui.components.BoxLayout;
 
-public class HBoxLayout extends AbstractContainer implements com.haulmont.cuba.gui.components.OrderedLayout {
+public class HBoxLayout extends AbstractContainer implements BoxLayout {
     @Override
     public String getTag() {
         return "horizontallayout";

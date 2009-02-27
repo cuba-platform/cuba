@@ -10,14 +10,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.ExpandLayout;
 import com.itmill.toolkit.ui.Layout;
 import com.itmill.toolkit.ui.Panel;
-import com.itmill.toolkit.ui.AbstractOrderedLayout;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
-public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.components.OrderedLayout, Component.Container {
+public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.components.Layout, Component.Container {
     private String id;
     private Component component;
     private Alignment alignment = Alignment.TOP_LEFT;

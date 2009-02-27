@@ -10,11 +10,11 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.OrderedLayout;
+import com.haulmont.cuba.gui.components.Layout;
+import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public class HBoxLoader extends ContainerLoader implements ComponentLoader {
@@ -23,11 +23,14 @@ public class HBoxLoader extends ContainerLoader implements ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final OrderedLayout component = factory.<OrderedLayout>createComponent("hbox");
+        final BoxLayout component = factory.createComponent("hbox");
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadAlign(component, element);
+
+        loadSpacing(component, element);
+        loadMargin(component, element);
 
         loadSubcomponentsAndExpand(component, element);
 

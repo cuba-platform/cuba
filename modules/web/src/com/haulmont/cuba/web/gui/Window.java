@@ -52,9 +52,8 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
     protected com.itmill.toolkit.ui.Component createLayout() {
         VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true);
-        layout.setSpacing(true);
 
+        layout.setMargin(true);
         layout.setSizeFull();
 
         return layout;
@@ -262,7 +261,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         protected com.itmill.toolkit.ui.Component createLayout() {
             VerticalLayout layout = new VerticalLayout();
 
-            form = new Form();
+            form = createForm();
 
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
@@ -286,6 +285,13 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             layout.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
 
             return layout;
+        }
+
+        protected Form createForm() {
+            final VerticalLayout formLayout = new VerticalLayout();
+            formLayout.setSizeFull();
+
+            return  new Form(formLayout);
         }
 
         @Override

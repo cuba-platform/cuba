@@ -10,7 +10,8 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.OrderedLayout;
+import com.haulmont.cuba.gui.components.Layout;
+import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -52,7 +53,21 @@ public abstract class ContainerLoader extends ComponentLoader {
         return res;
     }
 
-    protected void loadSubcomponentsAndExpand(OrderedLayout layout, Element element, String ...exceptTags) {
+    protected void loadSpacing(BoxLayout layout, Element element) {
+        final String spacing = element.attributeValue("spacing");
+        if (!StringUtils.isEmpty(spacing)) {
+            layout.setSpacing(Boolean.valueOf(spacing));
+        }
+    }
+
+    protected void loadMargin(BoxLayout layout, Element element) {
+        final String margin = element.attributeValue("margin");
+        if (!StringUtils.isEmpty(margin)) {
+            layout.setMargin(Boolean.valueOf(margin));
+        }
+    }
+
+    protected void loadSubcomponentsAndExpand(Layout layout, Element element, String ...exceptTags) {
         final Collection<Component> components = loadSubComponents(layout, element, exceptTags);
         if (components.size() == 1) {
             layout.expand(components.iterator().next(), null, null);

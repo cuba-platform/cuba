@@ -39,7 +39,7 @@ public abstract class AbstractListComponent<T extends AbstractSelect>
             final HashSet<Object> res = new HashSet<Object>();
             for (Object id : itemIds) {
                 final Object o = datasource.getItem(id);
-                res.add(o);
+                if (o != null) res.add(o);
             }
             return res;
         } else {

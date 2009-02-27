@@ -4,11 +4,12 @@
  * Use is subject to license terms.
 
  * Author: Dmitry Abramov
- * Created: 19.01.2009 13:39:01
+ * Created: 27.02.2009 17:35:42
  * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
-public interface OrderedLayout extends Component {
-    void expand(Component component, String height, String width);
+public interface BoxLayout extends Layout {
+    void setSpacing(boolean enabled);
+    void setMargin(boolean enable);
 }

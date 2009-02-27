@@ -20,23 +20,21 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox expand="table-panel">
-            <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
-            <vbox id="table-panel" expand="users">
-                <hbox>
-                    <button action="users.create"/>
-                    <button action="users.edit"/>
-                </hbox>
-                <table id="users" editable="false">
-                    <columns>
-                        <column id="name" caption="Name"/>
-                        <column id="login" caption="Login"/>
-                        <column id="activeDirectoryUser" caption="ActiveDirectory User"/>
-                    </columns>
-                    <rows datasource="users"/>
-                </table>
-            </vbox>
+    <layout expand="table-panel">
+        <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
+        <vbox id="table-panel" expand="users" spacing="true">
+            <hbox>
+                <button action="users.create"/>
+                <button action="users.edit"/>
+            </hbox>
+            <table id="users" editable="false">
+                <columns>
+                    <column id="name" caption="Name"/>
+                    <column id="login" caption="Login"/>
+                    <column id="activeDirectoryUser" caption="ActiveDirectory User"/>
+                </columns>
+                <rows datasource="users"/>
+            </table>
         </vbox>
     </layout>
 </window>

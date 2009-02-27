@@ -50,6 +50,11 @@ public class GenericEditorWindow
         return layout;
     }
 
+    @Override
+    protected Form createForm() {
+        return new Form();
+    }
+
     public void setItem(Object item) {
         this.item = item;
 
