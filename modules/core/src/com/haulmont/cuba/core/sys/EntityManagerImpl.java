@@ -18,12 +18,14 @@ import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.View;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.OpCallbacks;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class EntityManagerImpl implements EntityManager
 {
@@ -32,15 +34,19 @@ public class EntityManagerImpl implements EntityManager
         void onClose();
     }
 
-    private OpenJPAEntityManager jpaEm;
+    private OpenJPAEntityManager delegate;
 
     private boolean closed;
     private Set<CloseListener> closeListeners = new HashSet<CloseListener>();
 
     private boolean deleteDeferred = true;
 
+    private OpCallbacksImpl dummyOpCallbacks = new OpCallbacksImpl();
+
     EntityManagerImpl(OpenJPAEntityManager jpaEntityManager) {
-        this.jpaEm = jpaEntityManager;
+        delegate = jpaEntityManager;
+        // Set AutoDetachType to none to prevent automatic detach after transaction rollback 
+        delegate.setAutoDetach(EnumSet.noneOf(AutoDetachType.class));
     }
 
     public boolean isDeleteDeferred() {
@@ -50,7 +56,7 @@ public class EntityManagerImpl implements EntityManager
     public void setDeleteDeferred(boolean deleteDeferred) {
         if (deleteDeferred != this.deleteDeferred) {
             // clear SQL queries cache
-            OpenJPAConfiguration conf = ((OpenJPAEntityManagerFactorySPI) jpaEm.getEntityManagerFactory()).getConfiguration();
+            OpenJPAConfiguration conf = ((OpenJPAEntityManagerFactorySPI) delegate.getEntityManagerFactory()).getConfiguration();
             if (conf instanceof JDBCConfiguration) {
                 Map map = ((JDBCConfiguration) conf).getQuerySQLCacheInstance();
                 for (Object val : map.values()) {
@@ -63,11 +69,11 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public void persist(Entity entity) {
-        jpaEm.persist(entity);
+        delegate.persist(entity);
     }
 
     public <T extends Entity> T merge(T entity) {
-        return jpaEm.merge(entity);
+        return delegate.merge(entity);
     }
 
     public void remove(Entity entity) {
@@ -76,44 +82,44 @@ public class EntityManagerImpl implements EntityManager
             ((DeleteDeferred) entity).setDeletedBy(SecurityProvider.currentUserSession().getLogin());
         }
         else {
-            jpaEm.remove(entity);
+            delegate.remove(entity);
         }
     }
 
     public <T extends Entity> T find(Class<T> clazz, Object key) {
-        return jpaEm.find(clazz, key);
+        return delegate.find(clazz, key);
     }
 
     public Query createQuery() {
-        return new QueryImpl(jpaEm, false);
+        return new QueryImpl(delegate, false);
     }
 
     public Query createQuery(String qlStr) {
-        QueryImpl query = new QueryImpl(jpaEm, false);
+        QueryImpl query = new QueryImpl(delegate, false);
         query.setQueryString(qlStr);
         return query;
     }
 
     public Query createNativeQuery() {
-        return new QueryImpl(jpaEm, true);
+        return new QueryImpl(delegate, true);
     }
 
     public Query createNativeQuery(String sql) {
-        QueryImpl query = new QueryImpl(jpaEm, true);
+        QueryImpl query = new QueryImpl(delegate, true);
         query.setQueryString(sql);
         return query;
     }
 
     public void setView(View view) {
-        ViewHelper.setView(jpaEm.getFetchPlan(), view);
+        ViewHelper.setView(delegate.getFetchPlan(), view);
     }
 
     public void flush() {
-        jpaEm.flush();
+        delegate.flush();
     }
 
     public void close() {
-        jpaEm.close();
+        delegate.close();
         closed = true;
         for (CloseListener listener : closeListeners) {
             listener.onClose();
@@ -130,5 +136,21 @@ public class EntityManagerImpl implements EntityManager
 
     public void removeCloseListener(CloseListener listener) {
         closeListeners.remove(listener);
+    }
+
+    public Collection getManagedObjects() {
+        return delegate.getManagedObjects();
+    }
+
+    public void detachAll() {
+        Broker broker = ((org.apache.openjpa.persistence.EntityManagerImpl) delegate).getBroker();
+        broker.detachAll(dummyOpCallbacks);
+    }
+
+    private static class OpCallbacksImpl implements OpCallbacks
+    {
+        public int processArgument(int op, Object arg, OpenJPAStateManager sm) {
+            return ACT_RUN | ACT_CASCADE;
+        }
     }
 }

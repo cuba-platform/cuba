@@ -52,10 +52,6 @@
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
           </containerElement>
-          <containerElement type="library" name="test" level="project">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-          </containerElement>
           <containerElement type="library" level="module">
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />

@@ -11,11 +11,18 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.entity.Config;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.sys.ConfigWorker;
+import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.Permission;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,6 +32,9 @@ import java.util.*;
 
 public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
 {
+    private UUID roleId;
+    private UUID permissionId;
+
     public void create() {
     }
 
@@ -153,6 +163,124 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
             return sb.toString();
         } catch (IOException e) {
             return ExceptionUtils.getStackTrace(e);
+        }
+    }
+
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public String test() {
+        try {
+            createEntities();
+            try {
+                Permission p;
+                Transaction tx = Locator.createTransaction();
+                try {
+                    EntityManager em = PersistenceProvider.getEntityManager();
+
+                    em.setView(new View(Permission.class)
+                            .addProperty("target")
+                            .addProperty("role",
+                                new View(Role.class)
+                                    .addProperty("name")
+                            )
+                    );
+
+                    p = em.find(Permission.class, permissionId);
+                    tx.commitRetaining();
+
+                    p.setTarget("newTarget");
+
+                    em = PersistenceProvider.getEntityManager();
+                    em.merge(p);
+
+                    tx.commit();
+                } finally {
+                    tx.end();
+                }
+            } finally {
+                removeEntities();
+            }
+            return "Done";
+        } catch (Throwable t) {
+            return ExceptionUtils.getStackTrace(t);
+        }
+    }
+
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public String testDataService() {
+        try {
+            login();
+            createEntities();
+            try {
+                Permission p;
+                DataService ds = Locator.lookupLocal(DataService.JNDI_NAME);
+
+                DataService.LoadContext ctx = new DataServiceRemote.LoadContext(Permission.class);
+                ctx.setId(permissionId);
+                ctx.setView(new View(Permission.class)
+                        .addProperty("target")
+                        .addProperty("role",
+                        new View(Role.class)
+                                .addProperty("name")
+                )
+                );
+                p = ds.load(ctx);
+
+                p.setTarget("newTarget");
+
+                DataServiceRemote.CommitContext commitCtx = new DataService.CommitContext(Collections.singleton(p));
+                Map<Entity,Entity> map = ds.commit(commitCtx);
+                return "Done";
+            } finally {
+                removeEntities();
+                logout();
+            }
+        } catch (Throwable t) {
+            return ExceptionUtils.getStackTrace(t);
+        }
+    }
+
+    private void removeEntities() {
+        Transaction tx;
+        tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+
+            Query q;
+            q = em.createNativeQuery("delete from SEC_PERMISSION where ID = ?");
+            q.setParameter(1, permissionId.toString());
+            q.executeUpdate();
+
+            q = em.createNativeQuery("delete from SEC_ROLE where ID = ?");
+            q.setParameter(1, roleId.toString());
+            q.executeUpdate();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    private void createEntities() {
+        Transaction tx;
+        tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+
+            Role role = new Role();
+            roleId = role.getId();
+            role.setName("testRole");
+            em.persist(role);
+
+            Permission permission = new Permission();
+            permissionId = permission.getId();
+            permission.setRole(role);
+            permission.setType(0);
+            permission.setTarget("testTarget");
+            em.persist(permission);
+
+            tx.commit();
+        } finally {
+            tx.end();
         }
     }
 }

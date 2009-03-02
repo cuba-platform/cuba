@@ -10,7 +10,6 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.sys.ManagedPersistenceProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;

@@ -9,22 +9,21 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.EntityManagerFactory;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.transaction.*;
 import java.util.Hashtable;
 import java.util.Map;
-
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.EntityManagerFactory;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
 
 public class ManagedPersistenceProvider extends PersistenceProvider
 {
@@ -97,9 +96,19 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                     log.trace("Creating new EntityManager for transaction " + tx);
                     if (tx.getStatus() != Status.STATUS_ACTIVE)
                         throw new RuntimeException("Unable to create an EntityManager: JTA transaction status=" + tx.getStatus());
-                    
+
+                    // First register synchronization and then create EntityManager -
+                    // to ensure correct order of BrokerImpl.afterCompletion() and BrokerImpl.close() invocations.
+                    TxSync sync = new TxSync(tx);
+                    try {
+                        tx.registerSynchronization(sync);
+                    } catch (RollbackException e) {
+                        throw new RuntimeException("Unable to register synchronization with JTA transaction", e);
+                    }
+
                     em = getEntityManagerFactory().createEntityManager();
-                    registerSync(tx, em);
+
+                    sync.setEntityManager(em);
                     emMap.put(tx, em);
                 }
             }
@@ -127,27 +136,35 @@ public class ManagedPersistenceProvider extends PersistenceProvider
         }
     }
 
-    private void registerSync(final javax.transaction.Transaction tx, final EntityManager em) {
-        try {
-            tx.registerSynchronization(
-                    new Synchronization()
-                    {
-                        public void beforeCompletion() {
-                            log.trace("Closing EntityManager for transaction " + tx);
-                            em.close();
-                        }
-
-                        public void afterCompletion(int i) {
-                            emMap.remove(tx);
-                        }
-                    }
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to register synchronization with JTA transaction", e);
-        }
-    }
-
     private TransactionManager getTransactionManager() throws NamingException {
         return (TransactionManager) jndiContext.lookup(TM_JNDI_NAME);
+    }
+
+    private class TxSync implements Synchronization
+    {
+        private Transaction tx;
+        private EntityManager em;
+
+        public TxSync(Transaction tx) {
+            this.tx = tx;
+        }
+
+        public void setEntityManager(EntityManager em) {
+            this.em = em;
+        }
+
+        public void beforeCompletion() {
+            // Flush and detach in-place all managed instances.
+            // By default OpenJPA detaches in afterCompletion tx synchronization method,
+            // which leads to error on attempt to synchronize versions for some objects. 
+            log.trace("Detaching entities: tx=" + tx);
+            ((EntityManagerImpl) em).detachAll();
+        }
+
+        public void afterCompletion(int i) {
+            log.trace("Closing EntityManager: tx=" + tx);
+            em.close();
+            emMap.remove(tx);
+        }
     }
 }
