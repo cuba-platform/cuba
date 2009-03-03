@@ -8,6 +8,21 @@
 	<property file="${root.dir}/build.properties"/>
 	<property file="lib.properties"/>
 
+    <patternset id="chile.files">
+             <include name="10chile-core.jar"/>
+             <include name="11chile-jpa.jar"/>
+         </patternset>
+
+    <patternset id="cuba.files">
+             <include name="cuba-core-global.jar"/>
+             <include name="20cuba-core.jar"/>
+             <include name="21cuba-core-service.xml"/>
+             <include name="22cuba-gui.jar"/>
+             <include name="23cuba-web.jar"/>
+             <include name="24cuba.war"/>
+             <include name="29admin-console.war"/>
+    </patternset>
+
 	<target name="delegate">
 		<property name="target" value="noop" />
 		<ant dir="modules/core" target="${target}" inheritAll="false"/>
@@ -82,20 +97,35 @@
         </antcall>
     </target>
 
-    <target name="clean-build-deploy" depends="clean,build,deploy"/>
-    
-    <target name="run">
+    <target name="start">
         <exec dir="${root.dir}/jboss/bin" executable="cmd.exe" spawn="true">
-            <arg line="/c start debug.bat"/>
+            <env key="NOPAUSE" value="true"/>
+            <arg line="/c start callAndExit.bat debug.bat"/>
         </exec>
     </target>
 
     <target name="stop">
-        <exec dir="${root.dir}/jboss/bin" executable="cmd.exe" spawn="true">
-            <arg line="/c start shutdown.bat -S"/>
+        <exec dir="${root.dir}/jboss/bin" executable="cmd.exe">
+            <env key="NOPAUSE" value="true"/>
+            <arg line="/c start callAndExit.bat shutdown.bat -S"/>
         </exec>
     </target>
 
-    <target name="clean-build-deploy-run" depends="clean,build,deploy,run"/>
-    <target name="deploy-run" depends="deploy,run"/>
+    <target name="restart">
+        <parallel>
+            <antcall target="stop"/>
+            <antcall target="deploy"/>
+        </parallel>
+        <waitfor maxwait="6" maxwaitunit="second" checkevery="2" checkeveryunit="second">
+            <not>
+                <socket server="localhost" port="8787"/>
+            </not>
+        </waitfor>
+        <antcall target="start"/>
+    </target>
+
+    <target name="clean-build-deploy" depends="clean,build,deploy"/>
+
+    <target name="clean-build-deploy-start" depends="clean,build,deploy,start"/>
+
 </project>
