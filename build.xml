@@ -8,21 +8,6 @@
 	<property file="${root.dir}/build.properties"/>
 	<property file="lib.properties"/>
 
-    <patternset id="chile.files">
-             <include name="10chile-core.jar"/>
-             <include name="11chile-jpa.jar"/>
-         </patternset>
-
-    <patternset id="cuba.files">
-             <include name="cuba-core-global.jar"/>
-             <include name="20cuba-core.jar"/>
-             <include name="21cuba-core-service.xml"/>
-             <include name="22cuba-gui.jar"/>
-             <include name="23cuba-web.jar"/>
-             <include name="24cuba.war"/>
-             <include name="29admin-console.war"/>
-    </patternset>
-
 	<target name="delegate">
 		<property name="target" value="noop" />
 		<ant dir="modules/core" target="${target}" inheritAll="false"/>
