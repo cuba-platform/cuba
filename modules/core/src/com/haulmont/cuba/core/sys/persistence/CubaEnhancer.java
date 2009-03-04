@@ -104,13 +104,15 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
                 code.aload().setLocal(2);
                 code.aload().setLocal(1);
                 code.invokestatic().setMethod(ObjectUtils.class, "equals", boolean.class, new Class[]{Object.class,Object.class});
-                final IfInstruction ifInst = code.ifne();
+                IfInstruction ifne = code.ifne();
                 code.aload().setThis();
                 code.constant().setValue(fieldName);
                 code.aload().setLocal(2);
                 code.aload().setLocal(1);
                 code.invokevirtual().setMethod("propertyChanged", void.class, new Class[]{String.class,Object.class,Object.class});
-                ifInst.setTarget(code.vreturn());
+
+                ReturnInstruction vreturn = code.vreturn();
+                ifne.setTarget(vreturn);
 
                 code.calculateMaxStack();
                 code.calculateMaxLocals();
@@ -176,15 +178,16 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
 
         code.aload().setThis();
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
-        code.ifnull().setOffset(50);
+        final IfInstruction ifnull = code.ifnull();
 
         code.aload().setThis();
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
         code.invokeinterface().setMethod(Collection.class, "iterator", Iterator.class, new Class[]{});
         code.astore().setLocal(5);
-        code.aload().setLocal(5);
+        LoadInstruction aload = code.aload();
+        aload.setLocal(5);
         code.invokeinterface().setMethod(Iterator.class, "hasNext", boolean.class, new Class[]{});
-        code.ifeq().setOffset(29);
+        IfInstruction ifeq = code.ifeq();
         code.aload().setLocal(5);
         code.invokeinterface().setMethod(Iterator.class, "next", Object.class, new Class[]{});
         code.checkcast().setType(ValueListener.class);
@@ -195,9 +198,11 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         code.aload().setParam(1);
         code.aload().setParam(2);
         code.invokeinterface().setMethod(ValueListener.class, "propertyChanged", void.class, new Class[]{Object.class,String.class,Object.class,Object.class});
-        code.go2().setOffset(-33);
+        code.go2().setTarget(aload);
 
-        code.vreturn();
+        ReturnInstruction vreturn = code.vreturn();
+        ifnull.setTarget(vreturn);
+        ifeq.setTarget(vreturn);
 
         code.calculateMaxStack();
         code.calculateMaxLocals();
@@ -229,19 +234,22 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         Code code = method.getCode(true);
         code.aload().setThis();
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
-        code.ifnonnull().setOffset(14);
+        final IfInstruction ifnonnull = code.ifnonnull();
         code.aload().setThis();
         code.anew().setType(ArrayList.class);
         code.dup();
         code.invokespecial().setMethod(ArrayList.class, "<init>", void.class, null);
         code.putfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
-        code.aload().setThis();
+        LoadInstruction aload = code.aload();
+        aload.setThis();
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
         code.aload().setLocal(1);
         code.invokeinterface().setMethod(Collection.class, "add", boolean.class, new Class[]{Object.class});
         code.pop();
 
         code.vreturn();
+        ifnonnull.setTarget(aload);
+
         code.calculateMaxStack();
         code.calculateMaxLocals();
     }
@@ -254,14 +262,16 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         Code code = method.getCode(true);
         code.aload().setThis();
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
-        code.ifnull().setOffset(14);
+        IfInstruction ifnull = code.ifnull();
         code.aload().setThis();
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
         code.aload().setLocal(1);
         code.invokeinterface().setMethod(Collection.class, "remove", boolean.class, new Class[]{Object.class});
         code.pop();
 
-        code.vreturn();
+        ReturnInstruction vreturn = code.vreturn();
+        ifnull.setTarget(vreturn);
+
         code.calculateMaxStack();
         code.calculateMaxLocals();
     }
