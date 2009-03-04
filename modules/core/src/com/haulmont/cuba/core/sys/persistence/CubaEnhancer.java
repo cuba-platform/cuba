@@ -104,13 +104,13 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
                 code.aload().setLocal(2);
                 code.aload().setLocal(1);
                 code.invokestatic().setMethod(ObjectUtils.class, "equals", boolean.class, new Class[]{Object.class,Object.class});
-                code.ifne().setOffset(11);
+                final IfInstruction ifInst = code.ifne();
                 code.aload().setThis();
                 code.constant().setValue(fieldName);
                 code.aload().setLocal(2);
                 code.aload().setLocal(1);
                 code.invokevirtual().setMethod("propertyChanged", void.class, new Class[]{String.class,Object.class,Object.class});
-                code.vreturn();
+                ifInst.setTarget(code.vreturn());
 
                 code.calculateMaxStack();
                 code.calculateMaxLocals();
