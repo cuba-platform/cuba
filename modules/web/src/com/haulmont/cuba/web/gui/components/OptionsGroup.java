@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
+import com.haulmont.cuba.core.entity.Entity;
 import com.itmill.toolkit.ui.OptionGroup;
 import com.itmill.toolkit.ui.AbstractSelect;
 
@@ -39,6 +40,22 @@ public class OptionsGroup
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
         component.setContainerDataSource(new CollectionDatasourceWrapper(datasource));
+    }
+
+    @Override
+    public <T> T getValue() {
+        if (optionsDatasource != null) {
+            final Object key = super.getValue();
+            return (T) optionsDatasource.getItem(key);
+        } else {
+            return super.<T>getValue();
+        }
+    }
+
+    @Override
+    public void setValue(Object value) {
+        // TODO (abramov) need to be changed
+        super.setValue(((Entity) value).getId());
     }
 
     public boolean isMultiSelect() {
