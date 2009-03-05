@@ -22,4 +22,20 @@ public class TextField
         component.setImmediate(true);
         component.setNullRepresentation("");
     }
+
+    public int getRows() {
+        return component.getRows();
+    }
+
+    public void setRows(int rows) {
+        component.setRows(rows);
+    }
+
+    public int getColumns() {
+        return component.getColumns();
+    }
+
+    public void setColumns(int columns) {
+        component.setColumns(columns);
+    }
 }

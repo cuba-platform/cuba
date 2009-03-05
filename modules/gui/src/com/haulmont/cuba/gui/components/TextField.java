@@ -10,4 +10,9 @@
 package com.haulmont.cuba.gui.components;
 
 public interface TextField extends Field {
+    int getRows();
+    void setRows(int rows);
+
+    int getColumns();
+    void setColumns(int columns);
 }

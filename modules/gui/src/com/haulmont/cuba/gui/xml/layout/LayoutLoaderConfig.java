@@ -45,8 +45,8 @@ public class LayoutLoaderConfig {
         config.registerLoader("groupBox", GroupBoxLoader.class);
         config.registerLoader("checkBox", AbstractFieldLoader.class);
         config.registerLoader("label", LabelLoader.class);
-        config.registerLoader("textField", AbstractFieldLoader.class);
-        config.registerLoader("textArea", AbstractFieldLoader.class);
+        config.registerLoader("textField", TextFieldLoader.class);
+        config.registerLoader("textArea", TextAreaLoader.class);
         config.registerLoader("dateField", AbstractFieldLoader.class);
         config.registerLoader("lookupField", LookupFieldLoader.class);
         config.registerLoader("table", TableLoader.class);
