@@ -12,6 +12,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +26,13 @@ public class PickerFieldLoader extends AbstractFieldLoader{
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final PickerField component = (PickerField) super.loadComponent(factory, element);
+
+        String captionProperty = element.attributeValue("captionProperty");
+        if (!StringUtils.isEmpty(captionProperty)) {
+            component.setCaptionMode(Field.CaptionMode.PROPERTY);
+            component.setCaptionProperty(captionProperty);
+        }
+
         final String metaClass = element.attributeValue("metaClass");
 
         if (!StringUtils.isEmpty(metaClass)) {

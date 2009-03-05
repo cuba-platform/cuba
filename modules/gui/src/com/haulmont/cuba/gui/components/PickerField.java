@@ -12,11 +12,6 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 
 public interface PickerField extends Field {
-    enum CaptionMode {
-        ITEM,
-        PROPERTY
-    }
-
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);
 

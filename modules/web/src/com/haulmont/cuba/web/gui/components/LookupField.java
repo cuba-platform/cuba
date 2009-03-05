@@ -28,6 +28,7 @@ public class LookupField
         com.haulmont.cuba.gui.components.LookupField, Component.Wrapper
 {
     private CollectionDatasource lookupDatasource;
+
     private CaptionMode captionMode = CaptionMode.ITEM;
     private String captionProperty;
 

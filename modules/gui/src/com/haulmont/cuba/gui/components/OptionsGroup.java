@@ -4,20 +4,23 @@
  * Use is subject to license terms.
 
  * Author: Dmitry Abramov
- * Created: 16.01.2009 17:31:02
+ * Created: 05.03.2009 16:50:06
  * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-public interface LookupField extends Field {
+public interface OptionsGroup extends Field {
+    boolean isMultiSelect();
+    void setMultiSelect(boolean multiselect);
+
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);
 
     String getCaptionProperty();
     void setCaptionProperty(String captionProperty);
 
-    void setLookupDatasource(CollectionDatasource datasource);
+    CollectionDatasource getOptionsDatasource();
+    void setOptionsDatasource(CollectionDatasource datasource);
 }
