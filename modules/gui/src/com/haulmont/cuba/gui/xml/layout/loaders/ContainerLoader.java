@@ -53,14 +53,14 @@ public abstract class ContainerLoader extends ComponentLoader {
         return res;
     }
 
-    protected void loadSpacing(BoxLayout layout, Element element) {
+    protected void loadSpacing(Layout.Spacing layout, Element element) {
         final String spacing = element.attributeValue("spacing");
         if (!StringUtils.isEmpty(spacing)) {
             layout.setSpacing(Boolean.valueOf(spacing));
         }
     }
 
-    protected void loadMargin(BoxLayout layout, Element element) {
+    protected void loadMargin(Layout.Margin layout, Element element) {
         final String margin = element.attributeValue("margin");
         if (!StringUtils.isEmpty(margin)) {
             layout.setMargin(Boolean.valueOf(margin));

@@ -9,7 +9,5 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface BoxLayout extends Layout {
-    void setSpacing(boolean enabled);
-    void setMargin(boolean enable);
+public interface BoxLayout extends Layout, Layout.Spacing, Layout.Margin {
 }

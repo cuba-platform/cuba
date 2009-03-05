@@ -40,7 +40,7 @@ public class LayoutLoaderConfig {
     private static void registerComponents(LayoutLoaderConfig config) {
         config.registerLoader("hbox", HBoxLoader.class);
         config.registerLoader("vbox", VBoxLoader.class);
-        config.registerLoader("grid", GridLoader.class);
+        config.registerLoader("grid", GridLayoutLoader.class);
         config.registerLoader("button", ButtonLoader.class);
         config.registerLoader("groupBox", GroupBoxLoader.class);
         config.registerLoader("checkBox", AbstractFieldLoader.class);

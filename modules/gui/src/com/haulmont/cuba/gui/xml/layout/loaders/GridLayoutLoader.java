@@ -20,10 +20,10 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Collection;
 import java.util.List;
 
-public class GridLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected boolean[][] spanMatrix;
 
-    public GridLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+    public GridLayoutLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
@@ -64,6 +64,9 @@ public class GridLoader extends ContainerLoader implements com.haulmont.cuba.gui
             loadSubComponents(component, rowElement, row);
             row++;
         }
+
+        loadSpacing(component, element);
+        loadMargin(component, element);
 
         return component;
     }

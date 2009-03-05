@@ -11,4 +11,12 @@ package com.haulmont.cuba.gui.components;
 
 public interface Layout extends Component.Container {
     void expand(Component component, String height, String width);
+
+    interface Spacing{
+        void setSpacing(boolean enabled);
+    }
+
+    interface Margin {
+        void setMargin(boolean enable);
+    }
 }
