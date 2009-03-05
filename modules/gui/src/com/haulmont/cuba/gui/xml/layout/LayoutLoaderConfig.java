@@ -49,6 +49,7 @@ public class LayoutLoaderConfig {
         config.registerLoader("textArea", TextAreaLoader.class);
         config.registerLoader("dateField", AbstractFieldLoader.class);
         config.registerLoader("lookupField", LookupFieldLoader.class);
+        config.registerLoader("pickerField", PickerFieldLoader.class);
         config.registerLoader("table", TableLoader.class);
         config.registerLoader("iframe", IFrameLoader.class);
         config.registerLoader("split", SplitPanelLoader.class);

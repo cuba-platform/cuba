@@ -13,9 +13,10 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.core.entity.Entity;
 
 public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends AbstractComponent<T>{
-    protected Datasource datasource;
+    protected Datasource<Entity> datasource;
     protected String property;
     private boolean editable;
 

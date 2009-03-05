@@ -34,10 +34,10 @@
     </dsContext>
 
     <layout expand="roles-pane">
-        <grid>
+        <grid spacing="true" width="100%">
             <columns>
                 <column flex="1"/>
-                <column flex="3"/>
+                <column flex="1"/>
             </columns>
             <rows>
                 <row>
@@ -50,7 +50,7 @@
                 </row>
                 <row>
                     <label value="Group"/>
-                    <lookupField id="group" datasource="user" property="group" lookupDatasource="groups" captionProperty="name"/>
+                    <pickerField id="group" datasource="user" property="group" lookupDatasource="groups" captionProperty="name"/>
                 </row>
             </rows>
         </grid>

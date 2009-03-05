@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import org.apache.commons.lang.BooleanUtils;
 
 public class CheckBox
     extends
