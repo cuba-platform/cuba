@@ -14,22 +14,22 @@
             <groupBox>
                 <caption label="Filter"/>
                 <hbox id="group-box">
-                    <label control="name" value="res://name"/>
+                    <label control="name" value="msg://name"/>
                     <textField id="name"/>
 
-                    <label control="login" value="res://login"/>
+                    <label control="login" value="msg://login"/>
                     <textField id="login"/>
 
-                    <label control="email" value="res://email"/>      
+                    <label control="email" value="msg://email"/>
                     <textField id="email"/>
 
-                    <label control="group" value="res://group"/>      
+                    <label control="group" value="msg://group"/>
                     <lookupField id="group" optionsDatasource="groups"/>
                 </hbox>
             </groupBox>
             <hbox align="MIDDLE_RIGHT">
-                <button id="clear" caption="res://com.haulmont.cuba.web.gui.gui/clear"/>
-                <button id="apply" caption="res://com.haulmont.cuba.web.gui.gui/apply"/>
+                <button id="clear" caption="msg://com.haulmont.cuba.web.gui/clear"/>
+                <button id="apply" caption="msg://com.haulmont.cuba.web.gui/apply"/>
             </hbox>
         </vbox>
     </layout>

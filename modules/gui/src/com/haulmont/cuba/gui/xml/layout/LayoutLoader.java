@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class LayoutLoader {
     protected ComponentLoader.Context context;
@@ -27,7 +26,7 @@ public class LayoutLoader {
     private LayoutLoaderConfig config;
 
     private Locale locale;
-    private ResourceBundle resourceBundle;
+    private String messagesPack;
 
     public LayoutLoader(ComponentLoader.Context context, ComponentsFactory factory, LayoutLoaderConfig config) {
         this.context = context;
@@ -35,12 +34,12 @@ public class LayoutLoader {
         this.config = config;
     }
 
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
+    public String getMessagesPack() {
+        return messagesPack;
     }
 
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
+    public void setMessagesPack(String messagesPack) {
+        this.messagesPack = messagesPack;
     }
 
     public Component loadComponent(URL uri) {
@@ -76,13 +75,13 @@ public class LayoutLoader {
             loader = constructor.newInstance(context, config, factory);
 
             loader.setLocale(locale);
-            loader.setResourceBundle(resourceBundle);
+            loader.setMessagesPack(messagesPack);
         } catch (Throwable e) {
             try {
                 final Constructor<? extends ComponentLoader> constructor = loaderClass.getConstructor(ComponentLoader.Context.class);
                 loader = constructor.newInstance(context);
                 loader.setLocale(locale);
-                loader.setResourceBundle(resourceBundle);
+                loader.setMessagesPack(messagesPack);
             } catch (Throwable e1) {
                 throw new RuntimeException(e1);
             }

@@ -1,6 +1,6 @@
 <window
     class="com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser"
-    resourceBundle="com.haulmont.cuba.web.app.ui.security.user.browse.user-browse"
+    messagesPack="com.haulmont.cuba.web.app.ui.security.user.browse"
     lookupComponent="users"
 >
     <metadataContext>

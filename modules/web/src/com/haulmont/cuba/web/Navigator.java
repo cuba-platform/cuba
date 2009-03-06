@@ -10,14 +10,13 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.ScreenInfo;
-import com.haulmont.cuba.web.resource.Messages;
 import com.itmill.toolkit.event.ItemClickEvent;
 import com.itmill.toolkit.ui.Tree;
 import com.itmill.toolkit.ui.Window;
-import org.dom4j.Element;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +27,7 @@ public class Navigator extends Window
     private Window parentWindow;
 
     public Navigator(Window parentWindow) {
-        super(Messages.getString("navigator.caption"));
+        super(MessageProvider.getMessage(Navigator.class, "navigator.caption"));
         if (parentWindow == null) {
             throw new IllegalArgumentException("parentWindow must not be null");
         }

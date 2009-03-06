@@ -10,21 +10,23 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.itmill.toolkit.ui.*;
-import com.haulmont.cuba.web.resource.Messages;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
+import com.itmill.toolkit.ui.Button;
+import com.itmill.toolkit.ui.Label;
+import com.itmill.toolkit.ui.VerticalLayout;
+import com.itmill.toolkit.ui.Window;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 
 import java.util.List;
-
-import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class LogWindow extends Window
 {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public LogWindow() {
-        super(Messages.getString("logWindow.caption"));
+        super(MessageProvider.getMessage(LogWindow.class, "logWindow.caption"));
         setHeight("80%");
         setWidth("80%");
         initUI();
@@ -40,7 +42,7 @@ public class LogWindow extends Window
         label.setValue(writeLog());
         label.setSizeFull();
 
-        Button refreshBtn = new Button(Messages.getString("logWindow.refreshBtn"),
+        Button refreshBtn = new Button(MessageProvider.getMessage(getClass(), "logWindow.refreshBtn"),
                 new Button.ClickListener()
                 {
                     public void buttonClick(Button.ClickEvent event) {

@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web.ui;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.resource.Messages;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.HorizontalLayout;
@@ -33,7 +33,7 @@ public class ScreenTitlePane extends HorizontalLayout
         setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
 
         label = new Label();
-        closeBtn = new Button(Messages.getString("closeBtn"), new Button.ClickListener()
+        closeBtn = new Button(MessageProvider.getMessage(getClass(), "closeBtn"), new Button.ClickListener()
         {
             public void buttonClick(Button.ClickEvent event) {
                 App.getInstance().getScreenManager().closeScreen();

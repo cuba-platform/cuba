@@ -18,7 +18,6 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.web.log.AppLog;
-import com.haulmont.cuba.web.resource.Messages;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
@@ -30,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
 {
@@ -105,19 +103,19 @@ public class App extends Application implements ConnectionListener, ApplicationC
             if (!connection.isConnected())
                 throw new RuntimeException("Not connected");
             menuConfig = new MenuConfig(ClientType.WEB, connection.getSession());
-            menuConfig.loadConfig(getResourceBundle(), getMenuConfigXml());
+            menuConfig.loadConfig(getMessagesPack(), getMenuConfigXml());
         }
 
         return menuConfig;
     }
 
+    protected String getMessagesPack() {
+        return "com.haulmont.cuba.web";
+    }
+
     protected String getMenuConfigXml() {
         ResourceRepositoryService rrs = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
         return rrs.getResAsString("cuba/client/web/menu-config.xml");
-    }
-
-    protected ResourceBundle getResourceBundle() {
-        return Messages.getResourceBundle();
     }
 
     public ScreenManager getScreenManager() {

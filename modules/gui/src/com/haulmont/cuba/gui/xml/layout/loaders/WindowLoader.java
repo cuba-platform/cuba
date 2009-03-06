@@ -26,7 +26,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         final Window window = createComponent(factory);
 
         assignXmlDescriptor(window, element);
-        loadResourceBundle(window, element);
+        loadMessagesPack(window, element);
         loadCaption(window, element);
 
         loadSubcomponentsAndExpand(window, element.element("layout"));

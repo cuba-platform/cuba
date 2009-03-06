@@ -28,11 +28,11 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
         final LayoutLoader loader = new LayoutLoader(context, factory, LayoutLoaderConfig.getFrameLoaders());
         loader.setLocale(getLocale());
-        loader.setResourceBundle(getResourceBundle());
+        loader.setMessagesPack(getMessagesPack());
 
         final IFrame frame = (IFrame) loader.loadComponent(getClass().getResource(src));
-        if (frame.getResourceBundle() == null) {
-            frame.setResourceBundle(resourceBundle);
+        if (frame.getMessagesPack() == null) {
+            frame.setMessagesPack(messagesPack);
         }
 
         assignXmlDescriptor(frame, element);

@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -36,7 +37,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     private String id;
 
     private Map<String, Component> componentByIds = new HashMap<String, Component>();
-    private ResourceBundle resourceBundle;
+    private String messagePack;
 
     protected com.itmill.toolkit.ui.Component component;
     private Element element;
@@ -63,12 +64,18 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         return (ComponentContainer) component;
     }
 
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
+    public String getMessagesPack() {
+        return messagePack;
     }
 
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
+    public void setMessagesPack(String name) {
+        messagePack = name;
+    }
+
+    public String getMessage(String key) {
+        if (messagePack == null)
+            throw new IllegalStateException("MessagePack is not set");
+        return MessageProvider.getMessage(messagePack, key);
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -11,10 +11,10 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 public class AbstractFrame implements IFrame, Component.Wrapper {
     protected IFrame frame;
@@ -99,12 +99,19 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setDsContext(dsContext);
     }
 
-    public ResourceBundle getResourceBundle() {
-        return frame.getResourceBundle();
+    public String getMessagesPack() {
+        return frame.getMessagesPack();
     }
 
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        frame.setResourceBundle(resourceBundle);
+    public void setMessagesPack(String name) {
+        frame.setMessagesPack(name);
+    }
+
+    public String getMessage(String key) {
+        String msgPack = getMessagesPack();
+        if (msgPack == null)
+            throw new IllegalStateException("MessagePack is not set");
+        return MessageProvider.getMessage(msgPack, key);
     }
 
     public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map<String, Object> params) {

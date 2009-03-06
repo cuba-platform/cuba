@@ -11,7 +11,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Layout;
-import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -39,7 +38,7 @@ public abstract class ContainerLoader extends ComponentLoader {
 
         final LayoutLoader loader = new LayoutLoader(context, factory, config);
         loader.setLocale(getLocale());
-        loader.setResourceBundle(getResourceBundle());
+        loader.setMessagesPack(getMessagesPack());
         
         for (Element subElement : (Collection<Element>)element.elements()) {
             final String name = subElement.getName();
@@ -112,11 +111,11 @@ public abstract class ContainerLoader extends ComponentLoader {
             loader = constructor.newInstance(context, config, factory);
 
             loader.setLocale(locale);
-            loader.setResourceBundle(resourceBundle);
+            loader.setMessagesPack(messagesPack);
         } catch (Throwable e) {
             loader = loaderClass.newInstance();
             loader.setLocale(locale);
-            loader.setResourceBundle(resourceBundle);
+            loader.setMessagesPack(messagesPack);
         }
 
         return loader;

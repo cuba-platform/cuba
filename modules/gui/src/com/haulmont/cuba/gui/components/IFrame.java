@@ -13,14 +13,15 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
 
 import java.util.Map;
-import java.util.ResourceBundle;
 
 public interface IFrame extends Layout, Component.Container, Component.BelongToFrame {
     DsContext getDsContext();
     void setDsContext(DsContext dsContext);
 
-    ResourceBundle getResourceBundle();
-    void setResourceBundle(ResourceBundle resourceBundle);
+    String getMessagesPack();
+    void setMessagesPack(String name);
+
+    String getMessage(String key);
 
     <T extends Window> T openWindow(
             String windowAlias, WindowManager.OpenType openType, Map<String, Object> params);

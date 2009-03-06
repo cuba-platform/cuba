@@ -11,6 +11,7 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +31,7 @@ public class MenuConfig
     
     private List<MenuItem> rootItems = new ArrayList<MenuItem>();
 
-    private ResourceBundle resourceBundle;
+    private String msgPack;
 
     private ClientType clientType;
     private UserSession userSession;
@@ -44,10 +45,10 @@ public class MenuConfig
         return Collections.unmodifiableList(rootItems);
     }
 
-    public void loadConfig(ResourceBundle resourceBundle, String xml) {
+    public void loadConfig(String msgPack, String xml) {
         rootItems.clear();
 
-        this.resourceBundle = resourceBundle;
+        this.msgPack = msgPack;
 
         SAXReader reader = new SAXReader();
         Document doc;
@@ -73,7 +74,7 @@ public class MenuConfig
                     log.warn(String.format("Invalid menu-config: 'id' attribute not defined"));
                 }
 
-                menuItem = new MenuItem(parentItem, id, resourceBundle.getString("menu-config." + id));
+                menuItem = new MenuItem(parentItem, id, MessageProvider.getMessage(msgPack, "menu-config." + id));
                 menuItem.setDescriptor(element);
 
                 loadMenuItems(element, menuItem);
@@ -108,7 +109,7 @@ public class MenuConfig
 
     private String getCaption(String key, String def) {
         try {
-            return resourceBundle.getString(key);
+            return MessageProvider.getMessage(msgPack, key);
         } catch (MissingResourceException e) {
             return def;
         }

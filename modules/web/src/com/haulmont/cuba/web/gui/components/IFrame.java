@@ -15,12 +15,13 @@ import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.Map;
-import java.util.ResourceBundle;
 
 public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.components.IFrame {
-    private ResourceBundle resourceBundle;
+
+    private String messagePack;
     private DsContext dsContext;
     private com.haulmont.cuba.gui.components.IFrame frame;
 
@@ -35,12 +36,18 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
         this.dsContext = dsContext;
     }
 
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
+    public String getMessagesPack() {
+        return messagePack;
     }
 
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
+    public void setMessagesPack(String name) {
+        messagePack = name;
+    }
+
+    public String getMessage(String key) {
+        if (messagePack == null)
+            throw new IllegalStateException("MessagePack is not set");
+        return MessageProvider.getMessage(messagePack, key);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {

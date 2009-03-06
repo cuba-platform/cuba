@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.ScreenInfo;
 import com.haulmont.cuba.web.log.LogWindow;
-import com.haulmont.cuba.web.resource.Messages;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
@@ -73,7 +73,7 @@ public class AppWindow extends Window
     }
 
     protected String getAppCaption() {
-        return Messages.getString("application.caption", Locale.getDefault());
+        return MessageProvider.getMessage(getClass(), "application.caption", Locale.getDefault());
     }
 
     public TabSheet getTabSheet() {
@@ -102,11 +102,12 @@ public class AppWindow extends Window
 
         titleLayout.setSpacing(true);
 
-        Label logoLabel = new Label(Messages.getString("logoLabel"));
+        Label logoLabel = new Label(MessageProvider.getMessage(getClass(), "logoLabel"));
 
-        Label loggedInLabel = new Label(String.format(Messages.getString("loggedInLabel"), connection.getSession().getName()));
+        Label loggedInLabel = new Label(String.format(MessageProvider.getMessage(getClass(), "loggedInLabel"),
+                connection.getSession().getName()));
 
-        Button logoutBtn = new Button(Messages.getString("logoutBtn"),
+        Button logoutBtn = new Button(MessageProvider.getMessage(getClass(), "logoutBtn"),
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
                         connection.logout();
@@ -116,7 +117,7 @@ public class AppWindow extends Window
         );
         logoutBtn.setStyleName(Button.STYLE_LINK);
 
-        Button viewLogBtn = new Button(Messages.getString("viewLogBtn"),
+        Button viewLogBtn = new Button(MessageProvider.getMessage(getClass(), "viewLogBtn"),
                 new Button.ClickListener()
                 {
                     public void buttonClick(Button.ClickEvent event) {

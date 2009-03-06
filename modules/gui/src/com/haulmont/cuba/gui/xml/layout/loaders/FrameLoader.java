@@ -49,7 +49,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         assignXmlDescriptor(frame, element);
         loadId(frame, element);
 
-        loadResourceBundle(frame, element);
+        loadMessagesPack(frame, element);
         loadSubcomponentsAndExpand(frame, element.element("layout"));
 
         if (dsContext != null) {
@@ -70,23 +70,15 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         return frame;
     }
 
-    protected void loadResourceBundle(IFrame frame, Element element) {
-        final String resourceBundleName = element.attributeValue("resourceBundle");
-        final ResourceBundle bundle;
-        
-        if (resourceBundleName != null) {
-            Locale locale = getLocale();
-            bundle = ResourceBundle.getBundle(resourceBundleName, locale);
-        } else {
-            bundle = null;
+    protected void loadMessagesPack(IFrame frame, Element element) {
+        String msgPack = element.attributeValue("messagesPack");
+        if (msgPack != null) {
+            frame.setMessagesPack(msgPack);
+            setMessagesPack(msgPack);
         }
-
-        if (bundle != null) {
-            frame.setResourceBundle(bundle);
-            setResourceBundle(bundle);
-        } else {
-            frame.setResourceBundle(this.resourceBundle);
-            setResourceBundle(this.resourceBundle);
+        else {
+            frame.setMessagesPack(msgPack);
+            setMessagesPack(this.messagesPack);
         }
     }
 }

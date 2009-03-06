@@ -11,16 +11,16 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.core.global.MessageProvider;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected Locale locale;
-    protected ResourceBundle resourceBundle;
+    protected String messagesPack;
     protected Context context;
 
     protected ComponentLoader(Context context) {
@@ -43,12 +43,12 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         this.locale = locale;
     }
 
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
+    public String getMessagesPack() {
+        return messagesPack;
     }
 
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
+    public void setMessagesPack(String name) {
+        this.messagesPack = name;
     }
 
     protected void loadId(Component component, Element element) {
@@ -81,20 +81,24 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected String loadResourceString(String caption) {
-        if (caption.startsWith("res://")) {
+        if (caption.startsWith("msg://")) {
             String path = caption.substring(6);
             final String[] strings = path.split("/");
             if (strings.length == 1) {
-                if (resourceBundle != null) {
-                    caption = resourceBundle.getString(strings[0]);
+//                if (resourceBundle != null) {
+//                    caption = resourceBundle.getString(strings[0]);
+//                }
+                if (messagesPack != null) {
+                    caption = MessageProvider.getMessage(messagesPack, strings[0]);
                 }
             } else if (strings.length == 2) {
-                try {
-                    final ResourceBundle bundle = ResourceBundle.getBundle(strings[0], getLocale());
-                    caption = bundle.getString(strings[1]);
-                } catch (Throwable e) {
-                    // Do nothing
-                }
+//                try {
+//                    final ResourceBundle bundle = ResourceBundle.getBundle(strings[0], getLocale());
+//                    caption = bundle.getString(strings[1]);
+//                } catch (Throwable e) {
+//                    // Do nothing
+//                }
+                caption = MessageProvider.getMessage(strings[0], strings[1]);
             } else {
                 throw new UnsupportedOperationException();
             }

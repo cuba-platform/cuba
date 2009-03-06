@@ -1,7 +1,7 @@
 <window
-    resourceBundle="com.haulmont.cuba.web.app.ui.security.user.edit.user-edit"
+    messagesPack="com.haulmont.cuba.web.app.ui.security.user.edit"
     datasource="user"
-    caption="res://caption"
+    caption="msg://caption"
     class="com.haulmont.cuba.web.app.ui.security.user.edit.UserEditor"
 >
     <metadataContext>

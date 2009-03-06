@@ -10,10 +10,10 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.resource.Messages;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import jcifs.UniAddress;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
@@ -35,22 +35,35 @@ public class ActiveDirectoryHelper
     public static void authenticate(String login, String password) throws LoginException {
         int p = login.indexOf('\\');
         if (p <= 0)
-            throw new LoginException(Messages.getString("activeDirectory.invalidName"), login);
+            throw new LoginException(MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName"),
+                    login);
         String domain = login.substring(0, p);
         String user = login.substring(p+1);
         String dcIp = getActiveDirectoryDomains().get(domain);
         if (StringUtils.isBlank(dcIp))
-            throw new LoginException(Messages.getString("activeDirectory.unknownDomain"), domain);
+            throw new LoginException(
+                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownDomain"),
+                    domain
+            );
         try {
             UniAddress dc = UniAddress.getByName(dcIp);
             NtlmPasswordAuthentication cred = new NtlmPasswordAuthentication(domain, user, password);
             SmbSession.logon(dc, cred);
         } catch (UnknownHostException e) {
-            throw new LoginException(Messages.getString("activeDirectory.unknownHost"), dcIp);
+            throw new LoginException(
+                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownHost"),
+                    dcIp
+            );
         } catch (SmbAuthException e) {
-            throw new LoginException(Messages.getString("activeDirectory.authenticationError"), e.getMessage());
+            throw new LoginException(
+                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.authenticationError"),
+                    e.getMessage()
+            );
         } catch (SmbException e) {
-            throw new LoginException(Messages.getString("activeDirectory.unknownError"), e.getMessage());
+            throw new LoginException(
+                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownError"),
+                    e.getMessage()
+            );
         }
     }
 

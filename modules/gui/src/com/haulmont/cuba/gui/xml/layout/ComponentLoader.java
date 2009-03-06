@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public interface ComponentLoader {
     public interface Context {
@@ -35,8 +34,8 @@ public interface ComponentLoader {
     Locale getLocale();
     void setLocale(Locale locale);
 
-    ResourceBundle getResourceBundle();
-    void setResourceBundle(ResourceBundle resourceBundle);
+    String getMessagesPack();
+    void setMessagesPack(String name);
 
     Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException;
 }

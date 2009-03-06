@@ -9,12 +9,17 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.chile.core.ReflectionHelper;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.config.ScreenInfo;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
@@ -23,8 +28,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
-import com.haulmont.cuba.gui.config.ScreenInfo;
-import com.haulmont.chile.core.ReflectionHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -186,17 +189,13 @@ public abstract class WindowManager {
 
         caption = (String) params.get("parameter$caption");
         if (StringUtils.isEmpty(caption)) {
-            final ResourceBundle resourceBundle = window.getResourceBundle();
-            if (resourceBundle != null) {
-                try {
-                    caption = resourceBundle.getString("caption");
-                } catch (MissingResourceException e) {
-                    caption = null;
-                }
+            String msgPack = window.getMessagesPack();
+            if (msgPack != null) {
+                caption = MessageProvider.getMessage(msgPack, "caption");
             }
         }
 
-        if (caption != null) {
+        if (!"caption".equals(caption)) {
             caption = TemplateHelper.processTemplate(caption, params);
         }
 //        } else {
