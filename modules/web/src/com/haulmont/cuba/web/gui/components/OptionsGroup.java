@@ -59,10 +59,10 @@ public class OptionsGroup
                 return (T) set;
             } else {
                 final Object o = optionsDatasource.getItem(key);
-                return wrapAsCollectionIfMultiselect(o);
+                return (T)wrapAsCollectionIfMultiselect(o);
             }
         } else {
-            return wrapAsCollectionIfMultiselect(super.getValue());
+            return (T)wrapAsCollectionIfMultiselect(super.getValue());
         }
     }
 
