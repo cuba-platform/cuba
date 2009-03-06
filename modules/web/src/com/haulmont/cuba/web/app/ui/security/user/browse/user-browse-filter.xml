@@ -24,7 +24,7 @@
                     <textField id="email"/>
 
                     <label control="group" value="res://group"/>      
-                    <lookupField id="group" lookupDatasource="groups"/>
+                    <lookupField id="group" optionsDatasource="groups"/>
                 </hbox>
             </groupBox>
             <hbox align="MIDDLE_RIGHT">

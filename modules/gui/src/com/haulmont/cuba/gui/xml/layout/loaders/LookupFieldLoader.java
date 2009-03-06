@@ -39,10 +39,10 @@ public class LookupFieldLoader extends AbstractFieldLoader {
 
     @Override
     protected void loadDatasource(Field component, Element element) {
-        final String datasource = element.attributeValue("lookupDatasource");
+        final String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDSContext().get(datasource);
-            ((LookupField) component).setLookupDatasource((CollectionDatasource) ds);
+            ((LookupField) component).setOptionsDatasource((CollectionDatasource) ds);
         }
 
         super.loadDatasource(component, element);

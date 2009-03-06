@@ -64,8 +64,7 @@ public class PickerField
     public MetaClass getMetaClass() {
         final Datasource ds = getDatasource();
         if (ds != null) {
-            final MetaClass metaClass = ds.getMetaClass();
-            return metaClass.getProperty(property).getRange().asClass();
+            return metaProperty.getRange().asClass();
         } else {
             return metaClass;
         }
@@ -81,7 +80,7 @@ public class PickerField
     public <T> T getValue() {
         if (datasource != null) {
             final Entity item = datasource.getItem();
-            return ((Instance) item).<T>getValue(property);
+            return ((Instance) item).<T>getValue(metaProperty.getName());
         } else {
             return (T) value;
         }
@@ -93,7 +92,7 @@ public class PickerField
         component.setValue(getItemCaption(value));
         if (datasource != null) {
             final Entity item = datasource.getItem();
-            ((Instance) item).setValue(property, value);
+            ((Instance) item).setValue(metaProperty.getName(), value);
         }
     }
 
@@ -102,10 +101,9 @@ public class PickerField
         if (this.datasource != null) this.datasource.removeListener(dsListener);
 
         this.datasource = datasource;
-        this.property = property;
 
         MetaClass metaClass = datasource.getMetaClass();
-        final MetaProperty metaProperty = metaClass.getProperty(property);
+        this.metaProperty = metaClass.getProperty(property);
 
         setRequired(metaProperty.isMandatory());
         this.metaClass = metaProperty.getRange().asClass();
@@ -289,14 +287,14 @@ public class PickerField
 
     protected class DsListener implements DatasourceListener<Entity> {
         public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-            value = item == null ? null : ((Instance) item).getValue(property);
+            value = item == null ? null : ((Instance) item).getValue(metaProperty.getName());
             component.setValue(getItemCaption(value));
         }
 
         public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {}
 
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-            if (ObjectUtils.equals(property, PickerField.this.property) &&
+            if (ObjectUtils.equals(property, PickerField.this.metaProperty.getName()) &&
                     ObjectUtils.equals(datasource.getItem(), source))
             {
                 value = source == null ? null : ((Instance) source).getValue(property);

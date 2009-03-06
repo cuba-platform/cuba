@@ -12,12 +12,5 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-public interface LookupField extends Field {
-    CaptionMode getCaptionMode();
-    void setCaptionMode(CaptionMode captionMode);
-
-    String getCaptionProperty();
-    void setCaptionProperty(String captionProperty);
-
-    void setLookupDatasource(CollectionDatasource datasource);
+public interface LookupField extends OptionsField {
 }

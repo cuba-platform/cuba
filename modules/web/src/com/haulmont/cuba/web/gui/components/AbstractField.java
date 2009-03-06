@@ -17,23 +17,23 @@ import com.haulmont.cuba.core.entity.Entity;
 
 public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends AbstractComponent<T>{
     protected Datasource<Entity> datasource;
-    protected String property;
+    protected MetaProperty metaProperty;
+
     private boolean editable;
 
     public Datasource getDatasource() {
         return datasource;
     }
 
-    public String getProperty() {
-        return property;
+    public MetaProperty getMetaProperty() {
+        return metaProperty;
     }
 
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
-        this.property = property;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        final MetaProperty metaProperty = metaClass.getProperty(property);
+        this.metaProperty = metaClass.getProperty(property);
 
         final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
         component.setPropertyDataSource(wrapper.getItemProperty(metaProperty));

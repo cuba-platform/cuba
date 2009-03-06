@@ -9,30 +9,22 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.itmill.toolkit.ui.OptionGroup;
-import com.itmill.toolkit.ui.AbstractSelect;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collections;
 
 public class OptionsGroup
     extends
-        com.haulmont.cuba.web.gui.components.AbstractField<OptionGroup>
+        AbstractOptionsField<OptionGroup>
     implements
         com.haulmont.cuba.gui.components.OptionsGroup, Component.Wrapper
 {
-    private CollectionDatasource optionsDatasource;
-
-    private com.haulmont.cuba.gui.components.LookupField.CaptionMode captionMode = LookupField.CaptionMode.ITEM;
-    private String captionProperty;
-
     public OptionsGroup() {
         component = new OptionGroup();
         component.setImmediate(true);
@@ -42,31 +34,46 @@ public class OptionsGroup
         return optionsDatasource;
     }
 
-    public void setOptionsDatasource(CollectionDatasource datasource) {
-        this.optionsDatasource = datasource;
-        component.setContainerDataSource(new CollectionDatasourceWrapper(datasource));
-    }
-
+    @SuppressWarnings({"unchecked"})
     @Override
     public <T> T getValue() {
         if (optionsDatasource != null) {
             final Object key = super.getValue();
-            if (key instanceof Collection) {
-                final Set set = new HashSet();
-                for (Object o : (Collection) key) {
-                    set.add(optionsDatasource.getItem(o));
-                }
-                return (T) set;
-            } else {
-                final Object o = optionsDatasource.getItem(key);
-                return (T)wrapAsCollectionIfMultiselect(o);
-            }
+            return (T) getValueFromKey(key);
         } else {
-            return (T)wrapAsCollectionIfMultiselect(super.getValue());
+            return (T) wrapAsCollection(super.getValue());
         }
     }
 
-    protected <T> T wrapAsCollectionIfMultiselect(Object o) {
+    @SuppressWarnings({"unchecked"})
+    protected <T> T getValueFromKey(Object key) {
+        if (key instanceof Collection) {
+            final Set<Object> set = new HashSet<Object>();
+            for (Object o : (Collection) key) {
+                Object t = getValue(o);
+                set.add(t);
+            }
+            return (T) set;
+        } else {
+            final Object o = getValue(key);
+            return (T) wrapAsCollection(o);
+        }
+    }
+
+    protected <T> Object getValue(Object o) {
+        Object t;
+        if (o instanceof Enum) {
+            t = o;
+        } else if (o instanceof Entity) {
+            t = o;
+        } else {
+            t = optionsDatasource.getItem(o);
+        }
+        return t;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    protected <T> T wrapAsCollection(Object o) {
         if (isMultiSelect()) {
             if (o != null) {
                 return (T) Collections.singleton(o);
@@ -81,58 +88,38 @@ public class OptionsGroup
     @Override
     public void setValue(Object value) {
         // TODO (abramov) need to be changed
+        super.setValue(getKeyFromValue(value));
+    }
+
+    protected Object getKeyFromValue(Object value) {
+        Object v;
         if (isMultiSelect()) {
             if (value instanceof Collection) {
-                final Set set = new HashSet();
+                final Set<Object> set = new HashSet<Object>();
                 for (Object o : (Collection) value) {
-                    set.add(((Entity) o).getId());
+                    Object t = getKey(o);
+                    set.add(t);
                 }
-                super.setValue(set);
+                v = set;
             } else {
-                super.setValue(((Entity) value).getId());
+                v = getKey(value);
             }
         } else {
-            super.setValue(((Entity) value).getId());
+            v = getKey(value);
         }
+
+        return v;
     }
 
-    public boolean isMultiSelect() {
-        return component.isMultiSelect();
-    }
-
-    public void setMultiSelect(boolean multiselect) {
-        component.setMultiSelect(multiselect);
-    }
-
-    public CaptionMode getCaptionMode() {
-        return captionMode;
-    }
-
-    public void setCaptionMode(CaptionMode captionMode) {
-        this.captionMode = captionMode;
-        switch (captionMode) {
-            case ITEM: {
-                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
-                break;
-            }
-            case PROPERTY: {
-                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
-                break;
-            }
-            default :{
-                throw new UnsupportedOperationException();
-            }
+    protected Object getKey(Object o) {
+        Object t;
+        if (o instanceof Entity) {
+            t = ((Entity) o).getId();
+        } else if (o instanceof Enum) {
+            t = o;
+        } else {
+            t = o;
         }
-    }
-
-    public String getCaptionProperty() {
-        return captionProperty;
-    }
-
-    public void setCaptionProperty(String captionProperty) {
-        this.captionProperty = captionProperty;
-        if (optionsDatasource != null) {
-            component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
-        }
+        return t;
     }
 }
