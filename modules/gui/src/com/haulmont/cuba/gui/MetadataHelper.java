@@ -16,9 +16,11 @@ public class MetadataHelper {
     public static Class getPropertyTypeClass(MetaProperty metaProperty) {
         final Range range = metaProperty.getRange();
         if (range.isDatatype()) {
-            return range.asDatatype().getImplementationClass();
+            return range.asDatatype().getJavaClass();
         } else if (range.isClass()) {
             return range.asClass().getJavaClass();
+        } else if (range.isEnum()) {
+            return range.asEnumiration().getJavaClass();
         } else {
             throw new UnsupportedOperationException();
         }

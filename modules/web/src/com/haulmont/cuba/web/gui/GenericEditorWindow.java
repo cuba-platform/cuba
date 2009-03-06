@@ -109,7 +109,7 @@ public class GenericEditorWindow
     
                 if (Range.Cardinality.ONE_TO_ONE.equals(cardinality)) {
                     if (range.isDatatype()) {
-                        field = createField(range.asDatatype().getImplementationClass(), uiContext);
+                        field = createField(range.asDatatype().getJavaClass(), uiContext);
                     } else if (range.isClass()) {
 
                     }
