@@ -10,14 +10,17 @@
  */
 package com.haulmont.cuba.security.global;
 
-import com.haulmont.cuba.security.resource.Messages;
+import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.UUID;
 
 public class NoUserSessionException extends RuntimeException
 {
+    private static final long serialVersionUID = 4820628023682230319L;
+
     public NoUserSessionException(UUID sessionId) {
         super(String.format(
-                Messages.getString("NoUserSessionException"), sessionId.toString()));
+                MessageProvider.getMessage(NoUserSessionException.class, "NoUserSessionException"),
+                sessionId.toString()));
     }
 }

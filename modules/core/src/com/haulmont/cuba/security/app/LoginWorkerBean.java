@@ -14,12 +14,12 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.resource.Messages;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.global.MessageProvider;
 
 import javax.ejb.Stateless;
 import java.util.List;
@@ -46,7 +46,8 @@ public class LoginWorkerBean implements LoginWorker
         if (list.isEmpty()) {
             log.warn("Failed to authenticate: " + login);
             throw new LoginException(
-                    String.format(Messages.getString("LoginException.InvalidLoginOrPassword", locale), login));
+                    String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale),
+                            login));
         }
         else {
             User user = (User) list.get(0);
@@ -66,7 +67,8 @@ public class LoginWorkerBean implements LoginWorker
         if (list.isEmpty()) {
             log.warn("Failed to authenticate: " + activeDirectoryUser);
             throw new LoginException(
-                    String.format(Messages.getString("LoginException.InvalidActiveDirectoryUser", locale), activeDirectoryUser));
+                    String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidActiveDirectoryUser", locale),
+                            activeDirectoryUser));
         }
         else {
             User user = (User) list.get(0);
