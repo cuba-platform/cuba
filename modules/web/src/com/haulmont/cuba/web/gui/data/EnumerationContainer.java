@@ -11,10 +11,13 @@ package com.haulmont.cuba.web.gui.data;
 
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
+import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
+
+import org.apache.commons.lang.StringUtils;
 
 public class EnumerationContainer implements com.itmill.toolkit.data.Container {
     private List<Enum> values;
@@ -77,9 +80,14 @@ public class EnumerationContainer implements com.itmill.toolkit.data.Container {
 
     private static class EnumerationItem implements Item {
         private Object item;
+        private String name;
 
         public EnumerationItem(Object itemId) {
             this.item = itemId;
+            String nameKey = item.getClass().getSimpleName() + "." + item.toString();
+
+            name = MessageProvider.getMessage(item.getClass(), nameKey);
+            if (StringUtils.isEmpty(name)) name = item.toString();
         }
 
         public Property getItemProperty(Object id) {
@@ -100,7 +108,7 @@ public class EnumerationContainer implements com.itmill.toolkit.data.Container {
 
         @Override
         public String toString() {
-            return item.toString();
+            return name;
         }
     }
 }
