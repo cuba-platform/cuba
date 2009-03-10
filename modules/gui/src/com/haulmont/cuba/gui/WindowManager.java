@@ -85,7 +85,7 @@ public abstract class WindowManager {
         final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext);
 
         StopWatch loadLayoutStopWatch = new Log4JStopWatch("WindowManager.createWindow (loadLayout)");
-        final Window window = loadLayout(element, componentLoaderContext, layoutConfig);
+        final Window window = loadLayout(template, element, componentLoaderContext, layoutConfig);
         loadLayoutStopWatch.stop();
 
         componentLoaderContext.setFrame(window);
@@ -127,9 +127,15 @@ public abstract class WindowManager {
         dsContext.setContext(new FrameContext(window));
     }
 
-    protected Window loadLayout(Element rootElement, ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {
+    protected Window loadLayout(String descriptorPath, Element rootElement, ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {
         final LayoutLoader layoutLoader = new LayoutLoader(context, createComponentFactory(), layoutConfig);
         layoutLoader.setLocale(getLocale());
+        if (!StringUtils.isEmpty(descriptorPath)) {
+            String path = descriptorPath.replaceAll("/", ".");
+            path = path.substring(1, path.lastIndexOf("."));
+
+            layoutLoader.setMessagesPack(path);
+        }
 
         final Window window = (Window) layoutLoader.loadComponent(rootElement);
         return window;
