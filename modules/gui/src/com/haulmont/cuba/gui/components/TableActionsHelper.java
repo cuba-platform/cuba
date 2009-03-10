@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.DataService;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Collection;
 
 public class TableActionsHelper extends ListActionsHelper<Table>{
     public TableActionsHelper(IFrame frame, Table table) {
@@ -40,7 +41,17 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
 
                 final Entity item = dataservice.<Entity>newInstance(datasource.getMetaClass());
                 for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
-                    ((Instance) item).setValue(entry.getKey(), entry.getValue());
+                    final Object value = entry.getValue();
+                    if (value instanceof Collection) {
+                        final Collection collection = (Collection) value;
+                        if (collection.size() != 1) {
+                            throw new UnsupportedOperationException();
+                        } else {
+                            ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
+                        }
+                    } else {
+                        ((Instance) item).setValue(entry.getKey(), value);
+                    }
                 }
                 final Window window = frame.openEditor(windowID, item, openType);
                 window.addListener(new Window.CloseListener() {
