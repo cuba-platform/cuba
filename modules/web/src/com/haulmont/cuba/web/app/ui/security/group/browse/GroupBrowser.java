@@ -13,10 +13,13 @@ package com.haulmont.cuba.web.app.ui.security.group.browse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.User;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
+import java.util.Set;
 
 public class GroupBrowser extends AbstractWindow
 {
@@ -40,7 +43,8 @@ public class GroupBrowser extends AbstractWindow
         helper.createCreateAction(WindowManager.OpenType.DIALOG);
         helper.createEditAction(WindowManager.OpenType.DIALOG);
 
-        Table users = getComponent("users");
+        final Table users = getComponent("users");
+        Table constraints = getComponent("constraints");
 
         final TableActionsHelper usersActions = new TableActionsHelper(this, users);
         usersActions.createCreateAction(new ValueProvider() {
@@ -51,6 +55,47 @@ public class GroupBrowser extends AbstractWindow
             }
         });
         usersActions.createEditAction();
+        users.addAction(new AbstractAction("moveToGroup") {
+            public String getCaption() {
+                return "Move to Group";
+            }
+
+            public boolean isEnabled() {
+                return true;
+            }
+
+            public void actionPerform(Component component) {
+                final Set<User> selected = users.getSelected();
+                if (!selected.isEmpty()) {
+                    openLookup("sec$Group.lookup", new Lookup.Handler() {
+                        public void handleLookup(Collection items) {
+                            if (items.size() == 1) {
+                                Group group = (Group) items.iterator().next();
+                                for (User user : selected) {
+                                    user.setGroup(group);
+                                }
+                                
+                                final CollectionDatasource ds = users.getDatasource();
+                                ds.commit();
+                                ds.refresh();
+                            }
+                        }
+                    }, WindowManager.OpenType.THIS_TAB);
+                }
+            }
+        });
         usersActions.createRefreshAction();
+
+        final TableActionsHelper constraintsActions = new TableActionsHelper(this, constraints);
+        constraintsActions.createCreateAction(new ValueProvider() {
+            public Map<String, Object> getValues() {
+                final Map<String, Object> map = new HashMap<String, Object>();
+                map.put("group", tree.getSelected());
+                return map;
+            }
+        });
+        constraintsActions.createEditAction();
+        constraintsActions.createRemoveAction();
+        constraintsActions.createRefreshAction();
     }
 }

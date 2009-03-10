@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 
 import java.util.Map;
 
-public class AbstractWindow extends AbstractFrame implements Window, Component.HasXmlDescriptor {
+public class AbstractWindow extends AbstractFrame implements Window, Component.HasXmlDescriptor, Window.Wrapper {
     public AbstractWindow(IFrame frame) {
         super(frame);
     }
@@ -85,5 +85,9 @@ public class AbstractWindow extends AbstractFrame implements Window, Component.H
 
     protected void init(Map<String, Object> params) {
 
+    }
+
+    public <T extends Window> T getWrappedWindow() {
+        return (T) frame;
     }
 }

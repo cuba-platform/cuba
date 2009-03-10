@@ -10,42 +10,30 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
-import com.haulmont.cuba.web.ui.ScreenTitlePane;
+import com.haulmont.cuba.web.ui.WinfowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
-public class ScreenManager extends WindowManager
+public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 {
-    private static class TabInfo
-    {
-        private ScreenTitlePane titlePane;
-        private LinkedList<Window> screens = new LinkedList<Window>();
-
-        private TabInfo(ScreenTitlePane titlePane) {
-            this.titlePane = titlePane;
-        }
-    }
-
     private App app;
 
-    private Map<Layout, TabInfo> tabs = new HashMap<Layout, TabInfo>();
+    private Map<Layout, WinfowBreadCrumbs> tabs = new HashMap<Layout, WinfowBreadCrumbs>();
 
-    public ScreenManager(App app) {
+    public WindowManager(App app) {
         this.app = app;
     }
 
@@ -56,13 +44,35 @@ public class ScreenManager extends WindowManager
         return new GenericDataService(false);
     }
 
+    protected Map<Window, WindowOpenMode> windowOpenMode = new HashMap<Window, WindowOpenMode>();
+
+    protected static class WindowOpenMode {
+        protected Window window;
+        protected OpenType openType;
+        protected Object data;
+
+        public WindowOpenMode(Window window, OpenType openType) {
+            this.window = window;
+            this.openType = openType;
+        }
+
+        public Object getData() {
+            return data;
+        }
+
+        public void setData(Object data) {
+            this.data = data;
+        }
+    }
+
     protected void showWindow(Window window, String caption, OpenType type) {
+        final WindowOpenMode openMode = new WindowOpenMode(window, type);
         if (OpenType.NEW_TAB.equals(type)) {
             VerticalLayout layout = new VerticalLayout();
             layout.setSizeFull();
 
-            ScreenTitlePane titlePane = new ScreenTitlePane();
-            titlePane.addCaption(caption);
+            WinfowBreadCrumbs breadCrumbs = new WinfowBreadCrumbs();
+            breadCrumbs.addWindow(window);
 
             final Component component = ComponentsHelper.unwrap(window);
             component.setSizeFull();
@@ -71,65 +81,107 @@ public class ScreenManager extends WindowManager
             tabSheet.addTab(layout, caption, null);
             tabSheet.setSelectedTab(layout);
 
-            layout.addComponent(titlePane);
+            layout.addComponent(breadCrumbs);
             layout.addComponent(component);
             layout.setExpandRatio(component, 1);
 
-            TabInfo tabInfo = new TabInfo(titlePane);
-            tabInfo.screens.add(window);
-            tabs.put(layout, tabInfo);
+            tabs.put(layout, breadCrumbs);
+
+            openMode.setData(layout);
         } else if (OpenType.THIS_TAB.equals(type)) {
             TabSheet tabSheet = app.getAppWindow().getTabSheet();
             VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
 
-            TabInfo tabInfo = tabs.get(layout);
-            if (tabInfo == null)
-                throw new IllegalStateException("Current tab not found");
+            final WinfowBreadCrumbs breadCrumbs = tabs.get(layout);
+            if (breadCrumbs == null) throw new IllegalStateException("BreadCrumbs not found");
 
-            layout.removeComponent(ComponentsHelper.unwrap(tabInfo.screens.getLast()));
+            final Window currentWindow = breadCrumbs.getCurrentWindow();
+            layout.removeComponent(ComponentsHelper.unwrap(currentWindow));
 
             final Component component = ComponentsHelper.unwrap(window);
             layout.addComponent(component);
             component.setSizeFull();
             layout.setExpandRatio(component, 1);
 
-            tabInfo.titlePane.addCaption(caption);
-            tabInfo.screens.add(window);
-        } else
-            throw new UnsupportedOperationException("Opening type not supported: " + type);
+            breadCrumbs.addWindow(window);
+
+            openMode.setData(layout);
+        } else if (OpenType.DIALOG.equals(type)) {
+            final com.itmill.toolkit.ui.Window win = new com.itmill.toolkit.ui.Window(window.getCaption());
+
+            win.setLayout((Layout) ComponentsHelper.unwrap(window));
+
+            win.setWidth(600, Sizeable.UNITS_PIXELS);
+            win.setResizable(false);
+            win.setModal(true);
+
+            App.getInstance().getMainWindow().addWindow(win);
+
+            openMode.setData(win);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
+        if (window instanceof Window.Wrapper) {
+            window = ((Window.Wrapper) window).getWrappedWindow();
+            windowOpenMode.put(window, openMode);
+        } else {
+            windowOpenMode.put(window, openMode);
+        }
     }
 
     protected Locale getLocale() {
         return App.getInstance().getLocale();
     }
 
-    public void closeScreen() {
+    public void close(com.haulmont.cuba.gui.components.Window window) {
+        if (window instanceof Window.Wrapper) {
+            window = ((Window.Wrapper) window).getWrappedWindow();
+        }
+            
+        final WindowOpenMode openMode = windowOpenMode.get(window);
+        if (openMode == null) throw new IllegalStateException();
+
         TabSheet tabSheet = app.getAppWindow().getTabSheet();
-        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
+        switch (openMode.openType) {
+            case DIALOG: {
+                final com.itmill.toolkit.ui.Window win = (com.itmill.toolkit.ui.Window) openMode.getData();
+                App.getInstance().getMainWindow().removeWindow(win);
+                return;
+            }
+            case NEW_TAB: {
+                final Layout layout = (Layout) openMode.getData();
+                layout.removeComponent(ComponentsHelper.unwrap(window));
 
-        TabInfo tabInfo = tabs.get(layout);
-        if (tabInfo == null)
-            throw new IllegalStateException("Unable to close screen: current tab not found");
+                tabSheet.removeComponent(layout);
+                tabs.remove(layout);
 
-        Window window = tabInfo.screens.getLast();
+                // TODO (krivopustov) fix TabSheet repaint
+                app.getMainWindow().open(new ExternalResource(app.getURL()));
 
-        tabInfo.screens.removeLast();
+                return;
+            }
+            case THIS_TAB: {
+                final VerticalLayout layout = (VerticalLayout) openMode.getData();
 
-        layout.removeComponent(ComponentsHelper.unwrap(window));
-        if (tabInfo.screens.isEmpty()) {
-            tabSheet.removeComponent(layout);
-            tabs.remove(layout);
-            app.getMainWindow().open(new ExternalResource(app.getURL())); // TODO fix TabSheet repaint
-        } else {
-            tabInfo.titlePane.removeCaption();
-            Window prevScreen = tabInfo.screens.getLast();
+                final WinfowBreadCrumbs breadCrumbs = tabs.get(layout);
+                if (breadCrumbs == null) throw new IllegalStateException("Unable to close screen: breadCrumbs not found");
 
-            final Component component = ComponentsHelper.unwrap(prevScreen);
-            component.setSizeFull();
+                breadCrumbs.removeWindow();
+                Window currentWindow = breadCrumbs.getCurrentWindow();
 
-            layout.addComponent(component);
-            layout.setExpandRatio(component, 1);
-//            layout.expand(ComponentsHelper.unwrap(prevScreen));
+                final Component component = ComponentsHelper.unwrap(currentWindow);
+                component.setSizeFull();
+
+                layout.removeComponent(ComponentsHelper.unwrap(window));
+                layout.addComponent(component);
+                layout.setExpandRatio(component, 1);
+
+                return;
+            }
+            default: {
+                throw new UnsupportedOperationException();
+            }
         }
     }
 
@@ -147,6 +199,8 @@ public class ScreenManager extends WindowManager
         window.setLayout(layout);
 
         Label desc = new Label(message);
+        layout.addComponent(desc);
+
         window.addComponent(layout);
 
         window.setWidth(400, Sizeable.UNITS_PIXELS);

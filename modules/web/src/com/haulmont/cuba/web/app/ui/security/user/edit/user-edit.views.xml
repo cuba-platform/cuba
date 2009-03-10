@@ -2,6 +2,8 @@
     <view entity="sec$User" name="user.edit">
         <property name="name"/>
         <property name="login"/>
+        <property name="email"/>
+        <property name="activeDirectoryUser"/>
         <property name="group" view="lookup"/>
     </view>
 

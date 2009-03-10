@@ -52,40 +52,40 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
-        return App.getInstance().getScreenManager().<T>openWindow(screenInfo, openType, params);
+        return App.getInstance().getWindowManager().<T>openWindow(screenInfo, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
         ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
-        return App.getInstance().getScreenManager().<T>openEditor(windowInfo, item, openType, params);
+        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType) {
         ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
-        return App.getInstance().getScreenManager().<T>openEditor(windowInfo, item, openType);
+        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
         ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
-        return App.getInstance().getScreenManager().<T>openWindow(windowInfo, openType);
+        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
-        return App.getInstance().getScreenManager().<T>openLookup(windowInfo, handler, openType, params);
+        return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType, params);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         ScreenInfo windowInfo = App.getInstance().getScreenConfig().getScreenInfo(windowAlias);
-        return App.getInstance().getScreenManager().<T>openLookup(windowInfo, handler, openType);
+        return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType);
     }
 
     public void showMessageDialog(String title, String message, MessageType messageType) {
-        App.getInstance().getScreenManager().showMessageDialog(title, message, messageType);
+        App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
     }
 
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
-        App.getInstance().getScreenManager().showOptionDialog(title, message, messageType, actions);
+        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
     public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {

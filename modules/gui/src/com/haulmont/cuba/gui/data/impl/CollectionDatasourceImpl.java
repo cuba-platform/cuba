@@ -87,11 +87,12 @@ public class CollectionDatasourceImpl<T extends Entity, K>
             forceStateChanged(prevState);
         }
 
-        // HACK need somehow get id from item
         if (prevIds != null && this.item != null && !prevIds.contains(this.item.getId())) {
             setItem(null);
         } else if (this.item != null) {
             setItem(getItem((K) this.item.getId()));
+        } else {
+            setItem(null);
         }
 
         forceCollectionChanged(new CollectionDatasourceListener.CollectionOperation<T>(CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
@@ -101,7 +102,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         if (State.NOT_INITIALIZAED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
-            return (T) data.itemsByKey.get(key);
+            final T item = (T) data.itemsByKey.get(key);
+            attachListener((Instance) item);
+            return item;
         }
     }
 

@@ -10,10 +10,10 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.chile.core.annotations.Aggregation;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -32,6 +32,9 @@ public class User extends StandardEntity
 
     @Column(name = "NAME", length = 100)
     private String name;
+
+    @Column(name = "EMAIL", length = 100)
+    private String email;
 
     @Column(name = "AD_USER", length = 100)
     private String activeDirectoryUser;
@@ -95,5 +98,13 @@ public class User extends StandardEntity
 
     public String toString() {
         return login;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

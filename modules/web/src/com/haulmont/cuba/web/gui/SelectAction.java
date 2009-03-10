@@ -29,7 +29,7 @@ class SelectAction implements Button.ClickListener {
         if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table ) {
             selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
         } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
-            selected = Collections.singleton(((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected());
+            selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
         } else if (lookupComponent instanceof LookupField) {
             selected = Collections.singleton(((LookupField) lookupComponent).getValue());
         } else {

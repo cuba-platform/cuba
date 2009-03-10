@@ -3,7 +3,7 @@
     class="com.haulmont.cuba.web.app.ui.security.group.browse.GroupBrowser"
 >
     <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/browse/group-browse.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
     </metadataContext>
 
     <dsContext>
@@ -22,6 +22,14 @@
             view="group-browse">
             <query>select u from sec$User u where u.group.id = :ds$groups</query>
         </collectionDatasource>
+
+        <collectionDatasource
+            id="constraints"
+            class="com.haulmont.cuba.security.entity.Constraint"
+            view="group-browse">
+            <query>select c from sec$Constraint c where c.group.id = :ds$groups</query>
+        </collectionDatasource>
+
     </dsContext>
 
     <layout>
@@ -40,14 +48,14 @@
                     <tabsheet id="group-editor">
                         <tab id="users" caption="msg://tabsheet.users">
                             <vbox expand="users">
-                                <hbox>
-                                    <checkBox id="showDescendants"/>
-                                    <label value="msg://showDescendants"/>
-                                </hbox>
+                                <!--<hbox>-->
+                                    <!--<checkBox id="showDescendants"/>-->
+                                    <!--<label value="msg://showDescendants"/>-->
+                                <!--</hbox>-->
                                 <hbox>
                                     <button id="users.create" action="users.create"/>
                                     <button id="users.edit" action="users.edit"/>
-                                    <!--<button id="users.moveTo" action="users.moveTo"/>-->
+                                    <button id="users.moveToGroup" action="users.moveToGroup"/>
                                 </hbox>
                                 <table id="users">
                                     <columns>
@@ -60,7 +68,20 @@
                             </vbox>
                         </tab>
                         <tab id="constraints" caption="msg://tabsheet.constraints">
-
+                            <vbox expand="constraints">
+                                <hbox>
+                                    <button id="constraints.create" action="constraints.create"/>
+                                    <button id="constraints.edit" action="constraints.edit"/>
+                                    <button id="constraints.remove" action="constraints.remove"/>
+                                </hbox>
+                                <table id="constraints">
+                                    <columns>
+                                        <column id="entityName" caption="msg://entity"/>
+                                        <column id="whereClause" caption="msg://where"/>
+                                    </columns>
+                                    <rows datasource="constraints"/>
+                                </table>
+                            </vbox>
                         </tab>
                     </tabsheet>
                 </vbox>

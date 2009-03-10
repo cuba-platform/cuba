@@ -74,10 +74,12 @@ public abstract class AbstractDataSource<T extends Entity>
     }
 
     protected void attachListener(Instance item) {
+        if (item == null) return;
         item.addListener(listener);
     }
 
     protected void detatchListener(Instance item) {
+        if (item == null) return;
         item.removeListener(listener);
     }
 

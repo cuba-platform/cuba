@@ -50,7 +50,7 @@ public class Navigator extends Window
                 MenuItem menuItem = (MenuItem) event.getItemId();
                 String caption = menuItem.getCaption();
                 ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(menuItem.getId());
-                App.getInstance().getScreenManager().openWindow(
+                App.getInstance().getWindowManager().openWindow(
                             screenInfo,
                             WindowManager.OpenType.NEW_TAB,
                             Collections.<String, Object>singletonMap("caption", caption)

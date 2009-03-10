@@ -21,6 +21,7 @@ import com.haulmont.chile.core.model.MetaClass;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Arrays;
 
 public class UserEditor extends AbstractEditor {
     public UserEditor(Window frame) {
@@ -72,5 +73,8 @@ public class UserEditor extends AbstractEditor {
                 
             }
         });
+
+//        OptionsField field = getComponent("enum");
+//        field.setOptionsList(Arrays.asList(Datasource.State.values()));
     }
 }

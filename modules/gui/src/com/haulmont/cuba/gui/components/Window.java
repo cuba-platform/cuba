@@ -41,4 +41,8 @@ public interface Window extends IFrame, Component.HasCaption {
     interface CloseListener {
         void windowClosed(String actionId);
     }
+
+    interface Wrapper {
+        <T extends Window> T getWrappedWindow();
+    }
 }

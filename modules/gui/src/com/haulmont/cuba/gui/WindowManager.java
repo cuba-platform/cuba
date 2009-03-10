@@ -190,33 +190,20 @@ public abstract class WindowManager {
         String caption = window.getCaption();
         if (!StringUtils.isEmpty(caption)) {
             caption = TemplateHelper.processTemplate(caption, params);
-            return caption;
-        }
-
-        caption = (String) params.get("parameter$caption");
-        if (StringUtils.isEmpty(caption)) {
-            String msgPack = window.getMessagesPack();
-            if (msgPack != null) {
-                caption = MessageProvider.getMessage(msgPack, "caption");
+        } else {
+            caption = (String) params.get("parameter$caption");
+            if (StringUtils.isEmpty(caption)) {
+                String msgPack = window.getMessagesPack();
+                if (msgPack != null) {
+                    caption = MessageProvider.getMessage(msgPack, "caption");
+                    if (!"caption".equals(caption)) {
+                        caption = TemplateHelper.processTemplate(caption, params);
+                    }
+                }
+            } else {
+                caption = TemplateHelper.processTemplate(caption, params);
             }
         }
-
-        if (!"caption".equals(caption)) {
-            caption = TemplateHelper.processTemplate(caption, params);
-        }
-//        } else {
-//            try {
-//                caption = invokeMethod(frame, "getCaption");
-//                if (!StringUtils.isEmpty(caption)) {
-//                    caption = TemplateHelper.processTemplate(caption, params);
-//                }
-//            } catch (NoSuchMethodException e) {
-//                // Do nothing
-//            } catch (Throwable e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-
         window.setCaption(caption);
 
         return caption;

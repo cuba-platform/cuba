@@ -165,7 +165,7 @@ public class AppWindow extends Window
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 String caption = item.getCaption();
                 ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(item.getId());
-                App.getInstance().getScreenManager().openWindow(
+                App.getInstance().getWindowManager().openWindow(
                         screenInfo,
                         WindowManager.OpenType.NEW_TAB,
                         Collections.<String, Object>singletonMap("caption", caption)

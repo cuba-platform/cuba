@@ -40,7 +40,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     private MenuConfig menuConfig;
 
-    private ScreenManager screenManager;
+    private WindowManager screenManager;
 
     private AppLog appLog;
 
@@ -52,7 +52,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         appLog = new AppLog();
         connection = new Connection();
         connection.addListener(this);
-        screenManager = new ScreenManager(this);
+        screenManager = new WindowManager(this);
     }
 
     public void init() {
@@ -118,7 +118,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return rrs.getResAsString("cuba/client/web/menu-config.xml");
     }
 
-    public ScreenManager getScreenManager() {
+    public WindowManager getWindowManager() {
         return screenManager;
     }
 

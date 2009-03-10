@@ -12,8 +12,10 @@ package com.haulmont.cuba.web.app.ui;
 import com.haulmont.cuba.web.gui.Window;
 import com.itmill.toolkit.ui.ComponentContainer;
 
+import java.util.Map;
+
 public class TableDemoScreen  extends Window {
-    protected void init() {
+    protected void init(Map<String, Object> params) {
         ((ComponentContainer) component).addComponent(new TableExample());
     }
 }

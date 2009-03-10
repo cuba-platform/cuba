@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.ui;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.gui.components.Window;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.HorizontalLayout;
@@ -20,14 +21,14 @@ import com.itmill.toolkit.ui.Label;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class ScreenTitlePane extends HorizontalLayout
+public class WinfowBreadCrumbs extends HorizontalLayout
 {
-    private LinkedList<String> captions = new LinkedList<String>();
+    protected LinkedList<Window> windows = new LinkedList<Window>();
 
     private Label label;
     private Button closeBtn;
 
-    public ScreenTitlePane() {
+    public WinfowBreadCrumbs() {
         setMargin(true);
         setWidth(100, Sizeable.UNITS_PERCENTAGE);
         setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
@@ -36,7 +37,8 @@ public class ScreenTitlePane extends HorizontalLayout
         closeBtn = new Button(MessageProvider.getMessage(getClass(), "closeBtn"), new Button.ClickListener()
         {
             public void buttonClick(Button.ClickEvent event) {
-                App.getInstance().getScreenManager().closeScreen();
+                final Window window = getCurrentWindow();
+                App.getInstance().getWindowManager().close(window);
             }
         });
 
@@ -49,33 +51,34 @@ public class ScreenTitlePane extends HorizontalLayout
         setExpandRatio(label, 1);
     }
 
-    public String getCurrentCaption() {
-        if (captions.isEmpty())
+    public Window getCurrentWindow() {
+        if (windows.isEmpty())
             return null;
         else
-            return captions.getLast();
+            return windows.getLast();
     }
 
-    public void addCaption(String caption) {
-        captions.add(caption);
-        writeCaptions();
+    public void addWindow(Window window) {
+        windows.add(window);
+        update();
     }
 
-    public void removeCaption() {
-        if (!captions.isEmpty()) {
-            captions.removeLast();
-            writeCaptions();
+    public void removeWindow() {
+        if (!windows.isEmpty()) {
+            windows.removeLast();
+            update();
         }
     }
 
-    private void writeCaptions() {
+    private void update() {
         StringBuilder sb = new StringBuilder();
-        for (Iterator<String> it = captions.iterator(); it.hasNext();) {
-            String caption = it.next();
-            sb.append(caption);
-            if (it.hasNext())
-                sb.append(" -> ");
+        for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
+            Window window = it.next();
+            sb.append(window.getCaption());
+
+            if (it.hasNext()) sb.append(" -> ");
         }
+
         label.setValue(sb.toString());
     }
 }

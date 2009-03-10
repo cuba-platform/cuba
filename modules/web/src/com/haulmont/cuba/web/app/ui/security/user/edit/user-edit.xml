@@ -49,8 +49,12 @@
                     <textField id="login" datasource="user" property="login"/>
                 </row>
                 <row>
+                    <label value="Email"/>
+                    <textField id="email" datasource="user" property="email"/>
+                </row>
+                <row>
                     <label value="Group"/>
-                    <pickerField id="group" datasource="user" property="group" lookupDatasource="groups" captionProperty="name"/>
+                    <pickerField id="group" datasource="user" property="group" optionsDatasource="groups" captionProperty="name"/>
                 </row>
             </rows>
         </grid>

@@ -15,7 +15,15 @@
             view="user-browse"
         >
             <query>
-                <![CDATA[select u from sec$User u where <#if component$filter.name?has_content>u.name like :component$filter.name<#else>1=1</#if>]]>
+                <![CDATA[
+                select u
+                from sec$User u
+                where
+                    <#if component$filter.name?has_content>u.name like :component$filter.name<#else>1=1</#if>
+                    <#if component$filter.login?has_content>and u.login like :component$filter.login</#if>
+                    <#if component$filter.email?has_content>and u.email = :component$filter.email</#if>
+                    <#if component$filter.group?has_content>and u.group.id = :component$filter.group</#if>
+                ]]>
             </query>
         </collectionDatasource>
     </dsContext>
@@ -29,9 +37,10 @@
             </hbox>
             <table id="users" editable="false">
                 <columns>
-                    <column id="name" caption="Name"/>
-                    <column id="login" caption="Login"/>
-                    <column id="activeDirectoryUser" caption="ActiveDirectory User"/>
+                    <column id="name" caption="msg://name"/>
+                    <column id="login" caption="msg://login"/>
+                    <column id="email" caption="msg://email"/>
+                    <column id="activeDirectoryUser" caption="msg://activeDirectoryUser"/>
                 </columns>
                 <rows datasource="users"/>
             </table>

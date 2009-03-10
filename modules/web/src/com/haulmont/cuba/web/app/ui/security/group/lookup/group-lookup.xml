@@ -1,0 +1,24 @@
+<window
+    messagesPack="com.haulmont.cuba.web.app.ui.security.group.browse"
+    class="com.haulmont.cuba.web.app.ui.security.group.lookup.GroupLookup"
+    lookupComponent="groups"
+>
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource
+            id="groups"
+            class="com.haulmont.cuba.security.entity.Group"
+            view="group-browse">
+            <query><![CDATA[select g from sec$Group g]]></query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <tree id="groups">
+            <treechildren datasource="groups" property="name" parent="parent"/>
+        </tree>
+    </layout>
+</window>
