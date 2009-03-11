@@ -30,7 +30,7 @@ public class Permission extends StandardEntity
     @Column(name = "VALUE")
     private Integer value;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ROLE_ID")
     private Role role;
 

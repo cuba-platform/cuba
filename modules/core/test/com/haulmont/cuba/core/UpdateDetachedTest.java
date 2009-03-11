@@ -25,7 +25,7 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 
 public class UpdateDetachedTest extends CubaTestCase
 {
-    private UUID roleId, permissionId;
+    private UUID roleId, role2Id, permissionId;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -37,6 +37,11 @@ public class UpdateDetachedTest extends CubaTestCase
             roleId = role.getId();
             role.setName("testRole");
             em.persist(role);
+
+            Role role2 = new Role();
+            role2Id = role2.getId();
+            role2.setName("testRole2");
+            em.persist(role2);
 
             Permission permission = new Permission();
             permissionId = permission.getId();
@@ -61,8 +66,9 @@ public class UpdateDetachedTest extends CubaTestCase
             q.setParameter(1, permissionId.toString());
             q.executeUpdate();
 
-            q = em.createNativeQuery("delete from SEC_ROLE where ID = ?");
+            q = em.createNativeQuery("delete from SEC_ROLE where ID = ? or ID = ?");
             q.setParameter(1, roleId.toString());
+            q.setParameter(2, role2Id.toString());
             q.executeUpdate();
 
             tx.commit();
@@ -166,4 +172,48 @@ public class UpdateDetachedTest extends CubaTestCase
         assertNotNull(p.getRole());
         assertNotNull(((PersistenceCapable) p.getRole()).pcGetDetachedState());
     }
+
+    public void testUpdateNotLoaded() {
+        Permission p;
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+
+            em.setView(new View(Permission.class)
+                    .addProperty("target")
+            );
+
+            p = em.find(Permission.class, permissionId);
+            tx.commitRetaining();
+
+            em = PersistenceProvider.getEntityManager();
+            Role role = em.find(Role.class, role2Id);
+            tx.commitRetaining();
+
+            p.setRole(role); // change Role in detached object
+
+            em = PersistenceProvider.getEntityManager();
+            p = em.merge(p);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        assertNull(p.getRole());
+
+        tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+
+            em.setView(new View(Permission.class)
+                    .addProperty("target")
+                    .addProperty("role")
+            );
+            p = em.find(Permission.class, permissionId);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        assertEquals(roleId, p.getRole().getId()); // Role has not been changed
+    }
+
 }
