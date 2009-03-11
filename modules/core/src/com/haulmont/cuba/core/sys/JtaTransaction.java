@@ -21,13 +21,18 @@ public class JtaTransaction implements Transaction
 {
     private TransactionManager tm;
 
+    private boolean started;
     private boolean committed;
 
-    public JtaTransaction(TransactionManager tm) {
+    public JtaTransaction(TransactionManager tm, boolean join) {
         this.tm = tm;
         try {
             if (tm.getTransaction() == null) {
-                tm.begin(); // TODO KK: may be we should commit transaction only if we actually started it?
+                tm.begin();
+                started = true;
+            }
+            else if (!join) {
+                throw new IllegalStateException("JTA transaction exists while join = false");
             }
         } catch (SystemException e) {
             throw new RuntimeException(e);
@@ -37,6 +42,9 @@ public class JtaTransaction implements Transaction
     }
 
     public void commit() {
+        if (!started)
+            return;
+
         try {
             tm.commit();
             committed = true;
@@ -46,6 +54,9 @@ public class JtaTransaction implements Transaction
     }
 
     public void commitRetaining() {
+        if (!started)
+            return;
+
         try {
             tm.commit();
             tm.begin();
@@ -55,6 +66,9 @@ public class JtaTransaction implements Transaction
     }
 
     public void end() {
+        if (!started)
+            return;
+
         if (!committed) {
             try {
                 if (tm.getStatus() == Status.STATUS_ACTIVE) {

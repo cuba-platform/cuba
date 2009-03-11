@@ -51,9 +51,21 @@ public abstract class Locator
         return (T) getInstance().__lookupMBean(mbeanClass, name);
     }
 
-    /** Creates a new Transaction */
+    /**
+     * Creates a new JTA transaction.<br>
+     * @throws IllegalStateException if a JTA transaction exists
+    */
     public static Transaction createTransaction() {
         return getInstance().__createTransaction();
+    }
+
+    /**
+     * Creates a new JTA transaction if there is no one.<br>
+     * If a JTA transaction exists, does nothing: subsequent invocations
+     * of commit() and end() do not affect the transaction.
+    */
+    public static Transaction getTransaction() {
+        return getInstance().__getTransaction();
     }
 
     /** Returns reference to ResourceRepository */
@@ -71,4 +83,6 @@ public abstract class Locator
     protected abstract <T> T __lookupMBean(Class<T> mbeanClass, String name);
 
     protected abstract Transaction __createTransaction();
+
+    protected abstract Transaction __getTransaction();
 }

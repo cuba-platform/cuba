@@ -70,6 +70,14 @@ public class LocatorImpl extends Locator
     }
 
     protected Transaction __createTransaction() {
+        return new JtaTransaction(getTransactionManager(), false);
+    }
+
+    protected Transaction __getTransaction() {
+        return new JtaTransaction(getTransactionManager(), true);
+    }
+
+    private TransactionManager getTransactionManager() {
         Context ctx = __getJndiContextImpl();
         TransactionManager tm;
         try {
@@ -77,7 +85,7 @@ public class LocatorImpl extends Locator
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
-        return new JtaTransaction(tm);
+        return tm;
     }
 
 }
