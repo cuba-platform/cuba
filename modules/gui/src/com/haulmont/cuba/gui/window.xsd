@@ -60,7 +60,7 @@
 			<xs:attribute name="lookupComponent" type="xs:string" />
 
             <xs:attribute name="datasource" type="xs:string" />
-            <xs:attribute name="caption" type="xs:string" />
+            <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -110,7 +110,7 @@
                                 <xs:complexType>
                                     <xs:group ref="layoutOrComponent"/>
                                     <xs:attribute name="id" type="xs:string" use="required"/>
-                                    <xs:attribute name="caption" type="xs:string" use="required"/>
+                                    <xs:attribute name="caption" type="xs:string" use="required" default="msg://"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
@@ -197,7 +197,7 @@
                     <xs:complexType>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
                         <xs:attribute name="action" type="xs:string" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                     </xs:complexType>
                 </xs:element>
 
@@ -206,7 +206,7 @@
                     <xs:complexType>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
 
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
@@ -222,7 +222,7 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
@@ -235,7 +235,7 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
@@ -251,7 +251,7 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
@@ -267,7 +267,7 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
@@ -282,7 +282,7 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
@@ -297,7 +297,7 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
@@ -312,7 +312,7 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
@@ -350,7 +350,7 @@
                                         <xs:element name="column" minOccurs="1" maxOccurs="unbounded">
                                             <xs:complexType>
                                                 <xs:attribute name="id" type="xs:string" use="required"/>
-                                                <xs:attribute name="caption" type="xs:string" use="optional"/>
+                                                <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                                                 <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
                                                 <xs:attribute name="clickAction" type="xs:string" use="optional"/>
                                             </xs:complexType>
