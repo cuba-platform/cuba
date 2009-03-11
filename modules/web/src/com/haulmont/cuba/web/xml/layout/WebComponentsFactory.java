@@ -42,6 +42,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put("lookupField", LookupField.class);
         classes.put("pickerField", PickerField.class);
         classes.put("optionsGroup", OptionsGroup.class);
+        classes.put("upload", FileUploadField.class);
         classes.put("split", SplitPanel.class);
         classes.put("tree", Tree.class);
         classes.put("tabsheet", Tabsheet.class);

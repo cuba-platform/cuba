@@ -324,6 +324,14 @@
                         <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="upload">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
 
 
                 <xs:element name="tree">

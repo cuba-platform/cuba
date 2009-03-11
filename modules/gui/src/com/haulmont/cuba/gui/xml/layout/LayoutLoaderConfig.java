@@ -33,7 +33,7 @@ public class LayoutLoaderConfig {
         lookupLoaders.registerLoader("window", WindowLoader.Lookup.class);
         registerComponents(lookupLoaders);
 
-        frameLoaders.registerLoader("frame", FrameLoader.class);
+        frameLoaders.registerLoader("window", FrameLoader.class);
         registerComponents(frameLoaders);
     }
 
@@ -51,6 +51,7 @@ public class LayoutLoaderConfig {
         config.registerLoader("lookupField", LookupFieldLoader.class);
         config.registerLoader("pickerField", PickerFieldLoader.class);
         config.registerLoader("optionsGroup", OptionsGroupLoader.class);
+        config.registerLoader("upload", FileUploadFieldLoader.class);
         config.registerLoader("table", TableLoader.class);
         config.registerLoader("iframe", IFrameLoader.class);
         config.registerLoader("split", SplitPanelLoader.class);
