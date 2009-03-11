@@ -86,7 +86,11 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
     @Override
     public String toString() {
-        final Entity entity = item instanceof Datasource ? ((Datasource) item).getItem() : (Entity) item;
+        final Entity entity = getItem();
         return entity == null ? "" : entity.toString();
+    }
+
+    public Entity getItem() {
+        return item instanceof Datasource ? ((Datasource) item).getItem() : (Entity) item;
     }
 }

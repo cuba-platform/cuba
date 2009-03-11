@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Label;
 import org.apache.commons.lang.StringUtils;
@@ -96,8 +97,12 @@ public class Table
                         component.addGeneratedColumn(metaProperty, new ReadOnlyAssociationGenerator(column));
                     }
                 } else if (metaProperty.getRange().isDatatype()) {
-                    if (editable) {
-                        component.addGeneratedColumn(metaProperty, new ReadOnlyDatatypeGenerator());
+                    if (!StringUtils.isEmpty(clickAction)) {
+                        component.addGeneratedColumn(metaProperty, new CodePropertyGenerator(column));
+                    } else {
+                        if (editable) {
+                            component.addGeneratedColumn(metaProperty, new ReadOnlyDatatypeGenerator());
+                        }
                     }
                 } else {
                     throw new UnsupportedOperationException();
@@ -217,15 +222,16 @@ public class Table
         }
     }
 
-    protected class ReadOnlyAssociationGenerator implements com.itmill.toolkit.ui.Table.ColumnGenerator {
-        private Column column;
+    protected abstract class LinkGenerator implements com.itmill.toolkit.ui.Table.ColumnGenerator {
+        protected Column column;
 
-        public ReadOnlyAssociationGenerator(Column column) {
+        public LinkGenerator(Column column) {
             this.column = column;
         }
 
         public com.itmill.toolkit.ui.Component generateCell(com.itmill.toolkit.ui.Table source, final Object itemId, Object columnId) {
-            Property property = source.getItem(itemId).getItemProperty(columnId);
+            final Item item = source.getItem(itemId);
+            final Property property = item.getItemProperty(columnId);
             final Object value = property.getValue();
 
             final Button component = new Button();
@@ -241,7 +247,7 @@ public class Table
                     if (!StringUtils.isEmpty(clickAction)) {
                         if (clickAction.startsWith("open:")) {
                             final com.haulmont.cuba.gui.components.Window window = Table.this.getFrame();
-                            window.openEditor(clickAction.substring("open:".length()), value, WindowManager.OpenType.THIS_TAB);
+                            window.openEditor(clickAction.substring("open:".length()), getItem(item, property), WindowManager.OpenType.THIS_TAB);
                         } else {
                             throw new UnsupportedOperationException();
                         }
@@ -250,6 +256,28 @@ public class Table
             });
 
             return component;
+        }
+
+        protected abstract Object getItem(Item item, Property property);
+    }
+
+    protected class ReadOnlyAssociationGenerator extends LinkGenerator {
+        public ReadOnlyAssociationGenerator(Column column) {
+            super(column);
+        }
+
+        protected Object getItem(Item item, Property property) {
+            return property.getValue();
+        }
+    }
+
+    protected class CodePropertyGenerator extends LinkGenerator {
+        public CodePropertyGenerator(Column column) {
+            super(column);
+        }
+
+        protected Object getItem(Item item, Property property) {
+            return ((ItemWrapper) item).getItem();
         }
     }
 
