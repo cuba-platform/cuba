@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -41,10 +42,15 @@ public class TreeLoader extends ComponentLoader
         String datasource = itemsElem.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
             CollectionDatasource ds = context.getDSContext().get(datasource);
-            String showProperty = itemsElem.attributeValue("property");
-            String parentProperty = itemsElem.attributeValue("parent");
+            String hierarchyProperty = itemsElem.attributeValue("hierarchyProperty");
 
-            component.setDatasource(ds, showProperty, parentProperty);
+            component.setDatasource(ds, hierarchyProperty);
+
+            String captionProperty = itemsElem.attributeValue("captionProperty");
+            if (!StringUtils.isEmpty(captionProperty)) {
+                component.setCaptionProperty(captionProperty);
+                component.setCaptionMode(CaptionMode.PROPERTY);
+            }
         }
 
         addAssignWindowTask(component);

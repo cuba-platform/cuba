@@ -16,10 +16,6 @@ public interface Field
     extends
         Component, Component.HasCaption, Component.Field, Component.Editable, Component.BelongToFrame
 {
-    enum CaptionMode {
-        ITEM,
-        PROPERTY
-    }
 
     boolean isRequired();
     void setRequired(boolean required);

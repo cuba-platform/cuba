@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -30,7 +31,7 @@ public class LookupFieldLoader extends AbstractFieldLoader {
 
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
-            component.setCaptionMode(LookupField.CaptionMode.PROPERTY);
+            component.setCaptionMode(CaptionMode.PROPERTY);
             component.setCaptionProperty(captionProperty);
         }
 

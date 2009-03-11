@@ -1,4 +1,4 @@
-<frame>
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
     <dsContext>
         <collectionDatasource
             id="groups"
@@ -33,4 +33,4 @@
             </hbox>
         </vbox>
     </layout>
-</frame>
+</window>

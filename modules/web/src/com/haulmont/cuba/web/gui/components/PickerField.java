@@ -11,11 +11,11 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.itmill.toolkit.data.Property;
@@ -33,7 +33,7 @@ public class PickerField
     implements
         com.haulmont.cuba.gui.components.PickerField, Component.Wrapper
 {
-    private PickerField.CaptionMode captionMode = PickerField.CaptionMode.ITEM;
+    private CaptionMode captionMode = CaptionMode.ITEM;
     private String captionProperty;
 
     protected Object value;

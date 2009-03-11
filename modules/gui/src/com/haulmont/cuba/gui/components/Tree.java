@@ -16,6 +16,12 @@ public interface Tree extends List
 {
     void expandTree();
 
+    CaptionMode getCaptionMode();
+    void setCaptionMode(CaptionMode captionMode);
+
+    String getCaptionProperty();
+    void setCaptionProperty(String captionProperty);
+
     String getHierarchyProperty();
-    void setDatasource(CollectionDatasource datasource, String showProperty, String parentProperty);
+    void setDatasource(CollectionDatasource datasource, String hierarchyProperty);
 }

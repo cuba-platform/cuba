@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema
+    targetNamespace="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+>
+	<xs:element name="window">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="metadataContext" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="deployViews" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="name" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="dsContext" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                                <xs:element name="collectionDatasource">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="query" minOccurs="0" maxOccurs="1"/>
+                                            <xs:group ref="nestedDatasources" minOccurs="0"/>
+                                        </xs:sequence>
+                                        <xs:attribute name="id" type="xs:string" use="required"/>
+                                        <xs:attribute name="class" type="xs:string" />
+                                        <xs:attribute name="view" type="xs:string" />
+                                        <xs:attribute name="query" type="xs:string" />
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="datasource">
+                                    <xs:complexType>
+                                        <xs:group ref="nestedDatasources"/>
+                                        <xs:attribute name="id" type="xs:string" use="required"/>
+                                        <xs:attribute name="class" type="xs:string" />
+                                        <xs:attribute name="view" type="xs:string" />
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:choice>
+                        </xs:sequence>
+                    </xs:complexType>
+				</xs:element>
+				<xs:element name="layout" minOccurs="1" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:group ref="layoutOrComponent"/>
+                        <xs:attribute name="expand" type="xs:string" use="optional"/>
+                    </xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="class" type="xs:string" />
+			<xs:attribute name="messagesPack" type="xs:string" />
+			<xs:attribute name="lookupComponent" type="xs:string" />
+
+            <xs:attribute name="datasource" type="xs:string" />
+            <xs:attribute name="caption" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+
+    <xs:group name="layout">
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="vbox">
+                    <xs:complexType>
+                        <xs:group ref="layoutOrComponent"/>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="expand" type="xs:string" use="optional"/>
+                        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="align" type="align" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="hbox">
+                    <xs:complexType>
+                        <xs:group ref="layoutOrComponent"/>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="expand" type="xs:string" use="optional"/>
+                        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="align" type="align" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="split">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="2" maxOccurs="2">
+                            <xs:group ref="layoutOrComponent"/>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="orientation" default="horizontal" type="xs:string"/>
+                        <xs:attribute name="pos" type="xs:int"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="tabsheet">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                            <xs:element name="tab">
+                                <xs:complexType>
+                                    <xs:group ref="layoutOrComponent"/>
+                                    <xs:attribute name="id" type="xs:string" use="required"/>
+                                    <xs:attribute name="caption" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="grid">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:attribute name="flex" type="xs:int" use="optional"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="rows" minOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="row" minOccurs="1" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:group ref="layoutOrComponent"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="groupBox">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="caption" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="label" type="xs:string" use="optional"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:group ref="layoutOrComponent" minOccurs="0"/>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="expand" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="iframe">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="src" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:simpleType name="align">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TOP_RIGHT"/>
+            <xs:enumeration value="TOP_LEFT"/>
+            <xs:enumeration value="TOP_CENTER"/>
+            <xs:enumeration value="MIDDLE_RIGHT"/>
+            <xs:enumeration value="MIDDLE_LEFT"/>
+            <xs:enumeration value="MIDDLE_CENTER"/>
+            <xs:enumeration value="BOTTOM_RIGHT"/>
+            <xs:enumeration value="BOTTOM_LEFT"/>
+            <xs:enumeration value="BOTTOM_CENTER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:group name="component">
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="button">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="action" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+
+
+                <xs:element name="label">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="control" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="value" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="checkBox">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="textField">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="cols" type="xs:int" use="optional"/>
+                        <xs:attribute name="rows" type="xs:int" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="textArea">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="cols" type="xs:int" use="optional"/>
+                        <xs:attribute name="rows" type="xs:int" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="dateField">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="resolution" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="lookupField">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="pickerField">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                        <xs:attribute name="metaClass" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="optionsGroup">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+
+
+                <xs:element name="tree">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="treechildren" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="datasource" type="xs:string" use="required"/>
+                                    <xs:attribute name="hierarchyProperty" type="xs:string" use="required"/>
+                                    <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+                        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="table">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:attribute name="id" type="xs:string" use="required"/>
+                                                <xs:attribute name="caption" type="xs:string" use="optional"/>
+                                                <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                                                <xs:attribute name="clickAction" type="xs:string" use="optional"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="rows" minOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="datasource" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+                        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="layoutOrComponent">
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:group ref="component"/>
+                <xs:group ref="layout"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+
+
+    <xs:group name="nestedDatasources">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="collectionDatasource">
+                    <xs:complexType>
+                        <xs:group ref="nestedDatasources"/>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+                        <xs:attribute name="property" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="datasource">
+                    <xs:complexType>
+                        <xs:group ref="nestedDatasources"/>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+                        <xs:attribute name="property" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+</xs:schema>

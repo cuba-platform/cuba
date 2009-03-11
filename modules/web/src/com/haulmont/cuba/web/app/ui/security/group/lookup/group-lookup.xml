@@ -1,4 +1,5 @@
 <window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
     messagesPack="com.haulmont.cuba.web.app.ui.security.group.browse"
     class="com.haulmont.cuba.web.app.ui.security.group.lookup.GroupLookup"
     lookupComponent="groups"
@@ -18,7 +19,7 @@
 
     <layout>
         <tree id="groups">
-            <treechildren datasource="groups" property="name" parent="parent"/>
+            <treechildren datasource="groups" captionProperty="name" hierarchyProperty="parent"/>
         </tree>
     </layout>
 </window>

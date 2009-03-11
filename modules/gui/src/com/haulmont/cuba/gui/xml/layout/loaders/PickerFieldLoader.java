@@ -10,10 +10,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.xml.layout.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
@@ -29,7 +26,7 @@ public class PickerFieldLoader extends AbstractFieldLoader{
 
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
-            component.setCaptionMode(Field.CaptionMode.PROPERTY);
+            component.setCaptionMode(CaptionMode.PROPERTY);
             component.setCaptionProperty(captionProperty);
         }
 

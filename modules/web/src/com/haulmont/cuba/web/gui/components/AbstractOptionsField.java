@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.datatypes.Enumiration;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
