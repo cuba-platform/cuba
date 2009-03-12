@@ -18,11 +18,18 @@ import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 public class MessageProviderTest extends CubaTestCase
 {
     public void test() {
-        String msg = MessageProvider.getMessage(MpTestObj.class, "key1");
+        String msg = MessageProvider.getMessage(MpTestNestedObj.class, "key0");
+        assertEquals("Message0", msg);
+
+        msg = MessageProvider.getMessage(MpTestObj.class, "key1");
         assertEquals("Message1", msg);
 
         msg = MessageProvider.getMessage(MpTestNestedObj.class, "key2");
         assertEquals("Message2", msg);
+
+        // test cache
+        msg = MessageProvider.getMessage(MpTestNestedObj.class, "key0");
+        assertEquals("Message0", msg);
 
         msg = MessageProvider.getMessage("com.haulmont.cuba.core.mp_test.nested", "key1");
         assertEquals("Message1", msg);

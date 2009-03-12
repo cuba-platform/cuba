@@ -18,12 +18,16 @@ import org.apache.commons.logging.LogFactory;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ResourceBundleMessageProvider extends MessageProvider
 {
     public static final String BUNDLE_NAME = "messages";
 
     private Log log = LogFactory.getLog(ResourceBundleMessageProvider.class);
+
+    private Map<String, ResourceBundle> cache = new ConcurrentHashMap<String, ResourceBundle>();
 
     protected String __getMessage(Class caller, String key) {
         return __getMessage(caller, key, SecurityProvider.currentUserSession().getLocale());
@@ -50,11 +54,22 @@ public class ResourceBundleMessageProvider extends MessageProvider
     }
 
     protected String __getMessage(String pack, String key, Locale locale) {
-        ResourceBundle bundle = null;
+        String cacheKey = pack + "/" + locale + "/" + key;
+        ResourceBundle bundle = cache.get(cacheKey);
+        if (bundle != null) {
+            try {
+                return bundle.getString(key);
+            } catch (MissingResourceException e) {
+                cache.remove(cacheKey);
+                bundle = null;
+            }
+        }
+        String msg = null;
         String s = pack;
         while (s != null) {
             try {
                 bundle = ResourceBundle.getBundle(s + "." + BUNDLE_NAME, locale);
+                msg = bundle.getString(key);
                 break;
             } catch (MissingResourceException e) {
                 // not found, keep searching
@@ -65,15 +80,13 @@ public class ResourceBundleMessageProvider extends MessageProvider
             else
                 s = s.substring(0, pos);
         }
-        if (bundle == null) {
-            log.warn("Resource bundle for '" + pack + "' not found");
+        if (msg == null) {
+            log.warn("Resource '" + cacheKey + "' not found");
             return key;
         }
-        try {
-            return bundle.getString(key);
-        } catch (MissingResourceException e) {
-            log.warn("Resource key '" + key + "' not found in bundle " + s + "." + BUNDLE_NAME);
-            return key;
+        else {
+            cache.put(cacheKey, bundle);
+            return msg;
         }
     }
 
