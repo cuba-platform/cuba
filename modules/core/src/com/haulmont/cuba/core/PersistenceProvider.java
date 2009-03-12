@@ -59,6 +59,12 @@ public abstract class PersistenceProvider
         return getInstance().__getEntityManagerFactory();
     }
 
+    /**
+     * Returns a reference to EntityManager<p>
+     * Inside JTA transaction returns existing or creates new transaction-bound EntityManager,
+     * which will be closed on transaction commit/rollback.<br>
+     * Outside a transaction always creates new EntityManager which must be closed explicitly after use.
+     */
     public static EntityManager getEntityManager() {
         return getInstance().__getEntityManager();
     }
@@ -92,13 +98,6 @@ public abstract class PersistenceProvider
         }
         return set;
     }
-
-//    public static boolean isDetached(Entity entity) {
-//        if (entity instanceof PersistenceCapable)
-//            return ((PersistenceCapable) entity).pcIsDetached();
-//        else
-//            throw new RuntimeException("Entity is not PersistenceCapable: " + entity);
-//    }
 
     protected abstract EntityManagerFactory __getEntityManagerFactory();
 

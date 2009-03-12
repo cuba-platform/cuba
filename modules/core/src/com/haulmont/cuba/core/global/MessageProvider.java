@@ -39,26 +39,58 @@ public abstract class MessageProvider
         return instance;
     }
 
+    /**
+     * See {@link MessageProvider#getMessage(java.lang.String, java.lang.String, java.util.Locale)}, where<br>
+     * pack - caller name<br>
+     * locale - current user locale<br>
+     */
     public static String getMessage(Class caller, String key) {
         return getInstance().__getMessage(caller, key);
     }
 
+    /**
+     * See {@link MessageProvider#getMessage(java.lang.String, java.lang.String, java.util.Locale)}, where<br>
+     * pack - caller name<br>
+     */
     public static String getMessage(Class caller, String key, Locale locale) {
         return getInstance().__getMessage(caller, key, locale);
     }
 
+    /**
+     * See {@link MessageProvider#getMessage(java.lang.String, java.lang.String, java.util.Locale)}, where<br>
+     * pack - enum class name<br>
+     * key - enum class name plus dot plus enum value<br>
+     * locale - current user locale<br>
+     */
     public static String getMessage(Enum caller) {
         return getInstance().__getMessage(caller);
     }
 
+    /**
+     * See {@link MessageProvider#getMessage(java.lang.String, java.lang.String, java.util.Locale)}, where<br>
+     * pack - enum class name<br>
+     * key - enum class name plus dot plus enum value<br>
+     */
     public static String getMessage(Enum caller, Locale locale) {
         return getInstance().__getMessage(caller, locale);
     }
 
+    /**
+     * See {@link MessageProvider#getMessage(java.lang.String, java.lang.String, java.util.Locale)}, where<br>
+     * locale - current user locale
+     */
     public static String getMessage(String pack, String key) {
         return getInstance().__getMessage(pack, key);
     }
 
+    /**
+     * Returns localized message
+     * @param pack      package name to start searching the message. If the key is not found in this package,
+     *                  it will be searched in parent package, and so forth 
+     * @param key       message key
+     * @param locale    message locale
+     * @return          localized message
+     */
     public static String getMessage(String pack, String key, Locale locale) {
         return getInstance().__getMessage(pack, key, locale);
     }
