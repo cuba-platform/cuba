@@ -6,6 +6,8 @@
     elementFormDefault="qualified"
     attributeFormDefault="unqualified"
 >
+    <xs:include schemaLocation="http://www.haulmont.com/schema/cuba/view.xsd"/>
+
 	<xs:element name="window">
 		<xs:complexType>
 			<xs:sequence>
@@ -17,6 +19,7 @@
 									<xs:attribute name="name" type="xs:string" />
 								</xs:complexType>
 							</xs:element>
+                            <xs:element name="view" type="viewType" minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -411,4 +414,5 @@
             </xs:choice>
         </xs:sequence>
     </xs:group>
+
 </xs:schema>

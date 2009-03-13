@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema
+    targetNamespace="http://www.haulmont.com/schema/cuba/view.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.haulmont.com/schema/cuba/view.xsd"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+>
+    <xs:element name="views">
+        <xs:complexType>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="view" type="viewType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="viewType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="property" type="propertyType"/>
+        </xs:sequence>
+        <xs:attribute name="class"/>
+        <xs:attribute name="entity"/>
+        <xs:attribute name="name"/>
+    </xs:complexType>
+
+    <xs:complexType name="propertyType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="property" type="propertyType"/>
+        </xs:sequence>
+        <xs:attribute name="name"/>
+        <xs:attribute name="view"/>
+    </xs:complexType>
+</xs:schema>

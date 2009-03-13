@@ -1,4 +1,5 @@
-<views>
+<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
+
     <view entity="sec$User" name="user.edit">
         <property name="name"/>
         <property name="login"/>
