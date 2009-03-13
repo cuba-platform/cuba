@@ -10,12 +10,12 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.chile.core.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;

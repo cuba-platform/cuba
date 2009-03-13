@@ -1021,11 +1021,14 @@
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../chile/build/11chile-jpa.jar!/" />
         <root url="jar://$PROJECT_DIR$/../chile/build/10chile-core.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../chile/build/05bali.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
         <root url="file://$PROJECT_DIR$/../chile/modules/core/src" />
         <root url="file://$PROJECT_DIR$/../chile/modules/jpa/src" />
+        <root url="intellijad://intellijad" />
+        <root url="file://$PROJECT_DIR$/../chile/modules/bali/src" />
       </SOURCES>
     </library>
     <library name="server">

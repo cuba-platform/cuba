@@ -12,16 +12,22 @@ package com.haulmont.cuba.core.global;
 
 public enum ClientType
 {
-    WEB("W"),
-    DESKTOP("D");
+    WEB("W", "web"),
+    DESKTOP("D", "desktop");
 
     private String id;
+    private String configPath;
 
-    ClientType(String id) {
+    ClientType(String id, String configPath) {
         this.id = id;
+        this.configPath = configPath;
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getConfigPath() {
+        return configPath;
     }
 }

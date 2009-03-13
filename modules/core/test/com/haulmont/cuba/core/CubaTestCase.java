@@ -21,7 +21,8 @@ public abstract class CubaTestCase extends TestCase
         super.setUp();
         System.setProperty("cuba.UnitTestMode", "true");
 
-        File confDir = new File(System.getProperty("user.dir") + "/build/conf");
+        File currentDir = new File(System.getProperty("user.dir"));
+        File confDir =  new File(currentDir.getParent(), "/jboss-embedded/bootstrap/conf");
         System.setProperty("jboss.server.config.url", confDir.toURI().toString());
         
         System.setProperty(SecurityProvider.IMPL_PROP, "com.haulmont.cuba.core.sys.TestSecurityProvider");

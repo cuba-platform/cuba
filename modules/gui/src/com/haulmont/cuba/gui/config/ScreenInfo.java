@@ -11,7 +11,7 @@
 package com.haulmont.cuba.gui.config;
 
 import org.dom4j.Element;
-import com.haulmont.chile.core.ReflectionHelper;
+import com.haulmont.bali.util.ReflectionHelper;
 
 public class ScreenInfo
 {

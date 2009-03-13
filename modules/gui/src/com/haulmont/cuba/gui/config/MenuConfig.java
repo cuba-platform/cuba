@@ -104,7 +104,10 @@ public class MenuConfig
     }
 
     private boolean isScreenPermitted(String screenId) {
-        return userSession.isPermitted(PermissionType.SCREEN, clientType.getId() + ":" + screenId);
+        return userSession.isPermitted(
+                PermissionType.SCREEN,
+                PermissionConfig.getScreenPermissionTarget(clientType, screenId)
+        );
     }
 
     private String getCaption(String key, String def) {

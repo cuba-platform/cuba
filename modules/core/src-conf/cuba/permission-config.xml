@@ -2,8 +2,8 @@
 
     <specific>
 
-        <category name="sampleCategory" description="Sample Category">
-            <permission name="samplePermission" description="Sample Permission"/>
+        <category id="sampleCategory">
+            <permission id="samplePermission"/>
         </category>
         
     </specific>
