@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.ScreenConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;

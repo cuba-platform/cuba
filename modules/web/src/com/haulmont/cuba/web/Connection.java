@@ -14,6 +14,7 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import com.haulmont.cuba.gui.ServiceLocator;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.gui.config.PermissionConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.bali.datastruct.Tree;
 
 import java.util.Locale;
