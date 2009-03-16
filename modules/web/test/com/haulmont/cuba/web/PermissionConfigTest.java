@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.bali.datastruct.Tree;
 
 import java.util.Locale;
+import java.util.List;
 
 public class PermissionConfigTest extends CubaTestCase
 {
@@ -30,6 +31,12 @@ public class PermissionConfigTest extends CubaTestCase
 
         Tree<PermissionConfig.Target> entities = permissionConfig.getEntities();
         assertNotNull(entities);
+
+        List<PermissionConfig.Target> operations = permissionConfig.getEntityOperations(new PermissionConfig.Target("core$Server", "Server"));
+        assertNotNull(operations);
+
+        List<PermissionConfig.Target> attributes = permissionConfig.getEntityAttributes(new PermissionConfig.Target("core$Server", "Server"));
+        assertNotNull(attributes);
 
         Tree<PermissionConfig.Target> specific = permissionConfig.getSpecific();
         assertNotNull(specific);

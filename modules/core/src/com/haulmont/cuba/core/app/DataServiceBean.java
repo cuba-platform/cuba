@@ -87,7 +87,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <A extends Entity> List<A> loadList(CollectionLoadContext context) {
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
-        checkPermission(metaClass, "view");
+        checkPermission(metaClass, "read");
 
         final EntityManager em = PersistenceProvider.getEntityManager();
         com.haulmont.cuba.core.Query query = createQuery(em, context);

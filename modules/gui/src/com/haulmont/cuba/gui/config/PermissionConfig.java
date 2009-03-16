@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
@@ -186,12 +187,27 @@ public class PermissionConfig
         return entities;
     }
 
-    public List<Target> getEntityProperties(Target entityTarget) {
+    public List<Target> getEntityOperations(Target entityTarget) {
+        MetaClass metaClass = MetadataProvider.getSession().getClass(entityTarget.getId());
+        List<Target> result = new ArrayList<Target>();
+
+        result.add(new Target(entityTarget.getId() + ":create", "create"));
+        result.add(new Target(entityTarget.getId() + ":read", "read"));
+        result.add(new Target(entityTarget.getId() + ":delete", "delete"));
+
+        Class javaClass = metaClass.getJavaClass();
+        if (Updatable.class.isAssignableFrom(javaClass)) {
+            result.add(new Target(entityTarget.getId() + ":update", "update"));
+        }
+
+        return result;
+    }
+
+    public List<Target> getEntityAttributes(Target entityTarget) {
         MetaClass metaClass = MetadataProvider.getSession().getClass(entityTarget.getId());
         List<Target> result = new ArrayList<Target>();
         for (MetaProperty metaProperty : metaClass.getProperties()) {
-            String id = entityTarget.getId() + ":" + metaProperty.getName();
-            result.add(new Target(id, id));
+            result.add(new Target(entityTarget.getId() + ":" + metaProperty.getName(), metaProperty.getName()));
         }
         return result;
     }

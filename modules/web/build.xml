@@ -29,6 +29,10 @@
         <fileset refid="test-lib-fs"/>
         <fileset refid="jboss-embedded-lib-fs"/>
         <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/core"/>
+        <pathelement location="${prod.out.dir}/gui"/>
+        <pathelement location="${prod.out.dir}/${module.name}"/>
+        <pathelement location="${test.out.dir}/core"/>
     </path>
 
     <target name="build-module" depends="base-mod.build-module">
