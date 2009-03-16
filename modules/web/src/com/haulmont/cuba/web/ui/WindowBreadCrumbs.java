@@ -21,14 +21,14 @@ import com.itmill.toolkit.ui.Label;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class WinfowBreadCrumbs extends HorizontalLayout
+public class WindowBreadCrumbs extends HorizontalLayout
 {
     protected LinkedList<Window> windows = new LinkedList<Window>();
 
     private Label label;
     private Button closeBtn;
 
-    public WinfowBreadCrumbs() {
+    public WindowBreadCrumbs() {
         setMargin(true);
         setWidth(100, Sizeable.UNITS_PERCENTAGE);
         setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky

@@ -1027,7 +1027,6 @@
       <SOURCES>
         <root url="file://$PROJECT_DIR$/../chile/modules/core/src" />
         <root url="file://$PROJECT_DIR$/../chile/modules/jpa/src" />
-        <root url="intellijad://intellijad" />
         <root url="file://$PROJECT_DIR$/../chile/modules/bali/src" />
       </SOURCES>
     </library>

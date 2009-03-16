@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
-import com.haulmont.cuba.web.ui.WinfowBreadCrumbs;
+import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
@@ -31,7 +31,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 {
     private App app;
 
-    private Map<Layout, WinfowBreadCrumbs> tabs = new HashMap<Layout, WinfowBreadCrumbs>();
+    private Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
 
     public WindowManager(App app) {
         this.app = app;
@@ -71,7 +71,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             VerticalLayout layout = new VerticalLayout();
             layout.setSizeFull();
 
-            WinfowBreadCrumbs breadCrumbs = new WinfowBreadCrumbs();
+            WindowBreadCrumbs breadCrumbs = new WindowBreadCrumbs();
             breadCrumbs.addWindow(window);
 
             final Component component = ComponentsHelper.unwrap(window);
@@ -92,7 +92,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             TabSheet tabSheet = app.getAppWindow().getTabSheet();
             VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
 
-            final WinfowBreadCrumbs breadCrumbs = tabs.get(layout);
+            final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
             if (breadCrumbs == null) throw new IllegalStateException("BreadCrumbs not found");
 
             final Window currentWindow = breadCrumbs.getCurrentWindow();
@@ -142,29 +142,46 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         final WindowOpenMode openMode = windowOpenMode.get(window);
         if (openMode == null) throw new IllegalStateException();
 
-        TabSheet tabSheet = app.getAppWindow().getTabSheet();
+        boolean needRefresh = closeWindow(window, openMode);
+        windowOpenMode.remove(window);
+        
+        // TODO (krivopustov) fix TabSheet repaint
+        if (needRefresh)
+            app.getMainWindow().open(new ExternalResource(app.getURL()));
+    }
+
+    public void closeAll() {
+        boolean needRefresh = false;
+        for (Map.Entry<Window, WindowOpenMode> entry : windowOpenMode.entrySet()) {
+            boolean res = closeWindow(entry.getKey(), entry.getValue());
+            needRefresh = needRefresh || res;
+        }
+        windowOpenMode.clear();
+        // TODO (krivopustov) fix TabSheet repaint
+        if (needRefresh)
+            app.getMainWindow().open(new ExternalResource(app.getURL()));
+    }
+
+    private boolean closeWindow(Window window, WindowOpenMode openMode) {
         switch (openMode.openType) {
             case DIALOG: {
                 final com.itmill.toolkit.ui.Window win = (com.itmill.toolkit.ui.Window) openMode.getData();
                 App.getInstance().getMainWindow().removeWindow(win);
-                return;
+                return false;
             }
             case NEW_TAB: {
                 final Layout layout = (Layout) openMode.getData();
                 layout.removeComponent(ComponentsHelper.unwrap(window));
 
-                tabSheet.removeComponent(layout);
+                app.getAppWindow().getTabSheet().removeComponent(layout);
                 tabs.remove(layout);
 
-                // TODO (krivopustov) fix TabSheet repaint
-                app.getMainWindow().open(new ExternalResource(app.getURL()));
-
-                return;
+                return true;
             }
             case THIS_TAB: {
                 final VerticalLayout layout = (VerticalLayout) openMode.getData();
 
-                final WinfowBreadCrumbs breadCrumbs = tabs.get(layout);
+                final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
                 if (breadCrumbs == null) throw new IllegalStateException("Unable to close screen: breadCrumbs not found");
 
                 breadCrumbs.removeWindow();
@@ -177,7 +194,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
                 layout.addComponent(component);
                 layout.setExpandRatio(component, 1);
 
-                return;
+                return false;
             }
             default: {
                 throw new UnsupportedOperationException();

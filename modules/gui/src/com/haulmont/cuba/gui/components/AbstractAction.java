@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.global.MessageProvider;
+
 public abstract class AbstractAction implements Action {
     private String id;
 
@@ -18,5 +20,13 @@ public abstract class AbstractAction implements Action {
 
     public String getId() {
         return id;
+    }
+
+    public String getCaption() {
+        return MessageProvider.getMessage(getClass(), id);
+    }
+
+    public boolean isEnabled() {
+        return true;
     }
 }
