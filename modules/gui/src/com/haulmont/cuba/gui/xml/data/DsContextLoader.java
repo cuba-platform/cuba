@@ -9,17 +9,18 @@
  */
 package com.haulmont.cuba.gui.xml.data;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
-import com.haulmont.bali.util.ReflectionHelper;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.util.List;
 
 public class DsContextLoader {
     private DatasourceFactory factory;
@@ -34,17 +35,65 @@ public class DsContextLoader {
     public DsContext loadDatasources(Element element) {
         datasources = new DsContextImpl(dataservice);
 
+        //noinspection unchecked
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
             datasources.register(loadDatasource(ds));
         }
 
+        //noinspection unchecked
         elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
             datasources.register(loadCollectionDatasource(ds));
         }
 
+        //noinspection unchecked
+        elements = element.elements("hierarchicalDatasource");
+        for (Element ds : elements) {
+            datasources.register(loadHierarchicalDatasource(ds));
+        }
+
         return datasources;
+    }
+
+    protected Datasource loadHierarchicalDatasource(Element element) {
+        final String id = element.attributeValue("id");
+        final MetaClass metaClass = loadMetaClass(element);
+        final String viewName = element.attributeValue("view");
+        final String hierarchyProperty = element.attributeValue("hierarchyProperty");
+
+        final Element datasourceClassElement = element.element("datasourceClass");
+
+        final HierarchicalDatasource datasource;
+        if (datasourceClassElement != null) {
+            final String datasourceClass = datasourceClassElement.getText();
+            if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
+
+            try {
+                final Class<HierarchicalDatasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Constructor<HierarchicalDatasource> constructor =
+                        aClass.getConstructor(
+                                DsContext.class, DataService.class,
+                                    String.class, MetaClass.class, String.class);
+                datasource = constructor.newInstance(datasources, dataservice, id, metaClass, viewName);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        } else
+            datasource = factory.createHierarchicalDatasource(datasources, dataservice, id, metaClass, viewName);
+
+        if (!StringUtils.isEmpty(hierarchyProperty)) {
+            datasource.setHierarchyPropertyName(hierarchyProperty);
+        }
+
+        final String query = element.elementText("query");
+        if (!StringUtils.isBlank(query)) {
+            datasource.setQuery(query);
+        }
+
+        loadDatasources(element, datasource);
+
+        return datasource;
     }
 
     protected Datasource loadDatasource(Element element) {
@@ -52,8 +101,25 @@ public class DsContextLoader {
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
 
-        final Datasource datasource =
-                factory.createDatasource(datasources, dataservice, id, metaClass, viewName);
+        final Element datasourceClassElement = element.element("datasourceClass");
+
+        final Datasource datasource;
+        if (datasourceClassElement != null) {
+            final String datasourceClass = datasourceClassElement.getText();
+            if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
+
+            try {
+                final Class<Datasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Constructor<Datasource> constructor =
+                        aClass.getConstructor(
+                                DsContext.class, DataService.class,
+                                    String.class, MetaClass.class, String.class);
+                datasource = constructor.newInstance(datasources, dataservice, id, metaClass, viewName);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        } else
+            datasource = factory.createHierarchicalDatasource(datasources, dataservice, id, metaClass, viewName);
 
         String item = element.attributeValue("item");
         if (!StringUtils.isBlank(item)) {
@@ -67,12 +133,14 @@ public class DsContextLoader {
     }
 
     private void loadDatasources(Element element, Datasource datasource) {
+        //noinspection unchecked
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
             datasources.register(loadDatasource(ds, datasource, property));
         }
 
+        //noinspection unchecked
         elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
             final String property = ds.attributeValue("property");
@@ -132,8 +200,25 @@ public class DsContextLoader {
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
 
-        final CollectionDatasource datasource =
-                factory.createCollectionDatasource(datasources, dataservice, id, metaClass, viewName);
+        final Element datasourceClassElement = element.element("datasourceClass");
+
+        final CollectionDatasource datasource;
+        if (datasourceClassElement != null) {
+            final String datasourceClass = datasourceClassElement.getText();
+            if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
+
+            try {
+                final Class<CollectionDatasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Constructor<CollectionDatasource> constructor =
+                        aClass.getConstructor(
+                                DsContext.class, DataService.class,
+                                    String.class, MetaClass.class, String.class);
+                datasource = constructor.newInstance(datasources, dataservice, id, metaClass, viewName);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        } else
+            datasource = factory.createHierarchicalDatasource(datasources, dataservice, id, metaClass, viewName);
 
         final String query = element.elementText("query");
         if (!StringUtils.isBlank(query)) {

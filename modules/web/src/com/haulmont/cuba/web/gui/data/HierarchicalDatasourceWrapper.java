@@ -11,14 +11,11 @@
 package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.itmill.toolkit.data.Container;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Collections;
 
 public class HierarchicalDatasourceWrapper
     extends
@@ -28,50 +25,22 @@ public class HierarchicalDatasourceWrapper
 {
     private String parentPropertyName;
 
-    public HierarchicalDatasourceWrapper(CollectionDatasource datasource, String parentProperty)
+    public HierarchicalDatasourceWrapper(HierarchicalDatasource datasource)
     {
         super(datasource);
-        this.parentPropertyName = parentProperty;
+        this.parentPropertyName = datasource.getHierarchyPropertyName();
     }
 
     public Collection getChildren(Object itemId) {
-        Set<Object> res = new HashSet<Object>();
-
-        final Entity item = datasource.getItem(itemId);
-        if (item == null) return Collections.emptyList();
-
-        Collection<Object> ids = datasource.getItemIds();
-        for (Object id : ids) {
-            Entity currentItem = datasource.getItem(id);
-            Object parentItem = ((Instance) currentItem).getValue(parentPropertyName);
-            if (parentItem != null && parentItem.equals(item))
-                res.add(currentItem.getId());
-        }
-
-        return res;
+        return ((HierarchicalDatasource<Entity, Object>) datasource).getChildren(itemId);
     }
 
     public Object getParent(Object itemId) {
-        Instance item = (Instance) datasource.getItem(itemId);
-        if (item == null)
-            return null;
-        else {
-            Entity value = item.getValue(parentPropertyName);
-            return value == null ? null : value.getId();
-        }
+        return ((HierarchicalDatasource<Entity, Object>) datasource).getParent(itemId);
     }
 
     public Collection rootItemIds() {
-        Set<Object> result = new HashSet<Object>();
-        Collection ids = datasource.getItemIds();
-
-        for (Object id : ids) {
-            Entity item = datasource.getItem(id);
-            Object value = ((Instance) item).getValue(parentPropertyName);
-            if (value == null) result.add(item.getId());
-        }
-
-        return result;
+        return ((HierarchicalDatasource<Entity, Object>) datasource).getRootItemIds();
     }
 
     public boolean setParent(Object itemId, Object newParentId) throws UnsupportedOperationException {
@@ -92,22 +61,10 @@ public class HierarchicalDatasourceWrapper
     }
 
     public boolean isRoot(Object itemId) {
-        Instance item = (Instance) datasource.getItem(itemId);
-        return item != null && item.getValue(parentPropertyName) == null;
+        return ((HierarchicalDatasource<Entity, Object>) datasource).isRoot(itemId);
     }
 
     public boolean hasChildren(Object itemId) {
-        final Entity item = datasource.getItem(itemId);
-        if (item == null) return false;
-
-        Collection<Object> ids = datasource.getItemIds();
-        for (Object id : ids) {
-            Entity currentItem = datasource.getItem(id);
-            Object parentItem = ((Instance) currentItem).getValue(parentPropertyName);
-            if (parentItem != null && parentItem.equals(item))
-                return true;
-        }
-
-        return false;
+        return ((HierarchicalDatasource<Entity, Object>) datasource).hasChildren(itemId);
     }
 }

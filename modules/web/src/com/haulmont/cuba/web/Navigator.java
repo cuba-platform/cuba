@@ -12,8 +12,11 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.ApplicationProperties;
 import com.haulmont.cuba.gui.config.MenuItem;
-import com.haulmont.cuba.gui.config.ScreenInfo;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.security.global.UserSession;
 import com.itmill.toolkit.event.ItemClickEvent;
 import com.itmill.toolkit.ui.Tree;
 import com.itmill.toolkit.ui.Window;
@@ -38,7 +41,8 @@ public class Navigator extends Window
     private void initUI() {
         tree = new Tree();
 
-        List<MenuItem> rootItems = App.getInstance().getMenuConfig().getRootItems();
+        final MenuConfig menuConfig = ApplicationProperties.getInstance().getMenuConfig();
+        List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
             createTreeItem(menuItem, null);
         }
@@ -49,9 +53,10 @@ public class Navigator extends Window
             public void itemClick(ItemClickEvent event) {
                 MenuItem menuItem = (MenuItem) event.getItemId();
                 String caption = menuItem.getCaption();
-                ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(menuItem.getId());
+                final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+                WindowInfo windowInfo = windowConfig.getWindowInfo(menuItem.getId());
                 App.getInstance().getWindowManager().openWindow(
-                            screenInfo,
+                        windowInfo,
                             WindowManager.OpenType.NEW_TAB,
                             Collections.<String, Object>singletonMap("caption", caption)
                 );
@@ -63,18 +68,22 @@ public class Navigator extends Window
     }
 
     private void createTreeItem(MenuItem menuItem, MenuItem parenItem) {
-        tree.addItem(menuItem);
-        if (parenItem != null) {
-            tree.setParent(menuItem, parenItem);
-        }
-        if (menuItem.getChildren().size() == 0) {
-            tree.setChildrenAllowed(menuItem, false);
-        }
-        else {
-            tree.setChildrenAllowed(menuItem, true);
-            for (MenuItem item : menuItem.getChildren()) {
-                createTreeItem(item, menuItem);
-            }
+        final Connection connection = App.getInstance().getConnection();
+        if (!connection.isConnected()) return;
+        final UserSession session = connection.getSession();
+        if (menuItem.isPermitted(session)) {
+             tree.addItem(menuItem);
+             if (parenItem != null) {
+                 tree.setParent(menuItem, parenItem);
+             }
+             if (menuItem.getChildren().size() == 0) {
+                 tree.setChildrenAllowed(menuItem, false);
+             } else {
+                 tree.setChildrenAllowed(menuItem, true);
+                 for (MenuItem item : menuItem.getChildren()) {
+                     createTreeItem(item, menuItem);
+                 }
+             }
         }
     }
 }

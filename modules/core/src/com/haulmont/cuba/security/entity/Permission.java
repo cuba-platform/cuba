@@ -50,12 +50,12 @@ public class Permission extends StandardEntity
         this.target = target;
     }
 
-    public Integer getType() {
-        return type;
+    public PermissionType getType() {
+        return type == null ? null : PermissionType.valueOf(type);
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setType(PermissionType type) {
+        this.type = type == null ? null : type.getValue();
     }
 
     public Integer getValue() {

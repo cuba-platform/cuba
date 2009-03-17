@@ -9,12 +9,14 @@
     </metadataContext>
 
     <dsContext>
-        <collectionDatasource
+        <hierarchicalDatasource
             id="groups"
             class="com.haulmont.cuba.security.entity.Group"
-            view="group-browse">
+            view="group.browse"
+            hierarchyProperty="parent"
+        >
             <query><![CDATA[select g from sec$Group g]]></query>
-        </collectionDatasource>
+        </hierarchicalDatasource>
     </dsContext>
 
     <layout>

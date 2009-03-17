@@ -60,7 +60,7 @@ public class UserSessionManager
         }
         for (Role role : roles) {
             for (Permission permission : role.getPermissions()) {
-                PermissionType type = PermissionType.fromId(permission.getType());
+                PermissionType type = permission.getType();
                 if (type != null && permission.getValue() != null) {
                     Integer value = session.getPermissionValue(type, permission.getTarget());
                     if (value == null || value < permission.getValue()) {
@@ -76,6 +76,7 @@ public class UserSessionManager
         Query q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
                 "where h.group.id = ?1");
         q.setParameter(1, group);
+        @SuppressWarnings({"unchecked"})
         List<Constraint> constraints = q.getResultList();
         List<Constraint> list = new ArrayList<Constraint>(constraints);
         list.addAll(group.getConstraints());

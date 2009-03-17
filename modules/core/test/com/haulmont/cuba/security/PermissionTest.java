@@ -11,15 +11,14 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.app.LoginWorker;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-
-import java.util.UUID;
-import java.util.Locale;
-
 import org.apache.commons.codec.digest.DigestUtils;
+
+import java.util.Locale;
+import java.util.UUID;
 
 public class PermissionTest extends CubaTestCase
 {
@@ -54,7 +53,7 @@ public class PermissionTest extends CubaTestCase
             Permission permission1 = new Permission();
             permission1Id = permission1.getId();
             permission1.setRole(role1);
-            permission1.setType(PermissionType.SCREEN.getId());
+            permission1.setType(PermissionType.SCREEN);
             permission1.setTarget(PERM_TARGET_SCREEN);
             permission1.setValue(0);
             em.persist(permission1);
@@ -62,7 +61,7 @@ public class PermissionTest extends CubaTestCase
             Permission permission2 = new Permission();
             permission2Id = permission2.getId();
             permission2.setRole(role2);
-            permission2.setType(PermissionType.ENTITY_ATTR.getId());
+            permission2.setType(PermissionType.ENTITY_ATTR);
             permission2.setTarget(PERM_TARGET_ATTR);
             permission2.setValue(1);
             em.persist(permission2);

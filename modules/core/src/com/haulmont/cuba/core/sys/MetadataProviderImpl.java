@@ -10,10 +10,14 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.loader.ChileMetadataLoader;
+import com.haulmont.chile.core.loader.ClassMetadataLoader;
+import com.haulmont.chile.core.loader.MetadataLoader;
+import com.haulmont.chile.core.loader.ChileAnnotationsLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.jpa.loader.AnnotationsMetadataLoader;
+import com.haulmont.chile.jpa.loader.JPAAnnotationsLoader;
 import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
@@ -26,15 +30,12 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URISyntaxException;
+import java.util.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.net.URISyntaxException;
 
 public class MetadataProviderImpl extends MetadataProvider
 {
@@ -58,18 +59,16 @@ public class MetadataProviderImpl extends MetadataProvider
     }
 
     private void initialize() {
-        Collection<String> packages = getPackageNames();
-        if (packages.size() == 0)
-            throw new IllegalStateException("No packages with metadata found");
-
-        JPAMetadataLoader loader = new JPAMetadataLoader() {
+        Collection<String> packages;
+        JPAMetadataLoader jpaMetadataLoader = new JPAMetadataLoader() {
             @Override
-            protected AnnotationsMetadataLoader createAnnotationsLoader(Session session) {
-                return new AnnotationsMetadataLoader(session) {
+            protected ClassMetadataLoader createAnnotationsLoader(Session session) {
+                return new JPAAnnotationsLoader(session) {
                     @Override
                     protected boolean isMetaPropertyField(Field field) {
                         final String name = field.getName();
-                        return !name.startsWith("pc") && !name.startsWith("__") && super.isMetaPropertyField(field);
+                        return super.isMetaPropertyField(field) &&
+                                !name.startsWith("pc") && !name.startsWith("__") && super.isMetaPropertyField(field);
                     }
 
                     protected URL normalize(URL url) throws IOException, URISyntaxException {
@@ -78,6 +77,28 @@ public class MetadataProviderImpl extends MetadataProvider
                 };
             }
         };
+        packages = getJPAClassesPackageNames();
+        loadMetadata(jpaMetadataLoader, packages);
+
+        ChileMetadataLoader metadataLoader = new ChileMetadataLoader(session) {
+            @Override
+            protected ClassMetadataLoader createAnnotationsLoader(Session session) {
+                return new ChileAnnotationsLoader(session) {
+                    protected URL normalize(URL url) throws IOException, URISyntaxException {
+                        return super.normalize(ServerUtils.translateUrl(url));
+                    }
+                };
+            }
+        };
+        packages = getMetaClassesPackageNames();
+        loadMetadata(metadataLoader, packages);
+
+        for (MetaClass metaClass : session.getClasses()) {
+            initMetaClass(metaClass);
+        }
+    }
+
+    protected void loadMetadata(MetadataLoader loader, Collection<String> packages) {
         for (String p : packages) {
             String modelName = p;
             int i = p.lastIndexOf(".");
@@ -87,14 +108,19 @@ public class MetadataProviderImpl extends MetadataProvider
             loader.loadPackage(modelName, p);
         }
         session = loader.getSession();
-
-        for (MetaClass metaClass : session.getClasses()) {
-            initMetaClass(metaClass);
-        }
     }
 
-    private Collection<String> getPackageNames() {
+    protected Collection<String> getJPAClassesPackageNames() {
         String path = "/" + PersistenceProvider.getPersistenceXmlPath();
+        return getPackages(path, "persistence-unit", PersistenceProvider.getPersistenceUnitName());
+    }
+
+    protected Collection<String> getMetaClassesPackageNames() {
+        String path = "/" + MetadataProvider.getMetadataXmlPath();
+        return getPackages(path, "metadata-model");
+    }
+
+    protected Collection<String> getPackages(String path, String unitTag, String...unitNames) {
         InputStream stream = MetadataProviderImpl.class.getResourceAsStream(path);
         if (stream == null)
             throw new IllegalStateException("Unable to load resource: " + path);
@@ -108,9 +134,11 @@ public class MetadataProviderImpl extends MetadataProvider
         }
         Element root = document.getRootElement();
         List<String> packages = new ArrayList<String>();
-        for (Element unitElem : (List<Element>) root.elements("persistence-unit")) {
+        //noinspection unchecked
+        for (Element unitElem : (List<Element>) root.elements(unitTag)) {
             String name = unitElem.attributeValue("name");
-            if (PersistenceProvider.getPersistenceUnitName().equals(name)) {
+            if (unitNames == null || unitNames.length == 0 || Arrays.binarySearch(unitNames, name) >= 0) {
+                //noinspection unchecked
                 for (Element classElem : ((List<Element>) unitElem.elements("class"))) {
                     String className = classElem.getText().trim();
                     int i = className.lastIndexOf(".");

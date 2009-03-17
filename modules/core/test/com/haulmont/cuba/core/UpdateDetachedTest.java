@@ -12,6 +12,7 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.app.DataService;
@@ -46,7 +47,7 @@ public class UpdateDetachedTest extends CubaTestCase
             Permission permission = new Permission();
             permissionId = permission.getId();
             permission.setRole(role);
-            permission.setType(0);
+            permission.setType(PermissionType.SCREEN);
             permission.setTarget("testTarget");
             em.persist(permission);
 

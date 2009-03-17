@@ -20,7 +20,8 @@ public class DateField
     private Resolution resolution = Resolution.MIN;
 
     public DateField() {
-        this.component = new com.itmill.toolkit.ui.DateField();
+        component = new com.itmill.toolkit.ui.DateField();
+        attachListener(component);
         component.setImmediate(true);
         __setResolution(Resolution.MIN);
     }

@@ -13,13 +13,13 @@ package com.haulmont.cuba.gui.config;
 import org.dom4j.Element;
 import com.haulmont.bali.util.ReflectionHelper;
 
-public class ScreenInfo
+public class WindowInfo
 {
     private String id;
     private Element descriptor;
     private Class screenClass;
 
-    public ScreenInfo(String id, Element descriptor) {
+    public WindowInfo(String id, Element descriptor) {
         this.id = id;
         this.descriptor = descriptor;
     }

@@ -17,7 +17,6 @@ import javax.naming.Context;
 public abstract class ServiceLocator
 {
     public static final String IMPL_PROP = "cuba.ServiceLocator.impl";
-
     private static final String DEFAULT_IMPL = "com.haulmont.cuba.web.sys.ServiceLocatorImpl";
 
     private static ServiceLocator instance;

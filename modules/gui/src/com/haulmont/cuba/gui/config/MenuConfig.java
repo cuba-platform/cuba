@@ -30,16 +30,7 @@ public class MenuConfig
     private Log log = LogFactory.getLog(MenuConfig.class);
     
     private List<MenuItem> rootItems = new ArrayList<MenuItem>();
-
     private String msgPack;
-
-    private ClientType clientType;
-    private UserSession userSession;
-
-    public MenuConfig(ClientType clientType, UserSession userSession) {
-        this.clientType = clientType;
-        this.userSession = userSession;
-    }
 
     public List<MenuItem> getRootItems() {
         return Collections.unmodifiableList(rootItems);
@@ -85,7 +76,7 @@ public class MenuConfig
                 }
             } else if ("item".equals(element.getName())) {
                 String id = element.attributeValue("id");
-                if (!StringUtils.isBlank(id) && isScreenPermitted(id)) {
+                if (!StringUtils.isBlank(id)) {
                     String menuCaption = getCaption("menu-config." + id, id);
                     menuItem = new MenuItem(parentItem, id, menuCaption);
                     menuItem.setDescriptor(element);
@@ -101,13 +92,6 @@ public class MenuConfig
                 rootItems.add(menuItem);
             }
         }
-    }
-
-    private boolean isScreenPermitted(String screenId) {
-        return userSession.isPermitted(
-                PermissionType.SCREEN,
-                PermissionConfig.getScreenPermissionTarget(clientType, screenId)
-        );
     }
 
     private String getCaption(String key, String def) {

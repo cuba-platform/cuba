@@ -11,6 +11,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 public interface Tree extends List
 {
@@ -23,5 +24,5 @@ public interface Tree extends List
     void setCaptionProperty(String captionProperty);
 
     String getHierarchyProperty();
-    void setDatasource(CollectionDatasource datasource, String hierarchyProperty);
+    void setDatasource(HierarchicalDatasource datasource);
 }

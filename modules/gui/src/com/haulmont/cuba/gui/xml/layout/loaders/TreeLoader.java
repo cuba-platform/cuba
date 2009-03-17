@@ -10,10 +10,10 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Tree;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
@@ -41,10 +41,8 @@ public class TreeLoader extends ComponentLoader
         Element itemsElem = element.element("treechildren");
         String datasource = itemsElem.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
-            CollectionDatasource ds = context.getDSContext().get(datasource);
-            String hierarchyProperty = itemsElem.attributeValue("hierarchyProperty");
-
-            component.setDatasource(ds, hierarchyProperty);
+            HierarchicalDatasource ds = context.getDSContext().get(datasource);
+            component.setDatasource(ds);
 
             String captionProperty = itemsElem.attributeValue("captionProperty");
             if (!StringUtils.isEmpty(captionProperty)) {

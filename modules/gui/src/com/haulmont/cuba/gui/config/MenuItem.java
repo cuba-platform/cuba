@@ -11,9 +11,15 @@
 package com.haulmont.cuba.gui.config;
 
 import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.core.global.ClientType;
 
 public class MenuItem
 {
@@ -57,5 +63,15 @@ public class MenuItem
 
     public void setDescriptor(Element descriptor) {
         this.descriptor = descriptor;
+    }
+
+    public boolean isPermitted(UserSession session) {
+        final String id = descriptor.attributeValue("id");
+        if (StringUtils.isEmpty(id)) {
+             return true;
+        } else {
+            final ClientType clientType = ApplicationProperties.getInstance().getClientType();
+            return session.isPermitted(PermissionType.SCREEN, PermissionConfig.getScreenPermissionTarget(clientType, id));
+        }
     }
 }

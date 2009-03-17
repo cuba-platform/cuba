@@ -12,9 +12,10 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.config.MenuItem;
-import com.haulmont.cuba.gui.config.ScreenInfo;
+import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.web.log.LogWindow;
+import com.haulmont.cuba.security.global.UserSession;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
@@ -23,76 +24,76 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class AppWindow extends Window
-{
+public class AppWindow extends Window {
     protected Connection connection;
     private TabSheet tabSheet;
 
     public AppWindow(Connection connection) {
-        super();
+             super();
 
-        this.connection = connection;
-        setCaption(getAppCaption());
+             this.connection = connection;
+             setCaption(getAppCaption());
 
-        VerticalLayout rootLayout = createLayout();
-        initLayout();
-        setLayout(rootLayout);
-    }
+             VerticalLayout rootLayout = createLayout();
+             initLayout();
+             setLayout(rootLayout);
+         }
 
     protected VerticalLayout createLayout() {
-        final VerticalLayout layout = new VerticalLayout();
+             final VerticalLayout layout = new VerticalLayout();
 
-        layout.setMargin(true);
-        layout.setSpacing(true);
-        layout.setSizeFull();
+             layout.setMargin(true);
+             layout.setSpacing(true);
+             layout.setSizeFull();
 
-        // Title Pame
-        HorizontalLayout titlePane = createTitlePane();
+             // Title Pame
+             HorizontalLayout titlePane = createTitlePane();
 
-        final VerticalLayout titleLayout = new VerticalLayout();
-        titleLayout.addComponent(titlePane);
-        layout.addComponent(titleLayout);
+             final VerticalLayout titleLayout = new VerticalLayout();
+             titleLayout.addComponent(titlePane);
+             layout.addComponent(titleLayout);
 
-        // Menu & Windows
-        final VerticalLayout menuAndTabbedPaneLayout = new VerticalLayout();
+             // Menu & Windows
+             final VerticalLayout menuAndTabbedPaneLayout = new VerticalLayout();
 
-        MenuBar menuBar = createMenuBar();
-        menuAndTabbedPaneLayout.addComponent(menuBar);
+             MenuBar menuBar = createMenuBar();
+             menuAndTabbedPaneLayout.addComponent(menuBar);
 
-        tabSheet = new TabSheet();
-        tabSheet.setSizeFull();
+             tabSheet = new TabSheet();
+             tabSheet.setSizeFull();
 
-        menuAndTabbedPaneLayout.addComponent(tabSheet);
-        menuAndTabbedPaneLayout.setExpandRatio(tabSheet, 1);
+             menuAndTabbedPaneLayout.addComponent(tabSheet);
+             menuAndTabbedPaneLayout.setExpandRatio(tabSheet, 1);
 
-        menuAndTabbedPaneLayout.setSizeFull();
-        layout.addComponent(menuAndTabbedPaneLayout);
-        layout.setExpandRatio(menuAndTabbedPaneLayout, 1);
+             menuAndTabbedPaneLayout.setSizeFull();
+             layout.addComponent(menuAndTabbedPaneLayout);
+             layout.setExpandRatio(menuAndTabbedPaneLayout, 1);
 
-        return layout;
-    }
+             return layout;
+         }
 
     protected String getAppCaption() {
-        return MessageProvider.getMessage(getClass(), "application.caption", Locale.getDefault());
-    }
+             return MessageProvider.getMessage(getClass(), "application.caption", Locale.getDefault());
+         }
 
     public TabSheet getTabSheet() {
-        return tabSheet;
-    }
+             return tabSheet;
+         }
 
     protected void initLayout() {
-    }
+         }
 
     protected MenuBar createMenuBar() {
-        final MenuBar menuBar = new MenuBar();
+             final MenuBar menuBar = new MenuBar();
 
-        List<MenuItem> rootItems = App.getInstance().getMenuConfig().getRootItems();
-        for (MenuItem menuItem : rootItems) {
-            createMenuBarItem(menuBar, menuItem);
-        }
+             final MenuConfig menuConfig = ApplicationProperties.getInstance().getMenuConfig();
+             List<MenuItem> rootItems = menuConfig.getRootItems();
+             for (MenuItem menuItem : rootItems) {
+                 createMenuBarItem(menuBar, menuItem);
+             }
 
-        return menuBar;
-    }
+             return menuBar;
+         }
 
     protected HorizontalLayout createTitlePane() {
         HorizontalLayout titleLayout = new HorizontalLayout();
@@ -141,11 +142,17 @@ public class AppWindow extends Window
     }
 
     private void createMenuBarItem(MenuBar menuBar, MenuItem item) {
-        MenuBar.MenuItem menuItem = menuBar.addItem(item.getCaption(), null);
+        final Connection connection = App.getInstance().getConnection();
+        if (!connection.isConnected()) return;
 
-        if (!item.getChildren().isEmpty()) {
-            for (final MenuItem childItem : item.getChildren()) {
-                createMenuItem(menuItem, childItem);
+        final UserSession session = connection.getSession();
+        if (item.isPermitted(session)) {
+            MenuBar.MenuItem menuItem = menuBar.addItem(item.getCaption(), null);
+
+            if (!item.getChildren().isEmpty()) {
+                for (final MenuItem childItem : item.getChildren()) {
+                    createMenuItem(menuItem, childItem);
+                }
             }
         }
     }
@@ -164,9 +171,10 @@ public class AppWindow extends Window
         return new MenuBar.Command() {
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 String caption = item.getCaption();
-                ScreenInfo screenInfo = App.getInstance().getScreenConfig().getScreenInfo(item.getId());
+                final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+                WindowInfo windowInfo = windowConfig.getWindowInfo(item.getId());
                 App.getInstance().getWindowManager().openWindow(
-                        screenInfo,
+                        windowInfo,
                         WindowManager.OpenType.NEW_TAB,
                         Collections.<String, Object>singletonMap("caption", caption)
                 );

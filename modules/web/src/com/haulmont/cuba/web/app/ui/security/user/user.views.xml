@@ -5,7 +5,9 @@
         <property name="login"/>
         <property name="email"/>
         <property name="activeDirectoryUser"/>
-        <property name="group" view="lookup"/>
+        <property name="group">
+            <property name="name"/>
+        </property>
     </view>
 
     <view entity="sec$UserRole" name="user.edit">
@@ -14,4 +16,10 @@
         </property>
     </view>
 
+    <view entity="sec$User" name="user.browse">
+        <property name="name"/>
+        <property name="login"/>
+        <property name="email"/>
+        <property name="activeDirectoryUser"/>
+    </view>
 </views>

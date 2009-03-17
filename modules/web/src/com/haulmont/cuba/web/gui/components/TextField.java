@@ -19,6 +19,7 @@ public class TextField
 
     public TextField() {
         this.component = new com.itmill.toolkit.ui.TextField();
+        attachListener(component);
         component.setImmediate(true);
         component.setNullRepresentation("");
     }

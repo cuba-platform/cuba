@@ -26,6 +26,10 @@ public class DatasourceFactoryImpl implements DatasourceFactory {
         return new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
     }
 
+    public HierarchicalDatasource createHierarchicalDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
+        return new HierarchicalDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
+    }
+
     public Datasource createDatasource(String id, Datasource ds, String property) {
         return new PropertyDatasourceImpl(id, ds, property);
     }

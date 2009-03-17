@@ -3,7 +3,7 @@
         <collectionDatasource
             id="groups"
             class="com.haulmont.cuba.security.entity.Group"
-            view="lookup"
+            view="group.lookup"
         >
             <query>select g from sec$Group g</query>
         </collectionDatasource>

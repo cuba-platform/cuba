@@ -8,26 +8,28 @@
     </metadataContext>
 
     <dsContext>
-        <collectionDatasource
+        <hierarchicalDatasource
             id="groups"
             class="com.haulmont.cuba.security.entity.Group"
-            view="group-browse">
+            view="group.browse"
+            hierarchyProperty="parent"
+        >
             <query>
                 <![CDATA[select g from sec$Group g]]>
             </query>
-        </collectionDatasource>
+        </hierarchicalDatasource>
 
         <collectionDatasource
             id="users"
             class="com.haulmont.cuba.security.entity.User"
-            view="group-browse">
+            view="group.browse">
             <query>select u from sec$User u where u.group.id = :ds$groups</query>
         </collectionDatasource>
 
         <collectionDatasource
             id="constraints"
             class="com.haulmont.cuba.security.entity.Constraint"
-            view="group-browse">
+            view="group.browse">
             <query>select c from sec$Constraint c where c.group.id = :ds$groups</query>
         </collectionDatasource>
 

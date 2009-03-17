@@ -10,6 +10,10 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.ValueListener;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Label
     extends
@@ -17,6 +21,7 @@ public class Label
     implements
         com.haulmont.cuba.gui.components.Label, Component.Wrapper
 {
+    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
 
     public Label() {
         component = new com.itmill.toolkit.ui.Label();
@@ -35,7 +40,9 @@ public class Label
     }
 
     public void setValue(Object value) {
+        final Object prevValue = getValue();
         component.setValue(value);
+        fireValueChanged(prevValue, value);
     }
 
     public boolean isEditable() {
@@ -44,5 +51,20 @@ public class Label
 
     public void setEditable(boolean editable) {
         // Do nothing
+    }
+
+
+    public void addListener(ValueListener listener) {
+        if (!listeners.contains(listener)) listeners.add(listener);
+    }
+
+    public void removeListener(ValueListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void fireValueChanged(Object prevValue, Object value) {
+        for (ValueListener listener : listeners) {
+            listener.valueChanged(this, "value", prevValue, value);
+        }
     }
 }

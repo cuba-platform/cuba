@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.data.HierarchicalDatasourceWrapper;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.AbstractSelect;
@@ -43,8 +44,10 @@ public class Tree
                     public void valueChange(Property.ValueChangeEvent event) {
                         Set items = getSelected();
                         if (items.isEmpty()) {
+                            //noinspection unchecked
                             datasource.setItem(null);
                         } else if (items.size() == 1) {
+                            //noinspection unchecked
                             datasource.setItem((Entity) items.iterator().next());
                         } else {
                             throw new UnsupportedOperationException();
@@ -108,17 +111,16 @@ public class Tree
         return datasource;
     }
 
-    public void setDatasource(CollectionDatasource datasource, String hierarchyProperty)
+    public void setDatasource(HierarchicalDatasource datasource)
     {
         this.datasource = datasource;
-        this.hierarchyProperty = hierarchyProperty != null ? hierarchyProperty : "parent";
+        this.hierarchyProperty = datasource.getHierarchyPropertyName();
 
         // if showProperty is null, the Tree will use itemId.toString
         MetaProperty metaProperty = hierarchyProperty == null ? null : datasource.getMetaClass().getProperty(hierarchyProperty);
         component.setItemCaptionPropertyId(metaProperty);
 
-        HierarchicalDatasourceWrapper wrapper =
-                new HierarchicalDatasourceWrapper(datasource, hierarchyProperty);
+        HierarchicalDatasourceWrapper wrapper = new HierarchicalDatasourceWrapper(datasource);
         component.setContainerDataSource(wrapper);
     }
 }

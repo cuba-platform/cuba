@@ -1,17 +1,14 @@
 <window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
     class="com.haulmont.cuba.web.app.ui.security.role.browse.RoleBrowser"
     lookupComponent="users"
 >
-
     <metadataContext>
-        <view entity="sec$Role" name="role-browse">
-            <property name="name"/>
-        </view>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/role/role.views.xml"/>
     </metadataContext>
 
     <dsContext>
-        <collectionDatasource
-                id="roles" class="com.haulmont.cuba.security.entity.Role" view="role-browse">
+        <collectionDatasource id="roles" class="com.haulmont.cuba.security.entity.Role" view="role.browse">
             <query>
                 select r from sec$Role r
             </query>
@@ -19,7 +16,7 @@
     </dsContext>
 
     <layout>
-        <vbox id="table-panel" expand="roles">
+        <vbox id="table-panel" expand="roles" spacing="true">
             <hbox>
                 <button action="roles.create"/>
                 <button action="roles.edit"/>
@@ -27,7 +24,7 @@
             </hbox>
             <table id="roles" editable="false">
                 <columns>
-                    <column id="name" caption="Name"/>
+                    <column id="name" caption="msg://role.name"  clickAction="open:sec$Role.edit"/>
                 </columns>
                 <rows datasource="roles"/>
             </table>

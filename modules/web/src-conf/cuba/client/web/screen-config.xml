@@ -21,7 +21,9 @@
     <screen id="sec$Group.lookup"
             template="/com/haulmont/cuba/web/app/ui/security/group/lookup/group-lookup.xml"/>
 
-    <!--<screen id="sec$Role.browse"-->
-            <!--template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>-->
+    <screen id="sec$Role.browse"
+            template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>
+    <screen id="sec$Role.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/role/edit/role-edit.xml"/>
 
 </screen-config>

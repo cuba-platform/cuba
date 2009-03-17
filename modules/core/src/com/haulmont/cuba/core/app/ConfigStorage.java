@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.sys.ConfigWorker;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -274,7 +275,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
             Permission permission = new Permission();
             permissionId = permission.getId();
             permission.setRole(role);
-            permission.setType(0);
+            permission.setType(PermissionType.SCREEN);
             permission.setTarget("testTarget");
             em.persist(permission);
 

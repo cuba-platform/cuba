@@ -13,6 +13,8 @@ import org.dom4j.Element;
 
 import java.util.Collection;
 
+import com.haulmont.cuba.gui.data.ValueListener;
+
 public interface Component {
     enum Alignment {
         TOP_RIGHT,
@@ -70,6 +72,9 @@ public interface Component {
     interface Field extends Editable, BelongToFrame {
         <T> T getValue();
         void setValue(Object value);
+
+        void addListener(ValueListener listener);
+        void removeListener(ValueListener listener);
     }
 
     interface HasXmlDescriptor {

@@ -12,14 +12,27 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.core.entity.Entity;
+import com.itmill.toolkit.data.Property;
 
-public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends AbstractComponent<T>{
+import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+
+public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
+    extends
+        AbstractComponent<T>
+    implements
+        Component.Field
+{
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
 
     private boolean editable;
+    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
 
     public Datasource getDatasource() {
         return datasource;
@@ -35,10 +48,14 @@ public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends Abstra
         final MetaClass metaClass = datasource.getMetaClass();
         this.metaProperty = metaClass.getProperty(property);
 
-        final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, metaClass);
         component.setPropertyDataSource(wrapper.getItemProperty(metaProperty));
 
         setRequired(metaProperty.isMandatory());
+    }
+
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, MetaClass metaClass) {
+        return new ItemWrapper(datasource, metaClass.getProperties());
     }
 
     public boolean isRequired() {
@@ -72,5 +89,28 @@ public class AbstractField<T extends com.itmill.toolkit.ui.Field> extends Abstra
     public void setEditable(boolean editable) {
         this.editable = editable;
         component.setReadOnly(!editable);
+    }
+
+    public void addListener(ValueListener listener) {
+        if (!listeners.contains(listener)) listeners.add(listener);
+    }
+
+    public void removeListener(ValueListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void attachListener(T component) {
+        component.addListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent event) {
+                // TODO (abramov) suport prevValue
+                fireValueChanged(null, getValue());
+            }
+        });
+    }
+
+    protected void fireValueChanged(Object prevValue, Object value) {
+        for (ValueListener listener : listeners) {
+            listener.valueChanged(this, "value", prevValue, value);
+        }
     }
 }

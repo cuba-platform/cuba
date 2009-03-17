@@ -34,6 +34,7 @@ public class LookupField
 {
     public LookupField() {
         this.component = new Select();
+        attachListener(component);
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
     }

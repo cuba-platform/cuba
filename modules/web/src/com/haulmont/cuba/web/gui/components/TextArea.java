@@ -20,6 +20,7 @@ public class TextArea
 
     public TextArea() {
         this.component = new RichTextArea();
+        attachListener(component);
         component.setImmediate(true);
         component.setNullRepresentation("");
     }

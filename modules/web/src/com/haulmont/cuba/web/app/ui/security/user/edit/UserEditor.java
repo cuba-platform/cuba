@@ -60,21 +60,8 @@ public class UserEditor extends AbstractEditor {
                 }, WindowManager.OpenType.THIS_TAB);
             }
         });
-        rolesTable.addAction(new AbstractAction("exclude") {
-            public String getCaption() {
-                return "Exclude";
-            }
 
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                
-            }
-        });
-
-//        OptionsField field = getComponent("enum");
-//        field.setOptionsList(Arrays.asList(Datasource.State.values()));
+        final TableActionsHelper rolesTableActions = new TableActionsHelper(this, rolesTable);
+        rolesTableActions.createRemoveAction();
     }
 }

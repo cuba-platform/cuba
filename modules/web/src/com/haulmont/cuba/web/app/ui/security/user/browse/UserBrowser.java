@@ -26,6 +26,7 @@ public class UserBrowser extends AbstractLookup {
         final TableActionsHelper helper = new TableActionsHelper(this, table);
         helper.createCreateAction();
         helper.createEditAction();
+        helper.createRemoveAction();
 
         final Action refreshAction = helper.createRefreshAction();
         button.setAction(refreshAction);

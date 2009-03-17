@@ -1,12 +1,11 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    messagesPack="com.haulmont.cuba.web.app.ui.security.user.edit"
     datasource="user"
     caption="msg://caption"
     class="com.haulmont.cuba.web.app.ui.security.user.edit.UserEditor"
 >
     <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/edit/user-edit.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
     </metadataContext>
 
@@ -20,7 +19,7 @@
         <collectionDatasource
             id="groups"
             class="com.haulmont.cuba.security.entity.Group"
-            view="lookup"
+            view="group.lookup"
         >
             <query>select g from sec$Group g</query>
         </collectionDatasource>
@@ -62,7 +61,7 @@
         <vbox id="roles-pane" expand="roles" spacing="true">
             <hbox>
                 <button action="roles.include"/>
-                <button action="roles.exclude"/>
+                <button action="roles.remove"/>
             </hbox>
             <table id="roles">
                 <columns>

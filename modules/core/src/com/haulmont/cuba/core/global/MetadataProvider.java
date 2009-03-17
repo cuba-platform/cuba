@@ -11,12 +11,15 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.Session;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class MetadataProvider
 {
     public static final String IMPL_PROP = "cuba.MetadataProvider.impl";
-
     private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.MetadataProviderImpl";
+
+    public static final String METADATA_XML = "cuba.MetadataXml";
+    protected static final String DEFAULT_METADATA_XML = "META-INF/cuba-metadata.xml";
 
     private static MetadataProvider instance;
 
@@ -45,6 +48,13 @@ public abstract class MetadataProvider
 
     public static ViewRepository getViewRepository() {
         return getInstance().__getViewRepository();
+    }
+
+    public static String getMetadataXmlPath() {
+        String xmlPath = System.getProperty(METADATA_XML);
+        if (StringUtils.isBlank(xmlPath))
+            xmlPath = DEFAULT_METADATA_XML;
+        return xmlPath;
     }
 
     protected abstract Session __getSession();

@@ -10,16 +10,13 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
+import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.gui.config.MenuConfig;
-import com.haulmont.cuba.gui.config.ScreenConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.gui.ApplicationProperties;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
@@ -36,12 +33,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private Log log = LogFactory.getLog(App.class);
 
     private Connection connection;
-
-    private ScreenConfig screenConfig;
-
-    private MenuConfig menuConfig;
-
-    private WindowManager screenManager;
+    private WindowManager windowManager;
 
     private AppLog appLog;
 
@@ -49,11 +41,20 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     private boolean principalIsWrong;
 
+    static {
+        System.setProperty(ApplicationProperties.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
+        System.setProperty(ApplicationProperties.MENU_CONFIG_XML_PROP, "cuba/client/web/menu-config.xml");
+        System.setProperty(ApplicationProperties.WINDOW_CONFIG_XML_PROP, "cuba/client/web/screen-config.xml");
+        System.setProperty(ApplicationProperties.WINDOW_CONFIG_IMPL_PROP, "com.haulmont.cuba.web.WindowConfig");
+        System.setProperty(ApplicationProperties.CLIENT_TYPE_PROP, ClientType.WEB.toString());
+        System.setProperty(ApplicationProperties.MESSAGES_PACKAGE_PROP, "com.haulmont.cuba.web");
+    }
+
     public App() {
         appLog = new AppLog();
         connection = new Connection();
         connection.addListener(this);
-        screenManager = new WindowManager(this);
+        windowManager = new WindowManager(this);
     }
 
     public void init() {
@@ -86,41 +87,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return connection;
     }
 
-    public ScreenConfig getScreenConfig() {
-        if (screenConfig == null) {
-            screenConfig = new WindowConfig();
-            screenConfig.loadConfig(getScreenConfigXml());
-        }
-        return screenConfig;
-    }
-
-    protected String getScreenConfigXml() {
-        ResourceRepositoryService rrs = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
-        return rrs.getResAsString("cuba/client/web/screen-config.xml");
-    }
-
-    public MenuConfig getMenuConfig() {
-        if (menuConfig == null) {
-            if (!connection.isConnected())
-                throw new RuntimeException("Not connected");
-            menuConfig = new MenuConfig(ClientType.WEB, connection.getSession());
-            menuConfig.loadConfig(getMessagesPack(), getMenuConfigXml());
-        }
-
-        return menuConfig;
-    }
-
-    protected String getMessagesPack() {
-        return "com.haulmont.cuba.web";
-    }
-
-    protected String getMenuConfigXml() {
-        ResourceRepositoryService rrs = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
-        return rrs.getResAsString("cuba/client/web/menu-config.xml");
-    }
-
     public WindowManager getWindowManager() {
-        return screenManager;
+        return windowManager;
     }
 
     public AppLog getAppLog() {
@@ -133,7 +101,6 @@ public class App extends Application implements ConnectionListener, ApplicationC
             setMainWindow(window);
         }
         else {
-            menuConfig = null;
             Window window = createLoginWindow();
             setMainWindow(window);
         }

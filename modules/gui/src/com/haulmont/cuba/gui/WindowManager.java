@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.config.ScreenInfo;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -162,7 +162,7 @@ public abstract class WindowManager {
         }
     }
 
-    public <T extends Window> T openWindow(ScreenInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params)
+    public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params)
     {
         params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();
@@ -218,7 +218,7 @@ public abstract class WindowManager {
         return (T) window;
     }
 
-    public <T extends Window> T openEditor(ScreenInfo windowInfo, Object item, OpenType openType, Map<String, Object> params) {
+    public <T extends Window> T openEditor(WindowInfo windowInfo, Object item, OpenType openType, Map<String, Object> params) {
         params = createParametersMap(windowInfo, params);
         params.put("parameter$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
@@ -235,7 +235,7 @@ public abstract class WindowManager {
                             String.format("Class %s does't implement Window.Editor interface", windowClass));
                 }
             } else {
-                throw new IllegalStateException("Invalid ScreenInfo: " + windowInfo);
+                throw new IllegalStateException("Invalid WindowInfo: " + windowInfo);
             }
         }
         ((Window.Editor) window).setItem(item);
@@ -247,7 +247,7 @@ public abstract class WindowManager {
     }
 
     public <T extends Window> T openLookup(
-            ScreenInfo windowInfo, Window.Lookup.Handler handler,
+            WindowInfo windowInfo, Window.Lookup.Handler handler,
                 OpenType openType, Map<String, Object> params)
     {
         params = createParametersMap(windowInfo, params);
@@ -273,7 +273,7 @@ public abstract class WindowManager {
                             String.format("Class %s does't implement Window.Lookup interface", windowClass));
                 }
             } else {
-                throw new IllegalStateException("Invalid ScreenInfo: " + windowInfo);
+                throw new IllegalStateException("Invalid WindowInfo: " + windowInfo);
             }
         }
         ((Window.Lookup) window).setLookupHandler(handler);
@@ -284,7 +284,7 @@ public abstract class WindowManager {
         return (T) window;
     }
 
-    protected Map<String, Object> createParametersMap(ScreenInfo windowInfo, Map<String, Object> params) {
+    protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
         final Map<String, Object> map = new HashMap<String, Object>(params.size());
 
         final Element element = windowInfo.getDescriptor();
@@ -311,15 +311,15 @@ public abstract class WindowManager {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public <T extends Window> T openEditor(ScreenInfo windowInfo, Object item, OpenType openType) {
+    public <T extends Window> T openEditor(WindowInfo windowInfo, Object item, OpenType openType) {
         return (T)openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends Window> T openWindow(ScreenInfo windowInfo, OpenType openType) {
+    public <T extends Window> T openWindow(WindowInfo windowInfo, OpenType openType) {
         return (T)openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends Window> T openLookup(ScreenInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
+    public <T extends Window> T openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
         return (T)openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
     }
 

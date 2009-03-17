@@ -27,6 +27,7 @@ public class OptionsGroup
 {
     public OptionsGroup() {
         component = new OptionGroup();
+        attachListener(component);
         component.setImmediate(true);
     }
 

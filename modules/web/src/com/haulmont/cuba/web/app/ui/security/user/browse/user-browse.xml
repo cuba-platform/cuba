@@ -1,11 +1,10 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
     class="com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser"
-    messagesPack="com.haulmont.cuba.web.app.ui.security.user.browse"
     lookupComponent="users"
 >
     <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
     </metadataContext>
 
@@ -13,7 +12,7 @@
         <collectionDatasource
             id="users"
             class="com.haulmont.cuba.security.entity.User"
-            view="user-browse"
+            view="user.browse"
         >
             <query>
                 <![CDATA[
@@ -35,6 +34,7 @@
             <hbox>
                 <button action="users.create"/>
                 <button action="users.edit"/>
+                <button action="users.remove"/>
             </hbox>
             <table id="users" editable="false">
                 <columns>
