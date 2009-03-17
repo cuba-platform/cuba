@@ -172,6 +172,23 @@ alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROU
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SEC_USER_SETTING (
+    ID binary(16),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    USER_ID binary(16),
+    CLIENT_TYPE char(1),
+    NAME varchar(255),
+    VALUE text,
+    primary key (ID)
+)^
+
+alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID)^
+
+alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_UNIQ unique (USER_ID, NAME, CLIENT_TYPE)^
+
+------------------------------------------------------------------------------------------------------------
+
 create function from_id(uuid binary(16)) returns char(36)
 begin
     return concat(hex(left(uuid,4)),'-', hex(mid(uuid,5,2)),'-', hex(mid(uuid,7,2)),'-',hex(mid(uuid,9,2)),'-',hex(right(uuid,6)));

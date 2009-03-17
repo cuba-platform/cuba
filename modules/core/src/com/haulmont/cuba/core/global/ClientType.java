@@ -30,4 +30,13 @@ public enum ClientType
     public String getConfigPath() {
         return configPath;
     }
+
+    public static ClientType fromId(String id) {
+        if ("W".equals(id))
+            return WEB;
+        else if ("D".equals(id))
+            return DESKTOP;
+        else
+            return null;
+    }
 }

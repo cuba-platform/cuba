@@ -20,9 +20,11 @@ import java.util.UUID;
 
 public class TestSecurityProvider extends SecurityProvider
 {
+    public static final String USER_ID = "60885987-1b61-4247-94c7-dff348347f93";
+
     protected UserSession __currentUserSession() {
         User user = new User();
-        user.setId(UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+        user.setId(UUID.fromString(USER_ID));
         user.setLogin("test_admin");
         user.setName("Test Administrator");
         user.setPassword(DigestUtils.md5Hex("test_admin"));

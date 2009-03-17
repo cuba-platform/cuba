@@ -123,7 +123,7 @@ create table SEC_USER_ROLE (
     primary key (ID)
 );
 
-alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_PROFILE foreign key (USER_ID) references SEC_USER(ID);
+alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_USER foreign key (USER_ID) references SEC_USER(ID);
 
 alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID);
 
@@ -169,6 +169,23 @@ create table SEC_CONSTRAINT (
 );
 
 alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID);
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_USER_SETTING (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    USER_ID varchar(36),
+    CLIENT_TYPE char(1),
+    NAME varchar(255),
+    VALUE longvarchar,    
+    primary key (ID)
+);
+
+alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID);
+
+alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_UNIQ unique (USER_ID, NAME, CLIENT_TYPE);
 
 ------------------------------------------------------------------------------------------------------------
 

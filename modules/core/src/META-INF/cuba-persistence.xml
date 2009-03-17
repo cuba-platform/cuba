@@ -15,6 +15,7 @@
         <class>com.haulmont.cuba.security.entity.GroupHierarchy</class>
         <class>com.haulmont.cuba.security.entity.Permission</class>
         <class>com.haulmont.cuba.security.entity.Constraint</class>
+        <class>com.haulmont.cuba.security.entity.UserSetting</class>
 
         <properties>
             <property name="openjpa.ManagedRuntime" value="org.apache.openjpa.ee.JNDIManagedRuntime"/>
