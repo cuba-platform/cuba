@@ -12,7 +12,6 @@ package com.haulmont.cuba.core.entity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
-import javax.persistence.EntityListeners;
 
 @Entity(name = "core$Server")
 @Table(name = "SYS_SERVER")

@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Enumiration;
+import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -62,7 +62,7 @@ public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.Abstr
         setRequired(metaProperty.isMandatory());
 
         if (metaProperty.getRange().isEnum()) {
-            final Enumiration enumiration = metaProperty.getRange().asEnumiration();
+            final Enumeration enumiration = metaProperty.getRange().asEnumiration();
             final Class<Enum> javaClass = enumiration.getJavaClass();
 
             optionsList = Arrays.asList(javaClass.getEnumConstants());

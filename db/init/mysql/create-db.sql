@@ -25,7 +25,7 @@ create table SYS_CONFIG (
     UPDATE_TS datetime,
     UPDATED_BY varchar(20),
     NAME varchar(255),
-    VALUE varchar(500),
+    VALUE varchar(1500),
     primary key (ID)
 )^
 

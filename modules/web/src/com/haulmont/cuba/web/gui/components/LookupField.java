@@ -9,22 +9,10 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.datatypes.Enumiration;
-import com.itmill.toolkit.ui.Select;
+import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.AbstractSelect;
-import com.itmill.toolkit.ui.OptionGroup;
-import com.itmill.toolkit.data.Property;
-
-import java.util.List;
-import java.util.Arrays;
+import com.itmill.toolkit.ui.Select;
 
 public class LookupField
     extends

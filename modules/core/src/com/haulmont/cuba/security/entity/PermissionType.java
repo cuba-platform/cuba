@@ -31,14 +31,14 @@ public enum PermissionType implements EnumClass<Integer>
     }
 
     /** Returns corresponding database value */
-    public Integer getValue() {
+    public Integer getId() {
         return id;
     }
 
     /** Constructs type from corresponding database value */
-    public static PermissionType valueOf(Integer id) {
+    public static PermissionType fromId(Integer id) {
         for (PermissionType type : PermissionType.values()) {
-            if (ObjectUtils.equals(type.getValue(), id)) {
+            if (ObjectUtils.equals(type.getId(), id)) {
                 return type;
             }
         }

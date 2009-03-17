@@ -17,9 +17,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import java.util.Date;
-import java.util.UUID;
-
-import org.apache.openjpa.persistence.Persistent;
 
 @Entity(name = "core$Config")
 @Table(name = "SYS_CONFIG")
@@ -40,7 +37,7 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "VALUE", length = 500)
+    @Column(name = "VALUE", length = 1500)
     private String value;
 
     public Integer getVersion() {

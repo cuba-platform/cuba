@@ -25,7 +25,7 @@ create table SYS_CONFIG (
     UPDATE_TS timestamp,
     UPDATED_BY varchar(20),
     NAME varchar(255),
-    VALUE varchar(500),
+    VALUE varchar(1500),
     primary key (ID)
 );
 
@@ -186,6 +186,51 @@ create table SEC_USER_SETTING (
 alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID);
 
 alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_UNIQ unique (USER_ID, NAME, CLIENT_TYPE);
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_LOGGED_ENTITY (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    NAME varchar(50),
+    primary key (ID)
+);
+
+alter table SEC_LOGGED_ENTITY add constraint SEC_LOGGED_ENTITY_UNIQ_NAME unique (NAME);
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_LOGGED_ATTR (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    ENTITY_ID varchar(36),
+    NAME varchar(50),
+    primary key (ID)
+);
+
+alter table SEC_LOGGED_ATTR add constraint FK_SEC_LOGGED_ATTR_ENTITY foreign key (ENTITY_ID) references SEC_LOGGED_ENTITY(ID);
+
+alter table SEC_LOGGED_ATTR add constraint SEC_LOGGED_ATTR_UNIQ_NAME unique (ENTITY_ID, NAME);
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_ENTITY_LOG (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    EVENT_TS timestamp,
+    USER_ID varchar(36),
+    TYPE char(1),
+    ENTITY varchar(50),
+    ATTR varchar(50),
+    VALUE varchar(500),
+    OLD_VALUE varchar(500),
+    primary key (ID)
+);
+
+alter table SEC_ENTITY_LOG add constraint FK_SEC_ENTITY_LOG_USER foreign key (USER_ID) references SEC_USER(ID);
 
 ------------------------------------------------------------------------------------------------------------
 

@@ -51,11 +51,11 @@ public class Permission extends StandardEntity
     }
 
     public PermissionType getType() {
-        return type == null ? null : PermissionType.valueOf(type);
+        return type == null ? null : PermissionType.fromId(type);
     }
 
     public void setType(PermissionType type) {
-        this.type = type == null ? null : type.getValue();
+        this.type = type == null ? null : type.getId();
     }
 
     public Integer getValue() {
