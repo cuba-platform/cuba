@@ -11,12 +11,13 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Type of permission<br>
  * id - corresponding database value
  */
-public enum PermissionType implements EnumClass
+public enum PermissionType implements EnumClass<Integer>
 {
     SCREEN(10),
     ENTITY_OP(20),
@@ -30,14 +31,14 @@ public enum PermissionType implements EnumClass
     }
 
     /** Returns corresponding database value */
-    public int getValue() {
+    public Integer getValue() {
         return id;
     }
 
     /** Constructs type from corresponding database value */
-    public static PermissionType valueOf(int id) {
+    public static PermissionType valueOf(Integer id) {
         for (PermissionType type : PermissionType.values()) {
-            if (type.getValue() == id) {
+            if (ObjectUtils.equals(type.getValue(), id)) {
                 return type;
             }
         }
