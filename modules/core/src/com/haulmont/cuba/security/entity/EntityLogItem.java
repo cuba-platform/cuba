@@ -15,12 +15,17 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
+
+import org.apache.openjpa.persistence.Persistent;
 
 @Entity(name = "sec$EntityLog")
 @Table(name = "SEC_ENTITY_LOG")
 public class EntityLogItem extends BaseUuidEntity
 {
     private static final long serialVersionUID = 5859030306889056606L;
+
+    public static final int VALUE_LEN = 1500;
 
     public enum Type implements EnumClass<String>
     {
@@ -60,17 +65,18 @@ public class EntityLogItem extends BaseUuidEntity
     @Column(name = "TYPE", length = 1)
     private String type;
 
-    @Column(name = "ENTITY", length = 50)
+    @Column(name = "ENTITY", length = 100)
     private String entity;
+
+    @Column(name = "ENTITY_ID")
+    @Persistent
+    private UUID entityId;
 
     @Column(name = "ATTR", length = 50)
     private String attribute;
 
-    @Column(name = "VALUE", length = 500)
+    @Column(name = "VALUE", length = VALUE_LEN)
     private String value;
-
-    @Column(name = "OLD_VALUE", length = 500)
-    private String oldValue;
 
     public String getAttribute() {
         return attribute;
@@ -88,6 +94,14 @@ public class EntityLogItem extends BaseUuidEntity
         this.entity = entity;
     }
 
+    public UUID getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(UUID entityId) {
+        this.entityId = entityId;
+    }
+
     public Date getEventTs() {
         return eventTs;
     }
@@ -96,20 +110,12 @@ public class EntityLogItem extends BaseUuidEntity
         this.eventTs = eventTs;
     }
 
-    public String getOldValue() {
-        return oldValue;
+    public Type getType() {
+        return Type.fromId(type);
     }
 
-    public void setOldValue(String oldValue) {
-        this.oldValue = oldValue;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setType(Type type) {
+        this.type = type.getId();
     }
 
     public User getUser() {

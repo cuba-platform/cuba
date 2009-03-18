@@ -41,7 +41,7 @@ public class UserSettingServiceBean implements UserSettingService
 
         Query q = em.createQuery(
                 "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3");
-        q.setParameter(1, SecurityProvider.currentUserSession().getUserId());
+        q.setParameter(1, SecurityProvider.currentUserId());
         q.setParameter(2, name);
         q.setParameter(3, clientType == null ? null : clientType.getId());
         q.setView(new View(UserSetting.class, false).addProperty("value"));
@@ -63,7 +63,7 @@ public class UserSettingServiceBean implements UserSettingService
 
         Query q = em.createQuery(
                 "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3");
-        q.setParameter(1, SecurityProvider.currentUserSession().getUserId());
+        q.setParameter(1, SecurityProvider.currentUserId());
         q.setParameter(2, name);
         q.setParameter(3, clientType == null ? null : clientType.getId());
         q.setView(new View(UserSetting.class, false).addProperty("value"));

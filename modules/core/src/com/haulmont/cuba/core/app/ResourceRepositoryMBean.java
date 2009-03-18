@@ -18,7 +18,7 @@ public interface ResourceRepositoryMBean
 
     void start();
 
-    ResourceRepository getImplementation();
+    ResourceRepositoryAPI getAPI();
 
     String getContent();
 

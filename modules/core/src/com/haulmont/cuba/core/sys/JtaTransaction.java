@@ -32,7 +32,7 @@ public class JtaTransaction implements Transaction
                 started = true;
             }
             else if (!join) {
-                throw new IllegalStateException("JTA transaction exists while join = false");
+                throw new IllegalStateException("JTA transaction exists while join = false : " + tm.getTransaction());
             }
         } catch (SystemException e) {
             throw new RuntimeException(e);

@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.QueryTransformerFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.io.Serializable;
 
 public abstract class SecurityProvider
@@ -51,6 +52,10 @@ public abstract class SecurityProvider
 
     public static String currentUserLogin() {
         return getInstance().__currentUserSession().getLogin();
+    }
+
+    public static UUID currentUserId() {
+        return getInstance().__currentUserSession().getUserId();
     }
 
     public static UserSession currentUserSession() {

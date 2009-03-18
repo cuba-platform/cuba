@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ResourceRepository implements ResourceRepositoryMBean
+public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepositoryAPI
 {
     private String rootPath;
 
@@ -41,7 +41,7 @@ public class ResourceRepository implements ResourceRepositoryMBean
     public void start() {
     }
 
-    public ResourceRepository getImplementation() {
+    public ResourceRepositoryAPI getAPI() {
         return this;
     }
 
@@ -63,11 +63,6 @@ public class ResourceRepository implements ResourceRepositoryMBean
         repository.clear();
     }
 
-    /**
-     * Loads resource into cache as byte array and returns it
-     * @param name resource file name relative to resources root (jboss/server/default/conf)
-     * @return resource as stream
-     */
     public InputStream getResAsStream(String name) {
         Object value = repository.get(name);
         if (value != null) {
@@ -87,11 +82,6 @@ public class ResourceRepository implements ResourceRepositoryMBean
         }
     }
 
-    /**
-     * Loads resource into cache as String and returns it
-     * @param name resource file name relative to resources root (jboss/server/default/conf)
-     * @return String resource
-     */
     public String getResAsString(String name) {
         Object value = repository.get(name);
         if (value != null) {

@@ -18,24 +18,48 @@ import javax.persistence.Column;
 import javax.persistence.OneToMany;
 import java.util.Set;
 
+import org.apache.commons.lang.BooleanUtils;
+
 @Entity(name = "sec$LoggedEntity")
 @Table(name = "SEC_LOGGED_ENTITY")
 public class LoggedEntity extends BaseUuidEntity
 {
     private static final long serialVersionUID = 2189206984294705835L;
 
-    @Column(name = "NAME")
-    private String entity;
+    @Column(name = "NAME", length = 100)
+    private String name;
+
+    @Column(name = "AUTO")
+    private Boolean auto;
+
+    @Column(name = "MANUAL")
+    private Boolean manual;
 
     @OneToMany(mappedBy = "entity")
     private Set<LoggedAttribute> attributes;
 
-    public String getEntity() {
-        return entity;
+    public String getName() {
+        return name;
     }
 
-    public void setEntity(String entity) {
-        this.entity = entity;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isAuto() {
+        return BooleanUtils.isTrue(auto);
+    }
+
+    public void setAuto(boolean auto) {
+        this.auto = auto;
+    }
+
+    public boolean isManual() {
+        return BooleanUtils.isTrue(manual);
+    }
+
+    public void setManual(boolean manual) {
+        this.manual = manual;
     }
 
     public Set<LoggedAttribute> getAttributes() {

@@ -90,6 +90,10 @@ public class EntityManagerImpl implements EntityManager
         return delegate.find(clazz, key);
     }
 
+    public <T extends Entity> T getReference(Class<T> clazz, Object key) {
+        return delegate.getReference(clazz, key);
+    }
+
     public Query createQuery() {
         return new QueryImpl(delegate, false);
     }

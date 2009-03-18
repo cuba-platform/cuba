@@ -18,7 +18,7 @@ public interface EntityLogMBean
 
     void start();
 
-    EntityLog getImplementation();
+    EntityLogAPI getAPI();
 
     void invalidateCache();
 }

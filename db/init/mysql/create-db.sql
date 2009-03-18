@@ -189,6 +189,53 @@ alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_UNIQ unique (USER_I
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SEC_LOGGED_ENTITY (
+    ID binary(16),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    NAME varchar(100),
+    AUTO smallint,
+    MANUAL smallint,
+    primary key (ID)
+)^
+
+alter table SEC_LOGGED_ENTITY add constraint SEC_LOGGED_ENTITY_UNIQ_NAME unique (NAME)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_LOGGED_ATTR (
+    ID binary(16),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    ENTITY_ID binary(16),
+    NAME varchar(50),
+    primary key (ID)
+)^
+
+alter table SEC_LOGGED_ATTR add constraint FK_SEC_LOGGED_ATTR_ENTITY foreign key (ENTITY_ID) references SEC_LOGGED_ENTITY(ID)^
+
+alter table SEC_LOGGED_ATTR add constraint SEC_LOGGED_ATTR_UNIQ_NAME unique (ENTITY_ID, NAME)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_ENTITY_LOG (
+    ID binary(16),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    EVENT_TS timestamp,
+    USER_ID binary(16),
+    TYPE char(1),
+    ENTITY varchar(100),
+    ENTITY_ID binary(16),
+    ATTR varchar(50),
+    VALUE varchar(1500),
+    primary key (ID)
+)^
+
+alter table SEC_ENTITY_LOG add constraint FK_SEC_ENTITY_LOG_USER foreign key (USER_ID) references SEC_USER(ID)^
+
+------------------------------------------------------------------------------------------------------------
+
 create function from_id(uuid binary(16)) returns char(36)
 begin
     return concat(hex(left(uuid,4)),'-', hex(mid(uuid,5,2)),'-', hex(mid(uuid,7,2)),'-',hex(mid(uuid,9,2)),'-',hex(right(uuid,6)));

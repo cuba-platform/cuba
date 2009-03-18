@@ -193,7 +193,9 @@ create table SEC_LOGGED_ENTITY (
     ID varchar(36),
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
-    NAME varchar(50),
+    NAME varchar(100),
+    AUTO smallint,
+    MANUAL smallint,
     primary key (ID)
 );
 
@@ -223,10 +225,10 @@ create table SEC_ENTITY_LOG (
     EVENT_TS timestamp,
     USER_ID varchar(36),
     TYPE char(1),
-    ENTITY varchar(50),
+    ENTITY varchar(100),
+    ENTITY_ID varchar(36),
     ATTR varchar(50),
-    VALUE varchar(500),
-    OLD_VALUE varchar(500),
+    VALUE varchar(1500),
     primary key (ID)
 );
 

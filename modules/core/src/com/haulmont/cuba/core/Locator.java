@@ -10,8 +10,8 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.sys.LocatorImpl;
-import com.haulmont.cuba.core.app.ResourceRepository;
 import com.haulmont.cuba.core.app.ResourceRepositoryMBean;
+import com.haulmont.cuba.core.app.ResourceRepositoryAPI;
 
 import javax.naming.Context;
 
@@ -68,10 +68,10 @@ public abstract class Locator
         return getInstance().__getTransaction();
     }
 
-    /** Returns reference to ResourceRepository */
-    public static ResourceRepository getResourceRepository() {
+    /** Returns reference to ResourceRepositoryAPI */
+    public static ResourceRepositoryAPI getResourceRepository() {
         ResourceRepositoryMBean mbean = getInstance().__lookupMBean(ResourceRepositoryMBean.class, ResourceRepositoryMBean.OBJECT_NAME);
-        return mbean.getImplementation();
+        return mbean.getAPI();
     }
 
     protected abstract Context __getJndiContextImpl();

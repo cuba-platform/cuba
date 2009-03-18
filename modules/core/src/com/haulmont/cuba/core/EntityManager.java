@@ -23,6 +23,8 @@ public interface EntityManager
 
     <T extends Entity> T find(Class<T> clazz, Object key);
 
+    <T extends Entity> T getReference(Class<T> clazz, Object key);
+
     Query createQuery();
 
     Query createQuery(String qlStr);

@@ -15,6 +15,8 @@ import java.io.File;
 
 import org.jboss.embedded.Bootstrap;
 
+import javax.transaction.TransactionManager;
+
 public abstract class CubaTestCase extends TestCase
 {
     protected void setUp() throws Exception {
@@ -30,5 +32,9 @@ public abstract class CubaTestCase extends TestCase
         if (!Bootstrap.getInstance().isStarted()) {
             Bootstrap.getInstance().bootstrap();
         }
+
+        TransactionManager tm = (TransactionManager) Locator.getJndiContext().lookup("java:/TransactionManager");
+        if (tm.getTransaction() != null)
+            tm.rollback();
     }
 }

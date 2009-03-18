@@ -20,9 +20,9 @@ import javax.interceptor.Interceptors;
 @Interceptors({ServiceInterceptor.class})
 public class ResourceRepositoryServiceBean implements ResourceRepositoryService
 {
-    private ResourceRepository repository;
+    private ResourceRepositoryAPI repository;
 
-    private ResourceRepository getRepository() {
+    private ResourceRepositoryAPI getRepository() {
         if (repository == null)
             repository = Locator.getResourceRepository();
         return repository;
