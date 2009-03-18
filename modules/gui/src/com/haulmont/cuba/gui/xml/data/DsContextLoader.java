@@ -119,7 +119,7 @@ public class DsContextLoader {
                 throw new RuntimeException(e);
             }
         } else
-            datasource = factory.createHierarchicalDatasource(datasources, dataservice, id, metaClass, viewName);
+            datasource = factory.createDatasource(datasources, dataservice, id, metaClass, viewName);
 
         String item = element.attributeValue("item");
         if (!StringUtils.isBlank(item)) {
@@ -218,7 +218,7 @@ public class DsContextLoader {
                 throw new RuntimeException(e);
             }
         } else
-            datasource = factory.createHierarchicalDatasource(datasources, dataservice, id, metaClass, viewName);
+            datasource = factory.createCollectionDatasource(datasources, dataservice, id, metaClass, viewName);
 
         final String query = element.elementText("query");
         if (!StringUtils.isBlank(query)) {
