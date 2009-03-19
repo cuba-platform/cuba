@@ -23,6 +23,7 @@ public class ITreeTable
 {
     public static final String CLASSNAME = "i-tree-table";
     public static final String CLASSNAME_ROW_SELECTED = "i-selected";
+    public static final String CLASSNAME_ROW_EXPANDED = "i-expanded";
 
     public static final char ALIGN_CENTER = 'c';
     public static final char ALIGN_LEFT = 'b';
@@ -103,7 +104,6 @@ public class ITreeTable
                         .getStringArrayVariableAsSet("selected");
                 selectedRowKeys.clear();
                 for (String selectedKey : selectedKeys) {
-                    //todo see this and log
                     selectedRowKeys.add(selectedKey);
                 }
             }
@@ -165,8 +165,10 @@ public class ITreeTable
 
     public void onClick(Widget sender) {
         log.log("click");
-        if (sender instanceof TableBody.TreeCell) {
-            TableBody.GrouppedRow row = (TableBody.GrouppedRow) sender.getParent();
+        if (sender instanceof TableBody.CrossSign) {
+//            log.log(sender.getParent().getClass().getName());
+            log.log(sender.getParent().getParent().getParent().getClass().getName());
+            TableBody.ExpandedRow row = ((TableBody.CrossSign) sender).getParentRow();
             if (row.isExpanded()) {
                 client.updateVariable(uidlId, "collapse", row.getKey(), true);
             } else {
@@ -680,6 +682,7 @@ public class ITreeTable
     class TableBodyContainer extends Panel {
         private final Element sizer = DOM.createDiv();
 
+        private final Map<String, Widget> availableBodies = new HashMap<String, Widget>();
         private final Vector<Widget> tableBodies = new Vector<Widget>();
 
         TableBodyContainer() {
@@ -689,17 +692,22 @@ public class ITreeTable
             DOM.appendChild(getElement(), sizer);
         }
 
-        public void updateFromUIDL(UIDL uidl) {
+        public void updateFromUIDL(UIDL uidl)
+        {
             Iterator it = uidl.getChildIterator();
             while (it.hasNext()) {
                 final UIDL bodyUidl = (UIDL) it.next();
-                if ("tbody".equals(bodyUidl.getTag())) {
-                    log.log("add tbody");
-                    final String bodyCaption = bodyUidl.getStringAttribute("caption");
-                    final TableBody tbody = new TableBody(bodyCaption, null);
-                    addTableBody(tbody);
-                    tbody.updateBodyFromUIDL(bodyUidl);
-                    log.log("Table body has been added");
+                if ("tbody".equals(bodyUidl.getTag()))
+                {
+                    final String key = bodyUidl.getStringAttribute("key");
+                    TableBody tBody = (TableBody) availableBodies.get(key);
+                    if (tBody == null) {
+                        tBody = new TableBody(key);
+                        addTableBody(tBody);
+                        log.log("Created tbody with key: " + key);
+                    }
+                    tBody.updateBodyFromUIDL(bodyUidl);
+                    log.log("Table body has been updated");
                 }
             }
         }
@@ -708,6 +716,7 @@ public class ITreeTable
             adopt(tBody);
             DOM.appendChild(getElement(), tBody.getElement());
             tableBodies.add(tBody);
+            availableBodies.put(tBody.getKey(), tBody);
         }
 
         public int availableWidth() {
@@ -752,55 +761,100 @@ public class ITreeTable
 
     class TableBody extends Panel {
 
-        private String caption = "";
+        private String key;
+        private String caption;
         private String icon;
 
         private final Vector<Widget> rows = new Vector<Widget>();
 
+        private Element captionContainer = null;
         private final Element bodyContent = DOM.createDiv();
 
-        TableBody() {
+        TableBody(String key) {
+            this.key = key;
             setElement(DOM.createDiv());
             DOM.setElementProperty(bodyContent, "className", CLASSNAME + "-content");
             DOM.appendChild(getElement(), bodyContent);
         }
 
-        TableBody(String caption, String icon) {
-            this();
-            this.caption = caption; //todo add body caption later
-            this.icon = icon;
+        public String getKey() {
+            return key;
         }
 
         void updateBodyFromUIDL(UIDL uidl) {
-            final Iterator it = uidl.getChildIterator();
-//            rows.clear();
+            caption = uidl.getStringAttribute("caption");
+
+            if (caption != null) 
+            {
+                if (captionContainer == null) {
+                    Element captionWrapper = DOM.createDiv();
+                    DOM.setElementProperty(captionWrapper, "className", CLASSNAME + "-body-caption");
+                    captionContainer = DOM.createDiv();
+                    DOM.appendChild(captionWrapper, captionContainer);
+                    DOM.insertChild(getElement(), captionWrapper, 0);
+                }
+                DOM.setInnerHTML(captionContainer, caption);
+            }
+
             clear(); //todo think about a caching the rows list
-            int rowIndex = 0;
-            while (it.hasNext()) {
-                final UIDL row = (UIDL) it.next();
+
+            updateBodyRows(uidl.getChildIterator());
+        }
+
+        void updateBodyRows(Iterator rowsIterator) {
+            while (rowsIterator.hasNext()) {
+                final UIDL row = (UIDL) rowsIterator.next();
                 if ("gr".equals(row.getTag())
                         || "tr".equals(row.getTag()))
                 {
+
+                    boolean showChildren = false;
+                    boolean groupped = ("gr".equals(row.getTag()));
+
                     final String key = row.getStringAttribute("key");
                     Row r = null;//(Row) availableRows.get(key); todo
                     if (r == null) {
-                        if ("tr".equals(row.getTag())) {
+                        if (groupped)
+                        {
+                            showChildren = row.getBooleanAttribute("expanded");
+                            r = new ExpandedRow(
+                                    key,
+                                    row.getBooleanAttribute("selected"),
+                                    showChildren
+                            );
+                        } else {
                             r = new Row(key, row.getBooleanAttribute("selected"));
-                        } else if ("gr".equals(row.getTag())) {
-                            r = new GrouppedRow(key, row.getBooleanAttribute("selected"), false);
                         }
-                        addRow(rowIndex++, r);
+                        addRow(r);
                     }
-                    r.updateRowFromUIDL(row);
+
+                    UIDL rowContent = row;
+                    if (groupped)
+                    {
+                        Iterator tags = row.getChildIterator();
+                        while (tags.hasNext()) {
+                            final UIDL t = (UIDL) tags.next();
+                            if ("c".equals(t.getTag())) {
+                                rowContent = t;
+                                break;
+                            }
+                        }
+                    }
+                    r.updateRowFromUIDL(rowContent);
+
+                    if (showChildren)
+                    {
+                        updateBodyRows(row.getChildIterator());
+                    }
                 }
             }
         }
 
-        private void addRow(int rowIndex, Row r) {
+        private void addRow(Row r) {
             adopt(r);
             DOM.appendChild(bodyContent, r.getElement());
             String className;
-            if (rowIndex % 2 == 1) {
+            if (rows.size() % 2 == 1) {
                 className = "-row-odd";
             } else {
                 className = "-row";
@@ -856,17 +910,16 @@ public class ITreeTable
             }
         }
 
-        class GrouppedRow extends Row
+        class ExpandedRow extends Row
         {
-//            private ClickListenerCollection listeners;
             private Vector<Widget> children = new Vector<Widget>();
             private boolean expanded;
 
-            GrouppedRow(String key, boolean expanded) {
+            ExpandedRow(String key, boolean expanded) {
                 this(key, false, expanded);
             }
 
-            GrouppedRow(String key, boolean selected, boolean expanded) {
+            ExpandedRow(String key, boolean selected, boolean expanded) {
                 super(key, selected);
                 this.expanded = expanded;
             }
@@ -878,10 +931,10 @@ public class ITreeTable
                 int index = 0;
                 while (cells.hasNext()) {
                     final Object c = cells.next();
+                    log.log("cell:" + String.valueOf(c));
                     Cell cell = null;
                     if (index == 0) {
-                        cell = new TreeCell((String) c, GrouppedRow.this.expanded);
-//                        SourcesClickEvents w = (SourcesClickEvents) cell.getWidget();
+                        cell = new HierarchicalCell((String) c, ExpandedRow.this.expanded, ExpandedRow.this);
                     } else {
                         if (c instanceof String) {
                             cell = new Cell((String) c);
@@ -895,19 +948,6 @@ public class ITreeTable
                     index++;
                 }
             }
-
-//            public void addClickListener(ClickListener listener) {
-//                if (listeners == null) {
-//                    listeners = new ClickListenerCollection();
-//                }
-//                listeners.add(listener);
-//            }
-//
-//            public void removeClickListener(ClickListener listener) {
-//                if (listeners != null) {
-//                    listeners.remove(listener);
-//                }
-//            }
 
             public boolean isExpanded() {
                 return expanded;
@@ -1001,39 +1041,80 @@ public class ITreeTable
             }
         }
 
-        class Cell extends SimplePanel {
-            private Element content;
+        class Cell extends Composite {
+            private FlowPanel container = new FlowPanel();
             Cell(String text) {
                 this(new Label(text));
             }
 
             Cell(Widget w) {
-                super();
-                DOM.setElementProperty(getElement(), "className", CLASSNAME + "-cell-wrap");
+                container.setStyleName(CLASSNAME + "-cell-wrap");
 
-                content = DOM.createDiv();
-                DOM.setElementProperty(content, "className", CLASSNAME + "-cell");
-                DOM.appendChild(getElement(), content);
+                SimplePanel content = new SimplePanel();
+                content.setStyleName(CLASSNAME + "-cell");
+                content.setWidget(w);
 
-                setWidget(w);
+                container.add(content);
+
+                initWidget(container);
             }
 
-            @Override
-            protected Element getContainerElement() {
-                return content;
+            public FlowPanel getContainer() {
+                return container;
             }
         }
 
-        class TreeCell extends Cell {
-            TreeCell(String text, boolean expanded) {
+        class HierarchicalCell extends Cell {
+            HierarchicalCell(String text, boolean expanded, ExpandedRow parentRow) {
                 super(text);
+                final Widget cs = new CrossSign(expanded, parentRow);
+                getContainer().insert(cs, 0);
+            }
+        }
 
-//                Element div = DOM.createDiv();
-//                DOM.setElementProperty(div, "className", CLASSNAME + "-cell-nav");
-//                DOM.appendChild(getContainerElement(), div);
-//
-//                Element navImg = DOM.createImg();
-//                DOM.setElementAttribute(navImg, "src", "/img/" + expanded);
+        class CrossSign extends Widget implements SourcesClickEvents {
+            private ClickListenerCollection clickListeners = null;
+            private ExpandedRow parentRow;
+            CrossSign(boolean expanded, ExpandedRow parentRow) {
+                setElement(DOM.createDiv());
+                setStyleName(CLASSNAME + "-cell-cross");
+                if (expanded) {
+                    addStyleName(CLASSNAME_ROW_EXPANDED);
+                }
+                addClickListener(ITreeTable.this);
+                this.parentRow = parentRow;
+            }
+
+            public ExpandedRow getParentRow() {
+                if (parentRow == null) {
+                    throw new IllegalStateException("The parent row cannot be null");
+                }
+                return parentRow;
+            }
+
+            public void addClickListener(ClickListener listener) {
+                if (clickListeners == null) {
+                    clickListeners = new ClickListenerCollection();
+                    sinkEvents(Event.ONCLICK);
+                }
+                clickListeners.add(listener);
+            }
+
+            public void removeClickListener(ClickListener listener) {
+                if (clickListeners != null) {
+                    clickListeners.remove(listener);
+                }
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
+                switch (event.getTypeInt()) {
+                    case Event.ONCLICK:
+                        if (clickListeners != null) {
+                            clickListeners.fireClick(this);
+                        }
+                        break;
+                }
             }
         }
     }

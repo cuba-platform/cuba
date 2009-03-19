@@ -46,6 +46,14 @@
     border: 0;
 }
 
+.i-tree-table-body-caption {
+    height: 24px;
+    background-color: #e7edf3;
+}
+.i-tree-table-body-caption div {
+    padding: 4px 0 0 4px; 
+}
+
 .i-tree-table-resizer {
 	display: block;
 	background: transparent url(img/resizer-bg.png) repeat-y 50% 50%;
@@ -94,6 +102,16 @@
 .i-tree-table-row-odd .i-tree-table-cell-wrap {
     float: left;
     height: 24px;
+}
+.i-tree-table-cell-cross {
+    float: left;
+    background: url("img/nav-plus.gif") center right no-repeat;
+    width: 19px;
+    height: 18px;
+    cursor: pointer;
+}
+.i-tree-table .i-expanded {
+    background: url("img/nav-minus.gif") center right;
 }
 .i-tree-table-row-odd {
 	background-color: #f6f7f7;

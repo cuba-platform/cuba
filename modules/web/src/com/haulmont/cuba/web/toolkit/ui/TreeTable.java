@@ -23,11 +23,11 @@ public class TreeTable extends AbstractComponent {
 
     public static final String TAG_NAME = "treetable";
 
-    private static final int CELL_KEY = 0;
-    private static final int CELL_HEADER = 1;
-    private static final int CELL_ICON = 2;
-    private static final int CELL_ITEMID = 3;
-    private static final int CELL_FIRSTCOL = 4;
+//    private static final int CELL_KEY = 0;
+//    private static final int CELL_HEADER = 1;
+//    private static final int CELL_ICON = 2;
+//    private static final int CELL_ITEMID = 3;
+//    private static final int CELL_FIRSTCOL = 4;
 
     private final List<TableBody> tableBodies = new LinkedList<TableBody>();
 
@@ -64,17 +64,18 @@ public class TreeTable extends AbstractComponent {
         if (variables.containsKey("expand"))
         {
             String key = (String) variables.get("expand");
-            final TableBody tableBody = getTableBody(Integer.parseInt(getBodyKey(key)));
+            final TableBody tableBody = getTableBody(getBodyKey(key));
             Object itemId = tableBody.getItemIdByKey(getRowKey(key));
-            tableBody.setExpanded(itemId);
+            tableBody.setExpanded(itemId, false);
         }
         if (variables.containsKey("collapse")) 
         {
             String key = (String) variables.get("collapse");
-            final TableBody tableBody = getTableBody(Integer.parseInt(getBodyKey(key)));
+            final TableBody tableBody = getTableBody(getBodyKey(key));
             Object itemId = tableBody.getItemIdByKey(getRowKey(key));
-            tableBody.setCollapsed(itemId);
+            tableBody.setCollapsed(itemId, false);
         }
+        requestRepaint();
     }
 
     protected void paintColumns(PaintTarget target) throws PaintException {
@@ -100,7 +101,7 @@ public class TreeTable extends AbstractComponent {
         target.endTag("tbodies");
     }
 
-    class TableBody extends AbstractSelect
+    public class TableBody extends AbstractSelect
             implements TreeTableContainer
     {
         private final Set<Object> expanded = new HashSet<Object>();
@@ -160,6 +161,11 @@ public class TreeTable extends AbstractComponent {
                     final String key = itemIdMapper.key(itemId);
                     target.addAttribute("key", bodyKey + ":"+ key);
 
+                    if (allowChildren) {
+                        target.addAttribute("expanded", expanded.contains(itemId));
+                        target.startTag("c");
+                    }
+
                     for (final Object colId : visibleColumns) {
                         if (colId == null) {
                             continue;
@@ -173,6 +179,9 @@ public class TreeTable extends AbstractComponent {
                         target.addText((String) value);
                     }
 
+                    if (allowChildren) {
+                        target.endTag("c");
+                    }
 
                     if (hasChildren(itemId) && allowChildren && expanded.contains(itemId))
                     {
@@ -258,16 +267,24 @@ public class TreeTable extends AbstractComponent {
         }
 
         public void setExpanded(Object itemId) {
+            setExpanded(itemId, true);
+        }
+
+        protected void setExpanded(Object itemId, boolean rerender) {
             if (!isExpanded(itemId)) {
                 expanded.add(itemId);
-                requestRepaint();
+                if (rerender) requestRepaint();
             }
         }
 
         public void setCollapsed(Object itemId) {
+            setCollapsed(itemId, true);
+        }
+
+        protected void setCollapsed(Object itemId, boolean rerender) {
             if (isExpanded(itemId)) {
                 expanded.remove(itemId);
-                requestRepaint();
+                if (rerender)requestRepaint();
             }
         }
 
@@ -359,19 +376,23 @@ public class TreeTable extends AbstractComponent {
         return TAG_NAME;
     }
 
-    private String getBodyKey(String clientKey) {
+    private int getBodyKey(String clientKey) {
         int index;
         if (clientKey != null && (index = clientKey.indexOf(":")) != -1) {
-            return clientKey.substring(0, index + 1);
+            try {
+                return Integer.parseInt(clientKey.substring(0, index));
+            } catch (NumberFormatException e) {
+                //ignore body
+            }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(String.format("Illegal key: %s", clientKey));
     }
 
     private String getRowKey(String clientKey) {
         int index;
         if (clientKey != null && (index = clientKey.indexOf(":")) != -1) {
-            return clientKey.substring(index);
+            return clientKey.substring(index + 1);
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(String.format("Illegal key: %s", clientKey));
     }
 }
