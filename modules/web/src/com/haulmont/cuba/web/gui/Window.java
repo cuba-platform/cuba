@@ -46,7 +46,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     private DsContext dsContext;
     private String caption;
 
-    private List listeners = new ArrayList();
+    private List<CloseListener> listeners = new ArrayList<CloseListener>();
 
     public Window() {
         component = createLayout();
@@ -216,6 +216,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     }
 
     public <T extends Component> T getOwnComponent(String id) {
+        //noinspection unchecked
         return (T) componentByIds.get(id);
     }
 
@@ -239,6 +240,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     }
 
     public <T> T getComponent() {
+        //noinspection unchecked
         return (T) component;
     }
 
@@ -256,6 +258,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     }
 
     public <A extends IFrame> A getFrame() {
+        //noinspection unchecked
         return (A) this;
     }
 
@@ -282,8 +285,10 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
             HorizontalLayout buttonsContainer = new HorizontalLayout();
 
-            buttonsContainer.addComponent(new Button("OK", this, "commit"));
-            buttonsContainer.addComponent(new Button("Cancel", new Button.ClickListener() {
+            final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+
+            buttonsContainer.addComponent(new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"), this, "commit"));
+            buttonsContainer.addComponent(new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     close("cancel");
                 }
@@ -320,6 +325,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             Entity entity = getEntity(item, ds);
 
             this.item = item;
+            //noinspection unchecked
             ds.setItem(entity);
         }
 
@@ -443,10 +449,11 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
 
-            final Button selectButton = new Button("Select");
+            final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+            final Button selectButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Select"));
             selectButton.addListener(new SelectAction(this));
 
-            final Button cancelButton = new Button("Cancel", new Button.ClickListener() {
+            final Button cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     close("cancel");
                 }

@@ -2,11 +2,12 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.ApplicationProperties;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class TreeActionsHelper extends ListActionsHelper<Tree>{
@@ -17,7 +18,8 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
     public Action createCreateAction(final ValueProvider valueProvider, final WindowManager.OpenType openType) {
         final AbstractAction action = new AbstractAction("create") {
             public String getCaption() {
-                return "Create";
+                final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                return MessageProvider.getMessage(messagesPackage, "actions.Create");
             }
 
             public boolean isEnabled() {

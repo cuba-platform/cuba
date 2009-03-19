@@ -1,8 +1,10 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.ApplicationProperties;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.Set;
 import java.util.Map;
@@ -20,7 +22,7 @@ abstract class ListActionsHelper<T extends List> {
     public Action createCreateAction() {
         return createCreateAction(new ValueProvider() {
             public Map<String, Object> getValues() {
-                return Collections.<String, Object>emptyMap();
+                return Collections.emptyMap();
             }
         }, WindowManager.OpenType.THIS_TAB);
     }
@@ -28,7 +30,7 @@ abstract class ListActionsHelper<T extends List> {
     public Action createCreateAction(final WindowManager.OpenType openType) {
         return createCreateAction(new ValueProvider() {
             public Map<String, Object> getValues() {
-                return Collections.<String, Object>emptyMap();
+                return Collections.emptyMap();
             }
         }, openType);
     }
@@ -46,7 +48,8 @@ abstract class ListActionsHelper<T extends List> {
     public Action createEditAction(final WindowManager.OpenType openType) {
         final AbstractAction action = new AbstractAction("edit") {
             public String getCaption() {
-                return "Edit";
+                final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                return MessageProvider.getMessage(messagesPackage, "actions.Edit");
             }
 
             public boolean isEnabled() {
@@ -78,7 +81,8 @@ abstract class ListActionsHelper<T extends List> {
     public Action createRefreshAction() {
         final Action action = new AbstractAction("refresh") {
             public String getCaption() {
-                return "Refresh";
+                final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                return MessageProvider.getMessage(messagesPackage, "actions.Refresh");
             }
 
             public boolean isEnabled() {
@@ -97,7 +101,8 @@ abstract class ListActionsHelper<T extends List> {
     public Action createRemoveAction() {
         final Action action = new AbstractAction("remove") {
             public String getCaption() {
-                return "Remove";
+                final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                return MessageProvider.getMessage(messagesPackage, "actions.Remove");
             }
 
             public boolean isEnabled() {
@@ -107,13 +112,14 @@ abstract class ListActionsHelper<T extends List> {
             public void actionPerform(Component component) {
                 final Set selected = ListActionsHelper.this.component.getSelected();
                 if (!selected.isEmpty()) {
+                    final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
                     frame.showOptionDialog(
-                            "Confirmation",
-                            "Are you sure you want to delete selected entities?",
+                            MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
+                            MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
                             IFrame.MessageType.CONFIRMATION,
                             new Action[]{new AbstractAction("ok") {
                                 public String getCaption() {
-                                    return "Ok";
+                                    return MessageProvider.getMessage(messagesPackage, "actions.Ok");
                                 }
 
                                 public boolean isEnabled() {
@@ -121,7 +127,8 @@ abstract class ListActionsHelper<T extends List> {
                                 }
 
                                 public void actionPerform(Component component) {
-                                    final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
+                                    @SuppressWarnings({"unchecked"})
+                                    final CollectionDatasource<Entity, Object> ds = ListActionsHelper.this.component.getDatasource();
                                     for (Object item : selected) {
                                         ds.removeItem((Entity) item);
                                     }
@@ -130,7 +137,7 @@ abstract class ListActionsHelper<T extends List> {
                                 }
                             }, new AbstractAction("cancel") {
                                 public String getCaption() {
-                                    return "Cancel";
+                                    return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
                                 }
 
                                 public boolean isEnabled() {
