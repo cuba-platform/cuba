@@ -18,7 +18,7 @@ import java.util.*;
 
 import org.apache.commons.lang.ObjectUtils;
 
-public class DsContextImpl implements DsContext {
+public class DsContextImpl implements DsContextImplementation {
     private Context context;
     private DataService dataservice;
 
@@ -28,8 +28,20 @@ public class DsContextImpl implements DsContext {
     private Map<String, Collection<Datasource>> contextListeners =
             new HashMap<String, Collection<Datasource>>();
 
+    protected List<LazyTask> lazyTasks = new ArrayList<LazyTask>();
+
     public DsContextImpl(DataService dataservice) {
         this.dataservice = dataservice;
+    }
+
+    public void addLazyTask(LazyTask lazyTask) {
+        if (!lazyTasks.contains(lazyTask)) lazyTasks.add(lazyTask);
+    }
+
+    public void executeLazyTasks() {
+        for (LazyTask lazyTask : lazyTasks) {
+            lazyTask.execute(this);
+        }
     }
 
     public Context getContext() {

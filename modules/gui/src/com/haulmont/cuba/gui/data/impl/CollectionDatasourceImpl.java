@@ -184,8 +184,17 @@ public class CollectionDatasourceImpl<T extends Entity, K>
                     if (ds != null) {
                         dsContext.regirterDependency(this, ds);
                     } else {
-                        // TODO create lazy task
-                        throw new UnsupportedOperationException();
+                        ((DsContextImplementation) dsContext).addLazyTask(new DsContextImplementation.LazyTask() {
+                            public void execute(DsContext context) {
+                                final String[] strings = path.split("\\.");
+                                String source = strings[0];
+
+                                final Datasource ds = dsContext.get(source);
+                                if (ds != null) {
+                                    dsContext.regirterDependency(CollectionDatasourceImpl.this, ds);
+                                }
+                            }
+                        });
                     }
                 }
             }

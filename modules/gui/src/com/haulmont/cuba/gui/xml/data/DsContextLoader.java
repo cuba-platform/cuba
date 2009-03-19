@@ -53,6 +53,8 @@ public class DsContextLoader {
             datasources.register(loadHierarchicalDatasource(ds));
         }
 
+        datasources.executeLazyTasks();
+
         return datasources;
     }
 
