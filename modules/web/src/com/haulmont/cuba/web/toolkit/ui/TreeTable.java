@@ -23,12 +23,6 @@ public class TreeTable extends AbstractComponent {
 
     public static final String TAG_NAME = "treetable";
 
-//    private static final int CELL_KEY = 0;
-//    private static final int CELL_HEADER = 1;
-//    private static final int CELL_ICON = 2;
-//    private static final int CELL_ITEMID = 3;
-//    private static final int CELL_FIRSTCOL = 4;
-
     private final List<TableBody> tableBodies = new LinkedList<TableBody>();
 
     private final List visibleColumns = new LinkedList();
@@ -129,6 +123,8 @@ public class TreeTable extends AbstractComponent {
                 iteratorStack.push(rootIds.iterator());
             }
 
+//            int level = 0;
+
             while (!iteratorStack.isEmpty())
             {
                 final Iterator it = iteratorStack.peek();
@@ -136,6 +132,8 @@ public class TreeTable extends AbstractComponent {
                 if (!it.hasNext())
                 {
                     iteratorStack.pop();
+
+//                    --level;
 
                     if (!iteratorStack.isEmpty())
                     {
@@ -160,6 +158,7 @@ public class TreeTable extends AbstractComponent {
 
                     final String key = itemIdMapper.key(itemId);
                     target.addAttribute("key", bodyKey + ":"+ key);
+//                    target.addAttribute("level", level);
 
                     if (allowChildren) {
                         target.addAttribute("expanded", expanded.contains(itemId));
@@ -185,6 +184,8 @@ public class TreeTable extends AbstractComponent {
 
                     if (hasChildren(itemId) && allowChildren && expanded.contains(itemId))
                     {
+//                        level++;
+
                         iteratorStack.push(getChildren(itemId).iterator());
                     }
                     else {
@@ -202,7 +203,6 @@ public class TreeTable extends AbstractComponent {
 
         @Override
         public void changeVariables(Object source, Map variables) {
-            //todo
         }
 
         public Collection getChildren(Object itemId) {
@@ -293,10 +293,6 @@ public class TreeTable extends AbstractComponent {
         }
     }
 
-//    public Object[] getAvailableColumns() {
-//        return getTableBody(0).getContainerPropertyIds().toArray();
-//    }
-
     public void setVisibleColumns(Object[] columns) {
         setVisibleColumns(columns, true);
     }
@@ -305,21 +301,9 @@ public class TreeTable extends AbstractComponent {
         if (columns == null) {
             throw new NullPointerException();
         }
-// todo need to check properties when a user adds a new table section 
-//        final Collection propertyIds = getTableBody(0).getContainerPropertyIds();
-//        for (final Object column : columns) {
-//            if (column == null) {
-//                throw new NullPointerException();
-//            } else if (!propertyIds.contains(column)) {
-//                throw new IllegalArgumentException();
-//            }
-//        }
-
         visibleColumns.clear();
 
         visibleColumns.addAll(Arrays.asList(columns));
-//
-//        if (rerender) refreshRenderedCells();
     }
 
     public Object[] getVisibleColumns() {
@@ -328,15 +312,6 @@ public class TreeTable extends AbstractComponent {
         }
         return visibleColumns.toArray();
     }
-
-/*
-    protected Object[][] getVisibleCells() {
-        if (buffer == null) {
-            refreshRenderedCells();
-        }
-        return buffer;
-    }
-*/
 
     public void setColumnHeader(Object propertyId, String header) {
         setColumnHeader(propertyId, header, true);
@@ -348,8 +323,6 @@ public class TreeTable extends AbstractComponent {
             return;
         }
         columnHeaders.put(propertyId, header);
-//
-//        if (rerender) refreshRenderedCells();
     }
 
     public String getColumnHeader(Object propertyId) {
