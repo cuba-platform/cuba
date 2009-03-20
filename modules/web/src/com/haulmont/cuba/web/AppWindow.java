@@ -12,7 +12,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.security.global.UserSession;
@@ -86,7 +86,7 @@ public class AppWindow extends Window {
     protected MenuBar createMenuBar() {
              final MenuBar menuBar = new MenuBar();
 
-             final MenuConfig menuConfig = ApplicationProperties.getInstance().getMenuConfig();
+             final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
              List<MenuItem> rootItems = menuConfig.getRootItems();
              for (MenuItem menuItem : rootItems) {
                  createMenuBarItem(menuBar, menuItem);
@@ -171,7 +171,7 @@ public class AppWindow extends Window {
         return new MenuBar.Command() {
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 String caption = item.getCaption();
-                final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+                final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
                 WindowInfo windowInfo = windowConfig.getWindowInfo(item.getId());
                 App.getInstance().getWindowManager().openWindow(
                         windowInfo,

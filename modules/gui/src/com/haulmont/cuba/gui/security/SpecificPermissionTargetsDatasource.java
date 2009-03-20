@@ -15,7 +15,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.TreeDatasourceWrapper;
-import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 
 public class SpecificPermissionTargetsDatasource extends TreeDatasourceWrapper {
@@ -27,6 +27,6 @@ public class SpecificPermissionTargetsDatasource extends TreeDatasourceWrapper {
     }
 
     protected Tree<PermissionConfig.Target> loadTree() {
-        return ApplicationProperties.getInstance().getPermissionConfig().getSpecific();
+        return AppConfig.getInstance().getPermissionConfig().getSpecific();
     }
 }

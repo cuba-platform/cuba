@@ -1,7 +1,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -48,7 +48,7 @@ abstract class ListActionsHelper<T extends List> {
     public Action createEditAction(final WindowManager.OpenType openType) {
         final AbstractAction action = new AbstractAction("edit") {
             public String getCaption() {
-                final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
                 return MessageProvider.getMessage(messagesPackage, "actions.Edit");
             }
 
@@ -81,7 +81,7 @@ abstract class ListActionsHelper<T extends List> {
     public Action createRefreshAction() {
         final Action action = new AbstractAction("refresh") {
             public String getCaption() {
-                final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
                 return MessageProvider.getMessage(messagesPackage, "actions.Refresh");
             }
 
@@ -101,7 +101,7 @@ abstract class ListActionsHelper<T extends List> {
     public Action createRemoveAction() {
         final Action action = new AbstractAction("remove") {
             public String getCaption() {
-                final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
                 return MessageProvider.getMessage(messagesPackage, "actions.Remove");
             }
 
@@ -112,7 +112,7 @@ abstract class ListActionsHelper<T extends List> {
             public void actionPerform(Component component) {
                 final Set selected = ListActionsHelper.this.component.getSelected();
                 if (!selected.isEmpty()) {
-                    final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
                     frame.showOptionDialog(
                             MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
                             MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.core.global.ClientType;
 
 public class MenuItem
@@ -70,7 +70,7 @@ public class MenuItem
         if (StringUtils.isEmpty(id)) {
              return true;
         } else {
-            final ClientType clientType = ApplicationProperties.getInstance().getClientType();
+            final ClientType clientType = AppConfig.getInstance().getClientType();
             return session.isPermitted(PermissionType.SCREEN, PermissionConfig.getScreenPermissionTarget(clientType, id));
         }
     }

@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
@@ -28,7 +28,7 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
     public Action createCreateAction(final ValueProvider valueProvider, final WindowManager.OpenType openType) {
         final AbstractAction action = new AbstractAction("create") {
             public String getCaption() {
-                final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
                 return MessageProvider.getMessage(messagesPackage, "actions.Create");
             }
 

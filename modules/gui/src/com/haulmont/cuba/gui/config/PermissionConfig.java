@@ -24,9 +24,9 @@ import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.ClientType;
  import com.haulmont.cuba.core.global.MessageProvider;
  import com.haulmont.cuba.core.global.MetadataProvider;
- import com.haulmont.cuba.gui.ApplicationProperties;
+ import com.haulmont.cuba.gui.AppConfig;
  import com.haulmont.cuba.gui.ServiceLocator;
- import org.dom4j.Document;
+import org.dom4j.Document;
  import org.dom4j.DocumentException;
  import org.dom4j.Element;
  import org.dom4j.io.SAXReader;
@@ -106,8 +106,8 @@ public class PermissionConfig {
 
      public PermissionConfig() {
          this.repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
-         this.clientType = ApplicationProperties.getInstance().getClientType();
-         this.messagePack = ApplicationProperties.getInstance().getMessagesPackage();
+         this.clientType = AppConfig.getInstance().getClientType();
+         this.messagePack = AppConfig.getInstance().getMessagesPack();
          this.locale = Locale.getDefault();
      }
 
@@ -121,7 +121,7 @@ public class PermissionConfig {
          Node<Target> root = new Node<Target>(new Target("menu", getMessage("permissionConfig.screenRoot"), null));
          screens = new Tree<Target>(root);
 
-         final MenuConfig config = ApplicationProperties.getInstance().getMenuConfig();
+         final MenuConfig config = AppConfig.getInstance().getMenuConfig();
          walkMenu(config, root);
      }
 
@@ -168,7 +168,7 @@ public class PermissionConfig {
          Node<Target> root = new Node<Target>(new Target("specific", getMessage("permissionConfig.specificRoot"), null));
          specific = new Tree<Target>(root);
 
-         final String configPath = System.getProperty(ApplicationProperties.PERMISSION_CONFIG_XML_PROP);
+         final String configPath = System.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
          String xml = repository.getResAsString(configPath);
          SAXReader reader = new SAXReader();
          Document doc;

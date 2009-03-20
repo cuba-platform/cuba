@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Action;
@@ -82,37 +82,37 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String windowAlias, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openLookup(String windowAlias, com.haulmont.cuba.gui.components.Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType);
     }
@@ -285,7 +285,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
             HorizontalLayout buttonsContainer = new HorizontalLayout();
 
-            final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
 
             buttonsContainer.addComponent(new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"), this, "commit"));
             buttonsContainer.addComponent(new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new Button.ClickListener() {
@@ -455,7 +455,7 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
 
-            final String messagesPackage = ApplicationProperties.getInstance().getMessagesPackage();
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
             final Button selectButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Select"));
             selectButton.addListener(new SelectAction(this));
 

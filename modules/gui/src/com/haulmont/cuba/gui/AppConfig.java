@@ -17,26 +17,27 @@ import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 
-public class ApplicationProperties {
-    public static final String IMPL_PROP = "cuba.ApplicationProperties.impl";
-    public static final String DEFAULT_IMPL = "com.haulmont.cuba.gui.ApplicationProperties";
+public class AppConfig
+{
+    public static final String IMPL_PROP = "cuba.AppConfig.impl";
+    public static final String DEFAULT_IMPL = "com.haulmont.cuba.gui.AppConfig";
 
-    public static final String WINDOW_CONFIG_IMPL_PROP = "cuba.ApplicationProperties.WindowConfig.impl";
-    public static final String WINDOW_CONFIG_XML_PROP = "cuba.ApplicationProperties.WindowConfig.xml";
-    public static final String WINDOW_CONFIG_IMPL = "com.haulmont.cuba.gui.config.WindowConfig";
+    public static final String WINDOW_CONFIG_IMPL_PROP = "cuba.WindowConfig.impl";
+    public static final String WINDOW_CONFIG_XML_PROP = "cuba.WindowConfig.xml";
+    public static final String WINDOW_CONFIG_DEFAULT_IMPL = "com.haulmont.cuba.gui.config.WindowConfig";
 
-    public static final String MENU_CONFIG_IMPL_PROP = "cuba.ApplicationProperties.MenuConfig.impl";
-    public static final String MENU_CONFIG_XML_PROP = "cuba.ApplicationProperties.MenuConfig.xml";
-    public static final String MENU_CONFIG_IMPL = "com.haulmont.cuba.gui.config.MenuConfig";
+    public static final String MENU_CONFIG_IMPL_PROP = "cuba.MenuConfig.impl";
+    public static final String MENU_CONFIG_XML_PROP = "cuba.MenuConfig.xml";
+    public static final String MENU_CONFIG_DEFAULT_IMPL = "com.haulmont.cuba.gui.config.MenuConfig";
 
-    public static final String PERMISSION_CONFIG_IMPL_PROP = "cuba.ApplicationProperties.PermissionConfig.impl";
-    public static final String PERMISSION_CONFIG_XML_PROP = "cuba.ApplicationProperties.PermissionConfig.xml";
-    public static final String PERMISSION_CONFIG_IMPL = "com.haulmont.cuba.gui.config.PermissionConfig";
+    public static final String PERMISSION_CONFIG_IMPL_PROP = "cuba.PermissionConfig.impl";
+    public static final String PERMISSION_CONFIG_XML_PROP = "cuba.PermissionConfig.xml";
+    public static final String PERMISSION_CONFIG_DEFAULT_IMPL = "com.haulmont.cuba.gui.config.PermissionConfig";
 
-    public static final String CLIENT_TYPE_PROP = "com.ApplicationProperties.ClientType";
-    public static final String MESSAGES_PACKAGE_PROP = "com.ApplicationProperties.MessagesPackage";
+    public static final String CLIENT_TYPE_PROP = "cuba.AppConfig.clientType";
+    public static final String MESSAGES_PACK_PROP = "cuba.AppConfig.messagesPack";
 
-    protected static ApplicationProperties instance;
+    protected static AppConfig instance;
 
     protected WindowConfig windowConfig;
     protected MenuConfig menuConfig;
@@ -44,7 +45,7 @@ public class ApplicationProperties {
     protected String messagesPackage;
     protected PermissionConfig permissionsConfig;
 
-    public static ApplicationProperties getInstance() {
+    public static AppConfig getInstance() {
         if (instance == null) {
             instance = createInstance(IMPL_PROP, DEFAULT_IMPL);
         }
@@ -68,7 +69,7 @@ public class ApplicationProperties {
 
     public PermissionConfig getPermissionConfig() {
         if (permissionsConfig == null) {
-            permissionsConfig = createInstance(PERMISSION_CONFIG_IMPL_PROP, PERMISSION_CONFIG_IMPL);
+            permissionsConfig = createInstance(PERMISSION_CONFIG_IMPL_PROP, PERMISSION_CONFIG_DEFAULT_IMPL);
             permissionsConfig.compile();
         }
         
@@ -79,9 +80,9 @@ public class ApplicationProperties {
         if (menuConfig == null) {
             ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
 
-            menuConfig = createInstance(MENU_CONFIG_IMPL_PROP, MENU_CONFIG_IMPL);
+            menuConfig = createInstance(MENU_CONFIG_IMPL_PROP, MENU_CONFIG_DEFAULT_IMPL);
             final String path = System.getProperty(MENU_CONFIG_XML_PROP);
-            menuConfig.loadConfig(getMessagesPackage(), repository.getResAsString(path));
+            menuConfig.loadConfig(getMessagesPack(), repository.getResAsString(path));
         }
         return menuConfig;
     }
@@ -90,7 +91,7 @@ public class ApplicationProperties {
         if (windowConfig == null) {
             ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
 
-            windowConfig = createInstance(WINDOW_CONFIG_IMPL_PROP, WINDOW_CONFIG_IMPL);
+            windowConfig = createInstance(WINDOW_CONFIG_IMPL_PROP, WINDOW_CONFIG_DEFAULT_IMPL);
             final String path = System.getProperty(WINDOW_CONFIG_XML_PROP);
             windowConfig.loadConfig(repository.getResAsString(path));
         }
@@ -104,9 +105,9 @@ public class ApplicationProperties {
         return clientType;
     }
 
-    public String getMessagesPackage() {
+    public String getMessagesPack() {
         if (messagesPackage == null) {
-            messagesPackage = System.getProperty(MESSAGES_PACKAGE_PROP);
+            messagesPackage = System.getProperty(MESSAGES_PACK_PROP);
         }
         return messagesPackage;
      }

@@ -12,7 +12,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.config.MenuConfig;
@@ -41,7 +41,7 @@ public class Navigator extends Window
     private void initUI() {
         tree = new Tree();
 
-        final MenuConfig menuConfig = ApplicationProperties.getInstance().getMenuConfig();
+        final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
         List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
             createTreeItem(menuItem, null);
@@ -53,7 +53,7 @@ public class Navigator extends Window
             public void itemClick(ItemClickEvent event) {
                 MenuItem menuItem = (MenuItem) event.getItemId();
                 String caption = menuItem.getCaption();
-                final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+                final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
                 WindowInfo windowInfo = windowConfig.getWindowInfo(menuItem.getId());
                 App.getInstance().getWindowManager().openWindow(
                         windowInfo,

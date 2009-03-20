@@ -10,7 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.ApplicationProperties;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.components.Window;
@@ -52,37 +52,37 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
     }
 
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType, params);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = ApplicationProperties.getInstance().getWindowConfig();
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType);
     }
