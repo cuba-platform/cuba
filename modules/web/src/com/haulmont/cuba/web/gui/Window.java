@@ -345,8 +345,14 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
                     }
                 }
             } else {
-                entity = (Entity) item;
+                if (!PersistenceHelper.isNew((Entity) item)) {
+                    final DataService dataservice = ds.getDataService();
+                    entity = dataservice.reload((Entity) item, ds.getView());
+                } else {
+                    entity = (Entity) item;
+                }
             }
+            
             return entity;
         }
 
