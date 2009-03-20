@@ -14,6 +14,9 @@ import com.haulmont.chile.core.model.Range;
 
 public class MetadataHelper {
     public static Class getPropertyTypeClass(MetaProperty metaProperty) {
+        if (metaProperty == null)
+            throw new IllegalArgumentException("MetaProperty is null");
+        
         final Range range = metaProperty.getRange();
         if (range.isDatatype()) {
             return range.asDatatype().getJavaClass();

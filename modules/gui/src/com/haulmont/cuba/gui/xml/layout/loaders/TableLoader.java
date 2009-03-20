@@ -81,6 +81,9 @@ public class TableLoader extends ComponentLoader {
 
         final MetaClass metaClass = ds.getMetaClass();
         final MetaProperty metaProperty = metaClass.getPropertyEx(id);
+        if (metaProperty == null)
+            throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'", id, metaClass.getName()));
+        
         final Table.Column column = new Table.Column(metaProperty);
 
         final String editable = element.attributeValue("editable");
