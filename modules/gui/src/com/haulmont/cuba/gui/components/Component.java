@@ -34,6 +34,9 @@ public interface Component {
     String getId();
     void setId(String id);
 
+    boolean isVisible();
+    void setVisible(boolean visible);
+
     void requestFocus();
 
     float getHeight();

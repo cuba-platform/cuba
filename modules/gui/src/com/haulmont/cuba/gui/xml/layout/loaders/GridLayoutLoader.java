@@ -31,6 +31,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         GridLayout component = factory.createComponent("grid");
 
         loadId(component, element);
+        loadVisible(component, element);
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");

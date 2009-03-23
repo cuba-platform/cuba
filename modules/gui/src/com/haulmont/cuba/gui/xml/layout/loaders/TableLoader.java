@@ -42,6 +42,7 @@ public class TableLoader extends ComponentLoader {
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadVisible(component, element);
         loadEditable(component, element);
 
         final Element columnsElement = element.element("columns");

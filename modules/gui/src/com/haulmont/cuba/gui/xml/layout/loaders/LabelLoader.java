@@ -25,6 +25,7 @@ public class LabelLoader extends ComponentLoader {
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadVisible(component, element);
 
         String caption = element.attributeValue("value");
         if (!StringUtils.isEmpty(caption)) {

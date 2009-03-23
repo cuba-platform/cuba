@@ -31,6 +31,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setId(id);
     }
 
+    public boolean isVisible() {
+        return frame.isVisible();
+    }
+
+    public void setVisible(boolean visible) {
+        frame.setVisible(visible);
+    }
+
     public void requestFocus() {
         frame.requestFocus();
     }

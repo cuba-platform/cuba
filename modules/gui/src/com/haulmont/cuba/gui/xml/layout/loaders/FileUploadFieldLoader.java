@@ -23,6 +23,7 @@ public class FileUploadFieldLoader extends ComponentLoader{
         FileUploadField component = factory.createComponent("upload");
         
         loadId(component, element);
+        loadVisible(component, element);
 
         loadHeight(component, element);
         loadWidth(component, element);

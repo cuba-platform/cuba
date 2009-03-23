@@ -16,9 +16,11 @@ import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 
 import java.util.Locale;
+import java.util.Map;
 
 public interface ComponentLoader {
     public interface Context {
+        Map<String, Object> getParameters();
         DsContext getDSContext();
 
         void addLazyTask(LazyTask task);

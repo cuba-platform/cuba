@@ -188,6 +188,14 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         this.id = id;
     }
 
+    public boolean isVisible() {
+        return true; 
+    }
+
+    public void setVisible(boolean visible) {
+        throw new UnsupportedOperationException();
+    }
+
     public void requestFocus() {
     }
 

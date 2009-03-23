@@ -28,6 +28,7 @@ public class SplitPanelLoader extends ContainerLoader{
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadVisible(component, element);
 
         final Collection<Component> components = loadSubComponents(component, element);
         for (Component c : components) {

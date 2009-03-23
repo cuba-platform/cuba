@@ -17,6 +17,11 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.Locale;
+import java.util.Collection;
+import java.util.Map;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected Locale locale;
@@ -78,6 +83,38 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             caption = loadResourceString(caption);
             component.setCaption(caption);
         }
+    }
+
+    protected void loadVisible(Component component, Element element) {
+        String visible = element.attributeValue("visible");
+        if (visible == null) {
+            final Element e = element.element("visible");
+            if (e != null) {
+                visible = e.getText();
+            }
+        }
+
+        if (!StringUtils.isEmpty(visible)) {
+            if ("true".equals(visible) || "false".equals(visible)) {
+                component.setVisible(Boolean.valueOf(visible));
+            } else {
+                Binding binding = createBinding(context.getParameters());
+                GroovyShell shell = new GroovyShell(binding);
+
+                @SuppressWarnings({"unchecked"})
+                Boolean res = (Boolean) shell.evaluate(visible);
+                component.setVisible(res);
+            }
+        }
+    }
+
+    protected Binding createBinding(Map<String, Object> map) {
+        Binding binding = new Binding();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            binding.setVariable(entry.getKey(), entry.getValue());
+        }
+
+        return binding;
     }
 
     protected String loadResourceString(String caption) {

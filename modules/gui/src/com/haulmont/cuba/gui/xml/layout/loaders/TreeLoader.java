@@ -37,6 +37,7 @@ public class TreeLoader extends ComponentLoader
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadVisible(component, element);
 
         Element itemsElem = element.element("treechildren");
         String datasource = itemsElem.attributeValue("datasource");

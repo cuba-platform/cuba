@@ -1,21 +1,28 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 
 public class ComponentLoaderContext implements ComponentLoader.Context {
     protected DsContext dsContext;
     protected IFrame frame;
 
     protected List<ComponentLoader.LazyTask> lazyTasks = new ArrayList<ComponentLoader.LazyTask>();
+    protected Map<String, Object> parameters;
 
-    public ComponentLoaderContext(DsContext dsContext) {
+    public ComponentLoaderContext(DsContext dsContext, Map<String, Object> parameters) {
         this.dsContext = dsContext;
+        this.parameters = parameters;
+    }
+
+    public Map<String, Object> getParameters() {
+        return Collections.unmodifiableMap(parameters);
     }
 
     public DsContext getDSContext() {

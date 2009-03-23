@@ -42,6 +42,14 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
 //        component.setDebugId(id);
     }
 
+    public boolean isVisible() {
+        return component.isVisible();
+    }
+
+    public void setVisible(boolean visible) {
+        component.setVisible(visible);
+    }
+
     public void requestFocus() {
         if (component instanceof com.itmill.toolkit.ui.Component.Focusable) {
             ((com.itmill.toolkit.ui.Component.Focusable) component).focus();

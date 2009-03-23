@@ -34,6 +34,8 @@ public class AbstractFieldLoader extends ComponentLoader {
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadVisible(component, element);
+
         loadCaption(component, element);
         loadEditable(component, element);
 

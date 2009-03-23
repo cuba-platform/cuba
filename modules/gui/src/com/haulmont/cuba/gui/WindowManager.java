@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.components.Action;
@@ -27,15 +28,12 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
-import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.perf4j.StopWatch;
-import org.perf4j.log4j.Log4JStopWatch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,7 +70,7 @@ public abstract class WindowManager {
         deployViews(document);
 
         final DsContext dsContext = loadDsContext(element);
-        final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext);
+        final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext, params);
 
         final Window window = loadLayout(template, element, componentLoaderContext, layoutConfig);
 
@@ -89,12 +87,14 @@ public abstract class WindowManager {
     protected void deployViews(Document document) {
         final Element metadataContextElement = document.getRootElement().element("metadataContext");
         if (metadataContextElement != null) {
+            @SuppressWarnings({"unchecked"})
             List<Element> fileElements = metadataContextElement.elements("deployViews");
             for (Element fileElement : fileElements) {
                 final String resource = fileElement.attributeValue("name");
                 MetadataProvider.getViewRepository().deployViews(getClass().getResourceAsStream(resource));
             }
 
+            @SuppressWarnings({"unchecked"})
             List<Element> viewElements = metadataContextElement.elements("view");
             for (Element viewElement : viewElements) {
                 MetadataProvider.getViewRepository().deployView(metadataContextElement, viewElement);
@@ -154,10 +154,12 @@ public abstract class WindowManager {
         params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();
         if (template != null) {
+            //noinspection unchecked
             return (T) __openWindow(template, openType, params);
         } else {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null)
+                //noinspection unchecked
                 return (T) __openWindow(screenClass, openType, params);
             else
                 return null;
@@ -170,10 +172,11 @@ public abstract class WindowManager {
         String caption = loadCaption(window, params);
 
         showWindow(window, caption, openType);
+        //noinspection unchecked
         return (T) window;
     }
 
-    protected <T extends Window> String loadCaption(Window window, Map<String, Object> params) {
+    protected String loadCaption(Window window, Map<String, Object> params) {
         String caption = window.getCaption();
         if (!StringUtils.isEmpty(caption)) {
             caption = TemplateHelper.processTemplate(caption, params);
@@ -202,6 +205,7 @@ public abstract class WindowManager {
         String caption = loadCaption(window, params);
 
         showWindow(window, caption, openType);
+        //noinspection unchecked
         return (T) window;
     }
 
@@ -230,6 +234,7 @@ public abstract class WindowManager {
         String caption = loadCaption(window, params);
 
         showWindow(window, caption, openType);
+        //noinspection unchecked
         return (T) window;
     }
 
@@ -267,7 +272,7 @@ public abstract class WindowManager {
 
         String caption = loadCaption(window, params);
         showWindow(window, caption, openType);
-
+        //noinspection unchecked
         return (T) window;
     }
 
@@ -278,6 +283,7 @@ public abstract class WindowManager {
         if (element != null) {
             final Element paramsElement = element.element("params");
             if (paramsElement != null) {
+                @SuppressWarnings({"unchecked"})
                 final List<Element> paramElements = paramsElement.elements("param");
                 for (Element paramElement : paramElements) {
                     final String name = paramElement.attributeValue("name");
@@ -299,14 +305,17 @@ public abstract class WindowManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Object item, OpenType openType) {
+        //noinspection unchecked
         return (T)openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
     }
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, OpenType openType) {
+        //noinspection unchecked
         return (T)openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
     }
 
     public <T extends Window> T openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
+        //noinspection unchecked
         return (T)openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
     }
 
@@ -418,6 +427,7 @@ public abstract class WindowManager {
         }
         method.setAccessible(true);
 
+        //noinspection unchecked
         return (T) method.invoke(window);
     }
 
@@ -426,7 +436,7 @@ public abstract class WindowManager {
         for (Object param : params) {
             if (param == null) throw new IllegalStateException("Null parameter");
 
-            final Class<? extends Object> aClass = param.getClass();
+            final Class aClass = param.getClass();
             if (List.class.isAssignableFrom(aClass)) {
                 paramClasses.add(List.class);
             } else if (Set.class.isAssignableFrom(aClass)) {
@@ -441,11 +451,12 @@ public abstract class WindowManager {
         final Class<? extends Window> aClass = window.getClass();
         Method method;
         try {
-            method = aClass.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[]{}));
+            method = aClass.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[paramClasses.size()]));
         } catch (NoSuchMethodException e) {
-            method = aClass.getMethod(name, paramClasses.toArray(new Class<?>[]{}));
+            method = aClass.getMethod(name, paramClasses.toArray(new Class<?>[paramClasses.size()]));
         }
         method.setAccessible(true);
+        //noinspection unchecked
         return (T) method.invoke(window, params);
     }
 

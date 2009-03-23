@@ -30,19 +30,20 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
-        final IFrame frame = (IFrame) loader.loadComponent(getClass().getResource(src));
-        if (frame.getMessagesPack() == null) {
-            frame.setMessagesPack(messagesPack);
+        final IFrame component = (IFrame) loader.loadComponent(getClass().getResource(src));
+        if (component.getMessagesPack() == null) {
+            component.setMessagesPack(messagesPack);
         }
 
-        assignXmlDescriptor(frame, element);
-        loadId(frame, element);
-        loadAlign(frame, element);
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
+        loadVisible(component, element);
 
-        loadHeight(frame, element, "-1px");
-        loadWidth(frame, element);
+        loadAlign(component, element);
 
-        return frame;
+        loadHeight(component, element, "-1px");
+        loadWidth(component, element);
+
+        return component;
     }
-
 }

@@ -27,8 +27,9 @@ public class TabsheetLoader extends ContainerLoader {
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final Tabsheet component = factory.createComponent("tabsheet");
 
-        loadId(component, element);
         assignXmlDescriptor(component, element);
+        loadId(component, element);
+        loadVisible(component, element);
 
         final List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {

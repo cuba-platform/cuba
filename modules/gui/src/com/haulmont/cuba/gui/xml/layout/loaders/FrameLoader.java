@@ -22,9 +22,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
     public FrameLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -32,7 +29,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final IFrame frame = factory.createComponent("iframe");
+        final IFrame component = factory.createComponent("iframe");
 
         final Element dsContextElement = element.element("dsContext");
         final DsContext dsContext;
@@ -46,14 +43,15 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             dsContext = null;
         }
         
-        assignXmlDescriptor(frame, element);
-        loadId(frame, element);
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
+        loadVisible(component, element);
 
-        loadMessagesPack(frame, element);
-        loadSubcomponentsAndExpand(frame, element.element("layout"));
+        loadMessagesPack(component, element);
+        loadSubcomponentsAndExpand(component, element.element("layout"));
 
         if (dsContext != null) {
-            frame.setDsContext(dsContext);
+            component.setDsContext(dsContext);
 
             for (Datasource ds : dsContext.getAll()) {
                 if (ds instanceof DatasourceImplementation) {
@@ -61,13 +59,13 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 }
             }
 
-            dsContext.setContext(new FrameContext(frame));
+            dsContext.setContext(new FrameContext(component));
 
-            ((ComponentLoaderContext) context).setFrame(frame);
+            ((ComponentLoaderContext) context).setFrame(component);
             context.executeLazyTasks();
         }
 
-        return frame;
+        return component;
     }
 
     protected void loadMessagesPack(IFrame frame, Element element) {
@@ -75,8 +73,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         if (msgPack != null) {
             frame.setMessagesPack(msgPack);
             setMessagesPack(msgPack);
-        }
-        else {
+        } else {
             frame.setMessagesPack(msgPack);
             setMessagesPack(this.messagesPack);
         }
