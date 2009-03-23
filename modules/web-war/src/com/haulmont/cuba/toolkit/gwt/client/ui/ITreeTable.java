@@ -815,7 +815,7 @@ public class ITreeTable
                         } else {
                             r = new Row(key, row.getBooleanAttribute("selected"));
                         }
-                        addRow(r);
+                        add(r);
                     }
 
                     UIDL rowContent = row;
@@ -840,47 +840,46 @@ public class ITreeTable
             }
         }
 
-        private void addRow(Row r) {
-            DOM.appendChild(bodyContent, r.getElement());
-            adopt(r);
-            String className;
-            if (rows.size() % 2 == 1) {
-                className = "-row-odd";
-            } else {
-                className = "-row";
+        private Cell getCell(int row, int col) {
+            if (row < 0 || row >= rows.size()) {
+                throw new IndexOutOfBoundsException();
             }
-            DOM.setElementProperty(r.getElement(), "className", CLASSNAME + className);
-            rows.add(r);
-        }
-
-        private Element getCell(int row, int col) {
-            return DOM.getChild(DOM.getChild(bodyContent, row), col);
+            return ((Row) rows.get(row)).getCell(col);
         }
 
         int getColWidth(int col) {
-            return DOM.getElementPropertyInt(getCell(0, col), "offsetWidth");
+            return getCell(0, col).getWidth();
         }
 
-        void setColWidth(int colIndex, int w) {
-            final int rows = DOM.getChildCount(bodyContent);
-            for (int i = 0; i < rows; i++) {
-                final Element cell = DOM.getChild(DOM.getChild(bodyContent, i),
-                        colIndex);
-                DOM.setStyleAttribute(cell, "width", w + "px");
+        void setColWidth(int col, int w) {
+            for (int i = 0; i < rows.size(); i++) {
+                getCell(i, col).setWidth(w);
             }
         }
 
         int getRowHeight() {
-            int rowHeight = DOM.getElementPropertyInt(getCell(0, 0), "offsetHeight");
+            int rowHeight = getCell(0, 0).getHeight();
             if (rowHeight > 0) {
                 return rowHeight;
             }
             return DEFAULT_ROW_HEIGHT;
         }
 
+        public void add(Widget child) {
+            String className;
+            if (rows.size() % 2 == 1) {
+                className = "-row-odd";
+            } else {
+                className = "-row";
+            }
+            DOM.setElementProperty(child.getElement(), "className", CLASSNAME + className);
+            DOM.appendChild(bodyContent, child.getElement());
+            adopt(child);
+            rows.add(child);
+        }
+
         public boolean remove(Widget child) {
             if (rows.contains(child)) {
-                log.log("remove:" + ((Row)child).key);
                 rows.remove(child);
                 orphan(child);
                 DOM.removeChild(DOM.getParent(child.getElement()), child.getElement());
@@ -929,18 +928,23 @@ public class ITreeTable
             public void updateRowFromUIDL(UIDL uidl) {
                 Iterator cells = uidl.getChildIterator();
                 visibleCells.clear();
+                int index = 0;
                 while (cells.hasNext()) {
-                    final Object c = cells.next();
-                    Cell cell = null;
-                    if (c instanceof String) {
-                        cell = new Cell((String) c);
-                    } else if (c instanceof Widget) {
-                        cell = new Cell((Widget) c);
-                    }
+                    final Cell cell = createCell(cells.next(), index++);
                     if (cell != null) {
-                        addCell(cell);
+                        add(cell);
                     }
                 }
+            }
+
+            private Cell createCell(Object o, int index) {
+                Cell c = null;
+                if (o instanceof String) {
+                    c = index == 0 ? new CrossCell((String) o) : new Cell((String) o);
+                } else if (o instanceof Widget) {
+                    c = index == 0 ? new CrossCell((Widget) o) : new Cell((Widget) o);
+                }
+                return c;
             }
 
             public boolean isExpanded() {
@@ -1032,23 +1036,22 @@ public class ITreeTable
                         cell = new Cell((Widget) c);
                     }
                     if (cell != null) {
-                        addCell(cell);
+                        add(cell);
                     }
                 }
             }
 
-            protected void addCell(Cell c) {
-                adopt(c);
-                DOM.appendChild(getElement(), c.getElement());
-                visibleCells.add(c);
+            public void add(Widget child) {
+                DOM.appendChild(getElement(), child.getElement());
+                adopt(child);
+                visibleCells.add(child);
             }
 
             public boolean remove(Widget child) {
                 if (visibleCells.contains(child)) {
                     visibleCells.remove(child);
                     orphan(child);
-                    final Element parent = DOM.getParent(child.getElement());
-                    DOM.removeChild(parent, child.getElement());
+                    DOM.removeChild( DOM.getParent(child.getElement()), child.getElement());
                     return true;
                 }
                 return false;
@@ -1060,6 +1063,29 @@ public class ITreeTable
 
             public String getKey() {
                 return key;
+            }
+
+            public Cell getCell(int index) {
+                if (index < 0 || index >= visibleCells.size()) {
+                    throw new IndexOutOfBoundsException();
+                }
+                return (Cell) visibleCells.get(index);
+            }
+        }
+
+        class CrossCell extends Cell {
+            CrossCell(String text) {
+                super(text);
+            }
+
+            CrossCell(Widget w) {
+                super(w);
+            }
+
+            @Override
+            public void setWidth(int w) {
+                w = w - 19;
+                super.setWidth(w);
             }
         }
 
@@ -1083,6 +1109,19 @@ public class ITreeTable
 
             public Element getContainerElement() {
                 return cell;
+            }
+
+            public int getWidth() {
+                return DOM.getElementPropertyInt(getElement(), "offsetWidth");
+            }
+
+            public void setWidth(int w) {
+                if (w < 0) w = 0;
+                DOM.setStyleAttribute(getElement(), "width", w + "px");
+            }
+
+            public int getHeight() {
+                return DOM.getElementPropertyInt(getElement(), "offsetHeight");
             }
         }
     }
