@@ -45,6 +45,10 @@ public abstract class AbstractDataSource<T extends Entity>
         return modified;
     }
 
+    public void setModified(boolean modified) {
+        this.modified = modified;
+    }
+
     public Collection<T> getItemsToCreate() {
         return Collections.unmodifiableCollection(itemToCreate);
     }
@@ -55,6 +59,19 @@ public abstract class AbstractDataSource<T extends Entity>
 
     public Collection<T> getItemsToDelete() {
         return Collections.unmodifiableCollection(itemToDelete);
+    }
+
+    public void modified(T item) {
+        if (PersistenceHelper.isNew(item)) {
+            itemToCreate.add(item);
+        } else {
+            itemToUpdate.add(item);
+        }
+        modified = true;
+    }
+
+    public void deleted(T item) {
+        itemToDelete.add(item);
     }
 
     public void addListener(DatasourceListener<T> listener) {
@@ -101,13 +118,7 @@ public abstract class AbstractDataSource<T extends Entity>
                 dsListener.valueChanged(item, property, prevValue, value);
             }
 
-            if (PersistenceHelper.isNew((Entity) item)) {
-                itemToCreate.add((T) item);
-            } else {
-                itemToUpdate.add((T) item);
-            }
-
-            modified = true;
+            modified((T)item);
         }
     }
 }

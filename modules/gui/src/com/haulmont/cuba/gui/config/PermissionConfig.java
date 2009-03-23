@@ -11,31 +11,28 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.datastruct.Node;
- import com.haulmont.bali.datastruct.Tree;
- import com.haulmont.chile.core.model.MetaClass;
- import com.haulmont.chile.core.model.MetaModel;
- import com.haulmont.chile.core.model.MetaProperty;
- import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.utils.MethodsCache;
+import com.haulmont.bali.datastruct.Tree;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaModel;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.chile.core.model.utils.MethodsCache;
 import com.haulmont.cuba.core.app.ResourceRepositoryService;
- import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.ClientType;
- import com.haulmont.cuba.core.global.MessageProvider;
- import com.haulmont.cuba.core.global.MetadataProvider;
- import com.haulmont.cuba.gui.AppConfig;
- import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
 import org.dom4j.Document;
- import org.dom4j.DocumentException;
- import org.dom4j.Element;
- import org.dom4j.io.SAXReader;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
- import java.io.StringReader;
- import java.util.ArrayList;
- import java.util.List;
- import java.util.Locale;
-import java.util.UUID;
+import java.io.StringReader;
+import java.util.*;
 
 public class PermissionConfig {
      @com.haulmont.chile.core.annotations.MetaClass(name = "sec$Target")
@@ -213,16 +210,23 @@ public class PermissionConfig {
      }
 
     public List<Target> getEntityOperations(Target entityTarget) {
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entityTarget.getId());
+        if (entityTarget == null) return Collections.emptyList();
+
+        final String id = entityTarget.getId();
+        if (!id.startsWith("entity:")) return Collections.emptyList();
+
+        MetaClass metaClass = MetadataProvider.getSession().getClass(id.substring("entity:".length()));
+        if (metaClass == null)  return Collections.emptyList();
+
         List<Target> result = new ArrayList<Target>();
 
-        result.add(new Target(entityTarget.getId() + ":create", "create", entityTarget.getId() + ":create"));
-        result.add(new Target(entityTarget.getId() + ":read", "read", entityTarget.getId() + ":read"));
-        result.add(new Target(entityTarget.getId() + ":delete", "delete", entityTarget.getId() + ":delete"));
+        result.add(new Target(id + ":create", "create", id + ":create"));
+        result.add(new Target(id + ":read", "read", id + ":read"));
+        result.add(new Target(id + ":delete", "delete", id + ":delete"));
 
         Class javaClass = metaClass.getJavaClass();
         if (Updatable.class.isAssignableFrom(javaClass)) {
-            result.add(new Target(entityTarget.getId() + ":update", "update", entityTarget.getId() + ":update"));
+            result.add(new Target(id + ":update", "update", id + ":update"));
         }
 
         return result;

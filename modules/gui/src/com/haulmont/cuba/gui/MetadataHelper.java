@@ -12,6 +12,12 @@ package com.haulmont.cuba.gui;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 
+import javax.persistence.OneToMany;
+import javax.persistence.CascadeType;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Arrays;
+
 public class MetadataHelper {
     public static Class getPropertyTypeClass(MetaProperty metaProperty) {
         if (metaProperty == null)
@@ -27,5 +33,23 @@ public class MetadataHelper {
         } else {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public static boolean isCascade(MetaProperty metaProperty) {
+        boolean cascadeProperty = false;
+
+        final Field field = metaProperty.getJavaField();
+        if (field != null) {
+            OneToMany oneToMany = field.getAnnotation(OneToMany.class);
+            if (oneToMany != null) {
+                final Collection<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
+                if (cascadeTypes.contains(CascadeType.ALL) ||
+                        cascadeTypes.contains(CascadeType.MERGE))
+                {
+                    cascadeProperty = true;
+                }
+            }
+        }
+        return cascadeProperty;
     }
 }

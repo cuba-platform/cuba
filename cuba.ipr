@@ -1010,7 +1010,6 @@
       </map>
     </option>
     <option name="myVersion" value="124" />
-    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
@@ -1064,6 +1063,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-io-1.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/freemarker-2.3.15.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/perf4j-0.9.10.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.0.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -1072,7 +1072,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/reflections-0.9-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-io-1.4-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/perf4j-0.9.10-src.zip!/" />
-        <root url="intellijad://intellijad" />
+        <root url="NullVirtualFilePointer" />
       </SOURCES>
     </library>
     <library name="test">
@@ -1087,7 +1087,7 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/test/src/junit-4.5-src.zip!/" />
-        <root url="intellijad://intellijad" />
+        <root url="NullVirtualFilePointer" />
       </SOURCES>
     </library>
     <library name="client">

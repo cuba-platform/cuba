@@ -27,8 +27,8 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     implements
         CollectionDatasource<T, K>
 {
-    private String query;
-    private ParametersHelper.ParameterInfo[] queryParameters;
+    protected String query;
+    protected ParametersHelper.ParameterInfo[] queryParameters;
 
     protected Data data = new Data(Collections.<K>emptyList(), Collections.<K,T>emptyMap());
 
@@ -262,8 +262,12 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
         context.setView(view);
 
+        @SuppressWarnings({"unchecked"})
         final Collection<T> entities = (Collection) dataservice.loadList(context);
+        return wrapAsData(entities);
+    }
 
+    protected Data wrapAsData(Collection<T> entities) {
         List<K> ids = new ArrayList<K>();
         Map<K, T> itemsById = new HashMap<K,T>();
 
@@ -276,7 +280,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         return new Data(ids, itemsById);
     }
 
-    private Map<String, Object> getQueryParameters() {
+    protected Map<String, Object> getQueryParameters() {
         final Map<String, Object> map = new HashMap<String, Object>();
         for (ParametersHelper.ParameterInfo info : queryParameters) {
             String name = info.getFlatName();

@@ -99,11 +99,14 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
         listeners.remove(listener);
     }
 
+    protected Object prevValue;
+
     protected void attachListener(T component) {
         component.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
-                // TODO (abramov) suport prevValue
-                fireValueChanged(null, getValue());
+                final Object value = getValue();
+                fireValueChanged(prevValue, value);
+                prevValue = value;
             }
         });
     }

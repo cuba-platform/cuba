@@ -110,6 +110,7 @@
 
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
                         <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="margin" type="xs:boolean" use="optional"/>
                         <xs:attribute name="align" type="align" use="optional"/>
                     </xs:complexType>
                 </xs:element>

@@ -16,10 +16,14 @@ import java.util.Collection;
 
 public interface DatasourceImplementation<T extends Entity> {
     void initialized();
+    void setModified(boolean modified);
 
     Collection<T> getItemsToCreate();
     Collection<T> getItemsToUpdate();
     Collection<T> getItemsToDelete();
+
+    void modified(T item);
+    void deleted(T item);
 
     void commited(Map<Entity, Entity> map);
 }

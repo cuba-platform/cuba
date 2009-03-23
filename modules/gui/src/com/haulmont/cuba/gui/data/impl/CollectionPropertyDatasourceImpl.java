@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -30,10 +31,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         CollectionDatasource<T, K>
 {
     private T item;
+    protected boolean cascadeProperty;
 
     public CollectionPropertyDatasourceImpl(String id, Datasource<Entity> ds, String property) {
         super(id, ds, property);
-        
+
+        final MetaClass metaClass = ds.getMetaClass();
+        final MetaProperty metaProperty = metaClass.getProperty(property);
+        cascadeProperty = MetadataHelper.isCascade(metaProperty);
+
         ds.addListener(new DatasourceListener<Entity>() {
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                 forceCollectionChanged(
@@ -119,6 +125,13 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         __getCollection().add(item);
 
         modified = true;
+        if (cascadeProperty) {
+            final Entity parentItem = ds.getItem();
+            ((DatasourceImplementation) ds).modified(parentItem);
+        } else {
+            modified(item);
+        }
+
         forceCollectionChanged(
                 new CollectionDatasourceListener.CollectionOperation<T>(
                         CollectionDatasourceListener.CollectionOperation.Type.ADD, null));
@@ -129,6 +142,13 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         __getCollection().remove(item);
 
         modified = true;
+        if (cascadeProperty) {
+            final Entity parentItem = ds.getItem();
+            ((DatasourceImplementation) ds).modified(parentItem);
+        } else {
+            deleted(item);
+        }
+
         forceCollectionChanged(
                 new CollectionDatasourceListener.CollectionOperation<T>(
                     CollectionDatasourceListener.CollectionOperation.Type.REMOVE, null));

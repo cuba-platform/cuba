@@ -19,12 +19,28 @@
         </datasource>
 
         <hierarchicalDatasource
-            id="entityPermissions"
+            id="entities"
             class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
             view="role.edit"
         >
             <datasourceClass>com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource</datasourceClass>
         </hierarchicalDatasource>
+
+        <collectionDatasource
+            id="entityPermissions"
+            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+            view="role.edit"
+        >
+            <datasourceClass>com.haulmont.cuba.gui.data.CustomCollectionDatasource</datasourceClass>
+            <query>
+                <![CDATA[
+                import com.haulmont.cuba.gui.AppConfig
+                
+                config = AppConfig.getInstance().getPermissionConfig()
+                return config.getEntityOperations(:ds$entities);
+                ]]>
+            </query>
+        </collectionDatasource>
 
         <hierarchicalDatasource
             id="screenPermissions"
@@ -51,21 +67,32 @@
             <label value="msg://superRole"/>
             <checkBox id="superRole" datasource="role" property="superRole"/>
         </hbox>
+        <hbox></hbox>
         <vbox id="permissions-pane" expand="roles" spacing="true">
             <tabsheet id="permissions-types">
-                <tab id="entity-permissions" caption="msg://entity-permissions">
-                    <tree id="entity-permissions-tree">
-                        <treechildren datasource="entityPermissions"/>
-                    </tree>
+                <tab id="entity-permissions-tab" caption="msg://entity-permissions">
+                    <split orientation="horizontal" pos="30">
+                        <tree id="entity-permissions-tree">
+                            <treechildren datasource="entities" captionProperty="caption"/>
+                        </tree>
+                        <vbox>
+                            <optionsGroup
+                                id="entity-permissions"
+                                optionsDatasource="entityPermissions"
+                                multiselect="true"
+                                captionProperty="caption"
+                            />
+                        </vbox>
+                    </split>
                 </tab>
-                <tab id="screen-permissions" caption="msg://screen-permissions">
+                <tab id="screen-permissions-tab" caption="msg://screen-permissions">
                     <tree id="screen-permissions-tree">
-                         <treechildren datasource="screenPermissions"/>
+                         <treechildren datasource="screenPermissions" captionProperty="caption"/>
                     </tree>
                 </tab>
-                <tab id="specific-permissions" caption="msg://specific-permissions">
+                <tab id="specific-permissions-tab" caption="msg://specific-permissions">
                     <tree id="specific-permissions-tree">
-                          <treechildren datasource="specificPermissions"/>
+                          <treechildren datasource="specificPermissions" captionProperty="caption"/>
                      </tree>
                 </tab>
             </tabsheet>

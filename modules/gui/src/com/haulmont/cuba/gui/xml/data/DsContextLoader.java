@@ -42,15 +42,15 @@ public class DsContextLoader {
         }
 
         //noinspection unchecked
-        elements = element.elements("collectionDatasource");
-        for (Element ds : elements) {
-            datasources.register(loadCollectionDatasource(ds));
-        }
-
-        //noinspection unchecked
         elements = element.elements("hierarchicalDatasource");
         for (Element ds : elements) {
             datasources.register(loadHierarchicalDatasource(ds));
+        }
+
+        //noinspection unchecked
+        elements = element.elements("collectionDatasource");
+        for (Element ds : elements) {
+            datasources.register(loadCollectionDatasource(ds));
         }
 
         datasources.executeLazyTasks();
