@@ -841,8 +841,8 @@ public class ITreeTable
         }
 
         private void addRow(Row r) {
-            adopt(r);
             DOM.appendChild(bodyContent, r.getElement());
+            adopt(r);
             String className;
             if (rows.size() % 2 == 1) {
                 className = "-row-odd";
@@ -905,46 +905,46 @@ public class ITreeTable
             private Vector<Widget> children = new Vector<Widget>();
             private boolean expanded;
 
+            private final CrossSign cross = new CrossSign();
+
             GroupRow(String key, boolean expanded) {
                 this(key, false, expanded);
             }
 
             GroupRow(String key, boolean selected, boolean expanded) {
                 super(key, selected);
+
                 this.expanded = expanded;
+
+
+                DOM.appendChild(getElement(), cross.getElement());
+                adopt(cross);
+
+                DOM.sinkEvents(cross.getElement(), Event.ONCLICK);
+
+                cross.setExpanded(expanded);
             }
 
             @Override
             public void updateRowFromUIDL(UIDL uidl) {
                 Iterator cells = uidl.getChildIterator();
                 visibleCells.clear();
-                int index = 0;
                 while (cells.hasNext()) {
                     final Object c = cells.next();
-                    log.log("cell:" + String.valueOf(c));
                     Cell cell = null;
-                    if (index == 0) {
-                        cell = new HierarchicalCell((String) c, GroupRow.this.expanded, GroupRow.this);
-                    } else {
-                        if (c instanceof String) {
-                            cell = new Cell((String) c);
-                        } else if (c instanceof Widget) {
-                            cell = new Cell((Widget) c);
-                        }
+                    if (c instanceof String) {
+                        cell = new Cell((String) c);
+                    } else if (c instanceof Widget) {
+                        cell = new Cell((Widget) c);
                     }
                     if (cell != null) {
                         addCell(cell);
                     }
-                    index++;
                 }
             }
 
             public boolean isExpanded() {
                 return expanded;
-            }
-
-            public void setExpanded(boolean expanded) {
-                this.expanded = expanded;
             }
 
             public Vector<Widget> getChildred() {
@@ -953,6 +953,34 @@ public class ITreeTable
 
             public boolean hasChildred() {
                 return !getChildred().isEmpty();
+            }
+
+            public void onBrowserEvent(Event event) {
+                if (event.getTarget() == cross.getElement()) {
+                    switch (event.getTypeInt()) {
+                        case Event.ONCLICK:
+                            Window.alert("click");
+                            break;
+                    }
+                }
+            }
+
+            class CrossSign extends Widget
+            {
+                CrossSign() {
+                    setElement(DOM.createDiv());
+                    setStyleName(CLASSNAME + "-cell-cross");
+                }
+
+                void setExpanded(boolean b) {
+                    if (expanded != b) {
+                        if (b) {
+                            addStyleName(CLASSNAME_ROW_EXPANDED);
+                        } else {
+                            removeStyleName(CLASSNAME_ROW_EXPANDED);
+                        }
+                    }
+                }
             }
         }
 
@@ -1031,80 +1059,26 @@ public class ITreeTable
             }
         }
 
-        class Cell extends Composite {
-            private FlowPanel container = new FlowPanel();
+        class Cell extends SimplePanel {
+
+            private final Element cell = DOM.createDiv();
+
             Cell(String text) {
                 this(new Label(text));
             }
 
             Cell(Widget w) {
-                container.setStyleName(CLASSNAME + "-cell-wrap");
+                super();
+                setStyleName(CLASSNAME + "-cell-wrap");
 
-                SimplePanel content = new SimplePanel();
-                content.setStyleName(CLASSNAME + "-cell");
-                content.setWidget(w);
+                DOM.setElementProperty(cell, "className", CLASSNAME + "-cell");
+                DOM.appendChild(getElement(), cell);
 
-                container.add(content);
-
-                initWidget(container);
+                setWidget(w);
             }
 
-            public FlowPanel getContainer() {
-                return container;
-            }
-        }
-
-        class HierarchicalCell extends Cell {
-            HierarchicalCell(String text, boolean expanded, GroupRow parentRow) {
-                super(text);
-                final Widget cs = new CrossSign(expanded, parentRow);
-                getContainer().insert(cs, 0);
-            }
-        }
-
-        class CrossSign extends Widget implements SourcesClickEvents {
-            private ClickListenerCollection clickListeners = null;
-            private GroupRow parentRow;
-            CrossSign(boolean expanded, GroupRow parentRow) {
-                setElement(DOM.createDiv());
-                setStyleName(CLASSNAME + "-cell-cross");
-                if (expanded) {
-                    addStyleName(CLASSNAME_ROW_EXPANDED);
-                }
-                addClickListener(ITreeTable.this);
-                this.parentRow = parentRow;
-            }
-
-            public GroupRow getParentRow() {
-                if (parentRow == null) {
-                    throw new IllegalStateException("The parent row cannot be null");
-                }
-                return parentRow;
-            }
-
-            public void addClickListener(ClickListener listener) {
-                if (clickListeners == null) {
-                    clickListeners = new ClickListenerCollection();
-                    sinkEvents(Event.ONCLICK);
-                }
-                clickListeners.add(listener);
-            }
-
-            public void removeClickListener(ClickListener listener) {
-                if (clickListeners != null) {
-                    clickListeners.remove(listener);
-                }
-            }
-
-            @Override
-            public void onBrowserEvent(Event event) {
-                switch (event.getTypeInt()) {
-                    case Event.ONCLICK:
-                        if (clickListeners != null) {
-                            clickListeners.fireClick(this);
-                        }
-                        break;
-                }
+            public Element getContainerElement() {
+                return cell;
             }
         }
     }
