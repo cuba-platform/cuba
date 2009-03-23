@@ -703,8 +703,8 @@ public class ITreeTable
         }
 
         private void addTableBody(TableBody tBody) {
-            adopt(tBody);
             DOM.appendChild(getElement(), tBody.getElement());
+            adopt(tBody);
             tableBodies.add(tBody);
             availableBodies.put(tBody.getKey(), tBody);
         }
@@ -749,7 +749,7 @@ public class ITreeTable
         }
     }
 
-    class TableBody extends Panel {
+    class TableBody extends Widget {
 
         private String key;
         private String caption;
@@ -758,13 +758,16 @@ public class ITreeTable
         private final Vector<Widget> rows = new Vector<Widget>();
 
         private Element captionContainer = null;
-        private final Element bodyContent = DOM.createDiv();
+        private final RowsContainer bodyContent = new RowsContainer();
 
         TableBody(String key) {
             this.key = key;
+
             setElement(DOM.createDiv());
-            DOM.setElementProperty(bodyContent, "className", CLASSNAME + "-content");
-            DOM.appendChild(getElement(), bodyContent);
+
+            DOM.setElementProperty(bodyContent.getElement(), "className", CLASSNAME + "-content");
+            DOM.appendChild(getElement(), bodyContent.getElement());
+//            adopt(bodyContent);
         }
 
         public String getKey() {
@@ -786,117 +789,99 @@ public class ITreeTable
                 DOM.setInnerHTML(captionContainer, caption);
             }
 
-            clear(); //todo think about a caching the rows list
+            bodyContent.clear(); //todo think about a caching the rows list
 
-            updateBodyRows(uidl.getChildIterator());
+            bodyContent.updateFromUIDL(uidl);
         }
 
-        void updateBodyRows(Iterator rowsIterator) {
-            while (rowsIterator.hasNext()) {
-                final UIDL row = (UIDL) rowsIterator.next();
-                if ("gr".equals(row.getTag())
-                        || "tr".equals(row.getTag()))
-                {
-
-                    boolean showChildren = false;
-                    boolean groupped = ("gr".equals(row.getTag()));
-
-                    final String key = row.getStringAttribute("key");
-                    Row r = null;//(Row) availableRows.get(key); todo
-                    if (r == null) {
-                        if (groupped)
-                        {
-                            showChildren = row.getBooleanAttribute("expanded");
-                            r = new GroupRow(
-                                    key,
-                                    row.getBooleanAttribute("selected"),
-                                    showChildren
-                            );
-                        } else {
-                            r = new Row(key, row.getBooleanAttribute("selected"));
-                        }
-                        addRow(r);
-                    }
-
-                    UIDL rowContent = row;
-                    if (groupped)
-                    {
-                        Iterator tags = row.getChildIterator();
-                        while (tags.hasNext()) {
-                            final UIDL t = (UIDL) tags.next();
-                            if ("c".equals(t.getTag())) {
-                                rowContent = t;
-                                break;
-                            }
-                        }
-                    }
-                    r.updateRowFromUIDL(rowContent);
-
-                    if (showChildren)
-                    {
-                        updateBodyRows(row.getChildIterator());
-                    }
-                }
+        private Cell getCell(int row, int col) {
+            if (row < 0 || row >= rows.size()) {
+                throw new IndexOutOfBoundsException();
             }
-        }
-
-        private void addRow(Row r) {
-            DOM.appendChild(bodyContent, r.getElement());
-            adopt(r);
-            String className;
-            if (rows.size() % 2 == 1) {
-                className = "-row-odd";
-            } else {
-                className = "-row";
-            }
-            DOM.setElementProperty(r.getElement(), "className", CLASSNAME + className);
-            rows.add(r);
-        }
-
-        private Element getCell(int row, int col) {
-            return DOM.getChild(DOM.getChild(bodyContent, row), col);
+            return ((Row) rows.get(row)).getCell(col);
         }
 
         int getColWidth(int col) {
-            return DOM.getElementPropertyInt(getCell(0, col), "offsetWidth");
+            return getCell(0, col).getWidth();
         }
 
-        void setColWidth(int colIndex, int w) {
-            final int rows = DOM.getChildCount(bodyContent);
-            for (int i = 0; i < rows; i++) {
-                final Element cell = DOM.getChild(DOM.getChild(bodyContent, i),
-                        colIndex);
-                DOM.setStyleAttribute(cell, "width", w + "px");
+        void setColWidth(int col, int w) {
+            for (int i = 0; i < rows.size(); i++) {
+                getCell(i, col).setWidth(w);
             }
         }
 
         int getRowHeight() {
-            int rowHeight = DOM.getElementPropertyInt(getCell(0, 0), "offsetHeight");
+            int rowHeight = getCell(0, 0).getHeight();
             if (rowHeight > 0) {
                 return rowHeight;
             }
             return DEFAULT_ROW_HEIGHT;
         }
 
-        public boolean remove(Widget child) {
-            if (rows.contains(child)) {
-                log.log("remove:" + ((Row)child).key);
-                rows.remove(child);
-                orphan(child);
-                DOM.removeChild(DOM.getParent(child.getElement()), child.getElement());
-                return true;
+        class RowsContainer
+                extends Panel
+        {
+            public RowsContainer() {
+                setElement(DOM.createDiv());
             }
-            return false;
-        }
 
-        public Iterator<Widget> iterator() {
-            return rows.iterator();
-        }
+            public void updateFromUIDL(UIDL uidl) {
+                Iterator it = uidl.getChildIterator();
+                while (it.hasNext()) {
+                    final UIDL row = (UIDL) it.next();
+                    if ("gr".equals(row.getTag())
+                            || "tr".equals(row.getTag()))
+                    {
+                        final String key = row.getStringAttribute("key");
+                        Row r;
+                        if ("gr".equals(row.getTag())) {
+                            r = new GroupRow(key,
+                                    row.getBooleanAttribute("selected"),
+                                    row.getBooleanAttribute("expanded")
+                            );
+                        } else {
+                            r = new Row(key, row.getBooleanAttribute("selected"));
+                        }
+                        add(r);
+                        r.updateRowFromUIDL(row);
+                    }
+                }
+            }
 
-        public void clear() {
-            final  Vector<Widget> v = new Vector<Widget>(rows);
-            for (final Widget w : v) {
-                remove(w);
+            public void add(Widget widget) {
+                String className;
+                if (rows.size() % 2 == 1) {
+                    className = "-row-odd";
+                } else {
+                    className = "-row";
+                }
+                widget.addStyleName(CLASSNAME + className);
+
+                rows.add(widget);
+                DOM.appendChild(getElement(), widget.getElement());
+                adopt(widget);
+            }
+
+            public boolean remove(Widget child) {
+                if (rows.contains(child)) {
+                    orphan(child);
+                    DOM.removeChild(DOM.getParent(child.getElement()), child.getElement());
+                    rows.remove(child);
+                    return true;
+                }
+                return false;
+            }
+
+            public void clear() {
+                final  Vector<Widget> v = new Vector<Widget>(rows);
+                for (final Widget w : v) {
+                    remove(w);
+                }
+            }
+
+            public Iterator<Widget> iterator() {
+                return rows.iterator();
             }
         }
 
@@ -916,31 +901,51 @@ public class ITreeTable
 
                 this.expanded = expanded;
 
-
                 DOM.appendChild(getElement(), cross.getElement());
                 adopt(cross);
 
-                DOM.sinkEvents(cross.getElement(), Event.ONCLICK);
+//                DOM.sinkEvents(cross.getElement(), Event.ONCLICK);
 
                 cross.setExpanded(expanded);
             }
 
             @Override
-            public void updateRowFromUIDL(UIDL uidl) {
-                Iterator cells = uidl.getChildIterator();
-                visibleCells.clear();
-                while (cells.hasNext()) {
-                    final Object c = cells.next();
-                    Cell cell = null;
-                    if (c instanceof String) {
-                        cell = new Cell((String) c);
-                    } else if (c instanceof Widget) {
-                        cell = new Cell((Widget) c);
-                    }
-                    if (cell != null) {
-                        addCell(cell);
+            public void updateRowFromUIDL(UIDL uidl)
+            {
+                Iterator it = uidl.getChildIterator();
+                while (it.hasNext()) {
+                    final UIDL data = (UIDL) it.next();
+                    if ("c".equals(data.getTag())) {
+                        updateCells(data);
                     }
                 }
+
+//                if (isExpanded())
+//                {
+//                    getChildrenContainer().updateFromUIDL(uidl);
+//                }
+            }
+
+            protected void updateCells(UIDL uidl) {
+                Iterator cells = uidl.getChildIterator();
+                visibleCells.clear();
+                int index = 0;
+                while (cells.hasNext()) {
+                    final Cell cell = createCell(cells.next(), index++);
+                    if (cell != null) {
+                        add(cell);
+                    }
+                }
+            }
+
+            private Cell createCell(Object o, int index) {
+                Cell c = null;
+                if (o instanceof String) {
+                    c = new Cell((String) o);
+                } else if (o instanceof Widget) {
+                    c = new Cell((Widget) o);
+                }
+                return c;
             }
 
             public boolean isExpanded() {
@@ -955,21 +960,23 @@ public class ITreeTable
                 return !getChildred().isEmpty();
             }
 
-            public void onBrowserEvent(Event event) {
-                if (event.getTarget() == cross.getElement()) {
-                    switch (event.getTypeInt()) {
-                        case Event.ONCLICK:
-                            Window.alert("click");
-                            break;
-                    }
-                }
-            }
+//            public void onBrowserEvent(Event event) {
+//                if (event.getTarget() == cross.getElement()) {
+//                    switch (event.getTypeInt()) {
+//                        case Event.ONCLICK:
+//                            Window.alert("click");
+//                            break;
+//                    }
+//                }
+//            }
 
             class CrossSign extends Widget
             {
                 CrossSign() {
                     setElement(DOM.createDiv());
                     setStyleName(CLASSNAME + "-cell-cross");
+
+                    DOM.sinkEvents(getElement(), Event.ONCLICK);
                 }
 
                 void setExpanded(boolean b) {
@@ -978,6 +985,17 @@ public class ITreeTable
                             addStyleName(CLASSNAME_ROW_EXPANDED);
                         } else {
                             removeStyleName(CLASSNAME_ROW_EXPANDED);
+                        }
+                    }
+                }
+
+                public void onBrowserEvent(Event event) {
+                    Window.alert("event");
+                    if (event.getTarget() == getElement()) {
+                        switch (event.getTypeInt()) {
+                            case Event.ONCLICK:
+                                Window.alert("click");
+                                break;
                         }
                     }
                 }
@@ -1028,23 +1046,22 @@ public class ITreeTable
                         cell = new Cell((Widget) c);
                     }
                     if (cell != null) {
-                        addCell(cell);
+                        add(cell);
                     }
                 }
             }
 
-            protected void addCell(Cell c) {
-                adopt(c);
-                DOM.appendChild(getElement(), c.getElement());
-                visibleCells.add(c);
+            public void add(Widget child) {
+                visibleCells.add(child);
+                DOM.appendChild(getElement(), child.getElement());
+                adopt(child);
             }
 
             public boolean remove(Widget child) {
                 if (visibleCells.contains(child)) {
-                    visibleCells.remove(child);
                     orphan(child);
-                    final Element parent = DOM.getParent(child.getElement());
-                    DOM.removeChild(parent, child.getElement());
+                    DOM.removeChild(DOM.getParent(child.getElement()), child.getElement());
+                    visibleCells.remove(child);
                     return true;
                 }
                 return false;
@@ -1052,6 +1069,13 @@ public class ITreeTable
 
             public Iterator<Widget> iterator() {
                 return visibleCells.iterator();
+            }
+
+            public Cell getCell(int index) {
+                if (index < 0 || index >= visibleCells.size()) {
+                    throw new IndexOutOfBoundsException();
+                }
+                return (Cell) visibleCells.get(index);
             }
 
             public String getKey() {
@@ -1079,6 +1103,19 @@ public class ITreeTable
 
             public Element getContainerElement() {
                 return cell;
+            }
+
+            public int getWidth() {
+                return DOM.getElementPropertyInt(getElement(), "offsetWidth");
+            }
+
+            public void setWidth(int w) {
+                if (w < 0) w = 0;
+                DOM.setStyleAttribute(getElement(), "width", w + "px");
+            }
+
+            public int getHeight() {
+                return DOM.getElementPropertyInt(getElement(), "offsetHeight");
             }
         }
     }
