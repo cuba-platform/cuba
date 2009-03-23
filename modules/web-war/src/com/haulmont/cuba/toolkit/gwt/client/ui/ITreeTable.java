@@ -57,7 +57,7 @@ public class ITreeTable
     private final FlowPanel tablePanel = new FlowPanel();
 
     private final ScrollPanel bodyContainer = new ScrollPanel();
-    private final TableBodyContainer tableBody = new TableBodyContainer();
+    private final TableBodiesContainer tableBody = new TableBodiesContainer();
 
     private String height = null;
     private String width = null;
@@ -462,8 +462,8 @@ public class ITreeTable
         }
 
         private void addCell(Cell c) {
-            adopt(c);
             DOM.appendChild(headerBody, c.getElement());
+            adopt(c);
             visibleCells.add(c);
         }
 
@@ -679,13 +679,13 @@ public class ITreeTable
         }
     }
 
-    class TableBodyContainer extends Panel {
+    class TableBodiesContainer extends Panel {
         private final Element sizer = DOM.createDiv();
 
         private final Map<String, Widget> availableBodies = new HashMap<String, Widget>();
         private final Vector<Widget> tableBodies = new Vector<Widget>();
 
-        TableBodyContainer() {
+        TableBodiesContainer() {
             setElement(DOM.createDiv());
 
             DOM.setElementProperty(sizer, "className", CLASSNAME + "-body-sizer");
@@ -713,8 +713,8 @@ public class ITreeTable
         }
 
         private void addTableBody(TableBody tBody) {
-            adopt(tBody);
             DOM.appendChild(getElement(), tBody.getElement());
+            adopt(tBody);
             tableBodies.add(tBody);
             availableBodies.put(tBody.getKey(), tBody);
         }
@@ -775,6 +775,7 @@ public class ITreeTable
             setElement(DOM.createDiv());
             bodyContent.setStyleName(CLASSNAME + "-content");
             DOM.appendChild(getElement(), bodyContent.getElement());
+            adopt(bodyContent);
         }
 
         public String getKey() {
@@ -901,8 +902,8 @@ public class ITreeTable
 
             GroupRow(String key, boolean sel, boolean exp) {
                 super(key, sel);
-                getPanel().add(new Button("+", ITreeTable.this));
-                getPanel().add(container);
+                getRowContainer().add(crossSign);
+                getRowContainer().add(container);
                 container.add(cellsContainer);
                 crossSign.setRow(this);
                 crossSign.setExpanded(exp);
@@ -949,9 +950,9 @@ public class ITreeTable
             private Cell createCell(Object o, int index) {
                 Cell c = null;
                 if (o instanceof String) {
-                    c = index == 0 ? new CrossCell((String) o) : new Cell((String) o);
+                    c = index == 0 ? new GroupCell((String) o) : new Cell((String) o);
                 } else if (o instanceof Widget) {
-                    c = index == 0 ? new CrossCell((Widget) o) : new Cell((Widget) o);
+                    c = index == 0 ? new GroupCell((Widget) o) : new Cell((Widget) o);
                 }
                 return c;
             }
@@ -967,7 +968,7 @@ public class ITreeTable
         }
 
         class Row extends Composite {
-            private final FlowPanel panel = new FlowPanel();
+            private final FlowPanel rowContainer = new FlowPanel();
             protected final Vector<Widget> visibleCells = new Vector<Widget>();
             private final String key;
 
@@ -978,7 +979,7 @@ public class ITreeTable
             }
 
             Row(String key, boolean selected) {
-                initWidget(panel);
+                initWidget(rowContainer);
 
                 this.key = key;
                 setSelected(selected);
@@ -1021,10 +1022,10 @@ public class ITreeTable
                 visibleCells.add(c);
             }
 
-            protected boolean remove(Widget child) {
-                if (visibleCells.contains(child)) {
-                    visibleCells.remove(child);
-                    getCellsContainer().remove(child);
+            protected boolean removeCell(Cell c) {
+                if (visibleCells.contains(c)) {
+                    visibleCells.remove(c);
+                    getCellsContainer().remove(c);
                     return true;
                 }
                 return false;
@@ -1037,29 +1038,25 @@ public class ITreeTable
                 return (Cell) visibleCells.get(index);
             }
 
-            public Iterator<Widget> iterator() {
-                return visibleCells.iterator();
-            }
-
             public String getKey() {
                 return key;
             }
 
-            protected FlowPanel getPanel() {
-                return panel;
+            protected FlowPanel getRowContainer() {
+                return rowContainer;
             }
 
             protected FlowPanel getCellsContainer() {
-                return getPanel();
+                return getRowContainer();
             }
         }
 
-        class CrossCell extends Cell {
-            CrossCell(String text) {
+        class GroupCell extends Cell {
+            GroupCell(String text) {
                 super(text);
             }
 
-            CrossCell(Widget w) {
+            GroupCell(Widget w) {
                 super(w);
             }
 
