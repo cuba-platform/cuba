@@ -66,27 +66,15 @@ public abstract class WindowManager {
     }
 
     protected Window createWindow(String template, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
-        StopWatch stopWatch = new Log4JStopWatch("WindowManager.createWindow");
-
-        StopWatch parseDescriptorStopWatch = new Log4JStopWatch("WindowManager.createWindow (parseDescriptor)");
         Document document = parseDescriptor(template, params, true);
-        parseDescriptorStopWatch.stop();
 
         final Element element = document.getRootElement();
-
-        StopWatch deployViewsStopWatch = new Log4JStopWatch("WindowManager.createWindow (deployViews)");
         deployViews(document);
-        deployViewsStopWatch.stop();
 
-        StopWatch loadDsContextStopWatch = new Log4JStopWatch("WindowManager.createWindow (loadDsContext)");
         final DsContext dsContext = loadDsContext(element);
-        loadDsContextStopWatch.stop();
-
         final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext);
 
-        StopWatch loadLayoutStopWatch = new Log4JStopWatch("WindowManager.createWindow (loadLayout)");
         final Window window = loadLayout(template, element, componentLoaderContext, layoutConfig);
-        loadLayoutStopWatch.stop();
 
         componentLoaderContext.setFrame(window);
         initialize(window, dsContext, params);
@@ -94,7 +82,6 @@ public abstract class WindowManager {
         final Window wrapedWindow = wrapByCustomClass(window, element, params);
         componentLoaderContext.setFrame(wrapedWindow);
         componentLoaderContext.executeLazyTasks();
-        stopWatch.stop();
 
         return wrapedWindow;
     }
