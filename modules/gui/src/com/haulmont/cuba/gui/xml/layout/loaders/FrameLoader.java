@@ -22,6 +22,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 
+import java.util.Collections;
+
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
     public FrameLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -37,7 +39,9 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             final DsContextLoader contextLoader =
                     new DsContextLoader(new DatasourceFactoryImpl(), context.getDSContext().getDataService());
             dsContext = contextLoader.loadDatasources(dsContextElement);
-            final ComponentLoaderContext context = new ComponentLoaderContext(dsContext);
+            
+            final ComponentLoaderContext context =
+                    new ComponentLoaderContext(dsContext, Collections.<String, Object>emptyMap());
             setContext(context);
         } else {
             dsContext = null;
