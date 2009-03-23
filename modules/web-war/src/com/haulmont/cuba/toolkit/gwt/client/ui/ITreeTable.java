@@ -165,16 +165,6 @@ public class ITreeTable
 
     public void onClick(Widget sender) {
         log.log("click");
-        if (sender instanceof TableBody.CrossSign) {
-            log.log(sender.getParent().getClass().getName());
-            log.log(sender.getParent().getParent().getParent().getClass().getName());
-            TableBody.GroupRow row = ((TableBody.CrossSign) sender).getRow();
-            if (row.isExpanded()) {
-                client.updateVariable(uidlId, "collapse", row.getKey(), true);
-            } else {
-                client.updateVariable(uidlId, "expand", row.getKey(), true);
-            }
-        }
     }
 
     public void deselectAll() {
@@ -462,8 +452,8 @@ public class ITreeTable
         }
 
         private void addCell(Cell c) {
-            DOM.appendChild(headerBody, c.getElement());
             adopt(c);
+            DOM.appendChild(headerBody, c.getElement());
             visibleCells.add(c);
         }
 
@@ -713,8 +703,8 @@ public class ITreeTable
         }
 
         private void addTableBody(TableBody tBody) {
-            DOM.appendChild(getElement(), tBody.getElement());
             adopt(tBody);
+            DOM.appendChild(getElement(), tBody.getElement());
             tableBodies.add(tBody);
             availableBodies.put(tBody.getKey(), tBody);
         }
@@ -768,14 +758,13 @@ public class ITreeTable
         private final Vector<Widget> rows = new Vector<Widget>();
 
         private Element captionContainer = null;
-        private final RowsContainer bodyContent = new RowsContainer();
+        private final Element bodyContent = DOM.createDiv();
 
         TableBody(String key) {
             this.key = key;
             setElement(DOM.createDiv());
-            bodyContent.setStyleName(CLASSNAME + "-content");
-            DOM.appendChild(getElement(), bodyContent.getElement());
-            adopt(bodyContent);
+            DOM.setElementProperty(bodyContent, "className", CLASSNAME + "-content");
+            DOM.appendChild(getElement(), bodyContent);
         }
 
         public String getKey() {
@@ -785,7 +774,8 @@ public class ITreeTable
         void updateBodyFromUIDL(UIDL uidl) {
             caption = uidl.getStringAttribute("caption");
 
-            if (caption != null) {
+            if (caption != null)
+            {
                 if (captionContainer == null) {
                     Element captionWrapper = DOM.createDiv();
                     DOM.setElementProperty(captionWrapper, "className", CLASSNAME + "-body-caption");
@@ -798,37 +788,103 @@ public class ITreeTable
 
             clear(); //todo think about a caching the rows list
 
-            bodyContent.updateFromUIDL(uidl);
+            updateBodyRows(uidl.getChildIterator());
         }
 
-        private Cell getCell(int row, int col) {
-            if (row < 0 || row >= rows.size()) {
-                throw new IndexOutOfBoundsException();
+        void updateBodyRows(Iterator rowsIterator) {
+            while (rowsIterator.hasNext()) {
+                final UIDL row = (UIDL) rowsIterator.next();
+                if ("gr".equals(row.getTag())
+                        || "tr".equals(row.getTag()))
+                {
+
+                    boolean showChildren = false;
+                    boolean groupped = ("gr".equals(row.getTag()));
+
+                    final String key = row.getStringAttribute("key");
+                    Row r = null;//(Row) availableRows.get(key); todo
+                    if (r == null) {
+                        if (groupped)
+                        {
+                            showChildren = row.getBooleanAttribute("expanded");
+                            r = new GroupRow(
+                                    key,
+                                    row.getBooleanAttribute("selected"),
+                                    showChildren
+                            );
+                        } else {
+                            r = new Row(key, row.getBooleanAttribute("selected"));
+                        }
+                        addRow(r);
+                    }
+
+                    UIDL rowContent = row;
+                    if (groupped)
+                    {
+                        Iterator tags = row.getChildIterator();
+                        while (tags.hasNext()) {
+                            final UIDL t = (UIDL) tags.next();
+                            if ("c".equals(t.getTag())) {
+                                rowContent = t;
+                                break;
+                            }
+                        }
+                    }
+                    r.updateRowFromUIDL(rowContent);
+
+                    if (showChildren)
+                    {
+                        updateBodyRows(row.getChildIterator());
+                    }
+                }
             }
-            return ((Row) rows.get(row)).getCell(col);
+        }
+
+        private void addRow(Row r) {
+            adopt(r);
+            DOM.appendChild(bodyContent, r.getElement());
+            String className;
+            if (rows.size() % 2 == 1) {
+                className = "-row-odd";
+            } else {
+                className = "-row";
+            }
+            DOM.setElementProperty(r.getElement(), "className", CLASSNAME + className);
+            rows.add(r);
+        }
+
+        private Element getCell(int row, int col) {
+            return DOM.getChild(DOM.getChild(bodyContent, row), col);
         }
 
         int getColWidth(int col) {
-            return getCell(0, col).getWidth();
+            return DOM.getElementPropertyInt(getCell(0, col), "offsetWidth");
         }
 
-        void setColWidth(int col, int w) {
-            for (int i = 0; i < rows.size(); i++) {
-                getCell(i, col).setWidth(w);
+        void setColWidth(int colIndex, int w) {
+            final int rows = DOM.getChildCount(bodyContent);
+            for (int i = 0; i < rows; i++) {
+                final Element cell = DOM.getChild(DOM.getChild(bodyContent, i),
+                        colIndex);
+                DOM.setStyleAttribute(cell, "width", w + "px");
             }
         }
 
         int getRowHeight() {
-            int rowHeight = getCell(0, 0).getHeight();
+            int rowHeight = DOM.getElementPropertyInt(getCell(0, 0), "offsetHeight");
             if (rowHeight > 0) {
                 return rowHeight;
             }
             return DEFAULT_ROW_HEIGHT;
         }
 
-        public boolean remove(Widget w) {
-            if (rows.contains(w)) {
-                bodyContent.removeRow((Row) w);
+        public boolean remove(Widget child) {
+            if (rows.contains(child)) {
+                log.log("remove:" + ((Row)child).key);
+                rows.remove(child);
+                orphan(child);
+                DOM.removeChild(DOM.getParent(child.getElement()), child.getElement());
+                return true;
             }
             return false;
         }
@@ -844,142 +900,74 @@ public class ITreeTable
             }
         }
 
-        class RowsContainer
-                extends FlowPanel
-        {
-            public void updateFromUIDL(UIDL uidl) {
-                Iterator it = uidl.getChildIterator();
-                while (it.hasNext()) {
-                    final UIDL row = (UIDL) it.next();
-                    if ("gr".equals(row.getTag())
-                            || "tr".equals(row.getTag()))
-                    {
-                        final String key = row.getStringAttribute("key");
-                        Row r;
-                        if ("gr".equals(row.getTag())) {
-                            r = new GroupRow(key,
-                                    row.getBooleanAttribute("selected"),
-                                    row.getBooleanAttribute("expanded")
-                            );
-                        } else {
-                            r = new Row(key, row.getBooleanAttribute("selected"));
-                        }
-                        addRow(r);
-                        r.updateRowFromUIDL(row);
-                    }
-                }
-            }
-
-            private void addRow(Row r) {
-                String className;
-                if (rows.size() % 2 == 1) {
-                    className = "-row-odd";
-                } else {
-                    className = "-row";
-                }
-                r.addStyleName(CLASSNAME + className);
-                add(r);
-                rows.add(r);
-            }
-
-            public void removeRow(Row r) {
-                remove(r);
-                rows.remove(r);
-            }
-
-        }
-
         class GroupRow extends Row
         {
-            private final CrossSign crossSign = new CrossSign();
-            private final FlowPanel container = new FlowPanel();
-            private final FlowPanel cellsContainer = new FlowPanel();
-            private RowsContainer childrenContainer = null;
+            private Vector<Widget> children = new Vector<Widget>();
+            private boolean expanded;
 
-            GroupRow(String key, boolean exp) {
-                this(key, false, exp);
+            GroupRow(String key, boolean expanded) {
+                this(key, false, expanded);
             }
 
-            GroupRow(String key, boolean sel, boolean exp) {
-                super(key, sel);
-                getRowContainer().add(crossSign);
-                getRowContainer().add(container);
-                container.add(cellsContainer);
-                crossSign.setRow(this);
-                crossSign.setExpanded(exp);
+            GroupRow(String key, boolean selected, boolean expanded) {
+                super(key, selected);
+                this.expanded = expanded;
             }
 
             @Override
-            public void updateRowFromUIDL(UIDL uidl)
-            {
-                Iterator it = uidl.getChildIterator();
-                while (it.hasNext()) {
-                    final UIDL data = (UIDL) it.next();
-                    if ("c".equals(data.getTag())) {
-                        updateCells(data);
-                    }
-                }
-
-                if (isExpanded())
-                {
-                    getChildrenContainer().updateFromUIDL(uidl);
-                }
-            }
-
-            protected void updateCells(UIDL uidl) {
+            public void updateRowFromUIDL(UIDL uidl) {
                 Iterator cells = uidl.getChildIterator();
                 visibleCells.clear();
                 int index = 0;
                 while (cells.hasNext()) {
-                    final Cell cell = createCell(cells.next(), index++);
+                    final Object c = cells.next();
+                    log.log("cell:" + String.valueOf(c));
+                    Cell cell = null;
+                    if (index == 0) {
+                        cell = new HierarchicalCell((String) c, GroupRow.this.expanded, GroupRow.this);
+                    } else {
+                        if (c instanceof String) {
+                            cell = new Cell((String) c);
+                        } else if (c instanceof Widget) {
+                            cell = new Cell((Widget) c);
+                        }
+                    }
                     if (cell != null) {
                         addCell(cell);
                     }
+                    index++;
                 }
-            }
-
-            private RowsContainer getChildrenContainer() {
-                if (childrenContainer == null) {
-                    childrenContainer = new RowsContainer();
-                    childrenContainer.setStyleName(CLASSNAME + "-rows");
-                    container.add(childrenContainer);
-                }
-                return childrenContainer;
-            }
-
-            private Cell createCell(Object o, int index) {
-                Cell c = null;
-                if (o instanceof String) {
-                    c = index == 0 ? new GroupCell((String) o) : new Cell((String) o);
-                } else if (o instanceof Widget) {
-                    c = index == 0 ? new GroupCell((Widget) o) : new Cell((Widget) o);
-                }
-                return c;
-            }
-
-            @Override
-            protected FlowPanel getCellsContainer() {
-                return cellsContainer;
             }
 
             public boolean isExpanded() {
-                return crossSign.isExpanded();
+                return expanded;
+            }
+
+            public void setExpanded(boolean expanded) {
+                this.expanded = expanded;
+            }
+
+            public Vector<Widget> getChildred() {
+                return children;
+            }
+
+            public boolean hasChildred() {
+                return !getChildred().isEmpty();
             }
         }
 
-        class Row extends Composite {
-            private final FlowPanel rowContainer = new FlowPanel();
-            protected final Vector<Widget> visibleCells = new Vector<Widget>();
+        class Row extends Panel {
             private final String key;
-
             private boolean selected = false;
+
+            protected final Vector<Widget> visibleCells = new Vector<Widget>();
 
             Row(String key) {
                 this(key, false);
             }
 
             Row(String key, boolean selected) {
-                initWidget(rowContainer);
+                setElement(DOM.createDiv());
 
                 this.key = key;
                 setSelected(selected);
@@ -1018,126 +1006,80 @@ public class ITreeTable
             }
 
             protected void addCell(Cell c) {
-                getCellsContainer().add(c);
+                adopt(c);
+                DOM.appendChild(getElement(), c.getElement());
                 visibleCells.add(c);
             }
 
-            protected boolean removeCell(Cell c) {
-                if (visibleCells.contains(c)) {
-                    visibleCells.remove(c);
-                    getCellsContainer().remove(c);
+            public boolean remove(Widget child) {
+                if (visibleCells.contains(child)) {
+                    visibleCells.remove(child);
+                    orphan(child);
+                    final Element parent = DOM.getParent(child.getElement());
+                    DOM.removeChild(parent, child.getElement());
                     return true;
                 }
                 return false;
             }
 
-            public Cell getCell(int index) {
-                if (index < 0 || index >= visibleCells.size()) {
-                    throw new IndexOutOfBoundsException();
-                }
-                return (Cell) visibleCells.get(index);
+            public Iterator<Widget> iterator() {
+                return visibleCells.iterator();
             }
 
             public String getKey() {
                 return key;
             }
-
-            protected FlowPanel getRowContainer() {
-                return rowContainer;
-            }
-
-            protected FlowPanel getCellsContainer() {
-                return getRowContainer();
-            }
         }
 
-        class GroupCell extends Cell {
-            GroupCell(String text) {
-                super(text);
-            }
-
-            GroupCell(Widget w) {
-                super(w);
-            }
-
-            public void setWidth(int w) {
-//                GrouplRow parentRow = (GrouplRow) getParent().getParent().getParent();
-//                int shift = DOM.getElementPropertyInt(parentRow.crossSign.getElement(), "offsetWidth");
-                super.setWidth(w - /*shift * (parentRow.level + 1)*/19);
-            }
-        }
-
-        class Cell extends SimplePanel {
-            private Element content;
+        class Cell extends Composite {
+            private FlowPanel container = new FlowPanel();
             Cell(String text) {
                 this(new Label(text));
             }
 
             Cell(Widget w) {
-                super();
-                DOM.setElementProperty(getElement(), "className", CLASSNAME + "-cell-wrap");
+                container.setStyleName(CLASSNAME + "-cell-wrap");
 
-                content = DOM.createDiv();
-                DOM.setElementProperty(content, "className", CLASSNAME + "-cell");
-                DOM.appendChild(getElement(), content);
+                SimplePanel content = new SimplePanel();
+                content.setStyleName(CLASSNAME + "-cell");
+                content.setWidget(w);
 
-                setWidget(w);
+                container.add(content);
+
+                initWidget(container);
             }
 
-            @Override
-            protected Element getContainerElement() {
-                return content;
-            }
-
-            public int getWidth() {
-                return DOM.getElementPropertyInt(getElement(), "offsetWidth");
-            }
-
-            public void setWidth(int w) {
-                if (w < 0) w = 0;
-                DOM.setStyleAttribute(getElement(), "width", w + "px");
-            }
-
-            public int getHeight() {
-                return DOM.getElementPropertyInt(getElement(), "offsetHeight");
+            public FlowPanel getContainer() {
+                return container;
             }
         }
 
-        class CrossSign
-                extends Widget
-                implements SourcesClickEvents
-        {
-            private ClickListenerCollection clickListeners = null;
-            private boolean expanded = false;
-            private GroupRow row = null;
+        class HierarchicalCell extends Cell {
+            HierarchicalCell(String text, boolean expanded, GroupRow parentRow) {
+                super(text);
+                final Widget cs = new CrossSign(expanded, parentRow);
+                getContainer().insert(cs, 0);
+            }
+        }
 
-            CrossSign() {
+        class CrossSign extends Widget implements SourcesClickEvents {
+            private ClickListenerCollection clickListeners = null;
+            private GroupRow parentRow;
+            CrossSign(boolean expanded, GroupRow parentRow) {
                 setElement(DOM.createDiv());
                 setStyleName(CLASSNAME + "-cell-cross");
-                addClickListener(ITreeTable.this);
-            }
-
-            public GroupRow setRow(GroupRow r) {
-                return row = r;
-            }
-
-            public GroupRow getRow() {
-                return row;
-            }
-
-            void setExpanded(boolean b) {
-                if (isExpanded() != b) {
-                    if (b) {
-                        addStyleName(CLASSNAME_ROW_EXPANDED);
-                    } else {
-                        removeStyleName(CLASSNAME_ROW_EXPANDED);
-                    }
-                    expanded = b;
+                if (expanded) {
+                    addStyleName(CLASSNAME_ROW_EXPANDED);
                 }
+                addClickListener(ITreeTable.this);
+                this.parentRow = parentRow;
             }
 
-            public boolean isExpanded() {
-                return expanded;
+            public GroupRow getParentRow() {
+                if (parentRow == null) {
+                    throw new IllegalStateException("The parent row cannot be null");
+                }
+                return parentRow;
             }
 
             public void addClickListener(ClickListener listener) {
