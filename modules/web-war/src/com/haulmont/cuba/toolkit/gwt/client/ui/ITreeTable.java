@@ -715,7 +715,14 @@ public class ITreeTable
 
         public int getColWidth(int col) {
             if (tableBodies.isEmpty()) return 0;
-            return ((TableBody) tableBodies.get(0)).getColWidth(col);
+            int width = 0;
+
+            for (final Widget w : tableBodies) {
+                final TableBody tBody = (TableBody) w;
+                width = Math.max(width, tBody.getColWidth(col));
+            }
+
+            return width;
         }
 
         public void setColWidth(int colIndex, int w) {
@@ -789,6 +796,8 @@ public class ITreeTable
             clear(); //todo think about a caching the rows list
 
             updateBodyRows(uidl.getChildIterator());
+
+
         }
 
         void updateBodyRows(Iterator rowsIterator) {
@@ -809,11 +818,12 @@ public class ITreeTable
                             showChildren = row.getBooleanAttribute("expanded");
                             r = new GroupRow(
                                     key,
+                                    row.getIntAttribute("level"),
                                     row.getBooleanAttribute("selected"),
                                     showChildren
                             );
                         } else {
-                            r = new Row(key, row.getBooleanAttribute("selected"));
+                            r = new Row(key, row.getIntAttribute("level"), row.getBooleanAttribute("selected"));
                         }
                         add(r);
                     }
@@ -841,10 +851,14 @@ public class ITreeTable
         }
 
         private Cell getCell(int row, int col) {
+            return getRow(row).getCell(col);
+        }
+
+        public Row getRow(int row) {
             if (row < 0 || row >= rows.size()) {
                 throw new IndexOutOfBoundsException();
             }
-            return ((Row) rows.get(row)).getCell(col);
+            return ((Row) rows.get(row));
         }
 
         int getColWidth(int col) {
@@ -906,22 +920,28 @@ public class ITreeTable
 
             private final CrossSign cross = new CrossSign();
 
-            GroupRow(String key, boolean expanded) {
-                this(key, false, expanded);
+            GroupRow(String key, int level, boolean expanded) {
+                this(key, level, false, expanded);
             }
 
-            GroupRow(String key, boolean selected, boolean expanded) {
-                super(key, selected);
+            GroupRow(String key, int level, boolean selected, boolean expanded) {
+                super(key, level, selected);
 
-                this.expanded = expanded;
-
-
+                cross.setExpanded(expanded);
                 DOM.appendChild(getElement(), cross.getElement());
                 adopt(cross);
 
-                DOM.sinkEvents(cross.getElement(), Event.ONCLICK);
+                this.expanded = expanded;
 
-                cross.setExpanded(expanded);
+                DOM.sinkEvents(cross.getElement(), Event.ONCLICK);
+            }
+
+            @Override
+            protected void onAttach() {
+                super.onAttach();
+                if (getLevel() > 0) {
+                    DOM.setStyleAttribute(getElement(), "paddingLeft", getLevel() * getCrossSignOffsetWidth() + "px");
+                }
             }
 
             @Override
@@ -940,9 +960,9 @@ public class ITreeTable
             private Cell createCell(Object o, int index) {
                 Cell c = null;
                 if (o instanceof String) {
-                    c = index == 0 ? new CrossCell((String) o) : new Cell((String) o);
+                    c = /*index == 0 ? new CrossCell((String) o) :*/ new Cell((String) o);
                 } else if (o instanceof Widget) {
-                    c = index == 0 ? new CrossCell((Widget) o) : new Cell((Widget) o);
+                    c = /*index == 0 ? new CrossCell((Widget) o) :*/ new Cell((Widget) o);
                 }
                 return c;
             }
@@ -973,6 +993,10 @@ public class ITreeTable
                 }
             }
 
+            public int getCrossSignOffsetWidth() {
+                return cross.getOffsetWidth();
+            }
+
             class CrossSign extends Widget
             {
                 CrossSign() {
@@ -994,18 +1018,20 @@ public class ITreeTable
 
         class Row extends Panel {
             private final String key;
+            private final int level;
             private boolean selected = false;
 
             protected final Vector<Widget> visibleCells = new Vector<Widget>();
 
-            Row(String key) {
-                this(key, false);
+            Row(String key, int level) {
+                this(key, level, false);
             }
 
-            Row(String key, boolean selected) {
+            Row(String key, int level, boolean selected) {
                 setElement(DOM.createDiv());
 
                 this.key = key;
+                this.level = level;
                 setSelected(selected);
             }
 
@@ -1065,6 +1091,10 @@ public class ITreeTable
                 return key;
             }
 
+            public int getLevel() {
+                return level;
+            }
+
             public Cell getCell(int index) {
                 if (index < 0 || index >= visibleCells.size()) {
                     throw new IndexOutOfBoundsException();
@@ -1073,21 +1103,22 @@ public class ITreeTable
             }
         }
 
-        class CrossCell extends Cell {
-            CrossCell(String text) {
-                super(text);
-            }
-
-            CrossCell(Widget w) {
-                super(w);
-            }
-
-            @Override
-            public void setWidth(int w) {
-                w = w - 19;
-                super.setWidth(w);
-            }
-        }
+//        class CrossCell extends Cell {
+//            CrossCell(String text) {
+//                super(text);
+//            }
+//
+//            CrossCell(Widget w) {
+//                super(w);
+//            }
+//
+//            @Override
+//            public void setWidth(int w) {
+//                GroupRow row = (GroupRow) getParent();
+//                w = w - row.getCrossSignOffsetWidth() * (row.getLevel() + 1);
+//                super.setWidth(w);
+//            }
+//        }
 
         class Cell extends SimplePanel {
 
