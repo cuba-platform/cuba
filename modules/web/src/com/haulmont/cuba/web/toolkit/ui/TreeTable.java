@@ -96,7 +96,7 @@ public class TreeTable extends AbstractComponent {
     }
 
     public class TableBody extends AbstractSelect
-            implements TreeTableContainer
+            implements Container, Container.Hierarchical, TreeTableContainer
     {
         private final Set<Object> expanded = new HashSet<Object>();
 
@@ -115,7 +115,6 @@ public class TreeTable extends AbstractComponent {
                 target.addAttribute("caption", getCaption());
             }
             target.addAttribute("rows", size());
-            target.addAttribute("deep", deep());
 
             final Stack<Iterator> iteratorStack = new Stack<Iterator>();
 
@@ -256,15 +255,15 @@ public class TreeTable extends AbstractComponent {
         }
 
         public boolean isGroupCaption(Object itemId) {
-            return ((TreeTableContainer) items).isGroupCaption(itemId);
+            return items instanceof TreeTableContainer
+                    && ((TreeTableContainer) items).isGroupCaption(itemId);
         }
 
         public String getGroupCaption(Object itemId) {
+            if (!(items instanceof TreeTableContainer)) {
+                throw new IllegalStateException("The data source container is not an instance of TreeTableContainer");
+            }
             return ((TreeTableContainer) items).getGroupCaption(itemId);
-        }
-
-        public int deep() {
-            return ((TreeTableContainer) items).deep();
         }
 
         public boolean isExpanded(Object itemId) {

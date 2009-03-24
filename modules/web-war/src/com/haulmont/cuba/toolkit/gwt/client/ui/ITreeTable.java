@@ -751,8 +751,6 @@ public class ITreeTable
         private String key;
         private String icon;
 
-        private int deep;
-
         private final Vector<Widget> rows = new Vector<Widget>();
 
         private Element captionContainer = null;
@@ -770,12 +768,15 @@ public class ITreeTable
         }
 
         public int getDeep() {
-            return deep;
+            int deep = 0;
+            for (final Widget w : rows) {
+                deep = Math.max(deep, ((Row) w).getLevel());
+            }
+            return deep + 1;
         }
 
         void updateBodyFromUIDL(UIDL uidl) {
             String caption = uidl.getStringAttribute("caption");
-            deep = uidl.getIntAttribute("deep");
 
             if (caption != null)
             {
