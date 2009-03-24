@@ -13,7 +13,10 @@ import com.itmill.toolkit.data.Container;
 
 public interface TreeTableContainer extends Container.Hierarchical {
 
-    boolean isGroupCaption(Object itemId);
+    boolean hasCaption(Object itemId);
 
-    String getGroupCaption(Object itemId);
+    String getCaption(Object itemId);
+
+    void setCaption(Object itemId, String caption);
+
 }

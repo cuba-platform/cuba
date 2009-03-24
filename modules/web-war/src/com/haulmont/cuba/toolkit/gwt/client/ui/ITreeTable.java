@@ -92,22 +92,29 @@ public class ITreeTable
         this.client = client;
         uidlId = uidl.getId();
 
+/*
         immediate = uidl.getBooleanAttribute("immediate");
 
-        if (uidl.hasAttribute("selectmode")) {
-            if ("multi".equals(uidl.getStringAttribute("selectmode"))) {
-                selectMode = Table.SELECT_MODE_MULTI;
-            } else {
-                selectMode = Table.SELECT_MODE_SINGLE;
+        if (uidl.hasVariable("selected")) {
+            final Set selectedKeys = uidl
+                    .getStringArrayVariableAsSet("selected");
+            selectedRowKeys.clear();
+            for (final Object o : selectedKeys) {
+                selectedRowKeys.add((String) o);
             }
+        }
 
-            if (uidl.hasAttribute("selected")) {
-                final Set<String> selectedKeys = (Set<String>) uidl
-                        .getStringArrayVariableAsSet("selected");
-                selectedRowKeys.clear();
-                for (String selectedKey : selectedKeys) {
-                    selectedRowKeys.add(selectedKey);
-                }
+        if (uidl.hasAttribute("selectmode")) {
+            */
+/*if (uidl.getBooleanAttribute("readonly")) {
+                selectMode = Table.SELECT_MODE_NONE;
+            } else*/ /*
+if (uidl.getStringAttribute("selectmode").equals("multi")) {
+                selectMode = Table.SELECT_MODE_MULTI;
+            } else if (uidl.getStringAttribute("selectmode").equals("single")) {
+                selectMode = Table.SELECT_MODE_SINGLE;
+            } else {
+                selectMode = Table.SELECT_MODE_NONE;
             }
         }
 
@@ -146,6 +153,7 @@ public class ITreeTable
         if (isAttached()) {
             sizeInit();
         }
+*/
     }
 
     private void updateHeaderFromUIDL(UIDL uidl) {
@@ -772,7 +780,7 @@ public class ITreeTable
             for (final Widget w : rows) {
                 deep = Math.max(deep, ((Row) w).getLevel());
             }
-            return deep + 1;
+            return deep;
         }
 
         void updateBodyFromUIDL(UIDL uidl) {
@@ -970,6 +978,7 @@ public class ITreeTable
                 return !getChildred().isEmpty();
             }
 
+            @Override
             public void onBrowserEvent(Event event) {
                 if (event.getTarget() == cross.getElement()) {
                     switch (event.getTypeInt()) {
@@ -979,8 +988,11 @@ public class ITreeTable
                             } else {
                                 client.updateVariable(uidlId, "expand", getKey(), true);
                             }
+                            DOM.eventCancelBubble(event, true);
                             break;
                     }
+                } else {
+                    super.onBrowserEvent(event);
                 }
             }
 
@@ -1020,15 +1032,24 @@ public class ITreeTable
                 this.key = key;
                 this.level = level;
                 setSelected(selected);
+
+                DOM.sinkEvents(getElement(), Event.ONCLICK);
             }
 
             public boolean isSelected() {
                 return selected;
             }
 
-            public void setSelected(boolean selected) {
-                this.selected = selected;
+            private void setSelected(boolean selected) {
+                if (selected != this.selected) toggleSelection();
+            }
+
+            private void toggleSelection() {
+                selected = !selected;
                 if (selected) {
+                    if (selectMode == Table.SELECT_MODE_SINGLE) {
+                        deselectAll();
+                    }
                     selectedRowKeys.add(key);
                     addStyleName(CLASSNAME_ROW_SELECTED);
                 } else {
@@ -1072,6 +1093,22 @@ public class ITreeTable
 
             public Iterator<Widget> iterator() {
                 return visibleCells.iterator();
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
+                if (event.getCurrentTarget() == getElement()) {
+                    switch (DOM.eventGetType(event)) {
+                    case Event.ONCLICK:
+                        if (selectMode > Table.SELECT_MODE_NONE) {
+                            toggleSelection();
+                            log.log("Row: " + key + " is " + (selected ? " selected" : " deselected"));
+                            client.updateVariable(uidlId, "selected",
+                                    selectedRowKeys.toArray(), immediate);
+                        }
+                        break;
+                    }
+                }
             }
 
             public String getKey() {

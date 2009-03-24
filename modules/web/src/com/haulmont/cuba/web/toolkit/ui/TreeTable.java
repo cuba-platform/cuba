@@ -9,33 +9,66 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.itmill.toolkit.ui.AbstractComponent;
-import com.itmill.toolkit.ui.AbstractSelect;
+import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.itmill.toolkit.data.Container;
 import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.terminal.PaintTarget;
 import com.itmill.toolkit.terminal.PaintException;
-import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
+import com.itmill.toolkit.terminal.PaintTarget;
+import com.itmill.toolkit.ui.AbstractSelect;
 
 import java.util.*;
 
-public class TreeTable extends AbstractComponent {
+public class TreeTable
+        extends AbstractSelect
+        implements Container.Hierarchical, TreeTableContainer
+{
 
     public static final String TAG_NAME = "treetable";
-
-    private final List<TableBody> tableBodies = new LinkedList<TableBody>();
 
     private final List visibleColumns = new LinkedList();
     private final Map<Object, String> columnHeaders = new HashMap<Object, String>();
 
-    public TreeTable() {
+    private final Set<Object> expanded = new HashSet<Object>();
+
+    private boolean selectable = false;
+
+    public TreeTable(Container dataSource) {
+        super(null, dataSource);
     }
 
-    public TableBody addTableBody(Container dataSource)
+    @Override
+    public void changeVariables(Object source, Map variables)
     {
-        TableBody tableBody = new TableBody(dataSource);
-        tableBodies.add(tableBody);
-        return tableBody;
+        boolean needRepaint = false;
+
+        handleClickEvent(variables);
+
+        if (!isSelectable() && variables.containsKey("selected")) {
+            variables = new HashMap(variables);
+            variables.remove("selected");
+        }
+
+        super.changeVariables(source, variables);
+
+        if (variables.containsKey("expand"))
+        {
+            String key = (String) variables.get("expand");
+            Object itemId = itemIdMapper.get(key);
+            setExpanded(itemId, false);
+
+            needRepaint = true;
+        }
+
+        if (variables.containsKey("collapse"))
+        {
+            String key = (String) variables.get("collapse");
+            Object itemId = itemIdMapper.get(key);
+            setCollapsed(itemId, false);
+
+            needRepaint = true;
+        }
+
+        if (needRepaint) requestRepaint();
     }
 
     @Override
@@ -44,32 +77,19 @@ public class TreeTable extends AbstractComponent {
         Object[] colIds = getVisibleColumns();
         int cols = colIds.length;
 
-        target.addAttribute("selectmode", "none");
         target.addAttribute("cols", cols);
+        target.addAttribute("rows", size());
+
+        if (isSelectable()) {
+            target.addAttribute("selectmode", (isMultiSelect() ? "multi"
+                    : "single"));
+        } else {
+            target.addAttribute("selectmode", "none");
+        }
 
         paintColumns(target);
-
-        paintBodies(target);
-    }
-
-    @Override
-    public void changeVariables(Object source, Map variables)
-    {
-        if (variables.containsKey("expand"))
-        {
-            String key = (String) variables.get("expand");
-            final TableBody tableBody = getTableBody(getBodyKey(key));
-            Object itemId = tableBody.getItemIdByKey(getRowKey(key));
-            tableBody.setExpanded(itemId, false);
-        }
-        if (variables.containsKey("collapse")) 
-        {
-            String key = (String) variables.get("collapse");
-            final TableBody tableBody = getTableBody(getBodyKey(key));
-            Object itemId = tableBody.getItemIdByKey(getRowKey(key));
-            tableBody.setCollapsed(itemId, false);
-        }
-        requestRepaint();
+        
+        paintRows(target);
     }
 
     protected void paintColumns(PaintTarget target) throws PaintException {
@@ -87,77 +107,49 @@ public class TreeTable extends AbstractComponent {
         target.endTag("visiblecolumns");
     }
 
-    protected void paintBodies(PaintTarget target) throws PaintException {
-        target.startTag("tbodies");
-        for (final TableBody tableBody : tableBodies) {
-            tableBody.paintContent(target);
-        }
-        target.endTag("tbodies");
-    }
+    protected void paintRows(PaintTarget target) throws PaintException {
+        target.startTag("rows");
 
-    public class TableBody extends AbstractSelect
-            implements Container, Container.Hierarchical, TreeTableContainer
-    {
-        private final Set<Object> expanded = new HashSet<Object>();
+        final Stack<Iterator> iteratorStack = new Stack<Iterator>();
 
-        public TableBody(Container dataSource) {
-            super(null, dataSource);
+        final Collection rootIds = rootItemIds();
+        if (rootIds != null) {
+            iteratorStack.push(rootIds.iterator());
         }
 
-        @Override
-        public void paintContent(PaintTarget target) throws PaintException {
-            target.startTag("tbody");
+        int level = 0;
 
-            final String bodyKey = String.valueOf(TreeTable.this.tableBodies.indexOf(this));
+        while (!iteratorStack.isEmpty())
+        {
+            final Iterator it = iteratorStack.peek();
 
-            target.addAttribute("key", bodyKey);
-            if (getCaption() != null && getCaption().trim().length() > 0) {
-                target.addAttribute("caption", getCaption());
-            }
-            target.addAttribute("rows", size());
-
-            final Stack<Iterator> iteratorStack = new Stack<Iterator>();
-
-            final Collection rootIds = rootItemIds();
-            if (rootIds != null) {
-                iteratorStack.push(rootIds.iterator());
-            }
-
-            int level = 0;
-
-            while (!iteratorStack.isEmpty())
+            if (!it.hasNext())
             {
-                final Iterator it = iteratorStack.peek();
+                iteratorStack.pop();
 
-                if (!it.hasNext())
+                --level;
+
+                if (!iteratorStack.isEmpty())
                 {
-                    iteratorStack.pop();
+                    target.endTag("gr");
+                }
 
-                    --level;
+            } else {
 
-                    if (!iteratorStack.isEmpty())
-                    {
-                        target.endTag("gr");
-                    }
+                Object itemId = it.next();
 
+                boolean allowChildren = areChildrenAllowed(itemId);
+                if (allowChildren) {
+                    target.startTag("gr");
                 } else {
+                    target.startTag("tr");
+                }
 
-                    Object itemId = it.next();
-
-                    boolean allowChildren = areChildrenAllowed(itemId);
-                    if (allowChildren)
-                    {
-                        target.startTag("gr");
-                        if (isGroupCaption(itemId)) {
-                            target.addAttribute("caption", getItemCaption(itemId));
-                        }
-                    }
-                    else {
-                        target.startTag("tr");
-                    }
-
+                if (hasCaption(itemId)) {
+                    target.addAttribute("caption", getCaption(itemId));
+                } else {
                     final String key = itemIdMapper.key(itemId);
-                    target.addAttribute("key", bodyKey + ":"+ key);
+                    target.addAttribute("key", key);
                     target.addAttribute("level", level);
 
                     if (allowChildren) {
@@ -181,120 +173,108 @@ public class TreeTable extends AbstractComponent {
                     if (allowChildren) {
                         target.endTag("c");
                     }
+                }
 
-                    if (hasChildren(itemId) && allowChildren && expanded.contains(itemId))
-                    {
-                        level++;
 
-                        iteratorStack.push(getChildren(itemId).iterator());
-                    }
-                    else {
-                        if (allowChildren) {
-                            target.endTag("gr");
-                        } else {
-                            target.endTag("tr");
-                        }
+                if (allowChildren && hasChildren(itemId) && expanded.contains(itemId))
+                {
+                    level++;
+
+                    iteratorStack.push(getChildren(itemId).iterator());
+                }
+                else {
+                    if (allowChildren) {
+                        target.endTag("gr");
+                    } else {
+                        target.endTag("tr");
                     }
                 }
             }
-
-            target.endTag("tbody");
         }
 
-        @Override
-        public void changeVariables(Object source, Map variables) {
-        }
+        target.endTag("rows");
+    }
 
-        public Collection getChildren(Object itemId) {
-            return ((Hierarchical) items).getChildren(itemId);
-        }
+    private void handleClickEvent(Map variables) {
+//        if (clickListenerCount > 0) {
+//            if (variables.containsKey("clickEvent")) {
+//                String key = (String) variables.get("clickedKey");
+//                Object itemId = itemIdMapper.get(key);
+//                Object propertyId = null;
+//                String colkey = (String) variables.get("clickedColKey");
+//                // click is not necessary on a property
+//                if (colkey != null) {
+//                    propertyId = columnIdMap.get(colkey);
+//                }
+//                MouseEventDetails evt = MouseEventDetails
+//                        .deSerialize((String) variables.get("clickEvent"));
+//                fireEvent(new ItemClickEvent(this, getItem(itemId), itemId,
+//                        propertyId, evt));
+//            }
+//        }
+    }
 
-        public Object getParent(Object itemId) {
-            return ((Hierarchical) items).getParent(itemId);
-        }
+    public Collection getChildren(Object itemId) {
+        return ((Hierarchical) items).getChildren(itemId);
+    }
 
-        public Collection rootItemIds() {
-            return ((Hierarchical) items).rootItemIds();
-        }
+    public Object getParent(Object itemId) {
+        return ((Hierarchical) items).getParent(itemId);
+    }
 
-        public boolean setParent(Object itemId, Object newParentId)
-                throws UnsupportedOperationException
-        {
-            boolean success = ((Hierarchical) items).setParent(itemId, newParentId);
-            if (success) {
-                TreeTable.this.requestRepaint();
-            }
-            return success;
-        }
+    public Collection rootItemIds() {
+        return ((Hierarchical) items).rootItemIds();
+    }
 
-        public boolean areChildrenAllowed(Object itemId) {
-            return ((Hierarchical) items).areChildrenAllowed(itemId);
+    public boolean setParent(Object itemId, Object newParentId)
+            throws UnsupportedOperationException
+    {
+        boolean success = ((Hierarchical) items).setParent(itemId, newParentId);
+        if (success) {
+            requestRepaint();
         }
+        return success;
+    }
 
-        public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed)
-                throws UnsupportedOperationException
-        {
-            boolean success = ((Hierarchical) items).setChildrenAllowed(itemId, areChildrenAllowed);
-            if (success) {
-                TreeTable.this.requestRepaint();
-            }
-            return success;
-        }
+    public boolean areChildrenAllowed(Object itemId) {
+        return ((Hierarchical) items).areChildrenAllowed(itemId);
+    }
 
-        public boolean isRoot(Object itemId) {
-            return ((Hierarchical) items).isRoot(itemId);
+    public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed)
+            throws UnsupportedOperationException
+    {
+        boolean success = ((Hierarchical) items).setChildrenAllowed(itemId, areChildrenAllowed);
+        if (success) {
+            requestRepaint();
         }
+        return success;
+    }
 
-        public boolean hasChildren(Object itemId) {
-            return ((Hierarchical) items).hasChildren(itemId);
-        }
+    public boolean isRoot(Object itemId) {
+        return ((Hierarchical) items).isRoot(itemId);
+    }
 
-        @Override
-        public void requestRepaint() {
-            TreeTable.this.requestRepaint();
-        }
+    public boolean hasChildren(Object itemId) {
+        return ((Hierarchical) items).hasChildren(itemId);
+    }
 
-        public boolean isGroupCaption(Object itemId) {
-            return items instanceof TreeTableContainer
-                    && ((TreeTableContainer) items).isGroupCaption(itemId);
-        }
+    public boolean hasCaption(Object itemId) {
+        return items instanceof TreeTableContainer
+                && ((TreeTableContainer) items).hasCaption(itemId);
+    }
 
-        public String getGroupCaption(Object itemId) {
-            if (!(items instanceof TreeTableContainer)) {
-                throw new IllegalStateException("The data source container is not an instance of TreeTableContainer");
-            }
-            return ((TreeTableContainer) items).getGroupCaption(itemId);
+    public String getCaption(Object itemId) {
+        if (!(items instanceof TreeTableContainer)) {
+            throw new IllegalStateException("The data source container is not an instance of TreeTableContainer");
         }
+        return ((TreeTableContainer) items).getCaption(itemId);
+    }
 
-        public boolean isExpanded(Object itemId) {
-            return expanded.contains(itemId);
+    public void setCaption(Object itemId, String caption) {
+        if (!(items instanceof TreeTableContainer)) {
+            throw new IllegalStateException("The data source container is not an instance of TreeTableContainer");
         }
-
-        public void setExpanded(Object itemId) {
-            setExpanded(itemId, true);
-        }
-
-        protected void setExpanded(Object itemId, boolean rerender) {
-            if (!isExpanded(itemId)) {
-                expanded.add(itemId);
-                if (rerender) requestRepaint();
-            }
-        }
-
-        public void setCollapsed(Object itemId) {
-            setCollapsed(itemId, true);
-        }
-
-        protected void setCollapsed(Object itemId, boolean rerender) {
-            if (isExpanded(itemId)) {
-                expanded.remove(itemId);
-                if (rerender)requestRepaint();
-            }
-        }
-
-        Object getItemIdByKey(String key) {
-            return itemIdMapper.get(key);
-        }
+        ((TreeTableContainer) items).setCaption(itemId, caption);
     }
 
     public void setVisibleColumns(Object[] columns) {
@@ -308,6 +288,8 @@ public class TreeTable extends AbstractComponent {
         visibleColumns.clear();
 
         visibleColumns.addAll(Arrays.asList(columns));
+
+        if (rerender) requestRepaint();
     }
 
     public Object[] getVisibleColumns() {
@@ -327,6 +309,8 @@ public class TreeTable extends AbstractComponent {
             return;
         }
         columnHeaders.put(propertyId, header);
+
+        if (rerender) requestRepaint();
     }
 
     public String getColumnHeader(Object propertyId) {
@@ -337,39 +321,42 @@ public class TreeTable extends AbstractComponent {
         return header;
     }
 
-    private TableBody getTableBody(int index)
-    {
-        if (tableBodies.isEmpty()) {
-            throw new IllegalStateException("Table sections list is empty!");
+    public boolean isSelectable() {
+        return selectable;
+    }
+
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
+    }
+
+    public boolean isExpanded(Object itemId) {
+        return expanded.contains(itemId);
+    }
+
+    public void setExpanded(Object itemId) {
+        setExpanded(itemId, true);
+    }
+
+    protected void setExpanded(Object itemId, boolean rerender) {
+        if (!isExpanded(itemId)) {
+            expanded.add(itemId);
+            if (rerender) requestRepaint();
         }
-        if (index < 0 || index > tableBodies.size() - 1) {
-            throw new IllegalArgumentException("Index out of bound of the list");
+    }
+
+    public void setCollapsed(Object itemId) {
+        setCollapsed(itemId, true);
+    }
+
+    protected void setCollapsed(Object itemId, boolean rerender) {
+        if (isExpanded(itemId)) {
+            expanded.remove(itemId);
+            if (rerender)requestRepaint();
         }
-        return tableBodies.get(index);
     }
 
     public String getTag()
     {
         return TAG_NAME;
-    }
-
-    private int getBodyKey(String clientKey) {
-        int index;
-        if (clientKey != null && (index = clientKey.indexOf(":")) != -1) {
-            try {
-                return Integer.parseInt(clientKey.substring(0, index));
-            } catch (NumberFormatException e) {
-                //ignore body
-            }
-        }
-        throw new IllegalArgumentException(String.format("Illegal key: %s", clientKey));
-    }
-
-    private String getRowKey(String clientKey) {
-        int index;
-        if (clientKey != null && (index = clientKey.indexOf(":")) != -1) {
-            return clientKey.substring(index + 1);
-        }
-        throw new IllegalArgumentException(String.format("Illegal key: %s", clientKey));
     }
 }
