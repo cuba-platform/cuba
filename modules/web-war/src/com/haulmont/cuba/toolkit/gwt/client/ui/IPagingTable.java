@@ -556,8 +556,8 @@ public class IPagingTable
         }
 
         private void addCell(Cell c) {
-            adopt(c);
             DOM.appendChild(headerBody, c.getElement());
+            adopt(c);
             visibleCells.add(c);
         }
 

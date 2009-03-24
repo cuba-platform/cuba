@@ -66,6 +66,8 @@ public class ITreeTable
 
     private static Console log = ApplicationConnection.getConsole();
 
+    private int calculatedCrossSignWidth = 0;
+
     public ITreeTable() {
         tablePanel.setStyleName(CLASSNAME);
         tablePanel.add(tableHeader);
@@ -164,7 +166,7 @@ public class ITreeTable
     }
 
     public void onClick(Widget sender) {
-        log.log("click");
+        //todo
     }
 
     public void deselectAll() {
@@ -228,7 +230,7 @@ public class ITreeTable
             final int hw = cell.getOffsetWidth();
             log.log("[sizeInit] Header column " + i + " offsetwidth " + hw + "px");
 
-            final int bw = tableBody.getColWidth(i);
+            final int bw = tableBody.getColWidth(i) + (i == 0 ? tableBody.getMaxDeep() * calculatedCrossSignWidth : 0);
             log.log("[sizeInit] Body column " + i + " width " + bw + "px");
 
             int w = (hw > bw ? hw : bw);
@@ -292,6 +294,7 @@ public class ITreeTable
             if (cell.getWidth() == -1) {
                 cell.setWidth(widths[i]);
             }
+            tableBody.updatePaddings();
             tableBody.setColWidth(i, widths[i]);
             log.log("[sizeInit] " + i + " column width sets " + widths[i] + "px");
             i++;
@@ -718,11 +721,27 @@ public class ITreeTable
             int width = 0;
 
             for (final Widget w : tableBodies) {
-                final TableBody tBody = (TableBody) w;
-                width = Math.max(width, tBody.getColWidth(col));
+                width = Math.max(width, ((TableBody) w).getColWidth(col));
             }
 
             return width;
+        }
+
+        public int getMaxDeep() {
+            if (tableBodies.isEmpty()) return 0;
+            int deep = 0;
+
+            for (final Widget w : tableBodies) {
+                deep = Math.max(deep, ((TableBody) w).getDeep());
+            }
+
+            return deep;
+        }
+
+        public void updatePaddings() {
+            for (final Widget tBody : tableBodies) {
+                ((TableBody) tBody).updatePaddings();
+            }
         }
 
         public void setColWidth(int colIndex, int w) {
@@ -762,6 +781,8 @@ public class ITreeTable
         private String caption;
         private String icon;
 
+        private int deep;
+
         private final Vector<Widget> rows = new Vector<Widget>();
 
         private Element captionContainer = null;
@@ -778,8 +799,13 @@ public class ITreeTable
             return key;
         }
 
+        public int getDeep() {
+            return deep;
+        }
+
         void updateBodyFromUIDL(UIDL uidl) {
             caption = uidl.getStringAttribute("caption");
+            deep = uidl.getIntAttribute("deep");
 
             if (caption != null)
             {
@@ -796,8 +822,6 @@ public class ITreeTable
             clear(); //todo think about a caching the rows list
 
             updateBodyRows(uidl.getChildIterator());
-
-
         }
 
         void updateBodyRows(Iterator rowsIterator) {
@@ -867,7 +891,16 @@ public class ITreeTable
 
         void setColWidth(int col, int w) {
             for (int i = 0; i < rows.size(); i++) {
-                getCell(i, col).setWidth(w);
+                final Row row = getRow(i);
+                final Cell cell = row.getCell(col);
+
+                int newWidth = w;
+                if (col == 0) {
+                    newWidth = w - calculatedCrossSignWidth * (row.getLevel() + 1);
+                }
+
+                cell.setWidth(newWidth);
+//                getCell(i, col).setWidth(w);
             }
         }
 
@@ -877,6 +910,19 @@ public class ITreeTable
                 return rowHeight;
             }
             return DEFAULT_ROW_HEIGHT;
+        }
+
+        void updatePaddings() {
+            for (final Widget w : rows) {
+                final Row row = (Row) w;
+
+                int l = row.getLevel();
+                if (!(row instanceof GroupRow)) {
+                    l +=1;
+                }
+
+                DOM.setStyleAttribute(row.getElement(), "paddingLeft", l * calculatedCrossSignWidth + "px");
+            }
         }
 
         public void add(Widget child) {
@@ -939,8 +985,8 @@ public class ITreeTable
             @Override
             protected void onAttach() {
                 super.onAttach();
-                if (getLevel() > 0) {
-                    DOM.setStyleAttribute(getElement(), "paddingLeft", getLevel() * getCrossSignOffsetWidth() + "px");
+                if (calculatedCrossSignWidth == 0) {
+                    calculatedCrossSignWidth = cross.getOffsetWidth();
                 }
             }
 
@@ -991,10 +1037,6 @@ public class ITreeTable
                             break;
                     }
                 }
-            }
-
-            public int getCrossSignOffsetWidth() {
-                return cross.getOffsetWidth();
             }
 
             class CrossSign extends Widget
@@ -1147,7 +1189,6 @@ public class ITreeTable
             }
 
             public void setWidth(int w) {
-                if (w < 0) w = 0;
                 DOM.setStyleAttribute(getElement(), "width", w + "px");
             }
 

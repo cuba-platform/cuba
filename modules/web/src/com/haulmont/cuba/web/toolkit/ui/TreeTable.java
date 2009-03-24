@@ -114,7 +114,8 @@ public class TreeTable extends AbstractComponent {
             if (getCaption() != null && getCaption().trim().length() > 0) {
                 target.addAttribute("caption", getCaption());
             }
-            target.addAttribute("rows", getContainerDataSource().size());
+            target.addAttribute("rows", size());
+            target.addAttribute("deep", deep());
 
             final Stack<Iterator> iteratorStack = new Stack<Iterator>();
 
@@ -123,7 +124,7 @@ public class TreeTable extends AbstractComponent {
                 iteratorStack.push(rootIds.iterator());
             }
 
-//            int level = 0;
+            int level = 0;
 
             while (!iteratorStack.isEmpty())
             {
@@ -133,7 +134,7 @@ public class TreeTable extends AbstractComponent {
                 {
                     iteratorStack.pop();
 
-//                    --level;
+                    --level;
 
                     if (!iteratorStack.isEmpty())
                     {
@@ -158,7 +159,7 @@ public class TreeTable extends AbstractComponent {
 
                     final String key = itemIdMapper.key(itemId);
                     target.addAttribute("key", bodyKey + ":"+ key);
-//                    target.addAttribute("level", level);
+                    target.addAttribute("level", level);
 
                     if (allowChildren) {
                         target.addAttribute("expanded", expanded.contains(itemId));
@@ -184,7 +185,7 @@ public class TreeTable extends AbstractComponent {
 
                     if (hasChildren(itemId) && allowChildren && expanded.contains(itemId))
                     {
-//                        level++;
+                        level++;
 
                         iteratorStack.push(getChildren(itemId).iterator());
                     }
@@ -260,6 +261,10 @@ public class TreeTable extends AbstractComponent {
 
         public String getGroupCaption(Object itemId) {
             return ((TreeTableContainer) items).getGroupCaption(itemId);
+        }
+
+        public int deep() {
+            return ((TreeTableContainer) items).deep();
         }
 
         public boolean isExpanded(Object itemId) {

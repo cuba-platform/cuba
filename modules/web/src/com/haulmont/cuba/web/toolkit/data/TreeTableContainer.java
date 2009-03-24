@@ -16,4 +16,6 @@ public interface TreeTableContainer extends Container.Hierarchical {
     boolean isGroupCaption(Object itemId);
 
     String getGroupCaption(Object itemId);
+
+    int deep();
 }
