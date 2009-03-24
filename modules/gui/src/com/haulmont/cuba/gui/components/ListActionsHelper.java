@@ -99,6 +99,10 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createRemoveAction() {
+        return createRemoveAction(true);
+    }
+
+    public Action createRemoveAction(final boolean autocommit) {
         final Action action = new AbstractAction("remove") {
             public String getCaption() {
                 final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -133,7 +137,9 @@ abstract class ListActionsHelper<T extends List> {
                                         ds.removeItem((Entity) item);
                                     }
 
-                                    ds.commit();
+                                    if (autocommit) {
+                                        ds.commit();
+                                    }
                                 }
                             }, new AbstractAction("cancel") {
                                 public String getCaption() {

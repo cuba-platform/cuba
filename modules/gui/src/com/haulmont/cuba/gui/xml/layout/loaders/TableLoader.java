@@ -22,9 +22,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class TableLoader extends ComponentLoader {
     protected ComponentsFactory factory;
@@ -52,7 +50,7 @@ public class TableLoader extends ComponentLoader {
 
         if (!StringUtils.isBlank(datasource)) {
             final CollectionDatasource ds = context.getDSContext().get(datasource);
-            Set<Table.Column> availableColumns = new HashSet<Table.Column>();
+            List<Table.Column> availableColumns = new ArrayList<Table.Column>();
 
             if (columnsElement != null) {
                 for (Element columnElement : (Collection<Element>)columnsElement.elements("column")) {

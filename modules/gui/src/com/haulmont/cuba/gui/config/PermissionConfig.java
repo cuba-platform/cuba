@@ -219,25 +219,36 @@ public class PermissionConfig {
         if (metaClass == null)  return Collections.emptyList();
 
         List<Target> result = new ArrayList<Target>();
+        final String value = entityTarget.getValue();
 
-        result.add(new Target(id + ":create", "create", id + ":create"));
-        result.add(new Target(id + ":read", "read", id + ":read"));
-        result.add(new Target(id + ":delete", "delete", id + ":delete"));
+        result.add(new Target(id + ":create", "create", value + ":create"));
+        result.add(new Target(id + ":read", "read", value + ":read"));
+        result.add(new Target(id + ":delete", "delete", value + ":delete"));
 
         Class javaClass = metaClass.getJavaClass();
         if (Updatable.class.isAssignableFrom(javaClass)) {
-            result.add(new Target(id + ":update", "update", id + ":update"));
+            result.add(new Target(id + ":update", "update", value + ":update"));
         }
 
         return result;
     }
 
     public List<Target> getEntityAttributes(Target entityTarget) {
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entityTarget.getId());
+        if (entityTarget == null) return Collections.emptyList();
+
+        final String id = entityTarget.getId();
+        if (!id.startsWith("entity:")) return Collections.emptyList();
+
+        MetaClass metaClass = MetadataProvider.getSession().getClass(id.substring("entity:".length()));
+        if (metaClass == null)  return Collections.emptyList();
+
+        final String value = entityTarget.getValue();
+
         List<Target> result = new ArrayList<Target>();
         for (MetaProperty metaProperty : metaClass.getProperties()) {
-            result.add(new Target(entityTarget.getId() + ":" + metaProperty.getName(), metaProperty.getName(), entityTarget.getId() + ":" + metaProperty.getName()));
+            result.add(new Target(id + ":" + metaProperty.getName(), metaProperty.getName(), value + ":" + metaProperty.getName()));
         }
+
         return result;
     }
 

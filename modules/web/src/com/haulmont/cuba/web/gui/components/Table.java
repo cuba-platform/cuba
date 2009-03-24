@@ -9,19 +9,19 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.data.Item;
+import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Label;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +36,8 @@ public class Table
         com.haulmont.cuba.gui.components.Table, Component.Wrapper
 {
     protected Map<MetaProperty, Table.Column> columns = new HashMap<MetaProperty, Column>();
+    protected List<Table.Column> columnsOrder = new ArrayList<Column>();
+
     protected boolean editable;
 
     public Table() {
@@ -62,18 +64,19 @@ public class Table
     }
 
     public List<Column> getColumns() {
-        // TODO (abramov) implement column order
-        return new ArrayList<Column>(columns.values());
+        return columnsOrder;
     }
 
     public void addColumn(Column column) {
         component.addContainerProperty(column.getId(), column.getType(), null);
         columns.put((MetaProperty) column.getId(), column);
+        columnsOrder.add(column);
     }
 
     public void removeColumn(Column column) {
         component.removeContainerProperty(column.getId());
         columns.remove((MetaProperty) column.getId());
+        columnsOrder.remove(column);
     }
 
     public CollectionDatasource getDatasource() {
@@ -133,6 +136,12 @@ public class Table
                 }
             }
         }
+
+        List<MetaProperty> columnsOrder = new ArrayList<MetaProperty>();
+        for (Column column : this.columnsOrder) {
+            columnsOrder.add((MetaProperty) column.getId());
+        }
+        component.setVisibleColumns(columnsOrder.toArray());
     }
 
     public boolean isEditable() {

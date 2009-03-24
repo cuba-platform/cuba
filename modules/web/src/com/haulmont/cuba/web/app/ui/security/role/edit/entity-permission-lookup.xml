@@ -1,0 +1,54 @@
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    caption="Permission Lookup"
+    class="com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup"
+    lookupComponent="permissions"
+>
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/role/role.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <hierarchicalDatasource
+            id="entities"
+            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+            view="role.edit"
+        >
+            <datasourceClass>com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource</datasourceClass>
+        </hierarchicalDatasource>
+
+        <collectionDatasource
+            id="permissions"
+            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+            view="role.edit"
+        >
+            <datasourceClass>com.haulmont.cuba.gui.data.CustomCollectionDatasource</datasourceClass>
+            <query>
+                <![CDATA[
+                import com.haulmont.cuba.gui.AppConfig
+
+                config = AppConfig.getInstance().getPermissionConfig()
+                return config.getEntityOperations(:ds$entities);
+                ]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="permissions-pane">
+        <split orientation="horizontal" pos="30">
+            <tree id="permissions-tree">
+                <treechildren datasource="entities" captionProperty="caption"/>
+            </tree>
+            <vbox>
+                <optionsGroup
+                    id="permissions"
+                    optionsDatasource="permissions"
+                    multiselect="true"
+                    captionProperty="caption"
+                />
+            </vbox>
+        </split>
+    </layout>
+</window>

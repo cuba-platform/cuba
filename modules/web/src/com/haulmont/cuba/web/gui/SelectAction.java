@@ -32,6 +32,11 @@ class SelectAction implements Button.ClickListener {
             selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
         } else if (lookupComponent instanceof LookupField) {
             selected = Collections.singleton(((LookupField) lookupComponent).getValue());
+        } else if (lookupComponent instanceof PickerField) {
+            selected = Collections.singleton(((PickerField) lookupComponent).getValue());
+        } else if (lookupComponent instanceof OptionsGroup) {
+            final OptionsGroup optionsGroup = (OptionsGroup) lookupComponent;
+            selected = optionsGroup.getValue();
         } else {
             throw new UnsupportedOperationException();
         }

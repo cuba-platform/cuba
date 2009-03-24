@@ -10,13 +10,19 @@
      <view entity="sec$Role" name="role.edit">
          <property name="name"/>
          <property name="superRole"/>
-         <property name="permissions">
-             <property name="type"/>
-             <property name="target"/>
-             <property name="value"/>
-         </property>
+         <!--<property name="permissions">-->
+             <!--<property name="type"/>-->
+             <!--<property name="target"/>-->
+             <!--<property name="value"/>-->
+         <!--</property>-->
      </view>
-    
+
+    <view entity="sec$Permission" name="role.edit">
+        <property name="type"/>
+        <property name="target"/>
+        <property name="value"/>
+    </view>
+
      <view entity="sec$Target" name="role.edit">
          <property name="id"/>
          <property name="caption"/>

@@ -1,0 +1,28 @@
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    caption="Permission Lookup"
+    class="com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup"
+    lookupComponent="permissions-tree"
+>
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/role/role.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <hierarchicalDatasource
+            id="permissions"
+            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+            view="role.edit"
+        >
+            <datasourceClass>com.haulmont.cuba.gui.security.ScreenPermissionTargetsDatasource</datasourceClass>
+        </hierarchicalDatasource>
+    </dsContext>
+
+    <layout expand="permissions-pane">
+        <tree id="permissions-tree">
+            <treechildren datasource="permissions" captionProperty="caption"/>
+        </tree>
+    </layout>
+</window>

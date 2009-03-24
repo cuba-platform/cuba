@@ -7,6 +7,7 @@
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/role/role.views.xml"/>
     </metadataContext>
 
     <dsContext>
@@ -15,48 +16,40 @@
             class="com.haulmont.cuba.security.entity.Role"
             view="role.edit"
         >
-            <collectionDatasource id="permissions" property="permissions"/>
+            <!--<collectionDatasource id="permissions" property="permissions"/>-->
         </datasource>
 
-        <hierarchicalDatasource
-            id="entities"
-            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
-            view="role.edit"
-        >
-            <datasourceClass>com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource</datasourceClass>
-        </hierarchicalDatasource>
-
         <collectionDatasource
-            id="entityPermissions"
-            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+            id="entity-permissions"
+            class="com.haulmont.cuba.security.entity.Permission"
             view="role.edit"
         >
-            <datasourceClass>com.haulmont.cuba.gui.data.CustomCollectionDatasource</datasourceClass>
-            <query>
-                <![CDATA[
-                import com.haulmont.cuba.gui.AppConfig
-                
-                config = AppConfig.getInstance().getPermissionConfig()
-                return config.getEntityOperations(:ds$entities);
-                ]]>
-            </query>
+            <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 20</query>
         </collectionDatasource>
 
-        <hierarchicalDatasource
-            id="screenPermissions"
-            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+        <collectionDatasource
+            id="property-permissions"
+            class="com.haulmont.cuba.security.entity.Permission"
             view="role.edit"
         >
-            <datasourceClass>com.haulmont.cuba.gui.security.ScreenPermissionTargetsDatasource</datasourceClass>
-        </hierarchicalDatasource>
+            <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 30</query>
+        </collectionDatasource>
 
-        <hierarchicalDatasource
-            id="specificPermissions"
-            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+        <collectionDatasource
+            id="screen-permissions"
+            class="com.haulmont.cuba.security.entity.Permission"
             view="role.edit"
         >
-            <datasourceClass>com.haulmont.cuba.gui.security.SpecificPermissionTargetsDatasource</datasourceClass>
-        </hierarchicalDatasource>
+            <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 10</query>
+        </collectionDatasource>
+
+        <collectionDatasource
+            id="specific-permissions"
+            class="com.haulmont.cuba.security.entity.Permission"
+            view="role.edit"
+        >
+            <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 40</query>
+        </collectionDatasource>
     </dsContext>
 
     <layout expand="permissions-pane">
@@ -67,33 +60,74 @@
             <label value="msg://superRole"/>
             <checkBox id="superRole" datasource="role" property="superRole"/>
         </hbox>
-        <hbox></hbox>
+
+        <hbox margin="true"/>
+
         <vbox id="permissions-pane" expand="roles" spacing="true">
             <tabsheet id="permissions-types">
                 <tab id="entity-permissions-tab" caption="msg://entity-permissions">
-                    <split orientation="horizontal" pos="30">
-                        <tree id="entity-permissions-tree">
-                            <treechildren datasource="entities" captionProperty="caption"/>
-                        </tree>
-                        <vbox>
-                            <optionsGroup
-                                id="entity-permissions"
-                                optionsDatasource="entityPermissions"
-                                multiselect="true"
-                                captionProperty="caption"
-                            />
-                        </vbox>
-                    </split>
+                    <vbox expand="entity-permissions">
+                        <hbox>
+                            <button id="entity-permissions-allow" action="entity-permissions.grant" caption="msg://permissions.grant"/>
+                            <button id="entity-permissions-decline" action="entity-permissions.decline" caption="msg://permissions.decline"/>
+                            <button id="entity-permissions-remove" action="entity-permissions.remove" caption="msg://permissions.remove"/>
+                        </hbox>
+                        <table id="entity-permissions">
+                            <columns>
+                                <column id="target"/>
+                                <column id="value"/>
+                            </columns>
+                            <rows datasource="entity-permissions"/>
+                        </table>
+                    </vbox>
+                </tab>
+                <tab id="property-permissions-tab" caption="msg://property-permissions">
+                    <vbox expand="property-permissions">
+                        <hbox>
+                            <button id="property-permissions-allow" action="property-permissions.grant" caption="msg://permissions.grant"/>
+                            <button id="property-permissions-decline" action="property-permissions.decline" caption="msg://permissions.decline"/>
+                            <button id="property-permissions-remove" action="property-permissions.remove" caption="msg://permissions.remove"/>
+                        </hbox>
+                        <table id="property-permissions">
+                            <columns>
+                                <column id="target"/>
+                                <column id="value"/>
+                            </columns>
+                            <rows datasource="property-permissions"/>
+                        </table>
+                    </vbox>
                 </tab>
                 <tab id="screen-permissions-tab" caption="msg://screen-permissions">
-                    <tree id="screen-permissions-tree">
-                         <treechildren datasource="screenPermissions" captionProperty="caption"/>
-                    </tree>
+                    <vbox expand="screen-permissions">
+                        <hbox>
+                            <button id="screen-permissions-allow" action="screen-permissions.grant" caption="msg://permissions.grant"/>
+                            <button id="screen-permissions-decline" action="screen-permissions.decline" caption="msg://permissions.decline"/>
+                            <button id="screen-permissions-remove" action="screen-permissions.remove" caption="msg://permissions.remove"/>
+                        </hbox>
+                        <table id="screen-permissions">
+                            <columns>
+                                <column id="target"/>
+                                <column id="value"/>
+                            </columns>
+                            <rows datasource="screen-permissions"/>
+                        </table>
+                    </vbox>
                 </tab>
                 <tab id="specific-permissions-tab" caption="msg://specific-permissions">
-                    <tree id="specific-permissions-tree">
-                          <treechildren datasource="specificPermissions" captionProperty="caption"/>
-                     </tree>
+                    <vbox expand="specific-permissions">
+                        <hbox>
+                            <button id="specific-permissions-allow" action="specific-permissions.grant" caption="msg://permissions.grant"/>
+                            <button id="specific-permissions-decline" action="specific-permissions.decline" caption="msg://permissions.decline"/>
+                            <button id="specific-permissions-remove" action="specific-permissions.remove" caption="msg://permissions.remove"/>
+                        </hbox>
+                        <table id="specific-permissions">
+                            <columns>
+                                <column id="target"/>
+                                <column id="value"/>
+                            </columns>
+                            <rows datasource="specific-permissions"/>
+                        </table>
+                    </vbox>
                 </tab>
             </tabsheet>
         </vbox>
