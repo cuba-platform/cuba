@@ -155,7 +155,7 @@ public class ITreeTable
     }
 
     private void updateActionsFromUIDL(UIDL uidl) {
-        // TODO Auto-generated method stub
+        // TODO
 
     }
 
@@ -171,16 +171,6 @@ public class ITreeTable
 
     public void deselectAll() {
         //todo
-//        final Object[] keys = selectedRowKeys.toArray();
-//        for (int i = 0; i < keys.length; i++) {
-//            final TableRow tableRow = (TableRow) rowKeysToTableRows
-//                    .get(keys[i]);
-//            if (tableRow != null) {
-//                tableRow.setSelected(false);
-//            }
-//        }
-        // still ensure all selects are removed from
-        selectedRowKeys.clear();
     }
 
     public void add(Widget w) {
@@ -316,21 +306,7 @@ public class ITreeTable
             // get containers natural space for table
             availableHeight = DOM.getElementPropertyInt(parentElem,
                     "offsetHeight");
-/*
-            if (Util.isIE()) {
-                if (availPixels == 0) {
-                    // In complex layouts IE sometimes rather randomly returns 0
-                    // although container really has height. Use old value if
-                    // one exits.
-                    //todo what shall i must to do with it?
-                    if (oldAvailPixels > 0) {
-                        availPixels = oldAvailPixels;
-                    }
-                } else {
-                    oldAvailPixels = availPixels;
-                }
-            }
-*/
+
             // put table back to flow
             DOM.setStyleAttribute(getElement(), "position", "static");
             // set 100% height with borders
@@ -365,7 +341,6 @@ public class ITreeTable
     }
 
     private int availableWidth() {
-        //todo make a review for this logic
         int w;
         if (width != null) {
             int extra = getScrollbarWidth();
@@ -375,7 +350,7 @@ public class ITreeTable
             w = Tools.parseSize(width) - extra;
         } else {
             w = tableBody.availableWidth();
-            if (Util.isIE()) {
+            if (BrowserInfo.get().isIE()) {
                 // Hey IE, are you really sure about this?
                 w = tableBody.availableWidth();
             }
@@ -432,7 +407,7 @@ public class ITreeTable
         public void updateHeaderFromUIDL(UIDL uidl) {
             final Iterator it = uidl.getChildIterator();
 
-            visibleColumns.clear(); //clear visible columns
+            visibleColumns.clear();
 
             while (it.hasNext()) {
                 final UIDL col = (UIDL) it.next();
@@ -755,10 +730,6 @@ public class ITreeTable
             return ((TableBody) tableBodies.get(0)).getRowHeight();
         }
 
-        public int getHeight() {
-            return 0; //
-        }
-
         public boolean remove(Widget child) {
             if (tableBodies.contains(child)) {
                 log.log("Remove table body");
@@ -778,7 +749,6 @@ public class ITreeTable
     class TableBody extends Panel {
 
         private String key;
-        private String caption;
         private String icon;
 
         private int deep;
@@ -804,7 +774,7 @@ public class ITreeTable
         }
 
         void updateBodyFromUIDL(UIDL uidl) {
-            caption = uidl.getStringAttribute("caption");
+            String caption = uidl.getStringAttribute("caption");
             deep = uidl.getIntAttribute("deep");
 
             if (caption != null)
@@ -819,7 +789,7 @@ public class ITreeTable
                 DOM.setInnerHTML(captionContainer, caption);
             }
 
-            clear(); //todo think about a caching the rows list
+            clear();
 
             updateBodyRows(uidl.getChildIterator());
         }
@@ -835,22 +805,20 @@ public class ITreeTable
                     boolean groupped = ("gr".equals(row.getTag()));
 
                     final String key = row.getStringAttribute("key");
-                    Row r = null;//(Row) availableRows.get(key); todo
-                    if (r == null) {
-                        if (groupped)
-                        {
-                            showChildren = row.getBooleanAttribute("expanded");
-                            r = new GroupRow(
-                                    key,
-                                    row.getIntAttribute("level"),
-                                    row.getBooleanAttribute("selected"),
-                                    showChildren
-                            );
-                        } else {
-                            r = new Row(key, row.getIntAttribute("level"), row.getBooleanAttribute("selected"));
-                        }
-                        add(r);
+                    Row r;
+                    if (groupped)
+                    {
+                        showChildren = row.getBooleanAttribute("expanded");
+                        r = new GroupRow(
+                                key,
+                                row.getIntAttribute("level"),
+                                row.getBooleanAttribute("selected"),
+                                showChildren
+                        );
+                    } else {
+                        r = new Row(key, row.getIntAttribute("level"), row.getBooleanAttribute("selected"));
                     }
+                    add(r);
 
                     UIDL rowContent = row;
                     if (groupped)
@@ -900,7 +868,6 @@ public class ITreeTable
                 }
 
                 cell.setWidth(newWidth);
-//                getCell(i, col).setWidth(w);
             }
         }
 
@@ -990,29 +957,6 @@ public class ITreeTable
                 }
             }
 
-            @Override
-            public void updateRowFromUIDL(UIDL uidl) {
-                Iterator cells = uidl.getChildIterator();
-                visibleCells.clear();
-                int index = 0;
-                while (cells.hasNext()) {
-                    final Cell cell = createCell(cells.next(), index++);
-                    if (cell != null) {
-                        add(cell);
-                    }
-                }
-            }
-
-            private Cell createCell(Object o, int index) {
-                Cell c = null;
-                if (o instanceof String) {
-                    c = /*index == 0 ? new CrossCell((String) o) :*/ new Cell((String) o);
-                } else if (o instanceof Widget) {
-                    c = /*index == 0 ? new CrossCell((Widget) o) :*/ new Cell((Widget) o);
-                }
-                return c;
-            }
-
             public boolean isExpanded() {
                 return expanded;
             }
@@ -1096,12 +1040,12 @@ public class ITreeTable
                 Iterator cells = uidl.getChildIterator();
                 visibleCells.clear();
                 while (cells.hasNext()) {
-                    final Object c = cells.next();
+                    final Object o = cells.next();
                     Cell cell = null;
-                    if (c instanceof String) {
-                        cell = new Cell((String) c);
-                    } else if (c instanceof Widget) {
-                        cell = new Cell((Widget) c);
+                    if (o instanceof String) {
+                        cell = new Cell((String) o);
+                    } else if (o instanceof Widget) {
+                        cell = new Cell((Widget) o);
                     }
                     if (cell != null) {
                         add(cell);
@@ -1144,23 +1088,6 @@ public class ITreeTable
                 return (Cell) visibleCells.get(index);
             }
         }
-
-//        class CrossCell extends Cell {
-//            CrossCell(String text) {
-//                super(text);
-//            }
-//
-//            CrossCell(Widget w) {
-//                super(w);
-//            }
-//
-//            @Override
-//            public void setWidth(int w) {
-//                GroupRow row = (GroupRow) getParent();
-//                w = w - row.getCrossSignOffsetWidth() * (row.getLevel() + 1);
-//                super.setWidth(w);
-//            }
-//        }
 
         class Cell extends SimplePanel {
 
