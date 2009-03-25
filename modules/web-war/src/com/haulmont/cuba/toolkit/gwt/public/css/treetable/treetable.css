@@ -46,11 +46,11 @@
     border: 0;
 }
 
-.i-tree-table-body-caption {
+.i-tree-table-row-caption {
     height: 24px;
     background-color: #e7edf3;
 }
-.i-tree-table-body-caption div {
+.i-tree-table-row-caption .i-tree-table-row-caption-inner {
     padding: 4px 0 0 4px; 
 }
 

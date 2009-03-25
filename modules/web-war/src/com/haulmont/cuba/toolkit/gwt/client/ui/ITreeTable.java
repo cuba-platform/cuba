@@ -57,7 +57,7 @@ public class ITreeTable
     private final FlowPanel tablePanel = new FlowPanel();
 
     private final ScrollPanel bodyContainer = new ScrollPanel();
-    private final TableBodiesContainer tableBody = new TableBodiesContainer();
+    private final TableBody tableBody = new TableBody();
 
     private String height = null;
     private String width = null;
@@ -92,7 +92,6 @@ public class ITreeTable
         this.client = client;
         uidlId = uidl.getId();
 
-/*
         immediate = uidl.getBooleanAttribute("immediate");
 
         if (uidl.hasVariable("selected")) {
@@ -105,11 +104,10 @@ public class ITreeTable
         }
 
         if (uidl.hasAttribute("selectmode")) {
-            */
 /*if (uidl.getBooleanAttribute("readonly")) {
                 selectMode = Table.SELECT_MODE_NONE;
-            } else*/ /*
-if (uidl.getStringAttribute("selectmode").equals("multi")) {
+            } else*/
+            if (uidl.getStringAttribute("selectmode").equals("multi")) {
                 selectMode = Table.SELECT_MODE_MULTI;
             } else if (uidl.getStringAttribute("selectmode").equals("single")) {
                 selectMode = Table.SELECT_MODE_SINGLE;
@@ -131,7 +129,7 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
         UIDL actionsUidl = null;
         for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
             final UIDL data = (UIDL) it.next();
-            if ("tbodies".equals(data.getTag())) {
+            if ("rows".equals(data.getTag())) {
                 bodyUidl = data;
             } else if ("actions".equals(data.getTag())) {
                 actionsUidl = data;
@@ -153,7 +151,6 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
         if (isAttached()) {
             sizeInit();
         }
-*/
     }
 
     private void updateHeaderFromUIDL(UIDL uidl) {
@@ -169,7 +166,7 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
 
     private void updateBodyFromUIDL(UIDL uidl) {
         if (uidl != null) {
-            tableBody.updateFromUIDL(uidl);
+            tableBody.updateBodyFromUIDL(uidl);
         }
     }
 
@@ -228,7 +225,7 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
             final int hw = cell.getOffsetWidth();
             log.log("[sizeInit] Header column " + i + " offsetwidth " + hw + "px");
 
-            final int bw = tableBody.getColWidth(i) + (i == 0 ? tableBody.getMaxDeep() * calculatedCrossSignWidth : 0);
+            final int bw = tableBody.getColWidth(i) + (i == 0 ? tableBody.getDeep() * calculatedCrossSignWidth : 0);
             log.log("[sizeInit] Body column " + i + " width " + bw + "px");
 
             int w = (hw > bw ? hw : bw);
@@ -650,156 +647,44 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
             }
 
             public void onBrowserEvent(Event event) {
-                //todo
             }
         }
     }
 
-    class TableBodiesContainer extends Panel {
+    class TableBody extends Panel {
+
+        private String icon;
+
+        private final Vector<Widget> children = new Vector<Widget>(); //contains rows and captions
+        private final Vector<Row> rows = new Vector<Row>(); //contains only rows, needed for an implementation of a resize mechanism
+
         private final Element sizer = DOM.createDiv();
+        private final Element bodyContent = DOM.createDiv();
 
-        private final Map<String, Widget> availableBodies = new HashMap<String, Widget>();
-        private final Vector<Widget> tableBodies = new Vector<Widget>();
-
-        TableBodiesContainer() {
+        TableBody() {
             setElement(DOM.createDiv());
 
             DOM.setElementProperty(sizer, "className", CLASSNAME + "-body-sizer");
             DOM.appendChild(getElement(), sizer);
-        }
 
-        public void updateFromUIDL(UIDL uidl)
-        {
-            Iterator it = uidl.getChildIterator();
-            while (it.hasNext()) {
-                final UIDL bodyUidl = (UIDL) it.next();
-                if ("tbody".equals(bodyUidl.getTag()))
-                {
-                    final String key = bodyUidl.getStringAttribute("key");
-                    TableBody tBody = (TableBody) availableBodies.get(key);
-                    if (tBody == null) {
-                        tBody = new TableBody(key);
-                        addTableBody(tBody);
-                        log.log("Created tbody with key: " + key);
-                    }
-                    tBody.updateBodyFromUIDL(bodyUidl);
-                    log.log("Table body has been updated");
-                }
-            }
-        }
-
-        private void addTableBody(TableBody tBody) {
-            DOM.appendChild(getElement(), tBody.getElement());
-            adopt(tBody);
-            tableBodies.add(tBody);
-            availableBodies.put(tBody.getKey(), tBody);
+            DOM.setElementProperty(bodyContent, "className", CLASSNAME + "-content");
+            DOM.appendChild(getElement(), bodyContent);
         }
 
         public int availableWidth() {
             return DOM.getElementPropertyInt(sizer, "offsetWidth");
         }
 
-        public int getColWidth(int col) {
-            if (tableBodies.isEmpty()) return 0;
-            int width = 0;
-
-            for (final Widget w : tableBodies) {
-                width = Math.max(width, ((TableBody) w).getColWidth(col));
-            }
-
-            return width;
-        }
-
-        public int getMaxDeep() {
-            if (tableBodies.isEmpty()) return 0;
-            int deep = 0;
-
-            for (final Widget w : tableBodies) {
-                deep = Math.max(deep, ((TableBody) w).getDeep());
-            }
-
-            return deep;
-        }
-
-        public void updatePaddings() {
-            for (final Widget tBody : tableBodies) {
-                ((TableBody) tBody).updatePaddings();
-            }
-        }
-
-        public void setColWidth(int colIndex, int w) {
-            for (final Widget tBody : tableBodies) {
-                ((TableBody) tBody).setColWidth(colIndex, w);
-            }
-        }
-
-        public int getRowHeight() {
-            if (tableBodies.isEmpty()) return 0;
-            return ((TableBody) tableBodies.get(0)).getRowHeight();
-        }
-
-        public boolean remove(Widget child) {
-            if (tableBodies.contains(child)) {
-                log.log("Remove table body");
-                tableBodies.remove(child);
-                orphan(child);
-                DOM.removeChild(DOM.getParent(child.getElement()), child.getElement());
-                return true;
-            }
-            return false;
-        }
-
-        public Iterator<Widget> iterator() {
-            return tableBodies.iterator();
-        }
-    }
-
-    class TableBody extends Panel {
-
-        private String key;
-        private String icon;
-
-        private final Vector<Widget> rows = new Vector<Widget>();
-
-        private Element captionContainer = null;
-        private final Element bodyContent = DOM.createDiv();
-
-        TableBody(String key) {
-            this.key = key;
-            setElement(DOM.createDiv());
-            DOM.setElementProperty(bodyContent, "className", CLASSNAME + "-content");
-            DOM.appendChild(getElement(), bodyContent);
-        }
-
-        public String getKey() {
-            return key;
-        }
-
         public int getDeep() {
             int deep = 0;
-            for (final Widget w : rows) {
-                deep = Math.max(deep, ((Row) w).getLevel());
+            for (final Row r : rows) {
+                deep = Math.max(deep, r.getLevel());
             }
             return deep;
         }
 
         void updateBodyFromUIDL(UIDL uidl) {
-            String caption = uidl.getStringAttribute("caption");
-
-            if (caption != null)
-            {
-                if (captionContainer == null) {
-                    Element captionWrapper = DOM.createDiv();
-                    DOM.setElementProperty(captionWrapper, "className", CLASSNAME + "-body-caption");
-                    captionContainer = DOM.createDiv();
-                    DOM.appendChild(captionWrapper, captionContainer);
-                    DOM.insertChild(getElement(), captionWrapper, 0);
-                }
-                DOM.setInnerHTML(captionContainer, caption);
-            }
-
             clear();
-
             updateBodyRows(uidl.getChildIterator());
         }
 
@@ -809,30 +694,50 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
                 if ("gr".equals(row.getTag())
                         || "tr".equals(row.getTag()))
                 {
-
-                    boolean showChildren = false;
+                    boolean expanded = false;
                     boolean groupped = ("gr".equals(row.getTag()));
+                    boolean isCaption = (row.getStringAttribute("caption") != null);
 
                     final String key = row.getStringAttribute("key");
-                    Row r;
+                    AbstractRow r;
                     if (groupped)
                     {
-                        showChildren = row.getBooleanAttribute("expanded");
-                        r = new GroupRow(
-                                key,
-                                row.getIntAttribute("level"),
-                                row.getBooleanAttribute("selected"),
-                                showChildren
-                        );
+                        expanded = row.getBooleanAttribute("expanded");
+                        if (isCaption) {
+                            r = new GroupCaptionRow(
+                                    key, row.getIntAttribute("level"),
+                                    expanded
+                            );
+                        } else {
+                            r = new GroupRow(
+                                    key, row.getIntAttribute("level"),
+                                    row.getBooleanAttribute("selected"),
+                                    expanded
+                            );
+                        }
                     } else {
-                        r = new Row(key, row.getIntAttribute("level"), row.getBooleanAttribute("selected"));
+                        if (isCaption) {
+                            r = new CaptionRow(
+                                    key, row.getIntAttribute("level")
+                            );
+                        } else {
+                            r = new Row(
+                                    key, row.getIntAttribute("level"),
+                                    row.getBooleanAttribute("selected")
+                            );
+                        }
                     }
-                    add(r);
+
+                    if (isCaption) {
+                        addCaptionRow((CaptionRow) r);
+                    } else {
+                        addRow((Row) r);
+                    }
 
                     UIDL rowContent = row;
-                    if (groupped)
+                    if (groupped && !isCaption)
                     {
-                        Iterator tags = row.getChildIterator();
+                        final Iterator tags = row.getChildIterator();
                         while (tags.hasNext()) {
                             final UIDL t = (UIDL) tags.next();
                             if ("c".equals(t.getTag())) {
@@ -841,9 +746,10 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
                             }
                         }
                     }
+
                     r.updateRowFromUIDL(rowContent);
 
-                    if (showChildren)
+                    if (expanded)
                     {
                         updateBodyRows(row.getChildIterator());
                     }
@@ -859,7 +765,7 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
             if (row < 0 || row >= rows.size()) {
                 throw new IndexOutOfBoundsException();
             }
-            return ((Row) rows.get(row));
+            return rows.get(row);
         }
 
         int getColWidth(int col) {
@@ -896,46 +802,124 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
                 if (!(row instanceof GroupRow)) {
                     l +=1;
                 }
-
                 DOM.setStyleAttribute(row.getElement(), "paddingLeft", l * calculatedCrossSignWidth + "px");
             }
         }
 
-        public void add(Widget child) {
+        protected void addRow(Row r) {
             String className;
             if (rows.size() % 2 == 1) {
                 className = "-row-odd";
             } else {
                 className = "-row";
             }
-            DOM.setElementProperty(child.getElement(), "className", CLASSNAME + className);
+            DOM.setElementProperty(r.getElement(), "className", CLASSNAME + className);
+            add(r);
+            rows.add(r);
+        }
+
+        protected void addCaptionRow(CaptionRow r) {
+            add(r);
+        }
+
+        public void add(Widget child) {
             DOM.appendChild(bodyContent, child.getElement());
             adopt(child);
-            rows.add(child);
+            children.add(child);
         }
 
         public boolean remove(Widget child) {
-            if (rows.contains(child)) {
-                rows.remove(child);
+            if (children.contains(child)) {
                 orphan(child);
                 DOM.removeChild(DOM.getParent(child.getElement()), child.getElement());
+                children.remove(child);
+                if (child instanceof Row) rows.remove(child);
                 return true;
             }
             return false;
         }
 
         public Iterator<Widget> iterator() {
-            return rows.iterator();
+            return children.iterator();
         }
 
         public void clear() {
-            final  Vector<Widget> v = new Vector<Widget>(rows);
+            final  Vector<Widget> v = new Vector<Widget>(children);
             for (final Widget w : v) {
                 remove(w);
             }
         }
 
+        class GroupCaptionRow
+                extends CaptionRow
+                implements Group
+        {
+            private Vector<Widget> children = new Vector<Widget>();
+            private boolean expanded;
+
+            private final CrossSign cross = new CrossSign();
+
+            GroupCaptionRow(String key, int level, boolean expanded) {
+                super(key, level);
+
+                cross.setExpanded(expanded);
+                DOM.insertChild(getElement(), cross.getElement(), 0);
+                adopt(cross);
+
+                this.expanded = expanded;
+
+                DOM.sinkEvents(cross.getElement(), Event.ONCLICK);
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
+                if (event.getTarget() == cross.getElement()) {
+                    switch (event.getTypeInt()) {
+                        case Event.ONCLICK:
+                            if (expanded) {
+                                client.updateVariable(uidlId, "collapse", getKey(), true);
+                            } else {
+                                client.updateVariable(uidlId, "expand", getKey(), true);
+                            }
+                            DOM.eventCancelBubble(event, true);
+                            break;
+                    }
+                }
+            }
+
+            public boolean isExpanded() {
+                return expanded;
+            }
+
+            public Vector<Widget> getChildren() {
+                return children;
+            }
+
+            public boolean hasChildren() {
+                return !getChildren().isEmpty();
+            }
+        }
+
+        class CaptionRow extends AbstractRow {
+
+            private Element inner = DOM.createDiv();
+
+            CaptionRow(String key, int level) {
+                super(key, level);
+                setStyleName(CLASSNAME + "-row-caption");
+
+                DOM.setElementProperty(inner, "className", CLASSNAME + "-row-caption-inner");
+                DOM.appendChild(getElement(), inner);
+            }
+
+            @Override
+            public void updateRowFromUIDL(UIDL uidl) {
+                DOM.setInnerHTML(inner, uidl.getStringAttribute("caption"));
+            }
+        }
+
         class GroupRow extends Row
+                implements Group
         {
             private Vector<Widget> children = new Vector<Widget>();
             private boolean expanded;
@@ -966,18 +950,6 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
                 }
             }
 
-            public boolean isExpanded() {
-                return expanded;
-            }
-
-            public Vector<Widget> getChildred() {
-                return children;
-            }
-
-            public boolean hasChildred() {
-                return !getChildred().isEmpty();
-            }
-
             @Override
             public void onBrowserEvent(Event event) {
                 if (event.getTarget() == cross.getElement()) {
@@ -996,28 +968,20 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
                 }
             }
 
-            class CrossSign extends Widget
-            {
-                CrossSign() {
-                    setElement(DOM.createDiv());
-                    setStyleName(CLASSNAME + "-cell-cross");
-                }
+            public boolean isExpanded() {
+                return expanded;
+            }
 
-                void setExpanded(boolean b) {
-                    if (expanded != b) {
-                        if (b) {
-                            addStyleName(CLASSNAME_ROW_EXPANDED);
-                        } else {
-                            removeStyleName(CLASSNAME_ROW_EXPANDED);
-                        }
-                    }
-                }
+            public Vector<Widget> getChildren() {
+                return children;
+            }
+
+            public boolean hasChildren() {
+                return !getChildren().isEmpty();
             }
         }
 
-        class Row extends Panel {
-            private final String key;
-            private final int level;
+        class Row extends AbstractRow {
             private boolean selected = false;
 
             protected final Vector<Widget> visibleCells = new Vector<Widget>();
@@ -1027,13 +991,9 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
             }
 
             Row(String key, int level, boolean selected) {
-                setElement(DOM.createDiv());
+                super(key, level);
 
-                this.key = key;
-                this.level = level;
                 setSelected(selected);
-
-                DOM.sinkEvents(getElement(), Event.ONCLICK);
             }
 
             public boolean isSelected() {
@@ -1050,10 +1010,10 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
                     if (selectMode == Table.SELECT_MODE_SINGLE) {
                         deselectAll();
                     }
-                    selectedRowKeys.add(key);
+                    selectedRowKeys.add(getKey());
                     addStyleName(CLASSNAME_ROW_SELECTED);
                 } else {
-                    selectedRowKeys.remove(key);
+                    selectedRowKeys.remove(getKey());
                     removeStyleName(CLASSNAME_ROW_SELECTED);
                 }
             }
@@ -1102,13 +1062,34 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
                     case Event.ONCLICK:
                         if (selectMode > Table.SELECT_MODE_NONE) {
                             toggleSelection();
-                            log.log("Row: " + key + " is " + (selected ? " selected" : " deselected"));
+                            log.log("Row: " + getKey() + " is " + (selected ? " selected" : " deselected"));
                             client.updateVariable(uidlId, "selected",
                                     selectedRowKeys.toArray(), immediate);
                         }
                         break;
                     }
                 }
+            }
+
+            public Cell getCell(int index) {
+                if (index < 0 || index >= visibleCells.size()) {
+                    throw new IndexOutOfBoundsException();
+                }
+                return (Cell) visibleCells.get(index);
+            }
+        }
+
+        abstract class AbstractRow extends Panel {
+            private final String key;
+            private final int level;
+
+            protected AbstractRow(String key, int level) {
+                setElement(DOM.createDiv());
+
+                this.key = key;
+                this.level = level;
+
+                DOM.sinkEvents(getElement(), Event.ONCLICK);
             }
 
             public String getKey() {
@@ -1119,11 +1100,17 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
                 return level;
             }
 
-            public Cell getCell(int index) {
-                if (index < 0 || index >= visibleCells.size()) {
-                    throw new IndexOutOfBoundsException();
-                }
-                return (Cell) visibleCells.get(index);
+            public abstract void updateRowFromUIDL(UIDL uidl);
+
+            public void onBrowserEvent(Event event) {
+            }
+
+            public boolean remove(Widget child) {
+                return false;
+            }
+
+            public Iterator<Widget> iterator() {
+                return new ArrayList<Widget>(0).iterator();
             }
         }
 
@@ -1159,6 +1146,36 @@ if (uidl.getStringAttribute("selectmode").equals("multi")) {
 
             public int getHeight() {
                 return DOM.getElementPropertyInt(getElement(), "offsetHeight");
+            }
+        }
+    }
+
+    private interface Group
+    {
+        boolean isExpanded();
+
+        Vector<Widget> getChildren();
+
+        boolean hasChildren();
+
+        class CrossSign extends Widget
+        {
+            private boolean expanded;
+
+            CrossSign() {
+                setElement(DOM.createDiv());
+                setStyleName(CLASSNAME + "-cell-cross");
+            }
+
+            void setExpanded(boolean b) {
+                if (expanded != b) {
+                    if (b) {
+                        addStyleName(CLASSNAME_ROW_EXPANDED);
+                    } else {
+                        removeStyleName(CLASSNAME_ROW_EXPANDED);
+                    }
+                    expanded = b;
+                }
             }
         }
     }

@@ -145,15 +145,20 @@ public class TreeTable
                     target.startTag("tr");
                 }
 
-                if (hasCaption(itemId)) {
-                    target.addAttribute("caption", getCaption(itemId));
-                } else {
-                    final String key = itemIdMapper.key(itemId);
-                    target.addAttribute("key", key);
-                    target.addAttribute("level", level);
+                final String key = itemIdMapper.key(itemId);
+                target.addAttribute("key", key);
+                target.addAttribute("level", level);
 
+                if (allowChildren) {
+                    target.addAttribute("expanded", expanded.contains(itemId));
+                }
+
+                if (hasCaption(itemId))
+                {
+                    target.addAttribute("caption", getCaption(itemId));
+                } 
+                else {
                     if (allowChildren) {
-                        target.addAttribute("expanded", expanded.contains(itemId));
                         target.startTag("c");
                     }
 
