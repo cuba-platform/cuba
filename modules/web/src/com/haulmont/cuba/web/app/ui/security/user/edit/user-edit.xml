@@ -41,19 +41,27 @@
             </columns>
             <rows>
                 <row>
-                    <label value="Name"/>
-                    <textField id="name" datasource="user" property="name"/>
-                </row>
-                <row>
-                    <label value="Login"/>
+                    <label value="msg://Login"/>
                     <textField id="login" datasource="user" property="login"/>
                 </row>
                 <row>
-                    <label value="Email"/>
+                    <label id="passwLab" value="msg://Password"/>
+                    <textField id="passw" secret="true"/>
+                </row>
+                <row>
+                    <label id="confirmPasswLab" value="msg://ConfirmPassword"/>
+                    <textField id="confirmPassw" secret="true"/>
+                </row>
+                <row>
+                    <label value="msg://Name"/>
+                    <textField id="name" datasource="user" property="name"/>
+                </row>
+                <row>
+                    <label value="msg://Email"/>
                     <textField id="email" datasource="user" property="email"/>
                 </row>
                 <row>
-                    <label value="Group"/>
+                    <label value="msg://Group"/>
                     <pickerField id="group" datasource="user" property="group" captionProperty="name"/>
                 </row>
             </rows>

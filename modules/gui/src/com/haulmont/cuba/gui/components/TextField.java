@@ -15,4 +15,7 @@ public interface TextField extends Field {
 
     int getColumns();
     void setColumns(int columns);
+
+    boolean isSecret();
+    void setSecret(boolean secret);
 }

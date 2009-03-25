@@ -35,6 +35,7 @@
                 <button action="users.create"/>
                 <button action="users.edit"/>
                 <button action="users.remove"/>
+                <button action="users.changePassw"/>
             </hbox>
             <table id="users" editable="false">
                 <columns>

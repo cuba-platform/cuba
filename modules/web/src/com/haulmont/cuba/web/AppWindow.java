@@ -132,9 +132,11 @@ public class AppWindow extends Window {
         logoLabel.setSizeFull();
 
         titleLayout.addComponent(logoLabel);
-        titleLayout.setExpandRatio(logoLabel, 1);
+        titleLayout.setExpandRatio(logoLabel, 2);
 
         titleLayout.addComponent(loggedInLabel);
+        titleLayout.setExpandRatio(loggedInLabel, 1);
+        
         titleLayout.addComponent(logoutBtn);
         titleLayout.addComponent(viewLogBtn);
 
@@ -142,7 +144,6 @@ public class AppWindow extends Window {
     }
 
     private void createMenuBarItem(MenuBar menuBar, MenuItem item) {
-        final Connection connection = App.getInstance().getConnection();
         if (!connection.isConnected()) return;
 
         final UserSession session = connection.getSession();
@@ -158,6 +159,9 @@ public class AppWindow extends Window {
     }
 
     private void createMenuItem(MenuBar.MenuItem menuItem, MenuItem item) {
+        if (!item.isPermitted(connection.getSession()))
+            return;
+
         menuItem.addItem(item.getCaption(), createMenuBarCommand(item));
 
         if (!item.getChildren().isEmpty()) {

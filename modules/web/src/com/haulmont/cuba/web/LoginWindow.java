@@ -121,7 +121,7 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
                 }
                 open(new ExternalResource(App.getInstance().getURL()));
             } catch (LoginException e) {
-                showNotification(MessageProvider.getMessage(getClass(), "loginWindow.loginFailed"), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                showNotification(MessageProvider.getMessage(getClass(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
             }
         }
     }

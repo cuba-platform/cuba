@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextField;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
 
 public class TextFieldLoader extends AbstractFieldLoader {
     public TextFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -32,6 +33,11 @@ public class TextFieldLoader extends AbstractFieldLoader {
         }
         if (!StringUtils.isEmpty(rows)) {
             component.setRows(Integer.valueOf(rows));
+        }
+
+        String secret = element.attributeValue("secret");
+        if (!StringUtils.isEmpty(secret)) {
+            component.setSecret(Boolean.valueOf(secret));
         }
 
         return component;

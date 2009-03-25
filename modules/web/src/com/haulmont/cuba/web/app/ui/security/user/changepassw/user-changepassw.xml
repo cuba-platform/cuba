@@ -1,0 +1,36 @@
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    datasource="user"
+    caption="msg://caption"
+    class="com.haulmont.cuba.web.app.ui.security.user.changepassw.UserChangePassw">
+
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <datasource id="user"
+                    class="com.haulmont.cuba.security.entity.User"
+                    view="user.changepassw">
+        </datasource>
+    </dsContext>
+
+    <layout>
+        <grid spacing="true" width="100%">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label id="passwLab" value="msg://Password"/>
+                    <textField id="passw" secret="true"/>
+                </row>
+                <row>
+                    <label id="confirmPasswLab" value="msg://ConfirmPassword"/>
+                    <textField id="confirmPassw" secret="true"/>
+                </row>
+            </rows>
+        </grid>
+    </layout>
+</window>

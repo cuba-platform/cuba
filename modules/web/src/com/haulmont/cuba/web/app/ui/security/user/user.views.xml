@@ -3,6 +3,7 @@
     <view entity="sec$User" name="user.edit">
         <property name="name"/>
         <property name="login"/>
+        <property name="password"/>
         <property name="email"/>
         <property name="activeDirectoryUser"/>
         <property name="group">
@@ -21,5 +22,9 @@
         <property name="login"/>
         <property name="email"/>
         <property name="activeDirectoryUser"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.User" name="user.changepassw">
+        <property name="password"/>
     </view>
 </views>

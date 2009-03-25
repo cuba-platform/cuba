@@ -10,6 +10,8 @@
 package com.haulmont.cuba.web.app.ui.security.user.browse;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 
 import java.util.Map;
@@ -30,6 +32,21 @@ public class UserBrowser extends AbstractLookup {
 
         final Action refreshAction = helper.createRefreshAction();
         button.setAction(refreshAction);
+
+        table.addAction(
+                new AbstractAction("changePassw")
+                {
+                    public void actionPerform(Component component) {
+                        if (!table.getSelected().isEmpty()) {
+                            openEditor(
+                                    "sec$User.changePassw",
+                                    table.getSelected().iterator().next(),
+                                    WindowManager.OpenType.DIALOG
+                            );
+                        }
+                    }
+                }
+        );
     }
 
     public boolean close(String actionId) {

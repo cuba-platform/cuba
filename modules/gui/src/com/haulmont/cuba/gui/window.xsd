@@ -262,6 +262,7 @@
 
                         <xs:attribute name="cols" type="xs:int" use="optional"/>
                         <xs:attribute name="rows" type="xs:int" use="optional"/>
+                        <xs:attribute name="secret" type="xs:boolean" use="optional"/>
 
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>

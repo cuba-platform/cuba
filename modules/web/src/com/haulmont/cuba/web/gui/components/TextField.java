@@ -39,4 +39,12 @@ public class TextField
     public void setColumns(int columns) {
         component.setColumns(columns);
     }
+
+    public boolean isSecret() {
+        return component.isSecret();
+    }
+
+    public void setSecret(boolean secret) {
+        component.setSecret(secret);
+    }
 }
