@@ -40,8 +40,6 @@ public class ITreeTable
 
     private boolean rowHeaders = false;
 
-    private boolean immediate = false;
-
     private int selectMode = Table.SELECT_MODE_NONE;
 
     private final Vector<String> selectedRowKeys = new Vector<String>();
@@ -63,6 +61,8 @@ public class ITreeTable
     private String width = null;
 
     private Set<String> visibleColumns = new HashSet<String>(); //Contains visible columns ids. They need for a header and a body rendering
+
+    private boolean emitClickEvents;
 
     private static Console log = ApplicationConnection.getConsole();
 
@@ -91,8 +91,6 @@ public class ITreeTable
 
         this.client = client;
         uidlId = uidl.getId();
-
-        immediate = uidl.getBooleanAttribute("immediate");
 
         if (uidl.hasVariable("selected")) {
             final Set selectedKeys = uidl
@@ -143,6 +141,8 @@ public class ITreeTable
         if (uidl.hasAttribute("height")) {
             height = uidl.getStringAttribute("height");
         }
+
+        emitClickEvents = uidl.getBooleanAttribute("listenClicks");
 
         updateActionsFromUIDL(actionsUidl);
         updateHeaderFromUIDL(colsUidl);
@@ -704,27 +704,19 @@ public class ITreeTable
                     {
                         expanded = row.getBooleanAttribute("expanded");
                         if (isCaption) {
-                            r = new GroupCaptionRow(
-                                    key, row.getIntAttribute("level"),
+                            r = new GroupCaptionRow(key, row.getIntAttribute("level"),
                                     expanded
                             );
                         } else {
-                            r = new GroupRow(
-                                    key, row.getIntAttribute("level"),
-                                    row.getBooleanAttribute("selected"),
+                            r = new GroupRow(key, row.getIntAttribute("level"),
                                     expanded
                             );
                         }
                     } else {
                         if (isCaption) {
-                            r = new CaptionRow(
-                                    key, row.getIntAttribute("level")
-                            );
+                            r = new CaptionRow(key, row.getIntAttribute("level"));
                         } else {
-                            r = new Row(
-                                    key, row.getIntAttribute("level"),
-                                    row.getBooleanAttribute("selected")
-                            );
+                            r = new Row(key, row.getIntAttribute("level"));
                         }
                     }
 
@@ -734,20 +726,7 @@ public class ITreeTable
                         addRow((Row) r);
                     }
 
-                    UIDL rowContent = row;
-                    if (groupped && !isCaption)
-                    {
-                        final Iterator tags = row.getChildIterator();
-                        while (tags.hasNext()) {
-                            final UIDL t = (UIDL) tags.next();
-                            if ("c".equals(t.getTag())) {
-                                rowContent = t;
-                                break;
-                            }
-                        }
-                    }
-
-                    r.updateRowFromUIDL(rowContent);
+                    r.updateRowFromUIDL(row);
 
                     if (expanded)
                     {
@@ -927,11 +906,7 @@ public class ITreeTable
             private final CrossSign cross = new CrossSign();
 
             GroupRow(String key, int level, boolean expanded) {
-                this(key, level, false, expanded);
-            }
-
-            GroupRow(String key, int level, boolean selected, boolean expanded) {
-                super(key, level, selected);
+                super(key, level);
 
                 cross.setExpanded(expanded);
                 DOM.appendChild(getElement(), cross.getElement());
@@ -940,6 +915,23 @@ public class ITreeTable
                 this.expanded = expanded;
 
                 DOM.sinkEvents(cross.getElement(), Event.ONCLICK);
+            }
+
+            @Override
+            protected void updateCellsFromUIDL(UIDL uidl) {
+                UIDL cellsUidl = null;
+                final Iterator tags = uidl.getChildIterator();
+                while (tags.hasNext()) {
+                    final UIDL t = (UIDL) tags.next();
+                    if ("c".equals(t.getTag())) {
+                        cellsUidl = t;
+                        break;
+                    }
+                }
+
+                assert cellsUidl != null : "Cannot find tag <c>";
+
+                super.updateCellsFromUIDL(cellsUidl);
             }
 
             @Override
@@ -987,21 +979,11 @@ public class ITreeTable
             protected final Vector<Widget> visibleCells = new Vector<Widget>();
 
             Row(String key, int level) {
-                this(key, level, false);
-            }
-
-            Row(String key, int level, boolean selected) {
                 super(key, level);
-
-                setSelected(selected);
             }
 
             public boolean isSelected() {
                 return selected;
-            }
-
-            private void setSelected(boolean selected) {
-                if (selected != this.selected) toggleSelection();
             }
 
             private void toggleSelection() {
@@ -1018,7 +1000,15 @@ public class ITreeTable
                 }
             }
 
-            public void updateRowFromUIDL(UIDL uidl) {
+            public void updateRowFromUIDL(UIDL uidl)
+            {
+                if (uidl.hasAttribute("selected") && !isSelected()) {
+                    toggleSelection();
+                }
+                updateCellsFromUIDL(uidl);
+            }
+
+            protected void updateCellsFromUIDL(UIDL uidl) {
                 Iterator cells = uidl.getChildIterator();
                 visibleCells.clear();
                 while (cells.hasNext()) {
@@ -1060,11 +1050,12 @@ public class ITreeTable
                 if (event.getCurrentTarget() == getElement()) {
                     switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
+                        handleClickEvent(event);
                         if (selectMode > Table.SELECT_MODE_NONE) {
                             toggleSelection();
                             log.log("Row: " + getKey() + " is " + (selected ? " selected" : " deselected"));
                             client.updateVariable(uidlId, "selected",
-                                    selectedRowKeys.toArray(), immediate);
+                                    selectedRowKeys.toArray(), true);
                         }
                         break;
                     }
@@ -1090,6 +1081,29 @@ public class ITreeTable
                 this.level = level;
 
                 DOM.sinkEvents(getElement(), Event.ONCLICK);
+            }
+
+            void handleClickEvent(Event event) {
+                if (emitClickEvents) {
+                    if (event.getCurrentTarget() == getElement()) {
+                        boolean dbl = DOM.eventGetType(event) == Event.ONDBLCLICK;
+                        client.updateVariable(uidlId, "clickedKey", key, false);
+                        //todo Пока не знаю как найти ячейку
+//                    final Element tdOrTr = DOM.getParent(DOM
+//                            .eventGetTarget(event));
+//                    if (getElement() == tdOrTr.getParentElement()) {
+//                        int childIndex = DOM
+//                                .getChildIndex(getElement(), tdOrTr);
+//                        String colKey = null;
+//                        colKey = tHead.getHeaderCell(childIndex).getColKey();
+//                        client.updateVariable(uidlId, "clickedColKey",
+//                                colKey, false);
+//                    }
+                        MouseEventDetails details = new MouseEventDetails(event);
+                        client.updateVariable(uidlId, "clickEvent",
+                                details.toString(), !(!dbl && selectMode > Table.SELECT_MODE_NONE));
+                    }
+                }
             }
 
             public String getKey() {

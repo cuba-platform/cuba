@@ -87,6 +87,10 @@ public class TreeTable
             target.addAttribute("selectmode", "none");
         }
 
+//        if (clickListenerCount > 0) {
+        target.addAttribute("listenClicks", true);
+//        }
+
         paintColumns(target);
         
         paintRows(target);
@@ -158,6 +162,10 @@ public class TreeTable
                     target.addAttribute("caption", getCaption(itemId));
                 } 
                 else {
+                    if (isSelected(itemId)) {
+                        target.addAttribute("selected", true);
+                    }
+
                     if (allowChildren) {
                         target.startTag("c");
                     }
