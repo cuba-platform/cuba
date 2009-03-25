@@ -98,7 +98,7 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
     }
 
     public Class getType() {
-        return MetadataHelper.getPropertyTypeClass(metaProperty);
+        return MetadataHelper.getTypeClass(metaProperty);
     }
 
     public boolean isReadOnly() {

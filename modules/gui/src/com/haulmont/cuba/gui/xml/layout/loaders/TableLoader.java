@@ -93,7 +93,7 @@ public class TableLoader extends ComponentLoader {
         loadCaption(column, element);
 
         column.setXmlDescriptor(element);
-        column.setType(MetadataHelper.getPropertyTypeClass(metaProperty));
+        column.setType(MetadataHelper.getTypeClass(metaProperty));
 
         return column;
     }

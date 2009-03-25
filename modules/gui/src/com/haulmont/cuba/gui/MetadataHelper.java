@@ -11,6 +11,10 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 
 import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
@@ -19,7 +23,7 @@ import java.util.Collection;
 import java.util.Arrays;
 
 public class MetadataHelper {
-    public static Class getPropertyTypeClass(MetaProperty metaProperty) {
+    public static Class getTypeClass(MetaProperty metaProperty) {
         if (metaProperty == null)
             throw new IllegalArgumentException("MetaProperty is null");
         
@@ -51,5 +55,14 @@ public class MetadataHelper {
             }
         }
         return cascadeProperty;
+    }
+
+    public static boolean isSystem(MetaProperty metaProperty) {
+        final MetaClass metaClass = metaProperty.getDomain();
+        final Class javaClass = metaClass.getJavaClass();
+
+        return BaseUuidEntity.class.equals(javaClass) ||
+                StandardEntity.class.equals(javaClass) ||
+                    BaseLongIdEntity.class.equals(javaClass);
     }
 }

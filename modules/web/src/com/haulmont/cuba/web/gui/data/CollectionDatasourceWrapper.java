@@ -132,7 +132,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
 
     public Class getType(Object propertyId) {
         MetaProperty metaProperty = (MetaProperty) propertyId;
-        return MetadataHelper.getPropertyTypeClass(metaProperty);
+        return MetadataHelper.getTypeClass(metaProperty);
     }
 
     public synchronized int size() {

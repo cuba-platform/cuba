@@ -10,13 +10,17 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.FrameContext;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.components.TableActionsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
@@ -93,6 +97,37 @@ public class GenericBrowserWindow extends Window
         final CollectionDatasource ds = context.get(metaClass.getName());
         ds.refresh();
 
+        if (view != null) {
+            for (ViewProperty viewProperty : view.getProperties()) {
+                final String name = viewProperty.getName();
+                final MetaProperty metaProperty = metaClass.getProperty(name);
+
+                final com.haulmont.cuba.gui.components.Table.Column column =
+                        new com.haulmont.cuba.gui.components.Table.Column(metaProperty);
+                column.setType(MetadataHelper.getTypeClass(metaProperty));
+
+                table.addColumn(column);
+            }
+        } else {
+            for (MetaProperty metaProperty : metaClass.getProperties()) {
+                if (MetadataHelper.isSystem(metaProperty)) continue;
+
+                final Range range = metaProperty.getRange();
+                if (range == null) continue;
+
+                final Range.Cardinality cardinality = range.getCardinality();
+                if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
+                        Range.Cardinality.MANY_TO_ONE.equals(cardinality))
+                {
+                    final com.haulmont.cuba.gui.components.Table.Column column =
+                            new com.haulmont.cuba.gui.components.Table.Column(metaProperty);
+                    column.setType(MetadataHelper.getTypeClass(metaProperty));
+
+                    table.addColumn(column);
+                }
+            }
+        }
+        
         table.setDatasource(ds);
     }
 

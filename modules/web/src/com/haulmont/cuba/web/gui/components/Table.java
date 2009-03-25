@@ -169,7 +169,7 @@ public class Table
             } else {
                 for (Map.Entry<MetaProperty, Column> entry : columns.entrySet()) {
                     final MetaProperty metaProperty = entry.getKey();
-                    if (view != null && view.getProperty(metaProperty.getName()) != null) {
+                    if (view == null || view.getProperty(metaProperty.getName()) != null) {
                         properties.add(metaProperty);
                     }
                 }
