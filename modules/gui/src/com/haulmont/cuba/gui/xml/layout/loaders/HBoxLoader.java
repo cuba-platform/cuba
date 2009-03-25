@@ -34,7 +34,7 @@ public class HBoxLoader extends ContainerLoader implements ComponentLoader {
         loadSpacing(component, element);
         loadMargin(component, element);
 
-        loadSubcomponentsAndExpand(component, element);
+        loadSubcomponentsAndExpand(component, element, "visible");
 
         loadHeight(component, element);
         loadWidth(component, element);

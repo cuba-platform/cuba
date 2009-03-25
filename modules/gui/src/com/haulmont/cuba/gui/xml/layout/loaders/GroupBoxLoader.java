@@ -34,7 +34,7 @@ public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cub
         }
 
         loadAlign(component, element);
-        loadSubcomponentsAndExpand(component, element, "caption");
+        loadSubcomponentsAndExpand(component, element, "caption", "visible");
 
         return component;
     }
