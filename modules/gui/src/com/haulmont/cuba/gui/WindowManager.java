@@ -12,10 +12,7 @@ package com.haulmont.cuba.gui;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -38,10 +35,10 @@ import org.dom4j.io.SAXReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -331,15 +328,8 @@ public abstract class WindowManager {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
-                final Class<?> aClass = ReflectionHelper.getClass(screenClass);
-                Constructor<?> constructor;
-                try {
-                    constructor = aClass.getConstructor(Window.class);
-                } catch (NoSuchMethodException e) {
-                    constructor = aClass.getConstructor(IFrame.class);
-                }
-
-                res = (Window) constructor.newInstance(window);
+                final Class<Window> aClass = ReflectionHelper.getClass(screenClass);
+                res = ((WindowImplementation) window).wrap(aClass);
 
                 try {
                     invokeMethod(res, "init", params);

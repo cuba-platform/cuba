@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.WindowImplementation;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -32,8 +33,15 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-public class Window implements com.haulmont.cuba.gui.components.Window, Component.Wrapper, Component.HasXmlDescriptor
+public class Window
+    implements
+        com.haulmont.cuba.gui.components.Window,
+        Component.Wrapper,
+        Component.HasXmlDescriptor,
+        WindowImplementation
 {
     private String id;
 
@@ -47,6 +55,8 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
     private String caption;
 
     private List<CloseListener> listeners = new ArrayList<CloseListener>();
+
+    protected com.haulmont.cuba.gui.components.Window windowWrapper;
 
     public Window() {
         component = createLayout();
@@ -274,9 +284,32 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
         throw new UnsupportedOperationException();
     }
 
+    public com.haulmont.cuba.gui.components.Window wrap(Class<com.haulmont.cuba.gui.components.Window> aClass) {
+        try {
+            Constructor<?> constructor;
+            try {
+                constructor = aClass.getConstructor(com.haulmont.cuba.gui.components.Window.class);
+            } catch (NoSuchMethodException e) {
+                constructor = aClass.getConstructor(IFrame.class);
+            }
+
+            com.haulmont.cuba.gui.components.Window wrapper =
+                    (com.haulmont.cuba.gui.components.Window) constructor.newInstance(this);
+            this.windowWrapper = wrapper;
+
+            return wrapper;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static class Editor extends Window implements com.haulmont.cuba.gui.components.Window.Editor {
         protected Object item;
         protected Form form;
+
+        protected Button commitButton;
+        protected Button cancelButton;
+        protected CloseWindowAction cancelAction;
 
         public Object getItem() {
             return item;
@@ -295,12 +328,12 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
 
             final String messagesPackage = AppConfig.getInstance().getMessagesPack();
 
-            buttonsContainer.addComponent(new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"), this, "commit"));
-            buttonsContainer.addComponent(new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new Button.ClickListener() {
-                public void buttonClick(Button.ClickEvent event) {
-                    close("cancel");
-                }
-            }));
+            cancelAction = new CloseWindowAction(this);
+            commitButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"), this, "commit");
+            cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), cancelAction);
+
+            buttonsContainer.addComponent(commitButton);
+            buttonsContainer.addComponent(cancelButton);
 
             okbar.addComponent(buttonsContainer);
 
@@ -312,6 +345,20 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             layout.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
 
             return layout;
+        }
+
+        @Override
+        public com.haulmont.cuba.gui.components.Window wrap(Class<com.haulmont.cuba.gui.components.Window> aClass) {
+            final com.haulmont.cuba.gui.components.Window window = super.wrap(aClass);
+
+            commitButton.removeListener(Button.ClickEvent.class, this, "commit");
+            commitButton.addListener(Button.ClickEvent.class, window, "commit");
+
+            cancelButton.removeListener(cancelAction);
+            cancelAction = new CloseWindowAction(window);
+            cancelButton.addListener(cancelAction);
+
+            return window;
         }
 
         protected Form createForm() {
@@ -424,6 +471,18 @@ public class Window implements com.haulmont.cuba.gui.components.Window, Componen
             } else {
                 return context.getDataService();
             }
+        }
+    }
+
+    protected static class CloseWindowAction implements Button.ClickListener {
+        private com.haulmont.cuba.gui.components.Window window;
+
+        public CloseWindowAction(com.haulmont.cuba.gui.components.Window window) {
+            this.window = window;
+        }
+
+        public void buttonClick(Button.ClickEvent event) {
+            window.close("cancel");
         }
     }
 
