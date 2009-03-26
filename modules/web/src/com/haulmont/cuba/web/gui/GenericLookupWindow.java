@@ -64,6 +64,10 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
         super.init(params);   
     }
 
+    protected void initEditable(Map<String, Object> params) {
+        // Do nothing
+    }
+
     protected void initCaption(MetaClass metaClass) {
         setCaption("Lookup " + metaClass.getName());
     }

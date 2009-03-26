@@ -47,17 +47,7 @@ public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.Abstr
         final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
         final Property itemProperty = wrapper.getItemProperty(metaProperty);
 
-        component.setPropertyDataSource(new PropertyAdapter(itemProperty) {
-            public Object getValue() {
-                final Object o = itemProperty.getValue();
-                return getKeyFromValue(o);
-            }
-
-            public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-                final Object v = getValueFromKey(newValue);
-                itemProperty.setValue(v);
-            }
-        });
+        component.setPropertyDataSource(itemProperty);
 
         setRequired(metaProperty.isMandatory());
 

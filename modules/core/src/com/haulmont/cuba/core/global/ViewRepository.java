@@ -51,6 +51,10 @@ public class ViewRepository
         return view;
     }
 
+    public void deployViews(String resourceUrl) {
+        deployViews(getClass().getResourceAsStream(resourceUrl));
+    }
+
     public void deployViews(InputStream xml) {
         deployViews(new InputStreamReader(xml));
     }

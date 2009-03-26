@@ -12,18 +12,25 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.data.Container;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Label;
+import com.itmill.toolkit.ui.BaseFieldFactory;
+import com.itmill.toolkit.ui.Field;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -37,6 +44,8 @@ public class Table
 {
     protected Map<MetaProperty, Table.Column> columns = new HashMap<MetaProperty, Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Column>();
+
+    protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
 
     protected boolean editable;
 
@@ -55,12 +64,80 @@ public class Table
 
                 final Set selected = getSelected();
                 if (selected.isEmpty()) {
+                    //noinspection unchecked
                     datasource.setItem(null);
                 } else {
+                    //noinspection unchecked
                     datasource.setItem((Entity) selected.iterator().next());
                 }
             }
         });
+        component.setFieldFactory(new BaseFieldFactory() {
+            @Override
+            public com.itmill.toolkit.ui.Field createField(Class type, com.itmill.toolkit.ui.Component uiContext) {
+                return super.createField(type, uiContext);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public com.itmill.toolkit.ui.Field createField(Property property, com.itmill.toolkit.ui.Component uiContext) {
+                return super.createField(property, uiContext);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public com.itmill.toolkit.ui.Field createField(Item item, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
+                return super.createField(item, propertyId, uiContext);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public com.itmill.toolkit.ui.Field createField(com.itmill.toolkit.data.Container container, Object itemId, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
+                MetaProperty metaProperty = (MetaProperty) propertyId;
+                final Range range = metaProperty.getRange();
+                if (range != null) {
+                    if (range.isClass()) {
+                        final Column column = columns.get(metaProperty);
+
+                        final LookupField lookupField = new LookupField();
+                        final CollectionDatasource optionsDatasource = getOptionsDatasource(range.asClass(), column);
+//                        final Entity item = optionsDatasource.getItem(itemId);
+
+                        lookupField.setOptionsDatasource(optionsDatasource);
+//                        lookupField.setDatasource(getDatasource(), metaProperty.getName());
+
+                        return (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
+                    } else if (range.isEnum()) {
+                        final LookupField lookupField = new LookupField();
+                        lookupField.setDatasource(getDatasource(), metaProperty.getName());
+                        lookupField.setOptionsList(range.asEnumiration().getValues());
+
+                        return (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
+                    } else {
+                        return super.createField(container, itemId, propertyId, uiContext);
+                    }
+                } else {
+                    return super.createField(container, itemId, propertyId, uiContext);
+                }
+            }
+        });
+    }
+
+    protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, Column column) {
+        CollectionDatasource ds = optionsDatasources.get(metaClass);
+        if (ds != null) return ds;
+
+        if (datasource == null) throw new UnsupportedOperationException("Table datasource is null");
+
+        final DataService dataservice = datasource.getDataService();
+        final DsContext dsContext = datasource.getDsContext();
+
+        final String id = metaClass.getName();
+        final String viewName = null; //metaClass.getName() + ".lookup";
+
+        ds = new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
+        ds.refresh();
+        
+        optionsDatasources.put(metaClass, ds);
+
+        return ds;
     }
 
     public List<Column> getColumns() {
@@ -75,6 +152,7 @@ public class Table
 
     public void removeColumn(Column column) {
         component.removeContainerProperty(column.getId());
+        //noinspection RedundantCast
         columns.remove((MetaProperty) column.getId());
         columnsOrder.remove(column);
     }
@@ -87,6 +165,7 @@ public class Table
         this.datasource = datasource;
         final CollectionDatasourceWrapper ds = new TableDatasourceWrapper(datasource);
 
+        @SuppressWarnings({"unchecked"})
         final Collection<MetaProperty> properties = (Collection<MetaProperty>) ds.getContainerPropertyIds();
         for (MetaProperty metaProperty : properties) {
             final Column column = columns.get(metaProperty);
@@ -128,6 +207,7 @@ public class Table
             component.setColumnHeader(metaProperty, caption);
         }
 
+        @SuppressWarnings({"unchecked"})
         final Collection<MetaProperty> collection = component.getContainerPropertyIds();
         if (!columns.isEmpty()) {
             for (MetaProperty metaProperty : collection) {

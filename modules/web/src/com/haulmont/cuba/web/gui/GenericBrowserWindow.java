@@ -31,6 +31,9 @@ import com.itmill.toolkit.ui.*;
 import java.util.Map;
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
+
 public class GenericBrowserWindow extends Window
 {
     protected Table table;
@@ -129,6 +132,14 @@ public class GenericBrowserWindow extends Window
         }
         
         table.setDatasource(ds);
+        initEditable(params);
+    }
+
+    protected void initEditable(Map<String, Object> params) {
+        String editable = (String) params.get("parameter$editable");
+        if (!StringUtils.isEmpty(editable)) {
+            table.setEditable(BooleanUtils.toBoolean(editable));
+        }
     }
 
     protected void initCaption(MetaClass metaClass) {

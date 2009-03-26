@@ -12,6 +12,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.log.AppLog;
@@ -65,6 +66,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
         LoginWindow window = createLoginWindow();
         setMainWindow(window);
+
+        deployViews();
     }
 
     public static App getInstance() {
@@ -73,6 +76,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     protected LoginWindow createLoginWindow() {
         return new LoginWindow(this, connection);
+    }
+
+    protected void deployViews() {
+        //MetadataProvider.getViewRepository().deployViews("/com/haulmont/cuba/web/app/ui/security/user/user.views.xml");
     }
 
     protected AppWindow createAppWindow() {

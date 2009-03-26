@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.itmill.toolkit.ui.OptionGroup;
+import com.itmill.toolkit.data.Property;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +27,22 @@ public class OptionsGroup
         com.haulmont.cuba.gui.components.OptionsGroup, Component.Wrapper
 {
     public OptionsGroup() {
-        component = new OptionGroup();
+        component = new OptionGroup() {
+            @Override
+            public void setPropertyDataSource(Property newDataSource) {
+                super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+                    public Object getValue() {
+                        final Object o = itemProperty.getValue();
+                        return getKeyFromValue(o);
+                    }
+
+                    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                        final Object v = getValueFromKey(newValue);
+                        itemProperty.setValue(v);
+                    }
+                });
+            }
+        };
         attachListener(component);
         component.setImmediate(true);
     }
