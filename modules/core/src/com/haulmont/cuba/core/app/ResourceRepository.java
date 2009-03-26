@@ -11,6 +11,8 @@
 package com.haulmont.cuba.core.app;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -25,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepositoryAPI
 {
+    private Log log = LogFactory.getLog(ResourceRepository.class);
+
     private String rootPath;
 
     private Map<String, Object> repository = new ConcurrentHashMap<String, Object>();
@@ -32,6 +36,8 @@ public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepo
     private static final String MSG_UNABLE_TO_LOAD_RESOURCE = "Unable to load resource %s";
 
     public void create() {
+        log.debug("create");
+
         String confUrl = System.getProperty("jboss.server.config.url");
         if (confUrl == null)
             throw new IllegalStateException("Environment variable jboss.server.config.url is not set");
@@ -39,6 +45,7 @@ public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepo
     }
 
     public void start() {
+        log.debug("start");
     }
 
     public ResourceRepositoryAPI getAPI() {

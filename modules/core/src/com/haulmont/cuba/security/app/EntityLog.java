@@ -13,6 +13,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.security.entity.LoggedEntity;
 import com.haulmont.cuba.security.entity.LoggedAttribute;
 import com.haulmont.cuba.security.entity.EntityLogItem;
@@ -27,6 +28,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 
 public class EntityLog implements EntityLogMBean, EntityLogAPI
 {
@@ -34,19 +36,42 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
 
     private volatile boolean loaded;
 
+    private volatile Boolean enabled;
+
     private Map<String, Set<String>> entitiesManual;
     private Map<String, Set<String>> entitiesAuto;
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public void create() {
+        log.debug("create");
     }
 
     public void start() {
+        log.debug("start");
     }
 
     public EntityLogAPI getAPI() {
         return this;
+    }
+
+    public synchronized boolean isEnabled() {
+        if (enabled == null)
+            loadConfig();
+        return enabled;
+    }
+
+    public synchronized void setEnabled(boolean enabled) {
+        if (!ObjectUtils.equals(this.enabled, enabled)) {
+            this.enabled = enabled;
+            EntityLogConfig config = ConfigProvider.getConfig(EntityLogConfig.class);
+            config.setEnabled(enabled);
+        }
+    }
+
+    public synchronized void loadConfig() {
+        EntityLogConfig config = ConfigProvider.getConfig(EntityLogConfig.class);
+        enabled = config.getEnabled();
     }
 
     public void invalidateCache() {
@@ -60,7 +85,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
         }
     }
 
-    public Set<String> getLoggedAttributes(String entity, boolean auto) {
+    private Set<String> getLoggedAttributes(String entity, boolean auto) {
         lock.readLock().lock();
         try {
             if (!loaded) {
@@ -122,6 +147,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
     }
 
     public void registerCreate(BaseEntity entity, boolean auto) {
+        if (!isEnabled())
+            return;
+
         try {
             String entityName = entity.getClass().getName();
             Set<String> attributes = getLoggedAttributes(entityName, auto);
@@ -154,6 +182,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
     }
 
     public void registerModify(BaseEntity entity, boolean auto) {
+        if (!isEnabled())
+            return;
+
         try {
             String entityName = entity.getClass().getName();
             Set<String> attributes = getLoggedAttributes(entityName, auto);
@@ -189,6 +220,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
     }
 
     public void registerDelete(BaseEntity entity, boolean auto) {
+        if (!isEnabled())
+            return;
+
         try {
             String entityName = entity.getClass().getName();
             Set<String> attributes = getLoggedAttributes(entityName, auto);

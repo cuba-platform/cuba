@@ -10,11 +10,18 @@
  */
 package com.haulmont.cuba.core.app;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class CubaDeployer implements CubaDeployerMBean
 {
+    private Log log = LogFactory.getLog(CubaDeployer.class);
+
     public void create() {
+        log.debug("create");
     }
 
     public void start() {
+        log.debug("start");
     }
 }

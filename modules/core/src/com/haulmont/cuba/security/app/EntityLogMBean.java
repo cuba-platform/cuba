@@ -20,5 +20,10 @@ public interface EntityLogMBean
 
     EntityLogAPI getAPI();
 
+    boolean isEnabled();
+    void setEnabled(boolean enabled);
+
+    void loadConfig();
+
     void invalidateCache();
 }

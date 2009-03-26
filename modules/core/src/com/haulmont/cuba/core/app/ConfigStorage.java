@@ -21,6 +21,8 @@ import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -33,13 +35,17 @@ import java.util.*;
 
 public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
 {
+    private Log log = LogFactory.getLog(ConfigStorage.class);
+
     private UUID roleId;
     private UUID permissionId;
 
     public void create() {
+        log.debug("create");
     }
 
     public void start() {
+        log.debug("start");
         loadSystemProperties();
     }
 
