@@ -23,9 +23,7 @@ import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 {
@@ -44,7 +42,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         return new GenericDataService(false);
     }
 
-    protected Map<Window, WindowOpenMode> windowOpenMode = new HashMap<Window, WindowOpenMode>();
+    protected Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
 
     protected static class WindowOpenMode {
         protected Window window;
@@ -152,8 +150,9 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
     public void closeAll() {
         boolean needRefresh = false;
-        for (Map.Entry<Window, WindowOpenMode> entry : windowOpenMode.entrySet()) {
-            boolean res = closeWindow(entry.getKey(), entry.getValue());
+        List<Map.Entry<Window,WindowOpenMode>> entries = new ArrayList(windowOpenMode.entrySet());
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            boolean res = closeWindow(entries.get(i).getKey(), entries.get(i).getValue());
             needRefresh = needRefresh || res;
         }
         windowOpenMode.clear();

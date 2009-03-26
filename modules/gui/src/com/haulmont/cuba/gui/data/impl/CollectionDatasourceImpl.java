@@ -295,7 +295,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
                         final Entity item = datasource.getItem();
                         if (elements.length > 1) {
                             final List<String> list = Arrays.asList(elements);
-                            final List<String> valuePath = list.subList(1, list.size() - 1);
+                            final List<String> valuePath = list.subList(1, list.size());
                             final String propertyName = InstanceUtils.formatValuePath(valuePath.toArray(new String[valuePath.size()]));
 
                             map.put(name, InstanceUtils.getValueEx((Instance) item, propertyName));
