@@ -157,6 +157,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.showOptionDialog(title, message, messageType, actions);
     }
 
+    public void showNotification(String caption, NotificationType type) {
+        frame.showNotification(caption, type);
+    }
+
+    public void showNotification(String caption, String description, NotificationType type) {
+        frame.showNotification(caption, description, type);
+    }
+
     public boolean close(String actionId) {
         if (frame instanceof Window) {
             return ((Window) frame).close(actionId);

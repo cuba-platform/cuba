@@ -95,6 +95,14 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
+    public void showNotification(String caption, String description, NotificationType type) {
+        getWindow().showNotification(caption, description, ComponentsHelper.convertNotificationType(type));
+    }
+
+    public void showNotification(String caption, NotificationType type) {
+        getWindow().showNotification(caption, ComponentsHelper.convertNotificationType(type));
+    }
+
     public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {
         return (A) frame;
     }

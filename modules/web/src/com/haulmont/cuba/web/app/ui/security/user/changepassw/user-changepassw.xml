@@ -2,7 +2,9 @@
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
     datasource="user"
     caption="msg://caption"
-    class="com.haulmont.cuba.web.app.ui.security.user.changepassw.UserChangePassw">
+    class="com.haulmont.cuba.web.app.ui.security.user.changepassw.UserChangePassw"
+    messagesPack="com.haulmont.cuba.web.app.ui.security.user.changepassw"    
+>
 
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>

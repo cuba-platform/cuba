@@ -14,44 +14,41 @@ import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.User;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.codec.digest.DigestUtils;
-
 public class UserChangePassw extends AbstractEditor
 {
+    private TextField passwField;
+    private TextField confirmPasswField;
+    private Datasource<User> userDs;
+
     public UserChangePassw(IFrame frame) {
         super(frame);
     }
 
     protected void init(Map<String, Object> params) {
-        final Datasource<User> userDs = getDsContext().get("user");
+        userDs = getDsContext().get("user");
 
-        TextField passwField = getComponent("passw");
-        TextField confirmPasswField = getComponent("confirmPassw");
+        passwField = getComponent("passw");
+        confirmPasswField = getComponent("confirmPassw");
+    }
 
-        passwField.addListener(
-                new ValueListener()
-                {
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (StringUtils.isBlank((String) value))
-                            userDs.getItem().setPassword(null);
-                        else
-                            userDs.getItem().setPassword(DigestUtils.md5Hex((String) value));
-                    }
-                }
-        );
-        confirmPasswField.addListener(
-                new ValueListener()
-                {
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        // TODO KK: implement comparison after Bug#3305 is fixed
-                    }
-                }
-        );
+    public void commit() {
+        String passw = passwField.getValue();
+        String confPassw = confirmPasswField.getValue();
+        if (ObjectUtils.equals(passw, confPassw)) {
+            if (StringUtils.isEmpty(passw))
+                userDs.getItem().setPassword(null);
+            else
+                userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
+            super.commit();
+        } else {
+            showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+        }
     }
 }

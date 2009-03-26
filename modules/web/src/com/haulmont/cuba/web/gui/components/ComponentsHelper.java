@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Component;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.IFrame;
 
 import java.util.Iterator;
 import java.util.List;
@@ -117,6 +118,16 @@ public class ComponentsHelper {
             case BOTTOM_CENTER: {return Alignment.BOTTOM_CENTER;}
             case BOTTOM_RIGHT: {return Alignment.BOTTOM_RIGHT;}
             default: {throw new UnsupportedOperationException();}
+        }
+    }
+
+    public static int convertNotificationType(IFrame.NotificationType type) {
+        switch (type) {
+            case TRAY: return com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION;
+            case HUMANIZED: return com.itmill.toolkit.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE;
+            case WARNING: return com.itmill.toolkit.ui.Window.Notification.TYPE_WARNING_MESSAGE;
+            case ERROR: return com.itmill.toolkit.ui.Window.Notification.TYPE_ERROR_MESSAGE;
+            default: return com.itmill.toolkit.ui.Window.Notification.TYPE_WARNING_MESSAGE;
         }
     }
 }

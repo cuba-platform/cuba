@@ -9,28 +9,27 @@
  */
 package com.haulmont.cuba.web.app.ui.security.user.edit;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.chile.core.model.MetaClass;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Arrays;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
 
 public class UserEditor extends AbstractEditor {
 
     private Datasource<User> userDs;
+    private TextField passwField;
+    private TextField confirmPasswField;
 
     public UserEditor(Window frame) {
         super(frame);
@@ -44,37 +43,14 @@ public class UserEditor extends AbstractEditor {
         getComponent("passwLab").setVisible(isNew);
         getComponent("confirmPasswLab").setVisible(isNew);
 
-        TextField passwField = getComponent("passw");
-        TextField confirmPasswField = getComponent("confirmPassw");
         passwField.setVisible(isNew);
         confirmPasswField.setVisible(isNew);
-
-        if (isNew) {
-            passwField.addListener(
-                    new ValueListener()
-                    {
-                        public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                            if (StringUtils.isBlank((String) value))
-                                userDs.getItem().setPassword(null);
-                            else
-                                userDs.getItem().setPassword(DigestUtils.md5Hex((String) value));
-                        }
-                    }
-            );
-            confirmPasswField.addListener(
-                    new ValueListener()
-                    {
-                        public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                            // TODO KK: implement comparison after Bug#3305 is fixed
-                        }
-                    }
-            );
-
-        }
     }
 
     protected void init(Map<String, Object> params) {
         userDs = getDsContext().get("user");
+        passwField = getComponent("passw");
+        confirmPasswField = getComponent("confirmPassw");
 
         final Table rolesTable = getComponent("roles");
 
@@ -107,5 +83,19 @@ public class UserEditor extends AbstractEditor {
 
         final TableActionsHelper rolesTableActions = new TableActionsHelper(this, rolesTable);
         rolesTableActions.createRemoveAction();
+    }
+
+    public void commit() {
+        String passw = passwField.getValue();
+        String confPassw = confirmPasswField.getValue();
+        if (ObjectUtils.equals(passw, confPassw)) {
+            if (StringUtils.isEmpty(passw))
+                userDs.getItem().setPassword(null);
+            else
+                userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
+            super.commit();
+        } else {
+            showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+        }
     }
 }

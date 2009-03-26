@@ -135,6 +135,14 @@ public class Window
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
+    public void showNotification(String caption, NotificationType type) {
+        component.getWindow().showNotification(caption, ComponentsHelper.convertNotificationType(type));
+    }
+
+    public void showNotification(String caption, String description, NotificationType type) {
+        component.getWindow().showNotification(caption, description, ComponentsHelper.convertNotificationType(type));
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public DsContext getDsContext() {

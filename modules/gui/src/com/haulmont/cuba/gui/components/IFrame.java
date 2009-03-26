@@ -52,4 +52,17 @@ public interface IFrame extends Layout, Component.Container, Component.BelongToF
     
     void showMessageDialog(String title, String message, MessageType messageType);
     void showOptionDialog(String title, String message, MessageType messageType, Action[] actions);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    enum NotificationType {
+        TRAY,
+        HUMANIZED,
+        WARNING,
+        ERROR
+    }
+
+    void showNotification(String caption, NotificationType type);
+    void showNotification(String caption, String description, NotificationType type);
+
 }
