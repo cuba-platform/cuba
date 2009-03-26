@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.PersistenceHelper;
@@ -285,11 +286,22 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         for (ParametersHelper.ParameterInfo info : queryParameters) {
             String name = info.getFlatName();
 
+            final String path = info.getPath();
+            final String[] elements = path.split("\\.");
             switch (info.getType()) {
                 case DATASOURCE: {
-                    final Datasource datasource = dsContext.get(info.getPath());
+                    final Datasource datasource = dsContext.get(elements[0]);
                     if (Datasource.State.VALID.equals(datasource.getState())) {
-                        map.put(name, datasource.getItem());
+                        final Entity item = datasource.getItem();
+                        if (elements.length > 1) {
+                            final List<String> list = Arrays.asList(elements);
+                            final List<String> valuePath = list.subList(1, list.size() - 1);
+                            final String propertyName = InstanceUtils.formatValuePath(valuePath.toArray(new String[valuePath.size()]));
+
+                            map.put(name, InstanceUtils.getValueEx((Instance) item, propertyName));
+                        } else {
+                            map.put(name, item);
+                        }
                     } else {
                         map.put(name, null);
                     }
@@ -299,14 +311,14 @@ public class CollectionDatasourceImpl<T extends Entity, K>
                 case PARAM: {
                     final Object value =
                             dsContext.getContext() == null ?
-                                    null : dsContext.getContext().getValue(info.getPath());
+                                    null : dsContext.getContext().getValue(path);
                     map.put(name, value);
                     break;
                 }
                 case COMPONENT: {
                     final Object value =
                             dsContext.getContext() == null ?
-                                    null : dsContext.getContext().getValue(info.getPath());
+                                    null : dsContext.getContext().getValue(path);
                     map.put(name, value);
                     break;
                 }
