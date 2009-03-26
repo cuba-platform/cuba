@@ -10,27 +10,35 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
+import com.haulmont.cuba.web.gui.data.HierarchicalDatasourceWrapper;
 import com.itmill.toolkit.data.Container;
+import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.data.util.ContainerOrderedWrapper;
+import com.itmill.toolkit.data.util.IndexedContainer;
+import com.itmill.toolkit.data.util.ContainerHierarchicalWrapper;
 import com.itmill.toolkit.terminal.PaintException;
 import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.ui.AbstractSelect;
+import com.itmill.toolkit.ui.Component;
 
 import java.util.*;
 
 public class TreeTable
-        extends AbstractSelect
+        extends TableSupport
         implements Container.Hierarchical, TreeTableContainer
 {
 
     public static final String TAG_NAME = "treetable";
 
-    private final List visibleColumns = new LinkedList();
+    private List<Object> visibleColumns = null;
+    private final Map<Object, TableSupport.ColumnGenerator> columnGenerators = new LinkedHashMap<Object, TableSupport.ColumnGenerator>();
     private final Map<Object, String> columnHeaders = new HashMap<Object, String>();
 
     private final Set<Object> expanded = new HashSet<Object>();
 
     private boolean selectable = false;
+
+    private boolean editable = false;
 
     public TreeTable(Container dataSource) {
         super(null, dataSource);
@@ -112,6 +120,22 @@ public class TreeTable
     }
 
     protected void paintRows(PaintTarget target) throws PaintException {
+
+        final boolean[] iscomponent = new boolean[visibleColumns.size()];
+        int iscomponentIndex = 0;
+        for (final Iterator it = visibleColumns.iterator(); it.hasNext()
+                && iscomponentIndex < iscomponent.length;)
+        {
+            final Object columnId = it.next();
+            if (columnGenerators.containsKey(columnId)) {
+                iscomponent[iscomponentIndex++] = true;
+            } else {
+                final Class colType = getType(columnId);
+                iscomponent[iscomponentIndex++] = colType != null
+                        && Component.class.isAssignableFrom(colType);
+            }
+        }
+        
         target.startTag("rows");
 
         final Stack<Iterator> iteratorStack = new Stack<Iterator>();
@@ -170,6 +194,7 @@ public class TreeTable
                         target.startTag("c");
                     }
 
+                    int colIndex = 0;
                     for (final Object colId : visibleColumns) {
                         if (colId == null) {
                             continue;
@@ -180,7 +205,20 @@ public class TreeTable
                             value = p.getValue();
                         }
 
-                        target.addText((String) value);
+                        if ((iscomponent[colIndex] || isEditable())
+                                && Component.class.isInstance(value))
+                        {
+                            final Component c = (Component) value;
+                            if (c == null) {
+                                target.addText("");
+                            } else {
+                                c.paint(target);
+                            }
+                        } else {
+                            target.addText((String) value);
+                        }
+                        
+                        colIndex++;
                     }
 
                     if (allowChildren) {
@@ -208,8 +246,98 @@ public class TreeTable
         target.endTag("rows");
     }
 
+    @Override
+    public void setContainerDataSource(Container newDataSource) {
+        setContainerDataSource(newDataSource, true);
+    }
+
+    private void setContainerDataSource(Container newDataSource, boolean rerender) {
+
+        if (newDataSource == null) {
+            newDataSource = new IndexedContainer();
+        }
+
+        // Assures that the data source is ordered by making unordered
+        // containers ordered by wrapping them
+        if (newDataSource instanceof Hierarchical) {
+            super.setContainerDataSource(newDataSource);
+        } else {
+            super.setContainerDataSource(new ContainerHierarchicalWrapper(newDataSource));
+        }
+        //todo handle ordered and sortable containers
+
+        // Resets column properties
+//        if (collapsedColumns != null) {
+//            collapsedColumns.clear();
+//        }
+
+        // columnGenerators 'override' properties, don't add the same id twice
+        List<Object> col = new LinkedList<Object>();
+        for (final Object id : getContainerPropertyIds())
+        {
+            if (columnGenerators == null || !columnGenerators.containsKey(id)) {
+                col.add(id);
+            }
+        }
+        // generators added last
+        if (columnGenerators != null && columnGenerators.size() > 0) {
+            col.addAll(columnGenerators.keySet());
+        }
+
+        setVisibleColumns(col.toArray(), false);
+
+        // null value as we may not be sure that currently selected identifier
+        // exits in new ds
+        setValue(null);
+
+        if (rerender) requestRepaint();
+    }
+
+    public Object addItem(Object[] cells, Object itemId)
+            throws UnsupportedOperationException {
+
+        // remove generated columns from the list of columns being assigned
+        final LinkedList availableCols = new LinkedList();
+        for (final Object id : visibleColumns) {
+            if (!columnGenerators.containsKey(id)) {
+                availableCols.add(id);
+            }
+        }
+        // Checks that a correct number of cells are given
+        if (cells.length != availableCols.size()) {
+            return null;
+        }
+
+        // Creates new item
+        Item item;
+        if (itemId == null) {
+            itemId = items.addItem();
+            if (itemId == null) {
+                return null;
+            }
+            item = items.getItem(itemId);
+        } else {
+            item = items.addItem(itemId);
+        }
+        if (item == null) {
+            return null;
+        }
+
+        // Fills the item properties
+        for (int i = 0; i < availableCols.size(); i++) {
+            item.getItemProperty(availableCols.get(i)).setValue(cells[i]);
+        }
+
+        if (!(items instanceof Container.ItemSetChangeNotifier)) {
+            requestRepaint();
+        }
+
+        return itemId;
+    }
+
+
     private void handleClickEvent(Map variables) {
-//        if (clickListenerCount > 0) {
+//        if (clickListenerCount > 0) {            //todo use it if it needed
 //            if (variables.containsKey("clickEvent")) {
 //                String key = (String) variables.get("clickedKey");
 //                Object itemId = itemIdMapper.get(key);
@@ -295,12 +423,49 @@ public class TreeTable
     }
 
     private void setVisibleColumns(Object[] columns, boolean rerender) {
+        // Visible columns must exist
         if (columns == null) {
-            throw new NullPointerException();
+            throw new NullPointerException(
+                    "Can not set visible columns to null value");
         }
-        visibleColumns.clear();
 
-        visibleColumns.addAll(Arrays.asList(columns));
+        // Checks that the new visible columns contains no nulls and properties
+        // exist
+        final Collection properties = getContainerPropertyIds();
+        for (final Object column : columns) {
+            if (column == null) {
+                throw new NullPointerException("Ids must be non-nulls");
+            } else if (!properties.contains(column)
+                    && columnGenerators != null && !columnGenerators.containsKey(column))
+            {
+                throw new IllegalArgumentException(
+                        "Ids must exist in the Container or as a generated column , missing id: "
+                                + column);
+            }
+        }
+
+        // If this is called before the constructor is finished, it might be
+        // uninitialized
+        final LinkedList<Object> newVisibleColumns = new LinkedList<Object>();
+        newVisibleColumns.addAll(Arrays.asList(columns));
+
+        // Removes alignments, icons and headers from hidden columns
+        if (visibleColumns != null) {
+            for (final Object column : visibleColumns) {
+                if (!newVisibleColumns.contains(column)) {
+                    setColumnHeader(column, null, false);
+//                            setColumnAlignment(col, null);
+//                            setColumnIcon(col, null);
+                }
+            }
+
+            visibleColumns.clear();
+            visibleColumns.addAll(newVisibleColumns);
+
+        } else {
+            visibleColumns = newVisibleColumns;
+        }
+
 
         if (rerender) requestRepaint();
     }
@@ -310,6 +475,48 @@ public class TreeTable
             return new Object[0];
         }
         return visibleColumns.toArray();
+    }
+
+    public void addGeneratedColumn(Object columnId, TableSupport.ColumnGenerator columnGenerator) {
+        addGeneratedColumn(columnId, columnGenerator, true);
+    }
+
+    private void addGeneratedColumn(Object columnId, TableSupport.ColumnGenerator columnGenerator, boolean rerender) {
+        if (columnGenerator == null) {
+            throw new IllegalArgumentException(
+                    "Can not add null as a GeneratedColumn");
+        }
+        if (columnGenerators.containsKey(columnId)) {
+            throw new IllegalArgumentException(
+                    "Can not add the same GeneratedColumn twice, id:" + columnId);
+        } else {
+            columnGenerators.put(columnId, columnGenerator);
+            /*
+             * add to visible column list unless already there (overriding
+             * column from DS)
+             */
+            if (!visibleColumns.contains(columnId)) {
+                visibleColumns.add(columnId);
+            }
+            if (rerender) requestRepaint();
+        }
+    }
+
+    public boolean removeGeneratedColumn(Object columnId) {
+        return removeGeneratedColumn(columnId, true);
+    }
+
+    private boolean removeGeneratedColumn(Object columnId, boolean rerender) {
+        if (columnGenerators.containsKey(columnId)) {
+            columnGenerators.remove(columnId);
+            if (!items.getContainerPropertyIds().contains(columnId)) {
+                visibleColumns.remove(columnId);
+            }
+            if (rerender) requestRepaint();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void setColumnHeader(Object propertyId, String header) {
@@ -340,6 +547,16 @@ public class TreeTable
 
     public void setSelectable(boolean selectable) {
         this.selectable = selectable;
+        requestRepaint();
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        requestRepaint();
     }
 
     public boolean isExpanded(Object itemId) {

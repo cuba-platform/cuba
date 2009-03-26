@@ -977,6 +977,7 @@ public class ITreeTable
             private boolean selected = false;
 
             protected final Vector<Widget> visibleCells = new Vector<Widget>();
+            private List<UIDL> pendingComponentPaints = null;
 
             Row(String key, int level) {
                 super(key, level);
@@ -1016,14 +1017,26 @@ public class ITreeTable
                     Cell cell = null;
                     if (o instanceof String) {
                         cell = new Cell((String) o);
-                    } else if (o instanceof Widget) {
+                    } else {
+                        final Paintable cellContent = client.getPaintable((UIDL) o);
                         cell = new Cell((Widget) o);
+                        paintComponent(cellContent, (UIDL) o);
                     }
-                    if (cell != null) {
-                        add(cell);
-                    }
+                    add(cell);
                 }
             }
+
+            private void paintComponent(Paintable p, UIDL uidl) {
+                if (isAttached()) {
+                    p.updateFromUIDL(uidl, client);
+                } else {
+                    if (pendingComponentPaints == null) {
+                        pendingComponentPaints = new LinkedList<UIDL>();
+                    }
+                    pendingComponentPaints.add(uidl);
+                }
+            }
+
 
             public void add(Widget child) {
                 DOM.appendChild(getElement(), child.getElement());
@@ -1058,6 +1071,17 @@ public class ITreeTable
                                     selectedRowKeys.toArray(), true);
                         }
                         break;
+                    }
+                }
+            }
+
+            @Override
+            protected void onAttach() {
+                super.onAttach();
+                if (pendingComponentPaints != null) {
+                    for (UIDL uidl : pendingComponentPaints) {
+                        Paintable paintable = client.getPaintable(uidl);
+                        paintable.updateFromUIDL(uidl, client);
                     }
                 }
             }
