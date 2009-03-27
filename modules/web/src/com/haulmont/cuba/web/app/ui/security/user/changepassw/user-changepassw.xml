@@ -25,11 +25,11 @@
             </columns>
             <rows>
                 <row>
-                    <label id="passwLab" value="msg://Password"/>
+                    <label id="passwLab" value="msg://password"/>
                     <textField id="passw" secret="true"/>
                 </row>
                 <row>
-                    <label id="confirmPasswLab" value="msg://ConfirmPassword"/>
+                    <label id="confirmPasswLab" value="msg://confirmPassword"/>
                     <textField id="confirmPassw" secret="true"/>
                 </row>
             </rows>

@@ -112,7 +112,7 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
             String login = (String) loginField.getValue();
             try {
                 if (ActiveDirectoryHelper.useActiveDirectory()) {
-                    ActiveDirectoryHelper.authenticate(login, (String) passwdField.getValue());
+                    ActiveDirectoryHelper.authenticate(login, (String) passwdField.getValue(), loc);
                     connection.loginActiveDirectory(login);
                 }
                 else {

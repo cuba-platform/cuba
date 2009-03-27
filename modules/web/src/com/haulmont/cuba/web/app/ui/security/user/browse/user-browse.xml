@@ -39,10 +39,10 @@
             </hbox>
             <table id="users" editable="false">
                 <columns>
-                    <column id="name" caption="msg://name"/>
                     <column id="login" caption="msg://login" clickAction="open:sec$User.edit"/>
-                    <column id="email" caption="msg://email"/>
                     <column id="activeDirectoryUser" caption="msg://activeDirectoryUser"/>
+                    <column id="name" caption="msg://name"/>
+                    <column id="email" caption="msg://email"/>
                 </columns>
                 <rows datasource="users"/>
             </table>

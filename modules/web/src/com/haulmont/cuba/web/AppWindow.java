@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.web.log.LogWindow;
+import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.security.global.UserSession;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
@@ -112,7 +113,8 @@ public class AppWindow extends Window {
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
                         connection.logout();
-                        open(new ExternalResource(App.getInstance().getURL()));
+                        String url = ActiveDirectoryHelper.useActiveDirectory() ? "login" : "";
+                        open(new ExternalResource(App.getInstance().getURL() + url));
                     }
                 }
         );

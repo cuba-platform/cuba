@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Locale;
 
 public class ActiveDirectoryHelper
 {
@@ -32,17 +33,17 @@ public class ActiveDirectoryHelper
         return config.getUseActiveDirectory();
     }
 
-    public static void authenticate(String login, String password) throws LoginException {
+    public static void authenticate(String login, String password, Locale loc) throws LoginException {
         int p = login.indexOf('\\');
         if (p <= 0)
-            throw new LoginException(MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName"),
+            throw new LoginException(MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName", loc),
                     login);
         String domain = login.substring(0, p);
         String user = login.substring(p+1);
         String dcIp = getActiveDirectoryDomains().get(domain);
         if (StringUtils.isBlank(dcIp))
             throw new LoginException(
-                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownDomain"),
+                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownDomain", loc),
                     domain
             );
         try {
@@ -51,17 +52,17 @@ public class ActiveDirectoryHelper
             SmbSession.logon(dc, cred);
         } catch (UnknownHostException e) {
             throw new LoginException(
-                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownHost"),
+                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownHost", loc),
                     dcIp
             );
         } catch (SmbAuthException e) {
             throw new LoginException(
-                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.authenticationError"),
+                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.authenticationError", loc),
                     e.getMessage()
             );
         } catch (SmbException e) {
             throw new LoginException(
-                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownError"),
+                    MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.unknownError", loc),
                     e.getMessage()
             );
         }

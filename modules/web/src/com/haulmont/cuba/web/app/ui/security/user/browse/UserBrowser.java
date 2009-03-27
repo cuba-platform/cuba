@@ -47,6 +47,8 @@ public class UserBrowser extends AbstractLookup {
                     }
                 }
         );
+
+        getDsContext().get("users").refresh();
     }
 
     public boolean close(String actionId) {

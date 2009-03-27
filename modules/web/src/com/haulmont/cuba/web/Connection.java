@@ -30,8 +30,6 @@ public class Connection
 
     private boolean connected;
     private UserSession session;
-    private String login;
-    private String password;
 
     public boolean isConnected() {
         return connected;
@@ -47,38 +45,17 @@ public class Connection
     }
 
     public void login(String login, String password) throws LoginException {
-        login(login, password, null);
-    }
-
-    public void login(String login, String password, String profileName) throws LoginException {
         session = getLoginService().login(login, password, App.getInstance().getLocale());
         connected = true;
-        this.login = login;
-        this.password = password;
         ServerSecurityUtils.setSecurityAssociation(session.getLogin(), session.getId());
         fireConnectionListeners();
     }
 
     public void loginActiveDirectory(String activeDirectoryUser) throws LoginException {
-        loginActiveDirectory(activeDirectoryUser, null);
-    }
-
-    public void loginActiveDirectory(String activeDirectoryUser, String profileName) throws LoginException {
         session = getLoginService().loginActiveDirectory(activeDirectoryUser, App.getInstance().getLocale());
         connected = true;
-        this.login = activeDirectoryUser;
-        this.password = null;
+        ServerSecurityUtils.setSecurityAssociation(session.getLogin(), session.getId());
         fireConnectionListeners();
-    }
-
-    public void changeProfile(String profile) throws LoginException {
-        logout();
-        if (password != null) {
-            login(login, password, profile);
-        }
-        else {
-            loginActiveDirectory(login, profile);
-        }
     }
 
     public void logout() {

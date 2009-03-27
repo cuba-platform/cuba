@@ -42,27 +42,31 @@
             </columns>
             <rows>
                 <row>
-                    <label value="msg://Login"/>
+                    <label value="msg://login"/>
                     <textField id="login" datasource="user" property="login"/>
                 </row>
                 <row>
-                    <label id="passwLab" value="msg://Password"/>
+                    <label id="passwLab" value="msg://password"/>
                     <textField id="passw" secret="true"/>
                 </row>
                 <row>
-                    <label id="confirmPasswLab" value="msg://ConfirmPassword"/>
+                    <label id="confirmPasswLab" value="msg://confirmPassword"/>
                     <textField id="confirmPassw" secret="true"/>
                 </row>
                 <row>
-                    <label value="msg://Name"/>
+                    <label value="msg://activeDirectoryUser"/>
+                    <textField id="activeDirectoryUser" datasource="user" property="activeDirectoryUser"/>
+                </row>
+                <row>
+                    <label value="msg://name"/>
                     <textField id="name" datasource="user" property="name"/>
                 </row>
                 <row>
-                    <label value="msg://Email"/>
+                    <label value="msg://email"/>
                     <textField id="email" datasource="user" property="email"/>
                 </row>
                 <row>
-                    <label value="msg://Group"/>
+                    <label value="msg://group"/>
                     <pickerField id="group" datasource="user" property="group" captionProperty="name"/>
                 </row>
             </rows>

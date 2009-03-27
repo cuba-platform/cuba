@@ -143,9 +143,11 @@ public class App extends Application implements ConnectionListener, ApplicationC
         if (!connection.isConnected()
                 && request.getUserPrincipal() != null
                 && !principalIsWrong
-                && ActiveDirectoryHelper.useActiveDirectory())
+                && ActiveDirectoryHelper.useActiveDirectory()
+                && !(request.getRequestURI().endsWith("/login") || request.getRequestURI().endsWith("/UIDL/")))
         {
             String userName = request.getUserPrincipal().getName();
+            log.debug("Trying to login ActiveDirectory as " + userName);
             try {
                 connection.loginActiveDirectory(userName);
                 principalIsWrong = false;
