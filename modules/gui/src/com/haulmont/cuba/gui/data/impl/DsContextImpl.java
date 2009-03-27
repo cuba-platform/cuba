@@ -129,26 +129,34 @@ public class DsContextImpl implements DsContextImplementation {
 
     protected Map<Datasource, Datasource> dependencies = new HashMap<Datasource, Datasource>();
 
-    public void regirterDependency(final Datasource source, final Datasource destination) {
-        if (dependencies.containsKey(source)) throw new UnsupportedOperationException();
+    public void regirterDependency(final Datasource ds, final Datasource dependFrom, final String propertyName) {
+        if (dependencies.containsKey(ds)) throw new UnsupportedOperationException();
 
         final DatasourceListener listener = new CollectionDatasourceListener<Entity>() {
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
-                source.refresh();
+                ds.refresh();
             }
 
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {}
-            public void valueChanged(Entity source, String property, Object prevValue, Object value) {}
+
+            public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                if (propertyName != null && ObjectUtils.equals(propertyName, property)) {
+                    final Entity item = Datasource.State.VALID.equals(dependFrom.getState()) ? dependFrom.getItem() : null;
+                    if (ObjectUtils.equals(item, source)) {
+                        ds.refresh();
+                    }
+                }
+            }
 
             public void collectionChanged(Datasource ds, CollectionOperation operation) {
                 if (CollectionOperation.Type.REFRESH.equals(operation.getType())) {
-                    source.refresh();
+                    ds.refresh();
                 }
             }
         };
 
-        destination.addListener(listener);
-        dependencies.put(source, destination);
+        dependFrom.addListener(listener);
+        dependencies.put(ds, dependFrom);
     }
 
     public DataService getDataService() {

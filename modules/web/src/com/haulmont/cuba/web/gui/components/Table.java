@@ -221,6 +221,7 @@ public class Table
         for (Column column : this.columnsOrder) {
             columnsOrder.add((MetaProperty) column.getId());
         }
+
         component.setVisibleColumns(columnsOrder.toArray());
     }
 

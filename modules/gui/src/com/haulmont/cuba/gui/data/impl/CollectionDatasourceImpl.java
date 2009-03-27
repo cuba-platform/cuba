@@ -181,9 +181,18 @@ public class CollectionDatasourceImpl<T extends Entity, K>
                     final String[] strings = path.split("\\.");
                     String source = strings[0];
 
+                    final String property;
+                    if (strings.length > 1) {
+                        final List<String> list = Arrays.asList(strings);
+                        final List<String> valuePath = list.subList(1, list.size());
+                        property = InstanceUtils.formatValuePath(valuePath.toArray(new String[valuePath.size()]));
+                    } else {
+                        property = null;
+                    }
+
                     final Datasource ds = dsContext.get(source);
                     if (ds != null) {
-                        dsContext.regirterDependency(this, ds);
+                        dsContext.regirterDependency(this, ds, property);
                     } else {
                         ((DsContextImplementation) dsContext).addLazyTask(new DsContextImplementation.LazyTask() {
                             public void execute(DsContext context) {
@@ -192,7 +201,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
                                 final Datasource ds = dsContext.get(source);
                                 if (ds != null) {
-                                    dsContext.regirterDependency(CollectionDatasourceImpl.this, ds);
+                                    dsContext.regirterDependency(CollectionDatasourceImpl.this, ds, property);
                                 }
                             }
                         });

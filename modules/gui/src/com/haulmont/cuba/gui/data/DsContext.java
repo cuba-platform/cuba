@@ -27,5 +27,5 @@ public interface DsContext {
     void refresh();
     void commit();
 
-    void regirterDependency(Datasource ds, Datasource dependFrom);
+    void regirterDependency(Datasource ds, Datasource dependFrom, String property);
 }
