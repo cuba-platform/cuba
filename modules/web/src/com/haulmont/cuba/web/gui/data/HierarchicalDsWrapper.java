@@ -17,15 +17,15 @@ import com.itmill.toolkit.data.Container;
 
 import java.util.Collection;
 
-public class HierarchicalDatasourceWrapper
+public class HierarchicalDsWrapper
     extends
-        CollectionDatasourceWrapper
+        CollectionDsWrapper
     implements
         Container.Hierarchical
 {
     private String parentPropertyName;
 
-    public HierarchicalDatasourceWrapper(HierarchicalDatasource datasource)
+    public HierarchicalDsWrapper(HierarchicalDatasource datasource)
     {
         super(datasource);
         this.parentPropertyName = datasource.getHierarchyPropertyName();

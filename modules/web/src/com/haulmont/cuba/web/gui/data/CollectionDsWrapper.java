@@ -25,7 +25,7 @@ import com.haulmont.chile.core.model.Range;
 
 import java.util.*;
 
-public class CollectionDatasourceWrapper implements Container, Container.ItemSetChangeNotifier {
+public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier {
 
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
@@ -35,11 +35,11 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
     protected Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
 
-    public CollectionDatasourceWrapper(CollectionDatasource datasource) {
+    public CollectionDsWrapper(CollectionDatasource datasource) {
         this(datasource, false);
     }
 
-    public CollectionDatasourceWrapper(CollectionDatasource datasource, boolean autoRefresh) {
+    public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
 
@@ -89,7 +89,7 @@ public class CollectionDatasourceWrapper implements Container, Container.ItemSet
         for (ItemSetChangeListener listener : itemSetChangeListeners) {
             listener.containerItemSetChange(new ItemSetChangeEvent() {
                 public Container getContainer() {
-                    return CollectionDatasourceWrapper.this;
+                    return CollectionDsWrapper.this;
                 }
             });
         }

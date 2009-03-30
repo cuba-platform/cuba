@@ -39,6 +39,7 @@
                                         <xs:attribute name="class" type="xs:string" use="required"/>
                                         <xs:attribute name="view" type="xs:string" use="required"/>
                                         <xs:attribute name="query" type="xs:string" use="optional"/>
+                                        <xs:attribute name="fetchMode" type="fetchMode" use="optional"/>
                                     </xs:complexType>
                                 </xs:element>
                                 <xs:element name="hierarchicalDatasource">
@@ -54,6 +55,7 @@
                                         <xs:attribute name="query" type="xs:string" use="optional"/>
                                         <xs:attribute name="view" type="xs:string" use="required"/>
                                         <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
+                                        <xs:attribute name="fetchMode" type="fetchMode" use="optional"/>
                                     </xs:complexType>
                                 </xs:element>
                                 <xs:element name="datasource">
@@ -210,6 +212,12 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="fetchMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ALL"/>
+            <xs:enumeration value="LAZY"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:group name="component">
         <xs:sequence>

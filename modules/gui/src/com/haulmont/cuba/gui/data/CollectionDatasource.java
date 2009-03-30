@@ -14,6 +14,11 @@ import com.haulmont.cuba.core.entity.Entity;
 import java.util.Collection;
 
 public interface CollectionDatasource<T extends Entity, K> extends Datasource<T> {
+    enum FetchMode {
+        ALL,
+        LAZY
+    }
+
     T getItem(K key);
 
     Collection<K> getItemIds();
@@ -24,18 +29,44 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
 
     boolean containsItem(K itemId);
 
-    interface Sortable<K> {
+    interface Ordered<T extends Entity, K> extends CollectionDatasource<T, K> {
+        K firstItemId();
+        K lastItemId();
+
+        K nextItemId(K itemId);
+        K prevItemId(K itemId);
+
+        boolean isFirstId(K itemId);
+        boolean isLastId(K itemId);
+    }
+
+    interface Sortable<T extends Entity, K> extends Ordered<T, K>{
         enum Order {
             ASC,
             DESC
         }
 
-        class SortInfo {
-            Object property;
+        class SortInfo<P> {
+            P property;
             Order order;
+
+            public P getProperty() {
+                return property;
+            }
+
+            public void setProperty(P property) {
+                this.property = property;
+            }
+
+            public Order getOrder() {
+                return order;
+            }
+
+            public void setOrder(Order order) {
+                this.order = order;
+            }
         }
 
-        Collection<K> getSortedItemIds();
         void sort(SortInfo[] sortInfos);
     }
 

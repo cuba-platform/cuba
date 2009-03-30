@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.web.gui.data.HierarchicalDatasourceWrapper;
+import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.AbstractSelect;
 
@@ -120,7 +120,7 @@ public class Tree
         MetaProperty metaProperty = hierarchyProperty == null ? null : datasource.getMetaClass().getProperty(hierarchyProperty);
         component.setItemCaptionPropertyId(metaProperty);
 
-        HierarchicalDatasourceWrapper wrapper = new HierarchicalDatasourceWrapper(datasource);
+        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
         component.setContainerDataSource(wrapper);
     }
 }

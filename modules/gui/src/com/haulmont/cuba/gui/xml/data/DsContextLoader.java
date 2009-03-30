@@ -81,8 +81,10 @@ public class DsContextLoader {
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
-        } else
-            datasource = factory.createHierarchicalDatasource(datasources, dataservice, id, metaClass, viewName);
+        } else {
+            final CollectionDatasource.FetchMode mode = getFetchMode(element);
+            datasource = factory.createHierarchicalDatasource(datasources, dataservice, id, metaClass, viewName, mode);
+        }
 
         if (!StringUtils.isEmpty(hierarchyProperty)) {
             datasource.setHierarchyPropertyName(hierarchyProperty);
@@ -219,8 +221,10 @@ public class DsContextLoader {
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
-        } else
-            datasource = factory.createCollectionDatasource(datasources, dataservice, id, metaClass, viewName);
+        } else {
+            final CollectionDatasource.FetchMode mode = getFetchMode(element);
+            datasource = factory.createCollectionDatasource(datasources, dataservice, id, metaClass, viewName, mode);
+        }
 
         final String query = element.elementText("query");
         if (!StringUtils.isBlank(query)) {
@@ -230,5 +234,17 @@ public class DsContextLoader {
         loadDatasources(element, datasource);
 
         return datasource;
+    }
+
+    protected CollectionDatasource.FetchMode getFetchMode(Element element) {
+        final CollectionDatasource.FetchMode mode;
+
+        final String fetchMode = element.attributeValue("fetchMode");
+        if (!StringUtils.isEmpty(fetchMode)) {
+            mode = CollectionDatasource.FetchMode.valueOf(fetchMode);
+        } else {
+            mode = CollectionDatasource.FetchMode.ALL;
+        }
+        return mode;
     }
 }

@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.AbstractSelect;
 
@@ -126,7 +126,7 @@ public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.Abstr
 
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
-        component.setContainerDataSource(new CollectionDatasourceWrapper(datasource, true));
+        component.setContainerDataSource(new CollectionDsWrapper(datasource, true));
 
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));

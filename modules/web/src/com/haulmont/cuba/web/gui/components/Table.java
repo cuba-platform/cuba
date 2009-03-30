@@ -21,16 +21,15 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.web.gui.data.CollectionDatasourceWrapper;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.Container;
+import com.itmill.toolkit.ui.BaseFieldFactory;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.ui.BaseFieldFactory;
-import com.itmill.toolkit.ui.Field;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -163,7 +162,10 @@ public class Table
 
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-        final CollectionDatasourceWrapper ds = new TableDatasourceWrapper(datasource);
+        final CollectionDsWrapper ds =
+                datasource instanceof CollectionDatasource.Sortable ?
+                        new SortableTableDsWrapper(datasource) :
+                        new TableDsWrapper(datasource);
 
         @SuppressWarnings({"unchecked"})
         final Collection<MetaProperty> properties = (Collection<MetaProperty>) ds.getContainerPropertyIds();
@@ -238,8 +240,8 @@ public class Table
 //                    com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_HIDDEN);
     }
 
-    private class TableDatasourceWrapper extends CollectionDatasourceWrapper {
-        public TableDatasourceWrapper(CollectionDatasource datasource) {
+    protected class TableDsWrapper extends CollectionDsWrapper {
+        public TableDsWrapper(CollectionDatasource datasource) {
             super(datasource);
         }
 
@@ -269,46 +271,37 @@ public class Table
             };
         }
 
-        private class TablePropertyWrapper extends PropertyWrapper {
-            private final MetaProperty property;
+    }
 
-            public TablePropertyWrapper(Object item, MetaProperty property) {
-                super(item, property);
-                this.property = property;
-            }
+    protected class SortableTableDsWrapper extends SortableCollectionDsWrapper {
+        public SortableTableDsWrapper(CollectionDatasource datasource) {
+            super(datasource);
+        }
 
-            @Override
-            public boolean isReadOnly() {
-                final Column column = Table.this.columns.get(property);
-                if (column != null) {
-                    return !column.isEditable();
-                } else {
-                    return super.isReadOnly();
-                }
-            }
-
-            @Override
-            public void setReadOnly(boolean newStatus) {
-                super.setReadOnly(newStatus);
-            }
-
-            @Override
-            public String toString() {
-                final Column column = Table.this.columns.get(property);
-                if (column != null && column.getXmlDescriptor() != null) {
-                    String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
-                    if (!StringUtils.isEmpty(captionProperty)) {
-                        final Object value = getValue();
-                        return metaProperty.getRange().isDatatype() ?
-                                metaProperty.getRange().asDatatype().format(value) :
-                                value == null ? null : String.valueOf(((Instance) value).getValue(captionProperty));
-                    } else {
-                        return super.toString();
+        @Override
+        protected void createProperties(View view, MetaClass metaClass) {
+            if (columns.isEmpty()) {
+                super.createProperties(view, metaClass);
+            } else {
+                for (Map.Entry<MetaProperty, Column> entry : columns.entrySet()) {
+                    final MetaProperty metaProperty = entry.getKey();
+                    if (view == null || view.getProperty(metaProperty.getName()) != null) {
+                        properties.add(metaProperty);
                     }
-                } else {
-                    return super.toString();
                 }
             }
+        }
+
+        @Override
+        protected ItemWrapper createItemWrapper(Object item) {
+            return new ItemWrapper(item, properties) {
+                @Override
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaProperty property) {
+                    final PropertyWrapper wrapper = new TablePropertyWrapper(item, property);
+
+                    return wrapper;
+                }
+            };
         }
     }
 
@@ -380,6 +373,48 @@ public class Table
             label.setImmediate(true);
 
             return label;
+        }
+    }
+
+    private class TablePropertyWrapper extends PropertyWrapper {
+        private final MetaProperty property;
+
+        public TablePropertyWrapper(Object item, MetaProperty property) {
+            super(item, property);
+            this.property = property;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            final Column column = Table.this.columns.get(property);
+            if (column != null) {
+                return !column.isEditable();
+            } else {
+                return super.isReadOnly();
+            }
+        }
+
+        @Override
+        public void setReadOnly(boolean newStatus) {
+            super.setReadOnly(newStatus);
+        }
+
+        @Override
+        public String toString() {
+            final Column column = Table.this.columns.get(property);
+            if (column != null && column.getXmlDescriptor() != null) {
+                String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
+                if (!StringUtils.isEmpty(captionProperty)) {
+                    final Object value = getValue();
+                    return metaProperty.getRange().isDatatype() ?
+                            metaProperty.getRange().asDatatype().format(value) :
+                            value == null ? null : String.valueOf(((Instance) value).getValue(captionProperty));
+                } else {
+                    return super.toString();
+                }
+            } else {
+                return super.toString();
+            }
         }
     }
 }
