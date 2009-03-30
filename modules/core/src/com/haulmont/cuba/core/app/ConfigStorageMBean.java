@@ -33,4 +33,6 @@ public interface ConfigStorageMBean
     String test();
 
     String testDataService();
+
+    String createTestServers(Integer qty);
 }

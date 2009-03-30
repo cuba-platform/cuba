@@ -29,6 +29,9 @@ public class QueryTransformerRegex implements QueryTransformer
     public static final String LAST_CLAUSE_PATTERN_REGEX = "(\\bGROUP\\s+BY\\b)|(\\bORDER\\s+BY\\b)|(\\bHAVING\\b)";
     public static final Pattern LAST_CLAUSE_PATTERN = Pattern.compile(LAST_CLAUSE_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
+    public static final String ORDER_BY_PATTERN_REGEX = "\\bORDER\\s+BY\\b";
+    public static final Pattern ORDER_BY_PATTERN = Pattern.compile(ORDER_BY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+
     public static final String ALIAS_PATTERN_REGEX = "(^|\\s|\\()(\\w+)\\.";
     public static final Pattern ALIAS_PATTERN = Pattern.compile(ALIAS_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
@@ -104,6 +107,43 @@ public class QueryTransformerRegex implements QueryTransformer
             sb.append(alias);
         }
         sb.append(where.substring(pos));
+    }
+
+    public void replaceWithCount() {
+        String alias = null;
+        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        while (entityMatcher.find()) {
+            if (targetEntity.equals(entityMatcher.group(1))) {
+                alias = entityMatcher.group(3);
+                break;
+            }
+        }
+        if (StringUtils.isBlank(alias))
+            error("No alias for target entity " + targetEntity + " found");
+
+        buffer.replace(0, entityMatcher.start(), "select count(" + alias + ") from ");
+    }
+
+    public void replaceOrderBy(String property, boolean desc) {
+        String alias = null;
+        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        while (entityMatcher.find()) {
+            if (targetEntity.equals(entityMatcher.group(1))) {
+                alias = entityMatcher.group(3);
+                break;
+            }
+        }
+        if (StringUtils.isBlank(alias))
+            error("No alias for target entity " + targetEntity + " found");
+
+        String orderBy = alias + "." + property + (desc ? " desc" : "");
+
+        Matcher matcher = ORDER_BY_PATTERN.matcher(buffer);
+        if (matcher.find()) {
+            buffer.replace(matcher.end(), buffer.length(), " " + orderBy);
+        } else {
+            buffer.append(" order by ").append(orderBy);
+        }
     }
 
     public void reset() {

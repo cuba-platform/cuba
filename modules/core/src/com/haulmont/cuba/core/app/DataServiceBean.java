@@ -96,11 +96,16 @@ public class DataServiceBean implements DataService, DataServiceRemote
         return resultList;
     }
 
-    protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, AbstractLoasContext context) {
+    protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, AbstractLoadContext context) {
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
 
         com.haulmont.cuba.core.Query query = em.createQuery(context.getQuery().getQueryString());
         SecurityProvider.applyConstraints(query, metaClass.getName());
+
+        if (context.getQuery().getFirstResult() != 0)
+            query.setFirstResult(context.getQuery().getFirstResult());
+        if (context.getQuery().getMaxResults() != 0)
+            query.setMaxResults(context.getQuery().getMaxResults());
 
         final String queryString = context.getQuery().getQueryString();
         for (Map.Entry<String, Object> entry : context.getQuery().getParameters().entrySet()) {

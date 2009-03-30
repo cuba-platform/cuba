@@ -15,11 +15,13 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.entity.Config;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.sys.ConfigWorker;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -241,6 +243,31 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
                 removeEntities();
                 logout();
             }
+        } catch (Throwable t) {
+            return ExceptionUtils.getStackTrace(t);
+        }
+    }
+
+    public String createTestServers(Integer qty) {
+        try {
+            login();
+            Transaction tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+
+                for (int i = 0; i < (qty == null ? 100 : qty); i++) {
+                    Server serv = new Server();
+                    serv.setName("TestServer" + StringUtils.leftPad(String.valueOf(i), 3, '0'));
+                    serv.setAddress(String.valueOf(Math.random() * 1000));
+                    em.persist(serv);
+                }
+
+                tx.commit();
+            } finally {
+                tx.end();
+                logout();
+            }
+            return "OK";
         } catch (Throwable t) {
             return ExceptionUtils.getStackTrace(t);
         }

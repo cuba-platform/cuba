@@ -5,6 +5,7 @@
         <item id="sec$Role.browse"/>
     </menu>
     <menu id="administration">
+        <item id="tableTest"/>
         <item id="core$Server.browse"/>
     </menu>
 </menu-config>

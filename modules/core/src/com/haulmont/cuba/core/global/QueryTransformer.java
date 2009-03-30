@@ -18,9 +18,13 @@ public interface QueryTransformer
 
     void mergeWhere(String query);
 
+    void replaceWithCount();
+
     void reset();
-    
+
     String getResult();
 
     Set<String> getAddedParams();
+
+    void replaceOrderBy(String property, boolean asc);
 }

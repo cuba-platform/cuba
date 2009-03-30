@@ -75,4 +75,36 @@ public class QueryTransformerRegexTest extends TestCase
         }
 
     }
+
+    public void testReplaceWithCount() {
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level order by c.level having c.level > 0",
+                "sec$GroupHierarchy");
+        transformer.replaceWithCount();
+        String res = transformer.getResult();
+        assertEquals(
+                "select count(h) from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level order by c.level having c.level > 0",
+                res);
+    }
+
+    public void testOrderBy() {
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by c.level",
+                "sec$GroupHierarchy");
+        transformer.replaceOrderBy("group", false);
+        String res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by h.group",
+                res);
+        transformer.replaceOrderBy("group", true);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
+                        "group by c.level having c.level > 0 order by h.group desc",
+                res);
+    }
 }

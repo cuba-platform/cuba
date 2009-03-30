@@ -1,0 +1,36 @@
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    class="com.haulmont.cuba.web.app.ui.core.server.ServerBrowser">
+
+    <metadataContext>
+        <view class="com.haulmont.cuba.core.entity.Server" name="browse">
+            <property name="name"/>
+            <property name="address"/>
+            <property name="running"/>
+        </view>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource id="servers" class="com.haulmont.cuba.core.entity.Server" view="browse">
+            <query>
+                select s from core$Server s order by s.name
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox expand="servers">
+            <hbox>
+                <button action="servers.refresh"/>
+            </hbox>
+            <table id="servers" editable="false">
+                <columns>
+                    <column id="name" caption="msg://name"/>
+                    <column id="address" caption="msg://address"/>
+                    <column id="running" caption="msg://running"/>
+                </columns>
+                <rows datasource="servers"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

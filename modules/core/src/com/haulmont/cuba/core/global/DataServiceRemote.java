@@ -59,16 +59,16 @@ public interface DataServiceRemote
         }
     }
 
-    public class AbstractLoasContext implements Serializable {
+    public class AbstractLoadContext implements Serializable {
         protected String metaClass;
         protected DataServiceRemote.Query query;
         protected View view;
 
-        public AbstractLoasContext(MetaClass metaClass) {
+        public AbstractLoadContext(MetaClass metaClass) {
             this.metaClass = metaClass.getName();
         }
 
-        public AbstractLoasContext(Class metaClass) {
+        public AbstractLoadContext(Class metaClass) {
             this.metaClass = MetadataProvider.getSession().getClass(metaClass).getName();
         }
 
@@ -93,7 +93,8 @@ public interface DataServiceRemote
         }
     }
 
-    public class LoadContext extends AbstractLoasContext {
+    public class LoadContext extends AbstractLoadContext
+    {
         protected Object id;
 
         public LoadContext(MetaClass metaClass) {
@@ -114,7 +115,8 @@ public interface DataServiceRemote
 
     }
 
-    public class CollectionLoadContext extends AbstractLoasContext {
+    public class CollectionLoadContext extends AbstractLoadContext
+    {
         protected Collection<Object> ids;
 
         public CollectionLoadContext(MetaClass metaClass) {
@@ -144,6 +146,8 @@ public interface DataServiceRemote
     public class Query implements Serializable {
         private Map<String, Object> parameters = new HashMap<String, Object>();
         private String queryString;
+        private int firstResult;
+        private int maxResults;
 
         public Query(String queryString) {
             this.queryString = queryString;
@@ -163,6 +167,24 @@ public interface DataServiceRemote
 
         public void setParameters(Map<String, Object> parameters) {
             this.parameters.putAll(parameters);
+        }
+
+        public Query setFirstResult(int firstResult) {
+            this.firstResult = firstResult;
+            return this;
+        }
+
+        public Query setMaxResults(int maxResults) {
+            this.maxResults = maxResults;
+            return this;
+        }
+
+        public int getFirstResult() {
+            return firstResult;
+        }
+
+        public int getMaxResults() {
+            return maxResults;
         }
     }
 }

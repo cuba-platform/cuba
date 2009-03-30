@@ -1,7 +1,10 @@
 <screen-config>
 
+    <screen id="tableTest"
+            class="com.haulmont.cuba.web.app.ui.LazyLoadingTableScreen"/>
+    
     <screen id="core$Server.browse"
-            class="com.haulmont.cuba.web.app.ui.TableDemoScreen"/>
+            template="/com/haulmont/cuba/web/app/ui/core/server/server-browse.xml"/>
 
     <screen id="sec$User.browse"
             template="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.xml"/>
