@@ -29,7 +29,7 @@ public interface Table
     public class Column implements HasXmlDescriptor, HasCaption {
         protected Object id;
         protected String caption;
-        protected boolean editable;
+        protected boolean editable = true;
 
         protected Class type;
         private Element element;

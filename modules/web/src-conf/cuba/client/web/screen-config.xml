@@ -12,6 +12,8 @@
     <!--<screen id="sec$User.browse" class="com.haulmont.cuba.web.gui.GenericBrowserWindow">-->
         <!--<params>-->
             <!--<param name="metaClass" value="sec$User"/>-->
+            <!--<param name="view" value="user.edit"/>-->
+            <!--<param name="editable" value="true"/>-->
         <!--</params>-->
     <!--</screen>-->
 
