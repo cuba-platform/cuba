@@ -23,11 +23,7 @@ import java.util.Set;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.event.Action;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.CheckBox;
-import com.itmill.toolkit.ui.CustomComponent;
-import com.itmill.toolkit.ui.OrderedLayout;
-import com.itmill.toolkit.ui.Table;
+import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button.ClickEvent;
 
 /**
@@ -82,6 +78,25 @@ public class TableExample extends CustomComponent implements Action.Handler,
         source.setRowHeaderMode(Table.ROW_HEADER_MODE_ID);
         fillTable(source);
         source.addActionHandler(this);
+        source.addGeneratedColumn(PROPERTY_SPECIES, new Table.ColumnGenerator() {
+            public Component generateCell(final Table source, Object itemId, Object columnId) {
+                final Item item = source.getItem(itemId);
+                final Property property = item.getItemProperty(columnId);
+                final Object value = property.getValue();
+
+                final Button component = new Button();
+                component.setData(value);
+                component.setCaption(value == null ? "" : property.toString());
+                component.setStyleName("link");
+
+                component.addListener(new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent event) {
+                        source.getWindow().showNotification("Link " + value + " has been clicked");
+                    }
+                });
+                return component;
+            }
+        });
         main.addComponent(source);
 
         // x-selected button row

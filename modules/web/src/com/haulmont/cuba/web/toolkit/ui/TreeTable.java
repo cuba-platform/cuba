@@ -10,16 +10,14 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
-import com.haulmont.cuba.web.gui.data.HierarchicalDatasourceWrapper;
 import com.itmill.toolkit.data.Container;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.util.ContainerOrderedWrapper;
-import com.itmill.toolkit.data.util.IndexedContainer;
 import com.itmill.toolkit.data.util.ContainerHierarchicalWrapper;
+import com.itmill.toolkit.data.util.IndexedContainer;
 import com.itmill.toolkit.terminal.PaintException;
 import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.ui.Component;
+import com.itmill.toolkit.ui.*;
 
 import java.util.*;
 
@@ -33,6 +31,9 @@ public class TreeTable
     private List<Object> visibleColumns = null;
     private final Map<Object, TableSupport.ColumnGenerator> columnGenerators = new LinkedHashMap<Object, TableSupport.ColumnGenerator>();
     private final Map<Object, String> columnHeaders = new HashMap<Object, String>();
+
+    private Set<Component> visibleComponents = null;
+    private Set<Property> listenedProperties = null;
 
     private final Set<Object> expanded = new HashSet<Object>();
 
@@ -96,7 +97,7 @@ public class TreeTable
         }
 
 //        if (clickListenerCount > 0) {
-        target.addAttribute("listenClicks", true);
+        target.addAttribute("listenClicks", false);
 //        }
 
         paintColumns(target);
@@ -120,6 +121,12 @@ public class TreeTable
     }
 
     protected void paintRows(PaintTarget target) throws PaintException {
+
+        final Set<Component> oldVisibleComponents = visibleComponents;
+        final Set<Property> oldListenedProperties = listenedProperties;
+
+        visibleComponents = new HashSet<Component>();
+        listenedProperties = new HashSet<Property>();
 
         final boolean[] iscomponent = new boolean[visibleColumns.size()];
         int iscomponentIndex = 0;
@@ -199,10 +206,35 @@ public class TreeTable
                         if (colId == null) {
                             continue;
                         }
+
                         Object value = "";
-                        final Property p = getContainerProperty(itemId, colId);
-                        if (p != null) {
-                            value = p.getValue();
+                        boolean isGenerated = columnGenerators.containsKey(colId);
+
+                        Property p = null;
+                        if (!isGenerated) {
+                            p = getContainerProperty(itemId, colId);
+                        }
+
+                        if (p != null || isGenerated)
+                        {
+                            if (p instanceof Property.ValueChangeNotifier) {
+                                if (oldListenedProperties == null
+                                        || !oldListenedProperties.contains(p)) {
+                                    ((Property.ValueChangeNotifier) p)
+                                            .addListener(this);
+                                }
+                                listenedProperties.add(p);
+                            }
+                            if (isGenerated) {
+                                final ColumnGenerator cg = columnGenerators.get(colId);
+                                value = cg.generateCell(this, itemId, colId);
+                            } else if (iscomponent[colIndex]) {
+                                value = p.getValue();
+                            } else if (p != null) {
+                                value = getPropertyValue(itemId, colId, p);
+                            } else {
+                                value = getPropertyValue(itemId, colId, null);
+                            }
                         }
 
                         if ((iscomponent[colIndex] || isEditable())
@@ -217,7 +249,15 @@ public class TreeTable
                         } else {
                             target.addText((String) value);
                         }
-                        
+
+                        if (value instanceof Component) {
+                            if (oldVisibleComponents == null
+                                    || !oldVisibleComponents.contains(value)) {
+                                ((Component) value).setParent(this);
+                            }
+                            visibleComponents.add((Component) value);
+                        }
+
                         colIndex++;
                     }
 
@@ -244,6 +284,55 @@ public class TreeTable
         }
 
         target.endTag("rows");
+
+        unregisterComponentsAndProperties(
+                oldVisibleComponents,
+                oldListenedProperties
+        );
+    }
+
+    protected Object getPropertyValue(Object rowId, Object colId,
+            Property property) {
+// todo uncomment when i will be impl editable cells       
+//        if (isEditable() && fieldFactory != null) {
+//            final Field f = fieldFactory.createField(getContainerDataSource(),
+//                    rowId, colId, this);
+//            if (f != null) {
+//                f.setPropertyDataSource(property);
+//                return f;
+//            }
+//        }
+
+        return formatPropertyValue(rowId, colId, property);
+    }
+
+    protected String formatPropertyValue(Object rowId, Object colId,
+            Property property) {
+        if (property == null) {
+            return "";
+        }
+        return property.toString();
+    }
+
+    private void unregisterComponentsAndProperties(
+            Set<Component> oldVisibleComponents, Set<Property> oldListenedProperties) {
+        if (oldVisibleComponents != null) {
+            for (final Component c : oldVisibleComponents) {
+                if (!visibleComponents.contains(c)) {
+                    c.setParent(null);
+                }
+            }
+        }
+
+        if (oldListenedProperties != null) {
+            for (final Property p : oldListenedProperties) {
+                if (!listenedProperties.contains(p)
+                        && (p instanceof ValueChangeNotifier))
+                {
+                   ((ValueChangeNotifier) p).removeListener(this);
+                }
+            }
+        }
     }
 
     @Override
@@ -581,12 +670,61 @@ public class TreeTable
     protected void setCollapsed(Object itemId, boolean rerender) {
         if (isExpanded(itemId)) {
             expanded.remove(itemId);
-            if (rerender)requestRepaint();
+            if (rerender) requestRepaint();
+        }
+    }
+
+    @Override
+    public void attach() {
+        super.attach();
+
+        if (visibleComponents != null) {
+            for (final Component component : visibleComponents) {
+                component.attach();
+            }
+        }
+    }
+
+    @Override
+    public void detach() {
+        super.detach();
+
+        if (visibleComponents != null) {
+            for (final Component component : visibleComponents) {
+                component.detach();
+            }
         }
     }
 
     public String getTag()
     {
         return TAG_NAME;
+    }
+
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (getParent() == null || getParent().isEnabled()) {
+            requestRepaintAll();
+        }
+    }
+
+    public void requestRepaintAll() {
+        requestRepaint();
+        if (visibleComponents != null) {
+            for (final Component c : visibleComponents) {
+                if (c instanceof Form) {
+                    // Form has children in layout, but is not
+                    // ComponentContainer
+                    c.requestRepaint();
+                    ((Form) c).getLayout().requestRepaintAll();
+                } else if (c instanceof Table) {
+                    ((Table) c).requestRepaintAll();
+                } else if (c instanceof ComponentContainer) {
+                    ((ComponentContainer) c).requestRepaintAll();
+                } else {
+                    c.requestRepaint();
+                }
+            }
+        }
     }
 }

@@ -1014,12 +1014,12 @@ public class ITreeTable
                 visibleCells.clear();
                 while (cells.hasNext()) {
                     final Object o = cells.next();
-                    Cell cell = null;
+                    Cell cell;
                     if (o instanceof String) {
                         cell = new Cell((String) o);
                     } else {
                         final Paintable cellContent = client.getPaintable((UIDL) o);
-                        cell = new Cell((Widget) o);
+                        cell = new Cell((Widget) cellContent);
                         paintComponent(cellContent, (UIDL) o);
                     }
                     add(cell);
