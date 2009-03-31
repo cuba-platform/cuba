@@ -14,13 +14,13 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.data.Validator;
 
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
     extends
@@ -32,7 +32,10 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
     protected MetaProperty metaProperty;
 
     private boolean editable;
+
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+    protected Map<com.haulmont.cuba.gui.components.Field.Validator, Validator> validators =
+            new HashMap<com.haulmont.cuba.gui.components.Field.Validator, Validator>();
 
     public Datasource getDatasource() {
         return datasource;
@@ -114,6 +117,43 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
     protected void fireValueChanged(Object prevValue, Object value) {
         for (ValueListener listener : listeners) {
             listener.valueChanged(this, "value", prevValue, value);
+        }
+    }
+
+    public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
+        if (!validators.containsKey(validator)) {
+            final Validator componentValidator = new Validator() {
+                public void validate(Object value) throws InvalidValueException {
+                    try {
+                        validator.validate(value);
+                    } catch (ValidationException e) {
+                        throw new InvalidValueException(e.getMessage());
+                    }
+                }
+
+                public boolean isValid(Object value) {
+                    return validator.isValid(value);
+                }
+            };
+
+            component.addValidator(componentValidator);
+            validators.put(validator, componentValidator);
+        }
+    }
+
+    public void removeValidator(com.haulmont.cuba.gui.components.Field.Validator validator) {
+        validators.remove(validators.get(validator));
+    }
+
+    public boolean isValid() {
+        return component.isValid();
+    }
+
+    public void validate() throws ValidationException {
+        try {
+            component.validate();
+        } catch (Validator.InvalidValueException e) {
+            throw new ValidationException(e.getMessage());
         }
     }
 }

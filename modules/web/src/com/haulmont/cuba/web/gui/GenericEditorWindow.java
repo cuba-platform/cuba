@@ -71,6 +71,8 @@ public class GenericEditorWindow
                 field.setRequired(metaProperty.isMandatory());
             }
         }
+
+
     }
 
     protected DataService getDataService() {

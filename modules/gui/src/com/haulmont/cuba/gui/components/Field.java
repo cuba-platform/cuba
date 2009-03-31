@@ -24,4 +24,15 @@ public interface Field
     MetaProperty getMetaProperty();
 
     void setDatasource(Datasource datasource, String property);
+
+    void addValidator(Validator validator);
+    void removeValidator(Validator validator);
+
+    boolean isValid();
+    void validate() throws ValidationException;
+
+    interface Validator {
+        boolean isValid(Object value);
+        void validate(Object value) throws ValidationException;
+    }
 }

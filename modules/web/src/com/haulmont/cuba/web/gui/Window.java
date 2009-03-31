@@ -13,28 +13,28 @@ package com.haulmont.cuba.web.gui;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.WindowImplementation;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
+import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.ui.Button;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.*;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.List;
 
 public class Window
     implements
@@ -373,7 +373,7 @@ public class Window
             final VerticalLayout formLayout = new VerticalLayout();
             formLayout.setSizeFull();
 
-            return  new Form(formLayout);
+            return new Form(formLayout);
         }
 
         @Override
@@ -390,6 +390,27 @@ public class Window
             this.item = item;
             //noinspection unchecked
             ds.setItem(entity);
+        }
+
+        protected Collection<com.itmill.toolkit.ui.Field> getFields() {
+            return ComponentsHelper.getComponents(getContainer(), com.itmill.toolkit.ui.Field.class);
+        }
+
+        public boolean isValid() {
+            for (com.itmill.toolkit.ui.Field  field : getFields()) {
+                if (!field.isValid()) return false;
+            }
+            return true;
+        }
+
+        public void validate() throws ValidationException {
+            for (com.itmill.toolkit.ui.Field  field : getFields()) {
+                try {
+                    field.validate();
+                } catch (Validator.InvalidValueException e) {
+                    throw new ValidationException(e.getMessage());
+                }
+            }
         }
 
         protected Entity getEntity(Object item, Datasource ds) {
@@ -455,6 +476,7 @@ public class Window
         }
 
         public void commit() {
+            if (!__validate()) return;
             form.commit();
 
             final DsContext context = getDsContext();
@@ -470,6 +492,33 @@ public class Window
                 }
             }
             close("commit");
+        }
+
+        protected boolean __validate() {
+            Map<Validator.InvalidValueException, com.itmill.toolkit.ui.Field> problems =
+                    new HashMap<Validator.InvalidValueException, com.itmill.toolkit.ui.Field>();
+
+            for (com.itmill.toolkit.ui.Field field : getFields()) {
+                try {
+                    field.validate();
+                } catch (Validator.InvalidValueException e) {
+                    problems.put(e, field);
+                }
+            }
+
+            if (problems.isEmpty()) return true;
+
+            com.itmill.toolkit.ui.Field field = null;
+            StringBuffer buffer = new StringBuffer("Form validation failed:<br>");
+            for (Validator.InvalidValueException problem : problems.keySet()) {
+                if (field == null) field = problems.get(problem);
+                buffer.append(problem.getMessage()).append("<br>");
+            }
+
+            showNotification("Alert", buffer.toString(), NotificationType.TRAY);
+            if (field != null) field.focus();
+
+            return false;
         }
 
         protected DataService getDataService() {

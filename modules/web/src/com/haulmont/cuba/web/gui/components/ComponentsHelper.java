@@ -14,13 +14,27 @@ import com.itmill.toolkit.ui.Component;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.IFrame;
 
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 
 public class ComponentsHelper {
+    public static <T extends Component> Collection<T> getComponents(ComponentContainer container, Class<T> aClass) {
+        List<T> res  = new ArrayList<T>();
+        final Iterator iterator = container.getComponentIterator();
+        while (iterator.hasNext()) {
+            Component component = (Component) iterator.next();
+            if (aClass.isAssignableFrom(component.getClass())) {
+                res.add((T) component);
+            } else if (ComponentContainer.class.isAssignableFrom(component.getClass())) {
+                res.addAll(getComponents((ComponentContainer) component, aClass));
+            }
+
+        }
+
+        return res;
+    }
 
     public static Component unwrap(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;

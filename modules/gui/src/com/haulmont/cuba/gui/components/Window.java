@@ -9,8 +9,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.DsContext;
-
 import java.util.Collection;
 
 public interface Window extends IFrame, Component.HasCaption {
@@ -22,6 +20,9 @@ public interface Window extends IFrame, Component.HasCaption {
     interface Editor extends Window {
         Object getItem();
         void setItem(Object item);
+
+        boolean isValid();
+        void validate() throws ValidationException;
 
         void commit();
     }
