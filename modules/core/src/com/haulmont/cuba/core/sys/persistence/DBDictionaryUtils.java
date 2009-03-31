@@ -133,6 +133,8 @@ public class DBDictionaryUtils
 
             StringBuilder sb = new StringBuilder();
             for (String alias : tables.values()) {
+                if (sb.length() > 0)
+                    sb.append(" AND ");
                 sb.append(alias).append(".").append(DELETE_TS_COL).append(" IS NULL");
             }
             sel.where(sb.toString());
