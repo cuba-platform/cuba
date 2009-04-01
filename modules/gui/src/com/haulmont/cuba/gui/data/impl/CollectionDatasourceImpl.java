@@ -11,11 +11,9 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.lang.ObjectUtils;
@@ -24,7 +22,7 @@ import java.util.*;
 
 public class CollectionDatasourceImpl<T extends Entity, K>
     extends
-        AbstarctCollectionDatasource<T, K>
+        AbstractCollectionDatasource<T, K>
     implements
         CollectionDatasource<T, K>
 {

@@ -33,7 +33,8 @@ public class ParametersHelper {
         public enum Type {
             DATASOURCE("ds"),
             COMPONENT("component"),
-            PARAM("param");
+            PARAM("param"),
+            SESSION("session");
 
             private String prefix;
 
@@ -105,6 +106,8 @@ public class ParametersHelper {
                 return new ParameterInfo(name, ParameterInfo.Type.PARAM);
             } else if (ParameterInfo.Type.COMPONENT.prefix.equals(source)) {
                 return new ParameterInfo(name, ParameterInfo.Type.COMPONENT);
+            } else if (ParameterInfo.Type.SESSION.prefix.equals(source)) {
+                return new ParameterInfo(name, ParameterInfo.Type.SESSION);
             } else
                 throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
         } else {

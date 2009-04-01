@@ -26,7 +26,7 @@ import java.util.*;
 
 public class LazyCollectionDatasource<T extends Entity, K>
     extends
-        AbstarctCollectionDatasource<T, K>
+        AbstractCollectionDatasource<T, K>
     implements
         CollectionDatasource.Sortable<T, K>
 {

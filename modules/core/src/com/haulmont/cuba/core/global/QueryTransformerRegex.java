@@ -35,7 +35,7 @@ public class QueryTransformerRegex implements QueryTransformer
     public static final String ALIAS_PATTERN_REGEX = "(^|\\s|\\()(\\w+)\\.";
     public static final Pattern ALIAS_PATTERN = Pattern.compile(ALIAS_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
-    public static final String PARAM_PATTERN_REGEX = ":([a-zA-Z_0-9]+)";
+    public static final String PARAM_PATTERN_REGEX = ":([a-zA-Z_0-9$]+)";
     public static final Pattern PARAM_PATTERN = Pattern.compile(PARAM_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
     private String source;

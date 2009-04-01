@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.TemplateHelper;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.lang.ObjectUtils;
@@ -24,12 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AbstarctCollectionDatasource<T extends Entity, K>
+public class AbstractCollectionDatasource<T extends Entity, K>
         extends DatasourceImpl<T> {
     protected String query;
     protected ParametersHelper.ParameterInfo[] queryParameters;
 
-    public AbstarctCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
+    public AbstractCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
         super(dsContext, dataservice, id, metaClass, viewName);
     }
 
@@ -100,7 +101,7 @@ public class AbstarctCollectionDatasource<T extends Entity, K>
 
                                 final Datasource ds = dsContext.get(source);
                                 if (ds != null) {
-                                    dsContext.regirterDependency(AbstarctCollectionDatasource.this, ds, property);
+                                    dsContext.regirterDependency(AbstractCollectionDatasource.this, ds, property);
                                 }
                             }
                         });
@@ -152,8 +153,17 @@ public class AbstarctCollectionDatasource<T extends Entity, K>
                     map.put(name, value);
                     break;
                 }
+                case SESSION: {
+                    final Object value;
+                    if ("userId".equals(name)) 
+                        value = UserSessionClient.getUserSession().getUserId();
+                    else
+                        value = UserSessionClient.getUserSession().getAttribute(path);
+                    map.put(name, value);
+                    break;
+                }
                 default: {
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Unsupported parameter type: " + info.getType());
                 }
             }
         }
