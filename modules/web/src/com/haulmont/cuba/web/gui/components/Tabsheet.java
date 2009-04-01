@@ -52,6 +52,14 @@ public class Tabsheet
         return ComponentsHelper.<T>getComponent(this, id);
     }
 
+    public Collection<Component> getOwnComponents() {
+        return components.keySet();
+    }
+
+    public Collection<Component> getComponents() {
+        return ComponentsHelper.getComponents(this);
+    }
+
     protected class Tab implements com.haulmont.cuba.gui.components.Tabsheet.Tab {
         private String name;
         private Component component;

@@ -13,13 +13,12 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.TextField;
@@ -166,7 +165,7 @@ public class PickerField
             field.setInvalidCommitted(isCommitted);
         }
 
-        public void commit() throws SourceException, Validator.InvalidValueException {
+        public void commit() throws SourceException, com.itmill.toolkit.data.Validator.InvalidValueException  {
             field.commit();
         }
 
@@ -182,7 +181,7 @@ public class PickerField
             return field.isWriteThrough();
         }
 
-        public void setWriteThrough(boolean writeTrough) throws SourceException, Validator.InvalidValueException {
+        public void setWriteThrough(boolean writeTrough) throws SourceException, com.itmill.toolkit.data.Validator.InvalidValueException  {
             field.setWriteThrough(writeTrough);
         }
 
@@ -216,7 +215,7 @@ public class PickerField
             field.setPropertyDataSource(newDataSource);
         }
 
-        public void addValidator(Validator validator) {
+        public void addValidator(com.itmill.toolkit.data.Validator validator) {
             field.addValidator(validator);
         }
 
@@ -224,7 +223,7 @@ public class PickerField
             return field.getValidators();
         }
 
-        public void removeValidator(Validator validator) {
+        public void removeValidator(com.itmill.toolkit.data.Validator validator) {
             field.removeValidator(validator);
         }
 
@@ -232,7 +231,7 @@ public class PickerField
             return field.isValid();
         }
 
-        public void validate() throws Validator.InvalidValueException {
+        public void validate() throws com.itmill.toolkit.data.Validator.InvalidValueException  {
             field.validate();
         }
 

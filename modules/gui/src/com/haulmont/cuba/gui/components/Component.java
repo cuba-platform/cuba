@@ -56,6 +56,9 @@ public interface Component {
 
         <T extends Component> T getOwnComponent(String id);
         <T extends Component> T getComponent(String id);
+
+        Collection<Component> getOwnComponents();
+        Collection<Component> getComponents();
     }
 
     interface Wrapper {

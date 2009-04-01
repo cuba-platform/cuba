@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Collection;
 
 public class AbstractFrame implements IFrame, Component.Wrapper {
     protected IFrame frame;
@@ -89,6 +90,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
 
     public <T extends Component> T getComponent(String id) {
         return frame.<T>getComponent(id);
+    }
+
+    public Collection<Component> getOwnComponents() {
+        return frame.getOwnComponents();
+    }
+
+    public Collection<Component> getComponents() {
+        return frame.getComponents();
     }
 
     public <T> T getComponent() {

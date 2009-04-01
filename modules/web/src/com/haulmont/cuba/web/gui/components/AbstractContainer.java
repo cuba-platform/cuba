@@ -18,7 +18,10 @@ import java.util.*;
 
 class AbstractContainer extends AbstractOrderedLayout implements Component.Container {
     protected String id;
+
+    protected Collection<Component> ownComponents = new HashSet<Component>();
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+
     private Alignment alignment = Alignment.TOP_LEFT;
 
     public void add(Component component) {
@@ -30,6 +33,7 @@ class AbstractContainer extends AbstractOrderedLayout implements Component.Conta
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
         }
+        ownComponents.add(component);
     }
 
     public void remove(Component component) {
@@ -37,6 +41,7 @@ class AbstractContainer extends AbstractOrderedLayout implements Component.Conta
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
+        ownComponents.remove(component);
     }
 
     public <T extends Component> T getOwnComponent(String id) {
@@ -45,6 +50,14 @@ class AbstractContainer extends AbstractOrderedLayout implements Component.Conta
 
     public <T extends Component> T getComponent(String id) {
         return ComponentsHelper.<T>getComponent(this, id);
+    }
+
+    public Collection<Component> getOwnComponents() {
+        return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    public Collection<Component> getComponents() {
+        return ComponentsHelper.getComponents(this);  
     }
 
     public String getId() {

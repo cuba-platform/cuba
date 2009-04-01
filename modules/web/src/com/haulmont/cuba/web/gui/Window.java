@@ -45,7 +45,9 @@ public class Window
 {
     private String id;
 
-    private Map<String, Component> componentByIds = new HashMap<String, Component>();
+    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+    protected Collection<Component> ownComponents = new HashSet<Component>();
+
     private String messagePack;
 
     protected com.itmill.toolkit.ui.Component component;
@@ -176,6 +178,7 @@ public class Window
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
         }
+        ownComponents.add(component);
     }
 
     public void remove(Component component) {
@@ -183,6 +186,15 @@ public class Window
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
+        ownComponents.remove(component);
+    }
+
+    public Collection<Component> getOwnComponents() {
+        return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    public Collection<Component> getComponents() {
+        return ComponentsHelper.getComponents(this);
     }
 
     public boolean onClose(String actionId) {

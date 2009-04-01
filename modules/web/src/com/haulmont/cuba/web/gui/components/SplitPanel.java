@@ -12,12 +12,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.Layout;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.haulmont.cuba.gui.components.SplitPanel {
     protected String id;
+
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+    protected Collection<Component> ownComponents = new HashSet<Component>();
+
     private Alignment alignment = Alignment.TOP_LEFT;
 
     public void add(Component component) {
@@ -28,6 +30,7 @@ public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
         }
+        ownComponents.add(component);
     }
 
     public void remove(Component component) {
@@ -35,6 +38,7 @@ public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
+        ownComponents.remove(component);
     }
 
     public <T extends Component> T getOwnComponent(String id) {
@@ -43,6 +47,14 @@ public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.
 
     public <T extends Component> T getComponent(String id) {
         return ComponentsHelper.<T>getComponent(this, id);
+    }
+
+    public Collection<Component> getOwnComponents() {
+        return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    public Collection<Component> getComponents() {
+        return ComponentsHelper.getComponents(this);
     }
 
     public String getId() {

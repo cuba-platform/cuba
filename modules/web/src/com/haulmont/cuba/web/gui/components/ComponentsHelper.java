@@ -45,6 +45,21 @@ public class ComponentsHelper {
         return  (com.itmill.toolkit.ui.Component) comp;
     }
 
+    public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
+            com.haulmont.cuba.gui.components.Component.Container container)
+    {
+        final Collection<com.haulmont.cuba.gui.components.Component> ownComponents = container.getOwnComponents();
+        Set<com.haulmont.cuba.gui.components.Component> res = new HashSet<com.haulmont.cuba.gui.components.Component>(ownComponents);
+
+        for (com.haulmont.cuba.gui.components.Component component : ownComponents) {
+            if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
+                res.addAll(getComponents((com.haulmont.cuba.gui.components.Component.Container) component));
+            }
+        }
+
+        return res;
+    }
+
     public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(
             com.haulmont.cuba.gui.components.Component.Container comp, String id)
     {
