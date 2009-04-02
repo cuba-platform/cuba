@@ -76,6 +76,18 @@ public class QueryTransformerRegexTest extends TestCase
 
     }
 
+    public void testJoin() {
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h where h.group = :par",
+                "sec$GroupHierarchy");
+
+        transformer.addJoinAndWhere("join h.parent.constraints c", "c.createdBy = :par2");
+        String res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and c.createdBy = :par2",
+                res);
+    }
+
     public void testReplaceWithCount() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +

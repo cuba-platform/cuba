@@ -163,6 +163,7 @@ create table SEC_CONSTRAINT (
     DELETE_TS datetime,
     DELETED_BY varchar(20),
     ENTITY_NAME varchar(50),
+    JOIN_CLAUSE varchar(500),
     WHERE_CLAUSE varchar(500),
     GROUP_ID binary(16),
     primary key (ID)

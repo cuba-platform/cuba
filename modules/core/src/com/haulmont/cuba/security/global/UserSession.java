@@ -29,7 +29,7 @@ public class UserSession implements Serializable
     private final Locale locale;
 
     private final Map<String, Integer>[] permissions;
-    private final Map<String, List<String>> constraints;
+    private final Map<String, List<String[]>> constraints;
 
     private final Map<String, Serializable> attributes;
 
@@ -49,7 +49,7 @@ public class UserSession implements Serializable
             permissions[i] = new HashMap<String, Integer>();
         }
 
-        constraints = new HashMap<String, List<String>>();
+        constraints = new HashMap<String, List<String[]>>();
         attributes = new ConcurrentHashMap<String, Serializable>();
     }
 
@@ -94,18 +94,18 @@ public class UserSession implements Serializable
         return p == null || p >= value;
     }
 
-    public void addConstraint(String entityName, String constraint) {
-        List<String> list = constraints.get(entityName);
+    public void addConstraint(String entityName, String joinClause, String whereClause) {
+        List<String[]> list = constraints.get(entityName);
         if (list == null) {
-            list = new ArrayList<String>();
+            list = new ArrayList<String[]>();
             constraints.put(entityName, list);
         }
-        list.add(constraint);
+        list.add(new String[] {joinClause, whereClause});
     }
 
-    public List<String> getConstraints(String entityName) {
-        List<String> list = constraints.get(entityName);
-        return list != null ? list : Collections.<String>emptyList();
+    public List<String[]> getConstraints(String entityName) {
+        List<String[]> list = constraints.get(entityName);
+        return list != null ? list : Collections.<String[]>emptyList();
     }
 
     public <T extends Serializable> T getAttribute(String name) {

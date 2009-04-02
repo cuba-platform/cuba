@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.UUID;
 import java.io.Serializable;
 
+import org.apache.commons.lang.StringUtils;
+
 public abstract class SecurityProvider
 {
     public static final String IMPL_PROP = "cuba.SecurityProvider.impl";
@@ -74,15 +76,20 @@ public abstract class SecurityProvider
     protected abstract UserSession __currentUserSession();
 
     protected void __applyConstraints(Query query, String entityName) {
-        List<String> constraints = __currentUserSession().getConstraints(entityName);
+        List<String[]> constraints = __currentUserSession().getConstraints(entityName);
         if (constraints.isEmpty())
             return;
 
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(
                 query.getQueryString(), entityName);
 
-        for (String constraint : constraints) {
-            transformer.addWhere(constraint);
+        for (String[] constraint : constraints) {
+            String join = constraint[0];
+            String where = constraint[1];
+            if (StringUtils.isBlank(join))
+                transformer.addWhere(where);
+            else
+                transformer.addJoinAndWhere(join, where);
         }
         query.setQueryString(transformer.getResult());
         for (String paramName : transformer.getAddedParams()) {

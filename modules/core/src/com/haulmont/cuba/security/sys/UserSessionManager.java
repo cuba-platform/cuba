@@ -81,7 +81,7 @@ public class UserSessionManager
         List<Constraint> list = new ArrayList<Constraint>(constraints);
         list.addAll(group.getConstraints());
         for (Constraint constraint : list) {
-            session.addConstraint(constraint.getEntityName(), constraint.getWhereClause());
+            session.addConstraint(constraint.getEntityName(), constraint.getJoinClause(), constraint.getWhereClause());
         }
     }
 

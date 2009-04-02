@@ -62,7 +62,7 @@ public class QueryTransformerRegex implements QueryTransformer
         if (StringUtils.isBlank(alias))
             error("No alias for target entity " + targetEntity + " found");
 
-        int insertPos = source.length();
+        int insertPos = buffer.length();
         Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
         if (lastClauseMatcher.find(entityMatcher.end()))
             insertPos = lastClauseMatcher.start() - 1;
@@ -81,6 +81,63 @@ public class QueryTransformerRegex implements QueryTransformer
         Matcher paramMatcher = PARAM_PATTERN.matcher(where);
         while (paramMatcher.find()) {
             addedParams.add(paramMatcher.group(1));
+        }
+    }
+
+    public void addJoinAndWhere(String join, String where) {
+        String alias = null;
+        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        while (entityMatcher.find()) {
+            if (targetEntity.equals(entityMatcher.group(1))) {
+                alias = entityMatcher.group(3);
+                break;
+            }
+        }
+        if (StringUtils.isBlank(alias))
+            error("No alias for target entity " + targetEntity + " found");
+
+        int insertPos = buffer.length();
+
+        Matcher whereMatcher = WHERE_PATTERN.matcher(buffer);
+        if (whereMatcher.find(entityMatcher.end())) {
+            insertPos = whereMatcher.start() - 1;
+        } else {
+            Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
+            if (lastClauseMatcher.find(entityMatcher.end()))
+                insertPos = lastClauseMatcher.start() - 1;
+        }
+
+        if (!StringUtils.isBlank(join)) {
+            buffer.insert(insertPos, " ");
+            insertPos++;
+            buffer.insert(insertPos, join);
+            insertPos += join.length();
+
+            Matcher paramMatcher = PARAM_PATTERN.matcher(join);
+            while (paramMatcher.find()) {
+                addedParams.add(paramMatcher.group(1));
+            }
+        }
+        if (!StringUtils.isBlank(where)) {
+            StringBuilder sb = new StringBuilder();
+            whereMatcher = WHERE_PATTERN.matcher(buffer);
+            if (whereMatcher.find(entityMatcher.end()))
+                sb.append(" and ");
+            else
+                sb.append(" where ");
+            sb.append(where);
+
+            insertPos = buffer.length();
+            Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
+            if (lastClauseMatcher.find(entityMatcher.end()))
+                insertPos = lastClauseMatcher.start() - 1;
+
+            buffer.insert(insertPos, sb);
+
+            Matcher paramMatcher = PARAM_PATTERN.matcher(where);
+            while (paramMatcher.find()) {
+                addedParams.add(paramMatcher.group(1));
+            }
         }
     }
 

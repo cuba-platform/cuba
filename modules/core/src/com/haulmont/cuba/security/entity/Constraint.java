@@ -23,6 +23,9 @@ public class Constraint extends StandardEntity
     @Column(name = "ENTITY_NAME", length = 50)
     private String entityName;
 
+    @Column(name = "JOIN_CLAUSE", length = 500)
+    private String joinClause;
+
     @Column(name = "WHERE_CLAUSE", length = 500)
     private String whereClause;
 
@@ -44,6 +47,14 @@ public class Constraint extends StandardEntity
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public String getJoinClause() {
+        return joinClause;
+    }
+
+    public void setJoinClause(String joinClause) {
+        this.joinClause = joinClause;
     }
 
     public String getWhereClause() {

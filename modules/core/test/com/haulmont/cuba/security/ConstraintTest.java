@@ -124,7 +124,7 @@ public class ConstraintTest extends CubaTestCase
         UserSession userSession = lw.login(USER_LOGIN, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
-        List<String> constraints = userSession.getConstraints("core$Server");
+        List<String[]> constraints = userSession.getConstraints("core$Server");
         assertEquals(2, constraints.size());
 
 //        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
