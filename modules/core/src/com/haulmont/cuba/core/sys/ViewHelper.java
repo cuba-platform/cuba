@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.DeleteDeferred;
 import com.haulmont.cuba.core.entity.Updatable;
@@ -18,6 +19,8 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import org.apache.openjpa.persistence.FetchPlan;
+
+import java.lang.reflect.Field;
 
 public class ViewHelper
 {
@@ -36,10 +39,17 @@ public class ViewHelper
         if (view.isIncludeSystemProperties()) {
             includeSystemProperties(view, fetchPlan);
         }
+
+        MetaClass metaClass = MetadataProvider.getSession().getClass(view.getEntityClass());
+
         for (ViewProperty property : view.getProperties()) {
-            fetchPlan.addField(view.getEntityClass(), property.getName());
-            if (property.getView() != null) {
-                processView(property.getView(), fetchPlan);
+            MetaProperty metaProperty = metaClass.getProperty(property.getName());
+            Field field = metaProperty.getJavaField();
+            if (field != null) {
+                fetchPlan.addField(field.getDeclaringClass(), property.getName());
+                if (property.getView() != null) {
+                    processView(property.getView(), fetchPlan);
+                }
             }
         }
     }
