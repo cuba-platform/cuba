@@ -17,23 +17,32 @@ import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.HorizontalLayout;
 import com.itmill.toolkit.ui.Label;
+import com.itmill.toolkit.ui.Alignment;
 
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class WindowBreadCrumbs extends HorizontalLayout
 {
+    public interface Listener
+    {
+        void windowClick(Window window);
+    }
+
     protected LinkedList<Window> windows = new LinkedList<Window>();
 
-    private Label label;
+    private HorizontalLayout linksLayout;
     private Button closeBtn;
+
+    private Map<Button, Window> btn2win = new HashMap<Button, Window>();
+
+    private Set<Listener> listeners = new HashSet<Listener>();
 
     public WindowBreadCrumbs() {
         setMargin(true);
         setWidth(100, Sizeable.UNITS_PERCENTAGE);
         setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
 
-        label = new Label();
+        linksLayout = new HorizontalLayout();
         closeBtn = new Button(MessageProvider.getMessage(getClass(), "closeBtn"), new Button.ClickListener()
         {
             public void buttonClick(Button.ClickEvent event) {
@@ -44,11 +53,15 @@ public class WindowBreadCrumbs extends HorizontalLayout
 
         closeBtn.setStyleName(Button.STYLE_LINK);
 
-        addComponent(label);
+        HorizontalLayout enclosingLayout = new HorizontalLayout();
+        enclosingLayout.addComponent(linksLayout);
+        enclosingLayout.setComponentAlignment(linksLayout, Alignment.MIDDLE_LEFT);
+
+        addComponent(enclosingLayout);
         addComponent(closeBtn);
 
-        label.setSizeFull();
-        setExpandRatio(label, 1);
+        linksLayout.setSizeFull();
+        setExpandRatio(enclosingLayout, 1);
     }
 
     public Window getCurrentWindow() {
@@ -70,15 +83,49 @@ public class WindowBreadCrumbs extends HorizontalLayout
         }
     }
 
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(Listener listener) {
+        listeners.remove(listener);
+    }
+
+    public void clearListeners() {
+        listeners.clear();
+    }
+
+    private void fireListeners(Window window) {
+        for (Listener listener : listeners) {
+            listener.windowClick(window);
+        }
+    }
+
     private void update() {
-        StringBuilder sb = new StringBuilder();
+        linksLayout.removeAllComponents();
+        btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
-            sb.append(window.getCaption());
+            Button button = new Button(window.getCaption(), new BtnClickListener());
+            button.setStyleName(Button.STYLE_LINK);
 
-            if (it.hasNext()) sb.append(" -> ");
+            btn2win.put(button, window);
+
+            if (it.hasNext()) {
+                linksLayout.addComponent(button);
+                linksLayout.addComponent(new Label("> "));
+            } else {
+                linksLayout.addComponent(new Label(" " + window.getCaption()));
+            }
         }
+    }
 
-        label.setValue(sb.toString());
+    private class BtnClickListener implements Button.ClickListener
+    {
+        public void buttonClick(Button.ClickEvent event) {
+            Window win = btn2win.get(event.getButton());
+            if (win != null)
+                fireListeners(win);
+        }
     }
 }

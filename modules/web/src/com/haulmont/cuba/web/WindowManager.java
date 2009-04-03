@@ -69,7 +69,19 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             VerticalLayout layout = new VerticalLayout();
             layout.setSizeFull();
 
-            WindowBreadCrumbs breadCrumbs = new WindowBreadCrumbs();
+            final WindowBreadCrumbs breadCrumbs = new WindowBreadCrumbs();
+            breadCrumbs.addListener(
+                    new WindowBreadCrumbs.Listener()
+                    {
+                        public void windowClick(Window window) {
+                            Window currentWindow = breadCrumbs.getCurrentWindow();
+                            while (currentWindow != null && window != currentWindow) {
+                                close(currentWindow);
+                                currentWindow = breadCrumbs.getCurrentWindow();
+                            }
+                        }
+                    }
+            );
             breadCrumbs.addWindow(window);
 
             final Component component = ComponentsHelper.unwrap(window);
@@ -173,6 +185,11 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
                 layout.removeComponent(ComponentsHelper.unwrap(window));
 
                 app.getAppWindow().getTabSheet().removeComponent(layout);
+
+                WindowBreadCrumbs windowBreadCrumbs = tabs.get(layout);
+                if (windowBreadCrumbs != null)
+                    windowBreadCrumbs.clearListeners();
+
                 tabs.remove(layout);
 
                 return true;
