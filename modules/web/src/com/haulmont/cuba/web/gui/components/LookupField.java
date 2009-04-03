@@ -70,4 +70,20 @@ public class LookupField
         super.setRequired(required);
         component.setNullSelectionAllowed(!required);
     }
+
+    @Override
+    public <T> T getValue() {
+        if (optionsDatasource != null) {
+            final Object key = super.getValue();
+            return (T) optionsDatasource.getItem(key);
+        } else {
+            return super.<T>getValue();
+        }
+    }
+
+    @Override
+    public void setValue(Object value) {
+        // TODO (abramov) need to be changed
+        super.setValue(((Entity) value).getId());
+    }
 }
