@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 public class AbstractFieldLoader extends ComponentLoader {
@@ -38,6 +39,7 @@ public class AbstractFieldLoader extends ComponentLoader {
 
         loadCaption(component, element);
         loadEditable(component, element);
+        loadRequired(component, element);
 
         loadDatasource(component, element);
 
@@ -63,6 +65,13 @@ public class AbstractFieldLoader extends ComponentLoader {
                                 datasource, component.getId()));
 
             component.setDatasource(ds, property);
+        }
+    }
+
+    protected void loadRequired(Field component, Element element) {
+        final String required = element.attributeValue("required");
+        if (!StringUtils.isEmpty(required)) {
+            component.setRequired(BooleanUtils.toBoolean(required));
         }
     }
 }
