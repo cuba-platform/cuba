@@ -57,7 +57,7 @@ public class AppWindow extends Window {
              // Menu & Windows
              final VerticalLayout menuAndTabbedPaneLayout = new VerticalLayout();
 
-             MenuBar menuBar = createMenuBar();
+             Component menuBar = createMenuBar();
              menuAndTabbedPaneLayout.addComponent(menuBar);
 
              tabSheet = new TabSheet();
@@ -84,7 +84,7 @@ public class AppWindow extends Window {
     protected void initLayout() {
          }
 
-    protected MenuBar createMenuBar() {
+    protected Component createMenuBar() {
              final MenuBar menuBar = new MenuBar();
 
              final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
