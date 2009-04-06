@@ -126,7 +126,17 @@ public class DatasourceImpl<T extends Entity>
             }
             attachListener((Instance) item);
         }
+
         this.item = item;
+
+        // TODO (abramov) should we clear modified state there?
+        this.modified = false;
+        clearCommitLists();
+
+        if (PersistenceHelper.isNew(item)) {
+            itemToCreate.add(item);
+            this.modified = true;
+        }
     }
 
     public void invalidate() {
