@@ -107,10 +107,6 @@ public class Tree
         return hierarchyProperty;
     }
 
-    public CollectionDatasource getDatasource() {
-        return datasource;
-    }
-
     public void setDatasource(HierarchicalDatasource datasource)
     {
         this.datasource = datasource;

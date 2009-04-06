@@ -41,6 +41,9 @@ public class TreeTable
 
     private boolean editable = false;
 
+    public TreeTable() {
+    }
+
     public TreeTable(Container dataSource) {
         super(null, dataSource);
     }

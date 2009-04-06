@@ -76,4 +76,8 @@ public abstract class AbstractListComponent<T extends AbstractSelect>
     public void refresh() {
         datasource.refresh();
     }
+
+    public CollectionDatasource getDatasource() {
+        return datasource;
+    }
 }

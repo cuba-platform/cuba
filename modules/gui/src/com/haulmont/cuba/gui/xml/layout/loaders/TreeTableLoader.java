@@ -4,22 +4,21 @@
  * Use is subject to license terms.
 
  * Author: Dmitry Abramov
- * Created: 29.12.2008 13:24:14
+ * Created: 06.04.2009 11:40:36
  * $Id$
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 
-public class TableLoader extends AbstractTableLoader<Table> {
-
-    public TableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+public class TreeTableLoader extends AbstractTableLoader<TreeTable> {
+    public TreeTableLoader(Context context, ComponentsFactory factory, LayoutLoaderConfig config) {
         super(context, factory, config);
     }
 
-    protected Table createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
-        return factory.createComponent("table");
+    protected TreeTable createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
+        return factory.createComponent("treeTable");
     }
 }
