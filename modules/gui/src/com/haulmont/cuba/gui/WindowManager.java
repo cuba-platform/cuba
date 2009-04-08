@@ -99,6 +99,7 @@ public abstract class WindowManager {
         }
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     protected void initialize(final Window window, DsContext dsContext, Map<String, Object> params) {
         window.setDsContext(dsContext);
 
@@ -125,11 +126,43 @@ public abstract class WindowManager {
         return window;
     }
 
-    protected DsContext loadDsContext(Element rootElement) {
-        final DsContextLoader dsContextLoader = new DsContextLoader(new DatasourceFactoryImpl(), getDefaultDataService());
-        final DsContext dsContext = dsContextLoader.loadDatasources(rootElement.element("dsContext"));
+    protected DsContext loadDsContext(Element element) {
+        DataService dataService;
+
+        String dataserviceClass = element.attributeValue("dataservice");
+        if (StringUtils.isEmpty(dataserviceClass)) {
+            final Element dataserviceElement = element.element("dataservice");
+            if (dataserviceElement != null) {
+                dataserviceClass = dataserviceElement.getText();
+                if (StringUtils.isEmpty(dataserviceClass)) {
+                    throw new IllegalStateException("Can't find dataservice class name");
+                }
+                dataService = createDataservice(dataserviceClass, dataserviceElement);
+            } else {
+                dataService = getDefaultDataService();
+            }
+        } else {
+            dataService = createDataservice(dataserviceClass, null);
+        }
+
+        final DsContextLoader dsContextLoader = new DsContextLoader(new DatasourceFactoryImpl(), dataService);
+        final DsContext dsContext = dsContextLoader.loadDatasources(element.element("dsContext"));
 
         return dsContext;
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    protected DataService createDataservice(String dataserviceClass, Element element) {
+        DataService dataService;
+        
+        final Class<Object> aClass = ReflectionHelper.getClass(dataserviceClass);
+        try {
+            dataService = (DataService) aClass.newInstance();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+
+        return dataService;
     }
 
     protected Window createWindow(Class aclass, Map params) {

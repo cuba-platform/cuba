@@ -77,6 +77,46 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     public void commit() {
+        final Map<DataService, Collection<Datasource<Entity>>> commitData = collectCommitData();
+
+        if (commitData.isEmpty()) return;
+
+        final DataService dataservice = getDataService();
+        final Set<DataService> services = commitData.keySet();
+
+        if (services.size() == 1 &&
+                ObjectUtils.equals(services.iterator().next(), dataservice))
+        {
+            final DataServiceRemote.CommitContext<Entity> context = createCommitContext(dataservice, commitData);
+            final Map<Entity, Entity> map = dataservice.commit(context);
+
+            for (Datasource<Entity> datasource : commitData.get(dataservice)) {
+                ((DatasourceImplementation) datasource).commited(map);
+            }
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    protected DataServiceRemote.CommitContext<Entity> createCommitContext(DataService dataservice, Map<DataService, Collection<Datasource<Entity>>> commitData) {
+        Set<Entity> commitInstances = new HashSet<Entity>();
+        Set<Entity> deleteInstances = new HashSet<Entity>();
+
+        for (Datasource<Entity> datasource : commitData.get(dataservice)) {
+            final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
+
+            commitInstances.addAll(implementation.getItemsToCreate());
+            commitInstances.addAll(implementation.getItemsToUpdate());
+
+            deleteInstances.addAll(implementation.getItemsToDelete());
+        }
+
+        final DataServiceRemote.CommitContext<Entity> context =
+                new DataServiceRemote.CommitContext<Entity>(commitInstances, deleteInstances);
+        return context;
+    }
+
+    protected Map<DataService, Collection<Datasource<Entity>>> collectCommitData() {
         final Collection<Datasource> datasources = datasourceMap.values();
         final Map<DataService,Collection<Datasource<Entity>>> commitDatasources =
                 new HashMap<DataService,Collection<Datasource<Entity>>>();
@@ -94,37 +134,7 @@ public class DsContextImpl implements DsContextImplementation {
                 collection.add(datasource);
             }
         }
-
-        if (commitDatasources.isEmpty()) return;
-
-        final DataService dataservice = getDataService();
-        final Set<DataService> services = commitDatasources.keySet();
-
-        if (services.size() == 1 &&
-                ObjectUtils.equals(services.iterator().next(), dataservice))
-        {
-            Set<Entity> commitInstances = new HashSet<Entity>();
-            Set<Entity> deleteInstances = new HashSet<Entity>();
-
-            for (Datasource<Entity> datasource : commitDatasources.get(dataservice)) {
-                final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
-
-                commitInstances.addAll(implementation.getItemsToCreate());
-                commitInstances.addAll(implementation.getItemsToUpdate());
-
-                deleteInstances.addAll(implementation.getItemsToDelete());
-            }
-
-            final DataServiceRemote.CommitContext<Entity> context =
-                    new DataServiceRemote.CommitContext<Entity>(commitInstances, deleteInstances);
-            final Map<Entity, Entity> map = dataservice.commit(context);
-
-            for (Datasource<Entity> datasource : commitDatasources.get(dataservice)) {
-                ((DatasourceImplementation) datasource).commited(map);
-            }
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return commitDatasources;
     }
 
     protected Map<Datasource, Datasource> dependencies = new HashMap<Datasource, Datasource>();
