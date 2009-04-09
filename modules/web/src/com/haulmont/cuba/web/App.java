@@ -91,7 +91,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public Connection getConnection() {
-        return connection;
+        return connection;                       
     }
 
     public WindowManager getWindowManager() {

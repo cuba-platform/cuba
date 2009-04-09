@@ -33,7 +33,7 @@ public class UserEditor extends AbstractEditor {
 
     public UserEditor(Window frame) {
         super(frame);
-    }
+    }                                                                                                  
 
     public void setItem(Object item) {
         super.setItem(item);

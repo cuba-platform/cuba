@@ -36,19 +36,7 @@
             <attribute name="method" value="1" />
             <attribute name="URI" value="/WEB-INF/classes" />
           </containerElement>
-          <containerElement type="library" name="chile" level="project">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-          </containerElement>
-          <containerElement type="library" name="common" level="project">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="/WEB-INF/lib" />
-          </containerElement>
           <containerElement type="library" name="gwt" level="project">
-            <attribute name="method" value="0" />
-            <attribute name="URI" value="&lt;N/A&gt;" />
-          </containerElement>
-          <containerElement type="library" name="server" level="project">
             <attribute name="method" value="0" />
             <attribute name="URI" value="&lt;N/A&gt;" />
           </containerElement>
