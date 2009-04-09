@@ -20,44 +20,51 @@ public class LayoutLoaderConfig {
 
     private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig editorLoaders = new LayoutLoaderConfig();
-    private static LayoutLoaderConfig lookupLoaders = new LayoutLoaderConfig();
+    private static LayoutLoaderConfig lookupLoaders = new LayoutLoaderConfig();    
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
+    private static Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> customLoaders =
+            new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
+
     static {
-        windowLoaders.registerLoader("window", WindowLoader.class);
+        windowLoaders.register("window", WindowLoader.class);
         registerComponents(windowLoaders);
 
-        editorLoaders.registerLoader("window", WindowLoader.Editor.class);
+        editorLoaders.register("window", WindowLoader.Editor.class);
         registerComponents(editorLoaders);
 
-        lookupLoaders.registerLoader("window", WindowLoader.Lookup.class);
+        lookupLoaders.register("window", WindowLoader.Lookup.class);
         registerComponents(lookupLoaders);
 
-        frameLoaders.registerLoader("window", FrameLoader.class);
+        frameLoaders.register("window", FrameLoader.class);
         registerComponents(frameLoaders);
     }
 
     private static void registerComponents(LayoutLoaderConfig config) {
-        config.registerLoader("hbox", HBoxLoader.class);
-        config.registerLoader("vbox", VBoxLoader.class);
-        config.registerLoader("grid", GridLayoutLoader.class);
-        config.registerLoader("button", ButtonLoader.class);
-        config.registerLoader("groupBox", GroupBoxLoader.class);
-        config.registerLoader("checkBox", AbstractFieldLoader.class);
-        config.registerLoader("label", LabelLoader.class);
-        config.registerLoader("textField", TextFieldLoader.class);
-        config.registerLoader("textArea", TextAreaLoader.class);
-        config.registerLoader("dateField", AbstractFieldLoader.class);
-        config.registerLoader("lookupField", LookupFieldLoader.class);
-        config.registerLoader("pickerField", PickerFieldLoader.class);
-        config.registerLoader("optionsGroup", OptionsGroupLoader.class);
-        config.registerLoader("upload", FileUploadFieldLoader.class);
-        config.registerLoader("table", TableLoader.class);
-        config.registerLoader("treeTable", TreeTableLoader.class);
-        config.registerLoader("iframe", IFrameLoader.class);
-        config.registerLoader("split", SplitPanelLoader.class);
-        config.registerLoader("tree", TreeLoader.class);
-        config.registerLoader("tabsheet", TabsheetLoader.class);
+        config.register("hbox", HBoxLoader.class);
+        config.register("vbox", VBoxLoader.class);
+        config.register("grid", GridLayoutLoader.class);
+        config.register("button", ButtonLoader.class);
+        config.register("groupBox", GroupBoxLoader.class);
+        config.register("checkBox", AbstractFieldLoader.class);
+        config.register("label", LabelLoader.class);
+        config.register("textField", TextFieldLoader.class);
+        config.register("textArea", TextAreaLoader.class);
+        config.register("dateField", AbstractFieldLoader.class);
+        config.register("lookupField", LookupFieldLoader.class);
+        config.register("pickerField", PickerFieldLoader.class);
+        config.register("optionsGroup", OptionsGroupLoader.class);
+        config.register("upload", FileUploadFieldLoader.class);
+        config.register("table", TableLoader.class);
+        config.register("treeTable", TreeTableLoader.class);
+        config.register("iframe", IFrameLoader.class);
+        config.register("split", SplitPanelLoader.class);
+        config.register("tree", TreeLoader.class);
+        config.register("tabsheet", TabsheetLoader.class);
+    }
+
+    public static void registerLoader(String tagName, Class<com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {
+        customLoaders.put(tagName, aClass);
     }
 
     public static LayoutLoaderConfig getWindowLoaders() {
@@ -77,10 +84,15 @@ public class LayoutLoaderConfig {
     }
 
     public Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> getLoader(String name) {
-        return loaders.get(name);
+        final Class<? extends ComponentLoader> loader = customLoaders.get(name);
+        if (loader == null) {
+            return loaders.get(name);
+        }
+
+        return loader;
     }
 
-    public void registerLoader(String name, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loader)
+    protected void register(String name, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loader)
     {
         loaders.put(name, loader);
     }
