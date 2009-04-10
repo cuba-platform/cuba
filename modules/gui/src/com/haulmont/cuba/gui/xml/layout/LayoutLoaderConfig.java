@@ -63,7 +63,7 @@ public class LayoutLoaderConfig {
         config.register("tabsheet", TabsheetLoader.class);
     }
 
-    public static void registerLoader(String tagName, Class<com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {
+    public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {
         customLoaders.put(tagName, aClass);
     }
 
