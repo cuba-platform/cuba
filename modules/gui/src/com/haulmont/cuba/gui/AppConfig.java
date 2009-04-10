@@ -17,6 +17,10 @@ import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
+
 public class AppConfig
 {
     public static final String IMPL_PROP = "cuba.AppConfig.impl";
@@ -44,6 +48,9 @@ public class AppConfig
     protected ClientType clientType;
     protected String messagesPackage;
     protected PermissionConfig permissionsConfig;
+
+    protected Set<String> groovyImports = new HashSet<String>();
+    protected Set<String> unmodifiableGroovyImports = Collections.unmodifiableSet(groovyImports);
 
     public static AppConfig getInstance() {
         if (instance == null) {
@@ -111,4 +118,17 @@ public class AppConfig
         }
         return messagesPackage;
      }
+
+
+    public Set<String> getGroovyImports() {
+        return unmodifiableGroovyImports;
+    }
+
+    public void addGroovyImport(Class aClass) {
+        groovyImports.add(aClass.getName());
+    }
+
+    public void addGroovyImport(String classpath) {
+        groovyImports.add(classpath);
+    }
 }

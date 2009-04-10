@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -98,23 +99,11 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             if ("true".equals(visible) || "false".equals(visible)) {
                 component.setVisible(Boolean.valueOf(visible));
             } else {
-                Binding binding = createBinding(context.getParameters());
-                GroovyShell shell = new GroovyShell(binding);
-
                 @SuppressWarnings({"unchecked"})
-                Boolean res = (Boolean) shell.evaluate(visible);
+                Boolean res = GroovyHelper.evaluate(visible, context.getParameters());
                 component.setVisible(res);
             }
         }
-    }
-
-    protected Binding createBinding(Map<String, Object> map) {
-        Binding binding = new Binding();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            binding.setVariable(entry.getKey(), entry.getValue());
-        }
-
-        return binding;
     }
 
     protected String loadResourceString(String caption) {

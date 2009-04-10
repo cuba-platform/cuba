@@ -12,11 +12,10 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 
 import java.util.Collection;
 import java.util.Map;
@@ -41,11 +40,9 @@ public class CustomCollectionDatasource<T extends Entity, K>
     protected Data loadData() {
         final Map<String, Object> parameters = getQueryParameters();
 
-        Binding binding = createBinding(parameters);
-        GroovyShell shell = new GroovyShell(binding);
-
         @SuppressWarnings({"unchecked"})
-        Collection<T> res = (Collection) shell.evaluate(getGroovyScript(query, parameters));
+        Collection<T> res = GroovyHelper.evaluate(getGroovyScript(query, parameters), parameters);
+
         return wrapAsData(res);
     }
 
@@ -58,14 +55,5 @@ public class CustomCollectionDatasource<T extends Entity, K>
         query = TemplateHelper.processTemplate(query, parameterValues);
 
         return query;
-    }
-
-    protected Binding createBinding(Map<String, Object> map) {
-        Binding binding = new Binding();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            binding.setVariable(entry.getKey(), entry.getValue());
-        }
-
-        return binding;
     }
 }
