@@ -9,7 +9,9 @@
  */
 package com.haulmont.cuba.gui.data;
 
-public interface Context {
+public interface WindowContext {
+    <T> T getParameterValue(String property);
+
     <T> T getValue(String property);
     void setValue(String property, Object value);
 

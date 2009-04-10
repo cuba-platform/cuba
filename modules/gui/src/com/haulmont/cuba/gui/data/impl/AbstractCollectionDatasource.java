@@ -112,7 +112,7 @@ public class AbstractCollectionDatasource<T extends Entity, K>
         }
     }
 
-    protected Map<String, Object> getQueryParameters() {
+    protected Map<String, Object> getQueryParameters(Map<String, Object> params) {
         final Map<String, Object> map = new HashMap<String, Object>();
         for (ParametersHelper.ParameterInfo info : queryParameters) {
             String name = info.getFlatName();
@@ -141,15 +141,15 @@ public class AbstractCollectionDatasource<T extends Entity, K>
                 }
                 case PARAM: {
                     final Object value =
-                            dsContext.getContext() == null ?
-                                    null : dsContext.getContext().getValue(path);
+                            dsContext.getWindowContext() == null ?
+                                    null : dsContext.getWindowContext().getParameterValue(path);
                     map.put(name, value);
                     break;
                 }
                 case COMPONENT: {
                     final Object value =
-                            dsContext.getContext() == null ?
-                                    null : dsContext.getContext().getValue(path);
+                            dsContext.getWindowContext() == null ?
+                                    null : dsContext.getWindowContext().getValue(path);
                     map.put(name, value);
                     break;
                 }
@@ -159,7 +159,12 @@ public class AbstractCollectionDatasource<T extends Entity, K>
                         value = UserSessionClient.getUserSession().getUserId();
                     else
                         value = UserSessionClient.getUserSession().getAttribute(path);
+
                     map.put(name, value);
+                    break;
+                }
+                case CUSTOM: {
+                    map.put(name, params.get(info.getName()));
                     break;
                 }
                 default: {

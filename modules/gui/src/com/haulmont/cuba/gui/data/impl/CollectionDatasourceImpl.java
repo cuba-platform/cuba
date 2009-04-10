@@ -44,10 +44,14 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
     @Override
     public synchronized void refresh() {
+        refresh(Collections.<String, Object>emptyMap());
+    }
+
+    public void refresh(Map<String, Object> parameters) {
         Collection prevIds = data.itemIds;
         invalidate();
 
-        data = loadData();
+        data = loadData(parameters);
 
         State prevState = state;
         if (!prevState.equals(State.VALID)) {
@@ -171,12 +175,12 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         }
     }
 
-    protected Data loadData() {
+    protected Data loadData(Map<String, Object> params) {
         final DataServiceRemote.CollectionLoadContext context =
                 new DataServiceRemote.CollectionLoadContext(metaClass);
 
         if (query != null && queryParameters != null) {
-            final Map<String, Object> parameters = getQueryParameters();
+            final Map<String, Object> parameters = getQueryParameters(params);
             for (ParametersHelper.ParameterInfo info : queryParameters) {
                 if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
                     final Object value = parameters.get(info.getFlatName());

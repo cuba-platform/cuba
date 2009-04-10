@@ -32,7 +32,9 @@ public class LazyCollectionDatasource<T extends Entity, K>
 {
     protected LinkedMap data = new LinkedMap();
     protected Integer size;
-    protected Map<String, Object> parameters;
+
+    protected Map<String, Object> params = Collections.emptyMap();
+    protected Map<String, Object> parametersValues;
 
     protected int chunk = 20;
     private SortInfo<MetaProperty>[] sortInfos;
@@ -57,17 +59,33 @@ public class LazyCollectionDatasource<T extends Entity, K>
         return data.containsKey(itemId);
     }
 
+    @Override
+    public void refresh() {
+        invalidate();
+    }
+
+    public void refresh(Map<String, Object> parameters) {
+        this.params = parameters;
+        invalidate();
+    }
+
+    @Override
+    public void invalidate() {
+        size = null;
+        data.clear();
+    }
+
     public int getSize() {
         if (size == null) {
-            parameters = getQueryParameters();
+            parametersValues = getQueryParameters(params);
             for (ParametersHelper.ParameterInfo info : queryParameters) {
                 if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
-                    final Object value = parameters.get(info.getFlatName());
+                    final Object value = parametersValues.get(info.getFlatName());
                     if (value == null) return 0;
                 }
             }
 
-            String jpqlQuery = getJPQLQuery(query, parameters);
+            String jpqlQuery = getJPQLQuery(query, parametersValues);
 
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(jpqlQuery, metaClass.getName());
             transformer.replaceWithCount();
@@ -76,7 +94,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
             final DataServiceRemote.CollectionLoadContext context =
                     new DataServiceRemote.CollectionLoadContext(metaClass);
 
-            context.setQueryString(jpqlQuery).setParameters(parameters);
+            context.setQueryString(jpqlQuery).setParameters(parametersValues);
 
             final List res = dataservice.loadList(context);
             size = res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
@@ -155,7 +173,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
     }
 
     protected void loadNextChunk(boolean all) {
-        String jpqlQuery = getJPQLQuery(query, parameters);
+        String jpqlQuery = getJPQLQuery(query, parametersValues);
 
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(jpqlQuery, metaClass.getName());
         if (sortInfos != null) {

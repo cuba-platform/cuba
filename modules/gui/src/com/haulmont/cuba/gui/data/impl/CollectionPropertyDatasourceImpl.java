@@ -166,6 +166,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         throw new UnsupportedOperationException();
     }
 
+    public void refresh(Map<String, Object> parameters) {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public CommitMode getCommitMode() {
         final MetaProperty.Type type = metaProperty.getType();

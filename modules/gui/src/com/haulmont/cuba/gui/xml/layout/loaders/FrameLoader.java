@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 
 import java.util.Collections;
+import java.util.Map;
 
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
@@ -35,13 +36,14 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         final Element dsContextElement = element.element("dsContext");
         final DsContext dsContext;
+        final Map<String,Object> params = Collections.emptyMap();
+
         if (dsContextElement != null) {
             final DsContextLoader contextLoader =
                     new DsContextLoader(new DatasourceFactoryImpl(), context.getDSContext().getDataService());
             dsContext = contextLoader.loadDatasources(dsContextElement);
             
-            final ComponentLoaderContext context =
-                    new ComponentLoaderContext(dsContext, Collections.<String, Object>emptyMap());
+            final ComponentLoaderContext context = new ComponentLoaderContext(dsContext, params);
             setContext(context);
         } else {
             dsContext = null;
@@ -63,7 +65,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 }
             }
 
-            dsContext.setContext(new FrameContext(component));
+            dsContext.setWindowContext(new FrameContext(component, params));
 
             ((ComponentLoaderContext) context).setFrame(component);
             context.executeLazyTasks();

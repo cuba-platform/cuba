@@ -11,14 +11,22 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.data.Context;
+import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.data.ValueListener;
 
-public class FrameContext implements Context {
-    private final IFrame frame;
+import java.util.Map;
 
-    public FrameContext(IFrame window) {
+public class FrameContext implements WindowContext {
+    private final IFrame frame;
+    private Map<String, Object> params;
+
+    public FrameContext(IFrame window, Map<String, Object> params) {
         this.frame = window;
+        this.params = params;
+    }
+
+    public <T> T getParameterValue(String property) {
+        return (T) params.get(property);
     }
 
     public <T> T getValue(String property) {

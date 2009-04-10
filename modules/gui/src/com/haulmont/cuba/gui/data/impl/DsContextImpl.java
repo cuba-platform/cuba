@@ -19,7 +19,7 @@ import java.util.*;
 import org.apache.commons.lang.ObjectUtils;
 
 public class DsContextImpl implements DsContextImplementation {
-    private Context context;
+    private WindowContext windowContext;
     private DataService dataservice;
 
     private Map<String, Datasource> datasourceMap =
@@ -44,15 +44,15 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    public Context getContext() {
-        return context;
+    public WindowContext getWindowContext() {
+        return windowContext;
     }
 
-    public void setContext(Context context) {
-        this.context = context;
+    public void setWindowContext(WindowContext windowContext) {
+        this.windowContext = windowContext;
         for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
             final String property = entry.getKey();
-            final Object value = context.getValue(property);
+            final Object value = windowContext.getValue(property);
 
             if (value != null) {
                 final Collection<Datasource> datasources = entry.getValue();
@@ -62,7 +62,7 @@ public class DsContextImpl implements DsContextImplementation {
             }
         }
 
-        context.addValueListener(new ValueListener() {
+        windowContext.addValueListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
                     if (entry.getKey().equals(property)) {

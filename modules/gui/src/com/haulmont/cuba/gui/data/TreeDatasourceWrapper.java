@@ -38,7 +38,7 @@ public abstract class TreeDatasourceWrapper<T extends Entity, K>
         super(context, dataservice, id, metaClass, viewName);
     }
 
-    protected Data loadData() {
+    protected Data loadData(Map<String, Object> params) {
         this.tree = loadTree();
 
         List<K> ids = new ArrayList<K>();

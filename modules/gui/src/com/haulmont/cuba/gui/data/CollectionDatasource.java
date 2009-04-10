@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data;
 import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface CollectionDatasource<T extends Entity, K> extends Datasource<T> {
     enum FetchMode {
@@ -72,4 +73,6 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
 
     String getQuery();
     void setQuery(String query);
+
+    void refresh(Map<String, Object> parameters);
 }

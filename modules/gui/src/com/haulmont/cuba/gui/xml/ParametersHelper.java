@@ -34,7 +34,8 @@ public class ParametersHelper {
             DATASOURCE("ds"),
             COMPONENT("component"),
             PARAM("param"),
-            SESSION("session");
+            SESSION("session"),
+            CUSTOM("custom");
 
             private String prefix;
 

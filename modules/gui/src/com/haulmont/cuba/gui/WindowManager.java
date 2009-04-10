@@ -109,7 +109,7 @@ public abstract class WindowManager {
             }
         }
 
-        dsContext.setContext(new FrameContext(window));
+        dsContext.setWindowContext(new FrameContext(window, params));
     }
 
     protected Window loadLayout(String descriptorPath, Element rootElement, ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {

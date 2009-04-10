@@ -94,7 +94,7 @@ public class GenericBrowserWindow extends Window
         if (metaClass == null) throw new UnsupportedOperationException();
         initCaption(metaClass);
 
-        final DsContextImpl context = createDsContext(metaClass, view);
+        final DsContextImpl context = createDsContext(metaClass, view, params);
         setDsContext(context);
 
         final CollectionDatasource ds = context.get(metaClass.getName());
@@ -176,11 +176,11 @@ public class GenericBrowserWindow extends Window
         }
     }
 
-    protected DsContextImpl createDsContext(MetaClass metaClass, View view) {
+    protected DsContextImpl createDsContext(MetaClass metaClass, View view, Map<String, Object> params) {
         final GenericDataService dataservice = new GenericDataService(false);
         final DsContextImpl context = new DsContextImpl(dataservice);
 
-        context.setContext(new FrameContext(this));
+        context.setWindowContext(new FrameContext(this, params));
 
         final CollectionDatasource ds = createDatasource(context, metaClass, view);
         context.register(ds);

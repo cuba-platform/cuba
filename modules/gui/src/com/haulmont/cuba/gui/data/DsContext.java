@@ -9,13 +9,11 @@
  */
 package com.haulmont.cuba.gui.data;
 
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-
 import java.util.Collection;
 
 public interface DsContext {
-    Context getContext();
-    void setContext(Context context);
+    WindowContext getWindowContext();
+    void setWindowContext(WindowContext context);
 
     DataService getDataService();
 
