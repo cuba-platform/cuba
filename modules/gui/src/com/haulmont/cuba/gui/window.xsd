@@ -160,6 +160,7 @@
                                         <xs:element name="row" minOccurs="1" maxOccurs="unbounded">
                                             <xs:complexType>
                                                 <xs:group ref="layoutOrComponent"/>
+                                                <xs:attribute name="visible" type="xs:string" use="optional"/>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>

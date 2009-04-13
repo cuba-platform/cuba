@@ -11,7 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Collection;
 
-public interface Window extends IFrame, Component.HasCaption {
+public interface Window extends IFrame, Component.HasCaption, Component.Actions {
     void addListener(CloseListener listener);
     void removeListener(CloseListener listener);
 

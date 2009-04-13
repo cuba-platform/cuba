@@ -88,7 +88,7 @@ public interface Component {
         void setXmlDescriptor(Element element);
     }
 
-    interface ActionsOwner extends Component {
+    interface Actions extends Component {
         void addAction(Action action);
         void removeAction(Action action);
 

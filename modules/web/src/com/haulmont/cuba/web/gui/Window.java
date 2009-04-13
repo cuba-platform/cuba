@@ -29,6 +29,7 @@ import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -89,6 +90,33 @@ public class Window
         if (messagePack == null)
             throw new IllegalStateException("MessagePack is not set");
         return MessageProvider.getMessage(messagePack, key);
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder =
+        new LinkedList<com.haulmont.cuba.gui.components.Action>();
+
+    public void addAction(final com.haulmont.cuba.gui.components.Action action) {
+        actionsOrder.add(action);
+    }
+
+    public void removeAction(com.haulmont.cuba.gui.components.Action action) {
+        actionsOrder.remove(action);
+    }
+
+    public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
+        return actionsOrder;
+    }
+
+    public com.haulmont.cuba.gui.components.Action getAction(String id) {
+        for (com.haulmont.cuba.gui.components.Action action : getActions()) {
+            if (ObjectUtils.equals(action.getId(), id)) {
+                return action;
+            }
+        }
+
+        return null;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -327,12 +355,44 @@ public class Window
         protected Object item;
         protected Form form;
 
-        protected Button commitButton;
-        protected Button cancelButton;
-        protected CloseWindowAction cancelAction;
-
         public Object getItem() {
             return item;
+        }
+
+        public Editor() {
+            super();
+
+            addAction(new ActionWrapper("Window.commit") {
+                @Override
+                public String getCaption() {
+                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                    return MessageProvider.getMessage(messagesPackage, "actions.Ok");
+                }
+
+                public void actionPerform(Component component) {
+                    if (action != null) {
+                        action.actionPerform(component);
+                    } else {
+                        commit();
+                    }
+                }
+            });
+
+            addAction(new ActionWrapper("Window.close") {
+                @Override
+                public String getCaption() {
+                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                    return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
+                }
+
+                public void actionPerform(Component component) {
+                    if (action != null) {
+                        action.actionPerform(component);
+                    } else {
+                        close(getId());
+                    }
+                }
+            });
         }
 
         @Override
@@ -340,43 +400,44 @@ public class Window
             VerticalLayout layout = new VerticalLayout();
 
             form = createForm();
-
-            HorizontalLayout okbar = new HorizontalLayout();
-            okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
-
-            HorizontalLayout buttonsContainer = new HorizontalLayout();
-
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-
-            cancelAction = new CloseWindowAction(this);
-            commitButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"), this, "commit");
-            cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), cancelAction);
-
-            buttonsContainer.addComponent(commitButton);
-            buttonsContainer.addComponent(cancelButton);
-
-            okbar.addComponent(buttonsContainer);
-
             layout.addComponent(form);
-            layout.addComponent(okbar);
 
             form.setSizeFull();
             layout.setExpandRatio(form, 1);
-            layout.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
 
             return layout;
         }
 
         @Override
         public com.haulmont.cuba.gui.components.Window wrap(Class<com.haulmont.cuba.gui.components.Window> aClass) {
-            final com.haulmont.cuba.gui.components.Window window = super.wrap(aClass);
+            final com.haulmont.cuba.gui.components.Window.Editor window =
+                    (com.haulmont.cuba.gui.components.Window.Editor) super.wrap(aClass);
 
-            commitButton.removeListener(Button.ClickEvent.class, this, "commit");
-            commitButton.addListener(Button.ClickEvent.class, window, "commit");
+            final Action commitAction = getAction("Window.commit");
+            ((ActionWrapper) commitAction).setAction(new ActionWrapper("Window.commit") {
+                @Override
+                public String getCaption() {
+                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                    return MessageProvider.getMessage(messagesPackage, "actions.Ok");
+                }
 
-            cancelButton.removeListener(cancelAction);
-            cancelAction = new CloseWindowAction(window);
-            cancelButton.addListener(cancelAction);
+                public void actionPerform(Component component) {
+                    window.commit();
+                }
+            });
+            
+            final Action closeAction = getAction("Window.close");
+            ((ActionWrapper) closeAction).setAction(new ActionWrapper("Window.close") {
+                @Override
+                public String getCaption() {
+                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                    return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
+                }
+
+                public void actionPerform(Component component) {
+                    window.close(getId());
+                }
+            });
 
             return window;
         }

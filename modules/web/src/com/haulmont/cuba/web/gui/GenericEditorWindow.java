@@ -19,9 +19,12 @@ import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.terminal.Sizeable;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.FieldPosition;
@@ -36,13 +39,40 @@ public class GenericEditorWindow
 {
     private DataService dataservice;
 
+    protected Button commitButton;
+    protected Button cancelButton;
+
     public GenericEditorWindow() {
         dataservice = new GenericDataService(false);
     }
 
     @Override
     protected Component createLayout() {
-        final Component layout = super.createLayout();
+        VerticalLayout layout = new VerticalLayout();
+
+        form = createForm();
+
+        HorizontalLayout actionsBar = new HorizontalLayout();
+        actionsBar.setHeight(-1, Sizeable.UNITS_PIXELS);
+
+        HorizontalLayout buttonsContainer = new HorizontalLayout();
+
+        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+
+        commitButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"), this, "commit");
+        cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new CloseWindowAction(this));
+
+        buttonsContainer.addComponent(commitButton);
+        buttonsContainer.addComponent(cancelButton);
+
+        actionsBar.addComponent(buttonsContainer);
+
+        layout.addComponent(form);
+        layout.addComponent(actionsBar);
+
+        form.setSizeFull();
+        layout.setExpandRatio(form, 1);
+        layout.setComponentAlignment(actionsBar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
 
         form.setFieldFactory(new FieldFactory());
         form.setImmediate(true);

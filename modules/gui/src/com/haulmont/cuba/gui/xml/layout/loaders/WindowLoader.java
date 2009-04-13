@@ -29,7 +29,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         loadMessagesPack(window, element);
         loadCaption(window, element);
 
-        loadSubcomponentsAndExpand(window, element.element("layout"));
+        final Element layoutElement = element.element("layout");
+        loadSubcomponentsAndExpand(window, layoutElement);
 
         return window;
     }

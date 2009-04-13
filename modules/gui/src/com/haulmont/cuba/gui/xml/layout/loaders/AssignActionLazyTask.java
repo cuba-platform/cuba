@@ -32,8 +32,8 @@ public class AssignActionLazyTask implements com.haulmont.cuba.gui.xml.layout.Co
             final List<String> subpath = Arrays.asList(elements).subList(0, elements.length - 1);
             final Component component = frame.getComponent(ValuePathHelper.format(subpath.toArray(new String[]{})));
             if (component != null) {
-                if (component instanceof Component.ActionsOwner) {
-                    final Action action = ((Component.ActionsOwner) component).getAction(id);
+                if (component instanceof Component.Actions) {
+                    final Action action = ((Component.Actions) component).getAction(id);
                     if (action != null) {
                         this.component.setAction(action);
                     } else {
@@ -44,6 +44,15 @@ public class AssignActionLazyTask implements com.haulmont.cuba.gui.xml.layout.Co
                 }
             } else {
                 throw new IllegalStateException(String.format("Can't find component '%s'", subpath));
+            }
+        } else if (elements.length == 1) {
+            final String id = elements[0];
+            final Action action = ((Window) frame).getAction(id);
+
+            if (action != null) {
+                this.component.setAction(action);
+            } else {
+                throw new IllegalStateException(String.format("Can't find action '%s' in window", id));
             }
         } else {
             throw new IllegalStateException();

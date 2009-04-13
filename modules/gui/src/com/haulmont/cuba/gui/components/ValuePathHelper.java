@@ -37,10 +37,15 @@ public class ValuePathHelper {
 
         for (int i = 0; i < path.length(); i++) {
             char c = path.charAt(i);
-            if (c == '[')
+            if (c == '[') {
                 breaketCount++;
-            if (c == ']')
+                continue;
+            }
+
+            if (c == ']') {
                 breaketCount--;
+                continue;
+            }
 
             if ('.' != c || breaketCount > 0)
                 buffer.append(c);

@@ -26,33 +26,15 @@ import java.util.Collection;
 import java.util.Map;
 
 public class UserEditor extends AbstractEditor {
-
     private Datasource<User> userDs;
-    private TextField passwField;
-    private TextField confirmPasswField;
 
     public UserEditor(Window frame) {
         super(frame);
     }                                                                                                  
 
-    public void setItem(Object item) {
-        super.setItem(item);
-
-        boolean isNew = PersistenceHelper.isNew(userDs.getItem());
-
-        getComponent("passwLab").setVisible(isNew);
-        getComponent("confirmPasswLab").setVisible(isNew);
-
-        passwField.setVisible(isNew);
-        confirmPasswField.setVisible(isNew);
-    }
-
     protected void init(Map<String, Object> params) {
-        userDs = getDsContext().get("user");
-        passwField = getComponent("passw");
-        confirmPasswField = getComponent("confirmPassw");
-
         final Table rolesTable = getComponent("roles");
+        userDs = getDsContext().get("user");
 
         rolesTable.addAction(new AbstractAction("include") {
             public String getCaption() {
@@ -86,16 +68,24 @@ public class UserEditor extends AbstractEditor {
     }
 
     public void commit() {
-        String passw = passwField.getValue();
-        String confPassw = confirmPasswField.getValue();
-        if (ObjectUtils.equals(passw, confPassw)) {
-            if (StringUtils.isEmpty(passw))
-                userDs.getItem().setPassword(null);
-            else
-                userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
-            super.commit();
+        boolean isNew = PersistenceHelper.isNew(userDs.getItem());
+        if (isNew) {
+            TextField passwField = getComponent("passw");
+            TextField confirmPasswField = getComponent("confirmPassw");
+
+            String passw = passwField.getValue();
+            String confPassw = confirmPasswField.getValue();
+            if (ObjectUtils.equals(passw, confPassw)) {
+                if (StringUtils.isEmpty(passw))
+                    userDs.getItem().setPassword(null);
+                else
+                    userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
+                super.commit();
+            } else {
+                showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+            }
         } else {
-            showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+            super.commit();
         }
     }
 }

@@ -1,0 +1,8 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
+    <layout>
+        <hbox align="MIDDLE_RIGHT">
+            <button id="Window.commit" action="[Window.commit]"/>
+            <button id="Window.close" action="[Window.close]"/>
+        </hbox>
+    </layout>
+</window>

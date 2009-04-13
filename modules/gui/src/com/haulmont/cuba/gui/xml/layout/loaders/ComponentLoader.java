@@ -132,10 +132,14 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         return caption;
     }
 
-    protected void loadAlign(Component component, Element element) {
+    protected void loadAlign(final Component component, Element element) {
         final String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {
-            component.setAlignment(Component.Alignment.valueOf(align));
+            context.addLazyTask(new LazyTask() {
+                public void execute(Context context, IFrame frame) {
+                    component.setAlignment(Component.Alignment.valueOf(align));
+                }
+            });
         }
     }
 

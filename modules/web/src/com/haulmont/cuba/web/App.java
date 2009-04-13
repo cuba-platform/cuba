@@ -10,14 +10,14 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
-import com.haulmont.cuba.gui.AppConfig;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
@@ -60,6 +60,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     public void init() {
         log.debug("Initializing application");
+
+        AppConfig.getInstance().addGroovyImport(PersistenceHelper.class);
 
         ApplicationContext appContext = getContext();
         appContext.addTransactionListener(this);

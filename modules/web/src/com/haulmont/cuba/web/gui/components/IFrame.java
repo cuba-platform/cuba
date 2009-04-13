@@ -13,20 +13,67 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.ui.Component;
+import com.itmill.toolkit.ui.Layout;
 
-import java.util.Map;
+import java.util.*;
 
-public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.components.IFrame {
+public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.components.IFrame, Layout.AlignmentHandler {
 
     private String messagePack;
     private DsContext dsContext;
     private com.haulmont.cuba.gui.components.IFrame frame;
 
+    protected Collection<com.haulmont.cuba.gui.components.Component> ownComponents = new HashSet<com.haulmont.cuba.gui.components.Component>();
+    protected Map<String, com.haulmont.cuba.gui.components.Component> componentByIds = new HashMap<String, com.haulmont.cuba.gui.components.Component>();
+
     public IFrame() {
+        setLayout(new VerticalLayout());
+    }
+
+    public void add(com.haulmont.cuba.gui.components.Component component) {
+        final VerticalLayout layout = (VerticalLayout) getLayout();
+
+        final com.itmill.toolkit.ui.Component comp = ComponentsHelper.unwrap(component);
+        layout.addComponent(comp);
+        layout.setComponentAlignment(comp, ComponentsHelper.convertAlignment(component.getAlignment()));
+
+        if (component.getId() != null) {
+            componentByIds.put(component.getId(), component);
+        }
+        ownComponents.add(component);
+    }
+
+    public void remove(com.haulmont.cuba.gui.components.Component component) {
+        final VerticalLayout layout = (VerticalLayout) getLayout();
+
+        layout.removeComponent(ComponentsHelper.unwrap(component));
+
+        if (component.getId() != null) {
+            componentByIds.remove(component.getId());
+        }
+        ownComponents.remove(component);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Component> T getOwnComponent(String id) {
+        return (T) componentByIds.get(id);
+    }
+
+    public <T extends com.haulmont.cuba.gui.components.Component> T getComponent(String id) {
+        return ComponentsHelper.<T>getComponent(this, id);
+    }
+
+    public Collection<com.haulmont.cuba.gui.components.Component> getOwnComponents() {
+        return Collections.unmodifiableCollection(ownComponents);
+    }
+
+    public Collection<com.haulmont.cuba.gui.components.Component> getComponents() {
+        return ComponentsHelper.getComponents(this);
     }
 
     public DsContext getDsContext() {
@@ -109,5 +156,20 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
 
     public void setFrame(com.haulmont.cuba.gui.components.IFrame frame) {
         this.frame = frame;
+    }
+
+    public void setComponentAlignment(Component childComponent, int horizontalAlignment, int verticalAlignment) {
+        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
+        layout.setComponentAlignment(childComponent, horizontalAlignment, verticalAlignment);
+    }
+
+    public void setComponentAlignment(Component childComponent, com.itmill.toolkit.ui.Alignment alignment) {
+        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
+        layout.setComponentAlignment(childComponent, alignment);
+    }
+
+    public com.itmill.toolkit.ui.Alignment getComponentAlignment(Component childComponent) {
+        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
+        return layout.getComponentAlignment(childComponent);
     }
 }
