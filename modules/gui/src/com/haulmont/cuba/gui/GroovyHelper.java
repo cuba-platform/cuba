@@ -21,12 +21,12 @@ public class GroovyHelper {
 
         StringBuilder builder = new StringBuilder();
         for (String importItem : AppConfig.getInstance().getGroovyImports()) {
-            builder.append(importItem).append("\n");
+            builder.append("import ").append(importItem).append("\n");
         }
         builder.append(script);
 
         //noinspection unchecked
-        return (T) shell.evaluate(script);
+        return (T) shell.evaluate(builder.toString());
     }
 
     protected static Binding createBinding(Map<String, Object> map) {
