@@ -9,16 +9,20 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.dom4j.Element;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected boolean[][] spanMatrix;
@@ -48,7 +52,40 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         }
 
         final List<Element> rowElements = rowsElement.elements("row");
-        component.setRows(rowElements.size());
+        final Set<Element> invisibleRows = new HashSet<Element>();
+
+        int rowCount = 0;
+        for (Element rowElement : rowElements) {
+            String visible = rowElement.attributeValue("visible");
+            if (visible == null) {
+                final Element e = rowElement.element("visible");
+                if (e != null) {
+                    visible = e.getText();
+                }
+            }
+
+            if (!StringUtils.isEmpty(visible)) {
+                Boolean value;
+                if ("true".equals(visible) || "false".equals(visible)) {
+                    value = Boolean.valueOf(visible);
+                } else {
+                    @SuppressWarnings({"unchecked"})
+                    Boolean res = GroovyHelper.evaluate(visible, context.getParameters());
+                    value = res;
+                }
+
+                if (BooleanUtils.toBoolean(value)) {
+                    rowCount++;
+                } else {
+                    invisibleRows.add(rowElement);
+                }
+            } else {
+                rowCount++;
+            }
+        }
+
+        component.setRows(rowCount);
+
         int j = 0;
         for (Element rowElement : rowElements) {
             final String flex = rowElement.attributeValue("flex");
@@ -62,8 +99,10 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
 
         int row = 0;
         for (Element rowElement : rowElements) {
-            loadSubComponents(component, rowElement, row);
-            row++;
+            if (!invisibleRows.contains(rowElement)) {
+                loadSubComponents(component, rowElement, row);
+                row++;
+            }
         }
 
         loadSpacing(component, element);
