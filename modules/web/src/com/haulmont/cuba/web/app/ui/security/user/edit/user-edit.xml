@@ -45,11 +45,11 @@
                     <label value="msg://login"/>
                     <textField id="login" datasource="user" property="login"/>
                 </row>
-                <row>
+                <row visible="return PersistenceHelper.isNew(parameter$item)">
                     <label id="passwLab" value="msg://password"/>
                     <textField id="passw" secret="true"/>
                 </row>
-                <row>
+                <row visible="return PersistenceHelper.isNew(parameter$item)">
                     <label id="confirmPasswLab" value="msg://confirmPassword"/>
                     <textField id="confirmPassw" secret="true"/>
                 </row>
@@ -67,10 +67,11 @@
                 </row>
                 <row>
                     <label value="msg://group"/>
-                    <pickerField id="group" datasource="user" property="group" captionProperty="name"/>
+                    <lookupField id="group" datasource="user" property="group" captionProperty="name" optionsDatasource="groups"/>
                 </row>
             </rows>
         </grid>
+
         <vbox id="roles-pane" expand="roles" spacing="true">
             <hbox>
                 <button action="roles.include"/>
@@ -83,5 +84,7 @@
                 <rows datasource="roles"/>
             </table>
         </vbox>
+
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>
