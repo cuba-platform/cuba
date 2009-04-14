@@ -62,6 +62,12 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         component.setId(id);
     }
 
+    protected void loadStyleName(Component component, Element element)
+    {
+        final String styleName = element.attributeValue("style");
+        component.setStyleName(styleName);
+    }
+
     protected void assignXmlDescriptor(Component component, Element element) {
         if (component instanceof Component.HasXmlDescriptor) {
             ((Component.HasXmlDescriptor) component).setXmlDescriptor(element);

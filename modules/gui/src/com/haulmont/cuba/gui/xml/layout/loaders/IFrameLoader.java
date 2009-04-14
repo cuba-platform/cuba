@@ -39,6 +39,8 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         loadId(component, element);
         loadVisible(component, element);
 
+        loadStyleName(component, element);
+
         loadAlign(component, element);
 
         loadHeight(component, element, "-1px");

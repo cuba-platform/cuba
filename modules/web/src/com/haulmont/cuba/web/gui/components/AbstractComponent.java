@@ -42,6 +42,14 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
 //        component.setDebugId(id);
     }
 
+    public String getStyleName() {
+        return component.getStyleName();  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setStyleName(String name) {
+        component.setStyleName(name);//To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public boolean isVisible() {
         return component.isVisible();
     }

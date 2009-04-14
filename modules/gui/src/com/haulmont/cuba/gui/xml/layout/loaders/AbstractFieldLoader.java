@@ -37,6 +37,8 @@ public class AbstractFieldLoader extends ComponentLoader {
         loadId(component, element);
         loadVisible(component, element);
 
+        loadStyleName(component, element);
+
         loadCaption(component, element);
         loadEditable(component, element);
         loadRequired(component, element);

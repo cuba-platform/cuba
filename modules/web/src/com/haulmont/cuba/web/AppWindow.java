@@ -29,6 +29,8 @@ public class AppWindow extends Window {
     protected Connection connection;
     private TabSheet tabSheet;
 
+    private VerticalLayout tabbedPaneLayout;
+
     public AppWindow(Connection connection) {
              super();
 
@@ -38,6 +40,7 @@ public class AppWindow extends Window {
              VerticalLayout rootLayout = createLayout();
              initLayout();
              setLayout(rootLayout);
+            postInitLayout();
          }
 
     protected VerticalLayout createLayout() {
@@ -47,28 +50,36 @@ public class AppWindow extends Window {
              layout.setSpacing(true);
              layout.setSizeFull();
 
-             // Title Pame
+             // Title Pane
              HorizontalLayout titlePane = createTitlePane();
+//             titlePane.setStyleName("headtitle-layout-style");
 
              final VerticalLayout titleLayout = new VerticalLayout();
              titleLayout.addComponent(titlePane);
              layout.addComponent(titleLayout);
 
-             // Menu & Windows
-             final VerticalLayout menuAndTabbedPaneLayout = new VerticalLayout();
+             // Menu
+             final VerticalLayout menuLayout = new VerticalLayout();
+//             menuLayout.setStyleName("menu-layout-style");
 
              Component menuBar = createMenuBar();
-             menuAndTabbedPaneLayout.addComponent(menuBar);
+             menuLayout.addComponent(menuBar);
+
+             layout.addComponent(menuLayout);
+
+             // Windows
+             tabbedPaneLayout = new VerticalLayout();
+//             TabbedPaneLayout.setStyleName("content-layout-style");
 
              tabSheet = new TabSheet();
              tabSheet.setSizeFull();
 
-             menuAndTabbedPaneLayout.addComponent(tabSheet);
-             menuAndTabbedPaneLayout.setExpandRatio(tabSheet, 1);
+             tabbedPaneLayout.addComponent(tabSheet);
+             tabbedPaneLayout.setExpandRatio(tabSheet, 1);
 
-             menuAndTabbedPaneLayout.setSizeFull();
-             layout.addComponent(menuAndTabbedPaneLayout);
-             layout.setExpandRatio(menuAndTabbedPaneLayout, 1);
+             tabbedPaneLayout.setSizeFull();
+             layout.addComponent(tabbedPaneLayout);
+             layout.setExpandRatio(tabbedPaneLayout, 1);
 
              return layout;
          }
@@ -81,8 +92,14 @@ public class AppWindow extends Window {
              return tabSheet;
          }
 
+    public VerticalLayout getTabbedPaneLayout() {
+        return tabbedPaneLayout;
+    }
     protected void initLayout() {
          }
+
+    protected void postInitLayout() {
+    }
 
     protected Component createMenuBar() {
              final MenuBar menuBar = new MenuBar();

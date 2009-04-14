@@ -92,7 +92,15 @@ public class Window
         return MessageProvider.getMessage(messagePack, key);
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public String getStyleName() {
+        return component.getStyleName();
+    }
+
+    public void setStyleName(String name) {
+        component.setStyleName(name);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder =
         new LinkedList<com.haulmont.cuba.gui.components.Action>();

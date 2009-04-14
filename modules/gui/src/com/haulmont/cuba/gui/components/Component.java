@@ -50,6 +50,9 @@ public interface Component {
     Alignment getAlignment();
     void setAlignment(Alignment alignment);
 
+    String getStyleName();
+    void setStyleName(String name);
+
     interface Container extends Component {
         void add(Component component);
         void remove(Component component);

@@ -29,6 +29,8 @@ public class HBoxLoader extends ContainerLoader implements ComponentLoader {
         loadId(component, element);
         loadVisible(component, element);
 
+        loadStyleName(component, element);
+
         loadAlign(component, element);
 
         loadSpacing(component, element);

@@ -25,6 +25,8 @@ public class FileUploadFieldLoader extends ComponentLoader{
         loadId(component, element);
         loadVisible(component, element);
 
+        loadStyleName(component, element);
+
         loadHeight(component, element);
         loadWidth(component, element);
 

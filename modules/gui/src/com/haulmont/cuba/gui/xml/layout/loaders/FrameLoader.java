@@ -53,6 +53,8 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         loadId(component, element);
         loadVisible(component, element);
 
+        loadStyleName(component, element);
+
         loadMessagesPack(component, element);
         loadSubcomponentsAndExpand(component, element.element("layout"));
 

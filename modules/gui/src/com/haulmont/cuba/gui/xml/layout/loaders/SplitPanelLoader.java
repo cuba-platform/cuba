@@ -30,6 +30,8 @@ public class SplitPanelLoader extends ContainerLoader{
         loadId(component, element);
         loadVisible(component, element);
 
+        loadStyleName(component, element);
+
         final Collection<Component> components = loadSubComponents(component, element, "visible");
         for (Component c : components) {
             c.setWidth("100%");

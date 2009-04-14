@@ -117,7 +117,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
             openMode.setData(layout);
         } else if (OpenType.DIALOG.equals(type)) {
-            final com.itmill.toolkit.ui.Window win = new com.itmill.toolkit.ui.Window(window.getCaption());
+            final com.itmill.toolkit.ui.Window win = createDialogWindow(window);
 
             win.setLayout((Layout) ComponentsHelper.unwrap(window));
 
@@ -140,6 +140,10 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         }
     }
 
+    protected com.itmill.toolkit.ui.Window createDialogWindow(Window window) {
+        return new com.itmill.toolkit.ui.Window(window.getCaption());
+    }
+
     protected Locale getLocale() {
         return App.getInstance().getLocale();
     }
@@ -148,13 +152,13 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         if (window instanceof Window.Wrapper) {
             window = ((Window.Wrapper) window).getWrappedWindow();
         }
-            
+
         final WindowOpenMode openMode = windowOpenMode.get(window);
         if (openMode == null) throw new IllegalStateException();
 
         boolean needRefresh = closeWindow(window, openMode);
         windowOpenMode.remove(window);
-        
+
         // TODO (krivopustov) fix TabSheet repaint
         if (needRefresh)
             app.getMainWindow().open(new ExternalResource(app.getURL()));

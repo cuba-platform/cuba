@@ -27,6 +27,8 @@ public class LabelLoader extends ComponentLoader {
         loadId(component, element);
         loadVisible(component, element);
 
+        loadStyleName(component, element);
+
         String caption = element.attributeValue("value");
         if (!StringUtils.isEmpty(caption)) {
             caption = loadResourceString(caption);

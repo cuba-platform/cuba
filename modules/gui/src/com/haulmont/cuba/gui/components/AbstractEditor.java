@@ -53,4 +53,12 @@ public class AbstractEditor extends AbstractWindow implements Window.Editor {
             throw new UnsupportedOperationException();
         }
     }
+
+    public String getStyleName() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setStyleName(String name) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
