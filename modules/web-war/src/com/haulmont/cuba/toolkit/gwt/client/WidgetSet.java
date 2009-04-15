@@ -11,6 +11,7 @@ package com.haulmont.cuba.toolkit.gwt.client;
 
 import com.haulmont.cuba.toolkit.gwt.client.ui.IPagingTable;
 import com.haulmont.cuba.toolkit.gwt.client.ui.ITreeTable;
+import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
 import com.itmill.toolkit.terminal.gwt.client.DefaultWidgetSet;
 import com.itmill.toolkit.terminal.gwt.client.Paintable;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
@@ -20,10 +21,10 @@ public class WidgetSet extends DefaultWidgetSet {
         final String tag = uidl.getTag();
         if ("pagingtable".equals(tag)) {
             return IPagingTable.class;
-//        } else if ("menubar".equals(tag)) {
-//            return "com.haulmont.cuba.toolkit.gwt.client.ui.IMenuBar";
         } else if ("treetable".equals(tag)) {
             return ITreeTable.class;
+        } else if ("scrollablepanel".equals(tag)) {
+            return IScrollablePanel.class;
         }
         return super.resolveWidgetType(uidl);
     }
@@ -32,10 +33,10 @@ public class WidgetSet extends DefaultWidgetSet {
         final Class classType = resolveWidgetType(uidl);
         if (IPagingTable.class.equals(classType)) {
             return new IPagingTable();
-//        } else if ("com.haulmont.cuba.toolkit.gwt.client.ui.IMenuBar".equals(className)) {
-//            return new IMenuBar();
         } else if (ITreeTable.class.equals(classType)) {
             return new ITreeTable();
+        } else if (IScrollablePanel.class.equals(classType)) {
+            return new IScrollablePanel();
         }
         return super.createWidget(uidl);
     }
