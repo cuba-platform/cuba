@@ -25,6 +25,7 @@ public interface Window extends IFrame, Component.HasCaption, Component.Actions 
         void validate() throws ValidationException;
 
         void commit();
+        void commitAndClose();
     }
 
     interface Lookup extends Window {

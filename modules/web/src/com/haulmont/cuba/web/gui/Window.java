@@ -381,7 +381,7 @@ public class Window
                     if (action != null) {
                         action.actionPerform(component);
                     } else {
-                        commit();
+                        commitAndClose();
                     }
                 }
             });
@@ -430,7 +430,7 @@ public class Window
                 }
 
                 public void actionPerform(Component component) {
-                    window.commit();
+                    window.commitAndClose();
                 }
             });
             
@@ -572,6 +572,10 @@ public class Window
                     service.commit((Entity) item);
                 }
             }
+        }
+
+        public void commitAndClose() {
+            commit();
             close("commit");
         }
 

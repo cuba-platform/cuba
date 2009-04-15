@@ -43,11 +43,11 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
     }
 
     public String getStyleName() {
-        return component.getStyleName();  //To change body of implemented methods use File | Settings | File Templates.
+        return component.getStyleName();
     }
 
     public void setStyleName(String name) {
-        component.setStyleName(name);//To change body of implemented methods use File | Settings | File Templates.
+        component.setStyleName(name);
     }
 
     public boolean isVisible() {

@@ -96,7 +96,7 @@ public class DatasourceImpl<T extends Entity>
     }
 
     public void refresh() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // Do Nothing
     }
 
     public synchronized void setItem(T item) {

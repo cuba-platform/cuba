@@ -19,6 +19,7 @@ import java.util.Collection;
 
 public class AbstractFrame implements IFrame, Component.Wrapper {
     protected IFrame frame;
+    private String styleName;
 
     public AbstractFrame(IFrame frame) {
         this.frame = frame;
@@ -190,10 +191,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     public String getStyleName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return styleName;  
     }
 
-    public void setStyleName(String name) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void setStyleName(String styleName) {
+        this.styleName = styleName;
     }
 }
