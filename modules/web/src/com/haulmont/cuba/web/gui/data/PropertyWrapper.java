@@ -9,29 +9,30 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.haulmont.cuba.core.entity.Entity;
 import com.itmill.toolkit.data.Property;
 
 import java.text.ParseException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
     private boolean readOnly;
     private Object item;
-    protected MetaProperty metaProperty;
+
+    protected MetaPropertyPath propertyPath;
 
     private List<ValueChangeListener> listeners = new ArrayList<ValueChangeListener>();
 
-    public PropertyWrapper(Object item, MetaProperty metaProperty) {
+    public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;
-        this.metaProperty = metaProperty;
+        this.propertyPath = propertyPath;
         if (item instanceof Datasource) {
             ((Datasource) item).addListener(new DatasourceListener<Entity>() {
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
@@ -56,7 +57,7 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
 
     public Object getValue() {
         final Instance instance = getInstance();
-        return instance == null ? null : instance.getValue(metaProperty.getName());
+        return instance == null ? null : InstanceUtils.getValueEx(instance, propertyPath.getPath());
     }
 
     protected Instance getInstance() {
@@ -76,11 +77,11 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
         final Instance instance = getInstance();
         if (instance == null) throw new IllegalStateException("Instance is null");
         
-        instance.setValue(metaProperty.getName(), getValue(newValue));
+        InstanceUtils.setValueEx(instance, propertyPath.getPath(), valueOf(newValue));
     }
 
-    protected Object getValue(Object newValue) throws Property.ConversionException{
-        final Range range = metaProperty.getRange();
+    protected Object valueOf(Object newValue) throws Property.ConversionException{
+        final Range range = propertyPath.getRange();
         if (range == null) {
             return newValue;
         } else {
@@ -98,7 +99,7 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
     }
 
     public Class getType() {
-        return MetadataHelper.getTypeClass(metaProperty);
+        return propertyPath.getRangeJavaClass();
     }
 
     public boolean isReadOnly() {
@@ -112,8 +113,9 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
     @Override
     public String toString() {
         final Object value = getValue();
-        return metaProperty.getRange().isDatatype() ?
-                metaProperty.getRange().asDatatype().format(value) :
+        final Range range = propertyPath.getRange();
+        return range.isDatatype() ?
+                range.asDatatype().format(value) :
                 value == null ? null : value.toString();
     }
 

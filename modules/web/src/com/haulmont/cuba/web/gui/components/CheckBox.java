@@ -11,11 +11,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import org.apache.commons.lang.BooleanUtils;
+
+import java.util.Collection;
 
 public class CheckBox
     extends
@@ -30,11 +32,11 @@ public class CheckBox
     }
 
     @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, MetaClass metaClass) {
-        return new ItemWrapper(datasource, metaClass.getProperties()) {
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
             @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaProperty property) {
-                return new PropertyWrapper(item, property) {
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new PropertyWrapper(item, propertyPath) {
                     @Override
                     public Object getValue() {
                         return BooleanUtils.toBoolean((Boolean) super.getValue());

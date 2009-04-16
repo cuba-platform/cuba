@@ -14,17 +14,16 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.gui.data.impl.DsContextImpl;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.terminal.Sizeable;
+import com.itmill.toolkit.ui.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.FieldPosition;
@@ -91,14 +90,16 @@ public class GenericEditorWindow
         final MetaClass metaClass = getMetaClass(item);
         setCaption("Edit " + metaClass.getName());
 
-        final Collection<MetaProperty> properties = getProperties(item);
-        form.setItemDataSource(new ItemWrapper(item, properties));
-        form.setVisibleItemProperties(properties);
+//        final Collection<MetaProperty> properties = getProperties(item);
+        final Collection<MetaPropertyPath> propertyPaths = MetadataHelper.getPropertyPaths(metaClass);
 
-        for (MetaProperty metaProperty : properties) {
-            final com.itmill.toolkit.ui.Field field = form.getField(metaProperty);
+        form.setItemDataSource(new ItemWrapper(item, propertyPaths));
+        form.setVisibleItemProperties(propertyPaths);
+
+        for (MetaPropertyPath propertyPath : propertyPaths) {
+            final com.itmill.toolkit.ui.Field field = form.getField(propertyPath);
             if (field != null) {
-                field.setRequired(metaProperty.isMandatory());
+                field.setRequired(propertyPath.getMetaProperty().isMandatory());
             }
         }
 
@@ -133,7 +134,7 @@ public class GenericEditorWindow
         public com.itmill.toolkit.ui.Field createField(Item item, Object propertyId, Component uiContext) {
             com.itmill.toolkit.ui.Field field = null;
 
-            MetaProperty metaProperty = (MetaProperty) propertyId;
+            MetaPropertyPath metaProperty = (MetaPropertyPath) propertyId;
             final Range range = metaProperty.getRange();
 
             if (range != null) {
@@ -151,8 +152,8 @@ public class GenericEditorWindow
             }
 
             if (field != null) {
-                final String caption = metaProperty.getCaption();
-                field.setCaption(StringUtils.capitalize(caption == null ? metaProperty.getName() : caption));
+                final String caption = metaProperty.getMetaProperty().getCaption();
+                field.setCaption(StringUtils.capitalize(caption == null ? metaProperty.getMetaProperty().getName() : caption));
             }
 
             return field;

@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.BaseLongIdEntity;
@@ -21,6 +22,8 @@ import javax.persistence.CascadeType;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 public class MetadataHelper {
     public static Class getTypeClass(MetaProperty metaProperty) {
@@ -64,5 +67,23 @@ public class MetadataHelper {
         return BaseUuidEntity.class.equals(javaClass) ||
                 StandardEntity.class.equals(javaClass) ||
                     BaseLongIdEntity.class.equals(javaClass);
+    }
+
+    public static Collection<MetaPropertyPath> getPropertyPaths(MetaClass metaClass) {
+        List<MetaPropertyPath> res = new ArrayList<MetaPropertyPath>();
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            res.add(new MetaPropertyPath(metaClass, metaProperty));
+        }
+
+        return res;
+    }
+
+    public static Collection<MetaPropertyPath> toPropertyPaths(Collection<MetaProperty> properties) {
+        List<MetaPropertyPath> res = new ArrayList<MetaPropertyPath>();
+        for (MetaProperty metaProperty : properties) {
+            res.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
+        }
+
+        return res;
     }
 }

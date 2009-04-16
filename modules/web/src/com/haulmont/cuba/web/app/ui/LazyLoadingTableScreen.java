@@ -10,31 +10,30 @@
  */
 package com.haulmont.cuba.web.app.ui;
 
-import com.haulmont.cuba.web.gui.Window;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.core.global.QueryTransformer;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.gui.MetadataHelper;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.web.gui.Window;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.ComponentContainer;
 import com.itmill.toolkit.ui.CustomComponent;
 import com.itmill.toolkit.ui.Table;
 import com.itmill.toolkit.ui.VerticalLayout;
-
-import java.util.*;
-
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.collections.map.LinkedMap;
+
+import java.util.*;
 
 public class LazyLoadingTableScreen extends Window
 {
@@ -157,7 +156,7 @@ public class LazyLoadingTableScreen extends Window
             log.debug("getItem : " + itemId);
 
             Server server = (Server) data.get(itemId);
-            return server == null ? null : new ItemWrapper(server, properties);
+            return server == null ? null : new ItemWrapper(server, MetadataHelper.toPropertyPaths(properties));
         }
 
         public Collection getContainerPropertyIds() {

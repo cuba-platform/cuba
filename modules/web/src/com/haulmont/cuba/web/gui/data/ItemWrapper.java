@@ -9,26 +9,33 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 
 import java.util.*;
 
 public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
-    private Map<MetaProperty, PropertyWrapper> properties = new HashMap<MetaProperty, PropertyWrapper>();
+    private Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<MetaPropertyPath, PropertyWrapper>();
     private List<PropertySetChangeListener> listeners = new ArrayList<PropertySetChangeListener>();
 
     protected Object item;
 
-    public ItemWrapper(Object item, Collection<MetaProperty> properties) {
+    public ItemWrapper(Object item, MetaClass metaClass) {
+        this(item, MetadataHelper.getPropertyPaths(metaClass));
+    }
+
+    public ItemWrapper(Object item, Collection<MetaPropertyPath> properties) {
         this.item = item;
 
-        for (MetaProperty property : properties) {
+        for (MetaPropertyPath property : properties) {
             this.properties.put(property, createPropertyWrapper(item, property));
         }
 
@@ -50,12 +57,19 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
         }
     }
 
-    protected PropertyWrapper createPropertyWrapper(Object item, MetaProperty property) {
-        return new PropertyWrapper(item, property);
+    protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+        return new PropertyWrapper(item, propertyPath);
     }
 
     public Property getItemProperty(Object id) {
-        return properties.get(id);
+        if (id instanceof MetaPropertyPath) {
+            return properties.get(id);
+        } else if (id instanceof MetaProperty) {
+            final MetaProperty metaProperty = (MetaProperty) id;
+            return properties.get(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public Collection getItemPropertyIds() {

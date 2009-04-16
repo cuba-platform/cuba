@@ -11,10 +11,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.itmill.toolkit.data.Property;
@@ -51,14 +53,15 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
         final MetaClass metaClass = datasource.getMetaClass();
         this.metaProperty = metaClass.getProperty(property);
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, metaClass);
-        component.setPropertyDataSource(wrapper.getItemProperty(metaProperty));
+        final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath));
+        component.setPropertyDataSource(wrapper.getItemProperty(propertyPath));
 
         setRequired(metaProperty.isMandatory());
     }
 
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, MetaClass metaClass) {
-        return new ItemWrapper(datasource, metaClass.getProperties());
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths);
     }
 
     public boolean isRequired() {

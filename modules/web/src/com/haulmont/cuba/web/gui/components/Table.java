@@ -12,13 +12,12 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.*;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.BaseFieldFactory;
@@ -64,11 +63,11 @@ public class Table
 
             @Override
             public com.itmill.toolkit.ui.Field createField(com.itmill.toolkit.data.Container container, Object itemId, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
-                MetaProperty metaProperty = (MetaProperty) propertyId;
-                final Range range = metaProperty.getRange();
+                MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
+                final Range range = propertyPath.getRange();
                 if (range != null) {
                     if (range.isClass()) {
-                        final Column column = columns.get(metaProperty);
+                        final Column column = columns.get(propertyPath);
 
                         final LookupField lookupField = new LookupField();
                         final CollectionDatasource optionsDatasource = getOptionsDatasource(range.asClass(), column);
@@ -80,7 +79,9 @@ public class Table
                         return (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
                     } else if (range.isEnum()) {
                         final LookupField lookupField = new LookupField();
-                        lookupField.setDatasource(getDatasource(), metaProperty.getName());
+                        if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
+
+                        lookupField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
                         lookupField.setOptionsList(range.asEnumiration().getValues());
 
                         return (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
@@ -109,43 +110,40 @@ public class Table
     }
 
     public void setDatasource(CollectionDatasource datasource) {
-        this.datasource = datasource;
-        final CollectionDsWrapper ds =
+
+        final Collection<MetaPropertyPath> columns;
+        if (this.columns.isEmpty()) {
+            columns = null;
+        } else {
+            columns = this.columns.keySet();
+        }
+
+        final CollectionDsWrapper containerDatasource =
                 datasource instanceof CollectionDatasource.Sortable ?
-                        new SortableTableDsWrapper(datasource) :
-                        new TableDsWrapper(datasource);
+                    new SortableTableDsWrapper(datasource, columns) :
+                    new TableDsWrapper(datasource, columns);
 
-        @SuppressWarnings({"unchecked"})
-        final Collection<MetaProperty> properties = createColumns(ds);
+        this.datasource = datasource;
 
-        component.setContainerDataSource(ds);
 
-        for (MetaProperty metaProperty : properties) {
-            final Column column = columns.get(metaProperty);
+        component.setContainerDataSource(containerDatasource);
+
+        for (MetaPropertyPath propertyPath : columns) {
+            final Column column = this.columns.get(propertyPath);
 
             final String caption;
             if (column != null) {
-                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : metaProperty.getName());
+                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : propertyPath.getMetaProperty().getName());
             } else {
-                caption = StringUtils.capitalize(metaProperty.getName());
+                caption = StringUtils.capitalize(propertyPath.getMetaProperty().getName());
             }
 
-            component.setColumnHeader(metaProperty, caption);
+            component.setColumnHeader(propertyPath, caption);
         }
 
-        @SuppressWarnings({"unchecked"})
-        final Collection<MetaProperty> collection = component.getContainerPropertyIds();
-        if (!columns.isEmpty()) {
-            for (MetaProperty metaProperty : collection) {
-                if (!columns.containsKey(metaProperty)) {
-                    component.removeContainerProperty(metaProperty);
-                }
-            }
-        }
-
-        List<MetaProperty> columnsOrder = new ArrayList<MetaProperty>();
+        List<MetaPropertyPath> columnsOrder = new ArrayList<MetaPropertyPath>();
         for (Column column : this.columnsOrder) {
-            columnsOrder.add((MetaProperty) column.getId());
+            columnsOrder.add((MetaPropertyPath) column.getId());
         }
 
         component.setVisibleColumns(columnsOrder.toArray());
@@ -156,15 +154,19 @@ public class Table
             super(datasource);
         }
 
+        public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+            super(datasource, properties);
+        }
+
         @Override
         protected void createProperties(View view, MetaClass metaClass) {
             if (columns.isEmpty()) {
                 super.createProperties(view, metaClass);
             } else {
-                for (Map.Entry<MetaProperty, Column> entry : columns.entrySet()) {
-                    final MetaProperty metaProperty = entry.getKey();
-                    if (view == null || view.getProperty(metaProperty.getName()) != null) {
-                        properties.add(metaProperty);
+                for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
+                    final MetaPropertyPath propertyPath = entry.getKey();
+                    if (view == null || ViewHelper.contains(view, propertyPath)) {
+                        properties.add(propertyPath);
                     }
                 }
             }
@@ -174,8 +176,8 @@ public class Table
         protected ItemWrapper createItemWrapper(Object item) {
             return new ItemWrapper(item, properties) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaProperty property) {
-                    final PropertyWrapper wrapper = new TablePropertyWrapper(item, property);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                    final PropertyWrapper wrapper = new TablePropertyWrapper(item, propertyPath);
 
                     return wrapper;
                 }
@@ -189,15 +191,19 @@ public class Table
             super(datasource);
         }
 
+        public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+            super(datasource, properties);
+        }
+
         @Override
         protected void createProperties(View view, MetaClass metaClass) {
             if (columns.isEmpty()) {
                 super.createProperties(view, metaClass);
             } else {
-                for (Map.Entry<MetaProperty, Column> entry : columns.entrySet()) {
-                    final MetaProperty metaProperty = entry.getKey();
-                    if (view == null || view.getProperty(metaProperty.getName()) != null) {
-                        properties.add(metaProperty);
+                for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
+                    final MetaPropertyPath propertyPath = entry.getKey();
+                    if (view == null || ViewHelper.contains(view, propertyPath)) {
+                        properties.add(propertyPath);
                     }
                 }
             }
@@ -207,8 +213,8 @@ public class Table
         protected ItemWrapper createItemWrapper(Object item) {
             return new ItemWrapper(item, properties) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaProperty property) {
-                    final PropertyWrapper wrapper = new TablePropertyWrapper(item, property);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                    final PropertyWrapper wrapper = new TablePropertyWrapper(item, propertyPath);
 
                     return wrapper;
                 }

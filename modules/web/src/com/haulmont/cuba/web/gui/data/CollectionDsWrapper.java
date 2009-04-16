@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 
 import java.util.*;
 
@@ -32,21 +33,37 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     protected CollectionDatasource<Entity, Object> datasource;
 
-    protected Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
+    protected Collection<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
 
     public CollectionDsWrapper(CollectionDatasource datasource) {
         this(datasource, false);
     }
 
+    public CollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+        this(datasource, properties, false);
+    }
+
     public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
+        this(datasource, null, autoRefresh);
+    }
+
+    public CollectionDsWrapper(
+            CollectionDatasource datasource,
+                Collection<MetaPropertyPath> properties,
+                    boolean autoRefresh)
+    {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
 
         final View view = datasource.getView();
         final MetaClass metaClass = datasource.getMetaClass();
 
-        createProperties(view, metaClass);
+        if (properties == null) {
+            createProperties(view, metaClass);
+        } else {
+            this.properties = properties;
+        }
 
         datasource.addListener(new DataSourceRefreshListener());
     }
@@ -64,7 +81,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
                 if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
                         Range.Cardinality.MANY_TO_ONE.equals(cardinality))
                 {
-                    properties.add(metaProperty);
+                    properties.add(new MetaPropertyPath(metaClass, metaProperty));
                 }
             }
         } else {
@@ -76,7 +93,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
                 if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
                         Range.Cardinality.MANY_TO_ONE.equals(cardinality))
                 {
-                    properties.add(metaProperty);
+                    properties.add(new MetaPropertyPath(metaClass, metaProperty));
                 }
             }
         }
@@ -131,8 +148,8 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     public Class getType(Object propertyId) {
-        MetaProperty metaProperty = (MetaProperty) propertyId;
-        return MetadataHelper.getTypeClass(metaProperty);
+        MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
+        return propertyPath.getRangeJavaClass();
     }
 
     public synchronized int size() {

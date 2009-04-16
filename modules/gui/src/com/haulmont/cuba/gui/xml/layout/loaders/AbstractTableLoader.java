@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -86,11 +87,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final String id = element.attributeValue("id");
 
         final MetaClass metaClass = ds.getMetaClass();
-        final MetaProperty metaProperty = metaClass.getPropertyEx(id);
-        if (metaProperty == null)
+        final MetaPropertyPath metaPropertyPath = metaClass.getPropertyEx(id);
+        if (metaPropertyPath == null)
             throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'", id, metaClass.getName()));
 
-        final Table.Column column = new Table.Column(metaProperty);
+        final Table.Column column = new Table.Column(metaPropertyPath);
 
         final String editable = element.attributeValue("editable");
         if (!StringUtils.isEmpty(editable)) {
@@ -100,7 +101,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadCaption(column, element);
 
         column.setXmlDescriptor(element);
-        column.setType(MetadataHelper.getTypeClass(metaProperty));
+        column.setType(metaPropertyPath.getRangeJavaClass());
 
         return column;
     }

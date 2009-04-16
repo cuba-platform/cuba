@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Table;
@@ -36,7 +37,7 @@ import org.dom4j.Element;
 import java.util.*;
 
 public abstract class AbstractTable<T extends AbstractSelect> extends AbstractListComponent<T> {
-    protected Map<MetaProperty, Table.Column> columns = new HashMap<MetaProperty, Table.Column>();
+    protected Map<MetaPropertyPath, Table.Column> columns = new HashMap<MetaPropertyPath, Table.Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
     protected boolean editable;
@@ -47,14 +48,14 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
     public void addColumn(Table.Column column) {
         component.addContainerProperty(column.getId(), column.getType(), null);
-        columns.put((MetaProperty) column.getId(), column);
+        columns.put((MetaPropertyPath) column.getId(), column);
         columnsOrder.add(column);
     }
 
     public void removeColumn(Table.Column column) {
         component.removeContainerProperty(column.getId());
         //noinspection RedundantCast
-        columns.remove((MetaProperty) column.getId());
+        columns.remove((MetaPropertyPath) column.getId());
         columnsOrder.remove(column);
     }
 
@@ -113,26 +114,26 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         });
     }
 
-    protected Collection<MetaProperty> createColumns(CollectionDsWrapper ds) {
+    protected Collection<MetaPropertyPath> createColumns(CollectionDsWrapper ds) {
         @SuppressWarnings({"unchecked"})
-        final Collection<MetaProperty> properties = (Collection<MetaProperty>) ds.getContainerPropertyIds();
-        for (MetaProperty metaProperty : properties) {
-            final Table.Column column = columns.get(metaProperty);
+        final Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
+        for (MetaPropertyPath propertyPath : properties) {
+            final Table.Column column = columns.get(propertyPath);
             if (column != null && !column.isEditable()) {
                 final String clickAction =
                         column.getXmlDescriptor() == null ?
                                 null : column.getXmlDescriptor().attributeValue("clickAction");
 
-                if (metaProperty.getRange().isClass()) {
+                if (propertyPath.getRange().isClass()) {
                     if (!StringUtils.isEmpty(clickAction)) {
-                        addGeneratedColumn(metaProperty, new ReadOnlyAssociationGenerator(column));
+                        addGeneratedColumn(propertyPath, new ReadOnlyAssociationGenerator(column));
                     }
-                } else if (metaProperty.getRange().isDatatype()) {
+                } else if (propertyPath.getRange().isDatatype()) {
                     if (!StringUtils.isEmpty(clickAction)) {
-                        addGeneratedColumn(metaProperty, new CodePropertyGenerator(column));
+                        addGeneratedColumn(propertyPath, new CodePropertyGenerator(column));
                     } else {
                         if (editable) {
-                            addGeneratedColumn(metaProperty, new ReadOnlyDatatypeGenerator());
+                            addGeneratedColumn(propertyPath, new ReadOnlyDatatypeGenerator());
                         }
                     }
                 } else {
@@ -140,20 +141,18 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
                 }
             }
         }
+
         return properties;
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {
-        private final MetaProperty property;
-
-        public TablePropertyWrapper(Object item, MetaProperty property) {
-            super(item, property);
-            this.property = property;
+        public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+            super(item, propertyPath);
         }
 
         @Override
         public boolean isReadOnly() {
-            final Table.Column column = AbstractTable.this.columns.get(property);
+            final Table.Column column = AbstractTable.this.columns.get(propertyPath);
             if (column != null) {
                 return !column.isEditable();
             } else {
@@ -168,13 +167,13 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
         @Override
         public String toString() {
-            final Table.Column column = AbstractTable.this.columns.get(property);
+            final Table.Column column = AbstractTable.this.columns.get(propertyPath);
             if (column != null && column.getXmlDescriptor() != null) {
                 String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
                 if (!StringUtils.isEmpty(captionProperty)) {
                     final Object value = getValue();
-                    return metaProperty.getRange().isDatatype() ?
-                            metaProperty.getRange().asDatatype().format(value) :
+                    return this.propertyPath.getRange().isDatatype() ?
+                            this.propertyPath.getRange().asDatatype().format(value) :
                             value == null ? null : String.valueOf(((Instance) value).getValue(captionProperty));
                 } else {
                     return super.toString();

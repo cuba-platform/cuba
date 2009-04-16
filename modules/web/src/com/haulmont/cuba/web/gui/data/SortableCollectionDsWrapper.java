@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.gui.data;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.itmill.toolkit.data.Container;
 import com.itmill.toolkit.data.Item;
 
@@ -29,13 +30,23 @@ public class SortableCollectionDsWrapper extends CollectionDsWrapper implements 
         super(datasource, autoRefresh);
     }
 
+    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+        super(datasource, properties);
+    }
+
+    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
+        super(datasource, properties, autoRefresh);
+    }
+
     public void sort(Object[] propertyId, boolean[] ascending) {
         List<CollectionDatasource.Sortable.SortInfo> infos = new ArrayList<CollectionDatasource.Sortable.SortInfo>();
         for (int i = 0; i < propertyId.length; i++) {
-            final MetaProperty id = (MetaProperty) propertyId[i];
+            final MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId[i];
+            if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
+
             final CollectionDatasource.Sortable.SortInfo<MetaProperty> info =
                     new CollectionDatasource.Sortable.SortInfo<MetaProperty>();
-            info.setProperty(id);
+            info.setProperty(propertyPath.getMetaProperty());
             info.setOrder(ascending[i] ? CollectionDatasource.Sortable.Order.ASC : CollectionDatasource.Sortable.Order.DESC);
 
             infos.add(info);

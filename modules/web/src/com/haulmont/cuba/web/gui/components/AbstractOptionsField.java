@@ -11,10 +11,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -23,6 +25,7 @@ import com.itmill.toolkit.ui.AbstractSelect;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.AbstractSelect>
     extends
@@ -44,8 +47,9 @@ public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.Abstr
 
         setMultiSelect(metaProperty.getRange().getCardinality().isMany());
 
-        final ItemWrapper wrapper = new ItemWrapper(datasource, metaClass.getProperties());
-        final Property itemProperty = wrapper.getItemProperty(metaProperty);
+        final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
+        final ItemWrapper wrapper = new ItemWrapper(datasource, Collections.singleton(propertyPath));
+        final Property itemProperty = wrapper.getItemProperty(propertyPath);
 
         component.setPropertyDataSource(itemProperty);
 

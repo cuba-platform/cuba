@@ -11,7 +11,9 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -76,10 +78,10 @@ public class TreeTable
             if (columns.isEmpty()) {
                 super.createProperties(view, metaClass);
             } else {
-                for (Map.Entry<MetaProperty, Column> entry : columns.entrySet()) {
-                    final MetaProperty metaProperty = entry.getKey();
-                    if (view == null || view.getProperty(metaProperty.getName()) != null) {
-                        properties.add(metaProperty);
+                for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
+                    final MetaPropertyPath propertyPath = entry.getKey();
+                    if (view == null || ViewHelper.contains(view, propertyPath)) {
+                        properties.add(propertyPath);
                     }
                 }
             }
@@ -89,8 +91,8 @@ public class TreeTable
         protected ItemWrapper createItemWrapper(Object item) {
             return new ItemWrapper(item, properties) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaProperty property) {
-                    final PropertyWrapper wrapper = new TablePropertyWrapper(item, property);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                    final PropertyWrapper wrapper = new TablePropertyWrapper(item, propertyPath);
 
                     return wrapper;
                 }

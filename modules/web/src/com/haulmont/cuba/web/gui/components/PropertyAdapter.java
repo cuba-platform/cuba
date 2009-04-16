@@ -15,6 +15,7 @@ public abstract class PropertyAdapter implements Property {
     protected final Property itemProperty;
 
     public PropertyAdapter(Property itemProperty) {
+        if (itemProperty == null) throw new IllegalStateException("Property is null");
         this.itemProperty = itemProperty;
     }
 
