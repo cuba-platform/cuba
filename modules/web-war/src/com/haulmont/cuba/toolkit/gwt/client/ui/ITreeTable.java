@@ -544,6 +544,11 @@ public class ITreeTable
 
         public void setColumnCollapsingAllowed(boolean columnCollapsingAllowed) {
             this.columnCollapsingAllowed = columnCollapsingAllowed;
+            if (columnCollapsingAllowed) {
+                DOM.setStyleAttribute(columnsSelector, "display", "block");
+            } else {
+                DOM.setStyleAttribute(columnsSelector, "display", "none");
+            }
         }
 
         class VisibleColumnAction
