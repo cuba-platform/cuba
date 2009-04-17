@@ -17,7 +17,10 @@ import com.itmill.toolkit.data.util.ContainerHierarchicalWrapper;
 import com.itmill.toolkit.data.util.IndexedContainer;
 import com.itmill.toolkit.terminal.PaintException;
 import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.ui.Component;
+import com.itmill.toolkit.ui.ComponentContainer;
+import com.itmill.toolkit.ui.Form;
+import com.itmill.toolkit.ui.Table;
 
 import java.util.*;
 
@@ -29,10 +32,14 @@ public class TreeTable
     public static final String TAG_NAME = "treetable";
 
     private List<Object> visibleColumns = null;
-    private final Map<Object, TableSupport.ColumnGenerator> columnGenerators = new LinkedHashMap<Object, TableSupport.ColumnGenerator>();
+
+    private final Map<Object, TableSupport.ColumnGenerator> columnGenerators =
+            new LinkedHashMap<Object, TableSupport.ColumnGenerator>();
+
     private final Map<Object, String> columnHeaders = new HashMap<Object, String>();
 
     private Set<Component> visibleComponents = null;
+
     private Set<Property> listenedProperties = null;
 
     private final Set<Object> expanded = new HashSet<Object>();
@@ -40,6 +47,12 @@ public class TreeTable
     private boolean selectable = false;
 
     private boolean editable = false;
+
+    private boolean columnCollapsingAllowed = false;
+
+    private boolean columnReorderingAllowed = false;
+
+    private final Set<Object> collapsedColumns = new HashSet<Object>();
 
     public TreeTable() {
     }
@@ -68,7 +81,7 @@ public class TreeTable
             Object itemId = itemIdMapper.get(key);
             setExpanded(itemId, false);
 
-            needRepaint = true;
+            needRepaint |= true;
         }
 
         if (variables.containsKey("collapse"))
@@ -77,7 +90,27 @@ public class TreeTable
             Object itemId = itemIdMapper.get(key);
             setCollapsed(itemId, false);
 
-            needRepaint = true;
+            needRepaint |= true;
+        }
+
+        if (isColumnCollapsingAllowed())
+        {
+            if (variables.containsKey("collapsedcolumns"))
+            {
+                try {
+                    final Object[] collapsedColumns = (Object[]) variables.get("collapsedcolumns");
+                    for (final Object visibleColumn : visibleColumns) {
+                        setColumnCollapsed(visibleColumn, false);
+                    }
+                    for (final Object collapsedColumn : collapsedColumns) {
+                        setColumnCollapsed(collapsedColumn, true);
+                    }
+                } catch (final Exception e) {
+                    // todo Handle exception
+                    e.printStackTrace();
+                }
+                needRepaint |= true;
+            }
         }
 
         if (needRepaint) requestRepaint();
@@ -108,14 +141,44 @@ public class TreeTable
         paintRows(target);
     }
 
-    protected void paintColumns(PaintTarget target) throws PaintException {
+    protected void paintColumns(PaintTarget target) throws PaintException
+    {
+        if (columnCollapsingAllowed)
+        {
+            final Set<Object> ccs = new HashSet<Object>();
+            for (final Object o : visibleColumns) {
+                if (isColumnCollapsed(o)) {
+                    ccs.add(o);
+                }
+            }
+            final String[] collapsedkeys = new String[ccs.size()];
+            int nextColumn = 0;
+            for (final Iterator it = visibleColumns.iterator(); it.hasNext()
+                    && nextColumn < collapsedkeys.length;)
+            {
+                final Object columnId = it.next();
+                if (isColumnCollapsed(columnId)) {
+                    collapsedkeys[nextColumn++] = String.valueOf(columnId);
+                }
+            }
+            target.addVariable(this, "collapsedcolumns", collapsedkeys);
+        }
+
         target.startTag("visiblecolumns");
         for (final Object columnId : visibleColumns) {
-            if (columnId != null) {
+            if (columnId != null)
+            {
                 target.startTag("column");
+                
                 target.addAttribute("cid", String.valueOf(columnId));
+
                 final String head = getColumnHeader(columnId);
                 target.addAttribute("caption", (head != null ? head : ""));
+
+                if (isColumnCollapsed(columnId))
+                {
+                    target.addAttribute("collapsed", true);
+                }
 
                 target.endTag("column");
             }
@@ -137,6 +200,9 @@ public class TreeTable
                 && iscomponentIndex < iscomponent.length;)
         {
             final Object columnId = it.next();
+            if (isColumnCollapsed(columnId)) {
+                continue;
+            }
             if (columnGenerators.containsKey(columnId)) {
                 iscomponent[iscomponentIndex++] = true;
             } else {
@@ -206,7 +272,7 @@ public class TreeTable
 
                     int colIndex = 0;
                     for (final Object colId : visibleColumns) {
-                        if (colId == null) {
+                        if (colId == null || isColumnCollapsed(colId)) {
                             continue;
                         }
 
@@ -730,6 +796,39 @@ public class TreeTable
                     c.requestRepaint();
                 }
             }
+        }
+    }
+
+    public boolean isColumnCollapsed(Object propertyId) {
+        return collapsedColumns != null
+                && collapsedColumns.contains(propertyId);
+    }
+
+    public void setColumnCollapsed(Object propertyId, boolean collapsed)
+            throws IllegalAccessException
+    {
+        if (!isColumnCollapsingAllowed()) {
+            throw new IllegalAccessException("Column collapsing not allowed!");
+        }
+
+        if (collapsed) {
+            collapsedColumns.add(propertyId);
+        } else {
+            collapsedColumns.remove(propertyId);
+        }
+
+        requestRepaint();
+    }
+
+    public boolean isColumnCollapsingAllowed() {
+        return columnCollapsingAllowed;
+    }
+
+    public void setColumnCollapsingAllowed(boolean collapsingAllowed) {
+        columnCollapsingAllowed = collapsingAllowed;
+
+        if (!collapsingAllowed) {
+            collapsedColumns.clear();
         }
     }
 }

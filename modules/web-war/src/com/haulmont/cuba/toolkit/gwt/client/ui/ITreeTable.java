@@ -3,7 +3,6 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.itmill.toolkit.terminal.gwt.client.*;
@@ -60,7 +59,8 @@ public class ITreeTable
     private String height = null;
     private String width = null;
 
-    private Set<String> visibleColumns = new HashSet<String>(); //Contains visible columns ids. They need for a header and a body rendering
+//    private Set<String> visibleColumns = new HashSet<String>(); //Contains visible columns ids. They need for a header and a body rendering
+    private Set<String> collapsedColumns = null;
 
     private boolean emitClickEvents;
 
@@ -120,6 +120,14 @@ public class ITreeTable
 
         if (uidl.hasAttribute("rowheaders")) {
             rowHeaders = true;
+        }
+
+        if (uidl.hasVariable("collapsedcolumns")) {
+            tableHeader.setColumnCollapsingAllowed(true);
+            collapsedColumns = uidl.getStringArrayVariableAsSet("collapsedcolumns");
+        } else {
+            tableHeader.setColumnCollapsingAllowed(false);
+            collapsedColumns = null;
         }
 
         UIDL bodyUidl = null;
@@ -296,6 +304,18 @@ public class ITreeTable
         }
     }
 
+    private boolean isCollapsedColumn(String colKey) {
+        return collapsedColumns != null
+                && collapsedColumns.contains(colKey);
+    }
+
+    private Set<String> getCollapsedColumns() {
+        if (collapsedColumns == null) {
+            collapsedColumns = new HashSet<String>();
+        }
+        return collapsedColumns;
+    }
+
     public void setInternalHeight(String height) {
         int totalHeight;
         int availableHeight;
@@ -390,10 +410,12 @@ public class ITreeTable
         private final Element headerBody = DOM.createDiv();
         private final Element columnsSelector = DOM.createDiv();
 
-        private final Map<String, Widget> availableCells = new HashMap<String, Widget>();
-        private final Vector<Widget> visibleCells = new Vector<Widget>();
+        private final Map<String, Widget> availableCells = new HashMap<String, Widget>(); //cache of available cells
+        private final Vector<Widget> visibleCells = new Vector<Widget>(); //currently visible cells
 
         private VisibleColumnsMenu columnsMenu = null;
+
+        private boolean columnCollapsingAllowed = false;
 
         TableHeader() {
             setElement(DOM.createDiv());
@@ -412,24 +434,23 @@ public class ITreeTable
         public void updateHeaderFromUIDL(UIDL uidl) {
             final Iterator it = uidl.getChildIterator();
 
-            visibleColumns.clear();
+            clear(); //clear old visible cells
 
-            while (it.hasNext()) {
+            while (it.hasNext())
+            {
                 final UIDL col = (UIDL) it.next();
+                final String cid = col.getStringAttribute("cid");
+                final String caption = col.getStringAttribute("caption");
+
+                Cell c = (Cell) availableCells.get(cid);
+                if (c == null) {
+                    c = new Cell(cid, caption);
+                    availableCells.put(cid, c);
+                } else {
+                    c.setCaption(caption);
+                }
                 if (!col.hasAttribute("collapsed")) {
-                    final String cid = col.getStringAttribute("cid");
-                    final String caption = col.getStringAttribute("caption");
-
-                    Cell c = (Cell) availableCells.get(cid);
-                    if (c == null) {
-                        c = new Cell(cid, caption);
-                        availableCells.put(cid, c);
-                        addCell(c);
-                    } else {
-                        c.setCaption(caption);
-                    }
-
-                    visibleColumns.add(c.getCid());
+                    addCell(c);
                 }
             }
         }
@@ -449,6 +470,14 @@ public class ITreeTable
                 columnsMenu = new VisibleColumnsMenu();
             }
             return columnsMenu;
+        }
+
+        @Override
+        public void clear() {
+            final Vector<Widget> v = new Vector<Widget>(visibleCells);
+            for (final Widget w : v) {
+                remove(w);
+            }
         }
 
         public boolean remove(Widget child) {
@@ -475,21 +504,30 @@ public class ITreeTable
             }
         }
 
-        public Action[] getActions() {
-            final Action[] actions = new Action[availableCells.size() + 1];
+        public Action[] getActions()
+        {
+            final List<Action> actions = new LinkedList<Action>();
 
-            final Iterator it = availableCells.values().iterator();
-            int i = 0;
-            while (it.hasNext()) {
-                final Cell cell = (Cell) it.next();
-                final Action a = new VisibleColumnAction(cell.getCid(), false);
-                a.setCaption(cell.getCaption());
+            for (final Map.Entry<String, Widget> entry
+                    : availableCells.entrySet())
+            {
+                boolean collapsed = false;
+                final Cell cell = (Cell) entry.getValue();
+                final String key = entry.getKey();
 
-                actions[i++] = a;
+                if (isCollapsedColumn(key)) {
+                    collapsed = true;
+                } else if (!visibleCells.contains(cell)) {
+                    continue;
+                }
+
+                final VisibleColumnAction action = new VisibleColumnAction(key);
+                action.setCaption(cell.getCaption());
+                action.setCollapsed(collapsed);
+                actions.add(action);
             }
-            actions[i] = new ApplyVisibleColumnsAction("Apply");
 
-            return actions;
+            return actions.toArray(new Action[actions.size()]);
         }
 
         public ApplicationConnection getClient() {
@@ -500,20 +538,37 @@ public class ITreeTable
             return uidlId;
         }
 
+        public boolean isColumnCollapsingAllowed() {
+            return columnCollapsingAllowed;
+        }
+
+        public void setColumnCollapsingAllowed(boolean columnCollapsingAllowed) {
+            this.columnCollapsingAllowed = columnCollapsingAllowed;
+        }
+
         class VisibleColumnAction
                 extends Action
         {
-            private String cid;
+            private final String cid;
             private boolean collapsed;
 
-            VisibleColumnAction(String cid, boolean collapsed) {
+            VisibleColumnAction(String cid) {
                 super(TableHeader.this);
                 this.cid = cid;
-                this.collapsed = collapsed;
             }
 
-            public void execute() {
-                Window.alert("Column " + cid + " click");
+            public void execute()
+            {
+                getColumnsMenu().hide();
+                // toggle selected column
+                if (isCollapsedColumn(cid)) {
+                    getCollapsedColumns().remove(cid);
+                } else {
+                    getCollapsedColumns().add(cid);
+                }
+                // update variable to server
+                client.updateVariable(uidlId, "collapsedcolumns",
+                        getCollapsedColumns().toArray(), true);
             }
 
             public String getCid() {
@@ -522,6 +577,10 @@ public class ITreeTable
 
             public boolean isCollapsed() {
                 return collapsed;
+            }
+
+            public void setCollapsed(boolean collapsed) {
+                this.collapsed = collapsed;
             }
 
             public String getHTML() {
@@ -535,28 +594,6 @@ public class ITreeTable
                 sb.append("</span>");
 
                 return sb.toString();
-            }
-        }
-
-        class ApplyVisibleColumnsAction
-                extends Action
-        {
-            ApplyVisibleColumnsAction(String caption) {
-                super(TableHeader.this);
-                setCaption(caption);
-            }
-
-            public void execute() {
-                getColumnsMenu().hide();
-                Window.alert("Apply clicked");
-            }
-
-            public String getHTML() {
-                return "<button class=\""
-                        + CLASSNAME
-                        + "-columns-apply\">"
-                        + getCaption()
-                        + "</button>";
             }
         }
 
