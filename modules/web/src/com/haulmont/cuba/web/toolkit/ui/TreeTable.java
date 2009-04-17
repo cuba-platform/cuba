@@ -240,6 +240,16 @@ public class TreeTable
                             }
                         }
 
+                        if (value instanceof Component)
+                        {
+                            final Component c = (Component) value;
+                            if (oldVisibleComponents == null
+                                    || !oldVisibleComponents.contains(c)) {
+                                c.setParent(this);
+                            }
+                            visibleComponents.add((Component) value);
+                        }
+
                         if ((iscomponent[colIndex] || isEditable())
                                 && Component.class.isInstance(value))
                         {
@@ -251,14 +261,6 @@ public class TreeTable
                             }
                         } else {
                             target.addText((String) value);
-                        }
-
-                        if (value instanceof Component) {
-                            if (oldVisibleComponents == null
-                                    || !oldVisibleComponents.contains(value)) {
-                                ((Component) value).setParent(this);
-                            }
-                            visibleComponents.add((Component) value);
                         }
 
                         colIndex++;

@@ -602,13 +602,15 @@ public class ITreeTable
             }
 
             public void setCaption(String newCaption) {
-                if (!caption.equals(newCaption)) {
+                if (caption == null || !caption.equals(newCaption)) {
                     this.caption = newCaption;
                     DOM.setInnerHTML(captionContainer,
                             "<span class=\""
                                     + CLASSNAME
                                     + "-caption\">"
-                                    + caption + "</span>");
+                                    + caption != null ? caption : ""
+                                    + "</span>"
+                    );
                 }
             }
 
@@ -977,7 +979,6 @@ public class ITreeTable
             private boolean selected = false;
 
             protected final Vector<Widget> visibleCells = new Vector<Widget>();
-            private List<UIDL> pendingComponentPaints = null;
 
             Row(String key, int level) {
                 super(key, level);
@@ -1015,25 +1016,23 @@ public class ITreeTable
                 while (cells.hasNext()) {
                     final Object o = cells.next();
                     Cell cell;
+                    Paintable cellWidget = null;
                     if (o instanceof String) {
                         cell = new Cell((String) o);
                     } else {
-                        final Paintable cellContent = client.getPaintable((UIDL) o);
-                        cell = new Cell((Widget) cellContent);
-                        paintComponent(cellContent, (UIDL) o);
+                        cellWidget = client.getPaintable((UIDL) o);
+                        cell = new Cell((Widget) cellWidget);
                     }
                     add(cell);
+                    if (cellWidget != null) {
+                        paintCell(cellWidget, (UIDL) o);
+                    }
                 }
             }
 
-            private void paintComponent(Paintable p, UIDL uidl) {
+            private void paintCell(Paintable p, UIDL uidl) {
                 if (isAttached()) {
                     p.updateFromUIDL(uidl, client);
-                } else {
-                    if (pendingComponentPaints == null) {
-                        pendingComponentPaints = new LinkedList<UIDL>();
-                    }
-                    pendingComponentPaints.add(uidl);
                 }
             }
 
@@ -1071,17 +1070,6 @@ public class ITreeTable
                                     selectedRowKeys.toArray(), true);
                         }
                         break;
-                    }
-                }
-            }
-
-            @Override
-            protected void onAttach() {
-                super.onAttach();
-                if (pendingComponentPaints != null) {
-                    for (UIDL uidl : pendingComponentPaints) {
-                        Paintable paintable = client.getPaintable(uidl);
-                        paintable.updateFromUIDL(uidl, client);
                     }
                 }
             }
@@ -1152,7 +1140,7 @@ public class ITreeTable
             }
         }
 
-        class Cell extends SimplePanel {
+        class Cell extends SimplePanel implements Container {
 
             private final Element cell = DOM.createDiv();
 
@@ -1168,6 +1156,33 @@ public class ITreeTable
                 DOM.appendChild(getElement(), cell);
 
                 setWidget(w);
+            }
+
+            public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
+                if (oldComponent != getWidget()) {
+                    return;
+                }
+                setWidget(newComponent);
+            }
+
+            public boolean hasChildComponent(Widget component) {
+                return component != null && getWidget() == component;
+            }
+
+            public void updateCaption(Paintable component, UIDL uidl) {
+                //do nothing
+            }
+
+            public boolean requestLayout(Set<Paintable> children) {
+                return false;
+            }
+
+            public RenderSpace getAllocatedSpace(Widget child) {
+                return null;
+            }
+
+            public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+                //do nothing
             }
 
             public Element getContainerElement() {
