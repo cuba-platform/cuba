@@ -33,8 +33,6 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
 
-    private boolean editable;
-
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
     protected Map<com.haulmont.cuba.gui.components.Field.Validator, Validator> validators =
             new HashMap<com.haulmont.cuba.gui.components.Field.Validator, Validator>();
@@ -89,11 +87,10 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
     }
 
     public boolean isEditable() {
-        return editable;
+        return !component.isReadOnly();
     }
 
     public void setEditable(boolean editable) {
-        this.editable = editable;
         component.setReadOnly(!editable);
     }
 
