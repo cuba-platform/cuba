@@ -92,14 +92,16 @@ public class ITreeTable
         this.client = client;
         uidlId = uidl.getId();
 
-        if (uidl.hasVariable("selected")) {
-            final Set selectedKeys = uidl
-                    .getStringArrayVariableAsSet("selected");
-            selectedRowKeys.clear();
-            for (final Object o : selectedKeys) {
-                selectedRowKeys.add((String) o);
-            }
-        }
+        selectedRowKeys.clear();
+
+//        if (uidl.hasVariable("selected")) {
+//            final Set selectedKeys = uidl
+//                    .getStringArrayVariableAsSet("selected");
+//            selectedRowKeys.clear();
+//            for (final Object o : selectedKeys) {
+//                selectedRowKeys.add((String) o);
+//            }
+//        }
 
         if (uidl.hasAttribute("selectmode")) {
 /*if (uidl.getBooleanAttribute("readonly")) {
@@ -1018,7 +1020,6 @@ public class ITreeTable
         }
 
         class Row extends AbstractRow {
-            private boolean selected = false;
 
             protected final Vector<Widget> visibleCells = new Vector<Widget>();
 
@@ -1027,12 +1028,11 @@ public class ITreeTable
             }
 
             public boolean isSelected() {
-                return selected;
+                return selectedRowKeys.contains(getKey());
             }
 
             private void toggleSelection() {
-                selected = !selected;
-                if (selected) {
+                if (!isSelected()) {
                     if (selectMode == Table.SELECT_MODE_SINGLE) {
                         deselectAll();
                     }
@@ -1107,7 +1107,7 @@ public class ITreeTable
                         handleClickEvent(event);
                         if (selectMode > Table.SELECT_MODE_NONE) {
                             toggleSelection();
-                            log.log("Row: " + getKey() + " is " + (selected ? " selected" : " deselected"));
+                            log.log("Row: " + getKey() + " is " + (isSelected() ? " selected" : " deselected"));
                             client.updateVariable(uidlId, "selected",
                                     selectedRowKeys.toArray(), true);
                         }

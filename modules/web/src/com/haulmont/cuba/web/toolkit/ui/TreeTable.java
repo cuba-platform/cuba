@@ -68,7 +68,8 @@ public class TreeTable
 
         handleClickEvent(variables);
 
-        if (!isSelectable() && variables.containsKey("selected")) {
+        if (!isSelectable() && variables.containsKey("selected"))
+        {
             variables = new HashMap(variables);
             variables.remove("selected");
         }
