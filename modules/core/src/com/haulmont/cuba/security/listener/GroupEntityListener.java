@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Utils;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
@@ -68,7 +69,7 @@ public class GroupEntityListener implements
     }
 
     public void onBeforeUpdate(Group entity) {
-        if (!PersistenceProvider.getDirtyFields(entity).contains("parent"))
+        if (!PersistenceHelper.getDirtyFields(entity).contains("parent"))
             return;
 
         EntityManager em = PersistenceProvider.getEntityManager();

@@ -80,25 +80,6 @@ public abstract class PersistenceProvider
             return entityClass.getSimpleName();
     }
 
-    public static Set<String> getDirtyFields(BaseEntity entity) {
-        if (!(entity instanceof PersistenceCapable))
-            return Collections.emptySet();
-
-        OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
-        if (stateManager == null)
-            return Collections.emptySet();
-
-        Set<String> set = new HashSet<String>();
-        BitSet dirtySet = stateManager.getDirty();
-        for (int i = 0; i < dirtySet.size()-1; i++) {
-            if (dirtySet.get(i)) {
-                FieldMetaData field = stateManager.getMetaData().getField(i);
-                set.add(field.getName());
-            }
-        }
-        return set;
-    }
-
     protected abstract EntityManagerFactory __getEntityManagerFactory();
 
     protected abstract EntityManager __getEntityManager();

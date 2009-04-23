@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.DeleteDeferred;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.security.app.EntityLog;
 import com.haulmont.cuba.security.app.EntityLogMBean;
 import com.haulmont.cuba.security.app.EntityLogAPI;
@@ -83,7 +84,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
             return false;
         }
         else {
-            return PersistenceProvider.getDirtyFields((BaseEntity) dd).contains("deleteTs");
+            return PersistenceHelper.getDirtyFields((BaseEntity) dd).contains("deleteTs");
         }
     }
 

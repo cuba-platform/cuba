@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +103,7 @@ public class EntityListenerManager
             StringBuilder sb = new StringBuilder();
             sb.append("Executing ").append(type).append(" entity listener for ")
                     .append(entity.getClass().getName()).append(" id=").append(entity.getId());
-            Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
+            Set<String> dirty = PersistenceHelper.getDirtyFields(entity);
             if (!dirty.isEmpty()) {
                 sb.append(", changedProperties: ");
                 for (Iterator<String> it = dirty.iterator(); it.hasNext();) {
