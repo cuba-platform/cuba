@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.security.entity.LoggedEntity;
 import com.haulmont.cuba.security.entity.LoggedAttribute;
 import com.haulmont.cuba.security.entity.EntityLogItem;
@@ -195,7 +194,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
             Date ts = TimeProvider.currentTimestamp();
             EntityManager em = PersistenceProvider.getEntityManager();
             User user = em.getReference(User.class, SecurityProvider.currentUserId());
-            Set<String> dirty = PersistenceHelper.getDirtyFields(entity);
+            Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
 
             for (String attr : attributes) {
                 if (dirty.contains(attr)) {
