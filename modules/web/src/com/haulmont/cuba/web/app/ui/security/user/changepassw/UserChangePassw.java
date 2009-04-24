@@ -38,7 +38,7 @@ public class UserChangePassw extends AbstractEditor
         confirmPasswField = getComponent("confirmPassw");
     }
 
-    public void commit() {
+    public boolean commit() {
         String passw = passwField.getValue();
         String confPassw = confirmPasswField.getValue();
         if (ObjectUtils.equals(passw, confPassw)) {
@@ -46,9 +46,10 @@ public class UserChangePassw extends AbstractEditor
                 userDs.getItem().setPassword(null);
             else
                 userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
-            super.commit();
+            return super.commit();
         } else {
             showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+            return false;
         }
     }
 }

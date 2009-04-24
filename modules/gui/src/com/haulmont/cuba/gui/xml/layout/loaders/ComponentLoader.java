@@ -115,23 +115,14 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected String loadResourceString(String caption) {
-        if (caption.startsWith("msg://")) {
+        if (caption != null && caption.startsWith("msg://")) {
             String path = caption.substring(6);
             final String[] strings = path.split("/");
             if (strings.length == 1) {
-//                if (resourceBundle != null) {
-//                    caption = resourceBundle.getString(strings[0]);
-//                }
                 if (messagesPack != null) {
                     caption = MessageProvider.getMessage(messagesPack, strings[0]);
                 }
             } else if (strings.length == 2) {
-//                try {
-//                    final ResourceBundle bundle = ResourceBundle.getBundle(strings[0], getLocale());
-//                    caption = bundle.getString(strings[1]);
-//                } catch (Throwable e) {
-//                    // Do nothing
-//                }
                 caption = MessageProvider.getMessage(strings[0], strings[1]);
             } else {
                 throw new UnsupportedOperationException();

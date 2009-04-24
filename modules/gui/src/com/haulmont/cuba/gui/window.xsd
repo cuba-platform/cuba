@@ -275,6 +275,14 @@
                 </xs:element>
                 <xs:element name="textField">
                     <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="validator" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="class" type="xs:string" use="required"/>
+                                    <xs:attribute name="message" type="xs:string" use="optional"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>

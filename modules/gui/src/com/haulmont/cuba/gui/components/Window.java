@@ -24,7 +24,7 @@ public interface Window extends IFrame, Component.HasCaption, Component.Actions 
         boolean isValid();
         void validate() throws ValidationException;
 
-        void commit();
+        boolean commit();
         void commitAndClose();
     }
 

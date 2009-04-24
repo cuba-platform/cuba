@@ -63,7 +63,11 @@
                 </row>
                 <row>
                     <label value="msg://email"/>
-                    <textField id="email" datasource="user" property="email"/>
+                    <textField id="email" datasource="user" property="email">
+                        <validator
+                            class="com.haulmont.cuba.gui.components.validators.EmailValidator"
+                            message="msg://com.haulmont.cuba.web.app.ui.security.user.edit/email.alert"/>
+                    </textField>
                 </row>
                 <row>
                     <label value="msg://group"/>

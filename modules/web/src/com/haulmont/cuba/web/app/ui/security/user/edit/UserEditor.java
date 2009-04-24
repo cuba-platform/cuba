@@ -67,7 +67,7 @@ public class UserEditor extends AbstractEditor {
         rolesTableActions.createRemoveAction();
     }
 
-    public void commit() {
+    public boolean commit() {
         boolean isNew = PersistenceHelper.isNew(userDs.getItem());
         if (isNew) {
             TextField passwField = getComponent("passw");
@@ -80,12 +80,13 @@ public class UserEditor extends AbstractEditor {
                     userDs.getItem().setPassword(null);
                 else
                     userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
-                super.commit();
+                return super.commit();
             } else {
                 showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+                return false;
             }
         } else {
-            super.commit();
+            return super.commit();
         }
     }
 }

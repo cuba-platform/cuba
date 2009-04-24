@@ -556,8 +556,8 @@ public class Window
             }
         }
 
-        public void commit() {
-            if (!__validate()) return;
+        public boolean commit() {
+            if (!__validate()) return false;
             form.commit();
 
             final DsContext context = getDsContext();
@@ -572,11 +572,14 @@ public class Window
                     service.commit((Entity) item);
                 }
             }
+
+            return true;
         }
 
         public void commitAndClose() {
-            commit();
-            close("commit");
+            if (commit()) {
+                close("commit");
+            }
         }
 
         protected boolean __validate() {
