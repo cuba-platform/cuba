@@ -337,6 +337,7 @@
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>
                         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                        <xs:attribute name="nullName" type="xs:string" use="optional"/>
                         <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>

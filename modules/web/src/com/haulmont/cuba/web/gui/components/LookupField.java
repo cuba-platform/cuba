@@ -21,6 +21,8 @@ public class LookupField
     implements
         com.haulmont.cuba.gui.components.LookupField, Component.Wrapper
 {
+    private String nullName;
+
     public LookupField() {
         this.component = new Select() {
             @Override
@@ -85,5 +87,15 @@ public class LookupField
     public void setValue(Object value) {
         // TODO (abramov) need to be changed
         super.setValue(((Entity) value).getId());
+    }
+
+    public String getNullName() {
+        return nullName;
+    }
+
+    public void setNullName(String nullName) {
+        this.nullName = nullName;
+//        component.setNullSelectionItemId(nullName);
+//        component.requestRepaint();
     }
 }
