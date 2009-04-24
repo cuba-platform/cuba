@@ -77,7 +77,7 @@ public class LookupField
     public <T> T getValue() {
         if (optionsDatasource != null) {
             final Object key = super.getValue();
-            return (T) optionsDatasource.getItem(key);
+            return key == null ? null : (T) optionsDatasource.getItem(key);
         } else {
             return super.<T>getValue();
         }
@@ -86,7 +86,7 @@ public class LookupField
     @Override
     public void setValue(Object value) {
         // TODO (abramov) need to be changed
-        super.setValue(((Entity) value).getId());
+        super.setValue(value == null ? null : ((Entity) value).getId());
     }
 
     public String getNullName() {
