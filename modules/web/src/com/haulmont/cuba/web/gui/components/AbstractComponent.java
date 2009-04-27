@@ -50,6 +50,14 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
         component.setStyleName(name);
     }
 
+    public boolean isEnabled() {
+        return component.isEnabled();
+    }
+
+    public void setEnabled(boolean enabled) {
+        component.setEnabled(enabled);
+    }
+
     public boolean isVisible() {
         return component.isVisible();
     }

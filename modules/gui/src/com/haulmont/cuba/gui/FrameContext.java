@@ -26,7 +26,7 @@ public class FrameContext implements WindowContext {
     }
 
     public <T> T getParameterValue(String property) {
-        return (T) params.get(property);
+        return (T) params.get("parameter$" + property);
     }
 
     public <T> T getValue(String property) {

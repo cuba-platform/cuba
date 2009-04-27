@@ -254,6 +254,14 @@ public class Window
         this.id = id;
     }
 
+    public boolean isEnabled() {
+        return this.isEnabled();
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.setEnabled(enabled);
+    }
+
     public boolean isVisible() {
         return true; 
     }

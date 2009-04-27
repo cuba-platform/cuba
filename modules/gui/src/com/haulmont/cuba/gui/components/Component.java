@@ -34,6 +34,9 @@ public interface Component {
     String getId();
     void setId(String id);
 
+    boolean isEnabled();
+    void setEnabled(boolean enabled);
+
     boolean isVisible();
     void setVisible(boolean visible);
 

@@ -114,6 +114,22 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
+    protected void loadEnable(Component component, Element element) {
+        String visible = element.attributeValue("enable");
+        if (visible == null) {
+            final Element e = element.element("enable");
+            if (e != null) {
+                visible = e.getText();
+            }
+        }
+
+        if (!StringUtils.isEmpty(visible)) {
+            if ("true".equals(visible) || "false".equals(visible)) {
+                component.setEnabled(Boolean.valueOf(visible));
+            }
+        }
+    }
+
     protected String loadResourceString(String caption) {
         if (caption != null && caption.startsWith("msg://")) {
             String path = caption.substring(6);

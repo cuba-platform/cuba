@@ -33,6 +33,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setId(id);
     }
 
+    public boolean isEnabled() {
+        return frame.isEnabled();
+    }
+
+    public void setEnabled(boolean enabled) {
+        frame.setEnabled(enabled);
+    }
+
     public boolean isVisible() {
         return frame.isVisible();
     }
