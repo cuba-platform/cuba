@@ -185,32 +185,28 @@ public abstract class WindowManager {
         String template = windowInfo.getTemplate();
         if (template != null) {
             //noinspection unchecked
-            final T window = (T) __openWindow(template, openType, params);
+            Window window = createWindow(template, params, LayoutLoaderConfig.getWindowLoaders());
             window.setId(windowInfo.getId());
 
-            return window;
+            String caption = loadCaption(window, params);
+            showWindow(window, caption, openType);
+
+            return (T)window;
         } else {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null)
             {
                 //noinspection unchecked
-                final T window = (T) __openWindow(screenClass, openType, params);
+                Window window = createWindow(screenClass, params);
                 window.setId(windowInfo.getId());
 
-                return window;
+                String caption = loadCaption(window, params);
+                showWindow(window, caption, openType);
+
+                return (T)window;
             } else
                 return null;
         }
-    }
-
-    protected <T extends Window> T __openWindow(String descriptor, WindowManager.OpenType openType, Map<String, Object> params) {
-        Window window = createWindow(descriptor, params, LayoutLoaderConfig.getWindowLoaders());
-
-        String caption = loadCaption(window, params);
-
-        showWindow(window, caption, openType);
-        //noinspection unchecked
-        return (T) window;
     }
 
     protected String loadCaption(Window window, Map<String, Object> params) {
@@ -236,16 +232,6 @@ public abstract class WindowManager {
         return caption;
     }
 
-    protected <T extends Window> T __openWindow(Class aclass, WindowManager.OpenType openType, Map<String, Object> params) {
-        Window window = createWindow(aclass, params);
-
-        String caption = loadCaption(window, params);
-
-        showWindow(window, caption, openType);
-        //noinspection unchecked
-        return (T) window;
-    }
-
     public <T extends Window> T openEditor(WindowInfo windowInfo, Object item, OpenType openType, Map<String, Object> params) {
         params = createParametersMap(windowInfo, params);
         params.put("parameter$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
@@ -266,12 +252,11 @@ public abstract class WindowManager {
                 throw new IllegalStateException("Invalid WindowInfo: " + windowInfo);
             }
         }
+        window.setId(windowInfo.getId());
         ((Window.Editor) window).setItem(item);
 
         String caption = loadCaption(window, params);
-
         showWindow(window, caption, openType);
-        window.setId(windowInfo.getId());
 
         //noinspection unchecked
         return (T) window;
@@ -307,11 +292,11 @@ public abstract class WindowManager {
                 throw new IllegalStateException("Invalid WindowInfo: " + windowInfo);
             }
         }
+        window.setId(windowInfo.getId());
         ((Window.Lookup) window).setLookupHandler(handler);
 
         String caption = loadCaption(window, params);
         showWindow(window, caption, openType);
-        window.setId(windowInfo.getId());
 
         //noinspection unchecked
         return (T) window;
