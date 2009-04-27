@@ -185,13 +185,20 @@ public abstract class WindowManager {
         String template = windowInfo.getTemplate();
         if (template != null) {
             //noinspection unchecked
-            return (T) __openWindow(template, openType, params);
+            final T window = (T) __openWindow(template, openType, params);
+            window.setId(windowInfo.getId());
+
+            return window;
         } else {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null)
+            {
                 //noinspection unchecked
-                return (T) __openWindow(screenClass, openType, params);
-            else
+                final T window = (T) __openWindow(screenClass, openType, params);
+                window.setId(windowInfo.getId());
+
+                return window;
+            } else
                 return null;
         }
     }
@@ -264,6 +271,8 @@ public abstract class WindowManager {
         String caption = loadCaption(window, params);
 
         showWindow(window, caption, openType);
+        window.setId(windowInfo.getId());
+
         //noinspection unchecked
         return (T) window;
     }
@@ -302,6 +311,8 @@ public abstract class WindowManager {
 
         String caption = loadCaption(window, params);
         showWindow(window, caption, openType);
+        window.setId(windowInfo.getId());
+
         //noinspection unchecked
         return (T) window;
     }
