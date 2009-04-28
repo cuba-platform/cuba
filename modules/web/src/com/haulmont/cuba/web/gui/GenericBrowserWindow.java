@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
@@ -106,7 +107,7 @@ public class GenericBrowserWindow extends Window
                 final MetaProperty metaProperty = metaClass.getProperty(name);
 
                 final com.haulmont.cuba.gui.components.Table.Column column =
-                        new com.haulmont.cuba.gui.components.Table.Column(metaProperty);
+                        new com.haulmont.cuba.gui.components.Table.Column(new MetaPropertyPath(ds.getMetaClass(), metaProperty));
                 column.setType(MetadataHelper.getTypeClass(metaProperty));
 
                 table.addColumn(column);
@@ -123,7 +124,7 @@ public class GenericBrowserWindow extends Window
                         Range.Cardinality.MANY_TO_ONE.equals(cardinality))
                 {
                     final com.haulmont.cuba.gui.components.Table.Column column =
-                            new com.haulmont.cuba.gui.components.Table.Column(metaProperty);
+                            new com.haulmont.cuba.gui.components.Table.Column(new MetaPropertyPath(ds.getMetaClass(), metaProperty));
                     column.setType(MetadataHelper.getTypeClass(metaProperty));
 
                     table.addColumn(column);
