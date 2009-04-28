@@ -111,12 +111,12 @@ alter table SEC_USER add constraint SEC_USER_GROUP foreign key (GROUP_ID) refere
 
 create table SEC_USER_ROLE (
     ID binary(16),
-    CREATE_TS timestamp,
+    CREATE_TS datetime,
     CREATED_BY varchar(20),
     VERSION integer,
-    UPDATE_TS timestamp,
+    UPDATE_TS datetime,
     UPDATED_BY varchar(20),
-    DELETE_TS timestamp,
+    DELETE_TS datetime,
     DELETED_BY varchar(20),
     USER_ID binary(16),
     ROLE_ID binary(16),
@@ -175,7 +175,7 @@ alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROU
 
 create table SEC_USER_SETTING (
     ID binary(16),
-    CREATE_TS timestamp,
+    CREATE_TS datetime,
     CREATED_BY varchar(20),
     USER_ID binary(16),
     CLIENT_TYPE char(1),
@@ -192,7 +192,7 @@ alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_UNIQ unique (USER_I
 
 create table SEC_LOGGED_ENTITY (
     ID binary(16),
-    CREATE_TS timestamp,
+    CREATE_TS datetime,
     CREATED_BY varchar(20),
     NAME varchar(100),
     AUTO smallint,
@@ -206,7 +206,7 @@ alter table SEC_LOGGED_ENTITY add constraint SEC_LOGGED_ENTITY_UNIQ_NAME unique 
 
 create table SEC_LOGGED_ATTR (
     ID binary(16),
-    CREATE_TS timestamp,
+    CREATE_TS datetime,
     CREATED_BY varchar(20),
     ENTITY_ID binary(16),
     NAME varchar(50),
@@ -221,9 +221,9 @@ alter table SEC_LOGGED_ATTR add constraint SEC_LOGGED_ATTR_UNIQ_NAME unique (ENT
 
 create table SEC_ENTITY_LOG (
     ID binary(16),
-    CREATE_TS timestamp,
+    CREATE_TS datetime,
     CREATED_BY varchar(20),
-    EVENT_TS timestamp,
+    EVENT_TS datetime,
     USER_ID binary(16),
     TYPE char(1),
     ENTITY varchar(100),
