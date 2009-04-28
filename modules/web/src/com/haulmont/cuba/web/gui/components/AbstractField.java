@@ -124,6 +124,8 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
         if (!validators.containsKey(validator)) {
             final Validator componentValidator = new Validator() {
                 public void validate(Object value) throws InvalidValueException {
+                    if ((!isRequired() && value == null)) return;
+                    
                     try {
                         validator.validate(value);
                     } catch (ValidationException e) {
@@ -132,7 +134,7 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
                 }
 
                 public boolean isValid(Object value) {
-                    return validator.isValid(value);
+                    return (!isRequired() && value == null) || validator.isValid(value);
                 }
             };
 
