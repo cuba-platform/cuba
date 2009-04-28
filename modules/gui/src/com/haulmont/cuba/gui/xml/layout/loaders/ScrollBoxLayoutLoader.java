@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.BoxLayout;
+import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import org.dom4j.Element;
 
 public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
@@ -20,7 +21,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final BoxLayout component = factory.createComponent("scrollbox");
+        final ScrollBoxLayout component = factory.createComponent("scrollbox");
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -30,8 +31,8 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
 
         loadAlign(component, element);
 
-        loadSpacing(component, element);
-        loadMargin(component, element);
+//        loadSpacing(component, element);
+//        loadMargin(component, element);
 
         loadSubcomponentsAndExpand(component, element, "visible");
 
