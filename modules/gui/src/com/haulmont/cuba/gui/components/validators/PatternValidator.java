@@ -30,7 +30,7 @@ public class PatternValidator implements Field.Validator {
     }
 
     public boolean isValid(Object value) {
-        return pattern.matcher(((String) value)).matches();
+        return value != null && pattern.matcher(((String) value)).matches();
     }
 
     public void validate(Object value) throws ValidationException {
