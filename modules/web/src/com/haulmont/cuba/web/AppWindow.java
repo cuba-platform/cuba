@@ -27,57 +27,89 @@ import java.util.Locale;
 
 public class AppWindow extends Window {
     protected Connection connection;
+
+    private MenuBar menuBar;
     private TabSheet tabSheet;
 
+    private VerticalLayout rootLayout;
+    private HorizontalLayout titlePageLayout;
+    private HorizontalLayout menuBarLayout;
+    private HorizontalLayout emptyLayout;
     private VerticalLayout tabbedPaneLayout;
 
     public AppWindow(Connection connection) {
-             super();
+        super();
 
-             this.connection = connection;
-             setCaption(getAppCaption());
+        this.connection = connection;
+        setCaption(getAppCaption());
 
-             VerticalLayout rootLayout = createLayout();
-             initLayout();
-             setLayout(rootLayout);
-            postInitLayout();
-         }
+        rootLayout = createLayout();
+        initLayout();
+        setLayout(rootLayout);
+        postInitLayout();
+    }
+
+/*
+    private void setMarginSpacing(Layout layout, boolean margin, boolean spacing)
+    {
+         layout.setMargin(false);
+         layout.setSpacing(true);
+         layout.setSizeFull();
+    }
+*/
 
     protected VerticalLayout createLayout() {
              final VerticalLayout layout = new VerticalLayout();
 
-             layout.setMargin(true);
-             layout.setSpacing(true);
+             layout.setMargin(false);
+             layout.setSpacing(false);
              layout.setSizeFull();
 
              // Title Pane
-             HorizontalLayout titlePane = createTitlePane();
+             //HorizontalLayout titlePane = createTitlePane();
 //             titlePane.setStyleName("headtitle-layout-style");
 
-             final VerticalLayout titleLayout = new VerticalLayout();
-             titleLayout.addComponent(titlePane);
-             layout.addComponent(titleLayout);
+             titlePageLayout = createTitlePane();
+             titlePageLayout.setMargin(false);
+             titlePageLayout.setSpacing(false);
+//             vTitlePageLayout.setSizeFull();
+
+             //vTitlePageLayout.addComponent(titlePane);
+             layout.addComponent(titlePageLayout);
 
              // Menu
-             final VerticalLayout menuLayout = new VerticalLayout();
+             menuBarLayout = createMenuBarLayout();
 //             menuLayout.setStyleName("menu-layout-style");
+//             menuBar = createMenuBar();
+//             menuBarLayout.addComponent(menuBar);
+             menuBarLayout.setMargin(false);
+             menuBarLayout.setSpacing(false);
+//             vMenuBarLayout.setSizeFull();
 
-             Component menuBar = createMenuBar();
-             menuLayout.addComponent(menuBar);
+             layout.addComponent(menuBarLayout);
 
-             layout.addComponent(menuLayout);
+             emptyLayout = new HorizontalLayout();
+             emptyLayout.setMargin(false);
+             emptyLayout.setSpacing(false);
+             emptyLayout.setSizeFull();
+
+             layout.addComponent(emptyLayout);
 
              // Windows
              tabbedPaneLayout = new VerticalLayout();
+             tabbedPaneLayout.setMargin(true);
+             tabbedPaneLayout.setSpacing(true);
+//             tabbedPaneLayout.setSizeFull();
 //             TabbedPaneLayout.setStyleName("content-layout-style");
 
              tabSheet = new TabSheet();
              tabSheet.setSizeFull();
 
+             tabbedPaneLayout.setSizeFull();
+
              tabbedPaneLayout.addComponent(tabSheet);
              tabbedPaneLayout.setExpandRatio(tabSheet, 1);
 
-             tabbedPaneLayout.setSizeFull();
              layout.addComponent(tabbedPaneLayout);
              layout.setExpandRatio(tabbedPaneLayout, 1);
 
@@ -92,17 +124,51 @@ public class AppWindow extends Window {
              return tabSheet;
          }
 
+    public MenuBar getMenuBar()
+    {
+        return menuBar;
+    }
+
+    public VerticalLayout getRootLayout()
+    {
+        return rootLayout;
+    }
+
+    public HorizontalLayout getTitlePageLayout()
+    {
+        return titlePageLayout;
+    }
+
+    public HorizontalLayout getMenuBarLayout()
+    {
+        return menuBarLayout;
+    }
+
+    public HorizontalLayout getEmptyLayout()
+    {
+        return emptyLayout;
+    }
     public VerticalLayout getTabbedPaneLayout() {
         return tabbedPaneLayout;
     }
+
     protected void initLayout() {
-         }
+    }
 
     protected void postInitLayout() {
     }
 
-    protected Component createMenuBar() {
-             final MenuBar menuBar = new MenuBar();
+    protected HorizontalLayout createMenuBarLayout()
+    {
+        menuBarLayout = new HorizontalLayout();
+        menuBar = createMenuBar();
+        menuBarLayout.addComponent(menuBar);
+        
+        return menuBarLayout;
+    }
+
+    protected MenuBar createMenuBar() {
+             menuBar = new MenuBar();
 
              final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
              List<MenuItem> rootItems = menuConfig.getRootItems();

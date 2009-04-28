@@ -55,7 +55,11 @@ public class App extends Application implements ConnectionListener, ApplicationC
         appLog = new AppLog();
         connection = new Connection();
         connection.addListener(this);
-        windowManager = new WindowManager(this);
+        windowManager = createWindowManager();
+    }
+
+    protected WindowManager createWindowManager() {
+        return new WindowManager(this);
     }
 
     public void init() {

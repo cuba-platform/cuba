@@ -44,6 +44,7 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
         passwdField = new TextField();
 
         initUI();
+
     }
 
     protected void initUI() {

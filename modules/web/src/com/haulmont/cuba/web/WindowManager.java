@@ -69,7 +69,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             VerticalLayout layout = new VerticalLayout();
             layout.setSizeFull();
 
-            final WindowBreadCrumbs breadCrumbs = new WindowBreadCrumbs();
+            final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
             breadCrumbs.addListener(
                     new WindowBreadCrumbs.Listener()
                     {
@@ -138,6 +138,10 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         } else {
             windowOpenMode.put(window, openMode);
         }
+    }
+
+    protected WindowBreadCrumbs createWindowBreadCrumbs() {
+        return new WindowBreadCrumbs();
     }
 
     protected com.itmill.toolkit.ui.Window createDialogWindow(Window window) {

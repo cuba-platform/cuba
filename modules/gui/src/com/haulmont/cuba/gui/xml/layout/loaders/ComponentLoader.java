@@ -64,7 +64,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadStyleName(Component component, Element element)
     {
-        final String styleName = element.attributeValue("style");
+        final String styleName = element.attributeValue("stylename");
         if (!StringUtils.isEmpty(styleName)) {
             component.setStyleName(styleName);
         }

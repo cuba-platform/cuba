@@ -14,10 +14,8 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.gui.components.Window;
 import com.itmill.toolkit.terminal.Sizeable;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.HorizontalLayout;
-import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.ui.Alignment;
+import com.itmill.toolkit.terminal.ThemeResource;
+import com.itmill.toolkit.ui.*;
 
 import java.util.*;
 
@@ -30,17 +28,22 @@ public class WindowBreadCrumbs extends HorizontalLayout
 
     protected LinkedList<Window> windows = new LinkedList<Window>();
 
-    private HorizontalLayout linksLayout;
-    private Button closeBtn;
+    protected HorizontalLayout logoLayout;
+    protected HorizontalLayout linksLayout;
+    protected Button closeBtn;
 
-    private Map<Button, Window> btn2win = new HashMap<Button, Window>();
+    protected Map<Button, Window> btn2win = new HashMap<Button, Window>();
 
-    private Set<Listener> listeners = new HashSet<Listener>();
+    protected Set<Listener> listeners = new HashSet<Listener>();
 
     public WindowBreadCrumbs() {
         setMargin(true);
         setWidth(100, Sizeable.UNITS_PERCENTAGE);
         setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
+
+        logoLayout = new HorizontalLayout();
+        logoLayout.setMargin(true);
+        logoLayout.setSpacing(true);
 
         linksLayout = new HorizontalLayout();
         closeBtn = new Button(MessageProvider.getMessage(getClass(), "closeBtn"), new Button.ClickListener()
@@ -57,9 +60,11 @@ public class WindowBreadCrumbs extends HorizontalLayout
         enclosingLayout.addComponent(linksLayout);
         enclosingLayout.setComponentAlignment(linksLayout, Alignment.MIDDLE_LEFT);
 
+        addComponent(logoLayout);
+        setComponentAlignment(logoLayout, Alignment.MIDDLE_LEFT);
         addComponent(enclosingLayout);
         addComponent(closeBtn);
-
+        setComponentAlignment(enclosingLayout, Alignment.MIDDLE_LEFT);
         linksLayout.setSizeFull();
         setExpandRatio(enclosingLayout, 1);
     }
@@ -101,7 +106,13 @@ public class WindowBreadCrumbs extends HorizontalLayout
         }
     }
 
-    private void update() {
+    protected void setSubTitleContents()
+    {
+
+    }
+
+    protected void update()
+    {
         linksLayout.removeAllComponents();
         btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
@@ -120,7 +131,7 @@ public class WindowBreadCrumbs extends HorizontalLayout
         }
     }
 
-    private class BtnClickListener implements Button.ClickListener
+    public class BtnClickListener implements Button.ClickListener
     {
         public void buttonClick(Button.ClickEvent event) {
             Window win = btn2win.get(event.getButton());
