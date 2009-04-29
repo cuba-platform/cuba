@@ -101,20 +101,20 @@ public abstract class AbstractDataSource<T extends Entity>
     }
 
     protected void forceItemChanged(Object prevItem) {
-        for (DatasourceListener dsListener : dsListeners) {
+        for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             dsListener.itemChanged(this, (Entity) prevItem, getItem());
         }
     }
 
     protected void forceStateChanged(State prevStatus) {
-        for (DatasourceListener dsListener : dsListeners) {
+        for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             dsListener.stateChanged(this, prevStatus, getState());
         }
     }
 
     protected class ItemListener implements ValueListener {
         public void propertyChanged(Object item, String property, Object prevValue, Object value) {
-            for (DatasourceListener dsListener : dsListeners) {
+            for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
                 dsListener.valueChanged(item, property, prevValue, value);
             }
 
