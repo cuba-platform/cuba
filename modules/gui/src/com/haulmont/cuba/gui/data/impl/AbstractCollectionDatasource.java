@@ -20,10 +20,7 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AbstractCollectionDatasource<T extends Entity, K>
         extends DatasourceImpl<T> {
@@ -190,7 +187,7 @@ public class AbstractCollectionDatasource<T extends Entity, K>
     }
 
     protected void forceCollectionChanged(CollectionDatasourceListener.CollectionOperation operation) {
-        for (DatasourceListener dsListener : dsListeners) {
+        for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             if (dsListener instanceof CollectionDatasourceListener) {
                 ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation);
             }
