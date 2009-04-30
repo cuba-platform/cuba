@@ -33,8 +33,6 @@ public class TabsheetLoader extends ContainerLoader {
 
         loadStyleName(component, element);
 
-        loadSizeFull(component, element);
-
         final List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
             final String name = tabElement.attributeValue("id");
