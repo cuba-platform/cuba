@@ -52,7 +52,7 @@ public class LayoutLoaderConfig {
         config.register("label", LabelLoader.class);
         config.register("textField", TextFieldLoader.class);
         config.register("textArea", TextAreaLoader.class);
-        config.register("dateField", AbstractFieldLoader.class);
+        config.register("dateField", DateFieldLoader.class);
         config.register("lookupField", LookupFieldLoader.class);
         config.register("pickerField", PickerFieldLoader.class);
         config.register("optionsGroup", OptionsGroupLoader.class);
