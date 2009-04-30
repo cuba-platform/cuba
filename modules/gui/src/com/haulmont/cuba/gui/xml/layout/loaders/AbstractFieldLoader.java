@@ -43,16 +43,16 @@ public class AbstractFieldLoader extends ComponentLoader {
 
         loadCaption(component, element);
         loadEditable(component, element);
-        loadRequired(component, element);
 
         loadDatasource(component, element);
         loadValidators(component, element);
+        loadRequired(component, element);
 
         loadHeight(component, element);
         loadWidth(component, element);
 
         addAssignWindowTask(component);
-        
+
         return component;
     }
 
@@ -66,7 +66,7 @@ public class AbstractFieldLoader extends ComponentLoader {
                 throw new IllegalStateException(
                         String.format(
                                 "Can't set assign datasource '%s' for component '%s' due 'property' " +
-                                "attribute is not defined",
+                                        "attribute is not defined",
                                 datasource, component.getId()));
 
             component.setDatasource(ds, property);
@@ -83,10 +83,10 @@ public class AbstractFieldLoader extends ComponentLoader {
     protected void loadValidators(Field component, Element element) {
         @SuppressWarnings({"unchecked"})
         final List<Element> validatorElements = element.elements("validator");
-        
+
         for (Element validatorElement : validatorElements) {
             final String className = validatorElement.attributeValue("class");
-            final Class<Field.Validator > aClass = ReflectionHelper.getClass(className);
+            final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
 
             try {
                 final Constructor<Field.Validator> constructor = aClass.getConstructor(Element.class);
