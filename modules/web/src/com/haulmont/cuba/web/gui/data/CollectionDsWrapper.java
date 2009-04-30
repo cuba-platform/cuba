@@ -113,6 +113,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     public Item getItem(Object itemId) {
+        __autoRefreshInvalid();
         final Object item = datasource.getItem(itemId);
         return item == null ? null : getItemWrapper(item);
     }

@@ -11,6 +11,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.itmill.toolkit.ui.AbstractSelect;
 import com.itmill.toolkit.ui.Select;
 import com.itmill.toolkit.data.Property;
@@ -49,6 +50,7 @@ public class LookupField
         if (value instanceof Enum) {
             return value;
         } else {
+            // TODO (abramov) need to be changed
             return (value instanceof Entity) ? ((Entity) value).getId() : value;
         }
     }
@@ -59,6 +61,9 @@ public class LookupField
 
         Object v;
         if (optionsDatasource != null) {
+            if (Datasource.State.INVALID.equals(optionsDatasource.getState())) {
+                optionsDatasource.refresh();
+            }
             v = (T) optionsDatasource.getItem(key);
         } else {
             v = key;
@@ -75,18 +80,13 @@ public class LookupField
 
     @Override
     public <T> T getValue() {
-        if (optionsDatasource != null) {
-            final Object key = super.getValue();
-            return key == null ? null : (T) optionsDatasource.getItem(key);
-        } else {
-            return super.<T>getValue();
-        }
+        final Object key = super.getValue();
+        return (T)getValueFromKey(key);
     }
 
     @Override
     public void setValue(Object value) {
-        // TODO (abramov) need to be changed
-        super.setValue(value == null ? null : ((Entity) value).getId());
+        super.setValue(getKeyFromValue(value));
     }
 
     public String getNullName() {
