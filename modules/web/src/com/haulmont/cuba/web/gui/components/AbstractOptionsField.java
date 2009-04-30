@@ -128,6 +128,14 @@ public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.Abstr
         }
     }
 
+    public List getOptionsList() {
+        return optionsList;
+    }
+
+    public CollectionDatasource getOptionsDatasource() {
+        return optionsDatasource;
+    }
+
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
         component.setContainerDataSource(new CollectionDsWrapper(datasource, true));

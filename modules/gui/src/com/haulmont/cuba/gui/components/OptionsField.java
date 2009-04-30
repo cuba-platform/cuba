@@ -21,6 +21,9 @@ public interface OptionsField extends Field {
     String getCaptionProperty();
     void setCaptionProperty(String captionProperty);
 
+    CollectionDatasource getOptionsDatasource();
     void setOptionsDatasource(CollectionDatasource datasource);
-    void setOptionsList(java.util.List OptionsList);
+    
+    java.util.List getOptionsList();
+    void setOptionsList(java.util.List optionsList);
 }

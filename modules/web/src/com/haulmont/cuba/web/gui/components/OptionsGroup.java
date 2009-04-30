@@ -47,10 +47,6 @@ public class OptionsGroup
         component.setImmediate(true);
     }
 
-    public CollectionDatasource getOptionsDatasource() {
-        return optionsDatasource;
-    }
-
     @SuppressWarnings({"unchecked"})
     @Override
     public <T> T getValue() {
