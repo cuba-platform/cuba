@@ -10,7 +10,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.web.gui.Window;
+import com.haulmont.cuba.web.app.FileUploadConfig;
 import com.itmill.toolkit.ui.Upload;
 
 import java.io.File;
@@ -29,10 +31,13 @@ public class FileUploadField
     private List<Listener> listeners = new ArrayList<Listener>();
 
     public FileUploadField() {
+        FileUploadConfig config = ConfigProvider.getConfig(FileUploadConfig.class);
+        final String uploadDir = config.getUploadDir();
+
         component = new Upload(MessageProvider.getMessage(Window.class, "msg://Upload"), new Upload.Receiver() {
             public OutputStream receiveUpload(String filename, String MIMEType) {
                 FileOutputStream fos;
-                file = new File("c:/tmp/" + filename);
+                file = new File(uploadDir + filename);
                 try {
                     fos = new FileOutputStream(file);
                 } catch (final java.io.FileNotFoundException e) {

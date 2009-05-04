@@ -14,8 +14,6 @@ public interface ConfigStorageMBean
 {
     String OBJECT_NAME = "haulmont.cuba:service=ConfigStorage";
 
-    void create();
-
     void start();
 
     String printProperties();
@@ -29,10 +27,4 @@ public interface ConfigStorageMBean
     String removeProperty(String name);
 
     String loadSystemProperties();
-
-    String test();
-
-    String testDataService();
-
-    String createTestServers(Integer qty);
 }
