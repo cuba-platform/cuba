@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.xml.layout.*;
 import org.dom4j.Element;
 
 public class FileUploadFieldLoader extends ComponentLoader{
-    protected FileUploadFieldLoader(Context context) {
+    public FileUploadFieldLoader(Context context) {
         super(context);
     }
 
