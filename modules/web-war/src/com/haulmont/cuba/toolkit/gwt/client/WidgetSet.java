@@ -25,6 +25,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return IScrollablePanel.class;
         } else if ("table".equals(tag)) {
             return IScrollTable.class;
+        } else if ("upload".equals(tag)) {
+            return IUpload.class;
         }
         return super.resolveWidgetType(uidl);
     }
@@ -39,6 +41,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return new IScrollablePanel();
         } else if (IScrollTable.class.equals(classType)) {
             return new IScrollTable();
+        } else if (IUpload.class.equals(classType)) {
+            return new IUpload();
         }
         return super.createWidget(uidl);
     }

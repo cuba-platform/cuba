@@ -2782,3 +2782,16 @@ input.i-modified,
 	margin-top: 2px;
 	margin-left: 2px;
 }
+
+
+.i-upload-panel,
+.i-upload-submit
+{
+    float:left;
+}
+
+.i-upload-clear
+{
+    clear: right;
+}
+
