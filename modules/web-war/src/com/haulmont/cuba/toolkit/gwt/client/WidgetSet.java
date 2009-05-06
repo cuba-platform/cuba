@@ -9,9 +9,7 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client;
 
-import com.haulmont.cuba.toolkit.gwt.client.ui.IPagingTable;
-import com.haulmont.cuba.toolkit.gwt.client.ui.ITreeTable;
-import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
+import com.haulmont.cuba.toolkit.gwt.client.ui.*;
 import com.itmill.toolkit.terminal.gwt.client.DefaultWidgetSet;
 import com.itmill.toolkit.terminal.gwt.client.Paintable;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
@@ -25,6 +23,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return ITreeTable.class;
         } else if ("scrollablepanel".equals(tag)) {
             return IScrollablePanel.class;
+        } else if ("table".equals(tag)) {
+            return IScrollTable.class;
         }
         return super.resolveWidgetType(uidl);
     }
@@ -37,6 +37,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return new ITreeTable();
         } else if (IScrollablePanel.class.equals(classType)) {
             return new IScrollablePanel();
+        } else if (IScrollTable.class.equals(classType)) {
+            return new IScrollTable();
         }
         return super.createWidget(uidl);
     }
