@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.itmill.toolkit.ui.AbstractSelect;
 import com.itmill.toolkit.ui.Select;
 import com.itmill.toolkit.data.Property;
@@ -50,8 +51,11 @@ public class LookupField
         if (value instanceof Enum) {
             return value;
         } else {
-            // TODO (abramov) need to be changed
-            return (value instanceof Entity) ? ((Entity) value).getId() : value;
+            if (optionsDatasource != null) {
+                return optionsDatasource.getItemId((Entity) value);
+            } else {
+                return (value instanceof Entity) ? ((Entity) value).getId() : value;
+            }
         }
     }
 

@@ -108,6 +108,10 @@ public class LazyCollectionDatasource<T extends Entity, K>
         return (T) data.get(key);
     }
 
+    public K getItemId(T item) {
+        return item == null ? null : (K) item.getId();
+    }
+
     public Collection<K> getItemIds() {
         if (!isAllLoaded()) loadNextChunk(true);
         //noinspection unchecked

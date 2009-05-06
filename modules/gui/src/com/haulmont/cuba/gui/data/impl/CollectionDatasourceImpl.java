@@ -80,6 +80,10 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         }
     }
 
+    public K getItemId(T item) {
+        return item == null ? null : (K) item.getId();
+    }
+
     public synchronized Collection<K> getItemIds() {
         if (State.NOT_INITIALIZAED.equals(state)) {
             return Collections.emptyList();

@@ -63,6 +63,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         return (T) key;
     }
 
+    public K getItemId(T item) {
+        return (K) item;
+    }
+
     public Collection<K> getItemIds() {
         if (State.NOT_INITIALIZAED.equals(ds.getState())) {
             return Collections.emptyList();

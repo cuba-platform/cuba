@@ -21,6 +21,7 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
     }
 
     T getItem(K key);
+    K getItemId(T item);
 
     Collection<K> getItemIds();
     int size();
