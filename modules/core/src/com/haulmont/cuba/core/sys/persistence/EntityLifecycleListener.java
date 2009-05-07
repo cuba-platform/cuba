@@ -10,18 +10,17 @@
  */
 package com.haulmont.cuba.core.sys.persistence;
 
-import com.haulmont.cuba.core.SecurityProvider;
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.DeleteDeferred;
+import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.Updatable;
-import com.haulmont.cuba.core.entity.DeleteDeferred;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.security.app.EntityLog;
-import com.haulmont.cuba.security.app.EntityLogMBean;
 import com.haulmont.cuba.security.app.EntityLogAPI;
+import com.haulmont.cuba.security.app.EntityLogMBean;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.AbstractLifecycleListener;
 import org.apache.openjpa.event.LifecycleEvent;
@@ -40,39 +39,43 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
     }
 
     public void beforePersist(LifecycleEvent event) {
-        if ((event.getSource() instanceof BaseEntity)) {
-            __beforePersist((BaseEntity) event.getSource());
-        }
+        if (!(event.getSource() instanceof BaseEntity))
+            return;
+
+        __beforePersist((BaseEntity) event.getSource());
     }
 
     public void beforeStore(LifecycleEvent event) {
-        PersistenceCapable pc = (PersistenceCapable) event.getSource();
-        if (pc.pcIsNew()) {
-            getEntityLog().registerCreate((BaseEntity) event.getSource(), true);
-            EntityListenerManager.getInstance().fireListener(
-                    ((BaseEntity) event.getSource()), EntityListenerType.BEFORE_INSERT);
+        if (!(event.getSource() instanceof BaseEntity))
+            return;
+
+        BaseEntity entity = (BaseEntity) event.getSource();
+
+        if (((PersistenceCapable) entity).pcIsNew()) {
+            getEntityLog().registerCreate(entity, true);
+            EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_INSERT);
         } else {
-            if (pc instanceof Updatable) {
+            if (entity instanceof Updatable) {
                 __beforeUpdate((Updatable) event.getSource());
-                if ((pc instanceof DeleteDeferred) && justDeleted((DeleteDeferred) pc)) {
-                    getEntityLog().registerDelete((BaseEntity) event.getSource(), true);
-                    processDeletePolicy((BaseEntity) event.getSource());
-                    EntityListenerManager.getInstance().fireListener(
-                            ((BaseEntity) event.getSource()), EntityListenerType.BEFORE_DELETE);
+                if ((entity instanceof DeleteDeferred) && justDeleted((DeleteDeferred) entity)) {
+                    getEntityLog().registerDelete(entity, true);
+                    processDeletePolicy(entity);
+                    EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_DELETE);
                 } else {
-                    getEntityLog().registerModify((BaseEntity) event.getSource(), true);
-                    EntityListenerManager.getInstance().fireListener(
-                            ((BaseEntity) event.getSource()), EntityListenerType.BEFORE_UPDATE);
+                    getEntityLog().registerModify(entity, true);
+                    EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_UPDATE);
                 }
             } else {
-                getEntityLog().registerModify((BaseEntity) event.getSource(), true);
-                EntityListenerManager.getInstance().fireListener(
-                        ((BaseEntity) event.getSource()), EntityListenerType.BEFORE_UPDATE);
+                getEntityLog().registerModify(entity, true);
+                EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_UPDATE);
             }
         }
     }
 
     public void beforeDelete(LifecycleEvent event) {
+        if (!(event.getSource() instanceof BaseEntity))
+            return;
+
         getEntityLog().registerDelete((BaseEntity) event.getSource(), true);
         EntityListenerManager.getInstance().fireListener(
                 ((BaseEntity) event.getSource()), EntityListenerType.BEFORE_DELETE);
