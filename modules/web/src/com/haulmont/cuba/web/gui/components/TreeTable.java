@@ -17,12 +17,15 @@ import com.haulmont.cuba.core.global.ViewHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.List;
 
 public class TreeTable
     extends
@@ -43,19 +46,28 @@ public class TreeTable
 
     public void setDatasource(HierarchicalDatasource datasource)
     {
-        this.datasource = datasource;
-        this.hierarchyProperty = datasource.getHierarchyPropertyName();
+        setDatasource((CollectionDatasource)datasource);
+    }
+
+    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
+        return new TreeTableDsWrapper((HierarchicalDatasource) datasource);
+    }
+
+    protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
+        component.setVisibleColumns(columnsOrder.toArray());
+    }
+
+    protected void setColumnHeader(MetaPropertyPath propertyPath, String caption) {
+        component.setColumnHeader(propertyPath, caption);
+    }
+
+    public void setDatasource(CollectionDatasource datasource) {
+        super.setDatasource(datasource);
+        this.hierarchyProperty = ((HierarchicalDatasource) datasource).getHierarchyPropertyName();
 
         // if showProperty is null, the Tree will use itemId.toString
         MetaProperty metaProperty = hierarchyProperty == null ? null : datasource.getMetaClass().getProperty(hierarchyProperty);
         component.setItemCaptionPropertyId(metaProperty);
-
-        TreeTableDsWrapper wrapper = new TreeTableDsWrapper(datasource);
-        component.setContainerDataSource(wrapper);
-    }
-
-    public void setDatasource(CollectionDatasource datasource) {
-        setDatasource(((HierarchicalDatasource) datasource));
     }
 
     @Override

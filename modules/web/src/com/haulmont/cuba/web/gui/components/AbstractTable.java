@@ -32,6 +32,7 @@ import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.Label;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -119,7 +120,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         final Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
         for (MetaPropertyPath propertyPath : properties) {
             final Table.Column column = columns.get(propertyPath);
-            if (column != null && !column.isEditable()) {
+            if (column != null && !BooleanUtils.toBoolean(column.isEditable())) {
                 final String clickAction =
                         column.getXmlDescriptor() == null ?
                                 null : column.getXmlDescriptor().attributeValue("clickAction");
@@ -136,6 +137,8 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
                             addGeneratedColumn(propertyPath, new ReadOnlyDatatypeGenerator());
                         }
                     }
+                } else if (propertyPath.getRange().isEnum()) {
+                    // TODO (abramov) 
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -144,6 +147,48 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
         return properties;
     }
+
+    public void setDatasource(CollectionDatasource datasource) {
+
+        final Collection<MetaPropertyPath> columns;
+        if (this.columns.isEmpty()) {
+            columns = null;
+        } else {
+            columns = this.columns.keySet();
+        }
+
+        final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, columns);
+
+        this.datasource = datasource;
+
+
+        component.setContainerDataSource(containerDatasource);
+        createColumns(containerDatasource);
+
+        for (MetaPropertyPath propertyPath : columns) {
+            final Table.Column column = this.columns.get(propertyPath);
+
+            final String caption;
+            if (column != null) {
+                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : propertyPath.getMetaProperty().getName());
+            } else {
+                caption = StringUtils.capitalize(propertyPath.getMetaProperty().getName());
+            }
+
+            setColumnHeader(propertyPath, caption);
+        }
+
+        List<MetaPropertyPath> columnsOrder = new ArrayList<MetaPropertyPath>();
+        for (Table.Column column : this.columnsOrder) {
+            columnsOrder.add((MetaPropertyPath) column.getId());
+        }
+
+        setVisibleColumns(columnsOrder);
+    }
+
+    protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
+    protected abstract void setVisibleColumns(List<MetaPropertyPath> columnsOrder);
+    protected abstract void setColumnHeader(MetaPropertyPath propertyPath, String caption);
 
     protected class TablePropertyWrapper extends PropertyWrapper {
         public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath) {
@@ -154,7 +199,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         public boolean isReadOnly() {
             final Table.Column column = AbstractTable.this.columns.get(propertyPath);
             if (column != null) {
-                return !column.isEditable();
+                return column.isEditable() != null && !column.isEditable();
             } else {
                 return super.isReadOnly();
             }

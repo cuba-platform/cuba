@@ -29,7 +29,7 @@ public interface Table
     public class Column implements HasXmlDescriptor, HasCaption {
         protected Object id;
         protected String caption;
-        protected boolean editable = true;
+        protected boolean editable;
 
         protected Class type;
         private Element element;
@@ -50,11 +50,11 @@ public interface Table
             this.caption = caption;
         }
 
-        public boolean isEditable() {
+        public Boolean isEditable() {
             return editable;
         }
 
-        public void setEditable(boolean editable) {
+        public void setEditable(Boolean editable) {
             this.editable = editable;
         }
 

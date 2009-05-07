@@ -10,23 +10,23 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.data.*;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.BaseFieldFactory;
-import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 
 public class Table
     extends
@@ -109,45 +109,20 @@ public class Table
 //                    com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_HIDDEN);
     }
 
-    public void setDatasource(CollectionDatasource datasource) {
+    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
+        return datasource instanceof CollectionDatasource.Sortable ?
+            new SortableTableDsWrapper(datasource, columns) :
+            new TableDsWrapper(datasource, columns);
+    }
 
-        final Collection<MetaPropertyPath> columns;
-        if (this.columns.isEmpty()) {
-            columns = null;
-        } else {
-            columns = this.columns.keySet();
-        }
-
-        final CollectionDsWrapper containerDatasource =
-                datasource instanceof CollectionDatasource.Sortable ?
-                    new SortableTableDsWrapper(datasource, columns) :
-                    new TableDsWrapper(datasource, columns);
-
-        this.datasource = datasource;
-
-
-        component.setContainerDataSource(containerDatasource);
-
-        for (MetaPropertyPath propertyPath : columns) {
-            final Column column = this.columns.get(propertyPath);
-
-            final String caption;
-            if (column != null) {
-                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : propertyPath.getMetaProperty().getName());
-            } else {
-                caption = StringUtils.capitalize(propertyPath.getMetaProperty().getName());
-            }
-
-            component.setColumnHeader(propertyPath, caption);
-        }
-
-        List<MetaPropertyPath> columnsOrder = new ArrayList<MetaPropertyPath>();
-        for (Column column : this.columnsOrder) {
-            columnsOrder.add((MetaPropertyPath) column.getId());
-        }
-
+    protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
         component.setVisibleColumns(columnsOrder.toArray());
     }
+
+    protected void setColumnHeader(MetaPropertyPath propertyPath, String caption) {
+        component.setColumnHeader(propertyPath, caption);
+    }
+
 
     protected class TableDsWrapper extends CollectionDsWrapper {
         public TableDsWrapper(CollectionDatasource datasource) {
