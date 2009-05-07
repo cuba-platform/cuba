@@ -101,16 +101,13 @@ public class ParametersHelper {
             final String source = strings[0];
             final String name = strings[1];
 
-            if (ParameterInfo.Type.DATASOURCE.prefix.equals(source)) {
-                return new ParameterInfo(name, ParameterInfo.Type.DATASOURCE);
-            } else if (ParameterInfo.Type.PARAM.prefix.equals(source)) {
-                return new ParameterInfo(name, ParameterInfo.Type.PARAM);
-            } else if (ParameterInfo.Type.COMPONENT.prefix.equals(source)) {
-                return new ParameterInfo(name, ParameterInfo.Type.COMPONENT);
-            } else if (ParameterInfo.Type.SESSION.prefix.equals(source)) {
-                return new ParameterInfo(name, ParameterInfo.Type.SESSION);
-            } else
-                throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
+            for (ParameterInfo.Type type : ParameterInfo.Type.values()) {
+                if (type.prefix.equals(source)) {
+                    return new ParameterInfo(name, type);
+                }
+            }
+
+            throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
         } else {
             throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
         }
