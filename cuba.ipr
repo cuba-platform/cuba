@@ -1010,6 +1010,7 @@
       </map>
     </option>
     <option name="myVersion" value="124" />
+    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
@@ -1043,6 +1044,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2se.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.3.0-rc11.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/openjpa-1.2.0-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/postgresql-8.3-603.jdbc4.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -1050,6 +1052,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jboss-vfs-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.3.0-rc11.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/openjpa-1.2.0-patch1-src.zip!/" />
+        <root url="intellijad://intellijad" />
       </SOURCES>
     </library>
     <library name="common">
@@ -1074,6 +1077,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-io-1.4-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/perf4j-0.9.10-src.zip!/" />
         <root url="NullVirtualFilePointer" />
+        <root url="intellijad://intellijad" />
       </SOURCES>
     </library>
     <library name="test">
