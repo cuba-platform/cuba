@@ -11,12 +11,14 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.chile.core.model.MetaClass;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
@@ -260,13 +262,39 @@ public class AppWindow extends Window {
         return new MenuBar.Command() {
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 String caption = item.getCaption();
+
                 final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
                 WindowInfo windowInfo = windowConfig.getWindowInfo(item.getId());
-                App.getInstance().getWindowManager().openWindow(
-                        windowInfo,
-                        WindowManager.OpenType.NEW_TAB,
-                        Collections.<String, Object>singletonMap("caption", caption)
-                );
+
+                final String id = windowInfo.getId();
+                if (id.endsWith(".create") || id.endsWith(".edit")) {
+                    final String[] strings = id.split("[.]");
+                    if (strings.length != 2) throw new UnsupportedOperationException();
+
+                    final String metaClassName = strings[0];
+                    final MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
+                    if (metaClass == null) throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
+
+                    Object newItem;
+                    try {
+                        newItem = metaClass.createInstance();
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    App.getInstance().getWindowManager().openEditor(
+                            windowInfo,
+                            newItem,
+                            WindowManager.OpenType.NEW_TAB,
+                            Collections.<String, Object>singletonMap("caption", caption)
+                    );
+                } else {
+                    App.getInstance().getWindowManager().openWindow(
+                            windowInfo,
+                            WindowManager.OpenType.NEW_TAB,
+                            Collections.<String, Object>singletonMap("caption", caption)
+                    );
+                }
             }
         };
     }
