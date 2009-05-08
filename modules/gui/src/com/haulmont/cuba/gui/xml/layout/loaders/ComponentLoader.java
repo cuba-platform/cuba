@@ -104,13 +104,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
 
         if (!StringUtils.isEmpty(visible)) {
-            if ("true".equals(visible) || "false".equals(visible)) {
-                component.setVisible(Boolean.valueOf(visible));
-            } else {
-                @SuppressWarnings({"unchecked"})
-                Boolean res = GroovyHelper.evaluate(visible, context.getParameters());
-                component.setVisible(res);
-            }
+            component.setVisible(evaluateBoolean(visible));
         }
     }
 
@@ -190,5 +184,17 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 component.setFrame(frame);
             }
         });
+    }
+
+    protected Boolean evaluateBoolean(String expression) {
+        Boolean value;
+        if ("true".equals(expression) || "false".equals(expression)) {
+            value = Boolean.valueOf(expression);
+        } else {
+            @SuppressWarnings({"unchecked"})
+            Boolean res = GroovyHelper.evaluate(expression, context.getParameters());
+            value = res;
+        }
+        return value;
     }
 }

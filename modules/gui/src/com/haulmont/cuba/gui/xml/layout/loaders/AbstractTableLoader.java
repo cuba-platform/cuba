@@ -9,23 +9,21 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.MetadataHelper;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public abstract class AbstractTableLoader<T extends Table> extends ComponentLoader {
     protected ComponentsFactory factory;
@@ -60,7 +58,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             if (columnsElement != null) {
                 //noinspection unchecked
                 for (Element columnElement : (Collection<Element>)columnsElement.elements("column")) {
-                    availableColumns.add(loadColumn(columnElement, ds));
+                    String visible = columnElement.attributeValue("visible");
+                    if (visible == null) {
+                        final Element e = columnElement.element("visible");
+                        if (e != null) {
+                            visible = e.getText();
+                        }
+                    }
+
+                    if (StringUtils.isEmpty(visible) || evaluateBoolean(visible)) {
+                        availableColumns.add(loadColumn(columnElement, ds));
+                    }
                 }
             }
 
@@ -93,9 +101,16 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         final Table.Column column = new Table.Column(metaPropertyPath);
 
-        final String editable = element.attributeValue("editable");
+        String editable = element.attributeValue("editable");
+        if (editable == null) {
+            final Element e = element.element("editable");
+            if (e != null) {
+                editable = e.getText();
+            }
+        }
+
         if (!StringUtils.isEmpty(editable)) {
-            column.setEditable(BooleanUtils.toBoolean(editable));
+            column.setEditable(evaluateBoolean(editable));
         }
 
         loadCaption(column, element);

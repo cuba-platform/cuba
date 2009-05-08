@@ -67,14 +67,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             }
 
             if (!StringUtils.isEmpty(visible)) {
-                Boolean value;
-                if ("true".equals(visible) || "false".equals(visible)) {
-                    value = Boolean.valueOf(visible);
-                } else {
-                    @SuppressWarnings({"unchecked"})
-                    Boolean res = GroovyHelper.evaluate(visible, context.getParameters());
-                    value = res;
-                }
+                Boolean value = evaluateBoolean(visible);
 
                 if (BooleanUtils.toBoolean(value)) {
                     rowCount++;
