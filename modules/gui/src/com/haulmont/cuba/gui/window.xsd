@@ -241,6 +241,8 @@
                         <xs:attribute name="id" type="xs:string" use="optional"/>
                         <xs:attribute name="action" type="xs:string" use="optional"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="visible" type="xs:string" use="optional"/>
+                        <xs:attribute name="enable" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
