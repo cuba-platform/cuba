@@ -10,10 +10,9 @@
     </dsContext>
 
     <layout>
-        <vbox id="filter-pane">
-            <groupBox>
-                <caption label="Filter"/>
-                <hbox id="group-box">
+        <vbox id="filter-pane" spacing="true">
+            <vbox expand="expand-box" stylename="edit-area" margin="true" >
+                <hbox id="group-box" spacing="true">
                     <label control="name" value="msg://name"/>
                     <textField id="name"/>
 
@@ -26,8 +25,9 @@
                     <label control="group" value="msg://group"/>
                     <lookupField id="group" optionsDatasource="groups" captionProperty="name" required="false" nullName="msg://any"/>
                 </hbox>
-            </groupBox>
-            <hbox align="MIDDLE_RIGHT">
+                <hbox id="expand-box"/>
+            </vbox>
+            <hbox align="MIDDLE_RIGHT" >
                 <button id="clear" caption="msg://com.haulmont.cuba.web.gui/clear"/>
                 <button id="apply" caption="msg://com.haulmont.cuba.web.gui/apply"/>
             </hbox>

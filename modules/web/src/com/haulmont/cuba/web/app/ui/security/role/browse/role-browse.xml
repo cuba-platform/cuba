@@ -17,17 +17,17 @@
 
     <layout>
         <vbox id="table-panel" expand="roles" spacing="true">
-            <hbox>
-                <button action="roles.create"/>
-                <button action="roles.edit"/>
-                <button action="roles.refresh"/>
-            </hbox>
             <table id="roles" editable="false">
                 <columns>
                     <column id="name" caption="msg://role.name"  clickAction="open:sec$Role.edit"/>
                 </columns>
                 <rows datasource="roles"/>
             </table>
+            <hbox align="MIDDLE_RIGHT">
+                <button action="roles.create"/>
+                <button action="roles.edit"/>
+                <button action="roles.refresh"/>
+            </hbox>
         </vbox>
     </layout>
 </window>

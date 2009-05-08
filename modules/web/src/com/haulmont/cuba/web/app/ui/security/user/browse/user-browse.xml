@@ -1,8 +1,8 @@
 <window
-    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    class="com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser"
-    lookupComponent="users"
->
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser"
+        lookupComponent="users"
+        >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
@@ -10,10 +10,10 @@
 
     <dsContext>
         <collectionDatasource
-            id="users"
-            class="com.haulmont.cuba.security.entity.User"
-            view="user.browse"
-        >
+                id="users"
+                class="com.haulmont.cuba.security.entity.User"
+                view="user.browse"
+                >
             <query>
                 <![CDATA[
                 select u
@@ -28,24 +28,26 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="table-panel">
-        <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
-        <vbox id="table-panel" expand="users" spacing="true">
-            <hbox>
-                <button action="users.create"/>
-                <button action="users.edit"/>
-                <button action="users.remove"/>
-                <button action="users.changePassw"/>
-            </hbox>
-            <table id="users" editable="false">
-                <columns>
-                    <column id="login" caption="msg://login" clickAction="open:sec$User.edit"/>
-                    <column id="activeDirectoryUser" caption="msg://activeDirectoryUser"/>
-                    <column id="name" caption="msg://name"/>
-                    <column id="email" caption="msg://email"/>
-                </columns>
-                <rows datasource="users"/>
-            </table>
+    <layout >
+        <vbox expand="table-panel" spacing="true">
+            <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
+            <vbox id="table-panel" expand="users" spacing="true">
+                <table id="users" editable="false">
+                    <columns>
+                        <column id="login" caption="msg://login" clickAction="open:sec$User.edit"/>
+                        <column id="activeDirectoryUser" caption="msg://activeDirectoryUser"/>
+                        <column id="name" caption="msg://name"/>
+                        <column id="email" caption="msg://email"/>
+                    </columns>
+                    <rows datasource="users"/>
+                </table>
+                <hbox align="MIDDLE_RIGHT">
+                    <button action="users.create"/>
+                    <button action="users.edit"/>
+                    <button action="users.remove"/>
+                    <button action="users.changePassw"/>
+                </hbox>
+            </vbox>
         </vbox>
     </layout>
 </window>

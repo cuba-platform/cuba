@@ -1,6 +1,6 @@
 <window
-    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    class="com.haulmont.cuba.web.app.ui.core.server.ServerBrowser">
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.core.server.ServerBrowser">
 
     <metadataContext>
         <view class="com.haulmont.cuba.core.entity.Server" name="browse">
@@ -19,18 +19,20 @@
     </dsContext>
 
     <layout>
-        <vbox expand="servers">
-            <hbox>
+        <vbox margin="true">
+            <hbox align="MIDDLE_RIGHT">
                 <button action="servers.refresh"/>
             </hbox>
-            <table id="servers" editable="false">
-                <columns>
-                    <column id="name" caption="msg://name"/>
-                    <column id="address" caption="msg://address"/>
-                    <column id="running" caption="msg://running"/>
-                </columns>
-                <rows datasource="servers"/>
-            </table>
+            <vbox expand="servers">
+                <table id="servers" editable="false">
+                    <columns>
+                        <column id="name" caption="msg://name"/>
+                        <column id="address" caption="msg://address"/>
+                        <column id="running" caption="msg://running"/>
+                    </columns>
+                    <rows datasource="servers"/>
+                </table>
+            </vbox>
         </vbox>
     </layout>
 </window>
