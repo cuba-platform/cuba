@@ -60,8 +60,8 @@ public abstract class WindowManager {
         DIALOG
     }
 
-    protected Window createWindow(String template, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
-        Document document = parseDescriptor(template, params, true);
+    protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
+        Document document = parseDescriptor(windowInfo.getTemplate(), params, true);
 
         final Element element = document.getRootElement();
         deployViews(document);
@@ -69,7 +69,9 @@ public abstract class WindowManager {
         final DsContext dsContext = loadDsContext(element);
         final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext, params);
 
-        final Window window = loadLayout(template, element, componentLoaderContext, layoutConfig);
+        final Window window = loadLayout(windowInfo.getTemplate(), element, componentLoaderContext, layoutConfig);
+
+        window.setId(windowInfo.getId());
 
         componentLoaderContext.setFrame(window);
         initialize(window, dsContext, params);
@@ -165,9 +167,10 @@ public abstract class WindowManager {
         return dataService;
     }
 
-    protected Window createWindow(Class aclass, Map params) {
+    protected Window createWindow(WindowInfo windowInfo, Map params) {
         try {
-            final Window window = (Window) aclass.newInstance();
+            final Window window = (Window) windowInfo.getScreenClass().newInstance();
+            window.setId(windowInfo.getId());
             try {
                 invokeMethod(window, "init", params);
             } catch (NoSuchMethodException e) {
@@ -185,7 +188,7 @@ public abstract class WindowManager {
         String template = windowInfo.getTemplate();
         if (template != null) {
             //noinspection unchecked
-            Window window = createWindow(template, params, LayoutLoaderConfig.getWindowLoaders());
+            Window window = createWindow(windowInfo, params, LayoutLoaderConfig.getWindowLoaders());
             window.setId(windowInfo.getId());
 
             String caption = loadCaption(window, params);
@@ -197,7 +200,7 @@ public abstract class WindowManager {
             if (screenClass != null)
             {
                 //noinspection unchecked
-                Window window = createWindow(screenClass, params);
+                Window window = createWindow(windowInfo, params);
                 window.setId(windowInfo.getId());
 
                 String caption = loadCaption(window, params);
@@ -239,11 +242,11 @@ public abstract class WindowManager {
         String template = windowInfo.getTemplate();
         Window window;
         if (template != null) {
-            window = createWindow(template, params, LayoutLoaderConfig.getEditorLoaders());
+            window = createWindow(windowInfo, params, LayoutLoaderConfig.getEditorLoaders());
         } else {
             Class windowClass = windowInfo.getScreenClass();
             if (windowClass != null) {
-                window = createWindow(windowClass, params);
+                window = createWindow(windowInfo, params);
                 if (!(window instanceof Window.Editor)) {
                     throw new IllegalStateException(
                             String.format("Class %s does't implement Window.Editor interface", windowClass));
@@ -252,7 +255,6 @@ public abstract class WindowManager {
                 throw new IllegalStateException("Invalid WindowInfo: " + windowInfo);
             }
         }
-        window.setId(windowInfo.getId());
         ((Window.Editor) window).setItem(item);
 
         String caption = loadCaption(window, params);
@@ -272,7 +274,7 @@ public abstract class WindowManager {
         Window window;
 
         if (template != null) {
-            window = createWindow(template, params, LayoutLoaderConfig.getLookupLoaders());
+            window = createWindow(windowInfo, params, LayoutLoaderConfig.getLookupLoaders());
 
             final Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
             final String lookupComponent = element.attributeValue("lookupComponent");
@@ -283,7 +285,7 @@ public abstract class WindowManager {
         } else {
             Class windowClass = windowInfo.getScreenClass();
             if (windowClass != null) {
-                window = createWindow(windowClass, params);
+                window = createWindow(windowInfo, params);
                 if (!(window instanceof Window.Lookup)) {
                     throw new IllegalStateException(
                             String.format("Class %s does't implement Window.Lookup interface", windowClass));
