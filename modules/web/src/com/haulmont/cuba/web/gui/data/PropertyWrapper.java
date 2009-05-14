@@ -114,6 +114,8 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
     @Override
     public String toString() {
         final Object value = getValue();
+        if (value == null) return null;
+
         final Range range = propertyPath.getRange();
         if (range.isDatatype()) {
             return range.asDatatype().format(value);
@@ -121,7 +123,7 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
             String nameKey = value.getClass().getSimpleName() + "." + value.toString();
             return MessageProvider.getMessage(value.getClass(), nameKey);
         } else {
-            return value == null ? null : value.toString();
+            return value.toString();
         }
     }
 
