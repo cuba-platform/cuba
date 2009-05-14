@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.itmill.toolkit.data.Property;
@@ -114,9 +115,14 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
     public String toString() {
         final Object value = getValue();
         final Range range = propertyPath.getRange();
-        return range.isDatatype() ?
-                range.asDatatype().format(value) :
-                value == null ? null : value.toString();
+        if (range.isDatatype()) {
+            return range.asDatatype().format(value);
+        } else if (range.isEnum()){
+            String nameKey = value.getClass().getSimpleName() + "." + value.toString();
+            return MessageProvider.getMessage(value.getClass(), nameKey);
+        } else {
+            return value == null ? null : value.toString();
+        }
     }
 
     public void addListener(ValueChangeListener listener) {
