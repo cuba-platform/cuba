@@ -39,7 +39,7 @@
             autocommit="true"/>
     </target>
 
-    <target name="create-sample-data">
+    <target name="create-sample-data" depends="create-db">
         <sql classpathref="run-cp" src="${sql.dir}/create-sample-data.sql" delimiter="${sql.delimiter}"
             driver="${db.driver}"
             url="${db.url}"

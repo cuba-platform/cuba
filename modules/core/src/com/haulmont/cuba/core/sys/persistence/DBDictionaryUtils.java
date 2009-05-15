@@ -16,15 +16,13 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import com.haulmont.cuba.core.PersistenceProvider;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
+import java.util.*;
 
 public class DBDictionaryUtils
 {
-    private static final String DELETE_TS_COL = "DELETE_TS";
+    public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join, boolean lowerCase) {
+        String deleteTsCol = getDeleteTsCol(lowerCase);
 
-    public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join) {
         ForeignKey fk = join.getForeignKey();
         if (fk == null)
             return null;
@@ -47,11 +45,11 @@ public class DBDictionaryUtils
 
             // KK: support deferred delete for collections
             if (inverse
-                    && to[i].getTable().containsColumn(DELETE_TS_COL)
+                    && to[i].getTable().containsColumn(deleteTsCol)
                     && PersistenceProvider.getEntityManager().isDeleteDeferred())
             {
                 buf.append(" AND ");
-                buf.append(join.getAlias2()).append(".").append(DELETE_TS_COL).append(" IS NULL");
+                buf.append(join.getAlias2()).append(".").append(deleteTsCol).append(" IS NULL");
             }
         }
 
@@ -96,7 +94,10 @@ public class DBDictionaryUtils
         return buf;
     }
 
-    public static SQLBuffer getWhere(DBDictionary dbDictionary, Select sel, boolean forUpdate) {
+    public static SQLBuffer getWhere(DBDictionary dbDictionary, Select sel, boolean forUpdate,
+                                     boolean lowerCase, boolean useSchema) {
+        String deleteTsCol = getDeleteTsCol(lowerCase);
+
         Joins joins = sel.getJoins();
         if (sel.getJoinSyntax() == JoinSyntaxes.SYNTAX_SQL92
             || joins == null || joins.isEmpty())
@@ -105,12 +106,12 @@ public class DBDictionaryUtils
             if (!PersistenceProvider.getEntityManager().isDeleteDeferred())
                 return buf;
 
-            Map<Table, String> tables = new HashMap<Table, String>();
-            Collection columns;
+            Set<String> aliases = new HashSet<String>();
+            Collection columns = null;
             if (buf != null) {
                 columns = buf.getColumns();
             }
-            else {
+            if (columns == null) {
                 columns = sel.getSelects();
             }
 
@@ -121,9 +122,10 @@ public class DBDictionaryUtils
                         for (String s : (Collection<String>) sel.getTableAliases()) {
                             int i = s.indexOf(' ');
                             String tableName = s.substring(0, i);
-                            if (col.getTable().getName().equals(tableName)) {
-                                if (col.getTable().containsColumn(DELETE_TS_COL))
-                                    tables.put(col.getTable(), s.substring(i + 1));
+                            String t = useSchema ? col.getTable().getFullName() : col.getTable().getName();
+                            if (t.equals(tableName)) {
+                                if (col.getTable().containsColumn(deleteTsCol))
+                                    aliases.add(s.substring(i + 1));
                                 break;
                             }
                         }
@@ -132,10 +134,10 @@ public class DBDictionaryUtils
             }
 
             StringBuilder sb = new StringBuilder();
-            for (String alias : tables.values()) {
+            for (String alias : aliases) {
                 if (sb.length() > 0)
                     sb.append(" AND ");
-                sb.append(alias).append(".").append(DELETE_TS_COL).append(" IS NULL");
+                sb.append(alias).append(".").append(deleteTsCol).append(" IS NULL");
             }
             sel.where(sb.toString());
             return sel.getWhere();
@@ -146,6 +148,26 @@ public class DBDictionaryUtils
             where.append(sel.getWhere());
         if (joins != null)
             sel.append(where, joins);
+        if (sel instanceof SelectImpl) {
+            StringBuilder sb = new StringBuilder();
+            Map tables = ((SelectImpl) sel).getTables();
+            for (Object table : tables.values()) {
+                int p = ((String) table).indexOf(' ');
+                if (p > 0) {
+                    String alias = ((String) table).substring(p + 1);
+                    if (sb.length() > 0)
+                        sb.append(" AND ");
+                    sb.append(alias).append(".").append(deleteTsCol).append(" IS NULL");
+                }
+            }
+            if (!where.isEmpty())
+                where.append(" AND ");
+            where.append(sb.toString());
+        }
         return where;
+    }
+
+    private static String getDeleteTsCol(boolean lowerCase) {
+        return lowerCase ? "delete_ts" : "DELETE_TS";
     }
 }
