@@ -14,7 +14,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -68,6 +68,10 @@ public class TreeTable
         // if showProperty is null, the Tree will use itemId.toString
         MetaProperty metaProperty = hierarchyProperty == null ? null : datasource.getMetaClass().getProperty(hierarchyProperty);
         component.setItemCaptionPropertyId(metaProperty);
+    }
+
+    public void setStyleProvider(StyleProvider styleProvider) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

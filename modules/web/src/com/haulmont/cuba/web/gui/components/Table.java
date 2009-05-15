@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -123,6 +124,16 @@ public class Table
         component.setColumnHeader(propertyPath, caption);
     }
 
+    public void setStyleProvider(final StyleProvider styleProvider) {
+        if (styleProvider == null) {component.setCellStyleGenerator(null); return;}
+
+        component.setCellStyleGenerator(new com.itmill.toolkit.ui.Table.CellStyleGenerator() {
+            public String getStyle(Object itemId, Object propertyId) {
+                final Entity item = datasource.getItem(itemId);
+                return styleProvider.getStyleName(item, propertyId);
+            }
+        });
+    }
 
     protected class TableDsWrapper extends CollectionDsWrapper {
         public TableDsWrapper(CollectionDatasource datasource) {

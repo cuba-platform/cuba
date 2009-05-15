@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.List;
 import java.util.Set;
@@ -90,4 +91,10 @@ public interface Table
             this.element = element;
         }
     }
+
+    interface StyleProvider {
+        String getStyleName(Entity item, Object property);
+    }
+
+    void setStyleProvider(StyleProvider styleProvider);
 }
