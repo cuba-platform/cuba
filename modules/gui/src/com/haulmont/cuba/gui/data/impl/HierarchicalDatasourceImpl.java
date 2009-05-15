@@ -79,7 +79,7 @@ public class HierarchicalDatasourceImpl<T extends Entity, K>
         for (K id : ids) {
             Entity<K> item = getItem(id);
             Object value = ((Instance) item).getValue(hierarchyPropertyName);
-            if (value == null) result.add(item.getId());
+            if (value == null || !containsItem(getItemId((T) value))) result.add(item.getId());
         }
 
         return result;
@@ -87,7 +87,8 @@ public class HierarchicalDatasourceImpl<T extends Entity, K>
 
     public boolean isRoot(K itemId) {
         Instance item = (Instance) getItem(itemId);
-        return item != null && item.getValue(hierarchyPropertyName) == null;
+        Object value = item.getValue(hierarchyPropertyName);
+        return (value == null || !containsItem(getItemId((T) value)));
     }
 
     public boolean hasChildren(K itemId) {

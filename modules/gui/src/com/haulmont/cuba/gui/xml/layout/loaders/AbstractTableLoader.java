@@ -86,7 +86,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
-
+        
         addAssignWindowTask(component);
 
         return component;
