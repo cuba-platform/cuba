@@ -84,6 +84,12 @@ public class TreeTable
         component.setEditable(editable);
     }
 
+    @Override
+    protected void initComponent(com.haulmont.cuba.web.toolkit.ui.TreeTable component) {
+        super.initComponent(component);
+        component.setSelectable(true);
+    }
+
     protected class TreeTableDsWrapper extends HierarchicalDsWrapper {
         public TreeTableDsWrapper(HierarchicalDatasource datasource) {
             super(datasource);
