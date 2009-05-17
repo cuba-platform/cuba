@@ -10,6 +10,11 @@
         <depends>jboss:service=TransactionManager</depends>
     </mbean>
 
+    <mbean code="com.haulmont.cuba.core.app.UniqueNumbers"
+           name="haulmont.cuba:service=UniqueNumbers">
+        <depends>jboss:service=TransactionManager</depends>
+    </mbean>
+
     <mbean code="com.haulmont.cuba.security.app.EntityLog"
            name="haulmont.cuba:service=EntityLog">
         <depends>haulmont.cuba:service=ConfigStorage</depends>

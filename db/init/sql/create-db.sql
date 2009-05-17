@@ -1,4 +1,9 @@
 ------------------------------------------------------------------------------------------------------------
+-- table for selecting sequence values in HSQL
+create table DUAL (ID integer);
+insert into DUAL (ID) values (0);
+
+------------------------------------------------------------------------------------------------------------
 
 create table SYS_SERVER (
     ID varchar(36),

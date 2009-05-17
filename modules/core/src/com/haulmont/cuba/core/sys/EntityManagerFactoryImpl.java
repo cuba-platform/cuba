@@ -17,14 +17,18 @@ import com.haulmont.cuba.core.EntityManagerFactory;
 
 public class EntityManagerFactoryImpl implements EntityManagerFactory
 {
-    private OpenJPAEntityManagerFactory jpaFactory;
+    private OpenJPAEntityManagerFactory delegate;
 
-   EntityManagerFactoryImpl(OpenJPAEntityManagerFactory jpaFactory) {
-        this.jpaFactory = jpaFactory;
+    EntityManagerFactoryImpl(OpenJPAEntityManagerFactory jpaFactory) {
+        this.delegate = jpaFactory;
     }
 
     public EntityManagerImpl createEntityManager() {
-        OpenJPAEntityManager em = jpaFactory.createEntityManager();
+        OpenJPAEntityManager em = delegate.createEntityManager();
         return new EntityManagerImpl(em);
+    }
+
+    public OpenJPAEntityManagerFactory getDelegate() {
+        return delegate;
     }
 }
