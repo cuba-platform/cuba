@@ -11,36 +11,31 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.entity.Config;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.sys.ConfigWorker;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
+public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI
 {
     private Log log = LogFactory.getLog(ConfigStorage.class);
 
-    private UUID roleId;
-    private UUID permissionId;
+    private Map<String, String> cache = new ConcurrentHashMap<String, String>();
+
+    private String nullValue = new String();
+
+    public ConfigStorageAPI getAPI() {
+        return this;
+    }
 
     public void start() {
         log.debug("start");
@@ -81,7 +76,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
     public String getProperty(String name) {
         try {
             login();
-            String value = getConfigWorker().getProperty(name);
+            String value = getConfigProperty(name);
             return value;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -93,7 +88,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
     public String setProperty(String name, String value) {
         try {
             login();
-            getConfigWorker().setProperty(name, value);
+            setConfigProperty(name, value);
             return "Done";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -111,6 +106,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
             query.setParameter(1, name);
             query.executeUpdate();
             tx.commit();
+            cache.remove(name);
             return "Done";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -120,9 +116,8 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
         }
     }
 
-    private ConfigWorker getConfigWorker() {
-        ConfigWorker configWorker = Locator.lookupLocal(ConfigWorker.JNDI_NAME);
-        return configWorker;
+    public void clearCache() {
+        cache.clear();
     }
 
     public String loadSystemProperties() {
@@ -169,5 +164,61 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean
         } catch (IOException e) {
             return ExceptionUtils.getStackTrace(e);
         }
+    }
+
+    public String getConfigProperty(String name) {
+        String value = cache.get(name);
+        if (value == nullValue)
+            return null;
+        else if (value != null)
+            return value;
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            Config instance = getConfigInstance(name);
+            value = instance == null ? null : instance.getValue();
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        if (value != null)
+            cache.put(name, value);
+        else
+            cache.put(name, nullValue);
+        return value;
+    }
+
+    public void setConfigProperty(String name, String value) {
+        if (value == null)
+            throw new IllegalArgumentException("Value can not be null");
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Config instance = getConfigInstance(name);
+            if (instance == null) {
+                instance = new Config();
+                instance.setName(name);
+                instance.setValue(value);
+                em.persist(instance);
+            }
+            else {
+                instance.setValue(value);
+            }
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        cache.put(name, value);
+    }
+
+    private Config getConfigInstance(String name) {
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query query = em.createQuery("select c from core$Config c where c.name = ?1");
+        query.setParameter(1, name);
+        List<Config> list = query.getResultList();
+        if (list.isEmpty())
+            return null;
+        else
+            return list.get(0);
     }
 }

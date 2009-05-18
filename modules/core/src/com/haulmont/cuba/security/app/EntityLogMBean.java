@@ -14,16 +14,10 @@ public interface EntityLogMBean
 {
     String OBJECT_NAME = "haulmont.cuba:service=EntityLog";
 
-    void create();
-
-    void start();
-
     EntityLogAPI getAPI();
 
     boolean isEnabled();
     void setEnabled(boolean enabled);
-
-    void loadConfig();
 
     void invalidateCache();
 }

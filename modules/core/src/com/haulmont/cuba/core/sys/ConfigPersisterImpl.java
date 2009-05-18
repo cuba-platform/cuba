@@ -12,15 +12,11 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.entity.Config;
+import com.haulmont.cuba.core.app.ConfigStorageAPI;
+import com.haulmont.cuba.core.app.ConfigStorageMBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.List;
 
 public class ConfigPersisterImpl implements ConfigPersister
 {
@@ -32,7 +28,7 @@ public class ConfigPersisterImpl implements ConfigPersister
             return System.getProperty(name);
         }
         else if (SourceType.DATABASE.equals(sourceType)) {
-            String value = getConfigWorker().getProperty(name);
+            String value = getConfigStorageAPI().getConfigProperty(name);
             return value;
         }
         else {
@@ -46,15 +42,15 @@ public class ConfigPersisterImpl implements ConfigPersister
             System.setProperty(name, value);
         }
         else if (SourceType.DATABASE.equals(sourceType)) {
-            getConfigWorker().setProperty(name, value);
+            getConfigStorageAPI().setConfigProperty(name, value);
         }
         else {
             throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
         }
     }
 
-    private ConfigWorker getConfigWorker() {
-        ConfigWorker configWorker = Locator.lookupLocal(ConfigWorker.JNDI_NAME);
-        return configWorker;
+    private ConfigStorageAPI getConfigStorageAPI() {
+        ConfigStorageMBean mbean = Locator.lookupMBean(ConfigStorageMBean.class, ConfigStorageMBean.OBJECT_NAME);
+        return mbean.getAPI();
     }
 }

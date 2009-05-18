@@ -50,6 +50,7 @@
         <ext:install-jboss-lib name="jboss-javaee" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-remoting" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jbosssx" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="mail" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="servlet-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-j2se" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>

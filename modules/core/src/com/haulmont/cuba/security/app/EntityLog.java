@@ -36,42 +36,25 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
 
     private volatile boolean loaded;
 
-    private volatile Boolean enabled;
+    private EntityLogConfig config = ConfigProvider.getConfig(EntityLogConfig.class);
 
     private Map<String, Set<String>> entitiesManual;
     private Map<String, Set<String>> entitiesAuto;
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public void create() {
-        log.debug("create");
-    }
-
-    public void start() {
-        log.debug("start");
-    }
-
     public EntityLogAPI getAPI() {
         return this;
     }
 
     public synchronized boolean isEnabled() {
-        if (enabled == null)
-            loadConfig();
-        return enabled;
+        return config.getEnabled();
     }
 
     public synchronized void setEnabled(boolean enabled) {
-        if (!ObjectUtils.equals(this.enabled, enabled)) {
-            this.enabled = enabled;
-            EntityLogConfig config = ConfigProvider.getConfig(EntityLogConfig.class);
+        if (enabled != config.getEnabled()) {
             config.setEnabled(enabled);
         }
-    }
-
-    public synchronized void loadConfig() {
-        EntityLogConfig config = ConfigProvider.getConfig(EntityLogConfig.class);
-        enabled = config.getEnabled();
     }
 
     public void invalidateCache() {
