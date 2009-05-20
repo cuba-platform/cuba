@@ -17,7 +17,7 @@
 
     <mbean code="com.haulmont.cuba.core.app.Emailer"
            name="haulmont.cuba:service=Emailer">
-        <depends>jboss:service=Mail</depends>
+        <!--<depends>jboss:service=Mail</depends>-->
         <depends>haulmont.cuba:service=ConfigStorage</depends>
     </mbean>
 
