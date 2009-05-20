@@ -152,6 +152,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
                 EntityLogAttr attribute = new EntityLogAttr();
                 attribute.setName(attr);
                 attribute.setValue(stringify(((Instance) entity).getValue(attr)));
+                attribute.setLogItem(item);
                 em.persist(attribute);
             }
         } catch (Exception e) {
@@ -191,6 +192,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
                     EntityLogAttr attribute = new EntityLogAttr();
                     attribute.setName(attr);
                     attribute.setValue(stringify(((Instance) entity).getValue(attr)));
+                    attribute.setLogItem(item);
                     em.persist(attribute);
                 }
             }
