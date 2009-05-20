@@ -19,6 +19,7 @@
         <class>com.haulmont.cuba.security.entity.LoggedEntity</class>
         <class>com.haulmont.cuba.security.entity.LoggedAttribute</class>
         <class>com.haulmont.cuba.security.entity.EntityLogItem</class>
+        <class>com.haulmont.cuba.security.entity.EntityLogAttr</class>
 
         <properties>
             <property name="openjpa.ManagedRuntime" value="org.apache.openjpa.ee.JNDIManagedRuntime"/>

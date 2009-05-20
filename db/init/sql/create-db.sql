@@ -233,12 +233,24 @@ create table SEC_ENTITY_LOG (
     TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID varchar(36),
-    ATTR varchar(50),
-    VALUE varchar(1500),
     primary key (ID)
 );
 
 alter table SEC_ENTITY_LOG add constraint FK_SEC_ENTITY_LOG_USER foreign key (USER_ID) references SEC_USER(ID);
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_ENTITY_LOG_ATTR (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(20),
+    ITEM_ID varchar(36),
+    NAME varchar(50),
+    VALUE varchar(1500),
+    primary key (ID)
+);
+
+alter table SEC_ENTITY_LOG_ATTR add constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID);
 
 ------------------------------------------------------------------------------------------------------------
 

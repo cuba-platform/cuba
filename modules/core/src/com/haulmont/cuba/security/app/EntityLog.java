@@ -14,10 +14,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.security.entity.LoggedEntity;
-import com.haulmont.cuba.security.entity.LoggedAttribute;
-import com.haulmont.cuba.security.entity.EntityLogItem;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Instance;
@@ -143,17 +140,19 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
             EntityManager em = PersistenceProvider.getEntityManager();
             User user = em.getReference(User.class, SecurityProvider.currentUserId());
 
-            for (String attr : attributes) {
-                EntityLogItem item = new EntityLogItem();
-                item.setEventTs(ts);
-                item.setUser(user);
-                item.setType(EntityLogItem.Type.CREATE);
-                item.setEntity(entityName);
-                item.setEntityId((UUID) entity.getId());
-                item.setAttribute(attr);
-                item.setValue(stringify(((Instance) entity).getValue(attr)));
+            EntityLogItem item = new EntityLogItem();
+            item.setEventTs(ts);
+            item.setUser(user);
+            item.setType(EntityLogItem.Type.CREATE);
+            item.setEntity(entityName);
+            item.setEntityId((UUID) entity.getId());
+            em.persist(item);
 
-                em.persist(item);
+            for (String attr : attributes) {
+                EntityLogAttr attribute = new EntityLogAttr();
+                attribute.setName(attr);
+                attribute.setValue(stringify(((Instance) entity).getValue(attr)));
+                em.persist(attribute);
             }
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
@@ -179,18 +178,20 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
             User user = em.getReference(User.class, SecurityProvider.currentUserId());
             Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
 
+            EntityLogItem item = new EntityLogItem();
+            item.setEventTs(ts);
+            item.setUser(user);
+            item.setType(EntityLogItem.Type.MODIFY);
+            item.setEntity(entityName);
+            item.setEntityId((UUID) entity.getId());
+            em.persist(item);
+
             for (String attr : attributes) {
                 if (dirty.contains(attr)) {
-                    EntityLogItem item = new EntityLogItem();
-                    item.setEventTs(ts);
-                    item.setUser(user);
-                    item.setType(EntityLogItem.Type.MODIFY);
-                    item.setEntity(entityName);
-                    item.setEntityId((UUID) entity.getId());
-                    item.setAttribute(attr);
-                    item.setValue(stringify(((Instance) entity).getValue(attr)));
-
-                    em.persist(item);
+                    EntityLogAttr attribute = new EntityLogAttr();
+                    attribute.setName(attr);
+                    attribute.setValue(stringify(((Instance) entity).getValue(attr)));
+                    em.persist(attribute);
                 }
             }
         } catch (Exception e) {

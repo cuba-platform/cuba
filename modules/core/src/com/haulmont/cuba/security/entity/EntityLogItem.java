@@ -16,6 +16,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
+import java.util.Set;
 
 import org.apache.openjpa.persistence.Persistent;
 
@@ -72,19 +73,8 @@ public class EntityLogItem extends BaseUuidEntity
     @Persistent
     private UUID entityId;
 
-    @Column(name = "ATTR", length = 50)
-    private String attribute;
-
-    @Column(name = "VALUE", length = VALUE_LEN)
-    private String value;
-
-    public String getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
-    }
+    @OneToMany(mappedBy = "logItem", fetch = FetchType.LAZY)
+    private Set<EntityLogAttr> attributes;
 
     public String getEntity() {
         return entity;
@@ -126,11 +116,11 @@ public class EntityLogItem extends BaseUuidEntity
         this.user = user;
     }
 
-    public String getValue() {
-        return value;
+    public Set<EntityLogAttr> getAttributes() {
+        return attributes;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setAttributes(Set<EntityLogAttr> attributes) {
+        this.attributes = attributes;
     }
 }
