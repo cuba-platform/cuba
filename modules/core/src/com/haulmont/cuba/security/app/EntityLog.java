@@ -10,25 +10,23 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.model.Instance;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ObjectUtils;
-
-public class EntityLog implements EntityLogMBean, EntityLogAPI
-{
+public class EntityLog implements EntityLogMBean, EntityLogAPI {
     private Log log = LogFactory.getLog(EntityLog.class);
 
     private volatile boolean loaded;
@@ -104,7 +102,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
             EntityManager em = PersistenceProvider.getEntityManager();
             Query q = em.createQuery(
                     "select e from sec$LoggedEntity e join fetch e.attributes " +
-                    "where e.auto = true or e.manual = true");
+                            "where e.auto = true or e.manual = true");
             List<LoggedEntity> list = q.getResultList();
             for (LoggedEntity loggedEntity : list) {
                 Set<String> attributes = new HashSet<String>();
@@ -234,12 +232,15 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI
 
     private String stringify(Object value) {
         if (value == null)
-            return "<null>";
+            return "";
 
         String s;
         Datatype datatype = Datatypes.getInstance().get(value.getClass());
         if (datatype != null) {
             s = datatype.format(value);
+        } else if (value.getClass().isEnum()) {
+            String nameKey = value.getClass().getSimpleName() + "." + value.toString();
+            s = MessageProvider.getMessage(value.getClass(), nameKey);
         } else {
             s = value.toString();
         }
