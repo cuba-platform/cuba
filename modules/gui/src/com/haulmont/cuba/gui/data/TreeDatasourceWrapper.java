@@ -39,7 +39,7 @@ public abstract class TreeDatasourceWrapper<T extends Entity, K>
     }
 
     protected Data loadData(Map<String, Object> params) {
-        this.tree = loadTree();
+        this.tree = loadTree(params);
 
         List<K> ids = new ArrayList<K>();
         Map<K, T> itemsById = new HashMap<K,T>();
@@ -58,7 +58,7 @@ public abstract class TreeDatasourceWrapper<T extends Entity, K>
         return new Data(ids, itemsById);
     }
 
-    protected abstract Tree<T> loadTree();
+    protected abstract Tree<T> loadTree(Map<String, Object> params);
 
     public String getHierarchyPropertyName() {
         return null;
@@ -74,8 +74,11 @@ public abstract class TreeDatasourceWrapper<T extends Entity, K>
         } else {
             if (tree == null) return Collections.emptyList();
 
-            final Node<T> rootNode = tree.getRoot();
-            return (Collection<K>) Collections.singletonList(rootNode.getData().getId());
+            List ids = new ArrayList();
+            for (Node<T> rootNode : tree.getRootNodes()) {
+                ids.add(rootNode.getData().getId());
+            }
+            return (Collection<K>) Collections.unmodifiableCollection(ids);
         }
     }
 
@@ -102,9 +105,14 @@ public abstract class TreeDatasourceWrapper<T extends Entity, K>
 
     public boolean isRoot(K itemId) {
         final Node<T> node = nodes.get(itemId);
-        final Node<T> rootNode = tree.getRoot();
 
-        return ObjectUtils.equals(rootNode, node);
+        for (Node<T> tNode : tree.getRootNodes()) {
+            if (ObjectUtils.equals(tNode, node)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean hasChildren(K itemId) {

@@ -18,6 +18,8 @@ import com.haulmont.cuba.gui.data.TreeDatasourceWrapper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 
+import java.util.Map;
+
 public class EntityPermissionTargetsDatasource extends TreeDatasourceWrapper {
     public EntityPermissionTargetsDatasource(
             DsContext context, DataService dataservice,
@@ -26,7 +28,7 @@ public class EntityPermissionTargetsDatasource extends TreeDatasourceWrapper {
         super(context, dataservice, id, metaClass, viewName);
     }
 
-    protected Tree<PermissionConfig.Target> loadTree() {
+    protected Tree<PermissionConfig.Target> loadTree(Map params) {
         return AppConfig.getInstance().getPermissionConfig().getEntities();
     }
 }
