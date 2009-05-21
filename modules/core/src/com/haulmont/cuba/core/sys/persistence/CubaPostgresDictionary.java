@@ -17,7 +17,7 @@ import org.apache.openjpa.meta.JavaTypes;
 
 import java.sql.*;
 
-public class CubaPostgresDictionary extends PostgresDictionary implements SequenceSqlProvider
+public class CubaPostgresDictionary extends PostgresDictionary
 {
     public SQLBuffer toTraditionalJoin(Join join) {
         return DBDictionaryUtils.toTraditionalJoin(this, join, true);
@@ -41,27 +41,5 @@ public class CubaPostgresDictionary extends PostgresDictionary implements Sequen
         } else {
             super.setTyped(stmnt, idx, val, col, type, store);
         }
-    }
-
-    public String sequenceExistsSql(String sequenceName) {
-        return "select relname from pg_class where relkind = 'S' and relname = '"
-                + sequenceName.toLowerCase() + "'";
-    }
-
-    public String createSequenceSql(String sequenceName, long startValue, long increment) {
-        return "create sequence " + sequenceName
-                + " increment by " + increment + " start with " + startValue;
-    }
-
-    public String modifySequenceSql(String sequenceName, long startWith) {
-        return "select setval('" + sequenceName + "', " + startWith + ")";
-    }
-
-    public String getNextValueSql(String sequenceName) {
-        return "select nextval('" + sequenceName + "')";
-    }
-
-    public String getCurrentValueSql(String sequenceName) {
-        return "select currval('" + sequenceName + "')";
     }
 }

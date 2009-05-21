@@ -4,9 +4,9 @@
  * 
  * $Id$
  */
-package com.haulmont.cuba.core.sys.persistence;
+package com.haulmont.cuba.core.global;
 
-public interface SequenceSqlProvider
+public interface SequenceSupport
 {
     String sequenceExistsSql(String sequenceName);
 

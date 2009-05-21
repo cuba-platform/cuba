@@ -11,10 +11,21 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.sys.ManagedPersistenceProvider;
+import com.haulmont.cuba.core.sys.EntityManagerFactoryImpl;
+import com.haulmont.cuba.core.global.DbDialect;
+import com.haulmont.cuba.core.global.HsqlDbDialect;
+import com.haulmont.cuba.core.global.PostgresDbDialect;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 
 import java.lang.annotation.Annotation;
 import java.util.BitSet;
@@ -33,6 +44,8 @@ public abstract class PersistenceProvider
 
     protected static final String DEFAULT_PERSISTENCE_XML = "META-INF/cuba-persistence.xml";
     protected static final String DEFAULT_PERSISTENCE_UNIT = "cuba";
+
+    private DbDialect dbDialect;
 
     private static PersistenceProvider getInstance() {
         if (instance == null) {
@@ -53,6 +66,10 @@ public abstract class PersistenceProvider
         if (StringUtils.isBlank(unitName))
             unitName = DEFAULT_PERSISTENCE_UNIT;
         return unitName;
+    }
+
+    public static DbDialect getDbDialect() {
+        return getInstance().__getDbDialect();
     }
 
     public static EntityManagerFactory getEntityManagerFactory() {
@@ -97,6 +114,26 @@ public abstract class PersistenceProvider
             }
         }
         return set;
+    }
+
+    protected DbDialect __getDbDialect() {
+        if (dbDialect == null) {
+            OpenJPAEntityManagerFactory factory = ((EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory()).getDelegate();
+            OpenJPAConfiguration configuration = ((OpenJPAEntityManagerFactorySPI) factory).getConfiguration();
+            if (configuration instanceof JDBCConfiguration) {
+                DBDictionary dictionary = ((JDBCConfiguration) configuration).getDBDictionaryInstance();
+                if (dictionary instanceof HSQLDictionary) {
+                    dbDialect = new HsqlDbDialect();
+                } else if (dictionary instanceof PostgresDictionary) {
+                    dbDialect = new PostgresDbDialect();
+                } else {
+                    throw new UnsupportedOperationException("Unsupported DBDictionary class: " + dictionary.getClass());
+                }
+            } else {
+                throw new UnsupportedOperationException("Unsupported OpenJPAConfiguration class: " + configuration.getClass());
+            }
+        }
+        return dbDialect;
     }
 
     protected abstract EntityManagerFactory __getEntityManagerFactory();

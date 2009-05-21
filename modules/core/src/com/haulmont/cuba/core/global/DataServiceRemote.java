@@ -22,6 +22,8 @@ public interface DataServiceRemote
 {
     String JNDI_NAME = "cuba/core/DataService";
 
+    DbDialect getDbDialect();
+
     Map<Entity, Entity> commit(CommitContext<Entity> context);
 
     <A extends Entity> A load(LoadContext context);

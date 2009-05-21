@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.chile.core.model.MetaClass;
 
@@ -70,6 +71,10 @@ public class GenericDataService implements DataService {
                         Collections.<Entity>emptyList(),
                         Collections.singleton(entity));
         commit(context);
+    }
+
+    public DbDialect getDbDialect() {
+        return service.getDbDialect();
     }
 
     public Map<Entity, Entity> commit(CommitContext<Entity> context) {

@@ -16,10 +16,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.DataServiceRemote;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.security.entity.PermissionType;
 
@@ -33,6 +30,11 @@ import java.util.*;
 @Interceptors({ServiceInterceptor.class})
 public class DataServiceBean implements DataService, DataServiceRemote
 {
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public DbDialect getDbDialect() {
+        return PersistenceProvider.getDbDialect();
+    }
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Map<Entity, Entity> commit(CommitContext<Entity> context) {
         final Map<Entity, Entity> res = new HashMap<Entity, Entity>();

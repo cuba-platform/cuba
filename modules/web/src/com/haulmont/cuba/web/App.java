@@ -18,6 +18,8 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.exception.ExceptionHandlers;
+import com.haulmont.cuba.web.exception.UniqueConstraintViolationHandler;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
@@ -38,6 +40,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     private AppLog appLog;
 
+    private ExceptionHandlers exceptionHandlers;
+
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
 
     private boolean principalIsWrong;
@@ -56,6 +60,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         connection = new Connection();
         connection.addListener(this);
         windowManager = createWindowManager();
+        exceptionHandlers = new ExceptionHandlers(this);
     }
 
     protected WindowManager createWindowManager() {
@@ -78,6 +83,14 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     public static App getInstance() {
         return currentApp.get();
+    }
+
+    protected void initExceptionHandlers(boolean isConnected) {
+        if (isConnected) {
+            exceptionHandlers.addHandler(new UniqueConstraintViolationHandler());
+        } else {
+            exceptionHandlers.getHandlers().clear();
+        }
     }
 
     protected LoginWindow createLoginWindow() {
@@ -112,15 +125,18 @@ public class App extends Application implements ConnectionListener, ApplicationC
         if (connection.isConnected()) {
             Window window = createAppWindow();
             setMainWindow(window);
+            initExceptionHandlers(true);
         }
         else {
             Window window = createLoginWindow();
             setMainWindow(window);
+            initExceptionHandlers(false);
         }
     }
 
     public void terminalError(Terminal.ErrorEvent event) {
-        super.terminalError(event);
+//        super.terminalError(event);
+        exceptionHandlers.handle(event);
         getAppLog().log(event);
     }
 

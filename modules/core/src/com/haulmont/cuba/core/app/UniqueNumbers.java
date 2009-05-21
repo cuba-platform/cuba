@@ -7,13 +7,8 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.sys.persistence.SequenceSqlProvider;
-import com.haulmont.cuba.core.sys.EntityManagerFactoryImpl;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
+import com.haulmont.cuba.core.global.DbDialect;
+import com.haulmont.cuba.core.global.SequenceSupport;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -32,8 +27,8 @@ public class UniqueNumbers
             checkSequenceExists(seqName);
 
             EntityManager em = PersistenceProvider.getEntityManager();
-            SequenceSqlProvider sqlProvider = getSequenceSqlProvider();
-            Query query = em.createNativeQuery(sqlProvider.getNextValueSql(seqName));
+            SequenceSupport support = getSequenceSqlProvider();
+            Query query = em.createNativeQuery(support.getNextValueSql(seqName));
             Object value = query.getSingleResult();
 
             tx.commit();
@@ -54,8 +49,8 @@ public class UniqueNumbers
             checkSequenceExists(seqName);
 
             EntityManager em = PersistenceProvider.getEntityManager();
-            SequenceSqlProvider sqlProvider = getSequenceSqlProvider();
-            Query query = em.createNativeQuery(sqlProvider.getCurrentValueSql(seqName));
+            SequenceSupport support = getSequenceSqlProvider();
+            Query query = em.createNativeQuery(support.getCurrentValueSql(seqName));
             Object value = query.getSingleResult();
 
             tx.commit();
@@ -78,8 +73,8 @@ public class UniqueNumbers
             checkSequenceExists(seqName);
 
             EntityManager em = PersistenceProvider.getEntityManager();
-            SequenceSqlProvider sqlProvider = getSequenceSqlProvider();
-            String sql = sqlProvider.modifySequenceSql(seqName, value);
+            SequenceSupport support = getSequenceSqlProvider();
+            String sql = support.modifySequenceSql(seqName, value);
             Query query = em.createNativeQuery(sql);
             if (sql.startsWith("select"))
                 query.getResultList();
@@ -97,11 +92,11 @@ public class UniqueNumbers
 
         EntityManager em = PersistenceProvider.getEntityManager();
 
-        SequenceSqlProvider sqlProvider = getSequenceSqlProvider();
-        Query query = em.createNativeQuery(sqlProvider.sequenceExistsSql(seqName));
+        SequenceSupport support = getSequenceSqlProvider();
+        Query query = em.createNativeQuery(support.sequenceExistsSql(seqName));
         List list = query.getResultList();
         if (list.isEmpty()) {
-            query = em.createNativeQuery(sqlProvider.createSequenceSql(seqName, 1, 1));
+            query = em.createNativeQuery(support.createSequenceSql(seqName, 1, 1));
             query.executeUpdate();
         }
         existingSequences.add(seqName);
@@ -111,15 +106,11 @@ public class UniqueNumbers
         return "seq_un_" + domain;
     }
 
-    private SequenceSqlProvider getSequenceSqlProvider() {
-        OpenJPAEntityManagerFactory factory = ((EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory()).getDelegate();
-        OpenJPAConfiguration configuration = ((OpenJPAEntityManagerFactorySPI) factory).getConfiguration();
-        if (configuration instanceof JDBCConfiguration) {
-            DBDictionary dictionary = ((JDBCConfiguration) configuration).getDBDictionaryInstance();
-            if (dictionary instanceof SequenceSqlProvider) {
-                return (SequenceSqlProvider) dictionary;
-            }
-        }
-        throw new UnsupportedOperationException("DB sequences not supported");
+    private SequenceSupport getSequenceSqlProvider() {
+        DbDialect dialect = PersistenceProvider.getDbDialect();
+        if (dialect instanceof SequenceSupport)
+            return (SequenceSupport) dialect;
+        else
+            throw new UnsupportedOperationException("DB sequences not supported");
     }
 }

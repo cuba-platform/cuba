@@ -47,7 +47,7 @@ create table SEC_ROLE (
     primary key (ID)
 )^
 
-alter table SEC_ROLE add constraint SEC_ROLE_UNIQ_NAME unique (NAME, DELETE_TS)^
+create unique index IDX_SEC_ROLE_UNIQ_NAME on SEC_ROLE (NAME) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -103,9 +103,9 @@ create table SEC_USER (
     primary key (ID)
 )^
 
-alter table SEC_USER add constraint SEC_USER_UNIQ_LOGIN unique (LOGIN, DELETE_TS)^
-
 alter table SEC_USER add constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
+
+create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_PROFILE foreign key (USER
 
 alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)^
 
-alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_UNIQ_ROLE unique (USER_ID, ROLE_ID, DELETE_TS)^
+create unique index IDX_SEC_USER_ROLE_UNIQ_ROLE on SEC_USER_ROLE (USER_ID, ROLE_ID) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -149,7 +149,7 @@ create table SEC_PERMISSION (
 
 alter table SEC_PERMISSION add constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)^
 
-alter table SEC_PERMISSION add constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, TYPE, TARGET, DELETE_TS)^
+create unique index IDX_SEC_PERMISSION_UNIQUE on SEC_PERMISSION (ROLE_ID, TYPE, TARGET) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
