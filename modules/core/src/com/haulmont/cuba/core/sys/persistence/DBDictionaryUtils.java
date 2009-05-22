@@ -13,13 +13,17 @@ package com.haulmont.cuba.core.sys.persistence;
 import org.apache.openjpa.jdbc.sql.*;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.schema.Table;
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.app.PersistenceConfigAPI;
+import com.haulmont.cuba.core.app.PersistenceConfigMBean;
 
 import java.util.*;
 
 public class DBDictionaryUtils
 {
+    private static PersistenceConfigAPI persistenceConfig;
+
     public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join, boolean lowerCase) {
         String deleteTsCol = getDeleteTsCol(lowerCase);
 
@@ -148,16 +152,22 @@ public class DBDictionaryUtils
             where.append(sel.getWhere());
         if (joins != null)
             sel.append(where, joins);
-        if (sel instanceof SelectImpl) {
+        if (sel instanceof SelectImpl && PersistenceProvider.getEntityManager().isDeleteDeferred()) {
             StringBuilder sb = new StringBuilder();
             Map tables = ((SelectImpl) sel).getTables();
             for (Object table : tables.values()) {
                 int p = ((String) table).indexOf(' ');
                 if (p > 0) {
-                    String alias = ((String) table).substring(p + 1);
-                    if (sb.length() > 0)
-                        sb.append(" AND ");
-                    sb.append(alias).append(".").append(deleteTsCol).append(" IS NULL");
+                    String t = ((String) table).substring(0, p);
+                    int dot = t.indexOf('.');
+                    if (dot > 0)
+                        t = t.substring(dot + 1);
+                    if (getPersistenceConfigAPI().isDeleteDeferredFor(t)) {
+                        String alias = ((String) table).substring(p + 1);
+                        if (sb.length() > 0)
+                            sb.append(" AND ");
+                        sb.append(alias).append(".").append(deleteTsCol).append(" IS NULL");
+                    }
                 }
             }
             if (!where.isEmpty())
@@ -169,5 +179,13 @@ public class DBDictionaryUtils
 
     private static String getDeleteTsCol(boolean lowerCase) {
         return lowerCase ? "delete_ts" : "DELETE_TS";
+    }
+
+    private static PersistenceConfigAPI getPersistenceConfigAPI() {
+        if (persistenceConfig == null) {
+            PersistenceConfigMBean mbean = Locator.lookupMBean(PersistenceConfigMBean.class, PersistenceConfigMBean.OBJECT_NAME);
+            persistenceConfig = mbean.getAPI();
+        }
+        return persistenceConfig;
     }
 }

@@ -1,5 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <server>
+    <mbean code="com.haulmont.cuba.core.app.PersistenceConfig"
+           name="haulmont.cuba:service=PersistenceConfig">
+        <depends>jboss:service=TransactionManager</depends>
+    </mbean>
+
     <mbean code="com.haulmont.cuba.core.app.ResourceRepository"
            name="haulmont.cuba:service=ResourceRepository">
         <depends>jboss:service=TransactionManager</depends>
@@ -7,12 +12,12 @@
 
     <mbean code="com.haulmont.cuba.core.app.ConfigStorage"
            name="haulmont.cuba:service=ConfigStorage">
-        <depends>jboss:service=TransactionManager</depends>
+        <depends>haulmont.cuba:service=PersistenceConfig</depends>
     </mbean>
 
     <mbean code="com.haulmont.cuba.core.app.UniqueNumbers"
            name="haulmont.cuba:service=UniqueNumbers">
-        <depends>jboss:service=TransactionManager</depends>
+        <depends>haulmont.cuba:service=PersistenceConfig</depends>
     </mbean>
 
     <mbean code="com.haulmont.cuba.core.app.Emailer"
@@ -28,6 +33,7 @@
 
     <mbean code="com.haulmont.cuba.core.app.CubaDeployer"
            name="haulmont.cuba:service=CubaDeployer">
+        <depends>haulmont.cuba:service=PersistenceConfig</depends>
         <depends>haulmont.cuba:service=ResourceRepository</depends>
         <depends>haulmont.cuba:service=ConfigStorage</depends>
         <depends>haulmont.cuba:service=EntityLog</depends>
