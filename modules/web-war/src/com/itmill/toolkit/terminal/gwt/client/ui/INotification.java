@@ -16,16 +16,18 @@
 
 package com.itmill.toolkit.terminal.gwt.client.ui;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
+import com.itmill.toolkit.terminal.gwt.client.BrowserInfo;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EventObject;
 import java.util.Iterator;
-
-import com.google.gwt.user.client.*;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.BrowserInfo;
-import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 public class INotification extends IToolkitOverlay {
 
@@ -110,7 +112,6 @@ public class INotification extends IToolkitOverlay {
     }
 
     public void show(String html, int position, String style) {
-        html = Tools.format(html);  //replace tags [br], [b] and etc. with <br/> <b> ...
         setWidget(new HTML(html));
         show(position, style);
     }

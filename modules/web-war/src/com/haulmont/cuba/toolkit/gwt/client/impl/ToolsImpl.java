@@ -21,11 +21,11 @@ public class ToolsImpl {
     }-*/;
 
     public native String format(String message) /*-{
-        return message.replace(/\[br\]/, "<br/>")
-                .replace(/\[b\]/, "<b>")
-                .replace(/\[\/b\]/, "</b>")
-                .replace(/\[i\]/, "<i>")
-                .replace(/\[\/i\]/, "</i>");
+        return message.replace(/\[br\]/g, "<br/>")
+                .replace(/\[b\]/g, "<b>")
+                .replace(/\[\/b\]/g, "</b>")
+                .replace(/\[i\]/g, "<i>")
+                .replace(/\[\/i\]/g, "</i>");
     }-*/;
 
 }

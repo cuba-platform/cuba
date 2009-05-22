@@ -239,7 +239,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         layout.setMargin(true);
         window.setLayout(layout);
 
-        Label desc = new Label(message);
+        Label desc = new Label(message, Label.CONTENT_XHTML);
         layout.addComponent(desc);
 
         window.addComponent(layout);
@@ -254,7 +254,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
         final com.itmill.toolkit.ui.Window window = new com.itmill.toolkit.ui.Window(title);
 
-        Label messageBox = new Label(message);
+        Label messageBox = new Label(message, Label.CONTENT_XHTML);
 
         window.setWidth(400, Sizeable.UNITS_PIXELS);
         window.setResizable(false);
