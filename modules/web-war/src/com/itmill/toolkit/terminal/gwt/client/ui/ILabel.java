@@ -76,7 +76,7 @@ public class ILabel extends HTML implements Paintable {
 
         final String mode = uidl.getStringAttribute("mode");
         if (mode == null || "text".equals(mode)) {
-            setText(uidl.getChildString(0));
+            setHTML(Tools.format(uidl.getChildString(0)));
         } else if ("pre".equals(mode)) {
             PreElement preElement = Document.get().createPreElement();
             preElement.setInnerText(uidl.getChildUIDL(0).getChildString(0));
