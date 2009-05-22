@@ -327,8 +327,8 @@ public class ITreeTable
 
     private int getBorderHeight() {
         if (borderHeight < 0) {
-            borderHeight = Tools.getVerticalPaddingsAndBorder(
-                    tablePanel.getElement()
+            borderHeight = Util.measureVerticalPaddingAndBorder(
+                    tablePanel.getElement(), 2
             );
         }
         return borderHeight;
