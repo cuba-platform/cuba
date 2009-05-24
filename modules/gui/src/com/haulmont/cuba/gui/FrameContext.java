@@ -11,6 +11,8 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.List;
 import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.data.ValueListener;
 
@@ -33,6 +35,10 @@ public class FrameContext implements WindowContext {
         final Component component = frame.getComponent(property);
         if (component instanceof Component.Field) {
             return ((Component.Field) component).<T>getValue();
+        } else if (component instanceof List) {
+            List list = (List) component;
+            //noinspection unchecked
+            return list.isMultiSelect() ? (T)list.getSelected() : (T)list.getSingleSelected();
         } else {
             return null;
         }
