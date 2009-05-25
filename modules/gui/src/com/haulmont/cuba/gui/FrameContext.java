@@ -9,14 +9,15 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.List;
 import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
-import java.util.Map;
+import java.util.*;
 
 public class FrameContext implements WindowContext {
     private final IFrame frame;
@@ -28,12 +29,53 @@ public class FrameContext implements WindowContext {
     }
 
     public <T> T getParameterValue(String property) {
+        //noinspection unchecked
         return (T) params.get("parameter$" + property);
     }
 
     public <T> T getValue(String property) {
-        final Component component = frame.getComponent(property);
+        final String[] elements = ValuePathHelper.parse(property);
+        String[] path = elements;
+
+        Component component = frame.getComponent(property);
+        while (component == null && path.length > 1) {
+            final java.util.List<String> subpath = Arrays.asList(elements).subList(0, elements.length - 1);
+
+            path = subpath.toArray(new String[subpath.size()]);
+            component = frame.getComponent(ValuePathHelper.format(path));
+        }
+
+        if (component == null) return null;
+
+        final Object value = getValue(component);
+        if (value == null) return null;
+
+        if (path.length == elements.length) {
+            //noinspection unchecked
+            return (T) value;
+        } else {
+            final java.util.List<String> propertyPath = Arrays.asList(elements).subList(path.length, elements.length);
+            final String[] properties = propertyPath.toArray(new String[propertyPath.size()]);
+
+            if (value instanceof Instance) {
+                //noinspection RedundantTypeArguments
+                return InstanceUtils.<T>getValueEx(((Instance) value), properties);
+            } else if (value instanceof EnumClass) {
+                if (properties.length == 1 && "id".equals(properties[0])) {
+                    //noinspection unchecked
+                    return (T) ((EnumClass) value).getId();
+                } else {
+                    throw new UnsupportedOperationException(String.format("Can't get property '%s' of enum %s", propertyPath, value));
+                }
+            } else {
+                return null;
+            }
+        }
+    }
+
+    protected <T> T getValue(Component component) {
         if (component instanceof Component.Field) {
+            //noinspection RedundantTypeArguments
             return ((Component.Field) component).<T>getValue();
         } else if (component instanceof List) {
             List list = (List) component;

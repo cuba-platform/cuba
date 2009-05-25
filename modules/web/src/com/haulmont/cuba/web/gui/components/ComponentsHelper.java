@@ -20,6 +20,24 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 public class ComponentsHelper {
+    public static class ComponentPath {
+        String[] elements;
+        com.haulmont.cuba.gui.components.Component[] components;
+
+        public ComponentPath(String[] elements, com.haulmont.cuba.gui.components.Component[] components) {
+            this.elements = elements;
+            this.components = components;
+        }
+
+        public String[] getElements() {
+            return elements;
+        }
+
+        public com.haulmont.cuba.gui.components.Component[] getComponents() {
+            return components;
+        }
+    }
+
     public static <T extends Component> Collection<T> getComponents(ComponentContainer container, Class<T> aClass) {
         List<T> res  = new ArrayList<T>();
         final Iterator iterator = container.getComponentIterator();
