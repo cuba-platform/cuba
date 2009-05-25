@@ -4,7 +4,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
-import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.itmill.toolkit.terminal.gwt.client.*;
 import com.itmill.toolkit.terminal.gwt.client.ui.Action;
 import com.itmill.toolkit.terminal.gwt.client.ui.ActionOwner;
@@ -16,8 +15,7 @@ import java.util.*;
 public class ITreeTable
         extends FlowPanel
         implements Table,
-        ClickListener,
-        ContainerResizedListener
+        ClickListener
 {
     public static final String CLASSNAME = "i-tree-table";
     public static final String CLASSNAME_ROW_SELECTED = "i-selected";
@@ -48,13 +46,17 @@ public class ITreeTable
 
     private final TableHeader tableHeader = new TableHeader();
 
-    private final FlowPanel tablePanel = new FlowPanel();
+//    private final FlowPanel tablePanel = new FlowPanel();
 
     private final ScrollPanel bodyContainer = new ScrollPanel();
     private final TableBody tableBody = new TableBody();
 
-    private String height = null;
+    private int totalRows;
+
+    private String height;
     private String width = "";
+
+    private boolean relativeWidth = false;
 
     private Set<String> collapsedColumns = null;
 
@@ -65,17 +67,15 @@ public class ITreeTable
     private int calculatedCrossSignWidth = 0;
 
     public ITreeTable() {
-        tablePanel.setStyleName(CLASSNAME);
-        tablePanel.add(tableHeader);
-        tablePanel.add(bodyContainer);
-
         bodyContainer.setStyleName(CLASSNAME + "-body");
         DOM.setStyleAttribute(bodyContainer.getElement(), "overflow", "auto");
-        DOM.setStyleAttribute(bodyContainer.getElement(), "width", "100%");
+//        DOM.setStyleAttribute(bodyContainer.getElement(), "width", "100%");
 
         bodyContainer.add(tableBody);
 
-        add(tablePanel);
+        setStyleName(CLASSNAME);
+        add(tableHeader);
+        add(bodyContainer);
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
@@ -96,6 +96,8 @@ public class ITreeTable
 //                selectedRowKeys.add((String) o);
 //            }
 //        }
+
+        totalRows = uidl.getIntAttribute("rows");
 
         if (uidl.hasAttribute("selectmode")) {
 /*if (uidl.getBooleanAttribute("readonly")) {
@@ -140,11 +142,11 @@ public class ITreeTable
             }
         }
         if (uidl.hasAttribute("width")) {
-            width = uidl.getStringAttribute("width");
+            relativeWidth = uidl.getStringAttribute("width").endsWith("%");
         }
-        if (uidl.hasAttribute("height")) {
-            height = uidl.getStringAttribute("height");
-        }
+//        if (uidl.hasAttribute("height")) {
+//            height = uidl.getStringAttribute("height");
+//        }
 
         emitClickEvents = uidl.getBooleanAttribute("listenClicks");
 
@@ -189,9 +191,9 @@ public class ITreeTable
         int totalWidth = 0;
         int i = 0;
 
-        if (width == null || "".equals(width)) {
-            setContentWidth(-1);
-        }
+//        if (width == null || "".equals(width)) {
+//            setContentWidth(-1);
+//        }
 
         while (headerCells.hasNext())
         {
@@ -209,18 +211,22 @@ public class ITreeTable
         }
 
         if (height == null || "".equals(height)) {
-//            bodyContainer.setHeight((tableBody.getRowHeight() * pageLength) + "px");
-        } else {
-            setInternalHeight(height);
+            int rowsCount = tableBody.getVisibleRowsCount();
+            if (rowsCount == 0) {
+                rowsCount = 1;
+            }
+            bodyContainer.setHeight(rowsCount * tableBody.getRowHeight() + "px");
         }
 
+/*
         if (width == null || "".equals(width)) {
             int w = totalWidth;
             w += getScrollbarWidth();
             setContentWidth(w);
         }
+*/
 
-        int availableWidth = availableWidth();
+        int availableWidth = getBodyContainerWidth();
 
         final int extraWidth = availableWidth - totalWidth;
 
@@ -250,6 +256,23 @@ public class ITreeTable
         tableBody.updatePaddings();
     }
 
+    public void setWidth(String width) {
+        if (this.width.equals(width)) {
+            return;
+        }
+        this.width = width;
+        if (width != null && !"".equals(width)) {
+            super.setWidth(width);
+        }
+    }
+
+    @Override
+    public void setHeight(String height) {
+        this.height = height;
+        super.setHeight(height);
+        setContainerHeight();
+    }
+
     private boolean isCollapsedColumn(String colKey) {
         return collapsedColumns != null
                 && collapsedColumns.contains(colKey);
@@ -262,47 +285,6 @@ public class ITreeTable
         return collapsedColumns;
     }
 
-    public void setInternalHeight(String height) {
-        int totalHeight;
-        int availableHeight;
-
-        if (height.equals("100%")) {
-            final int borders = getBorderHeight();
-            final Element parentElem = DOM.getParent(getElement());
-
-            // put table away from flow for a moment
-            DOM.setStyleAttribute(getElement(), "position", "absolute");
-            // get containers natural space for table
-            availableHeight = DOM.getElementPropertyInt(parentElem,
-                    "offsetHeight");
-
-            // put table back to flow
-            DOM.setStyleAttribute(getElement(), "position", "static");
-            // set 100% height with borders
-
-            availableHeight = (availableHeight - borders);
-        }
-        else {
-            int h = Tools.parseSize(height);
-            availableHeight = DOM.getElementPropertyInt(getElement(), "offsetHeight");
-            if (availableHeight > h) {
-                availableHeight = h;
-            }
-        }
-
-        int headerHeight = DOM.getElementPropertyInt(
-                tableHeader.getElement(), "offsetHeight");
-
-        totalHeight = availableHeight - headerHeight;
-        if (totalHeight < 0) {
-            totalHeight = MIN_HEIGHT;
-        }
-
-        height = totalHeight + "px";
-
-        bodyContainer.setHeight(height);
-    }
-
     protected void setContentWidth(int w) {
         if (w == -1) {
             tableHeader.setWidth("");
@@ -313,35 +295,52 @@ public class ITreeTable
         }
     }
 
-    private int availableWidth() {
-        return tableBody.availableWidth();
+//    private int tableBodyAvailableWidth() {
+//        return tableBody.availableWidth();
+//    }
+
+    private int getBodyContainerHeight() {
+        int h = getOffsetHeight() - tableHeader.getOffsetHeight();
+        h -= getPaddingsAndBorderHeight();
+        if (h < 0) {
+            h = 0;
+        }
+        return h;
     }
 
-    public void iLayout() {
-        if (height != null) {
-            setInternalHeight(height);
+    private int getBodyContainerWidth() {
+        return getOffsetWidth() - getPaddingsAndBorderWidth(); //todo may be also need to use scroll bar width
+    }
+
+    protected void setContainerHeight() {
+        if (height != null && !"".equals(height)) {
+            int h = getBodyContainerHeight();
+            bodyContainer.setHeight(h + "px");
         }
     }
 
-    private int borderHeight = -1;
+    private int paddingsAndBorderHeight = -1;
 
-    private int getBorderHeight() {
-        if (borderHeight < 0) {
-            borderHeight = Util.measureVerticalPaddingAndBorder(
-                    tablePanel.getElement(), 2
-            );
+    private int getPaddingsAndBorderHeight() {
+        if (paddingsAndBorderHeight < 0) {
+            paddingsAndBorderHeight = Util.measureVerticalPaddingAndBorder(getElement(), 2);
         }
-        return borderHeight;
+        return paddingsAndBorderHeight;
+    }
+
+    private int paddingsAndBorderWidth = -1;
+
+    private int getPaddingsAndBorderWidth() {
+        if (paddingsAndBorderWidth < 0) {
+            paddingsAndBorderWidth = Util.measureHorizontalPaddingAndBorder(getElement(), 2);
+        }
+        return paddingsAndBorderWidth;
     }
 
     public int getScrollbarWidth() {
         return bodyContainer.getOffsetWidth()
                 - DOM.getElementPropertyInt(bodyContainer.getElement(),
                         "clientWidth");
-    }
-
-    public void onFirstPage() {
-        client.updateVariable(uidlId, "curpage", 1, true);
     }
 
     class TableHeader extends Panel implements ActionOwner {
@@ -756,6 +755,10 @@ public class ITreeTable
                 return rowHeight;
             }
             return DEFAULT_ROW_HEIGHT;
+        }
+
+        int getVisibleRowsCount() {
+            return children.size();
         }
 
         void updatePaddings() {
