@@ -31,6 +31,11 @@
         <depends>haulmont.cuba:service=ConfigStorage</depends>
     </mbean>
 
+    <mbean code="com.haulmont.cuba.core.app.ReportEngine"
+           name="haulmont.cuba:service=ReportEngine">
+        <depends>haulmont.cuba:service=ConfigStorage</depends>
+    </mbean>
+
     <mbean code="com.haulmont.cuba.core.app.CubaDeployer"
            name="haulmont.cuba:service=CubaDeployer">
         <depends>haulmont.cuba:service=PersistenceConfig</depends>
@@ -39,5 +44,6 @@
         <depends>haulmont.cuba:service=EntityLog</depends>
         <depends>haulmont.cuba:service=Emailer</depends>
         <depends>haulmont.cuba:service=UniqueNumbers</depends>
+        <depends>haulmont.cuba:service=ReportEngine</depends>
     </mbean>
 </server>

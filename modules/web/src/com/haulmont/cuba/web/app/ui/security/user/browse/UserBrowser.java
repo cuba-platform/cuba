@@ -10,9 +10,10 @@
 package com.haulmont.cuba.web.app.ui.security.user.browse;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
+import com.haulmont.cuba.web.rpt.ReportHelper;
+import com.haulmont.cuba.web.rpt.ReportOutput;
 
 import java.util.Map;
 
@@ -44,6 +45,18 @@ public class UserBrowser extends AbstractLookup {
                                     WindowManager.OpenType.DIALOG
                             );
                         }
+                    }
+                }
+        );
+
+        table.addAction(
+                new AbstractAction("print")
+                {
+                    public void actionPerform(Component component) {
+                        ReportHelper.printJasperReport(
+                                "cuba/report/users",
+                                new ReportOutput(ReportOutput.Format.HTML).setNewWindow(true)
+                        );
                     }
                 }
         );

@@ -54,6 +54,12 @@
         <ext:install-jboss-lib name="servlet-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-j2se" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <!-- jasper -->
+        <ext:install-lib name="jasperreports" version="${jasperreports.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="commons-digester" version="${commons-digester.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="commons-beanutils" version="${commons-beanutils.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="poi" version="${poi.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="iText" version="${iText.version}" toDir="${lib.server.dir}"/>
 	</target>
 	
 	<target name="compile">

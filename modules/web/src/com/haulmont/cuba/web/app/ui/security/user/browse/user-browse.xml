@@ -46,6 +46,7 @@
                     <button action="users.edit"/>
                     <button action="users.remove"/>
                     <button action="users.changePassw"/>
+                    <button action="users.print"/>
                 </hbox>
             </vbox>
         </vbox>
