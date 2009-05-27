@@ -11,8 +11,11 @@
 package com.haulmont.cuba.core.app;
 
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRDataSource;
 
 import javax.ejb.Local;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.util.Map;
 
 @Local
@@ -21,4 +24,7 @@ public interface ReportService
     String JNDI_NAME = "cuba/core/ReportService";
 
     JasperPrint executeJasperReport(String name, Map<String, Object> params);
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource);
 }

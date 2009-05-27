@@ -10,15 +10,14 @@
  */
 package com.haulmont.cuba.web.rpt;
 
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JRAbstractExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
 import net.sf.jasperreports.j2ee.servlets.ImageServlet;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 
@@ -38,6 +37,11 @@ public class ReportHelper
         return rs.executeJasperReport(name, params);
     }
 
+    public static JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource) {
+        ReportService rs = ServiceLocator.lookup(ReportService.JNDI_NAME);
+        return rs.executeJasperReport(name, params, dataSource);
+    }
+
     public static void printJasperReport(String name, ReportOutput output) {
         printJasperReport(name, new HashMap(), output);
     }
@@ -47,7 +51,23 @@ public class ReportHelper
         printJasperReport(name, print, output);
     }
 
+    public static void printJasperReport(List<String> names, Map<String, Object> params, ReportOutput output, JRDataSource dataSource) {
+        List<JasperPrint> prints = new ArrayList<JasperPrint>();
+        for (String str : names) {
+            prints.add(executeJasperReport(str, params, dataSource));
+        }
+        if (!names.isEmpty()) {
+            printJasperReport(names.iterator().next(), prints, output);
+        }
+    }
+
     public static void printJasperReport(String name, JasperPrint jasperPrint, ReportOutput output) {
+        List<JasperPrint> jasperPrints = new ArrayList<JasperPrint>();
+        jasperPrints.add(jasperPrint);
+        printJasperReport(name, jasperPrints, output);
+    }
+
+    public static void printJasperReport(String name, List<JasperPrint> jasperPrint, ReportOutput output) {
         App app = App.getInstance();
 
         ReportOutputWindow window = null;
@@ -70,7 +90,11 @@ public class ReportHelper
                 exporter.setParameter(JRXlsAbstractExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
                 exporter.setParameter(JRXlsAbstractExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
             }
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            if (jasperPrint.size() == 1) {
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint.iterator().next());
+            } else {
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrint);
+            }
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
             try {
                 exporter.exportReport();
@@ -86,7 +110,11 @@ public class ReportHelper
 
             StringWriter writer = new StringWriter();
             JRHtmlExporter exporter = new JRHtmlExporter();
-            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            if (jasperPrint.size() == 1) {
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint.iterator().next());
+            } else {
+                exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrint);
+            }
             exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
             exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "image?image=");
             try {

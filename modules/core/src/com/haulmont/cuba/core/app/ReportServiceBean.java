@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.app;
 
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRDataSource;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -29,6 +30,13 @@ public class ReportServiceBean implements ReportService
     public JasperPrint executeJasperReport(String name, Map<String, Object> params) {
         ReportEngineMBean mbean = Locator.lookupMBean(ReportEngineMBean.class, ReportEngineMBean.OBJECT_NAME);
         JasperPrint print = mbean.getAPI().executeJasperReport(name, params, null);
+        return print;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource) {
+        ReportEngineMBean mbean = Locator.lookupMBean(ReportEngineMBean.class, ReportEngineMBean.OBJECT_NAME);
+        JasperPrint print = mbean.getAPI().executeJasperReport(name, params, dataSource);
         return print;
     }
 }
