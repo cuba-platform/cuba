@@ -83,6 +83,9 @@
         <copy todir="${build.dir}/conf">
             <fileset dir="src-conf" includes="**/*"/>
         </copy>
+        <copy todir="${build.dir}/conf">
+            <fileset dir="fonts" includes="**/*"/>
+        </copy>
     </target>
 
     <target name="deploy-module" depends="base-mod.deploy-module">
