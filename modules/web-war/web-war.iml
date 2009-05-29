@@ -48,6 +48,19 @@
         </packaging>
       </configuration>
     </facet>
+    <facet type="gwt" name="GWT">
+      <configuration>
+        <setting name="additionalCompilerParameters" value="" />
+        <setting name="compilerMaxHeapSize" value="128" />
+        <setting name="compilerOutputPath" value="" />
+        <setting name="gwtScriptOutputStyle" value="DETAILED" />
+        <setting name="gwtSdkUrl" value="file://$MODULE_DIR$/../../../../../shared/gwt" />
+        <setting name="runGwtCompilerOnMake" value="true" />
+        <packaging>
+          <module name="com.haulmont.cuba.toolkit.gwt.WidgetSet" path="/com.haulmont.cuba.toolkit.gwt.WidgetSet" />
+        </packaging>
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
@@ -71,6 +84,7 @@
     <orderEntry type="module" module-name="web" />
     <orderEntry type="module" module-name="gui" />
     <orderEntry type="library" name="gwt" level="project" />
+    <orderEntry type="library" name="gwt-user" level="project" />
   </component>
 </module>
 

@@ -1,10 +1,10 @@
 <module>
     <inherits name="com.itmill.toolkit.terminal.gwt.DefaultWidgetSetNoEntry" />
 
-    <stylesheet src="css/link/link.css"/>
-    <stylesheet src="css/pagingtable/pagingtable.css"/>
-    <stylesheet src="css/menubar/menubar.css"/>
-    <stylesheet src="css/treetable/treetable.css"/>
+    <!--<stylesheet src="css/link/link.css"/>-->
+    <!--<stylesheet src="css/pagingtable/pagingtable.css"/>-->
+    <!--<stylesheet src="css/menubar/menubar.css"/>-->
+    <!--<stylesheet src="css/treetable/treetable.css"/>-->
 
     <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet"/>
 </module>
