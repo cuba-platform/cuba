@@ -684,7 +684,7 @@ public class ITreeTable
 
                     final String key = row.getStringAttribute("key");
                     AbstractRow r;
-                    if (groupped)
+                    if (groupped && row.getChildCount() > 0)
                     {
                         expanded = row.getBooleanAttribute("expanded");
                         if (isCaption) {
