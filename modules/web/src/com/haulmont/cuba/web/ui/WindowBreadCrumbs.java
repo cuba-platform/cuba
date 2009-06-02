@@ -50,7 +50,7 @@ public class WindowBreadCrumbs extends HorizontalLayout
         {
             public void buttonClick(Button.ClickEvent event) {
                 final Window window = getCurrentWindow();
-                App.getInstance().getWindowManager().close(window);
+                window.close("close");
             }
         });
 
