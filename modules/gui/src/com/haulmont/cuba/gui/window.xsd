@@ -437,6 +437,7 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
                         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="visible" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="treeTable">
