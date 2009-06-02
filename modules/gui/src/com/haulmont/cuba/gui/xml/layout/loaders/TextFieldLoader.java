@@ -28,6 +28,8 @@ public class TextFieldLoader extends AbstractFieldLoader {
         final String cols = element.attributeValue("cols");
         final String rows = element.attributeValue("rows");
 
+        loadStyleName(component, element);
+
         if (!StringUtils.isEmpty(cols)) {
             component.setColumns(Integer.valueOf(cols));
         }
