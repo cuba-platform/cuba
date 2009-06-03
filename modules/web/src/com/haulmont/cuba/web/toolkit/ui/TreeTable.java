@@ -243,7 +243,7 @@ public class TreeTable
 
                 Object itemId = it.next();
 
-                boolean allowChildren = areChildrenAllowed(itemId);
+                boolean allowChildren = areChildrenAllowed(itemId) && hasChildren(itemId);
                 if (allowChildren) {
                     target.startTag("gr");
                 } else {
@@ -258,7 +258,7 @@ public class TreeTable
                     target.addAttribute("expanded", expanded.contains(itemId));
                 }
 
-                if (hasCaption(itemId))
+                if (isCaption(itemId))
                 {
                     target.addAttribute("caption", getCaption(itemId));
                 } 
@@ -560,23 +560,22 @@ public class TreeTable
         return ((Hierarchical) items).hasChildren(itemId);
     }
 
-    public boolean hasCaption(Object itemId) {
+    public boolean isCaption(Object itemId) {
         return items instanceof TreeTableContainer
-                && ((TreeTableContainer) items).hasCaption(itemId);
+                && ((TreeTableContainer) items).isCaption(itemId);
     }
 
     public String getCaption(Object itemId) {
-        if (!(items instanceof TreeTableContainer)) {
-            throw new IllegalStateException("The data source container is not an instance of TreeTableContainer");
+        if (items instanceof TreeTableContainer) {
+            return ((TreeTableContainer) items).getCaption(itemId);
         }
-        return ((TreeTableContainer) items).getCaption(itemId);
+        return null;
     }
 
-    public void setCaption(Object itemId, String caption) {
-        if (!(items instanceof TreeTableContainer)) {
-            throw new IllegalStateException("The data source container is not an instance of TreeTableContainer");
-        }
-        ((TreeTableContainer) items).setCaption(itemId, caption);
+    public boolean setCaption(Object itemId, String caption) {
+        return items instanceof TreeTableContainer 
+                && ((TreeTableContainer) items)
+                .setCaption(itemId, caption);
     }
 
     public void setVisibleColumns(Object[] columns) {
