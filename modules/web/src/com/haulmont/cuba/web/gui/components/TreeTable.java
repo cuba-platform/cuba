@@ -12,20 +12,23 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.TreeTableDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public class TreeTable
     extends
@@ -50,7 +53,7 @@ public class TreeTable
     }
 
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
-        return new TreeTableDsWrapper((HierarchicalDatasource) datasource);
+        return new TreeTableDsWrapper((TreeTableDatasource) datasource);
     }
 
     protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
@@ -90,8 +93,11 @@ public class TreeTable
         component.setSelectable(true);
     }
 
-    protected class TreeTableDsWrapper extends HierarchicalDsWrapper {
-        public TreeTableDsWrapper(HierarchicalDatasource datasource) {
+    protected class TreeTableDsWrapper
+            extends HierarchicalDsWrapper
+            implements TreeTableContainer
+    {
+        public TreeTableDsWrapper(TreeTableDatasource datasource) {
             super(datasource);
         }
 
@@ -121,5 +127,16 @@ public class TreeTable
             };
         }
 
+        public boolean isCaption(Object itemId) {
+            return ((TreeTableDatasource<Entity, Object>) datasource).isCaption(itemId);
+        }
+
+        public String getCaption(Object itemId) {
+            return ((TreeTableDatasource<Entity, Object>) datasource).getCaption(itemId);
+        }
+
+        public boolean setCaption(Object itemId, String caption) {
+            return false;
+        }
     }
 }
