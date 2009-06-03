@@ -17,6 +17,6 @@ public interface TreeTableContainer extends Container.Hierarchical {
 
     String getCaption(Object itemId);
 
-    void setCaption(Object itemId, String caption);
+    boolean setCaption(Object itemId, String caption);
 
 }

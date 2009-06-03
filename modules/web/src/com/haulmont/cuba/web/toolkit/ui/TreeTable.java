@@ -258,7 +258,7 @@ public class TreeTable
                     target.addAttribute("expanded", expanded.contains(itemId));
                 }
 
-                if (isCaption(itemId))
+                if (hasCaption(itemId))
                 {
                     target.addAttribute("caption", getCaption(itemId));
                 } 
@@ -560,9 +560,9 @@ public class TreeTable
         return ((Hierarchical) items).hasChildren(itemId);
     }
 
-    public boolean isCaption(Object itemId) {
+    public boolean hasCaption(Object itemId) {
         return items instanceof TreeTableContainer
-                && ((TreeTableContainer) items).isCaption(itemId);
+                && ((TreeTableContainer) items).hasCaption(itemId);
     }
 
     public String getCaption(Object itemId) {
