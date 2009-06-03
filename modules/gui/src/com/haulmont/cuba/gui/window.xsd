@@ -243,6 +243,7 @@
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
@@ -260,6 +261,7 @@
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>
                         <xs:attribute name="value" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="checkBox">
@@ -300,6 +302,7 @@
 
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="textArea">
@@ -333,6 +336,7 @@
 
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="lookupField">
@@ -350,6 +354,7 @@
                         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
                         <xs:attribute name="nullName" type="xs:string" use="optional"/>
                         <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="pickerField">
@@ -438,6 +443,7 @@
                         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="treeTable">
