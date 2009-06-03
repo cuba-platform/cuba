@@ -12,10 +12,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Set;
 
 import org.apache.commons.lang.BooleanUtils;
@@ -35,7 +32,7 @@ public class LoggedEntity extends BaseUuidEntity
     @Column(name = "MANUAL")
     private Boolean manual;
 
-    @OneToMany(mappedBy = "entity")
+    @OneToMany(mappedBy = "entity", cascade = CascadeType.ALL)
     private Set<LoggedAttribute> attributes;
 
     public String getName() {

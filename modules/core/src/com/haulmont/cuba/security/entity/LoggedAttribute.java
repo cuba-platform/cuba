@@ -20,8 +20,8 @@ import javax.persistence.Entity;
 public class LoggedAttribute extends BaseUuidEntity
 {
     private static final long serialVersionUID = -615000337312303671L;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+                                     
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "ENTITY_ID")
     private LoggedEntity entity;
 
