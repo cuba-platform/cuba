@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.app.ui.security.role.browse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.web.rpt.WebExportDisplay;
 
 import java.util.Set;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class RoleBrowser extends AbstractLookup
         helper.createEditAction();
         helper.createRemoveAction();
         helper.createRefreshAction();
+        helper.createExcelAction(new WebExportDisplay());
 
         table.refresh();
     }

@@ -11,9 +11,11 @@ package com.haulmont.cuba.web.app.ui.security.user.browse;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.rpt.ReportHelper;
 import com.haulmont.cuba.web.rpt.ReportOutput;
+import com.haulmont.cuba.web.rpt.WebExportDisplay;
 
 import java.util.Map;
 
@@ -30,6 +32,7 @@ public class UserBrowser extends AbstractLookup {
         helper.createCreateAction();
         helper.createEditAction();
         helper.createRemoveAction();
+        helper.createExcelAction(new WebExportDisplay());
 
         final Action refreshAction = helper.createRefreshAction();
         button.setAction(refreshAction);
@@ -55,7 +58,7 @@ public class UserBrowser extends AbstractLookup {
                     public void actionPerform(Component component) {
                         ReportHelper.printJasperReport(
                                 "cuba/report/users",
-                                new ReportOutput(ReportOutput.Format.HTML).setNewWindow(true)
+                                new ReportOutput(ExportFormat.HTML).setNewWindow(true)
                         );
                     }
                 }

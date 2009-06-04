@@ -10,25 +10,22 @@
  */
 package com.haulmont.cuba.web.rpt;
 
+import com.haulmont.cuba.core.app.ReportService;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.web.App;
+import com.itmill.toolkit.terminal.gwt.server.WebApplicationContext;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
 import net.sf.jasperreports.j2ee.servlets.ImageServlet;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
+import javax.servlet.http.HttpSession;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
-
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.core.app.ReportService;
-import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.itmill.toolkit.terminal.gwt.server.WebApplicationContext;
-import com.itmill.toolkit.ui.Window;
-
-import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ReportHelper
 {
@@ -68,22 +65,12 @@ public class ReportHelper
     }
 
     public static void printJasperReport(String name, List<JasperPrint> jasperPrint, ReportOutput output) {
-        App app = App.getInstance();
+        WebExportDisplay display = new WebExportDisplay(output.isAttachment(), output.isNewWindow());
 
-        ReportOutputWindow window = null;
-        for (Object obj : app.getWindows()) {
-            if (obj instanceof ReportOutputWindow) {
-                window = (ReportOutputWindow) obj;
-            }
-        }
-        if (window != null) {
-            app.removeWindow(window);
-        }
-
-        if (output.getFormat() == ReportOutput.Format.PDF || output.getFormat() == ReportOutput.Format.XLS) {
+        if (output.getFormat() == ExportFormat.PDF || output.getFormat() == ExportFormat.XLS) {
             JRAbstractExporter exporter;
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            if (output.getFormat() == ReportOutput.Format.PDF) {
+            if (output.getFormat() == ExportFormat.PDF) {
                 exporter = new JRPdfExporter();
             } else {
                 exporter = new JRXlsExporter();
@@ -101,10 +88,8 @@ public class ReportHelper
             } catch (JRException e) {
                 throw new RuntimeException("Error printing report " + name, e);
             }
-            byte[] bytes = outputStream.toByteArray();
-
-            window = new ReportDownloadWindow(bytes, name, output);
-        } else if (output.getFormat() == ReportOutput.Format.HTML) {
+            display.show(outputStream.toByteArray(), name, output.getFormat());
+        } else if (output.getFormat() == ExportFormat.HTML) {
             HttpSession httpSession = ((WebApplicationContext) App.getInstance().getContext()).getHttpSession();
             httpSession.setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
 
@@ -122,22 +107,7 @@ public class ReportHelper
             } catch (JRException e) {
                 throw new RuntimeException("Error printing report " + name, e);
             }
-            window = new ReportHtmlWindow(name, writer.toString());
+            display.showHtml(writer.toString(), name);
         }
-
-        app.addWindow(window);
-        if (output.isNewWindow())
-            App.getInstance().getAppWindow().open(
-                    new ExternalResource(window.getURL()),
-                    "_blank",
-                    800,
-                    600,
-                    Window.BORDER_DEFAULT
-            );
-        else
-            App.getInstance().getAppWindow().open(
-                    new ExternalResource(window.getURL()),
-                    "_top"
-            );
     }
 }

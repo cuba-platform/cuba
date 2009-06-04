@@ -754,6 +754,7 @@
           <module name="core" />
         </modules>
       </facet-type>
+      <facet-type id="ejb" />
       <facet-type id="web">
         <modules>
           <module name="web" />
@@ -765,10 +766,13 @@
           </module>
         </modules>
       </facet-type>
-      <facet-type id="ejb" />
       <facet-type id="gwt">
         <modules>
-          <module name="web-war" />
+          <module name="web-war">
+            <files>
+              <file url="file://$PROJECT_DIR$/modules/web-war/src/com/haulmont/cuba/toolkit/gwt/WidgetSet.gwt.xml" />
+            </files>
+          </module>
         </modules>
       </facet-type>
     </autodetection-disabled>
@@ -944,22 +948,6 @@
   <component name="ProjectDetails">
     <option name="projectName" value="cuba" />
   </component>
-  <component name="ProjectFacetManager">
-    <default-configurations>
-      <entry facet-type="gwt">
-        <default-facet-configuration>
-          <configuration>
-            <setting name="additionalCompilerParameters" value="" />
-            <setting name="compilerMaxHeapSize" value="128" />
-            <setting name="compilerOutputPath" value="" />
-            <setting name="gwtScriptOutputStyle" value="DETAILED" />
-            <setting name="gwtSdkUrl" value="file://$PROJECT_DIR$/../../../shared/gwt" />
-            <setting name="runGwtCompilerOnMake" value="true" />
-          </configuration>
-        </default-facet-configuration>
-      </entry>
-    </default-configurations>
-  </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
     <option name="state" value="svn://dc/cuba/trunk/cuba.ipr" />
@@ -1024,6 +1012,7 @@
       </map>
     </option>
     <option name="myVersion" value="124" />
+    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
@@ -1060,10 +1049,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/postgresql-8.3-603.jdbc4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/mail.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-digester-1.7.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jasperreports-3.5.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/poi-3.2-FINAL-20081019.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-beanutils-1.7.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/iText-2.1.0.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -1071,9 +1057,6 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jboss-vfs-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.3.0-rc11.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/openjpa-1.2.0-patch1-src.zip!/" />
-        <root url="NullVirtualFilePointer" />
-        <root url="NullVirtualFilePointer" />
-        <root url="NullVirtualFilePointer" />
       </SOURCES>
     </library>
     <library name="common">
@@ -1089,6 +1072,9 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/freemarker-2.3.15.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/perf4j-0.9.10.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/iText-2.1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/jasperreports-3.5.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/poi-3.2-FINAL-20081019.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -1099,7 +1085,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/perf4j-0.9.10-src.zip!/" />
         <root url="NullVirtualFilePointer" />
         <root url="NullVirtualFilePointer" />
-        <root url="NullVirtualFilePointer" />
+        <root url="intellijad://intellijad" />
       </SOURCES>
     </library>
     <library name="test">
@@ -1116,7 +1102,6 @@
         <root url="jar://$PROJECT_DIR$/../lib/test/src/junit-4.5-src.zip!/" />
         <root url="NullVirtualFilePointer" />
         <root url="NullVirtualFilePointer" />
-        <root url="NullVirtualFilePointer" />
       </SOURCES>
     </library>
     <library name="client">
@@ -1130,19 +1115,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-1.5.3.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-1.5.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-dev-windows-1.5.3.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="gwt-user">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../../shared/gwt/gwt-user.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../../../shared/gwt/gwt-user.jar!/" />
-      </SOURCES>
+      <SOURCES />
     </library>
   </component>
 </project>

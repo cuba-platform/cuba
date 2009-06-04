@@ -14,6 +14,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.export.ExcelExporter;
+import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 
@@ -67,6 +69,22 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
         };
         TableActionsHelper.this.component.addAction(action);
 
+        return action;
+    }
+
+    public Action createExcelAction(final ExportDisplay display) {
+        AbstractAction action = new AbstractAction("excel") {
+            public String getCaption() {
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                return MessageProvider.getMessage(messagesPackage, "actions.Excel");
+            }
+
+            public void actionPerform(Component component) {
+                ExcelExporter exporter = new ExcelExporter();
+                exporter.exportTable(TableActionsHelper.this.component, display);
+            }
+        };
+        TableActionsHelper.this.component.addAction(action);
         return action;
     }
 }

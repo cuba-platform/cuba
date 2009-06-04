@@ -27,6 +27,7 @@
                 <button action="roles.create"/>
                 <button action="roles.edit"/>
                 <button action="roles.refresh"/>
+                <button action="roles.excel"/>
             </hbox>
         </vbox>
     </layout>

@@ -10,36 +10,15 @@
  */
 package com.haulmont.cuba.web.rpt;
 
+import com.haulmont.cuba.gui.export.ExportFormat;
+
 public class ReportOutput {
 
-    public enum Format
-    {
-        HTML("text/html", "html"),
-        PDF("application/pdf", "pdf"),
-        XLS("application/xls", "xls");
-
-        private String contentType;
-        private String fileExt;
-
-        Format(String contentType, String fileExt) {
-            this.contentType = contentType;
-            this.fileExt = fileExt;
-        }
-
-        public String getContentType() {
-            return contentType;
-        }
-
-        public String getFileExt() {
-            return fileExt;
-        }
-    }
-
-    private Format format;
+    private ExportFormat format;
     private boolean newWindow;
     private boolean attachment;
 
-    public ReportOutput(Format format) {
+    public ReportOutput(ExportFormat format) {
         this.format = format;
     }
 
@@ -52,11 +31,11 @@ public class ReportOutput {
         return this;
     }
 
-    public Format getFormat() {
+    public ExportFormat getFormat() {
         return format;
     }
 
-    public ReportOutput setFormat(Format format) {
+    public ReportOutput setFormat(ExportFormat format) {
         this.format = format;
         return this;
     }
