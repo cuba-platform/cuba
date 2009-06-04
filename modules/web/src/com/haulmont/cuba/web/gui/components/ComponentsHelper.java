@@ -103,8 +103,12 @@ public class ComponentsHelper {
                 return (T)getComponentByIterate(container, id);
             } else {
                 final List<String> subpath = Arrays.asList(elements).subList(1, elements.length);
-                return ((com.haulmont.cuba.gui.components.Component.Container) component).<T>getComponent(
-                        ValuePathHelper.format(subpath.toArray(new String[]{})));
+                if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
+                    return ((com.haulmont.cuba.gui.components.Component.Container) component).<T>getComponent(
+                            ValuePathHelper.format(subpath.toArray(new String[]{})));
+                } else {
+                    return null;
+                }
             }
         }
     }
