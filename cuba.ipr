@@ -777,7 +777,6 @@
       </facet-type>
     </autodetection-disabled>
   </component>
-  <component name="FacetManager" />
   <component name="IdProvider" IDEtalkID="99EE4594F0AAAC224547C8FE93321E41" />
   <component name="InspectionProjectProfileManager">
     <option name="PROJECT_PROFILE" value="Project Default" />
@@ -823,7 +822,6 @@
     <option name="IS_EMACS_ERRORS_MODE" value="true" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
-  <component name="NewModuleRootManager" />
   <component name="Palette2">
     <group name="Swing">
       <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
@@ -1012,7 +1010,6 @@
       </map>
     </option>
     <option name="myVersion" value="124" />
-    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
@@ -1085,7 +1082,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/perf4j-0.9.10-src.zip!/" />
         <root url="NullVirtualFilePointer" />
         <root url="NullVirtualFilePointer" />
-        <root url="intellijad://intellijad" />
+        <root url="NullVirtualFilePointer" />
       </SOURCES>
     </library>
     <library name="test">
@@ -1115,7 +1112,9 @@
         <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-1.5.3.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-1.5.3.jar!/" />
+      </SOURCES>
     </library>
   </component>
 </project>
