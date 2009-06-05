@@ -23,10 +23,6 @@ public class WidgetSet extends DefaultWidgetSet {
             return ITreeTable.class;
         } else if ("scrollablepanel".equals(tag)) {
             return IScrollablePanel.class;
-        } else if ("table".equals(tag)) {
-            return IScrollTable.class;
-        } else if ("upload".equals(tag)) {
-            return IUpload.class;
         }
         return super.resolveWidgetType(uidl);
     }
@@ -39,10 +35,6 @@ public class WidgetSet extends DefaultWidgetSet {
             return new ITreeTable();
         } else if (IScrollablePanel.class.equals(classType)) {
             return new IScrollablePanel();
-        } else if (IScrollTable.class.equals(classType)) {
-            return new IScrollTable();
-        } else if (IUpload.class.equals(classType)) {
-            return new IUpload();
         }
         return super.createWidget(uidl);
     }

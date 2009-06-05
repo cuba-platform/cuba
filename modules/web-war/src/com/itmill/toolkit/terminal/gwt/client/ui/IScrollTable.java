@@ -14,43 +14,14 @@
  * the License.
  */
 
-package com.haulmont.cuba.toolkit.gwt.client.ui;
+package com.itmill.toolkit.terminal.gwt.client.ui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.ScrollListener;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.BrowserInfo;
-import com.itmill.toolkit.terminal.gwt.client.Container;
-import com.itmill.toolkit.terminal.gwt.client.MouseEventDetails;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
-import com.itmill.toolkit.terminal.gwt.client.ui.Table;
-import com.itmill.toolkit.terminal.gwt.client.ui.ActionOwner;
-import com.itmill.toolkit.terminal.gwt.client.ui.Action;
-import com.itmill.toolkit.terminal.gwt.client.ui.TreeAction;
+import com.google.gwt.user.client.ui.*;
+import com.itmill.toolkit.terminal.gwt.client.*;
+
+import java.util.*;
 
 //import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable.IScrollTableBody.IScrollTableRow.*;
 
@@ -2125,8 +2096,13 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
                 String className = CLASSNAME + "-cell-content";
+                String classNameExt = null;
                 if (style != null && !style.equals("")) {
-                    className += " " + CLASSNAME + "-cell-content-" + style;
+                    classNameExt = CLASSNAME + "-cell-content-" + style;
+                }
+                if (classNameExt != null) {
+                    className += " " + classNameExt;
+                    DOM.setElementProperty(td, "className", classNameExt + "-td");
                 }
                 DOM.setElementProperty(container, "className", className);
                 // TODO most components work with this, but not all (e.g.
