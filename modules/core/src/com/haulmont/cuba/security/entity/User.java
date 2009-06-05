@@ -44,7 +44,7 @@ public class User extends StandardEntity
     @OnDeleteInverse(DeletePolicy.DENY)
     private Group group;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Aggregation
     private Set<UserRole> userRoles;
 
