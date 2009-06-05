@@ -15,6 +15,9 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.Field;
 import org.dom4j.Element;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 public class DoubleValidator implements Field.Validator{
 
     protected String message;
@@ -26,9 +29,11 @@ public class DoubleValidator implements Field.Validator{
     public boolean isValid(Object value) {
         if (value instanceof String) {
             try {
-                Double d = Double.valueOf((String) value);
+                NumberFormat.getInstance().parse((String) value);
                 return true;
             } catch (NumberFormatException e) {
+                return false;
+            } catch (ParseException e) {
                 return false;
             }
         } else if (value instanceof Double) {
