@@ -25,7 +25,7 @@ public class Permission extends StandardEntity
     private Integer type;
 
     @Column(name = "TARGET", length = 100)
-    private String target;
+    private String target;                    
 
     @Column(name = "VALUE")
     private Integer value;
