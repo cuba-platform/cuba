@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.export;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -92,6 +93,13 @@ public class ExcelExporter
                     cell.setCellValue(new HSSFRichTextString(str));
                     if (sizers[c].isNotificationRequired(r)) {
                         sizers[c].notifyCellValue(str, stdFont);
+                    }
+                } else if (val instanceof EnumClass) {
+                    String nameKey = val.getClass().getSimpleName() + "." + val.toString();
+                    final String message = MessageProvider.getMessage(val.getClass(), nameKey);
+                    cell.setCellValue(message);
+                    if (sizers[c].isNotificationRequired(r)) {
+                        sizers[c].notifyCellValue(message, stdFont);
                     }
                 } else {
                     cell.setCellValue(new HSSFRichTextString(val.toString()));
