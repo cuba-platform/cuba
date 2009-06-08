@@ -185,9 +185,11 @@
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:boolean" use="optional"/>
                         <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="margin" type="xs:boolean" use="optional"/>
 
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="groupBox">
@@ -278,6 +280,7 @@
 
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="textField">
@@ -392,6 +395,7 @@
                         <xs:attribute name="property" type="xs:string" use="optional"/>
                         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
                         <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="upload">
@@ -483,7 +487,7 @@
 
     <xs:group name="layoutOrComponent">
         <xs:sequence>
-            <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:group ref="component"/>
                 <xs:group ref="layout"/>
             </xs:choice>
