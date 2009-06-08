@@ -37,21 +37,25 @@
     </dsContext>
 
     <layout>
-        <hbox expand="expand-box" stylename="edit-area" spacing="true" margin="true">
-            <table id="events" editable="false">
-                <columns>
-                    <column id="eventTs" caption="msg://eventTs"/>
-                    <column id="createdBy" caption="msg://createdBy"/>
-                </columns>
-                <rows datasource="events"/>
-            </table>
-            <table id="values" editable="false">
-                <columns>
-                    <column id="displayName" caption="msg://name"/>
-                    <column id="value" caption="msg://value"/>
-                </columns>
-                <rows datasource="values"/>
-            </table>
-        </hbox>
+        <split orientation="horizontal" pos="30">
+            <vbox>
+                <table id="events" editable="false">
+                    <columns>
+                        <column id="eventTs" caption="msg://eventTs"/>
+                        <column id="createdBy" caption="msg://createdBy"/>
+                    </columns>
+                    <rows datasource="events"/>
+                </table>
+            </vbox>
+            <vbox>
+                <table id="values" editable="false">
+                    <columns>
+                        <column id="displayName" caption="msg://name"/>
+                        <column id="value" caption="msg://value"/>
+                    </columns>
+                    <rows datasource="values"/>
+                </table>
+            </vbox>
+        </split>
     </layout>
 </window>
