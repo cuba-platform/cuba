@@ -23,10 +23,6 @@ import com.itmill.toolkit.terminal.gwt.client.*;
 
 import java.util.*;
 
-//import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable.IScrollTableBody.IScrollTableRow.*;
-
-//import com.haulmont.cuba.toolkit.gwt.client.Tools;
-
 /**
  * IScrollTable
  *
@@ -2067,8 +2063,13 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
                 String className = CLASSNAME + "-cell-content";
+                String classNameExt = null;
                 if (style != null && !style.equals("")) {
-                    className += " " + CLASSNAME + "-cell-content-" + style;
+                    classNameExt = CLASSNAME + "-cell-content-" + style;
+                }
+                if (classNameExt != null) {
+                    className += " " + classNameExt;
+                    DOM.setElementProperty(td, "className", classNameExt + "-td");
                 }
 
                 DOM.setElementProperty(container, "className", className);
