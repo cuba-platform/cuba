@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
+import com.haulmont.cuba.web.gui.components.VBoxLayout;
 import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
@@ -674,26 +675,36 @@ public class Window
 
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
+            okbar.setStyleName("Window-actionsPane");
+            okbar.setMargin(true);
+            okbar.setSpacing(true);
+            okbar.setWidth("100%");
 
             final String messagesPackage = AppConfig.getInstance().getMessagesPack();
             final Button selectButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Select"));
             selectButton.addListener(new SelectAction(this));
+            selectButton.setStyleName("Window-actionButton");
 
             final Button cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     close("cancel");
                 }
             });
+            cancelButton.setStyleName("Window-actionButton");
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);
+
+            final VBoxLayout vBoxLayout = new VBoxLayout();
+            okbar.addComponent(vBoxLayout);
+            okbar.setExpandRatio(vBoxLayout, 1);
 
             form.addComponent(contaiter);
             form.addComponent(okbar);
 
             contaiter.setSizeFull();
             form.setExpandRatio(contaiter, 1);
-            form.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.MIDDLE_RIGHT);
+            form.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.MIDDLE_LEFT);
 
             return form;
         }
