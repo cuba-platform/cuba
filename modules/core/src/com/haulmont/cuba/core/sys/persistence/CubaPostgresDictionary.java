@@ -20,11 +20,11 @@ import java.sql.*;
 public class CubaPostgresDictionary extends PostgresDictionary
 {
     public SQLBuffer toTraditionalJoin(Join join) {
-        return DBDictionaryUtils.toTraditionalJoin(this, join, true);
+        return DBDictionaryUtils.toTraditionalJoin(this, join);
     }
 
     protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
-        return DBDictionaryUtils.getWhere(this, sel, forUpdate, true, true);
+        return DBDictionaryUtils.getWhere(this, sel, forUpdate, true);
     }
 
     public void setUnknown(PreparedStatement stmnt, int idx, Object val, Column col) throws SQLException {

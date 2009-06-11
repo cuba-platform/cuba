@@ -35,6 +35,10 @@ public class HsqlDbDialect extends DbDialect implements SequenceSupport
                 + sequenceName.toUpperCase() + "'";
     }
 
+    public String getDeleteTsColumn() {
+        return "DELETE_TS";
+    }
+
     public String getUniqueConstraintViolationMarker() {
         return "Violation of unique index";
     }

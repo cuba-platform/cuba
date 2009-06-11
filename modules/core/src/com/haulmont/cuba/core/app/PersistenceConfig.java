@@ -28,12 +28,15 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.sql.DataSource;
 import javax.naming.NamingException;
 
 public class PersistenceConfig implements PersistenceConfigMBean, PersistenceConfigAPI
 {
+    private Log log = LogFactory.getLog(PersistenceConfig.class);
     private String datasourceName;
     private Element persistenceUnitElement;
     private boolean metadataLoaded;
@@ -76,6 +79,7 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
     }
 
     public void initDbMetadata() {
+        log.info("Initializing DB metadata");
         DataSource datasource;
         try {
             datasource = (DataSource) Locator.getJndiContext().lookup(datasourceName);
@@ -86,7 +90,7 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
         try {
             conn = datasource.getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet rs = metaData.getColumns(null, null, null, "delete_ts");
+            ResultSet rs = metaData.getColumns(null, null, null, PersistenceProvider.getDbDialect().getDeleteTsColumn());
             lock.writeLock().lock();
             try {
                 softDeleteTables.clear();

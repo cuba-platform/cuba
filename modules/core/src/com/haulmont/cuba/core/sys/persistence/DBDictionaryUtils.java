@@ -24,8 +24,8 @@ public class DBDictionaryUtils
 {
     private static PersistenceConfigAPI persistenceConfig;
 
-    public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join, boolean lowerCase) {
-        String deleteTsCol = getDeleteTsCol(lowerCase);
+    public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join) {
+        String deleteTsCol = getDeleteTsCol();
 
         ForeignKey fk = join.getForeignKey();
         if (fk == null)
@@ -98,9 +98,8 @@ public class DBDictionaryUtils
         return buf;
     }
 
-    public static SQLBuffer getWhere(DBDictionary dbDictionary, Select sel, boolean forUpdate,
-                                     boolean lowerCase, boolean useSchema) {
-        String deleteTsCol = getDeleteTsCol(lowerCase);
+    public static SQLBuffer getWhere(DBDictionary dbDictionary, Select sel, boolean forUpdate, boolean useSchema) {
+        String deleteTsCol = getDeleteTsCol();
 
         Joins joins = sel.getJoins();
         if (sel.getJoinSyntax() == JoinSyntaxes.SYNTAX_SQL92
@@ -111,28 +110,26 @@ public class DBDictionaryUtils
                 return buf;
 
             Set<String> aliases = new HashSet<String>();
-            Collection columns = null;
-            if (buf != null) {
-                columns = buf.getColumns();
-            }
-            if (columns == null) {
-                columns = sel.getSelects();
-            }
 
-            if (columns != null) {
-                for (Object item : columns) {
-                    if (item instanceof Column) {
-                        Column col = (Column) item;
-                        for (String s : (Collection<String>) sel.getTableAliases()) {
-                            int i = s.indexOf(' ');
-                            String tableName = s.substring(0, i);
-                            String t = useSchema ? col.getTable().getFullName() : col.getTable().getName();
-                            if (t.equals(tableName)) {
-                                if (col.getTable().containsColumn(deleteTsCol))
-                                    aliases.add(s.substring(i + 1));
-                                break;
-                            }
-                        }
+            List<String> selectAliases = sel.getSelectAliases();
+            for (String s : (Collection<String>) sel.getTableAliases()) {
+                int i = s.indexOf(' ');
+                String alias = s.substring(i + 1);
+
+                boolean tableInSelect = false;
+                for (String selectAlias : selectAliases) {
+                    if (alias.equals(selectAlias.substring(0, selectAlias.indexOf('.')))) {
+                        tableInSelect = true;
+                        break;
+                    }
+                }
+                if (tableInSelect) {
+                    String tableName = s.substring(0, i);
+                    if (useSchema) {
+                        tableName = tableName.substring(tableName.indexOf('.') + 1);
+                    }
+                    if (getPersistenceConfigAPI().isDeleteDeferredFor(tableName)) {
+                        aliases.add(alias);
                     }
                 }
             }
@@ -177,8 +174,8 @@ public class DBDictionaryUtils
         return where;
     }
 
-    private static String getDeleteTsCol(boolean lowerCase) {
-        return lowerCase ? "delete_ts" : "DELETE_TS";
+    private static String getDeleteTsCol() {
+        return PersistenceProvider.getDbDialect().getDeleteTsColumn();
     }
 
     private static PersistenceConfigAPI getPersistenceConfigAPI() {

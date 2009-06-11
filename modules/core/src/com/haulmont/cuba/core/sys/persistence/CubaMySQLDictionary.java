@@ -18,10 +18,10 @@ import org.apache.openjpa.jdbc.sql.Select;
 public class CubaMySQLDictionary extends MySQLDictionary
 {
     public SQLBuffer toTraditionalJoin(Join join) {
-        return DBDictionaryUtils.toTraditionalJoin(this, join, false);
+        return DBDictionaryUtils.toTraditionalJoin(this, join);
     }
 
     protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
-        return DBDictionaryUtils.getWhere(this, sel, forUpdate, false, false);
+        return DBDictionaryUtils.getWhere(this, sel, forUpdate, false);
     }
 }
