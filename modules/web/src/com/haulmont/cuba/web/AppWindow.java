@@ -242,6 +242,9 @@ public class AppWindow extends Window {
                     createMenuItem(menuItem, childItem);
                 }
             }
+            if (!menuItem.hasChildren()) {
+                menuBar.removeItem(menuItem);
+            }
         }
     }
 
