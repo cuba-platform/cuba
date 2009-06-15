@@ -33,7 +33,7 @@ public class TreeTableContainerWrapper
     @Override
     public void updateHierarchicalWrapper() {
         super.updateHierarchicalWrapper();
-        first = roots.peekFirst();
+        updateFirst();
     }
 
     @Override
@@ -74,7 +74,7 @@ public class TreeTableContainerWrapper
         super.removeFromHierarchyWrapper(itemId);
 
         if (b) {
-            first = roots.iterator().next();
+            updateFirst();
         }
     }
 
@@ -325,7 +325,7 @@ public class TreeTableContainerWrapper
 
     protected void initInline() {
         inline = new LinkedList<Object>();
-        makeInlineElements(inline, roots);
+        makeInlineElements(inline, rootItemIds());
     }
 
     protected LinkedList<Object> getInlineChildren(Object itemId) {
@@ -347,6 +347,15 @@ public class TreeTableContainerWrapper
                     makeInlineElements(inline, getChildren(e));
                 }
             }
+        }
+    }
+
+    private void updateFirst() {
+        Collection roots = rootItemIds();
+        if (roots.size() > 0) {
+            first = roots.iterator().next();
+        } else {
+            first = null;
         }
     }
 
