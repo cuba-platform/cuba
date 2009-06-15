@@ -127,9 +127,9 @@ public class IScrollTreeTable
             }
         }
 
-        protected IScrollTableRow createRowInstance(UIDL uidl, char[] aligns) {
+        protected IScrollTreeTableRow createRowInstance(UIDL uidl, char[] aligns) {
             boolean isCaption = isCaptionRow(uidl);
-            final IScrollTableRow row;
+            final IScrollTreeTableRow row;
             if (isCaption) {
                 row = new IScrollTreeTableCaptionRow(uidl, aligns);
             } else {
@@ -140,15 +140,18 @@ public class IScrollTreeTable
 
         @Override
         protected IScrollTableRow createRow(UIDL uidl) {
-            final IScrollTableRow row = createRowInstance(uidl, aligns);
+            final IScrollTreeTableRow row = createRowInstance(uidl, aligns);
             if (!isCaptionRow(uidl)) {
+                int groupColIndex = showRowHeaders ? 1 : 0;
                 final int cells = DOM.getChildCount(row.getElement());
                 for (int i = 0; i < cells; i++) {
+                    int groupWidth = groupColIndex == i
+                            ? row.getGroupCellWidth() : 0;
                     final Element cell = DOM.getChild(row.getElement(), i);
                     final int w = IScrollTreeTable.this
                             .getColWidth(getColKeyByIndex(i));
                     DOM.setStyleAttribute(DOM.getChild(cell, DOM.getChildCount(cell) - 1), "width",
-                            (w - CELL_CONTENT_PADDING) + "px");
+                            (w - CELL_CONTENT_PADDING - groupWidth) + "px");
                     DOM.setStyleAttribute(cell, "width", w + "px");
                 }
             }
@@ -157,12 +160,15 @@ public class IScrollTreeTable
 
         @Override
         public void setColWidth(int colIndex, int w) {
+            int groupColIndex = showRowHeaders ? 1 : 0;
             for (final Object o : renderedRows) {
                 if (!(o instanceof IScrollTreeTableCaptionRow)) {
+                    int groupWidth = groupColIndex == colIndex
+                            ? ((IScrollTreeTableRow) o).getGroupCellWidth() : 0;
                     final Element cell = DOM.getChild(((IScrollTableRow) o).getElement(),
                             colIndex);
                     DOM.setStyleAttribute(DOM.getChild(cell, DOM.getChildCount(cell) - 1), "width",
-                            (w - CELL_CONTENT_PADDING) + "px");
+                            (w - CELL_CONTENT_PADDING - groupWidth) + "px");
                     DOM.setStyleAttribute(cell, "width", w + "px");
                 }
             }
@@ -203,8 +209,8 @@ public class IScrollTreeTable
 
             @Override
             protected void handleRowClick(Event event) {
-                if (groupContainer != null
-                        && DOM.eventGetTarget(event) == groupContainer) {
+                if (groupCell != null
+                        && DOM.eventGetTarget(event) == groupCell) {
                     if (isExpanded()) {
                         client.updateVariable(paintableId, "collapse", getKey(), true);
                     } else {
@@ -221,7 +227,7 @@ public class IScrollTreeTable
             private boolean hasChildren;
             private boolean expanded;
 
-            protected Element groupContainer = null;
+            protected Element groupCell = null;
 
             public IScrollTreeTableRow(UIDL uidl, char[] aligns) {
                 super(uidl.getIntAttribute("key"));
@@ -295,8 +301,8 @@ public class IScrollTreeTable
                 if (hasChildren) {
                     int groupCol = showRowHeaders ? 1 : 0;
                     if (col == groupCol) {
-                        groupContainer = createGroupContainer();
-                        DOM.appendChild(td, groupContainer);
+                        groupCell = createGroupContainer();
+                        DOM.appendChild(td, groupCell);
                         className += " " + CLASSNAME + "-float";
                         DOM.setElementProperty(container, "className", className);
                     }
@@ -335,8 +341,8 @@ public class IScrollTreeTable
                 if (hasChildren) {
                     int groupCol = showRowHeaders ? 1 : 0;
                     if (col == groupCol) {
-                        groupContainer = createGroupContainer();
-                        DOM.appendChild(td, groupContainer);
+                        groupCell = createGroupContainer();
+                        DOM.appendChild(td, groupCell);
                         className += " " + CLASSNAME + "-float";
                         DOM.setElementProperty(container, "className", className);
                     }
@@ -352,6 +358,13 @@ public class IScrollTreeTable
 
             public boolean isExpanded() {
                 return expanded;
+            }
+
+            public int getGroupCellWidth() {
+                if (groupCell != null) {
+                    return DOM.getElementPropertyInt(groupCell, "offsetWidth");
+                }
+                return 0;
             }
 
             protected Element createGroupContainer() {
@@ -384,8 +397,8 @@ public class IScrollTreeTable
             }
 
             protected void handleRowClick(Event event) {
-                if (groupContainer != null
-                        && DOM.eventGetTarget(event) == groupContainer) {
+                if (groupCell != null
+                        && DOM.eventGetTarget(event) == groupCell) {
                     if (isExpanded()) {
                         client.updateVariable(paintableId, "collapse", getKey(), true);
                     } else {
