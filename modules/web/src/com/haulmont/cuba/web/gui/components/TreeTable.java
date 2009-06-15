@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class TreeTable
     extends
-        AbstractTable<com.haulmont.cuba.web.toolkit.ui.TreeTable> 
+        AbstractTable<com.haulmont.cuba.web.toolkit.ui.TreeTable>
     implements
         com.haulmont.cuba.gui.components.TreeTable, Component.Wrapper
 {
@@ -137,6 +137,10 @@ public class TreeTable
 
         public boolean setCaption(Object itemId, String caption) {
             return false;
+        }
+
+        public int getLevel(Object itemId) {
+            return -1;
         }
     }
 }

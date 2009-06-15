@@ -2016,6 +2016,18 @@ input.i-modified,
 	display: inline;
 }
 
+.i-table .i-table-caption-row {
+    background-color: #cccccc;
+}
+
+.i-table .i-table-caption-row-content {
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 3px 0 3px 3px;
+    margin-right: 5px;
+    line-height: 23px;
+}
+
 /* IE6 hack */
 * html .i-table-scrollposition {
 	background: transparent;

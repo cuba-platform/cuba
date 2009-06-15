@@ -11,12 +11,13 @@ package com.haulmont.cuba.web.toolkit.data;
 
 import com.itmill.toolkit.data.Container;
 
-public interface TreeTableContainer extends Container.Hierarchical {
-
+public interface TreeTableContainer
+        extends Container.Hierarchical
+{
     boolean isCaption(Object itemId);
 
     String getCaption(Object itemId);
-
     boolean setCaption(Object itemId, String caption);
 
+    int getLevel(Object itemId);
 }

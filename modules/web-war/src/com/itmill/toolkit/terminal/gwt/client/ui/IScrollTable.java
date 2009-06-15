@@ -1649,17 +1649,17 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         private int rowHeight = -1;
 
-        private final List renderedRows = new Vector();
+        protected final List renderedRows = new Vector();
 
         private boolean initDone = false;
 
         Element preSpacer = DOM.createDiv();
         Element postSpacer = DOM.createDiv();
 
-        Element container = DOM.createDiv();
+        protected Element container = DOM.createDiv();
 
-        Element tBody = DOM.createTBody();
-        Element table = DOM.createTable();
+        protected Element tBody = DOM.createTBody();
+        protected Element table = DOM.createTable();
 
         protected int firstRendered;
 
@@ -1806,9 +1806,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 first = (IScrollTableRow) renderedRows.get(0);
             }
             if (first != null && first.getStyleName().indexOf("-odd") == -1) {
-                row.addStyleName(CLASSNAME + "-row-odd");
+                applyAlternatingRowColor(row, "-row-odd");
             } else {
-                row.addStyleName(CLASSNAME + "-row");
+                applyAlternatingRowColor(row, "-row");
             }
             if (row.isSelected()) {
                 row.addStyleName("i-selected");
@@ -1825,9 +1825,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                         .get(renderedRows.size() - 1);
             }
             if (last != null && last.getStyleName().indexOf("-odd") == -1) {
-                row.addStyleName(CLASSNAME + "-row-odd");
+                applyAlternatingRowColor(row, "-row-odd");
             } else {
-                row.addStyleName(CLASSNAME + "-row");
+                applyAlternatingRowColor(row, "-row");
             }
             if (row.isSelected()) {
                 row.addStyleName("i-selected");
@@ -1835,6 +1835,10 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             DOM.appendChild(tBody, row.getElement());
             adopt(row);
             renderedRows.add(row);
+        }
+
+        protected void applyAlternatingRowColor(IScrollTableRow row, String style) {
+            row.addStyleName(CLASSNAME + style);
         }
 
         public Iterator iterator() {
@@ -1979,7 +1983,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
             private String[] actionKeys = null;
 
-            private IScrollTableRow(int rowKey) {
+            protected IScrollTableRow(int rowKey) {
                 this.rowKey = rowKey;
                 setElement(DOM.createElement("tr"));
                 DOM.sinkEvents(getElement(), Event.ONCLICK | Event.ONDBLCLICK
@@ -2022,7 +2026,6 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
                 tHead.getColumnAlignments();
                 int col = 0;
-                int visibleColumnIndex = -1;
 
                 // row header
                 if (showRowHeaders) {
@@ -2034,12 +2037,20 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     actionKeys = uidl.getStringArrayAttribute("al");
                 }
 
+                addCells(uidl, col);
+
+                if (uidl.hasAttribute("selected") && !isSelected()) {
+                    toggleSelection();
+                }
+            }
+
+            protected void addCells(UIDL uidl, int col) {
+                int visibleColumnIndex = 0;
                 final Iterator cells = uidl.getChildIterator();
                 while (cells.hasNext()) {
                     final Object cell = cells.next();
-                    visibleColumnIndex++;
 
-                    String columnId = visibleColOrder[visibleColumnIndex];
+                    String columnId = visibleColOrder[visibleColumnIndex++];
 
                     String style = "";
                     if (uidl.hasAttribute("style-" + columnId)) {
@@ -2055,9 +2066,6 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                         addCell((Widget) cellContent, aligns[col++], style);
                         paintComponent(cellContent, (UIDL) cell);
                     }
-                }
-                if (uidl.hasAttribute("selected") && !isSelected()) {
-                    toggleSelection();
                 }
             }
 

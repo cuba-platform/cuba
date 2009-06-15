@@ -1,12 +1,11 @@
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
-import com.itmill.toolkit.terminal.gwt.client.ui.Table;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
+import com.itmill.toolkit.terminal.gwt.client.UIDL;
+import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
+import com.itmill.toolkit.terminal.gwt.client.ui.Table;
 
 import java.util.Iterator;
 
@@ -15,15 +14,13 @@ import java.util.Iterator;
  * Date: 03.06.2009
  */
 public class IScrollTreeTable
-        extends IScrollTable
-{
+        extends IScrollTable {
     @Override
     protected IScrollTableBody createBody() {
         return new IScrollTreeTableBody();
     }
 
-    public class IScrollTreeTableBody extends IScrollTableBody
-    {
+    public class IScrollTreeTableBody extends IScrollTableBody {
         @Override
         public void renderRows(UIDL rowData, int firstIndex, int rows) {
             // FIXME REVIEW
@@ -104,8 +101,8 @@ public class IScrollTreeTable
             final Iterator it = rowData.getChildIterator();
             aligns = tHead.getColumnAlignments();
             while (it.hasNext()) {
-                final IScrollTableRow row = new IScrollTreeTableRow((UIDL) it
-                        .next(), aligns);
+                final IScrollTableRow row =
+                        createRowInstance((UIDL) it.next(), aligns);
                 addRow(row);
             }
             if (isAttached()) {
@@ -113,23 +110,82 @@ public class IScrollTreeTable
             }
         }
 
-        @Override
-        protected IScrollTableRow createRow(UIDL uidl) {
-            final IScrollTableRow row = new IScrollTreeTableRow(uidl, aligns);
-            final int cells = DOM.getChildCount(row.getElement());
-            for (int i = 0; i < cells; i++) {
-                final Element cell = DOM.getChild(row.getElement(), i);
-                final int w = IScrollTreeTable.this
-                        .getColWidth(getColKeyByIndex(i));
-                DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
-                        (w - CELL_CONTENT_PADDING) + "px");
-                DOM.setStyleAttribute(cell, "width", w + "px");
+        protected IScrollTableRow createRowInstance(UIDL uidl, char[] aligns) {
+            boolean isCaption = isCaptionRow(uidl);
+            final IScrollTableRow row;
+            if (isCaption) {
+                row = new IScrollTreeTableCaptionRow(uidl, aligns);
+            } else {
+                row = new IScrollTreeTableRow(uidl, aligns);
             }
             return row;
         }
 
-        public class IScrollTreeTableRow extends IScrollTableBody.IScrollTableRow
-        {
+        @Override
+        protected IScrollTableRow createRow(UIDL uidl) {
+            final IScrollTableRow row = createRowInstance(uidl, aligns);
+            if (!isCaptionRow(uidl)) {
+                final int cells = DOM.getChildCount(row.getElement());
+                for (int i = 0; i < cells; i++) {
+                    final Element cell = DOM.getChild(row.getElement(), i);
+                    final int w = IScrollTreeTable.this
+                            .getColWidth(getColKeyByIndex(i));
+                    DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
+                            (w - CELL_CONTENT_PADDING) + "px");
+                    DOM.setStyleAttribute(cell, "width", w + "px");
+                }
+            }
+            return row;
+        }
+
+        @Override
+        public void setColWidth(int colIndex, int w) {
+            for (final Object o : renderedRows) {
+                if (!(o instanceof IScrollTreeTableCaptionRow)) {
+                    final Element cell = DOM.getChild(((IScrollTableRow) o).getElement(),
+                            colIndex);
+                    DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
+                            (w - CELL_CONTENT_PADDING) + "px");
+                    DOM.setStyleAttribute(cell, "width", w + "px");
+                }
+            }
+        }
+
+        @Override
+        protected void applyAlternatingRowColor(IScrollTableRow row, String style) {
+            if (row instanceof IScrollTreeTableCaptionRow) {
+                row.addStyleName(CLASSNAME + "-caption-row");
+            } else {
+                super.applyAlternatingRowColor(row, style);
+            }
+        }
+
+        private boolean isCaptionRow(UIDL uidl) {
+            return uidl.hasAttribute("rowCaption");
+        }
+
+        public class IScrollTreeTableCaptionRow extends IScrollTreeTableRow {
+            public IScrollTreeTableCaptionRow(UIDL uidl, char[] aligns) {
+                super(uidl, aligns);
+            }
+
+            @Override
+            protected void addCells(UIDL uidl, int col) {
+                int columnCount = IScrollTreeTable.this.tHead.getVisibleCellCount();
+
+                final Element td = DOM.createTD();
+                DOM.setElementAttribute(td, "colspan", String.valueOf(columnCount));
+                final Element container = DOM.createDiv();
+                String className = CLASSNAME + "-caption-row-content";   //todo check css
+
+                DOM.setElementProperty(container, "className", className);
+                DOM.setInnerText(container, uidl.getStringAttribute("rowCaption"));
+                DOM.appendChild(td, container);
+                DOM.appendChild(getElement(), td);
+            }
+        }
+
+        public class IScrollTreeTableRow extends IScrollTableBody.IScrollTableRow {
             private boolean hasChildren;
             private boolean expanded;
 
@@ -150,38 +206,35 @@ public class IScrollTreeTable
                 if (getElement() == tdOrTr
                         || getElement() == tdOrTr.getParentElement()) {
                     switch (DOM.eventGetType(event)) {
-                    case Event.ONCLICK:
-                        handleClickEvent(event);
-                        if (selectMode > Table.SELECT_MODE_NONE) {
-                            toggleSelection();
-                            // Note: changing the immediateness of this might
-                            // require changes to "clickEvent" immediateness
-                            // also.
-                            client.updateVariable(paintableId, "selected",
-                                    selectedRowKeys.toArray(), immediate);
-                        } else if (hasChildren) {         //todo
-                            if (expanded) {
-                                client.updateVariable(paintableId, "collapse", getKey(), true);
-                            } else {
-                                client.updateVariable(paintableId, "expand", getKey(), true);
+                        case Event.ONCLICK:
+                            handleClickEvent(event);
+                            if (selectMode > Table.SELECT_MODE_NONE) {
+                                toggleSelection();
+                                // Note: changing the immediateness of this might
+                                // require changes to "clickEvent" immediateness
+                                // also.
+                                client.updateVariable(paintableId, "selected",
+                                        selectedRowKeys.toArray(), immediate);
+                            } else if (hasChildren) {         //todo
+                                if (expanded) {
+                                    client.updateVariable(paintableId, "collapse", getKey(), true);
+                                } else {
+                                    client.updateVariable(paintableId, "expand", getKey(), true);
+                                }
+                                DOM.eventCancelBubble(event, true);
                             }
-                            DOM.eventCancelBubble(event, true);
-
-//                            Window.alert(expanded ? "Collapse" : "Expand");
-                        }
-                        break;
-                    case Event.ONDBLCLICK:
-                        handleClickEvent(event);
-                        break;
-                    case Event.ONCONTEXTMENU:
-                        showContextMenu(event);
-                        break;
-                    default:
-                        break;
+                            break;
+                        case Event.ONDBLCLICK:
+                            handleClickEvent(event);
+                            break;
+                        case Event.ONCONTEXTMENU:
+                            showContextMenu(event);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
         }
     }
-
 }

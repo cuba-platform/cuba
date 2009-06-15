@@ -20,7 +20,7 @@ public class WidgetSet extends DefaultWidgetSet {
         if ("pagingtable".equals(tag)) {
             return IPagingTable.class;
         } else if ("treetable".equals(tag)) {
-            return ITreeTable.class;
+            return IScrollTreeTable.class;
         } else if ("scrollablepanel".equals(tag)) {
             return IScrollablePanel.class;
         }
@@ -31,8 +31,8 @@ public class WidgetSet extends DefaultWidgetSet {
         final Class classType = resolveWidgetType(uidl);
         if (IPagingTable.class.equals(classType)) {
             return new IPagingTable();
-        } else if (ITreeTable.class.equals(classType)) {
-            return new ITreeTable();
+        } else if (IScrollTreeTable.class.equals(classType)) {
+            return new IScrollTreeTable();
         } else if (IScrollablePanel.class.equals(classType)) {
             return new IScrollablePanel();
         }
