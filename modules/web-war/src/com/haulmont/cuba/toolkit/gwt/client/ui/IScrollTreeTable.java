@@ -215,7 +215,8 @@ public class IScrollTreeTable
                                 // also.
                                 client.updateVariable(paintableId, "selected",
                                         selectedRowKeys.toArray(), immediate);
-                            } else if (hasChildren) {         //todo
+                            }
+                            if (hasChildren) {         //todo
                                 if (expanded) {
                                     client.updateVariable(paintableId, "collapse", getKey(), true);
                                 } else {
