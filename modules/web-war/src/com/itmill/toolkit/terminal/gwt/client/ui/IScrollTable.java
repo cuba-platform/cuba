@@ -53,44 +53,44 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
      * multiple of pagelength which component will cache when requesting more
      * rows
      */
-    private static final double CACHE_RATE = 2;
+    protected static final double CACHE_RATE = 2;
     /**
      * fraction of pageLenght which can be scrolled without making new request
      */
-    private static final double CACHE_REACT_RATE = 1.5;
+    protected static final double CACHE_REACT_RATE = 1.5;
 
     public static final char ALIGN_CENTER = 'c';
     public static final char ALIGN_LEFT = 'b';
     public static final char ALIGN_RIGHT = 'e';
-    private int firstRowInViewPort = 0;
-    private int pageLength = 15;
-    private int lastRequestedFirstvisible = 0; // to detect "serverside scroll"
+    protected int firstRowInViewPort = 0;
+    protected int pageLength = 15;
+    protected int lastRequestedFirstvisible = 0; // to detect "serverside scroll"
 
     private boolean showRowHeaders = false;
 
     private String[] columnOrder;
 
-    private ApplicationConnection client;
-    private String paintableId;
+    protected ApplicationConnection client;
+    protected String paintableId;
 
-    private boolean immediate;
+    protected boolean immediate;
 
-    private int selectMode = Table.SELECT_MODE_NONE;
+    protected int selectMode = Table.SELECT_MODE_NONE;
 
-    private final HashSet selectedRowKeys = new HashSet();
+    protected final HashSet selectedRowKeys = new HashSet();
 
     private boolean initializedAndAttached = false;
 
-    private final TableHead tHead = new TableHead();
+    protected final TableHead tHead = new TableHead();
 
-    private final ScrollPanel bodyContainer = new ScrollPanel();
+    protected final ScrollPanel bodyContainer = new ScrollPanel();
 
-    private int totalRows;
+    protected int totalRows;
 
     private Set<String> collapsedColumns;
 
-    private final RowRequestHandler rowRequestHandler;
-    private IScrollTableBody tBody;
+    protected final RowRequestHandler rowRequestHandler;
+    protected IScrollTableBody tBody;
     private int firstvisible = 0;
     private boolean sortAscending;
     private String sortColumn;
@@ -248,7 +248,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 tBody.removeFromParent();
                 lazyUnregistryBag.add(tBody);
             }
-            tBody = new IScrollTableBody();
+            tBody = createBody();
 
             tBody.renderInitialRows(rowData, uidl.getIntAttribute("firstrow"),
                     uidl.getIntAttribute("rows"));
@@ -260,6 +260,10 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         }
         hideScrollPositionAnnotation();
         purgeUnregistryBag();
+    }
+
+    protected IScrollTableBody createBody() {
+        return new IScrollTableBody();
     }
 
     /**
@@ -376,7 +380,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
      * @param colKey
      * @return column index of visible columns, -1 if column not visible
      */
-    private int getColIndexByKey(String colKey) {
+    protected int getColIndexByKey(String colKey) {
         // return 0 if asked for rowHeaders
         if ("0".equals(colKey)) {
             return 0;
@@ -389,7 +393,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         return -1;
     }
 
-    private boolean isCollapsedColumn(String colKey) {
+    protected boolean isCollapsedColumn(String colKey) {
         if (collapsedColumns == null) {
             return false;
         }
@@ -399,23 +403,23 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         return false;
     }
 
-    private String getColKeyByIndex(int index) {
+    protected String getColKeyByIndex(int index) {
         return tHead.getHeaderCell(index).getColKey();
     }
 
-    private void setColWidth(int colIndex, int w) {
+    protected void setColWidth(int colIndex, int w) {
         final HeaderCell cell = tHead.getHeaderCell(colIndex);
         cell.setWidth(w);
         tBody.setColWidth(colIndex, w);
     }
 
-    private int getColWidth(String colKey) {
+    protected int getColWidth(String colKey) {
         return tHead.getHeaderCell(colKey).getWidth();
     }
 
     private IScrollTableBody.IScrollTableRow getRenderedRowByKey(String key) {
         final Iterator it = tBody.iterator();
-        IScrollTableBody.IScrollTableRow r = null;
+        IScrollTableBody.IScrollTableRow r;
         while (it.hasNext()) {
             r = (IScrollTableBody.IScrollTableRow) it.next();
             if (r.getKey().equals(key)) {
@@ -796,7 +800,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         }
     }
 
-    private class RowRequestHandler extends Timer {
+    protected class RowRequestHandler extends Timer {
 
         private int reqFirstRow = 0;
         private int reqRows = 0;
@@ -1657,13 +1661,13 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         Element tBody = DOM.createTBody();
         Element table = DOM.createTable();
 
-        private int firstRendered;
+        protected int firstRendered;
 
-        private int lastRendered;
+        protected int lastRendered;
 
-        private char[] aligns;
+        protected char[] aligns;
 
-        IScrollTableBody() {
+        protected IScrollTableBody() {
             constructDOM();
             setElement(container);
         }
@@ -1782,7 +1786,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
          *
          * @param uidl
          */
-        private IScrollTableRow createRow(UIDL uidl) {
+        protected IScrollTableRow createRow(UIDL uidl) {
             final IScrollTableRow row = new IScrollTableRow(uidl, aligns);
             final int cells = DOM.getChildCount(row.getElement());
             for (int i = 0; i < cells; i++) {
@@ -1796,7 +1800,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             return row;
         }
 
-        private void addRowBeforeFirstRendered(IScrollTableRow row) {
+        protected void addRowBeforeFirstRendered(IScrollTableRow row) {
             IScrollTableRow first = null;
             if (renderedRows.size() > 0) {
                 first = (IScrollTableRow) renderedRows.get(0);
@@ -1814,7 +1818,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             renderedRows.add(0, row);
         }
 
-        private void addRow(IScrollTableRow row) {
+        protected void addRow(IScrollTableRow row) {
             IScrollTableRow last = null;
             if (renderedRows.size() > 0) {
                 last = (IScrollTableRow) renderedRows
@@ -1877,13 +1881,13 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
          * Fix container blocks height according to totalRows to avoid
          * "bouncing" when scrolling
          */
-        private void setContainerHeight() {
+        protected void setContainerHeight() {
             fixSpacers();
             DOM.setStyleAttribute(container, "height", totalRows
                     * getRowHeight() + "px");
         }
 
-        private void fixSpacers() {
+        protected void fixSpacers() {
             int prepx = getRowHeight() * firstRendered;
             if (prepx < 0) {
                 prepx = 0;
@@ -2148,7 +2152,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 }
             }
 
-            private void handleClickEvent(Event event) {
+            protected void handleClickEvent(Event event) {
                 if (emitClickEvents) {
                     boolean dbl = DOM.eventGetType(event) == Event.ONDBLCLICK;
                     final Element tdOrTr = DOM.getParent(DOM
@@ -2228,7 +2232,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 return selected;
             }
 
-            private void toggleSelection() {
+            protected void toggleSelection() {
                 selected = !selected;
                 if (selected) {
                     if (selectMode == Table.SELECT_MODE_SINGLE) {
