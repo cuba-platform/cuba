@@ -19,10 +19,14 @@ import com.haulmont.cuba.core.app.PersistenceConfigAPI;
 import com.haulmont.cuba.core.app.PersistenceConfigMBean;
 
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class DBDictionaryUtils
 {
     private static PersistenceConfigAPI persistenceConfig;
+
+    private static Pattern ALIAS_PATTERN = Pattern.compile("\\b(\\w+)\\.");
 
     public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join) {
         String deleteTsCol = getDeleteTsCol();
@@ -111,17 +115,29 @@ public class DBDictionaryUtils
 
             Set<String> aliases = new HashSet<String>();
 
-            List<String> selectAliases = sel.getSelectAliases();
+            List selectAliases = sel.getSelectAliases();
             for (String s : (Collection<String>) sel.getTableAliases()) {
                 int i = s.indexOf(' ');
                 String alias = s.substring(i + 1);
 
                 boolean tableInSelect = false;
-                for (String selectAlias : selectAliases) {
-                    if (alias.equals(selectAlias.substring(0, selectAlias.indexOf('.')))) {
-                        tableInSelect = true;
-                        break;
-                    }
+                for (Iterator it = selectAliases.iterator(); it.hasNext();) {
+                    Object obj = it.next();
+                    if (obj instanceof String) {
+                        String selectAlias = (String) obj;
+                        if (alias.equals(selectAlias.substring(0, selectAlias.indexOf('.')))) {
+                            tableInSelect = true;
+                            break;
+                        }
+                    } else if (obj instanceof SQLBuffer) {
+                        String selectAlias = ((SQLBuffer) obj).getSQL();
+                        Matcher matcher = ALIAS_PATTERN.matcher(selectAlias);
+                        if (matcher.find() && alias.equals(matcher.group(1))) {
+                            tableInSelect = true;
+                            break;
+                        }
+                    } else
+                        throw new UnsupportedOperationException("Unsupported SelectAlias type: " + obj.getClass());
                 }
                 if (tableInSelect) {
                     String tableName = s.substring(0, i);
