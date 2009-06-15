@@ -66,7 +66,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
     protected int pageLength = 15;
     protected int lastRequestedFirstvisible = 0; // to detect "serverside scroll"
 
-    private boolean showRowHeaders = false;
+    protected boolean showRowHeaders = false;
 
     private String[] columnOrder;
 
@@ -1976,12 +1976,12 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         public class IScrollTableRow extends Panel implements ActionOwner,
                 Container {
 
-            Vector childWidgets = new Vector();
+            protected Vector childWidgets = new Vector();
             private boolean selected = false;
             private final int rowKey;
             private List<UIDL> pendingComponentPaints;
 
-            private String[] actionKeys = null;
+            protected String[] actionKeys = null;
 
             protected IScrollTableRow(int rowKey) {
                 this.rowKey = rowKey;
@@ -2029,8 +2029,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
                 // row header
                 if (showRowHeaders) {
-                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col++], "",
+                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
                             true);
+                    col++;
                 }
 
                 if (uidl.hasAttribute("al")) {
@@ -2058,18 +2059,20 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     }
 
                     if (cell instanceof String) {
-                        addCell(cell.toString(), aligns[col++], style, false);
+                        addCell(cell.toString(), aligns[col], style, col, false);
+
                     } else {
                         final Paintable cellContent = client
                                 .getPaintable((UIDL) cell);
 
-                        addCell((Widget) cellContent, aligns[col++], style);
+                        addCell((Widget) cellContent, aligns[col], style, col);
                         paintComponent(cellContent, (UIDL) cell);
                     }
+                    col++;
                 }
             }
 
-            public void addCell(String text, char align, String style,
+            public void addCell(String text, char align, String style, int col,
                     boolean textIsHTML) {
                 // String only content is optimized by not using Label widget
                 final Element td = DOM.createTD();
@@ -2105,7 +2108,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 DOM.appendChild(getElement(), td);
             }
 
-            public void addCell(Widget w, char align, String style) {
+            public void addCell(Widget w, char align, String style, int col) {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
                 String className = CLASSNAME + "-cell-content";
@@ -2489,7 +2492,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
      *            possibly with values caption and icon
      * @return html snippet containing possibly an icon + caption text
      */
-    private String buildCaptionHtmlSnippet(UIDL uidl) {
+    protected String buildCaptionHtmlSnippet(UIDL uidl) {
         String s = uidl.getStringAttribute("caption");
         if (uidl.hasAttribute("icon")) {
             s = "<img src=\""

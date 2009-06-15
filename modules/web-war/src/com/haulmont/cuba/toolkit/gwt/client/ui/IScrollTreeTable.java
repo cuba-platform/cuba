@@ -3,6 +3,7 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Widget;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
 import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
 import com.itmill.toolkit.terminal.gwt.client.ui.Table;
@@ -110,6 +111,22 @@ public class IScrollTreeTable
             }
         }
 
+        @Override
+        protected void addRowBeforeFirstRendered(IScrollTableRow row) {
+            super.addRowBeforeFirstRendered(row);
+            if (((IScrollTreeTableRow) row).isExpanded()) {
+                row.addStyleName("i-expanded");
+            }
+        }
+
+        @Override
+        protected void addRow(IScrollTableRow row) {
+            super.addRow(row);
+            if (((IScrollTreeTableRow) row).isExpanded()) {
+                row.addStyleName("i-expanded");
+            }
+        }
+
         protected IScrollTableRow createRowInstance(UIDL uidl, char[] aligns) {
             boolean isCaption = isCaptionRow(uidl);
             final IScrollTableRow row;
@@ -130,7 +147,7 @@ public class IScrollTreeTable
                     final Element cell = DOM.getChild(row.getElement(), i);
                     final int w = IScrollTreeTable.this
                             .getColWidth(getColKeyByIndex(i));
-                    DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
+                    DOM.setStyleAttribute(DOM.getChild(cell, DOM.getChildCount(cell) - 1), "width",
                             (w - CELL_CONTENT_PADDING) + "px");
                     DOM.setStyleAttribute(cell, "width", w + "px");
                 }
@@ -144,7 +161,7 @@ public class IScrollTreeTable
                 if (!(o instanceof IScrollTreeTableCaptionRow)) {
                     final Element cell = DOM.getChild(((IScrollTableRow) o).getElement(),
                             colIndex);
-                    DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
+                    DOM.setStyleAttribute(DOM.getChild(cell, DOM.getChildCount(cell) - 1), "width",
                             (w - CELL_CONTENT_PADDING) + "px");
                     DOM.setStyleAttribute(cell, "width", w + "px");
                 }
@@ -183,14 +200,50 @@ public class IScrollTreeTable
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
             }
+
+            @Override
+            protected void handleRowClick(Event event) {
+                if (groupContainer != null
+                        && DOM.eventGetTarget(event) == groupContainer) {
+                    if (isExpanded()) {
+                        client.updateVariable(paintableId, "collapse", getKey(), true);
+                    } else {
+                        client.updateVariable(paintableId, "expand", getKey(), true);
+                    }
+                    DOM.eventCancelBubble(event, true);
+                }
+            }
         }
 
-        public class IScrollTreeTableRow extends IScrollTableBody.IScrollTableRow {
+        public class IScrollTreeTableRow
+                extends IScrollTableBody.IScrollTableRow
+        {
             private boolean hasChildren;
             private boolean expanded;
 
+            protected Element groupContainer = null;
+
             public IScrollTreeTableRow(UIDL uidl, char[] aligns) {
-                super(uidl, aligns);
+                super(uidl.getIntAttribute("key"));
+
+                String rowStyle = uidl.getStringAttribute("rowstyle");
+                if (rowStyle != null) {
+                    addStyleName(CLASSNAME + "-row-" + rowStyle);
+                }
+
+                tHead.getColumnAlignments();
+                int col = 0;
+
+                // row header
+                if (showRowHeaders) {
+                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
+                            true);
+                    col++;
+                }
+
+                if (uidl.hasAttribute("al")) {
+                    actionKeys = uidl.getStringArrayAttribute("al");
+                }
 
                 if (uidl.hasAttribute("children") && uidl.getIntAttribute("children") > 0) {
                     hasChildren = true;
@@ -198,6 +251,114 @@ public class IScrollTreeTable
                         expanded = true;
                     }
                 }
+
+                addCells(uidl, col);
+
+                if (uidl.hasAttribute("selected") && !isSelected()) {
+                    toggleSelection();
+                }
+            }
+
+            @Override
+            public void addCell(String text, char align, String style, int col, boolean textIsHTML) {
+                // String only content is optimized by not using Label widget
+                final Element td = DOM.createTD();
+                final Element container = DOM.createDiv();
+                String className = CLASSNAME + "-cell-content";
+                String classNameExt = null;
+                if (style != null && !style.equals("")) {
+                    classNameExt = CLASSNAME + "-cell-content-" + style;
+                }
+                if (classNameExt != null) {
+                    className += " " + classNameExt;
+                    DOM.setElementProperty(td, "className", classNameExt + "-td");
+                }
+
+                DOM.setElementProperty(container, "className", className);
+                if (textIsHTML) {
+                    DOM.setInnerHTML(container, text);
+                } else {
+                    DOM.setInnerText(container, text);
+                }
+                if (align != ALIGN_LEFT) {
+                    switch (align) {
+                    case ALIGN_CENTER:
+                        DOM.setStyleAttribute(container, "textAlign", "center");
+                        break;
+                    case ALIGN_RIGHT:
+                    default:
+                        DOM.setStyleAttribute(container, "textAlign", "right");
+                        break;
+                    }
+                }
+
+                if (hasChildren) {
+                    int groupCol = showRowHeaders ? 1 : 0;
+                    if (col == groupCol) {
+                        groupContainer = createGroupContainer();
+                        DOM.appendChild(td, groupContainer);
+                        className += " " + CLASSNAME + "-float";
+                        DOM.setElementProperty(container, "className", className);
+                    }
+                }
+
+                DOM.appendChild(td, container);
+                DOM.appendChild(getElement(), td);
+            }
+
+            @Override
+            public void addCell(Widget w, char align, String style, int col) {
+                final Element td = DOM.createTD();
+                final Element container = DOM.createDiv();
+                String className = CLASSNAME + "-cell-content";
+                String classNameExt = null;
+                if (style != null && !style.equals("")) {
+                    classNameExt = CLASSNAME + "-cell-content-" + style;
+                }
+                if (classNameExt != null) {
+                    className += " " + classNameExt;
+                    DOM.setElementProperty(td, "className", classNameExt + "-td");
+                }
+                DOM.setElementProperty(container, "className", className);
+                if (align != ALIGN_LEFT) {
+                    switch (align) {
+                    case ALIGN_CENTER:
+                        DOM.setStyleAttribute(container, "textAlign", "center");
+                        break;
+                    case ALIGN_RIGHT:
+                    default:
+                        DOM.setStyleAttribute(container, "textAlign", "right");
+                        break;
+                    }
+                }
+
+                if (hasChildren) {
+                    int groupCol = showRowHeaders ? 1 : 0;
+                    if (col == groupCol) {
+                        groupContainer = createGroupContainer();
+                        DOM.appendChild(td, groupContainer);
+                        className += " " + CLASSNAME + "-float";
+                        DOM.setElementProperty(container, "className", className);
+                    }
+                }
+
+                DOM.appendChild(td, container);
+                DOM.appendChild(getElement(), td);
+                w.removeFromParent();
+                DOM.appendChild(container, w.getElement());
+                adopt(w);
+                childWidgets.add(w);
+            }
+
+            public boolean isExpanded() {
+                return expanded;
+            }
+
+            protected Element createGroupContainer() {
+                Element groupContainer = DOM.createDiv();
+                DOM.setInnerHTML(groupContainer, "&nbsp;");
+                DOM.setElementProperty(groupContainer, "className", CLASSNAME + "-group-cell");
+                return groupContainer;
             }
 
             @Override
@@ -208,22 +369,7 @@ public class IScrollTreeTable
                     switch (DOM.eventGetType(event)) {
                         case Event.ONCLICK:
                             handleClickEvent(event);
-                            if (selectMode > Table.SELECT_MODE_NONE) {
-                                toggleSelection();
-                                // Note: changing the immediateness of this might
-                                // require changes to "clickEvent" immediateness
-                                // also.
-                                client.updateVariable(paintableId, "selected",
-                                        selectedRowKeys.toArray(), immediate);
-                            }
-                            if (hasChildren) {         //todo
-                                if (expanded) {
-                                    client.updateVariable(paintableId, "collapse", getKey(), true);
-                                } else {
-                                    client.updateVariable(paintableId, "expand", getKey(), true);
-                                }
-                                DOM.eventCancelBubble(event, true);
-                            }
+                            handleRowClick(event);
                             break;
                         case Event.ONDBLCLICK:
                             handleClickEvent(event);
@@ -234,6 +380,25 @@ public class IScrollTreeTable
                         default:
                             break;
                     }
+                }
+            }
+
+            protected void handleRowClick(Event event) {
+                if (groupContainer != null
+                        && DOM.eventGetTarget(event) == groupContainer) {
+                    if (isExpanded()) {
+                        client.updateVariable(paintableId, "collapse", getKey(), true);
+                    } else {
+                        client.updateVariable(paintableId, "expand", getKey(), true);
+                    }
+                    DOM.eventCancelBubble(event, true);
+                } else if (selectMode > Table.SELECT_MODE_NONE) {
+                    toggleSelection();
+                    // Note: changing the immediateness of this might
+                    // require changes to "clickEvent" immediateness
+                    // also.
+                    client.updateVariable(paintableId, "selected",
+                            selectedRowKeys.toArray(), immediate);
                 }
             }
         }
