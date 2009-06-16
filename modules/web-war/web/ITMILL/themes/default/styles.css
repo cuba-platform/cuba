@@ -2040,6 +2040,12 @@ input.i-modified,
     cursor: pointer;
 }
 
+.i-table .i-table-cols-size-row {
+    font-size: 0;
+    height: 0;
+    line-height: 0;
+}
+
 .i-expanded .i-table-group-cell {
     background: transparent url("table/img/nav-minus.gif") center right no-repeat;
 }

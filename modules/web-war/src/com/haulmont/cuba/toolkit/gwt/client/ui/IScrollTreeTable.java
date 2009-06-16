@@ -22,6 +22,11 @@ public class IScrollTreeTable
     }
 
     public class IScrollTreeTableBody extends IScrollTableBody {
+
+        protected int groupCellWidth = -1;
+        protected int groupColIndex =
+                showRowHeaders ? 1 : 0;
+
         @Override
         public void renderRows(UIDL rowData, int firstIndex, int rows) {
             // FIXME REVIEW
@@ -102,8 +107,14 @@ public class IScrollTreeTable
             final Iterator it = rowData.getChildIterator();
             aligns = tHead.getColumnAlignments();
             while (it.hasNext()) {
+                final UIDL uidl = (UIDL) it.next();
+
+                if (firstIndex == firstRendered) {
+                    addSizerRow(uidl);
+                }
+
                 final IScrollTableRow row =
-                        createRowInstance((UIDL) it.next(), aligns);
+                        createRowInstance(uidl, aligns);
                 addRow(row);
             }
             if (isAttached()) {
@@ -142,17 +153,11 @@ public class IScrollTreeTable
         protected IScrollTableRow createRow(UIDL uidl) {
             final IScrollTreeTableRow row = createRowInstance(uidl, aligns);
             if (!isCaptionRow(uidl)) {
-                int groupColIndex = showRowHeaders ? 1 : 0;
                 final int cells = DOM.getChildCount(row.getElement());
                 for (int i = 0; i < cells; i++) {
-                    int groupWidth = groupColIndex == i
-                            ? row.getGroupCellWidth() : 0;
-                    final Element cell = DOM.getChild(row.getElement(), i);
                     final int w = IScrollTreeTable.this
                             .getColWidth(getColKeyByIndex(i));
-                    DOM.setStyleAttribute(DOM.getChild(cell, DOM.getChildCount(cell) - 1), "width",
-                            (w - CELL_CONTENT_PADDING - groupWidth) + "px");
-                    DOM.setStyleAttribute(cell, "width", w + "px");
+                    applyCellWidth(row, i, w);
                 }
             }
             return row;
@@ -160,22 +165,28 @@ public class IScrollTreeTable
 
         @Override
         public void setColWidth(int colIndex, int w) {
-            int groupColIndex = showRowHeaders ? 1 : 0;
             for (final Object o : renderedRows) {
                 if (!(o instanceof IScrollTreeTableCaptionRow)) {
-                    int groupWidth = groupColIndex == colIndex
-                            ? ((IScrollTreeTableRow) o).getGroupCellWidth() : 0;
-                    final Element cell = DOM.getChild(((IScrollTableRow) o).getElement(),
-                            colIndex);
-                    DOM.setStyleAttribute(DOM.getChild(cell, DOM.getChildCount(cell) - 1), "width",
-                            (w - CELL_CONTENT_PADDING - groupWidth) + "px");
-                    DOM.setStyleAttribute(cell, "width", w + "px");
+                    applyCellWidth((IScrollTreeTableRow) o, colIndex, w);
                 }
             }
         }
 
+        protected void applyCellWidth(IScrollTreeTableRow row,
+                int colIndex, int width)
+        {
+            final int rows = DOM.getChildCount(tBody);
+            for (int i = 0; i < rows; i++) {
+                final Element cell = DOM.getChild(sizerRow,
+                        colIndex);
+                DOM.setStyleAttribute(cell, "width", width + "px");
+            }
+        }
+
         @Override
-        protected void applyAlternatingRowColor(IScrollTableRow row, String style) {
+        protected void applyAlternatingRowColor(IScrollTableRow row,
+                    String style)
+        {
             if (row instanceof IScrollTreeTableCaptionRow) {
                 row.addStyleName(CLASSNAME + "-caption-row");
             } else {
@@ -197,9 +208,9 @@ public class IScrollTreeTable
                 int columnCount = IScrollTreeTable.this.tHead.getVisibleCellCount();
 
                 final Element td = DOM.createTD();
-                DOM.setElementAttribute(td, "colspan", String.valueOf(columnCount));
+                DOM.setElementAttribute(td, "colSpan", String.valueOf(columnCount));
                 final Element container = DOM.createDiv();
-                String className = CLASSNAME + "-caption-row-content";   //todo check css
+                String className = CLASSNAME + "-caption-row-content";
 
                 DOM.setElementProperty(container, "className", className);
                 DOM.setInnerText(container, uidl.getStringAttribute("rowCaption"));
@@ -361,10 +372,16 @@ public class IScrollTreeTable
             }
 
             public int getGroupCellWidth() {
-                if (groupCell != null) {
-                    return DOM.getElementPropertyInt(groupCell, "offsetWidth");
+                int w = IScrollTreeTableBody.this.groupCellWidth;
+                if (w == -1) {
+                    if (groupCell != null) {
+                        w = DOM.getElementPropertyInt(groupCell, "offsetWidth");
+                        return w;
+                    }
+                    return 0;
+                } else {
+                    return w;
                 }
-                return 0;
             }
 
             protected Element createGroupContainer() {
