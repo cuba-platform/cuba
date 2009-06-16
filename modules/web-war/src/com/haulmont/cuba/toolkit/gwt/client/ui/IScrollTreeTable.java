@@ -107,14 +107,8 @@ public class IScrollTreeTable
             final Iterator it = rowData.getChildIterator();
             aligns = tHead.getColumnAlignments();
             while (it.hasNext()) {
-                final UIDL uidl = (UIDL) it.next();
-
-                if (firstIndex == firstRendered) {
-                    addSizerRow(uidl);
-                }
-
-                final IScrollTableRow row =
-                        createRowInstance(uidl, aligns);
+                final IScrollTableRow row = createRowInstance((UIDL) it.next(),
+                        aligns);
                 addRow(row);
             }
             if (isAttached()) {
@@ -177,7 +171,7 @@ public class IScrollTreeTable
         {
             final int rows = DOM.getChildCount(tBody);
             for (int i = 0; i < rows; i++) {
-                final Element cell = DOM.getChild(sizerRow,
+                final Element cell = DOM.getChild(colSizeRow,
                         colIndex);
                 DOM.setStyleAttribute(cell, "width", width + "px");
             }
