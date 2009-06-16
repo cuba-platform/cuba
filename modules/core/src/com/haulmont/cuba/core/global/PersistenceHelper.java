@@ -11,6 +11,12 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.entity.Entity;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.StateManager;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+
+import java.util.BitSet;
 
 public class PersistenceHelper {
     public static boolean isNew(Entity entity) {
@@ -18,5 +24,24 @@ public class PersistenceHelper {
             return ((PersistenceCapable) entity).pcIsDetached() == null;
         else
             return entity.getId() != null;
+    }
+
+    public static boolean isLoaded(Entity entity, String property) {
+        if (entity instanceof PersistenceCapable) {
+            final PersistenceCapable persistenceCapable = (PersistenceCapable) entity;
+            final OpenJPAStateManager stateManager = (OpenJPAStateManager) persistenceCapable.pcGetStateManager();
+
+            final BitSet loaded = stateManager.getLoaded();
+            final ClassMetaData metaData = stateManager.getMetaData();
+
+            final FieldMetaData fieldMetaData = metaData.getField(property);
+            if (fieldMetaData == null) throw new IllegalStateException();
+
+            final int index = fieldMetaData.getIndex();
+
+            return loaded.get(index);
+        } else {
+            return true;
+        }
     }
 }
