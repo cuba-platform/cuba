@@ -247,6 +247,8 @@ public class TreeTableContainerWrapper
     }
 
     protected int getItemLevel(Object itemId) {
+        if (rootItemIds().size() == container.size()) //no children; 
+            return -1;
         Object parentId;
         if ((parentId = parent.get(itemId)) == null) {
             return 0;

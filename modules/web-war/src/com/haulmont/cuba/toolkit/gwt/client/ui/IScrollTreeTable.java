@@ -16,6 +16,9 @@ import java.util.Iterator;
  */
 public class IScrollTreeTable
         extends IScrollTable {
+
+    private static int LEVEL_STEP_SIZE = 19;
+
     @Override
     protected IScrollTableBody createBody() {
         return new IScrollTreeTableBody();
@@ -23,7 +26,6 @@ public class IScrollTreeTable
 
     public class IScrollTreeTableBody extends IScrollTableBody {
 
-        protected int groupCellWidth = -1;
         protected int groupColIndex =
                 showRowHeaders ? 1 : 0;
 
@@ -203,8 +205,21 @@ public class IScrollTreeTable
 
                 final Element td = DOM.createTD();
                 DOM.setElementAttribute(td, "colSpan", String.valueOf(columnCount));
+
                 final Element container = DOM.createDiv();
                 String className = CLASSNAME + "-caption-row-content";
+
+                if (hasChildren) {
+                    groupCell = createGroupContainer();
+                    DOM.setStyleAttribute(groupCell, "marginLeft", getLevel() * LEVEL_STEP_SIZE
+                            + "px");
+                    DOM.appendChild(td, groupCell);
+                    className += " " + CLASSNAME + "-float";
+                    DOM.setElementProperty(container, "className", className);
+                } else {
+                    DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
+                            + "px");
+                }
 
                 DOM.setElementProperty(container, "className", className);
                 DOM.setInnerText(container, uidl.getStringAttribute("rowCaption"));
@@ -229,8 +244,9 @@ public class IScrollTreeTable
         public class IScrollTreeTableRow
                 extends IScrollTableBody.IScrollTableRow
         {
-            private boolean hasChildren;
+            protected boolean hasChildren;
             private boolean expanded;
+            private int level;
 
             protected Element groupCell = null;
 
@@ -262,6 +278,8 @@ public class IScrollTreeTable
                         expanded = true;
                     }
                 }
+
+                level = uidl.getIntAttribute("level");
 
                 addCells(uidl, col);
 
@@ -303,13 +321,17 @@ public class IScrollTreeTable
                     }
                 }
 
-                if (hasChildren) {
-                    int groupCol = showRowHeaders ? 1 : 0;
-                    if (col == groupCol) {
+                if (col == groupColIndex) {
+                    if (hasChildren) {
                         groupCell = createGroupContainer();
+                        DOM.setStyleAttribute(groupCell, "marginLeft", getLevel() * LEVEL_STEP_SIZE
+                                + "px");
                         DOM.appendChild(td, groupCell);
                         className += " " + CLASSNAME + "-float";
                         DOM.setElementProperty(container, "className", className);
+                    } else {
+                        DOM.setStyleAttribute(container, "marginLeft", (getLevel() + 1) * LEVEL_STEP_SIZE
+                                + "px");
                     }
                 }
 
@@ -343,13 +365,17 @@ public class IScrollTreeTable
                     }
                 }
 
-                if (hasChildren) {
-                    int groupCol = showRowHeaders ? 1 : 0;
-                    if (col == groupCol) {
+                if (col == groupColIndex) {
+                    if (hasChildren) {
                         groupCell = createGroupContainer();
+                        DOM.setStyleAttribute(groupCell, "marginLeft", getLevel() * LEVEL_STEP_SIZE
+                                + "px");
                         DOM.appendChild(td, groupCell);
                         className += " " + CLASSNAME + "-float";
                         DOM.setElementProperty(container, "className", className);
+                    } else {
+                        DOM.setStyleAttribute(container, "marginLeft", (getLevel() + 1) * LEVEL_STEP_SIZE
+                                + "px");
                     }
                 }
 
@@ -365,17 +391,8 @@ public class IScrollTreeTable
                 return expanded;
             }
 
-            public int getGroupCellWidth() {
-                int w = IScrollTreeTableBody.this.groupCellWidth;
-                if (w == -1) {
-                    if (groupCell != null) {
-                        w = DOM.getElementPropertyInt(groupCell, "offsetWidth");
-                        return w;
-                    }
-                    return 0;
-                } else {
-                    return w;
-                }
+            public int getLevel() {
+                return level;
             }
 
             protected Element createGroupContainer() {
