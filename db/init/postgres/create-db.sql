@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------------------------------------
 
 create table SYS_SERVER (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     VERSION integer,
@@ -18,7 +18,7 @@ create table SYS_SERVER (
 ------------------------------------------------------------------------------------------------------------
 
 create table SYS_CONFIG (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     VERSION integer,
@@ -34,7 +34,7 @@ alter table SYS_CONFIG add constraint SYS_CONFIG_UNIQ_NAME unique (NAME)^
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_ROLE (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     VERSION integer,
@@ -52,7 +52,7 @@ create unique index IDX_SEC_ROLE_UNIQ_NAME on SEC_ROLE (NAME) where DELETE_TS is
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_GROUP (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     VERSION integer,
@@ -70,7 +70,7 @@ alter table SEC_GROUP add constraint SEC_GROUP_PARENT foreign key (PARENT_ID) re
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_GROUP_HIERARCHY (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     GROUP_ID uuid,
@@ -86,7 +86,7 @@ alter table SEC_GROUP_HIERARCHY add constraint SEC_GROUP_HIERARCHY_PARENT foreig
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_USER (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     VERSION integer,
@@ -110,7 +110,7 @@ create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN) where DELETE_TS 
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_USER_ROLE (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     VERSION integer,
@@ -132,7 +132,7 @@ create unique index IDX_SEC_USER_ROLE_UNIQ_ROLE on SEC_USER_ROLE (USER_ID, ROLE_
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_PERMISSION (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     VERSION integer,
@@ -154,7 +154,7 @@ create unique index IDX_SEC_PERMISSION_UNIQUE on SEC_PERMISSION (ROLE_ID, TYPE, 
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_CONSTRAINT (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     VERSION integer,
@@ -174,7 +174,7 @@ alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROU
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_USER_SETTING (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     USER_ID uuid,
@@ -191,7 +191,7 @@ alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_UNIQ unique (USER_I
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_LOGGED_ENTITY (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     NAME varchar(100),
@@ -205,7 +205,7 @@ alter table SEC_LOGGED_ENTITY add constraint SEC_LOGGED_ENTITY_UNIQ_NAME unique 
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_LOGGED_ATTR (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     ENTITY_ID uuid,
@@ -220,7 +220,7 @@ alter table SEC_LOGGED_ATTR add constraint SEC_LOGGED_ATTR_UNIQ_NAME unique (ENT
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_ENTITY_LOG (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     EVENT_TS timestamp,
@@ -236,7 +236,7 @@ alter table SEC_ENTITY_LOG add constraint FK_SEC_ENTITY_LOG_USER foreign key (US
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_ENTITY_LOG_ATTR (
-    ID uuid,
+    ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(20),
     ITEM_ID uuid,
