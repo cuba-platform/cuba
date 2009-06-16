@@ -52,6 +52,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
 
+        final String rowHeaderMode = rowsElement.attributeValue("headerMode");
+        if (!StringUtils.isEmpty(rowHeaderMode)) {
+            component.setRowHeaderMode(Table.RowHeaderMode.valueOf(rowHeaderMode));
+        }
+
         final String datasource = rowsElement.attributeValue("datasource");
 
         if (!StringUtils.isBlank(datasource)) {

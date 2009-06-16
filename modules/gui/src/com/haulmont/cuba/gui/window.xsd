@@ -233,6 +233,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="headerMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NONE"/>
+            <xs:enumeration value="ICON"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="fetchMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="ALL"/>
@@ -445,6 +452,7 @@
                             <xs:element name="rows" minOccurs="1">
                                 <xs:complexType>
                                     <xs:attribute name="datasource" type="xs:string" use="required"/>
+                                    <xs:attribute name="headerMode" type="headerMode" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
@@ -476,6 +484,7 @@
                             <xs:element name="rows" minOccurs="1">
                                 <xs:complexType>
                                     <xs:attribute name="datasource" type="xs:string" use="required"/>
+                                    <xs:attribute name="headerMode" type="headerMode" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>

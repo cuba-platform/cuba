@@ -24,6 +24,7 @@ import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.BaseFieldFactory;
+import com.itmill.toolkit.terminal.Resource;
 
 import java.util.Collection;
 import java.util.Map;
@@ -37,7 +38,20 @@ public class Table
 {
 
     public Table() {
-        component = new com.itmill.toolkit.ui.Table();
+        component = new com.itmill.toolkit.ui.Table() {
+            @Override
+            public Resource getItemIcon(Object itemId) {
+                if (styleProvider != null) {
+                    @SuppressWarnings({"unchecked"})
+                    final Entity item = datasource.getItem(itemId);
+                    final String resURL = styleProvider.getItemIcon(item);
+
+                    return resURL == null ? null : ComponentsHelper.getResource(resURL);
+                } else {
+                    return null;
+                }
+            }
+        };
         initComponent(component);
     }
 
@@ -94,6 +108,9 @@ public class Table
                 }
             }
         });
+        
+        component.setColumnCollapsingAllowed(true);
+        component.setColumnReorderingAllowed(true);
     }
 
     @Override
@@ -124,11 +141,29 @@ public class Table
         component.setColumnHeader(propertyPath, caption);
     }
 
+    public void setRowHeaderMode(com.haulmont.cuba.gui.components.Table.RowHeaderMode rowHeaderMode) {
+        switch (rowHeaderMode) {
+            case NONE: {
+                component.setRowHeaderMode(com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_HIDDEN);
+                break;
+            }
+            case ICON: {
+                component.setRowHeaderMode(com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_ICON_ONLY);
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException();
+            }
+        }
+    }
+
     public void setStyleProvider(final StyleProvider styleProvider) {
-        if (styleProvider == null) {component.setCellStyleGenerator(null); return;}
+        this.styleProvider = styleProvider;
+        if (styleProvider == null) { component.setCellStyleGenerator(null); return; }
 
         component.setCellStyleGenerator(new com.itmill.toolkit.ui.Table.CellStyleGenerator() {
             public String getStyle(Object itemId, Object propertyId) {
+                @SuppressWarnings({"unchecked"})
                 final Entity item = datasource.getItem(itemId);
                 return styleProvider.getStyleName(item, propertyId);
             }

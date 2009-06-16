@@ -92,8 +92,17 @@ public interface Table
         }
     }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    enum RowHeaderMode {
+        NONE,
+        ICON
+    }
+
+    void setRowHeaderMode(RowHeaderMode mode);
+
     interface StyleProvider {
         String getStyleName(Entity item, Object property);
+        String getItemIcon(Entity item);
     }
 
     void setStyleProvider(StyleProvider styleProvider);

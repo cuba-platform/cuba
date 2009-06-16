@@ -15,7 +15,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
@@ -25,6 +25,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
+import com.itmill.toolkit.terminal.Resource;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +40,20 @@ public class TreeTable
     protected String hierarchyProperty;
 
     public TreeTable() {
-        component = new com.haulmont.cuba.web.toolkit.ui.TreeTable();
+        component = new com.haulmont.cuba.web.toolkit.ui.TreeTable() {
+            @Override
+            public Resource getItemIcon(Object itemId) {
+                if (styleProvider != null) {
+                    @SuppressWarnings({"unchecked"})
+                    final Entity item = datasource.getItem(itemId);
+                    final String resURL = styleProvider.getItemIcon(item);
+
+                    return resURL == null ? null : ComponentsHelper.getResource(resURL);
+                } else {
+                    return null;
+                }
+            }
+        };
         initComponent(component);
     }
 
@@ -73,8 +87,33 @@ public class TreeTable
         component.setItemCaptionPropertyId(metaProperty);
     }
 
-    public void setStyleProvider(StyleProvider styleProvider) {
-        throw new UnsupportedOperationException();
+    public void setRowHeaderMode(com.haulmont.cuba.gui.components.Table.RowHeaderMode rowHeaderMode) {
+        switch (rowHeaderMode) {
+            case NONE: {
+                component.setRowHeaderMode(com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_HIDDEN);
+                break;
+            }
+            case ICON: {
+                component.setRowHeaderMode(com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_ICON_ONLY);
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException();
+            }
+        }
+    }
+
+    public void setStyleProvider(final StyleProvider styleProvider) {
+        this.styleProvider = styleProvider;
+        if (styleProvider == null) { component.setCellStyleGenerator(null); return; }
+
+        component.setCellStyleGenerator(new com.haulmont.cuba.web.toolkit.ui.TreeTable.CellStyleGenerator () {
+            public String getStyle(Object itemId, Object propertyId) {
+                @SuppressWarnings({"unchecked"})
+                final Entity item = datasource.getItem(itemId);
+                return styleProvider.getStyleName(item, propertyId);
+            }
+        });
     }
 
     @Override

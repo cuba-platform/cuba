@@ -11,15 +11,35 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Component;
+import com.itmill.toolkit.terminal.Resource;
+import com.itmill.toolkit.terminal.FileResource;
+import com.itmill.toolkit.terminal.ClassResource;
+import com.itmill.toolkit.terminal.ThemeResource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.web.App;
 
 import java.util.*;
 import java.util.List;
+import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
 
 public class ComponentsHelper {
+    public static Resource getResource(String resURL) {
+        if (StringUtils.isEmpty(resURL)) return null;
+
+        if (resURL.startsWith("file:")) {
+            return new FileResource(new File(resURL.substring("file:".length())), App.getInstance());
+        } else if (resURL.startsWith("jar:")) {
+            return new ClassResource(resURL.substring("jar:".length()), App.getInstance());
+        } else if (resURL.startsWith("theme:")) {
+            return new ThemeResource(resURL.substring("theme:".length()));
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     public static class ComponentPath {
         String[] elements;
         com.haulmont.cuba.gui.components.Component[] components;

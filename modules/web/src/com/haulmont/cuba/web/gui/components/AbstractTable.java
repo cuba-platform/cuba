@@ -11,7 +11,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
@@ -31,8 +30,8 @@ import com.itmill.toolkit.ui.AbstractSelect;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.Label;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -42,6 +41,8 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
     protected boolean editable;
+
+    protected Table.StyleProvider styleProvider;
 
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
