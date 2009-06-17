@@ -147,36 +147,7 @@ public class IScrollTreeTable
 
         @Override
         protected IScrollTableRow createRow(UIDL uidl) {
-            final IScrollTreeTableRow row = createRowInstance(uidl, aligns);
-            if (!isCaptionRow(uidl)) {
-                final int cells = DOM.getChildCount(row.getElement());
-                for (int i = 0; i < cells; i++) {
-                    final int w = IScrollTreeTable.this
-                            .getColWidth(getColKeyByIndex(i));
-                    applyCellWidth(row, i, w);
-                }
-            }
-            return row;
-        }
-
-        @Override
-        public void setColWidth(int colIndex, int w) {
-            for (final Object o : renderedRows) {
-                if (!(o instanceof IScrollTreeTableCaptionRow)) {
-                    applyCellWidth((IScrollTreeTableRow) o, colIndex, w);
-                }
-            }
-        }
-
-        protected void applyCellWidth(IScrollTreeTableRow row,
-                int colIndex, int width)
-        {
-            final int rows = DOM.getChildCount(tBody);
-            for (int i = 0; i < rows; i++) {
-                final Element cell = DOM.getChild(colSizeRow,
-                        colIndex);
-                DOM.setStyleAttribute(cell, "width", width + "px");
-            }
+            return createRowInstance(uidl, aligns);
         }
 
         @Override
