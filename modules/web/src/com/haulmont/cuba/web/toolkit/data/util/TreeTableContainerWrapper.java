@@ -279,14 +279,16 @@ public class TreeTableContainerWrapper
             initInline();
         }
 
-        int itemIndex;
-        if ((itemIndex = inlineIndex(itemId)) > -1 && areChildrenAllowed(itemId))
+        if (areChildrenAllowed(itemId))
         {
             expanded.add(itemId);
 
-            final List<Object> inlineChildren = getInlineChildren(itemId);
-            if (inlineChildren != null) {
-                inline.addAll(itemIndex + 1, inlineChildren);
+            int itemIndex;
+            if ((itemIndex = inlineIndex(itemId)) > -1) {
+                final List<Object> inlineChildren = getInlineChildren(itemId);
+                if (inlineChildren != null) {
+                    inline.addAll(itemIndex + 1, inlineChildren);
+                }
             }
 
             return true;
@@ -307,11 +309,13 @@ public class TreeTableContainerWrapper
             initInline();
         }
 
-        if (containsInline(itemId) && areChildrenAllowed(itemId))
+        if (areChildrenAllowed(itemId))
         {
-            final List<Object> inlineChildren = getInlineChildren(itemId);
-            if (inlineChildren != null) {
-                inline.removeAll(inlineChildren);
+            if (containsInline(itemId)) {
+                final List<Object> inlineChildren = getInlineChildren(itemId);
+                if (inlineChildren != null) {
+                    inline.removeAll(inlineChildren);
+                }
             }
 
             expanded.remove(itemId);
@@ -319,6 +323,25 @@ public class TreeTableContainerWrapper
             return true;
         }
         return false;
+    }
+
+    public void expandAll() {
+        if (hierarchical) {
+            expandAll(rootItemIds());
+        } else {
+            for (Object itemId : children.keySet()) {
+                setExpanded(itemId);
+            }
+        }
+    }
+
+    protected void expandAll(Collection itemIds) {
+        for (final Object itemId : itemIds) {
+            if (areChildrenAllowed(itemId) && hasChildren(itemId)) {
+                setExpanded(itemId);
+                expandAll(getChildren(itemId));
+            }
+        }
     }
 
     private void initExpanded() {

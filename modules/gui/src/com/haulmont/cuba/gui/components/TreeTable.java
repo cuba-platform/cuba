@@ -14,4 +14,6 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 public interface TreeTable extends Table {
     String getHierarchyProperty();
     void setDatasource(HierarchicalDatasource datasource);
+
+    void expandAll();
 }

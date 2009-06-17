@@ -3135,6 +3135,10 @@ public class TreeTable
         }
     }
 
+    public void expandAll() {
+        ((TreeTableContainerWrapper) items).expandAll();
+    }
+
     public void setCollapsed(Object itemId) {
         setCollapsed(itemId, true);
     }

@@ -121,6 +121,10 @@ public class TreeTable
         component.addGeneratedColumn(id, (TableSupport.ColumnGenerator) generator);
     }
 
+    public void expandAll() {
+        component.expandAll();
+    }
+
     public void setEditable(boolean editable) {
         super.setEditable(editable);
         component.setEditable(editable);
