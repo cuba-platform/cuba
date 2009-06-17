@@ -16,4 +16,5 @@ public interface TreeTable extends Table {
     void setDatasource(HierarchicalDatasource datasource);
 
     void expandAll();
+    void expand(Object itemId);
 }

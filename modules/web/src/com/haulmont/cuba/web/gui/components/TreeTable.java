@@ -125,6 +125,10 @@ public class TreeTable
         component.expandAll();
     }
 
+    public void expand(Object itemId) {
+        component.setExpanded(itemId);
+    }
+
     public void setEditable(boolean editable) {
         super.setEditable(editable);
         component.setEditable(editable);
