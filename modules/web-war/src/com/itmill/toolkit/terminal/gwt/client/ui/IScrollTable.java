@@ -249,7 +249,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 lazyUnregistryBag.add(tBody);
             }
             tBody = createBody();
-            tBody.initColSizeRow();
+            tBody.initColsWidth();
             tBody.renderInitialRows(rowData, uidl.getIntAttribute("firstrow"),
                     uidl.getIntAttribute("rows"));
             bodyContainer.add(tBody);
@@ -1661,7 +1661,8 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         protected Element tBody = DOM.createTBody();
         protected Element table = DOM.createTable();
 
-        protected Element colSizeRow = null;
+        protected Element[] cols = null;
+        protected Element hiddenRow = null;
 
         protected int firstRendered;
 
@@ -1707,18 +1708,22 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             }
         }
 
-        protected void initColSizeRow() {
-            if (colSizeRow == null) {
-                colSizeRow = DOM.createTR();
-                int cellsCount = tHead.getVisibleCellCount();
-                if (showRowHeaders)
-                    cellsCount++;
-                for (int i = 0; i < cellsCount; i++ ) {
-                    colSizeRow.appendChild(DOM.createTD());
-                }
-                DOM.setElementProperty(colSizeRow, "className", CLASSNAME + "-cols-size-row");
-                DOM.insertChild(tBody, colSizeRow, 0);
+        protected void initColsWidth() {
+            int cellsCount = tHead.getVisibleCellCount();
+            if (showRowHeaders) {
+                cellsCount++;
             }
+            cols = new Element[cellsCount];
+            Element colGroup = DOM.createColGroup(); 
+            hiddenRow = DOM.createTR();
+            for (int i = 0; i < cellsCount; i++ ) {
+                cols[i] = DOM.createCol();
+                colGroup.appendChild(cols[i]);
+                hiddenRow.appendChild(DOM.createTD());
+            }
+            DOM.insertChild(table, colGroup, 0);
+            DOM.setElementProperty(hiddenRow, "className", CLASSNAME + "-hidden-row");
+            DOM.insertChild(tBody, hiddenRow, 0);
         }
 
         public void renderRows(UIDL rowData, int firstIndex, int rows) {
@@ -1938,7 +1943,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         public int getColWidth(int i) {
             if (initDone) {
-                final Element e = DOM.getChild(colSizeRow, i);
+                final Element e = DOM.getChild(hiddenRow, i);
                 return DOM.getElementPropertyInt(e, "offsetWidth");
             } else {
                 return 0;
@@ -1946,12 +1951,8 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         }
 
         public void setColWidth(int colIndex, int w) {
-            final int rows = DOM.getChildCount(tBody);
-            for (int i = 0; i < rows; i++) {
-                final Element cell = DOM.getChild(colSizeRow,
-                        colIndex);
-                DOM.setStyleAttribute(cell, "width", w + "px");
-            }
+            DOM.setElementAttribute(cols[colIndex], "width",
+                    String.valueOf(w));
         }
 
         private void reLayoutComponents() {

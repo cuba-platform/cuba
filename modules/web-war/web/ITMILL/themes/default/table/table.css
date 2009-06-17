@@ -229,7 +229,7 @@
     cursor: pointer;
 }
 
-.i-table .i-table-cols-size-row {
+.i-table .i-table-hidden-row {
     font-size: 0;
     height: 0;
     line-height: 0;
