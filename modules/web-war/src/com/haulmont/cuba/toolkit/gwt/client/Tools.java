@@ -27,4 +27,13 @@ public class Tools {
     public static String format(String s) {
         return impl.format(s);
     }
+
+    public static void removeChildren(Element e) {
+        int childCount = DOM.getChildCount(e);
+        if (childCount > 0) {
+            for (int i = 0; i < childCount; i++) {
+                DOM.removeChild(e, DOM.getChild(e, 0));
+            }
+        }
+    }
 }

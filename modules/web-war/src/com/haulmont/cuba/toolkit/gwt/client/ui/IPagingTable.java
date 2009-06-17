@@ -1157,12 +1157,7 @@ public class IPagingTable
                 remove(w);
             }
 
-            final Element el = pagesContainer.getElement();
-            int childCnt = DOM.getChildCount(el);
-            for (int i = 0; i < childCnt; i++) {
-                DOM.removeChild(pagesContainer.getElement(),
-                        DOM.getChild(pagesContainer.getElement(), 0));
-            }
+            Tools.removeChildren(pagesContainer.getElement());
         }
 
         public Iterator iterator() {
