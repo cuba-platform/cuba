@@ -187,7 +187,15 @@ public class TreeTable
         }
 
         public int getLevel(Object itemId) {
-            return -1;  //todo
+            return getItemLevel(itemId);
+        }
+
+        protected int getItemLevel(Object itemId) {
+            Object parentId;
+            if ((parentId = getParent(itemId)) == null) {
+                return 0;
+            }
+            return getItemLevel(parentId) + 1;
         }
     }
 }
