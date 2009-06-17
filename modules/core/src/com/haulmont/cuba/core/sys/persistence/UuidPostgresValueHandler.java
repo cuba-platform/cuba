@@ -36,6 +36,9 @@ public class UuidPostgresValueHandler extends AbstractValueHandler
 
     public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store) {
         try {
+            if (val == null) {
+                return null;
+            }
             PostgresUUID pgUuid = new PostgresUUID(((UUID) val));
             return pgUuid;
         } catch (SQLException e) {
