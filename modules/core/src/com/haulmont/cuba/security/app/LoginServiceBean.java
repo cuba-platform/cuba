@@ -29,9 +29,9 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
         return Locator.lookupLocal(LoginWorker.JNDI_NAME);
     }
 
-    public UserSession login(String activeDirectoryUser, String profileName, Locale locale) throws LoginException {
+    public UserSession login(String login, String password, Locale locale) throws LoginException {
         try {
-            return getLoginWorker().login(activeDirectoryUser, profileName, locale);
+            return getLoginWorker().login(login, password, locale);
         } catch (Exception e) {
             log.error("Login error", e);
             if (e instanceof LoginException)

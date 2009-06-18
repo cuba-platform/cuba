@@ -29,6 +29,11 @@ public class ServerSecurityUtils
         SecurityAssociation.setCredential(null);
     }
 
+    public static void setSecurityAssociation(String userName, String password) {
+        SecurityAssociation.setPrincipal(new SimplePrincipal(userName));
+        SecurityAssociation.setCredential(password);
+    }
+
     public static UUID getSessionId() {
         Principal principal = SecurityAssociation.getPrincipal();
         if (principal == null)

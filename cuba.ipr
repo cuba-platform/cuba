@@ -422,6 +422,7 @@
       </map>
     </option>
     <option name="myVersion" value="124" />
+    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
@@ -459,6 +460,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-beanutils-1.7.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/openjpa-1.2.1-patch1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.3.0-rc11-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/scheduler-plugin.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -466,6 +468,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jboss-vfs-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/openjpa-1.2.1-patch1-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.3.0-rc11-patch1.jar!/" />
+        <root url="intellijad://intellijad" />
       </SOURCES>
     </library>
     <library name="common">
