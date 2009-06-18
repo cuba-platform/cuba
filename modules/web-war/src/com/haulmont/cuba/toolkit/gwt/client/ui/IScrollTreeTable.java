@@ -197,19 +197,6 @@ public class IScrollTreeTable
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
             }
-
-            @Override
-            protected void handleRowClick(Event event) {
-                if (groupCell != null
-                        && DOM.eventGetTarget(event) == groupCell) {
-                    if (isExpanded()) {
-                        client.updateVariable(paintableId, "collapse", getKey(), true);
-                    } else {
-                        client.updateVariable(paintableId, "expand", getKey(), true);
-                    }
-                    DOM.eventCancelBubble(event, true);
-                }
-            }
         }
 
         public class IScrollTreeTableRow
