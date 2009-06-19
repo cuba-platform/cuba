@@ -90,8 +90,9 @@ public interface DataServiceRemote
             return view;
         }
 
-        public void setView(View view) {
+        public AbstractLoadContext setView(View view) {
             this.view = view;
+            return this;
         }
     }
 
@@ -111,8 +112,9 @@ public interface DataServiceRemote
             return id;
         }
 
-        public void setId(Object id) {
+        public LoadContext setId(Object id) {
             this.id = id;
+            return this;
         }
 
     }

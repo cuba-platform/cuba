@@ -16,10 +16,11 @@ import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.log.AppLog;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.exception.UniqueConstraintViolationHandler;
+import com.haulmont.cuba.web.log.AppLog;
+import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.sys.LinkHandler;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
@@ -29,7 +30,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
 {
@@ -45,6 +49,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
 
     private boolean principalIsWrong;
+
+    private LinkHandler linkHandler;
 
     static {
         System.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
@@ -126,6 +132,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
             Window window = createAppWindow();
             setMainWindow(window);
             initExceptionHandlers(true);
+            if (linkHandler != null) {
+                linkHandler.handle();
+                linkHandler = null;
+            }
         }
         else {
             Window window = createLoginWindow();
@@ -162,11 +172,13 @@ public class App extends Application implements ConnectionListener, ApplicationC
             }
         }
 
+        String requestURI = request.getRequestURI();
+
         if (!connection.isConnected()
                 && request.getUserPrincipal() != null
                 && !principalIsWrong
                 && ActiveDirectoryHelper.useActiveDirectory()
-                && !(request.getRequestURI().endsWith("/login") || request.getRequestURI().endsWith("/UIDL/")))
+                && !(requestURI.endsWith("/login") || requestURI.endsWith("/UIDL/")))
         {
             String userName = request.getUserPrincipal().getName();
             log.debug("Trying to login ActiveDirectory as " + userName);
@@ -183,6 +195,20 @@ public class App extends Application implements ConnectionListener, ApplicationC
             if (userSession != null) {
                 ServerSecurityUtils.setSecurityAssociation(userSession.getLogin(), userSession.getId());
             }
+        }
+
+        if (requestURI.endsWith("/open") && !requestURI.contains("/UIDL/")) {
+            Map<String, String> params = new HashMap<String, String>();
+            Enumeration parameterNames = request.getParameterNames();
+            while (parameterNames.hasMoreElements()) {
+                String name = (String) parameterNames.nextElement();
+                params.put(name, request.getParameter(name));
+            }
+            LinkHandler linkHandler = new LinkHandler(this, params);
+            if (connection.isConnected())
+                linkHandler.handle();
+            else
+                this.linkHandler = linkHandler;
         }
     }
 

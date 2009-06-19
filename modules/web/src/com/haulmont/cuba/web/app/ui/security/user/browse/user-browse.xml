@@ -2,6 +2,7 @@
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser"
         lookupComponent="users"
+        caption="msg://caption"
         >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
