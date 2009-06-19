@@ -1,0 +1,29 @@
+.i-upload-panel
+{
+
+}
+.i-upload-submit
+{
+    float:left;
+    /*height:18px;*/
+    text-align:inherit;
+}
+
+/*fix for IE*/
+* html .i-upload-submit
+{
+    float:left;
+    height:18px;
+    line-height:8pt;
+}
+
+.i-upload-panel,
+.i-upload-submit
+{
+    float:left;
+}
+
+.i-upload-clear
+{
+    clear: right;
+}
