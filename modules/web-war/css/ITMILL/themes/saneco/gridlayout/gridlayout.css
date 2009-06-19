@@ -7,12 +7,12 @@
 }
 .i-gridlayout-margin-left {
 	padding-left: 18px;
-} 
+}
 .i-gridlayout-margin-right {
 	padding-right: 18px;
 }
 
-/* 
+/*
  * Spacing values used by IGridLayout. (element does not exist in DOM)
  * Use padding-left for horizontal spacing and padding-top for vertical.
  */

@@ -13,8 +13,10 @@
     <property file="${project.dir}/lib.properties"/>
 
     <property name="web.src.dir" location="${module.dir}/web"/>
+    <property name="themes.src.dir" location="${module.dir}/css/ITMILL/themes"/>
 
     <property name="widgets.out.dir" value="${build.dir}/${module.name}/ITMILL/widgetsets"/>
+    <property name="themes.out.dir" value="${build.dir}/${module.name}/ITMILL/themes"/>
 
     <fileset id="gwt-lib-fs" dir="${lib.gwt.dir}">
         <include name="*.jar"/>
@@ -52,6 +54,20 @@
         <copy todir="${build.dir}/${module.name}">
             <fileset dir="${web.src.dir}" includes="**/*"/>
         </copy>
+        <mkdir dir="${themes.out.dir}"/>
+        <copy todir="${themes.out.dir}">
+            <fileset dir="${themes.src.dir}" includes="default/**"/>
+            <!--<fileset dir="${themes.src.dir}" includes="saneco/**"/>-->
+        </copy>
+
+        <taskdef name="build-theme" classname="com.haulmont.cuba.ant.BuildThemeTask">
+            <classpath>
+                <fileset refid="gwt-lib-fs"/>
+                <path location="${prod.out.dir}/${module.name}" />
+            </classpath>
+        </taskdef>
+
+        <build-theme themeDir="${themes.out.dir}/default" destFile="styles.css"/>
 
         <condition property="do-build-gwt" value="true">
             <not>

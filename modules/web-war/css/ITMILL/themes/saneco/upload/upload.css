@@ -1,11 +1,5 @@
-.i-upload-panel
-{
-
-}
 .i-upload-submit
 {
-    float:left;
-    /*height:18px;*/
     text-align:inherit;
 }
 
@@ -15,4 +9,15 @@
     float:left;
     height:18px;
     line-height:8pt;
+}
+
+.i-upload-panel,
+.i-upload-submit
+{
+    float:left;
+}
+
+.i-upload-clear
+{
+    clear: right;
 }

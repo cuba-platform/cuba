@@ -116,8 +116,10 @@
 .i-disabled .i-filterselect-button:hover,
 .i-readonly .i-filterselect-button:hover {
 	background-position: top left;
+    cursor: default;
 }
 
+/*
 .i-filterselect.i-readonly .i-filterselect-button {
 	display: none;
 }
@@ -126,6 +128,7 @@
 	background: transparent;
 	color: black;
 }
+*/
 
 .i-filterselect-suggestpopup {
 	background: #f6f7f7;

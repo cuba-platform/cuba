@@ -208,6 +208,42 @@
 	display: inline;
 }
 
+.i-table .i-table-caption-row {
+    background-color: #cccccc;
+}
+
+.i-table .i-table-caption-row-content {
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 3px 0 3px 3px;
+    margin-right: 5px;
+    line-height: 23px;
+}
+
+.i-table .i-table-float {
+    float: left;
+}
+
+.i-table .i-table-group-cell {
+    float: left;
+    background: transparent url("img/nav-plus.gif") center right no-repeat;
+    width: 19px;
+    line-height: 23px;
+    cursor: pointer;
+}
+
+.i-table .i-table-hidden-row {
+    font-size: 0;
+    height: 0;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.i-expanded .i-table-group-cell {
+    background: transparent url("img/nav-minus.gif") center right no-repeat;
+}
+
 /* IE6 hack */
 * html .i-table-scrollposition {
 	background: transparent;
