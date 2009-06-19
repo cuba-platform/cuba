@@ -1,0 +1,21 @@
+.i-button-linkbutton {
+	border: none;
+	text-align: left;
+	background: none;
+	padding: 0;
+    text-decoration: none;
+    /*color:#00f;*/
+}
+
+.i-sa .i-button-linkbutton:focus {
+	outline-offset: -2px;
+    text-decoration: none;
+}
+.i-button-linkbutton span {
+	text-decoration: none;
+}
+
+.i-button-linkbutton:hover {
+    text-decoration: underline;
+    color:#039;
+}

@@ -1,0 +1,105 @@
+.i-button {
+	cursor: pointer;
+	font-size: 13px;
+	white-space: nowrap;
+	margin: 0;
+}
+.i-checkbox input {
+	vertical-align: middle;
+}
+.i-button img, .i-checkbox img {
+	display:inline;
+	vertical-align: middle;
+	margin-right: 3px;
+}
+.i-button span, .i-checkbox label {
+	vertical-align: middle;
+}
+
+.i-button-link {
+	border: none;
+	text-align: left;
+	background: none;
+	padding: 0;
+}
+.i-sa .i-button-link:focus {
+	outline-offset: -3px;
+}
+.i-button-link span {
+	text-decoration: underline;
+}
+
+.i-checkbox {
+	white-space: nowrap;
+}
+
+.i-checkbox .i-errorindicator {
+	float: none;
+	display:inline;
+	padding-left: 10px;
+	background-position:left;
+}
+
+
+/* fixes streched buttons in IE6 */
+* html .i-button {
+	width: 1px;
+	overflow: visible;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/* fixes streched buttons in IE7 */
+*+html .i-button {
+	overflow: visible;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/* Error indicator on checkbox fix for IE6 */
+* html .i-checkbox * { display: block; float: left;}
+* html .i-checkbox .i-errorindicator {background-position:right;display: block; float: left; padding-left: 0px; padding-right:4px;}
+
+/* Error indicator on checkbox fix for IE7 */
+*+ html .i-checkbox * { display: block; float: left;}
+*+ html .i-checkbox .i-errorindicator {background-position:right;display: block; float: left; padding-left: 0px;;padding-right:7px;}
+
+/* Error indicator on button fix for IE7 */
+*+ html button .i-errorindicator { display:inline; padding-right:5px; }
+
+/* Error indicator on button fix for IE6 */
+* html button .i-errorindicator { display:inline; padding-right:5px;}
+
+
+
+.i-button .i-link,
+.i-button a,
+.i-button-link .i-link,
+.i-button-link a,
+.i-button-link span
+{
+    padding-top: 1px;
+    text-decoration: none;
+    text-align:center;
+}
+
+.i-button .i-link a:hover,
+.i-button-link .i-link a:hover,
+.i-button-link a:hover,
+.i-button-link .i-link span:hover
+{
+    padding-top: 1px;
+    text-decoration: underline;
+    text-align:center;
+}
+
+.i-app .i-button-link span
+{
+    color: #0033cc;
+    text-decoration: underline;
+}
+
+.i-app .i-button-link span:hover
+{
+    text-decoration: underline;
+}

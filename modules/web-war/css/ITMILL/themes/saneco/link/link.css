@@ -1,0 +1,28 @@
+.i-link {
+	white-space: nowrap;
+	text-decoration: none;
+}
+
+.i-link a {
+    color:#039;
+	vertical-align: middle;
+	text-decoration: none;
+}
+
+.i-link span {
+	text-decoration: none;
+	vertical-align: middle;
+}
+
+.i-disabled a {
+	cursor: default;
+}
+
+.i-link img {
+	vertical-align: middle;
+	border:none;
+}
+.i-link a:hover
+{
+    text-decoration: underline;
+}
