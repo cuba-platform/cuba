@@ -13,20 +13,21 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
+import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.itmill.toolkit.ui.AbstractSelect;
 import com.itmill.toolkit.ui.Select;
 import com.itmill.toolkit.data.Property;
 
 public class LookupField
     extends
-        AbstractOptionsField<Select>
+        AbstractOptionsField<FilterSelect>
     implements
         com.haulmont.cuba.gui.components.LookupField, Component.Wrapper
 {
     private String nullName;
 
     public LookupField() {
-        this.component = new Select() {
+        this.component = new FilterSelect() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
@@ -45,6 +46,7 @@ public class LookupField
         attachListener(component);
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
+        component.setFixedTextBoxWidth(true);
     }
 
     protected Object getKeyFromValue(Object value) {
