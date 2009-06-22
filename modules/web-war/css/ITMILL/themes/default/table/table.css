@@ -223,7 +223,7 @@
 
 .i-table .i-table-group-cell {
     float: left;
-    background: transparent url("img/nav-plus.gif") center right no-repeat;
+    background: transparent url(img/nav-plus.gif) center right no-repeat;
     width: 19px;
     line-height: 23px;
     cursor: pointer;
@@ -238,7 +238,7 @@
 }
 
 .i-expanded .i-table-group-cell {
-    background: transparent url("img/nav-minus.gif") center right no-repeat;
+    background: transparent url(img/nav-minus.gif) center right no-repeat;
 }
 
 /* IE6 hack */

@@ -136,8 +136,8 @@
 	border: 1px solid #b6bbbc;
 	font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
 	color: #464f52;
-	/*font-size: 12px;*/
-	/*line-height: 18px;*/
+	font-size: 12px;
+	line-height: 18px;
 	margin-top: -1px;
 }
 .i-filterselect-suggestmenu table {

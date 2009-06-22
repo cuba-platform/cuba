@@ -1,65 +1,48 @@
-/*
- *MenuBar styles
- */
-
-/*Top menu */
-
-.saneco-menubar-layout .i-button
-{
-    color: #fff;
-    font-weight: bold;
-    padding: 0 5px 0 5px;
-}
-
 .i-menubar table {
-    color:#fff;
+    font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
+    color: #fff;
     background: transparent url(img/menubar-bg.gif) repeat-x;
-    /*background-color: transparent;*/
     font-weight: bold;
- 	white-space: nowrap;
+    white-space: nowrap;
     height: 28px;
-    border:0;
+    border: 0;
     padding-left: 8px;
-    /*border-collapse:collapse;*/
 }
 
 .i-menubar .menuitem {
-
     cursor: pointer;
     padding-left: 10px;
     padding-right: 10px;
 
     background: transparent;
-
 }
 
 .i-menubar .menuitem-selected {
     background: transparent url(img/menu-selected2.gif) repeat-x 4px 4px;
     color: #002d96;
- }
-
-/*Submenu*/
-.i-menubar .i-menubar-submenu {
-
-    white-space: nowrap;
 }
 
-.i-menubar-submenu table
-{
+.i-menubar-submenu {
+    font-size: 13px;
+    padding: 3px;
+    font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
+    background-color: white;
+    white-space: nowrap;
+    border: thin ridge #D3D3D3;
+}
 
+.i-menubar-submenu table {
     background: #fff url(img/submenu-bg.gif) repeat-y;
 }
 
 .i-menubar-submenu .menuitem {
-
     cursor: pointer;
     padding-left: 10px;
     padding-right: 10px;
     background: transparent;
-
-    color:	#002d96;
+    color: #002d96;
 }
 
 .i-menubar-submenu .menuitem-selected {
-	background-color : 	#DCE3EB;
+    background-color: #DCE3EB;
 }
