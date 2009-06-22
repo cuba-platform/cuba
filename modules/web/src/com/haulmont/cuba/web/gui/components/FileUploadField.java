@@ -111,4 +111,12 @@ public class FileUploadField
     public File getFile() {
         return file;
     }
+
+    public String getCaption() {
+        return component.getCaption();
+    }
+
+    public void setCaption(String caption) {
+        component.setCaption(caption);
+    }
 }
