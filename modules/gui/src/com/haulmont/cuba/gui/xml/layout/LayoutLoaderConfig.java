@@ -63,6 +63,7 @@ public class LayoutLoaderConfig {
         config.register("split", SplitPanelLoader.class);
         config.register("tree", TreeLoader.class);
         config.register("tabsheet", TabsheetLoader.class);
+        config.register("embedded", EmbeddedLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

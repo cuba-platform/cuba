@@ -15,9 +15,11 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.Config;
 
-@Prefix("cuba.FileUploadConfig.")
+@Prefix("cuba.UIComponentsConfig.")
 @Source(type = SourceType.DATABASE)
-public interface FileUploadConfig extends Config
+public interface UIComponentsConfig extends Config
 {
     String getUploadDir();
+
+    String getResourcesRoot();
 }
