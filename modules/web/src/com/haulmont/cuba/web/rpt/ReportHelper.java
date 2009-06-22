@@ -68,108 +68,77 @@ public class ReportHelper
         WebExportDisplay display = new WebExportDisplay(output.isAttachment(), output.isNewWindow());
 
         if (output.getFormat() == ExportFormat.PDF || output.getFormat() == ExportFormat.XLS) {
-            JRAbstractExporter exporter;
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            if (output.getFormat() == ExportFormat.PDF) {
-                exporter = new JRPdfExporter();
-            } else {
-                exporter = new JRXlsExporter();
-                exporter.setParameter(JRXlsAbstractExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
-                exporter.setParameter(JRXlsAbstractExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
-            }
-            if (jasperPrint.size() == 1) {
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint.iterator().next());
-            } else {
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrint);
-            }
-            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
-            try {
-                exporter.exportReport();
-            } catch (JRException e) {
-                throw new RuntimeException("Error printing report " + name, e);
-            }
-            display.show(outputStream.toByteArray(), name, output.getFormat());
+            byte[] bytes = exportJasperReportPdfXls(name, jasperPrint, output);
+            display.show(bytes, name, output.getFormat());
         } else if (output.getFormat() == ExportFormat.HTML) {
             HttpSession httpSession = ((WebApplicationContext) App.getInstance().getContext()).getHttpSession();
             httpSession.setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
-
-            StringWriter writer = new StringWriter();
-            JRHtmlExporter exporter = new JRHtmlExporter();
-            if (jasperPrint.size() == 1) {
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint.iterator().next());
-            } else {
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrint);
-            }
-            exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
-            exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "image?image=");
-            try {
-                exporter.exportReport();
-            } catch (JRException e) {
-                throw new RuntimeException("Error printing report " + name, e);
-            }
-            display.showHtml(writer.toString(), name);
+            String str = exportJasperReportHtml(name, jasperPrint);
+            display.showHtml(str, name);
         }
     }
 
 
-    public static byte[] JasperReportToByte(String name, Map<String, Object> params, ReportOutput output) {
+    public static byte[] printJasperReportToBytes(String name, Map<String, Object> params, ReportOutput output) {
         JasperPrint print = executeJasperReport(name, params);
-        return JasperReportToByte(name, print, output);
+        return printJasperReportToBytes(name, print, output);
     }
 
-    public static byte[] JasperReportToByte(String name, JasperPrint jasperPrint, ReportOutput output) {
+    public static byte[] printJasperReportToBytes(String name, JasperPrint jasperPrint, ReportOutput output) {
         List<JasperPrint> jasperPrints = new ArrayList<JasperPrint>();
         jasperPrints.add(jasperPrint);
-        return JasperReportToByte(name, jasperPrints, output);
+        return printJasperReportToBytes(name, jasperPrints, output);
     }
     
-    public static byte[] JasperReportToByte(String name, List<JasperPrint> jasperPrint, ReportOutput output) {
-        WebExportDisplay display = new WebExportDisplay(output.isAttachment(), output.isNewWindow());
-
-        byte[] reportBytes = new byte[]{};
-
+    public static byte[] printJasperReportToBytes(String name, List<JasperPrint> jasperPrint, ReportOutput output) {
         if (output.getFormat() == ExportFormat.PDF || output.getFormat() == ExportFormat.XLS) {
-            JRAbstractExporter exporter;
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            if (output.getFormat() == ExportFormat.PDF) {
-                exporter = new JRPdfExporter();
-            } else {
-                exporter = new JRXlsExporter();
-                exporter.setParameter(JRXlsAbstractExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
-                exporter.setParameter(JRXlsAbstractExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
-            }
-            if (jasperPrint.size() == 1) {
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint.iterator().next());
-            } else {
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrint);
-            }
-            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
-            try {
-                exporter.exportReport();
-            } catch (JRException e) {
-                throw new RuntimeException("Error printing report " + name, e);
-            }
-            reportBytes = outputStream.toByteArray();
+            return exportJasperReportPdfXls(name, jasperPrint, output);
         } else if (output.getFormat() == ExportFormat.HTML) {
-            HttpSession httpSession = ((WebApplicationContext) App.getInstance().getContext()).getHttpSession();
-            httpSession.setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
-
-            StringWriter writer = new StringWriter();
-            JRHtmlExporter exporter = new JRHtmlExporter();
-            if (jasperPrint.size() == 1) {
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint.iterator().next());
-            } else {
-                exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrint);
-            }
-            exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
-            exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "image?image=");
-            try {
-                exporter.exportReport();
-            } catch (JRException e) {
-                throw new RuntimeException("Error printing report " + name, e);
-            }
-            reportBytes = writer.toString().getBytes();
+            return exportJasperReportHtml(name, jasperPrint).getBytes();
+        } else {
+            throw new UnsupportedOperationException("Format not supported: " + output.getFormat());
         }
-        return reportBytes;
+    }
+
+    private static byte[] exportJasperReportPdfXls(String name, List<JasperPrint> jasperPrint, ReportOutput output) {
+        JRAbstractExporter exporter;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        if (output.getFormat() == ExportFormat.PDF) {
+            exporter = new JRPdfExporter();
+        } else {
+            exporter = new JRXlsExporter();
+            exporter.setParameter(JRXlsAbstractExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
+            exporter.setParameter(JRXlsAbstractExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
+        }
+        if (jasperPrint.size() == 1) {
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint.iterator().next());
+        } else {
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrint);
+        }
+        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
+        try {
+            exporter.exportReport();
+        } catch (JRException e) {
+            throw new RuntimeException("Error printing report " + name, e);
+        }
+        return outputStream.toByteArray();
+    }
+
+    private static String exportJasperReportHtml(String name, List<JasperPrint> jasperPrint) {
+        StringWriter writer = new StringWriter();
+        JRHtmlExporter exporter = new JRHtmlExporter();
+        if (jasperPrint.size() == 1) {
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint.iterator().next());
+        } else {
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrint);
+        }
+        exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
+        exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "image?image=");
+        try {
+            exporter.exportReport();
+        } catch (JRException e) {
+            throw new RuntimeException("Error printing report " + name, e);
+        }
+        return writer.toString();
     }
 }
