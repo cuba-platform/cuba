@@ -26,6 +26,9 @@ public class DateFormatter implements Table.Formatter<Date> {
     }
 
     public String format(Date value) {
+        if (value == null) {
+            return null;
+        }
         final String format = element.attributeValue("format");
         if (format == null) {
             return value.toString();
