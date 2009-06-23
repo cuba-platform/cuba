@@ -31,6 +31,7 @@ public interface Table
         protected Object id;
         protected String caption;
         protected boolean editable;
+        protected Formatter formatter;
 
         protected Class type;
         private Element element;
@@ -67,6 +68,14 @@ public interface Table
             this.type = type;
         }
 
+        public Formatter getFormatter() {
+            return formatter;
+        }
+
+        public void setFormatter(Formatter formatter) {
+            this.formatter = formatter;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -90,6 +99,11 @@ public interface Table
         public void setXmlDescriptor(Element element) {
             this.element = element;
         }
+    }
+
+    public interface Formatter<T extends Object> {
+
+        String format(T value);
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

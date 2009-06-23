@@ -13,10 +13,12 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -24,6 +26,7 @@ import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.lang.reflect.Constructor;
 
 public abstract class AbstractTableLoader<T extends Table> extends ComponentLoader {
     protected ComponentsFactory factory;
@@ -35,8 +38,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         this.config = config;
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException
-    {
+    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
         final T component = createComponent(factory);
 
         assignXmlDescriptor(component, element);
@@ -65,7 +67,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
             if (columnsElement != null) {
                 //noinspection unchecked
-                for (Element columnElement : (Collection<Element>)columnsElement.elements("column")) {
+                for (Element columnElement : (Collection<Element>) columnsElement.elements("column")) {
                     String visible = columnElement.attributeValue("visible");
                     if (visible == null) {
                         final Element e = columnElement.element("visible");
@@ -91,7 +93,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
-        
+
         addAssignWindowTask(component);
 
         return component;
@@ -126,6 +128,32 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         column.setXmlDescriptor(element);
         column.setType(metaPropertyPath.getRangeJavaClass());
 
+        column.setFormatter(loadFormatter(element));
+
         return column;
+    }
+
+    protected Table.Formatter loadFormatter(Element element) {
+        final Element formatterElement = element.element("formatter");
+        if (formatterElement != null) {
+            final String className = formatterElement.attributeValue("class");
+            final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
+            try {
+                final Constructor<Field.Validator> constructor = aClass.getConstructor(Element.class);
+                try {
+                    return (Table.Formatter) constructor.newInstance(formatterElement);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    return (Table.Formatter) aClass.newInstance();
+                } catch (Exception e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
+        } else {
+            return null;
+        }
     }
 }

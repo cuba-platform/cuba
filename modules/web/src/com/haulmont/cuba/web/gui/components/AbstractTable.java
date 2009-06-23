@@ -216,7 +216,9 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
             final Table.Column column = AbstractTable.this.columns.get(propertyPath);
             if (column != null && column.getXmlDescriptor() != null) {
                 String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
-                if (!StringUtils.isEmpty(captionProperty)) {
+                if (column.getFormatter() != null) {
+                    return column.getFormatter().format(getValue());
+                } else if (!StringUtils.isEmpty(captionProperty)) {
                     final Object value = getValue();
                     return this.propertyPath.getRange().isDatatype() ?
                             this.propertyPath.getRange().asDatatype().format(value) :
