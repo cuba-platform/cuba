@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.Versioned;
 import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.data.*;
@@ -41,14 +42,22 @@ public class AbstractCollectionDatasource<T extends Entity, K>
         if (State.VALID.equals(state)) {
             Object prevItem = this.item;
 
-            if (!ObjectUtils.equals(prevItem, item)) {
+            final MetaClass metaClass = getMetaClass();
+            final Class javaClass = metaClass.getJavaClass();
+
+            if (!ObjectUtils.equals(prevItem, item) || 
+                    (Versioned.class.isAssignableFrom(javaClass)) &&
+                            !ObjectUtils.equals(
+                                    prevItem == null ? null : ((Versioned) prevItem).getVersion(),
+                                    item == null ? null : ((Versioned) item).getVersion()))
+            {
                 if (this.item != null) {
                     detatchListener((Instance) this.item);
                 }
 
                 if (item instanceof Instance) {
                     final MetaClass aClass = ((Instance) item).getMetaClass();
-                    if (!aClass.equals(metaClass)) {
+                    if (!aClass.equals(this.metaClass)) {
                         throw new IllegalStateException(String.format("Invalid item metaClass"));
                     }
                     attachListener((Instance) item);
