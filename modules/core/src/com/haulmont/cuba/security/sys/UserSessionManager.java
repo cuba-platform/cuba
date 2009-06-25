@@ -19,6 +19,8 @@ import com.haulmont.cuba.core.Query;
 
 import java.util.*;
 
+import org.apache.commons.lang.BooleanUtils;
+
 public class UserSessionManager
 {
     private static UserSessionManager instance;
@@ -55,7 +57,7 @@ public class UserSessionManager
 
     private void compilePermissions(UserSession session, List<Role> roles) {
         for (Role role : roles) {
-            if (role.isSuperRole())
+            if (BooleanUtils.isTrue(role.getSuperRole()))
                 return;
         }
         for (Role role : roles) {

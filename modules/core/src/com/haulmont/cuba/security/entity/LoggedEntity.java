@@ -43,19 +43,19 @@ public class LoggedEntity extends BaseUuidEntity
         this.name = name;
     }
 
-    public boolean isAuto() {
-        return BooleanUtils.isTrue(auto);
+    public Boolean getAuto() {
+        return auto;
     }
 
-    public void setAuto(boolean auto) {
+    public void setAuto(Boolean auto) {
         this.auto = auto;
     }
 
-    public boolean isManual() {
-        return BooleanUtils.isTrue(manual);
+    public Boolean getManual() {
+        return manual;
     }
 
-    public void setManual(boolean manual) {
+    public void setManual(Boolean manual) {
         this.manual = manual;
     }
 

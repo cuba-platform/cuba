@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -109,9 +110,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
                 for (LoggedAttribute loggedAttribute : loggedEntity.getAttributes()) {
                     attributes.add(loggedAttribute.getName());
                 }
-                if (loggedEntity.isAuto())
+                if (BooleanUtils.isTrue(loggedEntity.getAuto()))
                     entitiesAuto.put(loggedEntity.getName(), attributes);
-                if (loggedEntity.isManual())
+                if (BooleanUtils.isTrue(loggedEntity.getManual()))
                     entitiesManual.put(loggedEntity.getName(), attributes);
             }
             tx.commit();

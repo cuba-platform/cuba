@@ -48,11 +48,11 @@ public class Role extends StandardEntity
         this.name = name;
     }
 
-    public boolean isSuperRole() {
-        return BooleanUtils.isTrue(superRole);
+    public Boolean getSuperRole() {
+        return superRole;
     }
 
-    public void setSuperRole(boolean superRole) {
+    public void setSuperRole(Boolean superRole) {
         this.superRole = superRole;
     }
 
