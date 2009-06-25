@@ -9,11 +9,15 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.settings.Settings;
+
 import java.util.Collection;
 
 public interface Window extends IFrame, Component.HasCaption, Component.Actions {
     void addListener(CloseListener listener);
     void removeListener(CloseListener listener);
+
+    void applySettings(Settings settings);
 
     boolean close(String actionId);
 

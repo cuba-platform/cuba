@@ -25,6 +25,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.security.app.UserSettingService;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -44,12 +46,20 @@ import java.util.regex.Pattern;
 
 public abstract class WindowManager {
     private DataService defaultDataService;
+    private UserSettingService settingService;
 
     public synchronized DataService getDefaultDataService() {
         if (defaultDataService == null) {
             defaultDataService = createDefaultDataService();
         }
         return defaultDataService;
+    }
+
+    public synchronized UserSettingService getSettingService() {
+        if (settingService == null) {
+            settingService = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
+        }
+        return settingService;
     }
 
     protected abstract DataService createDefaultDataService();
@@ -74,13 +84,15 @@ public abstract class WindowManager {
         window.setId(windowInfo.getId());
 
         componentLoaderContext.setFrame(window);
-        initialize(window, dsContext, params);
+        initDatasources(window, dsContext, params);
 
-        final Window wrapedWindow = wrapByCustomClass(window, element, params);
-        componentLoaderContext.setFrame(wrapedWindow);
+        final Window windowWrapper = wrapByCustomClass(window, element, params);
+        componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executeLazyTasks();
 
-        return wrapedWindow;
+        windowWrapper.applySettings(new SettingsImpl(windowInfo.getId(), getSettingService()));
+
+        return windowWrapper;
     }
 
     protected void deployViews(Document document) {
@@ -101,8 +113,7 @@ public abstract class WindowManager {
         }
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
-    protected void initialize(final Window window, DsContext dsContext, Map<String, Object> params) {
+    protected void initDatasources(final Window window, DsContext dsContext, Map<String, Object> params) {
         window.setDsContext(dsContext);
 
         for (Datasource ds : dsContext.getAll()) {

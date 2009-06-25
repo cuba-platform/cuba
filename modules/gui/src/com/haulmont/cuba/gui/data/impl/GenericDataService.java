@@ -28,6 +28,7 @@ public class GenericDataService implements DataService {
         this.service = service;
     }
 
+    // TODO KK: fix this, wont work for remote client (Locator is not global)
     public GenericDataService(boolean remoteCalls) {
         if (remoteCalls) {
             this.service = Locator.lookupRemote(DataServiceRemote.JNDI_NAME);

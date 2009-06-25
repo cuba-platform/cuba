@@ -37,7 +37,7 @@
 
     <layout>
         <vbox>
-            <split orientation="horizontal" pos="30">
+            <split id="split" orientation="horizontal" pos="30">
                 <vbox>
                     <tree id="groups">
                         <treechildren datasource="groups" captionProperty="name" hierarchyProperty="parent"/>

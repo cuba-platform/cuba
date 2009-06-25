@@ -107,4 +107,9 @@ public interface Component {
         boolean isEditable();
         void setEditable(boolean editable);
     }
+
+    interface HasSettings {
+        void applySettings(Element element);
+        boolean saveSettings(Element element);
+    }
 }

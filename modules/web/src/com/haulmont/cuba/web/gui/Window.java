@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -26,12 +27,15 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.gui.components.VBoxLayout;
+import com.haulmont.cuba.web.gui.components.ComponentVisitor;
 import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -61,6 +65,10 @@ public class Window
     private List<CloseListener> listeners = new ArrayList<CloseListener>();
 
     protected com.haulmont.cuba.gui.components.Window windowWrapper;
+
+    private Settings settings;
+
+    private Log log = LogFactory.getLog(Window.class);
 
     public Window() {
         component = createLayout();
@@ -200,6 +208,22 @@ public class Window
         listeners.remove(listener);
     }
 
+    public void applySettings(Settings settings) {
+        this.settings = settings;
+        ComponentsHelper.walkComponents(
+                this,
+                new ComponentVisitor() {
+                    public void visit(Component component, String name) {
+                        if (component instanceof HasSettings) {
+                            log.trace("Applying settings for : " + name + " : " + component);
+                            Element e = Window.this.settings.get(name);
+                            ((HasSettings) component).applySettings(e);
+                        }
+                    }
+                }
+        );
+    }
+
     public Element getXmlDescriptor() {
         return element;
     }
@@ -328,6 +352,22 @@ public class Window
     }
 
     public boolean close(String actionId) {
+        if (settings != null) {
+            ComponentsHelper.walkComponents(
+                    this,
+                    new ComponentVisitor() {
+                        public void visit(Component component, String name) {
+                            if (component instanceof HasSettings) {
+                                log.trace("Saving settings for : " + name + " : " + component);
+                                Element e = Window.this.settings.get(name);
+                                boolean modified = ((HasSettings) component).saveSettings(e);
+                                Window.this.settings.setModified(modified);
+                            }
+                        }
+                    }
+            );
+            settings.commit();
+        }
         App.getInstance().getWindowManager().close(this);
         return onClose(actionId);
     }

@@ -25,11 +25,15 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
+import com.haulmont.bali.util.Dom4j;
 import com.itmill.toolkit.terminal.Resource;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+
+import org.dom4j.Element;
 
 public class TreeTable
     extends
@@ -138,6 +142,56 @@ public class TreeTable
     protected void initComponent(com.haulmont.cuba.web.toolkit.ui.TreeTable component) {
         super.initComponent(component);
         component.setSelectable(true);
+    }
+
+    public void applySettings(Element element) {
+        Element columnsElem = element.element("columns");
+        if (columnsElem != null) {
+            Object[] oldColumns = component.getVisibleColumns();
+            List<Object> newColumns = new ArrayList<Object>();
+            for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+                for (Object column : oldColumns) {
+                    if (column.toString().equals(colElem.attributeValue("id"))) {
+                        newColumns.add(column);
+
+                        String width = colElem.attributeValue("width");
+                        if (width != null)
+                            component.setColumnWidth(column, Integer.valueOf(width));
+
+                        String visible = colElem.attributeValue("visible");
+                        if (visible != null)
+                            try {
+                                component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                            } catch (IllegalAccessException e) {
+                                // ignore
+                            }
+                        break;
+                    }
+                }
+            }
+            component.setVisibleColumns(newColumns.toArray());
+        }
+    }
+
+    public boolean saveSettings(Element element) {
+        Element columnsElem = element.element("columns");
+        if (columnsElem != null)
+            element.remove(columnsElem);
+        columnsElem = element.addElement("columns");
+
+        Object[] visibleColumns = component.getVisibleColumns();
+        for (Object column : visibleColumns) {
+            Element colElem = columnsElem.addElement("columns");
+            colElem.addAttribute("id", column.toString());
+
+            int width = component.getColumnWidth(column);
+            if (width > -1)
+                colElem.addAttribute("width", String.valueOf(width));
+
+            Boolean visible = !component.isColumnCollapsed(column);
+            colElem.addAttribute("visible", visible.toString());
+        }
+        return true;
     }
 
     protected class TreeTableDsWrapper

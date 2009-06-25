@@ -11,11 +11,14 @@ package com.haulmont.cuba.gui.components;
 
 import org.dom4j.Element;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.settings.Settings;
 
 import java.util.Map;
 import java.util.Collection;
 
-public class AbstractWindow extends AbstractFrame implements Window, Component.HasXmlDescriptor, Window.Wrapper {
+public class AbstractWindow extends AbstractFrame 
+        implements Window, Component.HasXmlDescriptor, Window.Wrapper {
+
     public AbstractWindow(IFrame frame) {
         super(frame);
     }
@@ -119,6 +122,14 @@ public class AbstractWindow extends AbstractFrame implements Window, Component.H
     public Action getAction(String id) {
         if (frame instanceof Window) {
             return ((Window) frame).getAction(id);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void applySettings(Settings settings) {
+        if (frame instanceof Window) {
+            ((Window) frame).applySettings(settings);
         } else {
             throw new UnsupportedOperationException();
         }

@@ -14,7 +14,12 @@ import com.itmill.toolkit.ui.Layout;
 
 import java.util.*;
 
-public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.haulmont.cuba.gui.components.SplitPanel {
+import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
+
+public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel
+        implements com.haulmont.cuba.gui.components.SplitPanel, Component.HasSettings
+{
     protected String id;
 
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
@@ -79,5 +84,24 @@ public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel implements com.
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this, ComponentsHelper.convertAlignment(alignment));
         }
+    }
+
+    public void applySettings(Element element) {
+        Element e = element.element("position");
+        if (e != null) {
+            String value = e.attributeValue("value");
+            String unit = e.attributeValue("unit");
+            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit))
+                setSplitPosition(Integer.valueOf(value), Integer.valueOf(unit));
+        }
+    }
+
+    public boolean saveSettings(Element element) {
+        Element e = element.element("position");
+        if (e == null)
+            e = element.addElement("position");
+        e.addAttribute("value", String.valueOf(pos));
+        e.addAttribute("unit", String.valueOf(posUnit));
+        return true;
     }
 }

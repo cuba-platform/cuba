@@ -19,7 +19,7 @@ import org.dom4j.Element;
 
 public interface Table
     extends
-        com.haulmont.cuba.gui.components.List, Component.Editable 
+        com.haulmont.cuba.gui.components.List, Component.Editable, Component.HasSettings
 {
     List<Column> getColumns();
     void addColumn(Column column);

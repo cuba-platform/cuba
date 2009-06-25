@@ -9,21 +9,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.ui.Component;
-import com.itmill.toolkit.terminal.Resource;
-import com.itmill.toolkit.terminal.FileResource;
-import com.itmill.toolkit.terminal.ClassResource;
-import com.itmill.toolkit.terminal.ThemeResource;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.web.App;
-
-import java.util.*;
-import java.util.List;
-import java.io.File;
-
+import com.itmill.toolkit.terminal.ClassResource;
+import com.itmill.toolkit.terminal.FileResource;
+import com.itmill.toolkit.terminal.Resource;
+import com.itmill.toolkit.terminal.ThemeResource;
+import com.itmill.toolkit.ui.*;
 import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
+import java.util.*;
 
 public class ComponentsHelper {
     public static Resource getResource(String resURL) {
@@ -158,6 +155,28 @@ public class ComponentsHelper {
         }
 
         return null;
+    }
+
+    public static void walkComponents(com.haulmont.cuba.gui.components.Component.Container container,
+                                      ComponentVisitor visitor)
+    {
+        __walkComponents(container, visitor, "");
+    }
+
+    private static void __walkComponents(com.haulmont.cuba.gui.components.Component.Container container,
+                                      ComponentVisitor visitor,
+                                      String path)
+    {
+        for (com.haulmont.cuba.gui.components.Component component : container.getOwnComponents()) {
+            visitor.visit(component, path + component.getId());
+
+            if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
+                String p = component instanceof IFrame ? 
+                        path + component.getId() + "." :
+                        path;
+                __walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), visitor, p);
+            }
+        }
     }
 
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {

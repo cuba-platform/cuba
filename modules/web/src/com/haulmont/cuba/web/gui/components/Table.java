@@ -12,23 +12,27 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
+import com.haulmont.bali.util.Dom4j;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.ui.BaseFieldFactory;
 import com.itmill.toolkit.terminal.Resource;
+import com.itmill.toolkit.ui.BaseFieldFactory;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+
+import org.dom4j.Element;
 
 public class Table
     extends
@@ -168,6 +172,56 @@ public class Table
                 return styleProvider.getStyleName(item, propertyId);
             }
         });
+    }
+
+    public void applySettings(Element element) {
+        Element columnsElem = element.element("columns");
+        if (columnsElem != null) {
+            Object[] oldColumns = component.getVisibleColumns();
+            List<Object> newColumns = new ArrayList<Object>();
+            for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+                for (Object column : oldColumns) {
+                    if (column.toString().equals(colElem.attributeValue("id"))) {
+                        newColumns.add(column);
+
+                        String width = colElem.attributeValue("width");
+                        if (width != null)
+                            component.setColumnWidth(column, Integer.valueOf(width));
+
+                        String visible = colElem.attributeValue("visible");
+                        if (visible != null)
+                            try {
+                                component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                            } catch (IllegalAccessException e) {
+                                // ignore
+                            }
+                        break;
+                    }
+                }
+            }
+            component.setVisibleColumns(newColumns.toArray());
+        }
+    }
+
+    public boolean saveSettings(Element element) {
+        Element columnsElem = element.element("columns");
+        if (columnsElem != null)
+            element.remove(columnsElem);
+        columnsElem = element.addElement("columns");
+
+        Object[] visibleColumns = component.getVisibleColumns();
+        for (Object column : visibleColumns) {
+            Element colElem = columnsElem.addElement("columns");
+            colElem.addAttribute("id", column.toString());
+
+            int width = component.getColumnWidth(column);
+            if (width > -1)
+                colElem.addAttribute("width", String.valueOf(width));
+
+            Boolean visible = !component.isColumnCollapsed(column);
+            colElem.addAttribute("visible", visible.toString());
+        }
+        return true;
     }
 
     protected class TableDsWrapper extends CollectionDsWrapper {
