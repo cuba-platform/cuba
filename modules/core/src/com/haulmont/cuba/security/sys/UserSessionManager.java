@@ -55,6 +55,24 @@ public class UserSessionManager
         return session;
     }
 
+    public UserSession updateSession(UserSession src, User user) {
+        List<String> roleNames = new ArrayList<String>();
+        List<Role> roles = new ArrayList<Role>();
+        for (UserRole userRole : user.getUserRoles()) {
+            if (userRole.getRole() != null) {
+                roleNames.add(userRole.getRole().getName());
+                roles.add(userRole.getRole());
+            }
+        }
+        UserSession session = new UserSession(
+                src, user, roleNames.toArray(new String[roleNames.size()]), src.getLocale());
+        compilePermissions(session, roles);
+        compileConstraints(session, user.getGroup());
+        sessions.remove(src);
+        sessions.add(session);
+        return session;
+    }
+
     private void compilePermissions(UserSession session, List<Role> roles) {
         for (Role role : roles) {
             if (BooleanUtils.isTrue(role.getSuperRole()))

@@ -21,15 +21,15 @@ public class UserSession implements Serializable
 {
     private static final long serialVersionUID = -8248326616891177382L;
 
-    private final UUID userId;
-    private final UUID id;
-    private final String login;
-    private final String name;
-    private final String[] roles;
-    private final Locale locale;
+    private UUID userId;
+    private UUID id;
+    private String login;
+    private String name;
+    private String[] roles;
+    private Locale locale;
 
-    private final Map<String, Integer>[] permissions;
-    private final Map<String, List<String[]>> constraints;
+    private Map<String, Integer>[] permissions;
+    private Map<String, List<String[]>> constraints;
 
     private final Map<String, Serializable> attributes;
 
@@ -51,6 +51,14 @@ public class UserSession implements Serializable
 
         constraints = new HashMap<String, List<String[]>>();
         attributes = new ConcurrentHashMap<String, Serializable>();
+    }
+    
+    public UserSession(UserSession src, User user, String[] roles, Locale locale) {
+        this(user, roles, locale);
+        this.id = src.id;
+        this.userId = src.userId;
+        this.login = src.login;
+        this.name = src.name;
     }
 
     public UUID getId() {

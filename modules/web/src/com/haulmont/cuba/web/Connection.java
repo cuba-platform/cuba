@@ -39,6 +39,10 @@ public class Connection
         return session;
     }
 
+    public void setSession(UserSession session) {
+        this.session = session;
+    }
+
     private LoginService getLoginService() {
         LoginService ls = ServiceLocator.lookup(LoginService.JNDI_NAME);
         return ls;

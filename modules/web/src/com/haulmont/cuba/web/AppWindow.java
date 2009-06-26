@@ -30,7 +30,7 @@ import java.util.Locale;
 public class AppWindow extends Window {
     protected Connection connection;
 
-    private MenuBar menuBar;
+    protected MenuBar menuBar;
     private TabSheet tabSheet;
 
     private VerticalLayout rootLayout;
@@ -170,16 +170,16 @@ public class AppWindow extends Window {
     }
 
     protected MenuBar createMenuBar() {
-             menuBar = new MenuBar();
+        menuBar = new MenuBar();
 
-             final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
-             List<MenuItem> rootItems = menuConfig.getRootItems();
-             for (MenuItem menuItem : rootItems) {
-                 createMenuBarItem(menuBar, menuItem);
-             }
+        final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
+        List<MenuItem> rootItems = menuConfig.getRootItems();
+        for (MenuItem menuItem : rootItems) {
+            createMenuBarItem(menuBar, menuItem);
+        }
 
-             return menuBar;
-         }
+        return menuBar;
+    }
 
     protected HorizontalLayout createTitlePane() {
         HorizontalLayout titleLayout = new HorizontalLayout();
