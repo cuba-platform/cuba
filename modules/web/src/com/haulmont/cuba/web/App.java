@@ -161,16 +161,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         if (application == App.this) {
             currentApp.set((App) application);
         }
-        Terminal terminal = application.getMainWindow().getTerminal();
-        if (terminal != null) {
-            if (terminal instanceof WebBrowser) {
-                Locale locale = ((WebBrowser) terminal).getLocale();
-                application.setLocale(locale);
-            }
-            else {
-                log.error("Unsupported terminal type: " + terminal);
-            }
-        }
+        application.setLocale(request.getLocale());
 
         String requestURI = request.getRequestURI();
 

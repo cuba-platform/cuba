@@ -646,13 +646,15 @@ public class Window
             if (problems.isEmpty()) return true;
 
             com.itmill.toolkit.ui.Field field = null;
-            StringBuffer buffer = new StringBuffer("Form validation failed:<br>");
+            StringBuffer buffer = new StringBuffer(
+                    MessageProvider.getMessage(Window.class, "validationFail") + "<br>");
             for (Validator.InvalidValueException problem : problems.keySet()) {
                 if (field == null) field = problems.get(problem);
                 buffer.append(problem.getMessage()).append("<br>");
             }
 
-            showNotification("Alert", buffer.toString(), NotificationType.TRAY);
+            showNotification(MessageProvider.getMessage(Window.class, "validationFail.caption"),
+                    buffer.toString(), NotificationType.TRAY);
             if (field != null) field.focus();
 
             return false;
