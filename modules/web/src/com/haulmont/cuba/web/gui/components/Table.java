@@ -67,17 +67,17 @@ public class Table
         component.setFieldFactory(new BaseFieldFactory() {
             @Override
             public com.itmill.toolkit.ui.Field createField(Class type, com.itmill.toolkit.ui.Component uiContext) {
-                return super.createField(type, uiContext);    //To change body of overridden methods use File | Settings | File Templates.
+                return super.createField(type, uiContext);
             }
 
             @Override
             public com.itmill.toolkit.ui.Field createField(Property property, com.itmill.toolkit.ui.Component uiContext) {
-                return super.createField(property, uiContext);    //To change body of overridden methods use File | Settings | File Templates.
+                return super.createField(property, uiContext);
             }
 
             @Override
             public com.itmill.toolkit.ui.Field createField(Item item, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
-                return super.createField(item, propertyId, uiContext);    //To change body of overridden methods use File | Settings | File Templates.
+                return super.createField(item, propertyId, uiContext);
             }
 
             @Override

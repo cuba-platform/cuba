@@ -120,6 +120,10 @@
 	line-height: 15px;
 }
 
+.i-table-cell-content-wrap {
+    white-space: normal;
+}
+
 /* Fix textfield size to correspond label size inside table */
 .i-table-cell-content .i-textfield,
 .i-table-cell-content .i-button {

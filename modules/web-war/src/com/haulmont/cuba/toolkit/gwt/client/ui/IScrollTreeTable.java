@@ -252,6 +252,9 @@ public class IScrollTreeTable
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
                 String className = CLASSNAME + "-cell-content";
+                if (allowMultiStingCells) {
+                    className += " " + CLASSNAME + "-cell-content-wrap";
+                }
                 String classNameExt = null;
                 if (style != null && !style.equals("")) {
                     classNameExt = CLASSNAME + "-cell-content-" + style;
@@ -302,6 +305,9 @@ public class IScrollTreeTable
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
                 String className = CLASSNAME + "-cell-content";
+                if (allowMultiStingCells) {
+                    className += " " + CLASSNAME + "-cell-content-wrap";
+                }
                 String classNameExt = null;
                 if (style != null && !style.equals("")) {
                     classNameExt = CLASSNAME + "-cell-content-" + style;

@@ -128,6 +128,8 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
     private String height;
     private String width = "";
 
+    protected boolean allowMultiStingCells = false;
+
     public IScrollTable() {
         bodyContainer.addScrollListener(this);
         bodyContainer.setStyleName(CLASSNAME + "-body");
@@ -188,6 +190,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         showRowHeaders = uidl.getBooleanAttribute("rowheaders");
         showColHeaders = uidl.getBooleanAttribute("colheaders");
+        allowMultiStingCells = uidl.getBooleanAttribute("multistring");
 
         if (uidl.hasVariable("sortascending")) {
             sortAscending = uidl.getBooleanVariable("sortascending");
@@ -2097,6 +2100,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
                 String className = CLASSNAME + "-cell-content";
+                if (allowMultiStingCells) {
+                    className += " " + CLASSNAME + "-cell-content-wrap";
+                }
                 String classNameExt = null;
                 if (style != null && !style.equals("")) {
                     classNameExt = CLASSNAME + "-cell-content-" + style;
@@ -2131,6 +2137,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
                 String className = CLASSNAME + "-cell-content";
+                if (allowMultiStingCells) {
+                    className += " " + CLASSNAME + "-cell-content-wrap";
+                }
                 String classNameExt = null;
                 if (style != null && !style.equals("")) {
                     classNameExt = CLASSNAME + "-cell-content-" + style;

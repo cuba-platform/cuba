@@ -300,6 +300,12 @@ public class TreeTable
     protected boolean alwaysRecalculateColumnWidths = false;
     protected boolean recalcWidth = false;
 
+    /*
+     * EXPERIMENTAL feature: Tells to the client to wrap cells content.
+     * Also it sets page length equal container size
+     */
+    protected boolean allowMultiStringCells = false;
+
     /* Table constructors */
 
     /**
@@ -1908,7 +1914,7 @@ public class TreeTable
                 (reqFirstRowToPaint >= 0 ? reqFirstRowToPaint
                         : firstToBeRenderedInClient));
         target.addAttribute("totalrows", total);
-        if (pagelen != 0) {
+        if (pagelen != 0 && !allowMultiStringCells) {
             target.addAttribute("pagelength", pagelen);
         }
         if (colheads) {
@@ -1916,6 +1922,9 @@ public class TreeTable
         }
         if (rowheads) {
             target.addAttribute("rowheaders", true);
+        }
+        if (allowMultiStringCells) {
+            target.addAttribute("multistring", true);
         }
 
         // Visible column order
