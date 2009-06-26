@@ -15,6 +15,7 @@ import com.itmill.toolkit.ui.Panel;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.components.Layout, Component.Container {
     private String id;
@@ -79,11 +80,11 @@ public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.compon
     }
 
     public Collection<Component> getOwnComponents() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return component == null ? Collections.<Component>emptyList() : Collections.singletonList(component);
     }
 
     public Collection<Component> getComponents() {
-        return null;
+        return ComponentsHelper.getComponents(this);
     }
 
     public Alignment getAlignment() {

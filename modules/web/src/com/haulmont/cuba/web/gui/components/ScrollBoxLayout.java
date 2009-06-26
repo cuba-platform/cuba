@@ -15,6 +15,7 @@ import com.itmill.toolkit.ui.Layout;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class ScrollBoxLayout extends ScrollablePanel implements com.haulmont.cuba.gui.components.ScrollBoxLayout {
     private String id;
@@ -75,11 +76,11 @@ public class ScrollBoxLayout extends ScrollablePanel implements com.haulmont.cub
     }
 
     public Collection<Component> getOwnComponents() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return component == null ? Collections.<Component>emptyList() : Collections.singletonList(component);
     }
 
     public Collection<Component> getComponents() {
-        return null;
+        return ComponentsHelper.getComponents(this);
     }
 
     public Alignment getAlignment() {
