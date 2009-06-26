@@ -19,13 +19,14 @@ import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.bali.util.Dom4j;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+
+import org.dom4j.Element;
 
 public class AppWindow extends Window {
     protected Connection connection;
@@ -266,6 +267,13 @@ public class AppWindow extends Window {
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 String caption = item.getCaption();
 
+                Map<String, Object> params = new HashMap<String, Object>();
+                Element descriptor = item.getDescriptor();
+                for (Element element : Dom4j.elements(descriptor, "param")) {
+                    params.put(element.attributeValue("name"), element.attributeValue("value"));
+                }
+                params.put("caption", caption);
+
                 final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
                 WindowInfo windowInfo = windowConfig.getWindowInfo(item.getId());
 
@@ -289,13 +297,13 @@ public class AppWindow extends Window {
                             windowInfo,
                             newItem,
                             WindowManager.OpenType.NEW_TAB,
-                            Collections.<String, Object>singletonMap("caption", caption)
+                            params
                     );
                 } else {
                     App.getInstance().getWindowManager().openWindow(
                             windowInfo,
                             WindowManager.OpenType.NEW_TAB,
-                            Collections.<String, Object>singletonMap("caption", caption)
+                            params
                     );
                 }
             }

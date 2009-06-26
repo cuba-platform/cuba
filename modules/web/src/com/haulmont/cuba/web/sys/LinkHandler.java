@@ -22,6 +22,9 @@ import com.haulmont.chile.core.model.MetaClass;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +34,8 @@ public class LinkHandler {
     private Log log = LogFactory.getLog(LinkHandler.class);
     private App app;
     private Map<String, String> requestParams;
+
+    private static Pattern INSTANCE_RE = Pattern.compile("\\w+\\$\\w+-\\w+-\\w+-\\w+-\\w+-\\w+");
 
     public LinkHandler(App app, Map<String, String> requestParams) {
         this.app = app;
@@ -54,42 +59,77 @@ public class LinkHandler {
         String itemStr = requestParams.get("item");
         if (itemStr == null) {
             app.getWindowManager().openWindow(windowInfo,
-                    com.haulmont.cuba.gui.WindowManager.OpenType.NEW_TAB);
+                    com.haulmont.cuba.gui.WindowManager.OpenType.NEW_TAB,
+                    getParamsMap());
         } else {
-            int p = itemStr.indexOf('-');
-            if (p < 2) {
-                log.warn("Invalid item description: " + itemStr);
-                return;
+            Entity entity = loadEntityInstance(itemStr);
+            if (entity != null) {
+                app.getWindowManager().openEditor(windowInfo,
+                        entity,
+                        com.haulmont.cuba.gui.WindowManager.OpenType.NEW_TAB,
+                        getParamsMap());
             }
-            String entityName = itemStr.substring(0, p);
-            MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
-            if (metaClass == null) {
-                log.warn("No metaclass found for item: " + itemStr);
-                return;
-            }
-
-            String entityIdStr = itemStr.substring(p + 1);
-            UUID id;
-            try {
-                id = UUID.fromString(entityIdStr);
-            } catch (Exception e) {
-                log.warn("Invalid ID for item: " + itemStr);
-                return;
-            }
-
-            DataService ds = ServiceLocator.getDataService();
-            DataServiceRemote.LoadContext ctx = new DataService.LoadContext(metaClass).setId(id);
-            Entity entity = null;
-            try {
-                entity = ds.load(ctx);
-            } catch (Exception e) {
-                log.warn("Unable to load item: " + itemStr, e);
-                return;
-            }
-
-            app.getWindowManager().openEditor(windowInfo,
-                    entity,
-                    com.haulmont.cuba.gui.WindowManager.OpenType.NEW_TAB);
         }
+    }
+
+    private Map<String, Object> getParamsMap() {
+        Map<String, Object> params = new HashMap<String, Object>();
+        String paramsStr = requestParams.get("params");
+        if (paramsStr == null)
+            return params;
+
+        String[] entries = paramsStr.split(",");
+        for (String entry : entries) {
+            String[] parts = entry.split(":");
+            if (parts.length != 2) {
+                log.warn("Invalid parameter: " + entry);
+                return params;       
+            }
+            String name = parts[0];
+            String value = parts[1];
+            Matcher matcher = INSTANCE_RE.matcher(value);
+            if (matcher.matches()) {
+                Entity entity = loadEntityInstance(value);
+                if (entity != null)
+                    params.put(name, entity);
+            } else {
+                params.put(name, value);
+            }
+        }
+        return params;
+    }
+
+    private Entity loadEntityInstance(String str) {
+        int p = str.indexOf('-');
+        if (p < 2) {
+            log.warn("Invalid item description: " + str);
+            return null;
+        }
+        String entityName = str.substring(0, p);
+        MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
+        if (metaClass == null) {
+            log.warn("No metaclass found for item: " + str);
+            return null;
+        }
+
+        String entityIdStr = str.substring(p + 1);
+        UUID id;
+        try {
+            id = UUID.fromString(entityIdStr);
+        } catch (Exception e) {
+            log.warn("Invalid ID for item: " + str);
+            return null;
+        }
+
+        DataService ds = ServiceLocator.getDataService();
+        DataServiceRemote.LoadContext ctx = new DataService.LoadContext(metaClass).setId(id);
+        Entity entity;
+        try {
+            entity = ds.load(ctx);
+        } catch (Exception e) {
+            log.warn("Unable to load item: " + str, e);
+            return null;
+        }
+        return entity;
     }
 }
