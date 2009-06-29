@@ -68,6 +68,8 @@ public class Window
 
     private Settings settings;
 
+    private boolean forceClose;
+
     private Log log = LogFactory.getLog(Window.class);
 
     public Window() {
@@ -351,7 +353,28 @@ public class Window
         return (T) component;
     }
 
-    public boolean close(String actionId) {
+    public boolean close(final String actionId) {
+        if (!forceClose && getDsContext().isModified()) {
+            App.getInstance().getWindowManager().showOptionDialog(
+                    MessageProvider.getMessage(Window.class, "closeUnsaved.caption"),
+                    MessageProvider.getMessage(Window.class, "closeUnsaved"),
+                    MessageType.WARNING,
+                    new Action[] {
+                            new AbstractAction(MessageProvider.getMessage(Window.class, "actions.Yes")) {
+                                public void actionPerform(Component component) {
+                                    forceClose = true;
+                                    close(actionId);
+                                }
+                            },
+                            new AbstractAction(MessageProvider.getMessage(Window.class, "actions.No")) {
+                                public void actionPerform(Component component) {
+                                }
+                            }
+                    }
+            );
+            return false;
+        }
+        
         if (settings != null) {
             ComponentsHelper.walkComponents(
                     this,

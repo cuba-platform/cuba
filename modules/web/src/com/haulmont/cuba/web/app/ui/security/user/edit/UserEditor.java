@@ -64,7 +64,7 @@ public class UserEditor extends AbstractEditor {
         });
 
         final TableActionsHelper rolesTableActions = new TableActionsHelper(this, rolesTable);
-        rolesTableActions.createRemoveAction();
+        rolesTableActions.createRemoveAction(false);
     }
 
     private boolean _commit() {

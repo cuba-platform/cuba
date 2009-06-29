@@ -28,8 +28,8 @@
                 <hbox id="expand-box"/>
             </vbox>
             <hbox align="MIDDLE_RIGHT" >
-                <button id="clear" caption="msg://com.haulmont.cuba.web.gui/clear"/>
-                <button id="apply" caption="msg://com.haulmont.cuba.web.gui/apply"/>
+                <button id="clear" caption="msg://com.haulmont.cuba.web/actions.Clear"/>
+                <button id="apply"/>
             </hbox>
         </vbox>
     </layout>
