@@ -112,19 +112,20 @@
 	background: transparent url(img/bg-right-filter.png);
 }
 .i-filterselect-button:hover {
-	background-position: bottom left;
+	background-position: center left;
 }
 .i-disabled .i-filterselect-button:hover,
 .i-readonly .i-filterselect-button:hover {
-	background-position: top left;
+	background-position: bottom left;
+    cursor: default;
+}
+
+.i-filterselect.i-readonly .i-filterselect-button {
+    background-position: bottom left;
     cursor: default;
 }
 
 /*
-.i-filterselect.i-readonly .i-filterselect-button {
-	display: none;
-}
-
 .i-filterselect.i-readonly .i-filterselect-input {
 	background: transparent;
 	color: black;
