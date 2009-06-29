@@ -10,8 +10,8 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.chile.core.common.ValueListener;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
@@ -85,53 +85,35 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         Code code;
         for (final BCMethod method : methods) {
             final String name = method.getName();
-            if (!name.startsWith("set")) continue;
+            if (!name.startsWith("set") || method.getReturnType() != void.class)
+                continue;
 
             code = method.getCode(false);
 
             final String fieldName = StringUtils.uncapitalize(name.replace("set", ""));
 
-            if (isSetterCode(code, fieldName)) {
-                method.removeCode();
-                code = method.getCode(true);
+            code.aload().setThis();
+            code.invokevirtual().setMethod("get" + StringUtils.capitalize(fieldName) , method.getParamTypes()[0], new Class[]{});
+            code.astore().setLocal(2);
 
-                code.aload().setThis();
-                code.invokevirtual().setMethod("get" + StringUtils.capitalize(fieldName) , method.getParamTypes()[0], new Class[]{});
-                code.astore().setLocal(2);
-                code.aload().setThis();
-                code.aload().setLocal(1);
-                code.invokestatic().setMethod("pcSet" + fieldName, method.getReturnType(), new Class[]{_pc.getType(), method.getParamTypes()[0]});
-                code.aload().setLocal(2);
-                code.aload().setLocal(1);
-                code.invokestatic().setMethod(ObjectUtils.class, "equals", boolean.class, new Class[]{Object.class,Object.class});
-                IfInstruction ifne = code.ifne();
-                code.aload().setThis();
-                code.constant().setValue(fieldName);
-                code.aload().setLocal(2);
-                code.aload().setLocal(1);
-                code.invokevirtual().setMethod("propertyChanged", void.class, new Class[]{String.class,Object.class,Object.class});
+            code.afterLast();
+            Instruction vreturn = code.previous();
+            code.before(vreturn);
 
-                ReturnInstruction vreturn = code.vreturn();
-                ifne.setTarget(vreturn);
+            code.aload().setLocal(2);
+            code.aload().setLocal(1);
+            code.invokestatic().setMethod(ObjectUtils.class, "equals", boolean.class, new Class[]{Object.class,Object.class});
+            IfInstruction ifne = code.ifne();
+            code.aload().setThis();
+            code.constant().setValue(fieldName);
+            code.aload().setLocal(2);
+            code.aload().setLocal(1);
+            code.invokevirtual().setMethod("propertyChanged", void.class, new Class[]{String.class,Object.class,Object.class});
 
-                code.calculateMaxStack();
-                code.calculateMaxLocals();
-            }
-        }
-    }
+            ifne.setTarget(vreturn);
 
-    private boolean isSetterCode(Code code, String fieldName) {
-        final Instruction[] instructions = code.getInstructions();
-        if (instructions.length == 4) {
-            final Instruction instruction = instructions[2];
-            if (instruction instanceof MethodInstruction) {
-                final MethodInstruction methodInstruction = (MethodInstruction) instruction;
-                return methodInstruction.getMethodName().equals("pcSet"+ fieldName);
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+            code.calculateMaxStack();
+            code.calculateMaxLocals();
         }
     }
 
