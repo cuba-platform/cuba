@@ -23,7 +23,7 @@ public class ServiceInterceptor
     private Object aroundInvoke(InvocationContext ctx) throws Exception {
         Log log = LogFactory.getLog(ctx.getTarget().getClass());
 
-        log.debug("Invoking method " + ctx.getMethod().getName() +
+        log.trace("Invoking method " + ctx.getMethod().getName() +
                 ", " + SecurityProvider.currentUserSession());
 
         try {

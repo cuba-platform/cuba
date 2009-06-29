@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	name="cuba" default="build" basedir=".">
+	name="cuba" basedir=".">
 
 	<property name="root.dir" location=".."/>
 
