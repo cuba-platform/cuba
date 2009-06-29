@@ -120,9 +120,11 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
      */
     boolean recalcWidths = false;
 
-    int scrollbarWidthReservedInColumn = -1;
-    int scrollbarWidthReserved = -1;
+    protected int scrollbarWidthReservedInColumn = -1;
+    protected int scrollbarWidthReserved = -1;
     boolean relativeWidth = false;
+
+    protected int calculatedWidth = -1;
 
     private final ArrayList lazyUnregistryBag = new ArrayList();
     private String height;
@@ -253,7 +255,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 lazyUnregistryBag.add(tBody);
             }
             tBody = createBody();
-            tBody.initCols();
+//            tBody.initCols();
             tBody.renderInitialRows(rowData, uidl.getIntAttribute("firstrow"),
                     uidl.getIntAttribute("rows"));
             bodyContainer.add(tBody);
@@ -578,7 +580,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         boolean needsReLayout = false;
 
-        if (availW > total) {
+        if (availW > total || allowMultiStingCells/*fix an issue with the scrollbar appearing*/) {
             // natural size is smaller than available space
             int extraSpace = availW - total;
             int totalWidthR = total - totalExplicitColumnsWidths;
@@ -589,8 +591,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                  * If the table has a relative width and there is enough space
                  * for a scrollbar we reserve this in the last column
                  */
-                int scrollbarWidth = getScrollbarWidth();
-                scrollbarWidth = Util.getNativeScrollbarSize();
+                int scrollbarWidth = Util.getNativeScrollbarSize();
                 if (relativeWidth && totalWidthR >= scrollbarWidth) {
                     scrollbarWidthReserved = scrollbarWidth + 1; //
                     int columnindex = tHead.getVisibleCellCount() - 1;
@@ -603,6 +604,8 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     scrollbarWidthReservedInColumn = columnindex;
                 }
 
+                calculatedWidth = 0;
+
                 // now we will share this sum relatively to those without
                 // explicit width
                 headCells = tHead.iterator();
@@ -612,9 +615,17 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     hCell = (HeaderCell) headCells.next();
                     if (hCell.getWidth() == -1) {
                         int w = widths[i];
-                        final int newSpace = extraSpace * w / totalWidthR;
+                        final int newSpace;
+                        if (availW > total) {
+                            newSpace = extraSpace * w / totalWidthR;
+                        } else {
+                            newSpace = (int) Math.floor((double) extraSpace * (double) w / (double) totalWidthR);
+                        }
                         w += newSpace;
                         widths[i] = w;
+                        calculatedWidth += w;
+                    } else {
+                        calculatedWidth += hCell.getWidth();
                     }
                     i++;
                 }
@@ -1655,7 +1666,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         protected final List renderedRows = new Vector();
 
-        private boolean initDone = false;
+        protected boolean initDone = false;
 
         Element preSpacer = DOM.createDiv();
         Element postSpacer = DOM.createDiv();
@@ -1664,10 +1675,10 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         protected Element tBody = DOM.createTBody();
         protected Element table = DOM.createTable();
-        protected Element colGroup = DOM.createColGroup();
+//        protected Element colGroup = DOM.createColGroup();
 
-        protected Element[] cols = null;
-        protected Element hiddenRow = DOM.createTR();
+//        protected Element[] cols = null;
+//        protected Element hiddenRow = DOM.createTR();
 
         protected int firstRendered;
 
@@ -1682,14 +1693,14 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         private void constructDOM() {
             DOM.setElementProperty(table, "className", CLASSNAME + "-table");
-            DOM.setElementProperty(hiddenRow, "className", CLASSNAME + "-hidden-row");
+//            DOM.setElementProperty(hiddenRow, "className", CLASSNAME + "-hidden-row");
             DOM.setElementProperty(preSpacer, "className", CLASSNAME
                     + "-row-spacer");
             DOM.setElementProperty(postSpacer, "className", CLASSNAME
                     + "-row-spacer");
 
-            DOM.appendChild(tBody, hiddenRow);
-            DOM.appendChild(table, colGroup);
+//            DOM.appendChild(tBody, hiddenRow);
+//            DOM.appendChild(table, colGroup);
             DOM.appendChild(table, tBody);
             DOM.appendChild(container, preSpacer);
             DOM.appendChild(container, table);
@@ -1716,6 +1727,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             }
         }
 
+/*
         protected void initCols() {
             if (colGroup.hasChildNodes()) {
                 Tools.removeChildren(colGroup);
@@ -1740,6 +1752,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 hiddenRow.appendChild(td);
             }
         }
+*/
 
         public void renderRows(UIDL rowData, int firstIndex, int rows) {
             // FIXME REVIEW
@@ -1823,7 +1836,17 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
          * @param uidl
          */
         protected IScrollTableRow createRow(UIDL uidl) {
-            return new IScrollTableRow(uidl, aligns);
+            final IScrollTableRow row = new IScrollTableRow(uidl, aligns);
+            final int cells = DOM.getChildCount(row.getElement());
+            for (int i = 0; i < cells; i++) {
+                final Element cell = DOM.getChild(row.getElement(), i);
+                final int w = IScrollTable.this
+                        .getColWidth(getColKeyByIndex(i));
+                DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
+                        (w - CELL_CONTENT_PADDING) + "px");
+                DOM.setStyleAttribute(cell, "width", w + "px");
+            }
+            return row;
         }
 
         protected void addRowBeforeFirstRendered(IScrollTableRow row) {
@@ -1935,7 +1958,6 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 return rowHeight;
             } else {
                 if (DOM.getChildCount(tBody) > 1) {
-//                    rowHeight = tBody.getParentElement().getOffsetHeight() / DOM.getChildCount(tBody);
                     IScrollTableRow row = (IScrollTableRow) renderedRows.get(0);
                     rowHeight = DOM.getChild(row.getElement(), 0).getOffsetHeight();
                 } else {
@@ -1948,7 +1970,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         public int getColWidth(int i) {
             if (initDone) {
-                final Element e = DOM.getChild(hiddenRow, i);
+                final Element e = DOM.getChild(DOM.getChild(tBody, 0), i);
                 return DOM.getElementPropertyInt(e, "offsetWidth");
             } else {
                 return 0;
@@ -1956,10 +1978,14 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         }
 
         public void setColWidth(int colIndex, int w) {
-            DOM.setElementAttribute(cols[colIndex], "width",
-                    String.valueOf(w));
-            DOM.setStyleAttribute(DOM.getChild(hiddenRow, colIndex), "width", w
-                    + "px");
+            final int rows = DOM.getChildCount(tBody);
+            for (int i = 0; i < rows; i++) {
+                final Element cell = DOM.getChild(DOM.getChild(tBody, i),
+                        colIndex);
+                DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
+                        (w - CELL_CONTENT_PADDING) + "px");
+                DOM.setStyleAttribute(cell, "width", w + "px");
+            }
         }
 
         private void reLayoutComponents() {
@@ -2099,36 +2125,25 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 // String only content is optimized by not using Label widget
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
+                String classNameTd = CLASSNAME + "-cell";
                 String className = CLASSNAME + "-cell-content";
                 if (allowMultiStingCells) {
-                    className += " " + CLASSNAME + "-cell-content-wrap";
+                    classNameTd += " " + CLASSNAME + "-cell-wrap";
                 }
-                String classNameExt = null;
+                String classNameTdExt = null;
                 if (style != null && !style.equals("")) {
-                    classNameExt = CLASSNAME + "-cell-content-" + style;
+                    className += " " + CLASSNAME + "-cell-content-" + style;
+                    classNameTdExt = CLASSNAME + "-cell-" + style;
                 }
-                if (classNameExt != null) {
-                    className += " " + classNameExt;
-                    DOM.setElementProperty(td, "className", classNameExt + "-td");
+                if (classNameTdExt != null) {
+                    classNameTd += " " + classNameTdExt;
                 }
-
+                DOM.setElementProperty(td, "className", classNameTd);
                 DOM.setElementProperty(container, "className", className);
-                if (textIsHTML) {
-                    DOM.setInnerHTML(container, text);
-                } else {
-                    DOM.setInnerText(container, text);
-                }
-                if (align != ALIGN_LEFT) {
-                    switch (align) {
-                    case ALIGN_CENTER:
-                        DOM.setStyleAttribute(container, "textAlign", "center");
-                        break;
-                    case ALIGN_RIGHT:
-                    default:
-                        DOM.setStyleAttribute(container, "textAlign", "right");
-                        break;
-                    }
-                }
+
+                setCellContent(container, text, textIsHTML);
+                setCellAlignment(container, align);
+
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
             }
@@ -2136,23 +2151,53 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             public void addCell(Widget w, char align, String style, int col) {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
+                String classNameTd = CLASSNAME + "-cell";
                 String className = CLASSNAME + "-cell-content";
                 if (allowMultiStingCells) {
-                    className += " " + CLASSNAME + "-cell-content-wrap";
+                    classNameTd += " " + CLASSNAME + "-cell-wrap";
                 }
-                String classNameExt = null;
+                String classNameTdExt = null;
                 if (style != null && !style.equals("")) {
-                    classNameExt = CLASSNAME + "-cell-content-" + style;
+                    className += " " + CLASSNAME + "-cell-content-" + style;
+                    classNameTdExt = CLASSNAME + "-cell-" + style;
                 }
-                if (classNameExt != null) {
-                    className += " " + classNameExt;
-                    DOM.setElementProperty(td, "className", classNameExt + "-td");
+                if (classNameTdExt != null) {
+                    classNameTd += " " + classNameTdExt;
                 }
+                DOM.setElementProperty(td, "className", classNameTd);
                 DOM.setElementProperty(container, "className", className);
                 // TODO most components work with this, but not all (e.g.
                 // Select)
                 // Old comment: make widget cells respect align.
                 // text-align:center for IE, margin: auto for others
+
+                setCellAlignment(container, align);
+
+                DOM.appendChild(td, container);
+                DOM.appendChild(getElement(), td);
+
+                setCellContent(container, w);
+            }
+
+            protected void setCellContent(Element container, String text,
+                                          boolean textIsHTML) {
+                if (textIsHTML) {
+                    DOM.setInnerHTML(container, text);
+                } else {
+                    DOM.setInnerText(container, text);
+                }
+            }
+
+            protected void setCellContent(Element container, Widget w) {
+                // ensure widget not attached to another element (possible tBody
+                // change)
+                w.removeFromParent();
+                DOM.appendChild(container, w.getElement());
+                adopt(w);
+                childWidgets.add(w);
+            }
+
+            protected void setCellAlignment(Element container, char align) {
                 if (align != ALIGN_LEFT) {
                     switch (align) {
                     case ALIGN_CENTER:
@@ -2164,14 +2209,6 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                         break;
                     }
                 }
-                DOM.appendChild(td, container);
-                DOM.appendChild(getElement(), td);
-                // ensure widget not attached to another element (possible tBody
-                // change)
-                w.removeFromParent();
-                DOM.appendChild(container, w.getElement());
-                adopt(w);
-                childWidgets.add(w);
             }
 
             public Iterator iterator() {
@@ -2201,8 +2238,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     if (getElement() == tdOrTr.getParentElement()) {
                         int childIndex = DOM
                                 .getChildIndex(getElement(), tdOrTr);
-                        String colKey = null;
-                        colKey = tHead.getHeaderCell(childIndex).getColKey();
+                        String colKey = tHead.getHeaderCell(childIndex).getColKey();
                         client.updateVariable(paintableId, "clickedColKey",
                                 colKey, false);
                     }

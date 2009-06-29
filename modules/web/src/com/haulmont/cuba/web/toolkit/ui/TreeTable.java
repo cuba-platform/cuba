@@ -1745,7 +1745,6 @@ public class TreeTable
                     e.printStackTrace();
                 }
                 clientNeedsContentRefresh = true;
-                recalcWidth = true;
             }
         }
         if (isColumnReorderingAllowed()) {
@@ -1763,7 +1762,6 @@ public class TreeTable
 
                 }
                 clientNeedsContentRefresh = true;
-                recalcWidth = true;
             }
         }
 

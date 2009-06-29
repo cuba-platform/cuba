@@ -112,16 +112,22 @@
 	padding: 0;
     border-bottom:1px solid #DCE3EB;
 }
+
+.i-table-cell {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.i-table-cell-wrap {
+    white-space: normal;
+}
+
 .i-table-cell-content {
 	white-space: nowrap;
 	overflow: hidden;
 	padding: 3px 0 3px 3px;
 	margin-right: 5px;
 	line-height: 15px;
-}
-
-.i-table-cell-content-wrap {
-    white-space: normal;
 }
 
 /* Fix textfield size to correspond label size inside table */

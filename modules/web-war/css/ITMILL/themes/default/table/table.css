@@ -104,16 +104,20 @@
 .i-table-row-odd td {
 	padding: 0;
 }
+
+.i-table-cell {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.i-table-cell-wrap {
+    white-space: normal;
+}
+
 .i-table-cell-content {
-	white-space: nowrap;
-	overflow: hidden;
 	padding: 3px 0 3px 3px;
 	margin-right: 5px;
 	line-height: 23px;
-}
-
-.i-table-cell-content-wrap {
-    white-space: normal;
 }
 
 /* Fix textfield size to correspond label size inside table */
@@ -233,6 +237,7 @@
     cursor: pointer;
 }
 
+/*
 .i-table .i-table-hidden-row {
     font-size: 0;
     height: 0;
@@ -240,6 +245,7 @@
     margin: 0;
     padding: 0;
 }
+*/
 
 .i-expanded .i-table-group-cell {
     background: transparent url(img/nav-minus.gif) center right no-repeat;
