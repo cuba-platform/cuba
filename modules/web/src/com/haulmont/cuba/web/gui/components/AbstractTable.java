@@ -35,6 +35,8 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 public abstract class AbstractTable<T extends AbstractSelect> extends AbstractListComponent<T> {
 
@@ -285,11 +287,28 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
                     final String clickAction = element.attributeValue("clickAction");
                     if (!StringUtils.isEmpty(clickAction)) {
+
                         if (clickAction.startsWith("open:")) {
                             final com.haulmont.cuba.gui.components.Window window = AbstractTable.this.getFrame();
-                            window.openEditor(clickAction.substring("open:".length()), getItem(item, property), WindowManager.OpenType.THIS_TAB);
+                            String screenName = clickAction.substring("open:".length()).trim();
+                            window.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
+
+                        } else if (clickAction.startsWith("invoke:")) {
+                            final com.haulmont.cuba.gui.components.Window window = AbstractTable.this.getFrame();
+                            String methodName = clickAction.substring("invoke:".length()).trim();
+                            try {
+                                Method method = window.getClass().getMethod(methodName, Object.class);
+                                method.invoke(window, getItem(item, property));
+                            } catch (NoSuchMethodException e) {
+                                throw new RuntimeException("Unable to invoke clickAction", e);
+                            } catch (InvocationTargetException e) {
+                                throw new RuntimeException("Unable to invoke clickAction", e);
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException("Unable to invoke clickAction", e);
+                            }
+
                         } else {
-                            throw new UnsupportedOperationException();
+                            throw new UnsupportedOperationException("Unsupported clickAction format: " + clickAction);
                         }
                     }
                 }
