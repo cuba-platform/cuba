@@ -102,9 +102,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     }
 
     private void loadRequired(T component, Table.Column column) {
-        final String required = column.getXmlDescriptor().attributeValue("required");
+        Element element = column.getXmlDescriptor();
+        final String required = element.attributeValue("required");
         if (!StringUtils.isEmpty(required)) {
-            component.setRequired(column, BooleanUtils.toBoolean(required));
+            String requiredMsg = element.attributeValue("requiredMessage");
+            component.setRequired(column, BooleanUtils.toBoolean(required), loadResourceString(requiredMsg));
         }
     }
 

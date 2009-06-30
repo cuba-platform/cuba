@@ -70,6 +70,10 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
         component.setRequired(required);
     }
 
+    public void setRequiredMessage(String msg) {
+        component.setRequiredError(msg);
+    }
+
     public <T> T getValue() {
         return (T) component.getValue();
     }
@@ -125,7 +129,7 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
             final Validator componentValidator = new Validator() {
                 public void validate(Object value) throws InvalidValueException {
                     if ((!isRequired() && value == null)) return;
-                    
+
                     try {
                         validator.validate(value);
                     } catch (ValidationException e) {

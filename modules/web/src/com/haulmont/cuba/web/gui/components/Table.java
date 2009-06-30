@@ -109,8 +109,10 @@ public class Table
                     field = super.createField(container, itemId, propertyId, uiContext);
                 }
 
-                boolean required = requiredColumns.contains(column);
+                boolean required = requiredColumns.containsKey(column);
                 field.setRequired(required);
+                if (required)
+                    field.setRequiredError(requiredColumns.get(column));
 
                 Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);
                 if (validators != null) {

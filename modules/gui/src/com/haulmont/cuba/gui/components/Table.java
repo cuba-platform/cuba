@@ -28,7 +28,7 @@ public interface Table
 
     void setDatasource(CollectionDatasource datasource);
 
-    void setRequired(Column column, boolean required);
+    void setRequired(Column column, boolean required, String message);
     void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator);
 
     public class Column implements HasXmlDescriptor, HasCaption {

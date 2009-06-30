@@ -45,7 +45,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
     protected Table.StyleProvider styleProvider;
 
-    protected Set<Table.Column> requiredColumns = new HashSet<Table.Column>();
+    protected Map<Table.Column, String> requiredColumns = new HashMap<Table.Column, String>();
 
     protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap =
             new HashMap<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>>();
@@ -205,9 +205,9 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     protected abstract void setVisibleColumns(List<MetaPropertyPath> columnsOrder);
     protected abstract void setColumnHeader(MetaPropertyPath propertyPath, String caption);
 
-    public void setRequired(Table.Column column, boolean required) {
+    public void setRequired(Table.Column column, boolean required, String message) {
         if (required)
-            requiredColumns.add(column);
+            requiredColumns.put(column, message);
         else
             requiredColumns.remove(column);
     }

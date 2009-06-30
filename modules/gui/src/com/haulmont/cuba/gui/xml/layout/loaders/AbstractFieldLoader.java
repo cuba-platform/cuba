@@ -77,6 +77,9 @@ public class AbstractFieldLoader extends ComponentLoader {
         final String required = element.attributeValue("required");
         if (!StringUtils.isEmpty(required)) {
             component.setRequired(BooleanUtils.toBoolean(required));
+            String msg = element.attributeValue("requiredMessage");
+            if (msg != null)
+                component.setRequiredMessage(loadResourceString(msg));
         }
     }
 

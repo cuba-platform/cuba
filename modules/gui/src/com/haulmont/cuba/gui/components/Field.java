@@ -19,6 +19,7 @@ public interface Field
 
     boolean isRequired();
     void setRequired(boolean required);
+    void setRequiredMessage(String msg);
 
     Datasource getDatasource();
     MetaProperty getMetaProperty();
