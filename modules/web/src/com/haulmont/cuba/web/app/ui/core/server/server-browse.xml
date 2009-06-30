@@ -19,11 +19,11 @@
     </dsContext>
 
     <layout>
-        <vbox margin="true">
+        <vbox margin="true" expand="servers_panel">
             <hbox align="MIDDLE_RIGHT">
                 <button action="servers.refresh"/>
             </hbox>
-            <vbox expand="servers">
+            <vbox id="servers_panel" expand="servers">
                 <table id="servers" editable="false">
                     <columns>
                         <column id="name" caption="msg://name"/>
