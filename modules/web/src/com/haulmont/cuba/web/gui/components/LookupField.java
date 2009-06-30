@@ -46,7 +46,7 @@ public class LookupField
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
         component.setFixedTextBoxWidth(true);
-        setFilterMode(FilterMode.STARTS_WITH);
+        setFilterMode(FilterMode.CONTAINS);
     }
 
     protected Object getKeyFromValue(Object value) {
