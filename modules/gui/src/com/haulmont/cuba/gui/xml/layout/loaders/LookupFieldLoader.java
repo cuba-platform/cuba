@@ -54,4 +54,11 @@ public class LookupFieldLoader extends AbstractFieldLoader {
 
         super.loadDatasource(component, element);
     }
+
+    protected void loadFilterMode(LookupField component, Element element) {
+        final String filterMode = element.attributeValue("filterMode");
+        if (!StringUtils.isEmpty(filterMode)) {
+            component.setFilterMode(LookupField.FilterMode.valueOf(filterMode));
+        }
+    }
 }

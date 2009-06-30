@@ -12,11 +12,9 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
-import com.itmill.toolkit.ui.AbstractSelect;
-import com.itmill.toolkit.ui.Select;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.ui.AbstractSelect;
 
 public class LookupField
     extends
@@ -25,6 +23,7 @@ public class LookupField
         com.haulmont.cuba.gui.components.LookupField, Component.Wrapper
 {
     private String nullName;
+    private FilterMode filterMode;
 
     public LookupField() {
         this.component = new FilterSelect() {
@@ -47,6 +46,7 @@ public class LookupField
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
         component.setFixedTextBoxWidth(true);
+        setFilterMode(FilterMode.STARTS_WITH);
     }
 
     protected Object getKeyFromValue(Object value) {
@@ -76,6 +76,15 @@ public class LookupField
         }
 
         return (T) v;
+    }
+
+    public void setFilterMode(FilterMode mode) {
+        filterMode = mode;
+        component.setFilteringMode(ComponentsHelper.convertFilterMode(mode));
+    }
+
+    public FilterMode getFilterMode() {
+        return filterMode;
     }
 
     @Override

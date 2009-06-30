@@ -9,18 +9,21 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.web.App;
 import com.itmill.toolkit.terminal.ClassResource;
 import com.itmill.toolkit.terminal.FileResource;
 import com.itmill.toolkit.terminal.Resource;
 import com.itmill.toolkit.terminal.ThemeResource;
 import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.ui.Component;
+import com.itmill.toolkit.ui.Window;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.*;
+import java.util.List;
 
 public class ComponentsHelper {
     public static Resource getResource(String resURL) {
@@ -218,6 +221,15 @@ public class ComponentsHelper {
             case WARNING: return com.itmill.toolkit.ui.Window.Notification.TYPE_WARNING_MESSAGE;
             case ERROR: return com.itmill.toolkit.ui.Window.Notification.TYPE_ERROR_MESSAGE;
             default: return com.itmill.toolkit.ui.Window.Notification.TYPE_WARNING_MESSAGE;
+        }
+    }
+
+    public static int convertFilterMode(com.haulmont.cuba.gui.components.LookupField.FilterMode filterMode) {
+        switch (filterMode) {
+            case NO: return 0;
+            case STARTS_WITH: return 1;
+            case CONTAINS: return 2;
+            default: return 0;
         }
     }
 }

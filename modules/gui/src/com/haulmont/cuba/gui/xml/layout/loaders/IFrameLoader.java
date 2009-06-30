@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 
 public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
@@ -53,7 +54,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
     protected void loadExpandLayout(IFrame frame, Element element) {
         final String expandLayout = element.attributeValue("expandLayout");
-        if (expandLayout != null) {
+        if (!StringUtils.isEmpty(expandLayout)) {
             if ("true".equals(expandLayout) || "false".equals(expandLayout)) {
                 frame.expandLayout(Boolean.valueOf(expandLayout));
             }
