@@ -45,6 +45,8 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
     protected Table.StyleProvider styleProvider;
 
+    protected Set<Table.Column> requiredColumns = new HashSet<Table.Column>();
+
     protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap =
             new HashMap<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>>();
 
@@ -202,6 +204,13 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
     protected abstract void setVisibleColumns(List<MetaPropertyPath> columnsOrder);
     protected abstract void setColumnHeader(MetaPropertyPath propertyPath, String caption);
+
+    public void setRequired(Table.Column column, boolean required) {
+        if (required)
+            requiredColumns.add(column);
+        else
+            requiredColumns.remove(column);
+    }
 
     public void addValidator(Table.Column column, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);

@@ -85,6 +85,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             for (Table.Column column : availableColumns) {
                 component.addColumn(column);
                 loadValidators(component, column);
+                loadRequired(component, column);
             }
 
             component.setDatasource(ds);
@@ -98,6 +99,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         addAssignWindowTask(component);
 
         return component;
+    }
+
+    private void loadRequired(T component, Table.Column column) {
+        final String required = column.getXmlDescriptor().attributeValue("required");
+        if (!StringUtils.isEmpty(required)) {
+            component.setRequired(column, BooleanUtils.toBoolean(required));
+        }
     }
 
     private void loadValidators(T component, Table.Column column) {
