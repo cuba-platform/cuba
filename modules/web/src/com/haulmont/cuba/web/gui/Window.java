@@ -412,6 +412,12 @@ public class Window
         throw new UnsupportedOperationException();
     }
 
+    public void expandLayout(boolean expandLayout) {
+        if (expandLayout) {
+            component.setSizeFull();
+        }
+    }
+
     public com.haulmont.cuba.gui.components.Window wrap(Class<com.haulmont.cuba.gui.components.Window> aClass) {
         try {
             Constructor<?> constructor;

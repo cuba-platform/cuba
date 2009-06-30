@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 
 import java.util.Map;
 
-public interface IFrame extends Layout, Component.Container, Component.BelongToFrame {
+public interface IFrame extends Layout, Component.Container, Component.BelongToFrame, Component.HasLayout {
     DsContext getDsContext();
     void setDsContext(DsContext dsContext);
 

@@ -172,4 +172,10 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
         final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
         return layout.getComponentAlignment(childComponent);
     }
+
+    public void expandLayout(boolean expandLayout) {
+        if (expandLayout) {
+            getLayout().setSizeFull();
+        }
+    }
 }

@@ -205,4 +205,8 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     public void setStyleName(String styleName) {
         this.styleName = styleName;
     }
+
+    public void expandLayout(boolean expandLayout) {
+        frame.expandLayout(expandLayout);
+    }
 }

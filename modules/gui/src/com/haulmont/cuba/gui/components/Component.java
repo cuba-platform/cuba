@@ -71,6 +71,10 @@ public interface Component {
         <T> T getComponent();
     }
 
+    interface HasLayout {
+        void expandLayout(boolean expandLayout);
+    }
+
     interface BelongToFrame extends Component {
         <A extends IFrame> A getFrame();
         void setFrame(IFrame frame);
