@@ -38,5 +38,7 @@
 }
 
 .i-caption .i-required-field-indicator {
-	float: left;
+    float: none;
+    color: #f00;
+    font-weight:bold;
 }
