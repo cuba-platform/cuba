@@ -84,6 +84,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
             for (Table.Column column : availableColumns) {
                 component.addColumn(column);
+                loadValidators(component, column);
             }
 
             component.setDatasource(ds);
@@ -97,6 +98,32 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         addAssignWindowTask(component);
 
         return component;
+    }
+
+    private void loadValidators(T component, Table.Column column) {
+        final List<Element> validatorElements = column.getXmlDescriptor().elements("validator");
+
+        for (Element validatorElement : validatorElements) {
+            final String className = validatorElement.attributeValue("class");
+            final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
+
+            try {
+                final Constructor<Field.Validator> constructor = aClass.getConstructor(Element.class);
+                try {
+                    final Field.Validator validator = constructor.newInstance(validatorElement);
+                    component.addValidator(column, validator);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    final Field.Validator validator = aClass.newInstance();
+                    component.addValidator(column, validator);
+                } catch (Exception e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
+        }
     }
 
     protected abstract T createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException;

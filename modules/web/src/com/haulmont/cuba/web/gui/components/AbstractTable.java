@@ -37,6 +37,7 @@ import org.dom4j.Element;
 import java.util.*;
 
 public abstract class AbstractTable<T extends AbstractSelect> extends AbstractListComponent<T> {
+
     protected Map<MetaPropertyPath, Table.Column> columns = new HashMap<MetaPropertyPath, Table.Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
@@ -44,8 +45,19 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
     protected Table.StyleProvider styleProvider;
 
+    protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap =
+            new HashMap<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>>();
+
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
+    }
+
+    public Table.Column getColumn(String id) {
+        for (Table.Column column : columnsOrder) {
+            if (column.getId().toString().equals(id))
+                return column;
+        }
+        throw new IllegalArgumentException("Column not found: " + id);
     }
 
     public void addColumn(Table.Column column) {
@@ -190,6 +202,15 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
     protected abstract void setVisibleColumns(List<MetaPropertyPath> columnsOrder);
     protected abstract void setColumnHeader(MetaPropertyPath propertyPath, String caption);
+
+    public void addValidator(Table.Column column, final com.haulmont.cuba.gui.components.Field.Validator validator) {
+        Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);
+        if (validators == null) {
+            validators = new HashSet<com.haulmont.cuba.gui.components.Field.Validator>();
+            validatorsMap.put(column, validators);
+        }
+        validators.add(validator);
+    }
 
     protected class TablePropertyWrapper extends PropertyWrapper {
         public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath) {

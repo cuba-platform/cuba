@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
@@ -16,23 +17,20 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
-import com.haulmont.bali.util.Dom4j;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.terminal.Resource;
 import com.itmill.toolkit.ui.BaseFieldFactory;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-
 import org.dom4j.Element;
+
+import java.util.*;
 
 public class Table
     extends
@@ -82,12 +80,12 @@ public class Table
 
             @Override
             public com.itmill.toolkit.ui.Field createField(com.itmill.toolkit.data.Container container, Object itemId, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
+                final com.itmill.toolkit.ui.Field field;
                 MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
+                final Column column = columns.get(propertyPath);
                 final Range range = propertyPath.getRange();
                 if (range != null) {
                     if (range.isClass()) {
-                        final Column column = columns.get(propertyPath);
-
                         final LookupField lookupField = new LookupField();
                         final CollectionDatasource optionsDatasource = getOptionsDatasource(range.asClass(), column);
 //                        final Entity item = optionsDatasource.getItem(itemId);
@@ -95,7 +93,7 @@ public class Table
                         lookupField.setOptionsDatasource(optionsDatasource);
 //                        lookupField.setDatasource(getDatasource(), metaProperty.getName());
 
-                        return (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
+                        field = (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
                     } else if (range.isEnum()) {
                         final LookupField lookupField = new LookupField();
                         if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
@@ -103,13 +101,40 @@ public class Table
                         lookupField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
                         lookupField.setOptionsList(range.asEnumiration().getValues());
 
-                        return (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
+                        field = (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
                     } else {
-                        return super.createField(container, itemId, propertyId, uiContext);
+                        field = super.createField(container, itemId, propertyId, uiContext);
                     }
                 } else {
-                    return super.createField(container, itemId, propertyId, uiContext);
+                    field = super.createField(container, itemId, propertyId, uiContext);
                 }
+
+                Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);
+                if (validators != null) {
+                    for (final com.haulmont.cuba.gui.components.Field.Validator validator : validators) {
+
+                        if (field instanceof com.itmill.toolkit.ui.AbstractField) {
+
+                            field.addValidator(new Validator() {
+                                public void validate(Object value) throws InvalidValueException {
+                                    if ((!field.isRequired() && value == null))
+                                        return;
+                                    try {
+                                        validator.validate(value);
+                                    } catch (ValidationException e) {
+                                        throw new InvalidValueException(e.getMessage());
+                                    }
+                                }
+
+                                public boolean isValid(Object value) {
+                                    return (!field.isRequired() && value == null) || validator.isValid(value);
+                                }
+                            });
+                            ((com.itmill.toolkit.ui.AbstractField) field).setValidationVisible(false);
+                        }
+                    }
+                }
+                return field;
             }
         });
         

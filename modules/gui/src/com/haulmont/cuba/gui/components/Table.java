@@ -22,10 +22,13 @@ public interface Table
         com.haulmont.cuba.gui.components.List, Component.Editable, Component.HasSettings
 {
     List<Column> getColumns();
+    Column getColumn(String id);
     void addColumn(Column column);
     void removeColumn(Column column);
 
     void setDatasource(CollectionDatasource datasource);
+
+    void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator);
 
     public class Column implements HasXmlDescriptor, HasCaption {
         protected Object id;
