@@ -201,7 +201,7 @@ public class IScrollTreeTable
                     colIndex);
             int innerWidth = w;
             if (colIndex == groupColIndex) {
-                if (row instanceof IScrollTreeTableCaptionRow) {
+                if (row.hasChildren) {
                     innerWidth -= (row.getLevel() * LEVEL_STEP_SIZE);
                 } else {
                     innerWidth -= ((row.getLevel() + 1) * LEVEL_STEP_SIZE);
@@ -244,7 +244,7 @@ public class IScrollTreeTable
                 if (hasChildren) {
                     groupCell = createGroupContainer();
                     final Element contentDiv = DOM.createDiv();
-                    DOM.setStyleAttribute(groupCell, "marginLeft", getLevel() * LEVEL_STEP_SIZE
+                    DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
                             + "px");
                     DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
                     DOM.setInnerText(contentDiv, uidl.getStringAttribute("rowCaption"));
@@ -336,7 +336,7 @@ public class IScrollTreeTable
                         groupCell = createGroupContainer();
                         contentDiv = DOM.createDiv();
 
-                        DOM.setStyleAttribute(groupCell, "marginLeft", getLevel() * LEVEL_STEP_SIZE
+                        DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
                                 + "px");
 
                         DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
