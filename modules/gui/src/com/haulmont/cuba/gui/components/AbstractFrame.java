@@ -191,6 +191,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         }
     }
 
+    public boolean close(String actionId, boolean force) {
+        if (frame instanceof Window) {
+            return ((Window) frame).close(actionId, force);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     public <A extends IFrame> A getFrame() {
         return (A) this;
     }

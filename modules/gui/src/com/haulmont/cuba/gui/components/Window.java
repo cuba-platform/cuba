@@ -20,6 +20,7 @@ public interface Window extends IFrame, Component.HasCaption, Component.Actions 
     void applySettings(Settings settings);
 
     boolean close(String actionId);
+    boolean close(String actionId, boolean force);
 
     interface Editor extends Window {
         Object getItem();

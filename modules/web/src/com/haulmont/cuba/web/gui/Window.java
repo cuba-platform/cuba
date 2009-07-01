@@ -354,6 +354,11 @@ public class Window
         return (T) component;
     }
 
+    public boolean close(final String actionId, boolean force) {
+        forceClose = true;
+        return close(actionId);
+    }
+
     public boolean close(final String actionId) {
         if (!forceClose && getDsContext().isModified()) {
             App.getInstance().getWindowManager().showOptionDialog(
