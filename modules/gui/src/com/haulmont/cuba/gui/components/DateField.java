@@ -22,4 +22,7 @@ public interface DateField extends Field {
 
     Resolution getResolution();
     void setResolution(Resolution resolution);
+
+    String getDateFormat();
+    void setDateFormat(String dateFormat);
 }

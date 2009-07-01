@@ -35,6 +35,14 @@ public class DateField
         __setResolution(resolution);
     }
 
+    public String getDateFormat() {
+        return component.getDateFormat();
+    }
+
+    public void setDateFormat(String dateFormat) {
+        component.setDateFormat(dateFormat);
+    }
+
     protected void __setResolution(Resolution resolution) {
         switch (resolution) {
             case MSEC: {component.setResolution(com.itmill.toolkit.ui.DateField.RESOLUTION_MSEC); break;}

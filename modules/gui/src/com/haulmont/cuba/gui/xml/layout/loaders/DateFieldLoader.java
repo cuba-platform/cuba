@@ -28,7 +28,12 @@ public class DateFieldLoader extends AbstractFieldLoader {
         if (!StringUtils.isEmpty(resolution)) {
             component.setResolution(DateField.Resolution.valueOf(resolution));
         }
-        
+
+        final String dateFormat = element.attributeValue("dateFormat");
+        if (!StringUtils.isEmpty(dateFormat)) {
+            component.setDateFormat(dateFormat);
+        }
+
         return component;
     }
 }
