@@ -192,7 +192,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             value = Boolean.valueOf(expression);
         } else {
             @SuppressWarnings({"unchecked"})
-            Boolean res = GroovyHelper.evaluate(expression, context.getParameters());
+            Boolean res = GroovyHelper.evaluate(expression, context.getBinding());
             value = res;
         }
         return value;

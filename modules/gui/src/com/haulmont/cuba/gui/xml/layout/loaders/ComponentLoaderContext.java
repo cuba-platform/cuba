@@ -9,9 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collections;
 
+import groovy.lang.Binding;
+
 public class ComponentLoaderContext implements ComponentLoader.Context {
+
     protected DsContext dsContext;
     protected IFrame frame;
+    protected Binding binding;
 
     protected List<ComponentLoader.LazyTask> lazyTasks = new ArrayList<ComponentLoader.LazyTask>();
     protected Map<String, Object> parameters;
@@ -27,6 +31,16 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
 
     public DsContext getDSContext() {
         return dsContext;
+    }
+
+    public Binding getBinding() {
+        if (binding == null) {
+            binding = new Binding();
+            for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                binding.setVariable(entry.getKey(), entry.getValue());
+            }
+        }
+        return binding;
     }
 
     public IFrame getFrame() {

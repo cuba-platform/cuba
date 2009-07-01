@@ -18,10 +18,14 @@ import org.dom4j.Element;
 import java.util.Locale;
 import java.util.Map;
 
+import groovy.lang.Binding;
+
 public interface ComponentLoader {
+
     public interface Context {
         Map<String, Object> getParameters();
         DsContext getDSContext();
+        Binding getBinding();
 
         void addLazyTask(LazyTask task);
         void executeLazyTasks();

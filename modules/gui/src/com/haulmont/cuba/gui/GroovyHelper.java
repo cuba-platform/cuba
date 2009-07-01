@@ -15,8 +15,8 @@ import groovy.lang.GroovyShell;
 import java.util.Map;
 
 public class GroovyHelper {
-    public static <T> T evaluate(String script, Map<String, Object> context) {
-        Binding binding = createBinding(context);
+
+    public static <T> T evaluate(String script, Binding binding) {
         GroovyShell shell = new GroovyShell(binding);
 
         StringBuilder builder = new StringBuilder();
@@ -27,6 +27,11 @@ public class GroovyHelper {
 
         //noinspection unchecked
         return (T) shell.evaluate(builder.toString());
+    }
+
+    public static <T> T evaluate(String script, Map<String, Object> context) {
+        Binding binding = createBinding(context);
+        return (T) evaluate(script, binding);
     }
 
     protected static Binding createBinding(Map<String, Object> map) {
