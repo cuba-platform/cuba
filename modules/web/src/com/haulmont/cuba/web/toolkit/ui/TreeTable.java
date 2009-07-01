@@ -298,7 +298,7 @@ public class TreeTable
      * if set to true. Currently no setter: extend to enable.
      */
     protected boolean alwaysRecalculateColumnWidths = false;
-    protected boolean recalcWidth = false;
+//    protected boolean recalcWidth = false;
 
     /*
      * EXPERIMENTAL feature: Tells to the client to wrap cells content.
@@ -1625,7 +1625,7 @@ public class TreeTable
             needsResetPageBuffer = true;
             clientNeedsContentRefresh = true;
 
-            recalcWidth = true;
+//            recalcWidth = true;
         }
 
         //collapse selected row
@@ -1638,7 +1638,7 @@ public class TreeTable
             needsResetPageBuffer = true;
             clientNeedsContentRefresh = true;
 
-            recalcWidth = true;
+//            recalcWidth = true;
         }
 
         // Page start index
@@ -1855,13 +1855,13 @@ public class TreeTable
             rows = reqRowsToPaint;
         } else {
             rows = cells[0].length;
-            if (alwaysRecalculateColumnWidths || recalcWidth) {
+            if (alwaysRecalculateColumnWidths /*|| recalcWidth*/) {
                 // TODO experimental feature for now: tell the client to
                 // recalculate column widths.
                 // We'll only do this for paints that do not originate from
                 // table scroll/cache requests (i.e when reqRowsToPaint<0)
                 target.addAttribute("recalcWidths", true);
-                recalcWidth = false;
+//                recalcWidth = false;
             }
         }
 
