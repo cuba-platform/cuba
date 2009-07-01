@@ -11,16 +11,19 @@ package com.haulmont.cuba.toolkit.gwt.client;
 
 import com.haulmont.cuba.toolkit.gwt.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IFilterSelect;
+import com.haulmont.cuba.toolkit.gwt.client.ui.ILabel;
 import com.itmill.toolkit.terminal.gwt.client.DefaultWidgetSet;
 import com.itmill.toolkit.terminal.gwt.client.Paintable;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
+import com.itmill.toolkit.terminal.gwt.client.ui.*;
 
 public class WidgetSet extends DefaultWidgetSet {
     protected Class resolveWidgetType(UIDL uidl) {
         final String tag = uidl.getTag();
-        if ("pagingtable".equals(tag)) {
+        /*if ("pagingtable".equals(tag)) {
             return IPagingTable.class;
-        } else if ("treetable".equals(tag)) {
+        } else */
+        if ("treetable".equals(tag)) {
             return IScrollTreeTable.class;
         } else if ("scrollablepanel".equals(tag)) {
             return IScrollablePanel.class;
@@ -48,7 +51,10 @@ public class WidgetSet extends DefaultWidgetSet {
                     return IFilterSelect.class;
                 }
             }
+        } else if ("label".equals(tag)) {
+            return ILabel.class;
         }
+
         return super.resolveWidgetType(uidl);
     }
 
@@ -62,6 +68,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return new IScrollablePanel();
         } else if (IFilterSelect.class.equals(classType)) {
             return new IFilterSelect();
+        } else if (ILabel.class.equals(classType)) {
+            return new ILabel();
         }
         return super.createWidget(uidl);
     }

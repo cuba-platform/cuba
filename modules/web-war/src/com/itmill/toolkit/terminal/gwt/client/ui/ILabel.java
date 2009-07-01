@@ -35,9 +35,9 @@ public class ILabel extends HTML implements Paintable {
     public static final String CLASSNAME = "i-label";
     private static final String CLASSNAME_UNDEFINED_WIDTH = "i-label-undef-w";
 
-    private ApplicationConnection client;
-    private int verticalPaddingBorder = 0;
-    private int horizontalPaddingBorder = 0;
+    protected ApplicationConnection client;
+    protected int verticalPaddingBorder = 0;
+    protected int horizontalPaddingBorder = 0;
 
     public ILabel() {
         super();
@@ -65,7 +65,6 @@ public class ILabel extends HTML implements Paintable {
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        //todo: gorodnoff would need think about text formating on update
         if (client.updateComponent(this, uidl, true)) {
             return;
         }
@@ -107,7 +106,7 @@ public class ILabel extends HTML implements Paintable {
         }
     }
 
-    private void sinkOnloadsForContainedImgs() {
+    protected void sinkOnloadsForContainedImgs() {
         NodeList<Element> images = getElement().getElementsByTagName("img");
         for (int i = 0; i < images.getLength(); i++) {
             Element img = images.getItem(i);
