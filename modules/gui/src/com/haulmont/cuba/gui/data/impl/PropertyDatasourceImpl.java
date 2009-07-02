@@ -38,6 +38,19 @@ public class PropertyDatasourceImpl<T extends Entity>
         super(id);
         this.ds = ds;
         metaProperty = ds.getMetaClass().getProperty(property);
+        this.ds.addListener(new DatasourceListener<Entity>() {
+            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+            }
+
+            public void stateChanged(Datasource ds, State prevState, State state) {
+                for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+                    dsListener.stateChanged(PropertyDatasourceImpl.this, prevState, state);
+                }
+            }
+
+            public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+            }
+        });
     }
 
     public State getState() {

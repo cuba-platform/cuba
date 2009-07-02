@@ -673,7 +673,7 @@ public class Window
             ComponentsHelper.walkComponents(this, new ComponentVisitor() {
                 public void visit(Component component, String name) {
                     com.itmill.toolkit.ui.Component impl = ComponentsHelper.unwrap(component);
-                    if (impl instanceof com.itmill.toolkit.ui.Field) {
+                    if (impl instanceof com.itmill.toolkit.ui.Field && impl.isVisible()) {
                         try {
                             ((com.itmill.toolkit.ui.Field) impl).validate();
                         } catch (Validator.InvalidValueException e) {
