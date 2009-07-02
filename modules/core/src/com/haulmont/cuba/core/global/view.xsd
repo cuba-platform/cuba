@@ -29,5 +29,6 @@
         </xs:sequence>
         <xs:attribute name="name"/>
         <xs:attribute name="view"/>
+        <xs:attribute name="entity"/>
     </xs:complexType>
 </xs:schema>

@@ -135,10 +135,18 @@ public class ViewRepository
                             String.format("View %s/%s definition error: property %s is not an entity", metaClass.getName(), viewName, propertyName)
                     );
 
-                refView = findView(range.asClass(), refViewName);
+                String refEntityName = propElem.attributeValue("entity");
+                MetaClass refMetaClass;
+                if (refEntityName == null) {
+                    refMetaClass = range.asClass();
+                } else {
+                    refMetaClass = session.getClass(refEntityName);
+                }
+
+                refView = findView(refMetaClass, refViewName);
                 if (refView == null) {
                     for (Element e : (List<Element>) rootElem.elements("view")) {
-                        if (range.asClass().getName().equals(e.attributeValue("entity"))
+                        if (refMetaClass.getName().equals(e.attributeValue("entity"))
                                 && refViewName.equals(e.attributeValue("name")))
                         {
                             refView = deployView(rootElem, e);

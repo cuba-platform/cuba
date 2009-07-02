@@ -81,7 +81,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
                 if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
                         Range.Cardinality.MANY_TO_ONE.equals(cardinality))
                 {
-                    properties.add(new MetaPropertyPath(metaClass, metaProperty));
+                    properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
                 }
             }
         } else {
@@ -93,7 +93,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
                 if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
                         Range.Cardinality.MANY_TO_ONE.equals(cardinality))
                 {
-                    properties.add(new MetaPropertyPath(metaClass, metaProperty));
+                    properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
                 }
             }
         }
