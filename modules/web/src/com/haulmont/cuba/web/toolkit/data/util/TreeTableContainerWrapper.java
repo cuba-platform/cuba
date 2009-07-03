@@ -34,6 +34,12 @@ public class TreeTableContainerWrapper
     public void updateHierarchicalWrapper() {
         super.updateHierarchicalWrapper();
         updateFirst();
+        if (inline == null) {
+            initInline();
+        } else {
+            inline.clear();
+            makeInlineElements(inline, rootItemIds());
+        }
     }
 
     @Override
@@ -92,7 +98,7 @@ public class TreeTableContainerWrapper
             return false;
         }
 
-        final Object oldParentId = parent.get(itemId);
+        final Object oldParentId = getParent(itemId);
 
         if ((newParentId == null && oldParentId == null)
                 || (newParentId != null && newParentId.equals(oldParentId))) {
@@ -128,7 +134,7 @@ public class TreeTableContainerWrapper
     @Override
     public int size() {
         if (inline == null) {
-            return 0;
+            initInline();
         }
         return inline.size();
     }
@@ -247,10 +253,10 @@ public class TreeTableContainerWrapper
     }
 
     protected int getItemLevel(Object itemId) {
-        if (rootItemIds().size() == container.size()) //no children; 
+        if (rootItemIds().size() == container.size()) //no children;
             return -1;
         Object parentId;
-        if ((parentId = parent.get(itemId)) == null) {
+        if ((parentId = getParent(itemId)) == null) {
             return 0;
         }
         return getItemLevel(parentId) + 1;
@@ -329,8 +335,10 @@ public class TreeTableContainerWrapper
         if (hierarchical) {
             expandAll(rootItemIds());
         } else {
-            for (Object itemId : children.keySet()) {
-                setExpanded(itemId);
+            if (children != null) {
+                for (Object itemId : children.keySet()) {
+                    setExpanded(itemId);
+                }
             }
         }
     }

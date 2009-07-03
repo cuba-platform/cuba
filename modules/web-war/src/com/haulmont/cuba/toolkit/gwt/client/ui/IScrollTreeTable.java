@@ -1,10 +1,10 @@
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.Widget;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
+import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
+import com.itmill.toolkit.terminal.gwt.client.Util;
 import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
 import com.itmill.toolkit.terminal.gwt.client.ui.Table;
 
@@ -22,6 +22,167 @@ public class IScrollTreeTable
     @Override
     protected IScrollTableBody createBody() {
         return new IScrollTreeTableBody();
+    }
+
+    @Override
+    protected void sizeInit() {
+        /*
+         * We will use browsers table rendering algorithm to find proper column
+         * widths. If content and header take less space than available, we will
+         * divide extra space relatively to each column which has not width set.
+         *
+         * Overflow pixels are added to last column.
+         */
+
+        Iterator<Widget> headCells = tHead.iterator();
+        int i = 0;
+        int totalExplicitColumnsWidths = 0;
+        int total = 0;
+
+        final int[] widths = new int[tHead.getVisibleCellCount()];
+
+        tHead.enableBrowserIntelligence();
+        // first loop: collect natural widths
+        while (headCells.hasNext()) {
+            final HeaderCell hCell = (HeaderCell) headCells.next();
+            int w = hCell.getWidth();
+            if (w > 0) {
+                // server has defined column width explicitly
+                totalExplicitColumnsWidths += w;
+            } else {
+                final int hw = hCell.getOffsetWidth();
+                final int cw = tBody.getColWidth(i);
+                w = (hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
+            }
+            widths[i] = w;
+            total += w;
+            i++;
+        }
+
+        tHead.disableBrowserIntelligence();
+
+        // fix "natural" height if height not set
+/*
+        if (height == null || "".equals(height)) {
+            bodyContainer.setHeight((tBody.getRowHeight() * pageLength) + "px");
+        }
+*/
+        if (height == null || "".equals(height)) {
+            bodyContainer.setHeight((tBody.getRowHeight() * (totalRows<pageLength?( (totalRows<1)?1:totalRows ):pageLength) ) + "px");
+            String height = (tBody.getRowHeight() * (totalRows<pageLength?( (totalRows<1)?1:totalRows ):pageLength) ) + "px";
+        }
+
+        // fix "natural" width if width not set
+        if (width == null || "".equals(width)) {
+            //            w += getScrollbarWidth();
+            setContentWidth(total);
+        }
+
+        int availW = tBody.getAvailableWidth();
+        // Hey IE, are you really sure about this?
+        availW = tBody.getAvailableWidth() - Util.getNativeScrollbarSize();//todo fix an issue with scroll bar
+
+//        boolean needsReLayout = false;
+
+        if (availW > total || allowMultiStingCells/*fix an issue with the scrollbar appearing*/) {
+            // natural size is smaller than available space
+            int extraSpace = availW - total;
+            int totalWidthR = total - totalExplicitColumnsWidths;
+            if (totalWidthR > 0) {
+//                needsReLayout = true;
+
+                /*
+                 * If the table has a relative width and there is enough space
+                 * for a scrollbar we reserve this in the last column
+                 */
+                int scrollbarWidth = Util.getNativeScrollbarSize();
+                if (relativeWidth && totalWidthR >= scrollbarWidth) {
+                    scrollbarWidthReserved = scrollbarWidth + 1; //
+                    int columnindex = tHead.getVisibleCellCount() - 1;
+                    widths[columnindex] += scrollbarWidthReserved;
+                    HeaderCell headerCell = tHead.getHeaderCell(columnindex);
+                    if (headerCell.getWidth() == -1) {
+                        totalWidthR += scrollbarWidthReserved;
+                    }
+                    extraSpace -= scrollbarWidthReserved;
+                    scrollbarWidthReservedInColumn = columnindex;
+                }
+
+                calculatedWidth = 0;
+
+                // now we will share this sum relatively to those without
+                // explicit width
+                headCells = tHead.iterator();
+                i = 0;
+                HeaderCell hCell;
+                while (headCells.hasNext()) {
+                    hCell = (HeaderCell) headCells.next();
+                    if (hCell.getWidth() == -1) {
+                        int w = widths[i];
+                        final int newSpace;
+                        if (availW > total) {
+                            newSpace = extraSpace * w / totalWidthR;
+                        } else {
+                            newSpace = (int) Math.floor((double) extraSpace * (double) w / (double) totalWidthR);
+                        }
+                        w += newSpace;
+                        widths[i] = w;
+                        calculatedWidth += w;
+                    } else {
+                        calculatedWidth += hCell.getWidth();
+                    }
+                    i++;
+                }
+            }
+        } else {
+            // bodys size will be more than available and scrollbar will appear
+        }
+
+        // last loop: set possibly modified values or reset if new tBody
+        i = 0;
+        headCells = tHead.iterator();
+        while (headCells.hasNext()) {
+            final HeaderCell hCell = (HeaderCell) headCells.next();
+            if (isNewBody || hCell.getWidth() == -1) {
+                final int w = widths[i];
+                setColWidth(i, w);
+            }
+            i++;
+        }
+
+        isNewBody = false;
+
+        if (firstvisible > 0) {
+            // Deferred due some Firefox oddities. IE & Safari could survive
+            // without
+            DeferredCommand.addCommand(new Command() {
+                public void execute() {
+                    bodyContainer.setScrollPosition(firstvisible
+                            * tBody.getRowHeight());
+                    firstRowInViewPort = firstvisible;
+                }
+            });
+        }
+
+        if (enabled) {
+            // Do we need cache rows
+            if (tBody.getLastRendered() + 1 < firstRowInViewPort + pageLength
+                    + CACHE_REACT_RATE * pageLength) {
+                if (totalRows - 1 > tBody.getLastRendered()) {
+                    // fetch cache rows
+                    rowRequestHandler
+                            .setReqFirstRow(tBody.getLastRendered() + 1);
+                    rowRequestHandler
+                            .setReqRows((int) (pageLength * CACHE_RATE));
+                    rowRequestHandler.deferRowFetch(1);
+                }
+            }
+        }
+        initializedAndAttached = true;
+
+//        if (needsReLayout) {
+        tBody.reLayoutComponents();
+//        }
     }
 
     public class IScrollTreeTableBody extends IScrollTableBody {
@@ -201,7 +362,7 @@ public class IScrollTreeTable
                     colIndex);
             int innerWidth = w;
             if (colIndex == groupColIndex) {
-                if (row.hasChildren) {
+                if (row.hasChildren()) {
                     innerWidth -= (row.getLevel() * LEVEL_STEP_SIZE);
                 } else {
                     innerWidth -= ((row.getLevel() + 1) * LEVEL_STEP_SIZE);
@@ -241,8 +402,7 @@ public class IScrollTreeTable
 
                 final Element container = DOM.createDiv();
                 DOM.setElementProperty(container, "className", CLASSNAME + "-caption-row-content");
-                if (hasChildren) {
-                    groupCell = createGroupContainer();
+                if (groupCell != null) {
                     final Element contentDiv = DOM.createDiv();
                     DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
                             + "px");
@@ -251,7 +411,7 @@ public class IScrollTreeTable
                     DOM.appendChild(container, groupCell);
                     DOM.appendChild(container, contentDiv);
                 } else {
-                    DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
+                    DOM.setStyleAttribute(container, "marginLeft", (getLevel() + 1) * LEVEL_STEP_SIZE
                             + "px");
                     DOM.setInnerText(container, uidl.getStringAttribute("rowCaption"));
                 }
@@ -264,7 +424,6 @@ public class IScrollTreeTable
         public class IScrollTreeTableRow
                 extends IScrollTableBody.IScrollTableRow
         {
-            protected boolean hasChildren;
             private boolean expanded;
             private int level;
 
@@ -293,7 +452,7 @@ public class IScrollTreeTable
                 }
 
                 if (uidl.hasAttribute("children") && uidl.getIntAttribute("children") > 0) {
-                    hasChildren = true;
+                    groupCell = createGroupContainer();
                     if (uidl.hasAttribute("expanded")) {
                         expanded = true;
                     }
@@ -332,8 +491,7 @@ public class IScrollTreeTable
                 Element contentDiv = container;
 
                 if (col == groupColIndex) {
-                    if (hasChildren) {
-                        groupCell = createGroupContainer();
+                    if (groupCell != null) {
                         contentDiv = DOM.createDiv();
 
                         DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
@@ -379,8 +537,7 @@ public class IScrollTreeTable
                 Element contentDiv = container;
 
                 if (col == groupColIndex) {
-                    if (hasChildren) {
-                        groupCell = createGroupContainer();
+                    if (groupCell != null) {
                         contentDiv = DOM.createDiv();
 
                         DOM.setStyleAttribute(groupCell, "marginLeft", getLevel() * LEVEL_STEP_SIZE
@@ -400,7 +557,7 @@ public class IScrollTreeTable
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                setCellContent(contentDiv, w);
+                setCellContent(contentDiv, w, col);
             }
 
             public boolean isExpanded() {
@@ -416,6 +573,31 @@ public class IScrollTreeTable
                 DOM.setInnerHTML(groupContainer, "&nbsp;");
                 DOM.setElementProperty(groupContainer, "className", CLASSNAME + "-group-cell");
                 return groupContainer;
+            }
+
+            @Override
+            public RenderSpace getAllocatedSpace(Widget child) {
+                int w = 0;
+                int i = getColIndexOf(child);
+                HeaderCell headerCell = tHead.getHeaderCell(i);
+                if (headerCell != null) {
+                    if (initializedAndAttached) {
+                        w = headerCell.getWidth() - CELL_CONTENT_PADDING;
+                    } else {
+                        // header offset width is not absolutely correct value,
+                        // but
+                        // a best guess (expecting similar content in all
+                        // columns ->
+                        // if one component is relative width so are others)
+                        w = headerCell.getOffsetWidth() - CELL_CONTENT_PADDING;
+                    }
+                }
+
+                if (i == groupColIndex) {
+                    w -= (getLevel() + 1) * LEVEL_STEP_SIZE;
+                }
+
+                return new RenderSpace(w, getRowHeight());
             }
 
             @Override
@@ -440,6 +622,10 @@ public class IScrollTreeTable
                             break;
                     }
                 }
+            }
+
+            public boolean hasChildren() {
+                return (groupCell != null);
             }
 
             protected void handleRowClick(Event event) {
