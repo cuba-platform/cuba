@@ -40,6 +40,7 @@
         <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="itmill-toolkit" version="${itmill-toolkit.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="jcifs" version="${jcifs.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="jespa" version="${jespa.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
         <ext:install-lib name="gwt-dev-windows" version="${gwt-dev-windows.version}" toDir="${lib.gwt.dir}"/>
         <ext:install-lib name="hsqldb" version="${hsqldb.version}" toDir="${lib.server.dir}"/>
@@ -96,7 +97,7 @@
     <target name="start">
         <exec dir="${root.dir}/jboss/bin" executable="cmd.exe" spawn="true">
             <env key="NOPAUSE" value="true"/>
-            <arg line="/c start callAndExit.bat debug.bat"/>
+            <arg line="/c start callAndExit.bat debug.bat -b0.0.0.0"/>
         </exec>
     </target>
 

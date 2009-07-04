@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.config.Prefix;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 @Source(type = SourceType.SYSTEM)
 @Prefix("cuba.web.")
@@ -27,13 +29,5 @@ public interface WebConfig extends Config
     @DefaultBoolean(false)
     boolean getUseActiveDirectory();
 
-    String getActiveDirectoryDomainController();
-
-    String getActiveDirectoryDomain();
-
-    String getActiveDirectoryUser();
-
-    String getActiveDirectoryPassword();
-
-    String getActiveDirectoryDomainMap();
+    String getActiveDirectoryDomains();
 }

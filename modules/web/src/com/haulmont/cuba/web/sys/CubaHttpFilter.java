@@ -10,59 +10,51 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.web.WebConfig;
-import jcifs.Config;
-import jcifs.http.NtlmHttpFilter;
-import org.apache.commons.lang.StringUtils;
+import jespa.http.HttpSecurityService;
+import jespa.security.SecurityProviderException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
-public class CubaHttpFilter extends NtlmHttpFilter
+public class CubaHttpFilter extends HttpSecurityService implements Filter
 {
+    private Log log = LogFactory.getLog(CubaHttpFilter.class);
+
     public void init(FilterConfig filterConfig) throws ServletException {
-        WebConfig config = ConfigProvider.getConfig(WebConfig.class);
+        Map<String, String> properties = new HashMap<String, String>();
 
-        String s = config.getActiveDirectoryDomainController();
-        if (!StringUtils.isBlank(s))
-            Config.setProperty("jcifs.http.domainController", s);
+        if (ActiveDirectoryHelper.useActiveDirectory()) {
+            ServerConfig serverConfig = ConfigProvider.getConfig(ServerConfig.class);
 
-        s = config.getActiveDirectoryDomain();
-        if (!StringUtils.isBlank(s))
-            Config.setProperty("jcifs.smb.client.domain", s);
-
-        s = config.getActiveDirectoryUser();
-        if (!StringUtils.isBlank(s))
-            Config.setProperty("jcifs.smb.client.username", s);
-
-        s = config.getActiveDirectoryPassword();
-        if (!StringUtils.isBlank(s))
-            Config.setProperty("jcifs.smb.client.password", s);
-
-        super.init(filterConfig);
+            properties.put("jespa.bindstr", ActiveDirectoryHelper.getBindStr());
+            properties.put("jespa.service.acctname", ActiveDirectoryHelper.getAcctName());
+            properties.put("jespa.service.password", ActiveDirectoryHelper.getAcctPassword());
+            properties.put("jespa.account.canonicalForm", "3");
+            properties.put("jespa.log.path", serverConfig.getServerLogDir() + "/jespa.log");
+            ActiveDirectoryHelper.fillFromSystemProperties(properties);
+        }
+        try {
+            super.init(properties);
+        } catch (SecurityProviderException e) {
+            throw new ServletException(e);
+        }
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (ActiveDirectoryHelper.useActiveDirectory()) {
-            HttpServletRequest req = (HttpServletRequest)request;
-            HttpServletResponse resp = (HttpServletResponse)response;
-
-            Principal principal;
-            try {
-                principal = negotiate(req, resp, false);
-                if (principal == null)
-                    return;
-            } catch (Exception e) {
-                principal = null;
-            }
-            chain.doFilter(new CubaHttpServletRequest(req, principal), response);
+            super.doFilter(request, response, chain);
         }
         else {
             chain.doFilter(request, response);
         }
+    }
+
+    public void destroy() {
     }
 }
