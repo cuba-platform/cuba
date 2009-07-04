@@ -488,6 +488,8 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/jasperreports-3.5.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/poi-3.2-FINAL-20081019.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/google-collect-snapshot-20080820.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/asm-2.2.3.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-pool-1.5.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -500,6 +502,7 @@
         <root url="NullVirtualFilePointer" />
         <root url="NullVirtualFilePointer" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/google-collect-snapshot-20080820-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-pool-1.5.1-src.zip!/" />
       </SOURCES>
     </library>
     <library name="test">

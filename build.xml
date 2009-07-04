@@ -30,6 +30,7 @@
         <!-- common libs -->
         <ext:install-lib name="commons-codec" version="${commons-codec.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="commons-io" version="${commons-io.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib name="commons-pool" version="${commons-pool.version}" toDir="${lib.common.dir}"/>
         <ext:install-jboss-lib name="log4j" version="${jboss.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="freemarker" version="${freemarker.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="perf4j" version="${perf4j.version}" toDir="${lib.common.dir}"/>
