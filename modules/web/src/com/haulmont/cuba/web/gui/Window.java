@@ -71,6 +71,9 @@ public class Window
 
     private boolean forceClose;
 
+    private com.haulmont.cuba.gui.components.Window replacingWindow;
+    private String replacingWindowCaption;
+
     private Log log = LogFactory.getLog(Window.class);
 
     public Window() {
@@ -354,14 +357,22 @@ public class Window
         return (T) component;
     }
 
+    public void replace(String actionId, com.haulmont.cuba.gui.components.Window window, String caption) {
+        this.replacingWindow = window;
+        this.replacingWindowCaption = caption;
+        close(actionId);
+    }
+
     public boolean close(final String actionId, boolean force) {
-        forceClose = true;
+        forceClose = force;
         return close(actionId);
     }
 
     public boolean close(final String actionId) {
+        com.haulmont.cuba.web.WindowManager windowManager = App.getInstance().getWindowManager();
+
         if (!forceClose && getDsContext().isModified()) {
-            App.getInstance().getWindowManager().showOptionDialog(
+            windowManager.showOptionDialog(
                     MessageProvider.getMessage(Window.class, "closeUnsaved.caption"),
                     MessageProvider.getMessage(Window.class, "closeUnsaved"),
                     MessageType.WARNING,
@@ -374,6 +385,8 @@ public class Window
                             },
                             new AbstractAction(MessageProvider.getMessage(Window.class, "actions.No")) {
                                 public void actionPerform(Component component) {
+                                    replacingWindow = null;
+                                    replacingWindowCaption = null;
                                 }
                             }
                     }
@@ -397,8 +410,12 @@ public class Window
             );
             settings.commit();
         }
-        App.getInstance().getWindowManager().close(this);
-        return onClose(actionId);
+        windowManager.close(this);
+        boolean res = onClose(actionId);
+        if (res && replacingWindow != null) {
+            windowManager.showWindow(replacingWindow, replacingWindowCaption, WindowManager.OpenType.NEW_TAB);
+        }
+        return res;
     }
 
     public String getCaption() {

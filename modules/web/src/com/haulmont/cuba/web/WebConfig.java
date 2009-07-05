@@ -30,4 +30,7 @@ public interface WebConfig extends Config
     boolean getUseActiveDirectory();
 
     String getActiveDirectoryDomains();
+
+    @Default("TABBED")
+    String getAppWindowMode();
 }

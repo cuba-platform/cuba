@@ -63,9 +63,30 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         }
     }
 
-    protected void showWindow(Window window, String caption, OpenType type) {
+    public void showWindow(Window window, String caption, OpenType type) {
+        AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
+
         if (OpenType.NEW_TAB.equals(type)) {
+            if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
+                VerticalLayout mainLayout = appWindow.getMainLayout();
+                if (mainLayout.getComponentIterator().hasNext()) {
+                    Layout oldLayout = (Layout) mainLayout.getComponentIterator().next();
+                    WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
+                    if (oldBreadCrumbs == null)
+                        throw new IllegalStateException("BreadCrumbs not found");
+                    Window oldWindow = oldBreadCrumbs.getCurrentWindow();
+                    com.haulmont.cuba.web.gui.Window webWindow;
+                    if (oldWindow instanceof Window.Wrapper) {
+                        webWindow = ((Window.Wrapper) oldWindow).getWrappedWindow();
+                    } else {
+                        webWindow = (com.haulmont.cuba.web.gui.Window) oldWindow;
+                    }
+                    webWindow.replace("replacingWindow", window, caption);
+                    return;
+                }
+            }
+
             VerticalLayout layout = new VerticalLayout();
             layout.setSizeFull();
 
@@ -87,23 +108,36 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             final Component component = ComponentsHelper.unwrap(window);
             component.setSizeFull();
 
-            TabSheet tabSheet = app.getAppWindow().getTabSheet();
-            tabSheet.addTab(layout, caption, null);
-            tabSheet.setSelectedTab(layout);
-
             layout.addComponent(breadCrumbs);
             layout.addComponent(component);
             layout.setExpandRatio(component, 1);
 
+            if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+                TabSheet tabSheet = appWindow.getTabSheet();
+                tabSheet.addTab(layout, caption, null);
+                tabSheet.setSelectedTab(layout);
+            } else {
+                VerticalLayout mainLayout = appWindow.getMainLayout();
+                mainLayout.removeAllComponents();
+                mainLayout.addComponent(layout);
+            }
             tabs.put(layout, breadCrumbs);
 
             openMode.setData(layout);
+
         } else if (OpenType.THIS_TAB.equals(type)) {
-            TabSheet tabSheet = app.getAppWindow().getTabSheet();
-            VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
+            VerticalLayout layout;
+
+            if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+                TabSheet tabSheet = appWindow.getTabSheet();
+                layout = (VerticalLayout) tabSheet.getSelectedTab();
+            } else {
+                layout = (VerticalLayout) appWindow.getMainLayout().getComponentIterator().next();
+            }
 
             final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
-            if (breadCrumbs == null) throw new IllegalStateException("BreadCrumbs not found");
+            if (breadCrumbs == null)
+                throw new IllegalStateException("BreadCrumbs not found");
 
             final Window currentWindow = breadCrumbs.getCurrentWindow();
             layout.removeComponent(ComponentsHelper.unwrap(currentWindow));
@@ -117,8 +151,14 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
             openMode.setData(layout);
 
-            tabSheet.setTabCaption(layout, caption);
-            tabSheet.requestRepaintAll();
+            if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+                TabSheet tabSheet = appWindow.getTabSheet();
+                tabSheet.setTabCaption(layout, caption);
+                tabSheet.requestRepaintAll();
+            } else {
+                appWindow.getMainLayout().requestRepaintAll();
+            }
+
         } else if (OpenType.DIALOG.equals(type)) {
             final com.itmill.toolkit.ui.Window win = createDialogWindow(window);
 
@@ -131,6 +171,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             App.getInstance().getMainWindow().addWindow(win);
 
             openMode.setData(win);
+
         } else {
             throw new UnsupportedOperationException();
         }
@@ -185,6 +226,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
     }
 
     private boolean closeWindow(Window window, WindowOpenMode openMode) {
+        AppWindow appWindow = app.getAppWindow();
         switch (openMode.openType) {
             case DIALOG: {
                 final com.itmill.toolkit.ui.Window win = (com.itmill.toolkit.ui.Window) openMode.getData();
@@ -195,7 +237,11 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
                 final Layout layout = (Layout) openMode.getData();
                 layout.removeComponent(ComponentsHelper.unwrap(window));
 
-                app.getAppWindow().getTabSheet().removeComponent(layout);
+                if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+                    appWindow.getTabSheet().removeComponent(layout);
+                } else {
+                    appWindow.getMainLayout().removeComponent(layout);
+                }
 
                 WindowBreadCrumbs windowBreadCrumbs = tabs.get(layout);
                 if (windowBreadCrumbs != null)
@@ -203,10 +249,9 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
                 tabs.remove(layout);
 
-                return true;
+                return AppWindow.Mode.TABBED.equals(appWindow.getMode());
             }
             case THIS_TAB: {
-                TabSheet tabSheet = app.getAppWindow().getTabSheet();
                 final VerticalLayout layout = (VerticalLayout) openMode.getData();
 
                 final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
@@ -222,8 +267,11 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
                 layout.addComponent(component);
                 layout.setExpandRatio(component, 1);
 
-                tabSheet.setTabCaption(layout, currentWindow.getCaption());
-                tabSheet.requestRepaintAll();
+                if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+                    TabSheet tabSheet = app.getAppWindow().getTabSheet();
+                    tabSheet.setTabCaption(layout, currentWindow.getCaption());
+                    tabSheet.requestRepaintAll();
+                }
 
                 return false;
             }
