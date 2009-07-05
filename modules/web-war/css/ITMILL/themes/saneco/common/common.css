@@ -361,8 +361,6 @@ input.i-modified,
 
 .box-spacer
 {
-    /*border-top: 1px solid #f00;*/
-    /*border-bottom: 1px solid #f00;*/
     margin-top:-1px;
     background: #fff;
     float:left;
@@ -379,8 +377,6 @@ input.i-modified,
     border-bottom: 1px solid #829fd6;
     background: #f2f2f2;
     float:left;
-    /*margin: 6px;*/
-    /*padding: 8px;*/
 }
 
 .description-area

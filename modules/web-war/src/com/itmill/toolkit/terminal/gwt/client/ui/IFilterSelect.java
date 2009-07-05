@@ -557,7 +557,9 @@ public class IFilterSelect extends Composite implements Paintable, Field,
     private int totalMatches;
     private boolean allowNewItem;
     private boolean nullSelectionAllowed;
+
     private boolean enabled;
+    private boolean readonly;
 
     // shown in unfocused empty field, disappears on focus (e.g "Search here")
     private String emptyText = "";
@@ -644,16 +646,11 @@ public class IFilterSelect extends Composite implements Paintable, Field,
         paintableId = uidl.getId();
         this.client = client;
 
-        boolean readonly = uidl.hasAttribute("readonly");
-        boolean disabled = uidl.hasAttribute("disabled");
+        readonly = uidl.getBooleanAttribute("readonly");
+        enabled = !uidl.getBooleanAttribute("disabled");
 
-        if (disabled || readonly) {
-            tb.setEnabled(false);
-            enabled = false;
-        } else {
-            tb.setEnabled(true);
-            enabled = true;
-        }
+        tb.setEnabled(enabled);
+        tb.setReadOnly(readonly);
 
         if (client.updateComponent(this, uidl, true)) {
             return;
@@ -806,7 +803,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
     }
 
     public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-        if (enabled && suggestionPopup.isAttached()) {
+        if (enabled && !readonly && suggestionPopup.isAttached()) {
             switch (keyCode) {
             case KeyboardListener.KEY_DOWN:
                 suggestionPopup.selectNextItem();
@@ -839,7 +836,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
     }
 
     public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-        if (enabled) {
+        if (enabled && !readonly) {
             switch (keyCode) {
             case KeyboardListener.KEY_ENTER:
             case KeyboardListener.KEY_TAB:
@@ -886,7 +883,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
      * Listener for popupopener
      */
     public void onClick(Widget sender) {
-        if (enabled) {
+        if (enabled && !readonly) {
             // ask suggestionPopup if it was just closed, we are using GWT
             // Popup's
             // auto close feature
