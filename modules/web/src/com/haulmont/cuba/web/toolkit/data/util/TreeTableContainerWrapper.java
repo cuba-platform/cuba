@@ -28,26 +28,39 @@ public class TreeTableContainerWrapper
     public TreeTableContainerWrapper(Container toBeWrapped) {
         super(toBeWrapped);
         treeTableContainer = toBeWrapped instanceof TreeTableContainer;
+
+        inline = new LinkedList<Object>();
+        expanded = new HashSet<Object>();
+        captions = new Hashtable<Object, String>();
     }
 
     @Override
     public void updateHierarchicalWrapper() {
         super.updateHierarchicalWrapper();
+
         updateFirst();
-        if (inline == null) {
-            initInline();
+
+        if (inline == null || expanded == null || captions == null) {
+            inline = new LinkedList<Object>();
+            expanded = new HashSet<Object>();
+            captions = new Hashtable<Object, String>();
         } else {
             inline.clear();
-            makeInlineElements(inline, rootItemIds());
+            final Set<Object> s = new HashSet<Object>();
+            s.addAll(expanded);
+            s.addAll(captions.keySet());
+            for (final Object o : s) {
+                if (!container.containsId(o)) {
+                    expanded.remove(o);
+                    captions.remove(o);
+                }
+            }
         }
+        makeInlineElements(inline, rootItemIds());
     }
 
     @Override
     protected void addToHierarchyWrapper(Object itemId) {
-        if (inline == null) {
-            initInline();
-        }
-
         super.addToHierarchyWrapper(itemId);
 
         // Add item to the end of the list
@@ -61,10 +74,6 @@ public class TreeTableContainerWrapper
 
     @Override
     protected void removeFromHierarchyWrapper(Object itemId) {
-        if (inline == null) {
-            initInline();
-        }
-
         boolean b = isFirstId(itemId);
 
         if (containsInline(itemId)) {
@@ -88,10 +97,6 @@ public class TreeTableContainerWrapper
     public boolean setParent(Object itemId, Object newParentId) {
         if (itemId == null) {
             throw new NullPointerException("Item id cannot be NULL");
-        }
-
-        if (inline == null) {
-            initInline();
         }
 
         if (!container.containsId(itemId)) {
@@ -133,18 +138,12 @@ public class TreeTableContainerWrapper
 
     @Override
     public int size() {
-        if (inline == null) {
-            initInline();
-        }
         return inline.size();
     }
 
     public Object nextItemId(Object itemId) {
         if (itemId == null) {
             throw new NullPointerException("Item id cannot be NULL");
-        }
-        if (inline == null) {
-            initInline();
         }
         int index = inlineIndex(itemId);
         if (index == -1 || isLastId(itemId)) {
@@ -156,9 +155,6 @@ public class TreeTableContainerWrapper
     public Object prevItemId(Object itemId) {
         if (itemId == null)  {
             throw new NullPointerException("Item id cannot be NULL");
-        }
-        if (inline == null) {
-            initInline();
         }
         int index = inlineIndex(itemId);
         if (index == -1 || isFirstId(itemId)) {
@@ -172,9 +168,6 @@ public class TreeTableContainerWrapper
     }
 
     public Object lastItemId() {
-        if (inline == null) {
-            initInline();
-        }
         return inline.peekLast();
     }
 
@@ -197,9 +190,6 @@ public class TreeTableContainerWrapper
     public boolean isCaption(Object itemId) {
         if (itemId != null) {
             if (!treeTableContainer) {
-                if (captions == null) {
-                    captions = new Hashtable<Object, String>();
-                }
                 return captions.containsKey(itemId);
             } else {
                 return ((TreeTableContainer) container).isCaption(itemId);
@@ -211,9 +201,6 @@ public class TreeTableContainerWrapper
     public String getCaption(Object itemId) {
         if (itemId != null) {
             if (!treeTableContainer) {
-                if (captions == null) {
-                    captions = new Hashtable<Object, String>();
-                }
                 return captions.get(itemId);
             } else {
                 return ((TreeTableContainer) container).getCaption(itemId);
@@ -225,9 +212,6 @@ public class TreeTableContainerWrapper
     public boolean setCaption(Object itemId, String caption) {
         if (itemId != null) {
             if (!treeTableContainer) {
-                if (captions == null) {
-                    captions = new Hashtable<Object, String>();
-                }
                 if (caption != null) {
                     captions.put(itemId, caption);
                 } else {
@@ -266,23 +250,12 @@ public class TreeTableContainerWrapper
         if (itemId == null) {
             throw new NullPointerException("Item id cannot be NULL");
         }
-        if (expanded == null) {
-            initExpanded();
-        }
         return expanded.contains(itemId);
     }
 
     public boolean setExpanded(Object itemId) {
         if (itemId == null) {
             throw new NullPointerException("Item id cannot be NULL");
-        }
-
-        if (expanded == null) {
-            initExpanded();
-        }
-
-        if (inline == null) {
-            initInline();
         }
 
         if (areChildrenAllowed(itemId))
@@ -305,14 +278,6 @@ public class TreeTableContainerWrapper
     public boolean setCollapsed(Object itemId) {
         if (itemId == null) {
             throw new NullPointerException("Item id cannot be NULL");
-        }
-
-        if (expanded == null) {
-            initExpanded();
-        }
-
-        if (inline == null) {
-            initInline();
         }
 
         if (areChildrenAllowed(itemId))
@@ -350,15 +315,6 @@ public class TreeTableContainerWrapper
                 expandAll(getChildren(itemId));
             }
         }
-    }
-
-    private void initExpanded() {
-        expanded = new HashSet<Object>();
-    }
-
-    protected void initInline() {
-        inline = new LinkedList<Object>();
-        makeInlineElements(inline, rootItemIds());
     }
 
     protected LinkedList<Object> getInlineChildren(Object itemId) {

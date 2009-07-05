@@ -3152,6 +3152,9 @@ public class TreeTable
 
     public void expandAll() {
         ((TreeTableContainerWrapper) items).expandAll();
+        resetPageBuffer();
+        refreshRenderedCells();
+        requestRepaint();
     }
 
     public void setCollapsed(Object itemId) {
