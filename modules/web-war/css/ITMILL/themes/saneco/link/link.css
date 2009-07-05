@@ -1,3 +1,7 @@
+/**
+ * Link component styles
+ * (useless to move into a separate file)
+ */
 .i-link {
 	white-space: nowrap;
 	text-decoration: none;
