@@ -29,9 +29,7 @@ import org.apache.openjpa.util.OpenJPAException;
 import serp.bytecode.*;
 
 import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
     private static final Class INSTANCE_TYPE = Instance.class;
@@ -218,9 +216,9 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         code.getfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
         final IfInstruction ifnonnull = code.ifnonnull();
         code.aload().setThis();
-        code.anew().setType(ArrayList.class);
+        code.anew().setType(LinkedHashSet.class);
         code.dup();
-        code.invokespecial().setMethod(ArrayList.class, "<init>", void.class, null);
+        code.invokespecial().setMethod(LinkedHashSet.class, "<init>", void.class, null);
         code.putfield().setField(VALUE_LISTENERS_FIELD, Collection.class);
         LoadInstruction aload = code.aload();
         aload.setThis();

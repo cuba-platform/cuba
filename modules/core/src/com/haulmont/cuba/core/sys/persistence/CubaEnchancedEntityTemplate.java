@@ -17,10 +17,7 @@ import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
+import java.util.*;
 
 class CubaEnchancedEntityTemplate implements Instance {
     public UUID getUuid() {
@@ -65,7 +62,7 @@ class CubaEnchancedEntityTemplate implements Instance {
     public void addListener(ValueListener valuelistener)
     {
         if(__valueListeners == null)
-            __valueListeners = new ArrayList();
+            __valueListeners = new LinkedHashSet();
         __valueListeners.add(valuelistener);
     }
 
