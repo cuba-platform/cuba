@@ -71,10 +71,9 @@ public class Window
 
     private boolean forceClose;
 
-    private com.haulmont.cuba.gui.components.Window replacingWindow;
-    private String replacingWindowCaption;
-
     private Log log = LogFactory.getLog(Window.class);
+
+    private Runnable doAfterClose;
 
     public Window() {
         component = createLayout();
@@ -357,9 +356,8 @@ public class Window
         return (T) component;
     }
 
-    public void replace(String actionId, com.haulmont.cuba.gui.components.Window window, String caption) {
-        this.replacingWindow = window;
-        this.replacingWindowCaption = caption;
+    public void closeAndRun(String actionId, Runnable runnable) {
+        this.doAfterClose = runnable;
         close(actionId);
     }
 
@@ -385,8 +383,7 @@ public class Window
                             },
                             new AbstractAction(MessageProvider.getMessage(Window.class, "actions.No")) {
                                 public void actionPerform(Component component) {
-                                    replacingWindow = null;
-                                    replacingWindowCaption = null;
+                                    doAfterClose = null;
                                 }
                             }
                     }
@@ -412,8 +409,8 @@ public class Window
         }
         windowManager.close(this);
         boolean res = onClose(actionId);
-        if (res && replacingWindow != null) {
-            windowManager.showWindow(replacingWindow, replacingWindowCaption, WindowManager.OpenType.NEW_TAB);
+        if (res && doAfterClose != null) {
+            doAfterClose.run();
         }
         return res;
     }

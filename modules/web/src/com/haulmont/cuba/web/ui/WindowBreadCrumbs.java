@@ -19,10 +19,9 @@ import com.itmill.toolkit.ui.*;
 
 import java.util.*;
 
-public class WindowBreadCrumbs extends HorizontalLayout
-{
-    public interface Listener
-    {
+public class WindowBreadCrumbs extends HorizontalLayout {
+
+    public interface Listener {
         void windowClick(Window window);
     }
 
@@ -46,8 +45,7 @@ public class WindowBreadCrumbs extends HorizontalLayout
         logoLayout.setSpacing(true);
 
         linksLayout = new HorizontalLayout();
-        closeBtn = new Button(MessageProvider.getMessage(getClass(), "closeBtn"), new Button.ClickListener()
-        {
+        closeBtn = new Button(MessageProvider.getMessage(getClass(), "closeBtn"), new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 final Window window = getCurrentWindow();
                 window.close("close");
@@ -106,13 +104,11 @@ public class WindowBreadCrumbs extends HorizontalLayout
         }
     }
 
-    protected void setSubTitleContents()
-    {
+    protected void setSubTitleContents() {
 
     }
 
-    protected void update()
-    {
+    protected void update() {
         linksLayout.removeAllComponents();
         btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
@@ -131,8 +127,7 @@ public class WindowBreadCrumbs extends HorizontalLayout
         }
     }
 
-    public class BtnClickListener implements Button.ClickListener
-    {
+    public class BtnClickListener implements Button.ClickListener {
         public void buttonClick(Button.ClickEvent event) {
             Window win = btn2win.get(event.getButton());
             if (win != null)

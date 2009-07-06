@@ -63,7 +63,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         }
     }
 
-    public void showWindow(Window window, String caption, OpenType type) {
+    public void showWindow(final Window window, final String caption, OpenType type) {
         AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
 
@@ -82,7 +82,12 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
                     } else {
                         webWindow = (com.haulmont.cuba.web.gui.Window) oldWindow;
                     }
-                    webWindow.replace("replacingWindow", window, caption);
+
+                    webWindow.closeAndRun("mainMenu", new Runnable() {
+                        public void run() {
+                            showWindow(window, caption, OpenType.NEW_TAB);
+                        }
+                    });
                     return;
                 }
             }
@@ -94,12 +99,23 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             breadCrumbs.addListener(
                     new WindowBreadCrumbs.Listener()
                     {
-                        public void windowClick(Window window) {
-                            Window currentWindow = breadCrumbs.getCurrentWindow();
-                            while (currentWindow != null && window != currentWindow) {
-                                close(currentWindow);
-                                currentWindow = breadCrumbs.getCurrentWindow();
-                            }
+                        public void windowClick(final Window window) {
+                            Runnable op = new Runnable() {
+                                public void run() {
+                                    Window currentWindow = breadCrumbs.getCurrentWindow();
+
+                                    if (currentWindow != null && window != currentWindow) {
+                                        com.haulmont.cuba.web.gui.Window webWindow;
+                                        if (currentWindow instanceof Window.Wrapper) {
+                                            webWindow = ((Window.Wrapper) currentWindow).getWrappedWindow();
+                                        } else {
+                                            webWindow = (com.haulmont.cuba.web.gui.Window) currentWindow;
+                                        }
+                                        webWindow.closeAndRun("close", this);
+                                    }
+                                }
+                            };
+                            op.run();
                         }
                     }
             );
@@ -177,8 +193,8 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         }
 
         if (window instanceof Window.Wrapper) {
-            window = ((Window.Wrapper) window).getWrappedWindow();
-            windowOpenMode.put(window, openMode);
+            Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
+            windowOpenMode.put(wrappedWindow, openMode);
         } else {
             windowOpenMode.put(window, openMode);
         }
