@@ -27,18 +27,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.LoadListener;
-import com.google.gwt.user.client.ui.PopupListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
@@ -531,7 +520,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
 
     protected final SuggestionPopup suggestionPopup = new SuggestionPopup();
 
-    protected final HTML popupOpener = new HTML("");
+    protected final Button popupOpener = new Button();
 
     protected final Image selectedItemIcon = new Image();
 
@@ -602,6 +591,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
         tb.setStyleName(CLASSNAME + "-input");
         tb.addFocusListener(this);
         popupOpener.setStyleName(CLASSNAME + "-button");
+        popupOpener.setText("");
         popupOpener.addClickListener(this);
     }
 

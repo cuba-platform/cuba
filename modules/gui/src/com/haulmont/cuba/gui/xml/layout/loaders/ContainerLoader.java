@@ -69,7 +69,18 @@ public abstract class ContainerLoader extends ComponentLoader {
     protected void loadSubcomponentsAndExpand(Layout layout, Element element, String ...exceptTags) {
         final Collection<Component> components = loadSubComponents(layout, element, exceptTags);
         if (components.size() == 1) {
-            layout.expand(components.iterator().next(), null, null);
+            final Component component = components.iterator().next();
+            if (component instanceof Component.HasXmlDescriptor) {
+                final Element xmlDescriptor = ((Component.HasXmlDescriptor) component).getXmlDescriptor();
+                if (xmlDescriptor != null) {
+                    layout.expand(component,
+                            xmlDescriptor.attributeValue("height"),
+                            xmlDescriptor.attributeValue("width")
+                    );
+                    return;
+                }
+            }
+            layout.expand(component, null, null);
         } else {
             final String expand = element.attributeValue("expand");
             if (!StringUtils.isEmpty(expand)) {

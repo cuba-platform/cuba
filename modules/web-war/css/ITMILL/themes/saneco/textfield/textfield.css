@@ -32,8 +32,12 @@
 	background: transparent;
 	color: #222;
 	border: none;
+    cursor: default;
 }
 
+.i-textarea.i-readonly {
+    overflow: hidden;
+}
 
 .i-richtextarea {
 	border: 1px solid #b6b6b6;

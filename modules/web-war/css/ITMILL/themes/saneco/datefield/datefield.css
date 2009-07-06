@@ -202,8 +202,9 @@
 	background: #ff9999;
 }
 
-
-
+.i-datefield.i-readonly .i-datefield-button {
+    display: none;
+}
 
 /* IE specific styles */
 
