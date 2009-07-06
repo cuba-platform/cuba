@@ -12,6 +12,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Table;
@@ -26,9 +28,8 @@ import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.event.Action;
-import com.itmill.toolkit.ui.AbstractSelect;
+import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -150,9 +151,17 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
                     if (!StringUtils.isEmpty(clickAction)) {
                         addGeneratedColumn(propertyPath, new CodePropertyGenerator(column));
                     } else {
-                        if (editable) {
-                            addGeneratedColumn(propertyPath, new ReadOnlyDatatypeGenerator());
+
+                        final Datatype datatype = propertyPath.getRange()
+                                .asDatatype();
+                        if (BooleanDatatype.NAME.equals(datatype.getName())) {
+                            addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
+                        } else {
+                            if (editable) {
+                                addGeneratedColumn(propertyPath, new ReadOnlyDatatypeGenerator());
+                            }
                         }
+
                     }
                 } else if (propertyPath.getRange().isEnum()) {
                     // TODO (abramov) 
@@ -348,7 +357,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         }
     }
 
-    private static class ReadOnlyDatatypeGenerator implements com.itmill.toolkit.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+    private class ReadOnlyDatatypeGenerator implements com.itmill.toolkit.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
         protected Component generateCell(com.itmill.toolkit.ui.AbstractSelect source, Object itemId, Object columnId) {
             Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
@@ -365,6 +374,30 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
         public Component generateCell(TableSupport source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
+        }
+    }
+
+    private class ReadOnlyBooleanDatatypeGenerator
+            implements com.itmill.toolkit.ui.Table.ColumnGenerator,
+            TableSupport.ColumnGenerator
+    {
+        public Component generateCell(com.itmill.toolkit.ui.Table source, Object itemId, Object columnId) {
+            return generateCell((AbstractSelect) source, itemId, columnId);
+        }
+
+        public Component generateCell(TableSupport source, Object itemId, Object columnId) {
+            return generateCell((AbstractSelect) source, itemId, columnId);
+        }
+
+        protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
+            final Property property = source.getItem(itemId).getItemProperty(columnId);
+            final Object value = property.getValue();
+
+            final com.itmill.toolkit.ui.CheckBox checkBox = new com.itmill.toolkit.ui.CheckBox();
+            checkBox.setValue((Boolean) value);
+            checkBox.setEnabled(false);
+
+            return checkBox;
         }
     }
 }
