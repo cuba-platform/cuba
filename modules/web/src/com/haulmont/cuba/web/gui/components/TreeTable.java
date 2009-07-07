@@ -133,15 +133,23 @@ public class TreeTable
         component.setExpanded(itemId);
     }
 
+    @Override
     public void setEditable(boolean editable) {
         super.setEditable(editable);
         component.setEditable(editable);
     }
 
     @Override
+    public void setSortable(boolean sortable) {
+        super.setSortable(sortable);
+        component.setSortDisabled(!sortable);
+    }
+
+    @Override
     protected void initComponent(com.haulmont.cuba.web.toolkit.ui.TreeTable component) {
         super.initComponent(component);
         component.setSelectable(true);
+        component.setSortDisabled(true);
     }
 
     public void applySettings(Element element) {

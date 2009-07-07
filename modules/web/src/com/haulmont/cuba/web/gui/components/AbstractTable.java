@@ -45,6 +45,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
     protected boolean editable;
+    protected boolean sortable;
 
     protected Table.StyleProvider styleProvider;
 
@@ -86,7 +87,15 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
     public void setEditable(boolean editable) {
         this.editable = editable;
-    } 
+    }
+
+    public boolean isSortable() {
+        return sortable;
+    }
+
+    public void setSortable(boolean sortable) {
+        this.sortable = sortable;
+    }
 
     @SuppressWarnings({"UnusedDeclaration"})
     protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, Table.Column column) {

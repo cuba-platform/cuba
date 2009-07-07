@@ -49,15 +49,15 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
         }
 
         class SortInfo<P> {
-            P property;
+            P propertyPath;
             Order order;
 
-            public P getProperty() {
-                return property;
+            public P getPropertyPath() {
+                return propertyPath;
             }
 
-            public void setProperty(P property) {
-                this.property = property;
+            public void setPropertyPath(P propertyPath) {
+                this.propertyPath = propertyPath;
             }
 
             public Order getOrder() {

@@ -11,11 +11,13 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
@@ -24,10 +26,12 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     extends
         AbstractCollectionDatasource<T, K>
     implements
-        CollectionDatasource<T, K>
+        CollectionDatasource.Sortable<T, K>
 {
 
     protected Data data = new Data(Collections.<K>emptyList(), Collections.<K,T>emptyMap());
+
+    private SortInfo<MetaPropertyPath>[] sortInfos;
 
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
@@ -98,6 +102,60 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         } else {
             return data.itemIds.size();
         }
+    }
+
+    public void sort(SortInfo[] sortInfos) {
+        if (sortInfos.length != 1)
+            throw new UnsupportedOperationException("Supporting sort by one field only");
+
+        if (!Arrays.equals(this.sortInfos, sortInfos)) {
+            //noinspection unchecked
+            this.sortInfos = sortInfos;
+            doSort();
+        }
+    }
+
+    private void doSort() {
+        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+        final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+
+        @SuppressWarnings({"unchecked"})
+        List<T> order = new ArrayList<T>(data.itemsByKey.values());
+        Collections.sort(order, new EntityComparator<T>(propertyPath, asc));
+        data.itemsByKey.clear();
+        for (T t : order) {
+            data.itemsByKey.put(t.getId(), t);
+        }
+    }
+
+    public K firstItemId() {
+        if (!data.itemIds.isEmpty()) {
+            return (K) data.itemsByKey.firstKey();
+        }
+        return null;
+    }
+
+    public K lastItemId() {
+        if (!data.itemIds.isEmpty()) {
+            return (K) data.itemsByKey.lastKey();
+        }
+        return null;
+    }
+
+    public K nextItemId(K itemId) {
+        return (K) data.itemsByKey.nextKey(itemId);
+    }
+
+    public K prevItemId(K itemId) {
+        return (K) data.itemsByKey.previousKey(itemId);
+    }
+
+    public boolean isFirstId(K itemId) {
+        return itemId != null && itemId.equals(firstItemId());
+    }
+
+    public boolean isLastId(K itemId) {
+        return itemId != null && itemId.equals(lastItemId());
     }
 
     public synchronized void addItem(T item) throws UnsupportedOperationException {
@@ -171,11 +229,11 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
     protected class Data {
         protected Collection<K> itemIds = Collections.emptyList();
-        protected Map<K, T> itemsByKey = Collections.emptyMap();
+        protected final LinkedMap itemsByKey;
 
         public Data(Collection<K> itemIds, Map<K, T> itemsByKey) {
             this.itemIds = itemIds;
-            this.itemsByKey = itemsByKey;
+            this.itemsByKey = new LinkedMap(itemsByKey);
         }
     }
 

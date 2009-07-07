@@ -187,6 +187,7 @@ public class GenericEditorWindow
             final Datatype datatype = datatypes.get(type);
 
             field.setFormat(new DatatypeFormat(datatype));
+            field.setNullRepresentation("");
             return field;
         }
 

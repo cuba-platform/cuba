@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.DataServiceRemote;
@@ -37,7 +38,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
     protected Map<String, Object> parametersValues;
 
     protected int chunk = 20;
-    private SortInfo<MetaProperty>[] sortInfos;
+    private SortInfo<MetaPropertyPath>[] sortInfos;
 
     public LazyCollectionDatasource(
             DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
@@ -182,7 +183,8 @@ public class LazyCollectionDatasource<T extends Entity, K>
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(jpqlQuery, metaClass.getName());
         if (sortInfos != null) {
             final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-            transformer.replaceOrderBy(sortInfos[0].getProperty().getName(), asc);
+            final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath(); //todo
+            transformer.replaceOrderBy(propertyPath.getMetaProperty().getName(), asc);
         }
         jpqlQuery = transformer.getResult();
 
@@ -216,12 +218,12 @@ public class LazyCollectionDatasource<T extends Entity, K>
 
     private void doSort() {
         if (isAllLoaded()) {
-            final MetaProperty metaProperty = sortInfos[0].getProperty();
+            final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
             final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
             @SuppressWarnings({"unchecked"})
             List<T> order = new ArrayList<T>(data.values());
-            Collections.sort(order, new EntityComparator<T>(metaProperty, asc));
+            Collections.sort(order, new EntityComparator<T>(propertyPath, asc));
             data.clear();
             for (T t : order) {
                 data.put(t.getId(), t);

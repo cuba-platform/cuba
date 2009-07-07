@@ -13,7 +13,6 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
@@ -30,16 +29,12 @@ import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.terminal.Resource;
-import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.AbstractField;
+import com.itmill.toolkit.ui.BaseFieldFactory;
 import com.itmill.toolkit.ui.TextField;
 import org.dom4j.Element;
 
 import java.util.*;
-import java.text.Format;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
-import java.text.ParseException;
 
 public class Table
     extends
@@ -122,6 +117,10 @@ public class Table
                     ((TextField) field).setNullRepresentation("");
                 }
 
+                if (field instanceof com.itmill.toolkit.ui.TextField) {
+                    ((com.itmill.toolkit.ui.TextField) field).setNullRepresentation("");
+                }
+
                 boolean required = requiredColumns.containsKey(column);
                 field.setRequired(required);
                 if (required)
@@ -165,6 +164,7 @@ public class Table
         component.addGeneratedColumn(id, (com.itmill.toolkit.ui.Table.ColumnGenerator) generator);
     }
 
+    @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
         component.setEditable(editable);
@@ -174,8 +174,14 @@ public class Table
 //                    com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_HIDDEN);
     }
 
+    @Override
+    public void setSortable(boolean sortable) {
+        super.setSortable(sortable);
+        component.setSortDisabled(!sortable);
+    }
+
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
-        return datasource instanceof CollectionDatasource.Sortable ?
+        return datasource instanceof CollectionDatasource.Sortable && isSortable() ?
             new SortableTableDsWrapper(datasource, columns) :
             new TableDsWrapper(datasource, columns);
     }
@@ -301,7 +307,7 @@ public class Table
         return true;
     }
 
-    protected class TableDsWrapper extends CollectionDsWrapper {
+    protected class TableDsWrapper extends SortableTableDsWrapper {
         public TableDsWrapper(CollectionDatasource datasource) {
             super(datasource);
         }
