@@ -18,5 +18,6 @@ public interface Layout extends Component.Container {
 
     interface Margin {
         void setMargin(boolean enable);
+        void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable);
     }
 }

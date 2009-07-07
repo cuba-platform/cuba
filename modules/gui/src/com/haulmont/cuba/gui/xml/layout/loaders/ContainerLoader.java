@@ -54,7 +54,7 @@ public abstract class ContainerLoader extends ComponentLoader {
 
     protected void loadSpacing(Layout.Spacing layout, Element element) {
         final String spacing = element.attributeValue("spacing");
-        if (!StringUtils.isEmpty(spacing)) {
+        if (!StringUtils.isEmpty(spacing) && isBoolean(spacing)) {
             layout.setSpacing(Boolean.valueOf(spacing));
         }
     }
@@ -62,7 +62,17 @@ public abstract class ContainerLoader extends ComponentLoader {
     protected void loadMargin(Layout.Margin layout, Element element) {
         final String margin = element.attributeValue("margin");
         if (!StringUtils.isEmpty(margin)) {
-            layout.setMargin(Boolean.valueOf(margin));
+            if (margin.indexOf(";") > -1) {
+                final String[] margins = margin.split(";");
+                if (margins.length != 4) {
+                    throw new IllegalStateException(
+                            "Margin attribute must contains 1 or 4 boolean values separeated by \";\"");
+                }
+                layout.setMargin(Boolean.valueOf(margins[0]), Boolean.valueOf(margins[1]),
+                        Boolean.valueOf(margins[2]), Boolean.valueOf(margins[3]));
+            } else if (isBoolean(margin)){
+                layout.setMargin(Boolean.valueOf(margin));
+            }
         }
     }
 

@@ -9,20 +9,15 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.GroovyHelper;
-import com.haulmont.cuba.core.global.MessageProvider;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.Locale;
-import java.util.Collection;
-import java.util.Map;
-
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     protected Locale locale;
@@ -109,17 +104,17 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected void loadEnable(Component component, Element element) {
-        String visible = element.attributeValue("enable");
-        if (visible == null) {
+        String enable = element.attributeValue("enable");
+        if (enable == null) {
             final Element e = element.element("enable");
             if (e != null) {
-                visible = e.getText();
+                enable = e.getText();
             }
         }
 
-        if (!StringUtils.isEmpty(visible)) {
-            if ("true".equals(visible) || "false".equals(visible)) {
-                component.setEnabled(Boolean.valueOf(visible));
+        if (!StringUtils.isEmpty(enable)) {
+            if (isBoolean(enable)) {
+                component.setEnabled(Boolean.valueOf(enable));
             }
         }
     }
@@ -188,7 +183,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected Boolean evaluateBoolean(String expression) {
         Boolean value;
-        if ("true".equals(expression) || "false".equals(expression)) {
+        if (isBoolean(expression)) {
             value = Boolean.valueOf(expression);
         } else {
             @SuppressWarnings({"unchecked"})
@@ -196,5 +191,9 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             value = res;
         }
         return value;
+    }
+
+    protected static boolean isBoolean(String s) {
+        return "true".equals(s) || "false".equals(s);
     }
 }

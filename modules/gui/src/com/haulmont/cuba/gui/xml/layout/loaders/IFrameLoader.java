@@ -55,7 +55,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
     protected void loadExpandLayout(IFrame frame, Element element) {
         final String expandLayout = element.attributeValue("expandLayout");
         if (!StringUtils.isEmpty(expandLayout)) {
-            if ("true".equals(expandLayout) || "false".equals(expandLayout)) {
+            if (isBoolean(expandLayout)) {
                 frame.expandLayout(Boolean.valueOf(expandLayout));
             }
         }
