@@ -234,7 +234,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     public void commited(Map<Entity, Entity> map) {
         if (map.containsKey(item)) {
             item = (T) map.get(item);
-            // TODO update collection elements
+        }
+        for (Entity newEntity : map.values()) {
+            updateItem((T) newEntity);
         }
 
         modified = false;
