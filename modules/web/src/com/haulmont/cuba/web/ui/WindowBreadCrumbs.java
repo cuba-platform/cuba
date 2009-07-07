@@ -11,11 +11,12 @@
 package com.haulmont.cuba.web.ui;
 
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.gui.components.Window;
 import com.itmill.toolkit.terminal.Sizeable;
-import com.itmill.toolkit.terminal.ThemeResource;
-import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.ui.Alignment;
+import com.itmill.toolkit.ui.Button;
+import com.itmill.toolkit.ui.HorizontalLayout;
+import com.itmill.toolkit.ui.Label;
 
 import java.util.*;
 
