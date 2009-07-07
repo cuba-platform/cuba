@@ -42,7 +42,6 @@ public class SortableCollectionDsWrapper extends CollectionDsWrapper implements 
         List<CollectionDatasource.Sortable.SortInfo> infos = new ArrayList<CollectionDatasource.Sortable.SortInfo>();
         for (int i = 0; i < propertyId.length; i++) {
             final MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId[i];
-//            if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
 
             final CollectionDatasource.Sortable.SortInfo<MetaPropertyPath> info =
                     new CollectionDatasource.Sortable.SortInfo<MetaPropertyPath>();

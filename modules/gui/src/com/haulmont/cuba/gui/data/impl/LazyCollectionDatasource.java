@@ -11,7 +11,6 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
@@ -113,7 +112,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
             final List res = dataservice.loadList(context);
             size = res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
         }
-        
+
         return size;
     }
 
@@ -196,7 +195,10 @@ public class LazyCollectionDatasource<T extends Entity, K>
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(jpqlQuery, metaClass.getName());
         if (sortInfos != null) {
             final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-            final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath(); //todo
+            final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+
+            if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
+
             transformer.replaceOrderBy(propertyPath.getMetaProperty().getName(), asc);
         }
         jpqlQuery = transformer.getResult();

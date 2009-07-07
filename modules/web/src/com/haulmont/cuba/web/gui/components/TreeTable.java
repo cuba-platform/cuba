@@ -71,7 +71,7 @@ public class TreeTable
     }
 
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
-        return new TreeTableDsWrapper((TreeTableDatasource) datasource);
+        return new TreeTableDsWrapper((HierarchicalDatasource) datasource);
     }
 
     protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
@@ -150,6 +150,8 @@ public class TreeTable
         super.initComponent(component);
         component.setSelectable(true);
         component.setSortDisabled(true);
+        component.setColumnCollapsingAllowed(true);
+        component.setColumnReorderingAllowed(true);
     }
 
     public void applySettings(Element element) {
@@ -206,8 +208,11 @@ public class TreeTable
             extends HierarchicalDsWrapper
             implements TreeTableContainer
     {
-        public TreeTableDsWrapper(TreeTableDatasource datasource) {
+        protected boolean treeTableDatasource;
+
+        public TreeTableDsWrapper(HierarchicalDatasource datasource) {
             super(datasource);
+            treeTableDatasource  = (datasource instanceof TreeTableDatasource);
         }
 
         @Override
@@ -237,15 +242,21 @@ public class TreeTable
         }
 
         public boolean isCaption(Object itemId) {
-            return ((TreeTableDatasource<Entity, Object>) datasource).isCaption(itemId);
+            if (treeTableDatasource) {
+                return ((TreeTableDatasource<Entity, Object>) datasource).isCaption(itemId);
+            }
+            return false;
         }
 
         public String getCaption(Object itemId) {
-            return ((TreeTableDatasource<Entity, Object>) datasource).getCaption(itemId);
+            if (treeTableDatasource) {
+                return ((TreeTableDatasource<Entity, Object>) datasource).getCaption(itemId);
+            }
+            return null;
         }
 
         public boolean setCaption(Object itemId, String caption) {
-            return false; //todo
+            throw new UnsupportedOperationException();
         }
 
         public int getLevel(Object itemId) {
