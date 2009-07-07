@@ -102,7 +102,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Query q = em.createQuery(
-                    "select e from sec$LoggedEntity e join fetch e.attributes " +
+                    "select distinct e from sec$LoggedEntity e join fetch e.attributes " +
                             "where e.auto = true or e.manual = true");
             List<LoggedEntity> list = q.getResultList();
             for (LoggedEntity loggedEntity : list) {
