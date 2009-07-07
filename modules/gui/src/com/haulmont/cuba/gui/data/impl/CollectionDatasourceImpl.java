@@ -265,7 +265,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
                     if (value == null) return new Data(Collections.<K>emptyList(), Collections.<K,T>emptyMap());
                 }
             }
-            context.setQueryString(getJPQLQuery(this.query, parameters)).setParameters(parameters);
+
+            String queryString = getJPQLQuery(this.query, getTemplateParams(parameters, params));
+            context.setQueryString(queryString).setParameters(parameters);
         } else {
             context.setQueryString("select e from " + metaClass.getName() + " e");
         }

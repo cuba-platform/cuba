@@ -9,7 +9,11 @@
  */
 package com.haulmont.cuba.gui.data;
 
+import java.util.Collection;
+
 public interface WindowContext {
+
+    Collection<String> getParameterNames();
     <T> T getParameterValue(String property);
 
     <T> T getValue(String property);

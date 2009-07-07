@@ -202,4 +202,21 @@ public class AbstractCollectionDatasource<T extends Entity, K>
             }
         }
     }
+
+    protected Map<String, Object> getTemplateParams(Map<String, Object> queryParams, Map<String, Object> customParams) {
+        Map<String, Object> templateParams = new HashMap<String, Object>(queryParams);
+        String customPerfix = ParametersHelper.ParameterInfo.Type.CUSTOM.getPrefix() + "$";
+        for (Map.Entry<String, Object> entry : customParams.entrySet()) {
+            templateParams.put(customPerfix + entry.getKey(), entry.getValue());
+        }
+
+        String paramPrefix = ParametersHelper.ParameterInfo.Type.PARAM.getPrefix() + "$";
+        WindowContext windowContext = dsContext.getWindowContext();
+        if (windowContext != null) {
+            for (String name : windowContext.getParameterNames()) {
+                templateParams.put(paramPrefix + name, windowContext.getParameterValue(name));
+            }
+        }
+        return templateParams;
+    }
 }

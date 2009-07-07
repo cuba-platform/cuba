@@ -10,7 +10,6 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.List;
 import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.chile.core.model.Instance;
@@ -18,6 +17,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 import java.util.*;
+import java.util.List;
 
 public class FrameContext implements WindowContext {
     private final IFrame frame;
@@ -26,6 +26,14 @@ public class FrameContext implements WindowContext {
     public FrameContext(IFrame window, Map<String, Object> params) {
         this.frame = window;
         this.params = params;
+    }
+
+    public Collection<String> getParameterNames() {
+        List<String> names = new ArrayList<String>();
+        for (String s : params.keySet()) {
+            names.add(s.substring("parameter$".length()));
+        }
+        return names;
     }
 
     public <T> T getParameterValue(String property) {
@@ -78,7 +86,7 @@ public class FrameContext implements WindowContext {
             //noinspection RedundantTypeArguments
             return ((Component.Field) component).<T>getValue();
         } else if (component instanceof List) {
-            List list = (List) component;
+            com.haulmont.cuba.gui.components.List list = (com.haulmont.cuba.gui.components.List) component;
             //noinspection unchecked
             return list.isMultiSelect() ? (T)list.getSelected() : (T)list.getSingleSelected();
         } else {

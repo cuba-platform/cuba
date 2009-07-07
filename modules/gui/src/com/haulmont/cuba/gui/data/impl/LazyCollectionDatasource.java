@@ -98,7 +98,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
                 }
             }
 
-            String jpqlQuery = getJPQLQuery(query, parametersValues);
+            String jpqlQuery = getJPQLQuery(query, getTemplateParams(parametersValues, params));
 
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(jpqlQuery, metaClass.getName());
             transformer.replaceWithCount();
@@ -190,7 +190,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
     }
 
     protected void loadNextChunk(boolean all) {
-        String jpqlQuery = getJPQLQuery(query, parametersValues);
+        String jpqlQuery = getJPQLQuery(query, getTemplateParams(parametersValues, params));
 
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(jpqlQuery, metaClass.getName());
         if (sortInfos != null) {
