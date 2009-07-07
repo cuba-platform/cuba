@@ -158,8 +158,13 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         return itemId != null && itemId.equals(lastItemId());
     }
 
+    private void checkState() {
+        if (!State.VALID.equals(state))
+            throw new IllegalStateException("Invalid datasource state: " + state);
+    }
+
     public synchronized void addItem(T item) throws UnsupportedOperationException {
-        if (!ObjectUtils.equals(state, State.VALID)) throw new IllegalStateException("Datasource have state" + state);
+        checkState();
 
         data.itemIds.add((K) item.getId());
         data.itemsByKey.put((K)item.getId(), item);
@@ -175,7 +180,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
-        if (!ObjectUtils.equals(state, State.VALID)) throw new IllegalStateException("Datasource have state" + state);
+        checkState();
 
         data.itemIds.remove((K) item.getId());
         data.itemsByKey.remove((K)item.getId());
@@ -190,6 +195,17 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         forceCollectionChanged(
                 new CollectionDatasourceListener.CollectionOperation<T>(
                     CollectionDatasourceListener.CollectionOperation.Type.REMOVE, null));
+    }
+
+    public void updateItem(T item) {
+        checkState();
+
+        if (data.itemsByKey.containsKey((K)item.getId())) {
+            data.itemsByKey.put((K) item.getId(), item);
+            forceCollectionChanged(
+                    new CollectionDatasourceListener.CollectionOperation<T>(
+                            CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
+        }
     }
 
     public synchronized boolean containsItem(K itemId) {

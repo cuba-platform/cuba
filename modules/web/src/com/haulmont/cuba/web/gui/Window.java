@@ -670,6 +670,7 @@ public class Window
                     service.commit((Entity) item);
                 }
             }
+            item = getDatasource().getItem();
 
             return true;
         }

@@ -60,8 +60,10 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                 final Window window = frame.openEditor(windowID, item, openType);
                 window.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
-                        if ("commit".equals(actionId)) {
-                            datasource.refresh();
+                        if (window instanceof Window.Editor) {
+                            Object item = ((Window.Editor) window).getItem();
+                            if (item instanceof Entity)
+                                datasource.addItem((Entity) item);
                         }
                     }
                 });

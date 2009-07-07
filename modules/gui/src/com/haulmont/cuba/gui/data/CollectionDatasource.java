@@ -28,6 +28,7 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
 
     void addItem(T item) throws UnsupportedOperationException;
     void removeItem(T item) throws UnsupportedOperationException;
+    void updateItem(T item);
 
     boolean containsItem(K itemId);
 

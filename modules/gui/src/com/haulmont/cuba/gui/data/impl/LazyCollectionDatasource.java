@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.collections.map.LinkedMap;
 
@@ -53,6 +54,18 @@ public class LazyCollectionDatasource<T extends Entity, K>
 
     public void removeItem(T item) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
+    }
+
+    public void updateItem(T item) {
+        if (!State.VALID.equals(state))
+            throw new IllegalStateException("Invalid datasource state: " + state);
+
+        if (data.containsKey(item.getId())) {
+            data.put(item.getId(), item);
+            forceCollectionChanged(
+                    new CollectionDatasourceListener.CollectionOperation<T>(
+                            CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
+        }
     }
 
     public boolean containsItem(K itemId) {

@@ -124,8 +124,13 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         return item == null ? null : (Collection<T>) item.getValue(metaProperty.getName());
     }
 
+    private void checkState() {
+        if (!State.VALID.equals(getState()))
+            throw new IllegalStateException("Invalid datasource state: " + getState());
+    }
+
     public void addItem(T item) throws UnsupportedOperationException {
-        if (!ObjectUtils.equals(getState(), State.VALID)) throw new IllegalStateException("Datasource have state" + getState());
+        checkState();
         __getCollection().add(item);
 
         modified = true;
@@ -142,7 +147,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     }
 
     public void removeItem(T item) throws UnsupportedOperationException {
-        if (!ObjectUtils.equals(getState(), State.VALID)) throw new IllegalStateException("Datasource have state" + getState());
+        checkState();
         __getCollection().remove(item);
 
         modified = true;
@@ -156,6 +161,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         forceCollectionChanged(
                 new CollectionDatasourceListener.CollectionOperation<T>(
                     CollectionDatasourceListener.CollectionOperation.Type.REMOVE, null));
+    }
+
+    public void updateItem(T item) {
+        // do nothing ?
     }
 
     public boolean containsItem(K itemId) {
