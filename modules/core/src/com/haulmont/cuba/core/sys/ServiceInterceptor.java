@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,8 +24,8 @@ public class ServiceInterceptor
     private Object aroundInvoke(InvocationContext ctx) throws Exception {
         Log log = LogFactory.getLog(ctx.getTarget().getClass());
 
-        log.trace("Invoking method " + ctx.getMethod().getName() +
-                ", " + SecurityProvider.currentUserSession());
+        UserSession userSession = SecurityProvider.currentUserSession();
+        log.trace("Invoking method " + ctx.getMethod().getName() + ", session: " + userSession);
 
         try {
             return ctx.proceed();

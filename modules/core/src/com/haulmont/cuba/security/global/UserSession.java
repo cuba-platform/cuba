@@ -125,9 +125,6 @@ public class UserSession implements Serializable
     }
 
     public String toString() {
-        return "UserSession{" +
-                "id=" + id +
-                ", login='" + login + '\'' +
-                '}';
+        return id + " [" + login + "]";
     }
 }

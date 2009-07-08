@@ -19,8 +19,6 @@ public class NoUserSessionException extends RuntimeException
     private static final long serialVersionUID = 4820628023682230319L;
 
     public NoUserSessionException(UUID sessionId) {
-        super(String.format(
-                MessageProvider.getMessage(NoUserSessionException.class, "NoUserSessionException"),
-                sessionId.toString()));
+        super(String.format("User session not found: %s", sessionId.toString()));
     }
 }

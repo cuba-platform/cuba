@@ -16,6 +16,7 @@ import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Locator;
 
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class UserSessionManager
 {
     private static UserSessionManager instance;
 
-    private UserSessions sessions;
+    private UserSessionsAPI sessions;
 
     public static UserSessionManager getInstance() {
         if (instance == null) {
@@ -35,7 +36,8 @@ public class UserSessionManager
     }
 
     public UserSessionManager() {
-        sessions = new UserSessionsCache();
+        UserSessionsMBean mBean = Locator.lookupMBean(UserSessionsMBean.class, UserSessionsMBean.OBJECT_NAME);
+        sessions = mBean.getAPI();
     }
 
     public UserSession createSession(User user, Locale locale) {
