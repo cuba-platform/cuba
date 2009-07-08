@@ -692,7 +692,7 @@ public class Window
                 public void visit(Component component, String name) {
                     com.itmill.toolkit.ui.Component impl = ComponentsHelper.unwrap(component);
                     if (impl instanceof com.itmill.toolkit.ui.Field 
-                            && impl.isVisible() && impl.isEnabled())
+                            && impl.isVisible() && impl.isEnabled() && !impl.isReadOnly())
                     {
                         try {
                             ((com.itmill.toolkit.ui.Field) impl).validate();
@@ -704,8 +704,8 @@ public class Window
                         Set visibleComponents = ((Table) impl).getVisibleComponents();
                         for (Object visibleComponent : visibleComponents) {
                             if (visibleComponent instanceof com.itmill.toolkit.ui.Field
-                                    && ((com.itmill.toolkit.ui.Field) visibleComponent).isEnabled())
-                            {
+                                    && ((com.itmill.toolkit.ui.Field) visibleComponent).isEnabled() &&
+                                    !((com.itmill.toolkit.ui.Field) visibleComponent).isReadOnly()) {
                                 try {
                                     ((com.itmill.toolkit.ui.Field) visibleComponent).validate();
                                 } catch (Validator.InvalidValueException e) {
