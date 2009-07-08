@@ -1961,7 +1961,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             if (initDone) {
                 return rowHeight;
             } else {
-                if (DOM.getChildCount(tBody) > 1) {
+                if (DOM.getChildCount(tBody) > 0) {
                     IScrollTableRow row = (IScrollTableRow) renderedRows.get(0);
                     rowHeight = DOM.getChild(row.getElement(), 0).getOffsetHeight();
                 } else {
