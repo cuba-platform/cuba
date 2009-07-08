@@ -130,6 +130,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
             if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
                 TabSheet tabSheet = appWindow.getTabSheet();
+                layout.setMargin(true);
                 tabSheet.addTab(layout, caption, null);
                 tabSheet.setSelectedTab(layout);
             } else {

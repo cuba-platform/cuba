@@ -31,7 +31,7 @@ import org.dom4j.Element;
 
 public class AppWindow extends Window {
 
-    enum Mode {
+    public enum Mode {
         TABBED, SINGLE
     }
 

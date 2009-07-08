@@ -82,7 +82,7 @@ public class Window
     protected com.itmill.toolkit.ui.Component createLayout() {
         VerticalLayout layout = new VerticalLayout();
 
-        layout.setMargin(true);
+//        layout.setMargin(true);
         layout.setSizeFull();
 
         return layout;
