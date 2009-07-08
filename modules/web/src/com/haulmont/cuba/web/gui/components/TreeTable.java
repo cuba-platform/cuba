@@ -16,9 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.TreeTableDatasource;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -156,32 +154,66 @@ public class TreeTable
     }
 
     public void applySettings(Element element) {
-        Element columnsElem = element.element("columns");
+        final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
-            Object[] oldColumns = component.getVisibleColumns();
-            List<Object> newColumns = new ArrayList<Object>();
-            for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
-                for (Object column : oldColumns) {
-                    if (column.toString().equals(colElem.attributeValue("id"))) {
-                        newColumns.add(column);
-
-                        String width = colElem.attributeValue("width");
-                        if (width != null)
-                            component.setColumnWidth(column, Integer.valueOf(width));
-
-                        String visible = colElem.attributeValue("visible");
-                        if (visible != null)
-                            try {
-                                component.setColumnCollapsed(column, !Boolean.valueOf(visible));
-                            } catch (IllegalAccessException e) {
-                                // ignore
-                            }
-                        break;
+            if (!Datasource.State.VALID.equals(getDatasource().getState())) {
+                getDatasource().addListener(new DatasourceListener<Entity>() {
+                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                     }
+
+                    public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+                        __applySettings(columnsElem);
+                    }
+
+                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                    }
+                });
+            } else {
+                __applySettings(columnsElem);
+            }
+        }
+    }
+
+    private void __applySettings(Element columnsElem) {
+        Object[] oldColumns = component.getVisibleColumns();
+        List<Object> newColumns = new ArrayList<Object>();
+        // add columns from saved settings
+        for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+            for (Object column : oldColumns) {
+                if (column.toString().equals(colElem.attributeValue("id"))) {
+                    newColumns.add(column);
+
+                    String width = colElem.attributeValue("width");
+                    if (width != null)
+                        component.setColumnWidth(column, Integer.valueOf(width));
+
+                    String visible = colElem.attributeValue("visible");
+                    if (visible != null)
+                        try {
+                            component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                        } catch (IllegalAccessException e) {
+                            // ignore
+                        }
+                    break;
                 }
             }
-            component.setVisibleColumns(newColumns.toArray());
         }
+        // add columns not saved in settings (perhaps new)
+        for (Object column : oldColumns) {
+            if (!newColumns.contains(column)) {
+                newColumns.add(column);
+            }
+        }
+        // if the table contains only one column, always show it
+        if (newColumns.size() == 1) {
+            try {
+                component.setColumnCollapsed(newColumns.get(0), false);
+            } catch (IllegalAccessException e) {
+                //
+            }
+        }
+
+        component.setVisibleColumns(newColumns.toArray());
     }
 
     public boolean saveSettings(Element element) {
