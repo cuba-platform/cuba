@@ -688,7 +688,9 @@ public class Window
             ComponentsHelper.walkComponents(this, new ComponentVisitor() {
                 public void visit(Component component, String name) {
                     com.itmill.toolkit.ui.Component impl = ComponentsHelper.unwrap(component);
-                    if (impl instanceof com.itmill.toolkit.ui.Field && impl.isVisible()) {
+                    if (impl instanceof com.itmill.toolkit.ui.Field 
+                            && impl.isVisible() && impl.isEnabled())
+                    {
                         try {
                             ((com.itmill.toolkit.ui.Field) impl).validate();
                         } catch (Validator.InvalidValueException e) {
@@ -698,7 +700,9 @@ public class Window
                     if (impl instanceof com.itmill.toolkit.ui.Table) {
                         Set visibleComponents = ((Table) impl).getVisibleComponents();
                         for (Object visibleComponent : visibleComponents) {
-                            if (visibleComponent instanceof com.itmill.toolkit.ui.Field) {
+                            if (visibleComponent instanceof com.itmill.toolkit.ui.Field
+                                    && ((com.itmill.toolkit.ui.Field) visibleComponent).isEnabled())
+                            {
                                 try {
                                     ((com.itmill.toolkit.ui.Field) visibleComponent).validate();
                                 } catch (Validator.InvalidValueException e) {
