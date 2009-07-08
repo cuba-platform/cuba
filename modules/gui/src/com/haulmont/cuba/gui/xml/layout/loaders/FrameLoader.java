@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;
@@ -56,7 +57,10 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         loadStyleName(component, element);
 
         loadMessagesPack(component, element);
-        loadSubcomponentsAndExpand(component, element.element("layout"));
+
+        final Element layoutElement = element.element("layout");
+        loadExpandLayout(component, layoutElement);
+        loadSubcomponentsAndExpand(component, layoutElement);
 
         if (dsContext != null) {
             component.setDsContext(dsContext);
@@ -74,6 +78,15 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
 
         return component;
+    }
+
+    protected void loadExpandLayout(Component.HasLayout component, Element element) {
+        final String expandLayout = element.attributeValue("expandLayout");
+        if (!StringUtils.isEmpty(expandLayout)) {
+            if (isBoolean(expandLayout)) {
+                component.expandLayout(Boolean.valueOf(expandLayout));
+            }
+        }
     }
 
     protected void loadMessagesPack(IFrame frame, Element element) {

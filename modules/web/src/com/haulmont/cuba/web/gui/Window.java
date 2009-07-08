@@ -434,7 +434,10 @@ public class Window
 
     public void expandLayout(boolean expandLayout) {
         if (expandLayout) {
-            component.setSizeFull();
+            getContainer().setSizeFull();
+        } else {
+            getContainer().setWidth("100%");
+            getContainer().setHeight("-1px");
         }
     }
 

@@ -74,6 +74,7 @@
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
+                        <xs:attribute name="expandLayout" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
@@ -154,6 +155,8 @@
                             </xs:element>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="grid">

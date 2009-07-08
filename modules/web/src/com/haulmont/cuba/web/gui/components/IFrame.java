@@ -176,6 +176,9 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
     public void expandLayout(boolean expandLayout) {
         if (expandLayout) {
             getLayout().setSizeFull();
+        } else {
+            getLayout().setWidth("100%");
+            getLayout().setHeight("-1px");
         }
     }
 }
