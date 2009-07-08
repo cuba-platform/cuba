@@ -152,6 +152,7 @@ public class TreeTable
         component.setSortDisabled(true);
         component.setColumnCollapsingAllowed(true);
         component.setColumnReorderingAllowed(true);
+        setSortable(false);
     }
 
     public void applySettings(Element element) {

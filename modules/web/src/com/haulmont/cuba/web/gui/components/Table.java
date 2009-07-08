@@ -157,6 +157,7 @@ public class Table
         
         component.setColumnCollapsingAllowed(true);
         component.setColumnReorderingAllowed(true);
+        setSortable(true);
     }
 
     @Override
