@@ -43,7 +43,7 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
         boolean isLastId(K itemId);
     }
 
-    interface Sortable<T extends Entity, K> extends Ordered<T, K>{
+    interface Sortable<T extends Entity, K> extends Ordered<T, K>, CollectionDatasource<T, K> {
         enum Order {
             ASC,
             DESC

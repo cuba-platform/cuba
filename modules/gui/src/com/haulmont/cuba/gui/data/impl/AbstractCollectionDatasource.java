@@ -23,8 +23,12 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
-public class AbstractCollectionDatasource<T extends Entity, K>
-        extends DatasourceImpl<T> {
+public abstract class AbstractCollectionDatasource<T extends Entity, K> 
+    extends
+        DatasourceImpl<T>
+    implements
+        CollectionDatasource<T, K>
+{
     protected String query;
     protected ParametersHelper.ParameterInfo[] queryParameters;
 

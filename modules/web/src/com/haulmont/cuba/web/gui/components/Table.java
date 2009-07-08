@@ -307,7 +307,7 @@ public class Table
         return true;
     }
 
-    protected class TableDsWrapper extends SortableTableDsWrapper {
+    protected class TableDsWrapper extends CollectionDsWrapper {
         public TableDsWrapper(CollectionDatasource datasource) {
             super(datasource);
         }
