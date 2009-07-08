@@ -69,6 +69,12 @@ public class App extends Application implements ConnectionListener, ApplicationC
         exceptionHandlers = new ExceptionHandlers(this);
     }
 
+    public static Application.SystemMessages getSystemMessages() {
+        Application.CustomizedSystemMessages msgs = new Application.CustomizedSystemMessages();
+        msgs.setInternalErrorURL("/cuba?restartApplication");
+        return msgs;
+    }
+
     protected WindowManager createWindowManager() {
         return new WindowManager(this);
     }
