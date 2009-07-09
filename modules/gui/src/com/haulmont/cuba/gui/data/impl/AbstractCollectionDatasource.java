@@ -174,7 +174,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
                     break;
                 }
                 case CUSTOM: {
-                    map.put(name, params.get(info.getName()));
+                    map.put(name, params.get(info.getPath()));
                     break;
                 }
                 default: {
