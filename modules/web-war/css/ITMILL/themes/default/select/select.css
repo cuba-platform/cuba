@@ -108,6 +108,9 @@
 	width: 25px;
 	height: 23px;
 	cursor: pointer;
+    border: 0;
+    margin: 0;
+    padding: 0;
 	background: transparent url(img/bg-right-filter.png);
 }
 .i-filterselect-button:hover {
