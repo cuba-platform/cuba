@@ -51,14 +51,14 @@ public class Connection
     public void login(String login, String password) throws LoginException {
         session = getLoginService().login(login, password, App.getInstance().getLocale());
         connected = true;
-        ServerSecurityUtils.setSecurityAssociation(session.getLogin(), session.getId());
+        ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
     }
 
     public void loginActiveDirectory(String activeDirectoryUser) throws LoginException {
         session = getLoginService().loginActiveDirectory(activeDirectoryUser, App.getInstance().getLocale());
         connected = true;
-        ServerSecurityUtils.setSecurityAssociation(session.getLogin(), session.getId());
+        ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
     }
 

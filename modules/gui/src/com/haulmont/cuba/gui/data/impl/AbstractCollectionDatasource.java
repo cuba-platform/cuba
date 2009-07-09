@@ -166,7 +166,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
                 case SESSION: {
                     final Object value;
                     if ("userId".equals(name)) 
-                        value = UserSessionClient.getUserSession().getUserId();
+                        value = UserSessionClient.getUserSession().getUser().getId();
                     else
                         value = UserSessionClient.getUserSession().getAttribute(path);
 

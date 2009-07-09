@@ -190,7 +190,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         if (connection.isConnected()) {
             UserSession userSession = connection.getSession();
             if (userSession != null) {
-                ServerSecurityUtils.setSecurityAssociation(userSession.getLogin(), userSession.getId());
+                ServerSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
             }
         }
 

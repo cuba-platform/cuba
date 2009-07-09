@@ -21,10 +21,8 @@ public class UserSession implements Serializable
 {
     private static final long serialVersionUID = -8248326616891177382L;
 
-    private UUID userId;
     private UUID id;
-    private String login;
-    private String name;
+    private User user;
     private String[] roles;
     private Locale locale;
 
@@ -35,9 +33,7 @@ public class UserSession implements Serializable
 
     public UserSession(User user, String[] roles, Locale locale) {
         this.id = UuidProvider.createUuid();
-        this.userId = user.getId();
-        this.login = user.getLogin();
-        this.name = user.getName();
+        this.user = user;
 
         this.roles = roles;
         Arrays.sort(this.roles);
@@ -56,25 +52,15 @@ public class UserSession implements Serializable
     public UserSession(UserSession src, User user, String[] roles, Locale locale) {
         this(user, roles, locale);
         this.id = src.id;
-        this.userId = src.userId;
-        this.login = src.login;
-        this.name = src.name;
+        this.user = src.user;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public String getName() {
-        return name;
+    public User getUser() {
+        return user;
     }
 
     public String[] getRoles() {
@@ -125,6 +111,6 @@ public class UserSession implements Serializable
     }
 
     public String toString() {
-        return id + " [" + login + "]";
+        return id + " [" + user.getLogin() + "]";
     }
 }

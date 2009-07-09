@@ -72,7 +72,7 @@ public class UserSettingServiceBean implements UserSettingService
         if (list.isEmpty()) {
             UserSetting us = new UserSetting();
             em.setView(new View(User.class, false));
-            us.setUser(em.find(User.class, SecurityProvider.currentUserSession().getUserId()));
+            us.setUser(em.find(User.class, SecurityProvider.currentUserSession().getUser().getId()));
             us.setName(name);
             us.setClientType(clientType);
             us.setValue(value);

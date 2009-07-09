@@ -179,7 +179,7 @@ public class AppWindow extends Window {
         Label logoLabel = new Label(MessageProvider.getMessage(getClass(), "logoLabel"));
 
         Label loggedInLabel = new Label(String.format(MessageProvider.getMessage(getClass(), "loggedInLabel"),
-                connection.getSession().getName()));
+                connection.getSession().getUser().getName()));
 
         Button logoutBtn = new Button(MessageProvider.getMessage(getClass(), "logoutBtn"),
                 new Button.ClickListener() {

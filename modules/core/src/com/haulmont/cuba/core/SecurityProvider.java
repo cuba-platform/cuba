@@ -52,12 +52,8 @@ public abstract class SecurityProvider
         return instance;
     }
 
-    public static String currentUserLogin() {
-        return getInstance().__currentUserSession().getLogin();
-    }
-
     public static UUID currentUserId() {
-        return getInstance().__currentUserSession().getUserId();
+        return getInstance().__currentUserSession().getUser().getId();
     }
 
     public static UserSession currentUserSession() {
@@ -101,9 +97,9 @@ public abstract class SecurityProvider
         if (paramName.startsWith(CONSTRAINT_PARAM_SESSION_ATTR)) {
             String attrName = paramName.substring(CONSTRAINT_PARAM_SESSION_ATTR.length());
             if (CONSTRAINT_PARAM_USER_LOGIN.equals(attrName)) {
-                query.setParameter(paramName, __currentUserSession().getLogin());
+                query.setParameter(paramName, __currentUserSession().getUser().getLogin());
             } else if (CONSTRAINT_PARAM_USER_ID.equals(attrName)) {
-                query.setParameter(paramName, __currentUserSession().getUserId());
+                query.setParameter(paramName, __currentUserSession().getUser().getId());
             } else {
                 Serializable value = __currentUserSession().getAttribute(attrName);
                 query.setParameter(paramName, value);
