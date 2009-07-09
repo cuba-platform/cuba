@@ -419,6 +419,10 @@ public class IScrollTreeTable
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
             }
+
+            @Override
+            protected void moveCol(int oldIndex, int newIndex) {
+            }
         }
 
         public class IScrollTreeTableRow

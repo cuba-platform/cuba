@@ -2014,13 +2014,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             // loop all rows and move given index to its new place
             final Iterator rows = iterator();
             while (rows.hasNext()) {
-                final IScrollTableRow row = (IScrollTableRow) rows.next();
-
-                final Element td = DOM.getChild(row.getElement(), oldIndex);
-                DOM.removeChild(row.getElement(), td);
-
-                DOM.insertChild(row.getElement(), td, newIndex);
-
+                ((IScrollTableRow) rows.next()).moveCol(oldIndex, newIndex);
             }
 
         }
@@ -2183,6 +2177,13 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 DOM.appendChild(getElement(), td);
 
                 setCellContent(container, w, col);
+            }
+
+            protected void moveCol(int oldIndex, int newIndex) {
+                final Element td = DOM.getChild(getElement(), oldIndex);
+                DOM.removeChild(getElement(), td);
+
+                DOM.insertChild(getElement(), td, newIndex);
             }
 
             protected void setCellContent(Element container, String text,
