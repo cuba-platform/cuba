@@ -403,7 +403,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
             final Object value = property.getValue();
 
             final com.itmill.toolkit.ui.CheckBox checkBox = new com.itmill.toolkit.ui.CheckBox();
-            checkBox.setValue((Boolean) value);
+            checkBox.setValue(BooleanUtils.toBoolean((Boolean) value));
             checkBox.setEnabled(false);
 
             return checkBox;
