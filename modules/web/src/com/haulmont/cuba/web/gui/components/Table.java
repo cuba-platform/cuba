@@ -38,13 +38,13 @@ import java.util.*;
 
 public class Table
     extends
-        AbstractTable<com.itmill.toolkit.ui.Table>
+        AbstractTable<com.haulmont.cuba.web.toolkit.ui.Table>
     implements
         com.haulmont.cuba.gui.components.Table, Component.Wrapper
 {
 
     public Table() {
-        component = new com.itmill.toolkit.ui.Table() {
+        component = new com.haulmont.cuba.web.toolkit.ui.Table() {
             @Override
             public Resource getItemIcon(Object itemId) {
                 if (styleProvider != null) {
@@ -62,7 +62,7 @@ public class Table
     }
 
     @Override
-    protected void initComponent(com.itmill.toolkit.ui.Table component) {
+    protected void initComponent(com.haulmont.cuba.web.toolkit.ui.Table component) {
         super.initComponent(component);
 
         component.setSelectable(true);
@@ -163,6 +163,10 @@ public class Table
     @Override
     protected void addGeneratedColumn(Object id, Object generator) {
         component.addGeneratedColumn(id, (com.itmill.toolkit.ui.Table.ColumnGenerator) generator);
+    }
+
+    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
+        component.setEditableColumns(editableColumns.toArray());
     }
 
     @Override

@@ -123,6 +123,10 @@ public class TreeTable
         component.addGeneratedColumn(id, (TableSupport.ColumnGenerator) generator);
     }
 
+    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
+        //todo: gorodnov: implement a cells content editing for the tree table
+    }
+
     public void expandAll() {
         component.expandAll();
     }

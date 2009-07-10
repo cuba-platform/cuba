@@ -165,10 +165,12 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
                                 .asDatatype();
                         if (BooleanDatatype.NAME.equals(datatype.getName())) {
                             addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
+/*
                         } else {
                             if (editable) {
                                 addGeneratedColumn(propertyPath, new ReadOnlyDatatypeGenerator());
                             }
+*/
                         }
 
                     }
@@ -196,9 +198,12 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
         this.datasource = datasource;
 
-
         component.setContainerDataSource(containerDatasource);
-        createColumns(containerDatasource);
+
+        List<MetaPropertyPath> editableColumns = null;
+        if (isEditable()) {
+            editableColumns = new LinkedList<MetaPropertyPath>();
+        }
 
         for (MetaPropertyPath propertyPath : columns) {
             final Table.Column column = this.columns.get(propertyPath);
@@ -211,7 +216,17 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
             }
 
             setColumnHeader(propertyPath, caption);
+
+            if (editableColumns != null && column != null && column.isEditable()) {
+                editableColumns.add((MetaPropertyPath) column.getId());
+            }
         }
+
+        if (editableColumns != null) {
+            setEditableColumns(editableColumns);
+        }
+
+        createColumns(containerDatasource);
 
         List<MetaPropertyPath> columnsOrder = new ArrayList<MetaPropertyPath>();
         for (Table.Column column : this.columnsOrder) {
@@ -224,6 +239,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
     protected abstract void setVisibleColumns(List<MetaPropertyPath> columnsOrder);
     protected abstract void setColumnHeader(MetaPropertyPath propertyPath, String caption);
+    protected abstract void setEditableColumns(List<MetaPropertyPath> editableColumns);
 
     public void setRequired(Table.Column column, boolean required, String message) {
         if (required)
