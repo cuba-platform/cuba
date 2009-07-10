@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextField;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.BooleanUtils;
 
 public class TextFieldLoader extends AbstractFieldLoader {
     public TextFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -22,8 +21,8 @@ public class TextFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final TextField component = (TextField) super.loadComponent(factory, element);
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+        final TextField component = (TextField) super.loadComponent(factory, element, parent);
 
         final String cols = element.attributeValue("cols");
         final String rows = element.attributeValue("rows");

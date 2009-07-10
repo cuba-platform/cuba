@@ -24,7 +24,7 @@ public class TabsheetLoader extends ContainerLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final Tabsheet component = factory.createComponent("tabsheet");
 
         assignXmlDescriptor(component, element);
@@ -42,7 +42,7 @@ public class TabsheetLoader extends ContainerLoader {
 
             final ComponentLoader loader = getLoader("vbox");
 
-            final Tabsheet.Tab tab = component.addTab(name, loader.loadComponent(factory, tabElement));
+            final Tabsheet.Tab tab = component.addTab(name, loader.loadComponent(factory, tabElement, null));
             String caption = tabElement.attributeValue("caption");
 
             if (!StringUtils.isEmpty(caption)) {

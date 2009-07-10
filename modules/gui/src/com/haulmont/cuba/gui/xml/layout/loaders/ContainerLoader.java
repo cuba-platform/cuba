@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Layout;
+import com.haulmont.cuba.gui.components.QuasiComponent;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -43,9 +44,16 @@ public abstract class ContainerLoader extends ComponentLoader {
         for (Element subElement : (Collection<Element>)element.elements()) {
             final String name = subElement.getName();
             if (exceptTags != null && Arrays.binarySearch(exceptTags, name) < 0) {
-                final Component subComponent = loader.loadComponent(subElement);
-                ((Component.Container) component).add(subComponent);
-                res.add(subComponent);
+                final Component subComponent = loader.loadComponent(subElement, component);
+                if (subComponent instanceof QuasiComponent) {
+                    for (Component realSubComponent : ((QuasiComponent) subComponent).getRealComponents()) {
+                        ((Component.Container) component).add(realSubComponent);
+                        res.add(realSubComponent);
+                    }
+                } else {
+                    ((Component.Container) component).add(subComponent);
+                    res.add(subComponent);
+                }
             }
         }
 
@@ -76,7 +84,7 @@ public abstract class ContainerLoader extends ComponentLoader {
         }
     }
 
-    protected void loadSubcomponentsAndExpand(Layout layout, Element element, String ...exceptTags) {
+    protected void loadSubComponentsAndExpand(Layout layout, Element element, String ...exceptTags) {
         final Collection<Component> components = loadSubComponents(layout, element, exceptTags);
         if (components.size() == 1) {
             final Component component = components.iterator().next();

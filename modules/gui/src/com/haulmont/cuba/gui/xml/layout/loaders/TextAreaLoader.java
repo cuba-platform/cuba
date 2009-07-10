@@ -22,8 +22,8 @@ public class TextAreaLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final TextArea component = (TextArea) super.loadComponent(factory, element);
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+        final TextArea component = (TextArea) super.loadComponent(factory, element, parent);
 
         final String cols = element.attributeValue("cols");
         final String rows = element.attributeValue("rows");

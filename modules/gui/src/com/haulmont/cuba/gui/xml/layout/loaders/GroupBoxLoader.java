@@ -21,7 +21,7 @@ public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cub
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final Layout component = factory.createComponent("groupBox");
 
         final Element captionElement = element.element("caption");
@@ -34,7 +34,7 @@ public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cub
         }
 
         loadAlign(component, element);
-        loadSubcomponentsAndExpand(component, element, "caption", "visible");
+        loadSubComponentsAndExpand(component, element, "caption", "visible");
 
         loadStyleName(component, element);
 

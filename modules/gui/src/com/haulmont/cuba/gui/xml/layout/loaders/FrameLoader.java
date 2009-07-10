@@ -32,7 +32,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final IFrame component = factory.createComponent("iframe");
 
         final Element dsContextElement = element.element("dsContext");
@@ -60,7 +60,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         final Element layoutElement = element.element("layout");
         loadExpandLayout(component, layoutElement);
-        loadSubcomponentsAndExpand(component, layoutElement);
+        loadSubComponentsAndExpand(component, layoutElement);
 
         if (dsContext != null) {
             component.setDsContext(dsContext);

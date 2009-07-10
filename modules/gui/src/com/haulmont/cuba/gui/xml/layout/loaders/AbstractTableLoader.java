@@ -38,7 +38,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         this.config = config;
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final T component = createComponent(factory);
 
         assignXmlDescriptor(component, element);

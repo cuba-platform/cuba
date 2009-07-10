@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -31,7 +30,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         GridLayout component = factory.createComponent("grid");
 
         loadId(component, element);
@@ -117,7 +116,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         int col = 0;
 
         for (Element subElement : (Collection<Element>)element.elements()) {
-            final Component subComponent = loader.loadComponent(subElement);
+            final Component subComponent = loader.loadComponent(subElement, component);
 
             String colspan = subElement.attributeValue("colspan");
             String rowspan = subElement.attributeValue("rowspan");

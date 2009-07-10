@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
 
 public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
@@ -24,14 +23,14 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final String src = element.attributeValue("src");
 
         final LayoutLoader loader = new LayoutLoader(context, factory, LayoutLoaderConfig.getFrameLoaders());
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
-        final IFrame component = (IFrame) loader.loadComponent(getClass().getResource(src));
+        final IFrame component = (IFrame) loader.loadComponent(getClass().getResource(src), parent);
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(messagesPack);
         }

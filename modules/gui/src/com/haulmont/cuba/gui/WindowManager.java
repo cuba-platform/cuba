@@ -135,7 +135,7 @@ public abstract class WindowManager {
             layoutLoader.setMessagesPack(path);
         }
 
-        final Window window = (Window) layoutLoader.loadComponent(rootElement);
+        final Window window = (Window) layoutLoader.loadComponent(rootElement, null);
         return window;
     }
 

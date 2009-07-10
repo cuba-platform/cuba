@@ -42,7 +42,7 @@ public class LayoutLoader {
         this.messagesPack = messagesPack;
     }
 
-    public Component loadComponent(URL uri) {
+    public Component loadComponent(URL uri, Component parent) {
         try {
             final InputStream stream = uri.openStream();
 
@@ -56,7 +56,7 @@ public class LayoutLoader {
 
             Element element = doc.getRootElement();
 
-            return loadComponent(element);
+            return loadComponent(element, parent);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -90,10 +90,10 @@ public class LayoutLoader {
         return loader;
     }
 
-    public <T extends Component> T loadComponent(Element element) {
+    public <T extends Component> T loadComponent(Element element, Component parent) {
         try {
             ComponentLoader loader = getLoader(element);
-            return (T) loader.loadComponent(factory, element);
+            return (T) loader.loadComponent(factory, element, parent);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

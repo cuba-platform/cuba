@@ -20,7 +20,7 @@ public class LabelLoader extends ComponentLoader {
         super(context);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final Label component = factory.createComponent("label");
 
         assignXmlDescriptor(component, element);

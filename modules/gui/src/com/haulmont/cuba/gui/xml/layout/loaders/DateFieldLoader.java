@@ -21,8 +21,8 @@ public class DateFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final DateField component = (DateField) super.loadComponent(factory, element);
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+        final DateField component = (DateField) super.loadComponent(factory, element, parent);
 
         final String resolution = element.attributeValue("resolution");
         if (!StringUtils.isEmpty(resolution)) {

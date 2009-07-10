@@ -23,7 +23,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final Window window = createComponent(factory);
 
         assignXmlDescriptor(window, element);
@@ -32,7 +32,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         final Element layoutElement = element.element("layout");
         loadExpandLayout(window, layoutElement);
-        loadSubcomponentsAndExpand(window, layoutElement);
+        loadSubComponentsAndExpand(window, layoutElement);
 
         return window;
     }

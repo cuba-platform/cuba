@@ -30,7 +30,7 @@ public class TreeLoader extends ComponentLoader
         this.factory = factory;
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element)
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
             throws InstantiationException, IllegalAccessException
     {
         Tree component = factory.createComponent("tree");

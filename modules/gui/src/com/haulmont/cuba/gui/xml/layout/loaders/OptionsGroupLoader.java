@@ -22,8 +22,8 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final OptionsGroup component = (OptionsGroup) super.loadComponent(factory, element);
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+        final OptionsGroup component = (OptionsGroup) super.loadComponent(factory, element, parent);
 
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));

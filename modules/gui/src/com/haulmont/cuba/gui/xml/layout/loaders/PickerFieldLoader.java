@@ -21,8 +21,8 @@ public class PickerFieldLoader extends AbstractFieldLoader{
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
-        final PickerField component = (PickerField) super.loadComponent(factory, element);
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+        final PickerField component = (PickerField) super.loadComponent(factory, element, parent);
 
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {

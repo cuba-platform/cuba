@@ -10,7 +10,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Layout;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -22,7 +21,7 @@ public class VBoxLoader extends ContainerLoader implements ComponentLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final BoxLayout component = factory.createComponent("vbox");
 
         assignXmlDescriptor(component, element);
@@ -36,7 +35,7 @@ public class VBoxLoader extends ContainerLoader implements ComponentLoader {
         loadSpacing(component, element);
         loadMargin(component, element);
 
-        loadSubcomponentsAndExpand(component, element, "visible");
+        loadSubComponentsAndExpand(component, element, "visible");
 
         loadHeight(component, element);
         loadWidth(component, element);
