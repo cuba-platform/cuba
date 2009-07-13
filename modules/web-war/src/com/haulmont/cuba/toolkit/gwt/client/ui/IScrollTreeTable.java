@@ -344,7 +344,7 @@ public class IScrollTreeTable
                 if (o instanceof IScrollTreeTableCaptionRow) {
                     if (colIndex < groupColIndex) {
                         applyCellWidth((IScrollTreeTableRow) o, colIndex, w);
-                    } else if (colIndex == groupColIndex) {
+                    } else {
                         int rowWidth = scrollbarWidthReserved > 0
                                 ? calculatedWidth - scrollbarWidthReserved : calculatedWidth;
                         applyCellWidth((IScrollTreeTableRow) o, groupColIndex, rowWidth);

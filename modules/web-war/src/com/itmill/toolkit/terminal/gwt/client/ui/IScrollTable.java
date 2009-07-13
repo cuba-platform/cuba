@@ -1209,11 +1209,27 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     if (newWidth < MINIMUM_COL_WIDTH) {
                         newWidth = MINIMUM_COL_WIDTH;
                     }
+                    updateCalculatedWidth(colIndex, newWidth);
                     setColWidth(colIndex, newWidth);
                 }
                 break;
             default:
                 break;
+            }
+        }
+
+        private void updateCalculatedWidth(int colIndex, int newColumnWidth) {
+            if (calculatedWidth > -1) {
+                int newWidth = 0;
+                for (int i = 0; i < tHead.getVisibleCellCount(); i++) {
+                    if (i == colIndex) {
+                        newWidth += newColumnWidth;
+                    } else {
+                        HeaderCell cell = (HeaderCell) tHead.getVisibleCells().get(i);
+                        newWidth += cell.getWidth();
+                    }
+                }
+                calculatedWidth = newWidth;
             }
         }
 
