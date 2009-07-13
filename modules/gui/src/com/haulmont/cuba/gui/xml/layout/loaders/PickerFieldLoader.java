@@ -36,6 +36,8 @@ public class PickerFieldLoader extends AbstractFieldLoader{
             component.setMetaClass(MetadataProvider.getSession().getClass(metaClass));
         }
 
+        loadExpandable(component, element);
+
         return component;
     }
 }

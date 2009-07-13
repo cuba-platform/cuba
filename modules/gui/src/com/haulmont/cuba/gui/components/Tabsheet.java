@@ -13,7 +13,7 @@ import java.util.Collection;
 
 public interface Tabsheet 
     extends
-        Component, Component.BelongToFrame
+        Component, Component.BelongToFrame, Component.Expandable
 {
     Tab addTab(String name, Component component);
     void removeTab(String name);

@@ -10,12 +10,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.OrderedLayout;
-import com.itmill.toolkit.ui.Panel;
-import com.itmill.toolkit.ui.ExpandLayout;
 import com.itmill.toolkit.ui.VerticalLayout;
 
-public class GroupBox extends AbstractPanel implements Component.HasCaption {
+public class GroupBox extends AbstractPanel implements com.haulmont.cuba.gui.components.GroupBox {
 
     public GroupBox() {
         setLayout(new VerticalLayout());

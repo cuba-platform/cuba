@@ -34,6 +34,8 @@ public class DateFieldLoader extends AbstractFieldLoader {
             component.setDateFormat(dateFormat);
         }
 
+        loadExpandable(component, element);
+
         return component;
     }
 }

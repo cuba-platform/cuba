@@ -11,11 +11,10 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.ui.Layout;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import java.util.*;
-
-import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
 
 public class SplitPanel extends com.itmill.toolkit.ui.SplitPanel
         implements com.haulmont.cuba.gui.components.SplitPanel, Component.HasSettings

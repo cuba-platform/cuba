@@ -12,8 +12,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.ValueListener;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Label
     extends

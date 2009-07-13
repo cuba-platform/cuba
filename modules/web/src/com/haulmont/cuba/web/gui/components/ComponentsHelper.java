@@ -9,21 +9,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.web.App;
 import com.itmill.toolkit.terminal.ClassResource;
 import com.itmill.toolkit.terminal.FileResource;
 import com.itmill.toolkit.terminal.Resource;
 import com.itmill.toolkit.terminal.ThemeResource;
 import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.ui.Component;
-import com.itmill.toolkit.ui.Window;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.*;
-import java.util.List;
 
 public class ComponentsHelper {
     public static Resource getResource(String resURL) {

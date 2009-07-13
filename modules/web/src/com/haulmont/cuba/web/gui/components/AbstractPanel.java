@@ -17,10 +17,13 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.Collection;
 import java.util.Collections;
 
-public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.components.Layout, Component.Container {
+public class AbstractPanel extends Panel
+        implements com.haulmont.cuba.gui.components.Layout, Component.Container, Component.Expandable {
     private String id;
     private Component component;
     private Alignment alignment = Alignment.TOP_LEFT;
+
+    private boolean expandable = true;
 
     public AbstractPanel() {
         setStyleName(Panel.STYLE_LIGHT);
@@ -97,6 +100,14 @@ public class AbstractPanel extends Panel implements com.haulmont.cuba.gui.compon
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this, ComponentsHelper.convertAlignment(alignment));
         }
+    }
+
+    public boolean isExpandable() {
+        return expandable;
+    }
+
+    public void setExpandable(boolean expandable) {
+        this.expandable = expandable;
     }
 
     public void expand(Component component, String height, String width) {

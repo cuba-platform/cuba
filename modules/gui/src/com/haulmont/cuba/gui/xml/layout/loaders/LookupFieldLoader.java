@@ -41,6 +41,8 @@ public class LookupFieldLoader extends AbstractFieldLoader {
             component.setNullName(nullName);
         }
 
+        loadExpandable(component, element);
+
         return component;
     }
 

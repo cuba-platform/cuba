@@ -10,19 +10,20 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.OrderedLayout;
 import com.itmill.toolkit.ui.AbstractOrderedLayout;
 import com.itmill.toolkit.ui.Layout;
 
 import java.util.*;
 
-class AbstractContainer extends AbstractOrderedLayout implements Component.Container {
+class AbstractContainer extends AbstractOrderedLayout implements Component.Container, Component.Expandable {
     protected String id;
 
     protected Collection<Component> ownComponents = new HashSet<Component>();
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
 
     private Alignment alignment = Alignment.TOP_LEFT;
+
+    private boolean expandable = true;
 
     public void add(Component component) {
         final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
@@ -57,11 +58,11 @@ class AbstractContainer extends AbstractOrderedLayout implements Component.Conta
     }
 
     public Collection<Component> getComponents() {
-        return ComponentsHelper.getComponents(this);  
+        return ComponentsHelper.getComponents(this);
     }
 
     public String getId() {
-        return id; 
+        return id;
     }
 
     public void setId(String id) {
@@ -75,6 +76,14 @@ class AbstractContainer extends AbstractOrderedLayout implements Component.Conta
 
     public float getHeight() {
         return super.getHeight();
+    }
+
+    public boolean isExpandable() {
+        return expandable;
+    }
+
+    public void setExpandable(boolean expandable) {
+        this.expandable = expandable;
     }
 
     public void requestFocus() {

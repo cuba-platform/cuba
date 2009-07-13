@@ -51,6 +51,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadHeight(component, element);
         loadWidth(component, element);
 
+        loadExpandable(component, element);
+
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
 

@@ -9,12 +9,11 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Collection;

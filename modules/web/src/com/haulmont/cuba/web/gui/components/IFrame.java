@@ -9,17 +9,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.itmill.toolkit.ui.*;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.web.App;
+import com.itmill.toolkit.ui.AbstractOrderedLayout;
 import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.Layout;
+import com.itmill.toolkit.ui.VerticalLayout;
 
 import java.util.*;
 

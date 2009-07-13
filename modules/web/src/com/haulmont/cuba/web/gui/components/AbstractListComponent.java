@@ -1,14 +1,14 @@
 package com.haulmont.cuba.web.gui.components;
 
-import com.itmill.toolkit.ui.AbstractSelect;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.List;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.core.entity.Entity;
+import com.itmill.toolkit.ui.AbstractSelect;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractListComponent<T extends AbstractSelect>
     extends

@@ -9,14 +9,14 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.itmill.toolkit.ui.Layout;
 import org.dom4j.Element;
 
 class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
     implements
-        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame
+        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable
 {
     private String id;
     protected T component;
@@ -24,6 +24,8 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
     private Element element;
     private com.haulmont.cuba.gui.components.IFrame frame;
     private Alignment alignment = Alignment.TOP_LEFT;
+
+    private boolean expandable = true;
 
     public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {
         return (A) frame;
@@ -94,6 +96,14 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
 
     public void setWidth(String width) {
         component.setWidth(width);
+    }
+
+    public boolean isExpandable() {
+        return expandable;
+    }
+
+    public void setExpandable(boolean expandable) {
+        this.expandable = expandable;
     }
 
     public Alignment getAlignment() {

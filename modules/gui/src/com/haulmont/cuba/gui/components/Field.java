@@ -14,7 +14,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 
 public interface Field
     extends
-        Component, Component.HasCaption, Component.Field, Component.Editable, Component.BelongToFrame
+        Component, Component.HasCaption, Component.Field, Component.Editable,
+        Component.BelongToFrame, Component.Expandable
 {
 
     boolean isRequired();

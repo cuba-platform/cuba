@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.QuasiComponent;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.QuasiComponent;
 
 import java.util.Collection;
 

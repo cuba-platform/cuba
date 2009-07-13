@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Layout;
+import com.haulmont.cuba.gui.components.GroupBox;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
@@ -22,14 +23,14 @@ public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cub
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        final Layout component = factory.createComponent("groupBox");
+        final GroupBox component = factory.createComponent("groupBox");
 
         final Element captionElement = element.element("caption");
         if (captionElement != null) {
             String caption = captionElement.attributeValue("label");
             if (!StringUtils.isEmpty(caption)) {
                 caption = loadResourceString(caption);
-                ((Component.HasCaption) component).setCaption(caption);
+                component.setCaption(caption);
             }
         }
 

@@ -34,6 +34,8 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
             component.setCaptionProperty(captionProperty);
         }
 
+        loadExpandable(component, element);
+
         return component;
     }
 

@@ -11,7 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.io.File;
 
-public interface FileUploadField extends Component, Component.HasCaption {
+public interface FileUploadField extends Component, Component.HasCaption, Component.Expandable {
     interface Listener {
         class Event {
             String filename;

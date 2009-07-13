@@ -22,6 +22,8 @@ public class GridLayout extends com.itmill.toolkit.ui.GridLayout implements com.
 
     private Alignment alignment = Alignment.TOP_LEFT;
 
+    private boolean expandable = true;
+
     public void add(Component component) {
         final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
 
@@ -82,6 +84,14 @@ public class GridLayout extends com.itmill.toolkit.ui.GridLayout implements com.
     }
 
     public void requestFocus() {
+    }
+
+    public boolean isExpandable() {
+        return expandable;
+    }
+
+    public void setExpandable(boolean expandable) {
+        this.expandable = expandable;
     }
 
     public Alignment getAlignment() {

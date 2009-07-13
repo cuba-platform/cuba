@@ -1,15 +1,14 @@
 package com.haulmont.cuba.web.gui.components;
 
-import com.itmill.toolkit.event.Action;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.itmill.toolkit.event.Action;
+import org.apache.commons.lang.ObjectUtils;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import org.apache.commons.lang.ObjectUtils;
+import java.util.List;
 
 
 public class AbstractActionOwnerComponent<T extends com.itmill.toolkit.ui.Component> extends AbstractComponent<T> {

@@ -3,11 +3,13 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
 
- * Author: Dmitry Abramov
- * Created: 27.02.2009 17:35:42
+ * Author: Nikolay Gorodnov
+ * Created: 10.07.2009 19:46:28
+ *
  * $Id$
  */
+
 package com.haulmont.cuba.gui.components;
 
-public interface BoxLayout extends Layout, Layout.Spacing, Layout.Margin, Component.Expandable {
+public interface GroupBox extends Layout, Component.Container, Component.HasCaption, Component.Expandable {
 }

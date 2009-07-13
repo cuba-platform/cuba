@@ -9,13 +9,14 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewHelper;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
@@ -23,15 +24,13 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
-import com.haulmont.bali.util.Dom4j;
 import com.itmill.toolkit.terminal.Resource;
+import org.dom4j.Element;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-
-import org.dom4j.Element;
 
 public class TreeTable
     extends

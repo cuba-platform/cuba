@@ -9,9 +9,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Layout;
 import com.haulmont.cuba.gui.components.BoxLayout;
+import com.haulmont.cuba.gui.components.Component;
 
 public class VBoxLayout extends AbstractContainer implements BoxLayout {
 

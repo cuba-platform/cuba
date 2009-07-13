@@ -41,6 +41,8 @@ public class TextFieldLoader extends AbstractFieldLoader {
             component.setSecret(Boolean.valueOf(secret));
         }
 
+        loadExpandable(component, element);
+
         return component;
     }
 }

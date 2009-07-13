@@ -116,4 +116,9 @@ public interface Component {
         void applySettings(Element element);
         boolean saveSettings(Element element);
     }
+
+    interface Expandable {
+        void setExpandable(boolean expandable);
+        boolean isExpandable();
+    }
 }

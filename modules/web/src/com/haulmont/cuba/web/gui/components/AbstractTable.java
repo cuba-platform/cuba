@@ -9,11 +9,11 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Table;
@@ -28,16 +28,17 @@ import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.event.Action;
-import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.ui.AbstractSelect;
 import com.itmill.toolkit.ui.Button;
+import com.itmill.toolkit.ui.Component;
 import com.itmill.toolkit.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.*;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 public abstract class AbstractTable<T extends AbstractSelect> extends AbstractListComponent<T> {
 

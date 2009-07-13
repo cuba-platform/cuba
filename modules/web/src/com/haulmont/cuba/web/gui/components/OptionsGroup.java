@@ -11,9 +11,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.itmill.toolkit.ui.OptionGroup;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.ui.OptionGroup;
 
 import java.util.Collection;
 import java.util.Collections;

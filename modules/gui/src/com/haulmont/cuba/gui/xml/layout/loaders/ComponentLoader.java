@@ -173,6 +173,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
+    protected void loadExpandable(Component.Expandable component, Element element) {
+        final String expandable = element.attributeValue("expandable");
+        if (!StringUtils.isEmpty(expandable) && isBoolean(expandable)) {
+            component.setExpandable(Boolean.valueOf(expandable));
+        }
+    }
+
     protected void addAssignWindowTask(final Component.BelongToFrame component) {
         context.addLazyTask(new LazyTask() {
             public void execute(Context context, IFrame frame) {

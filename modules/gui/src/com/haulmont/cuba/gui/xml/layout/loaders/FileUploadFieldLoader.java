@@ -32,6 +32,8 @@ public class FileUploadFieldLoader extends ComponentLoader{
         
         loadCaption(component, element);
 
+        loadExpandable(component, element);
+
         return component;
     }
 }
