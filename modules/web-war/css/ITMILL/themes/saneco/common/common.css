@@ -94,6 +94,7 @@
 
 .i-required-field-indicator {
 	padding-left: 2px;
+    float: left;
 	color: red;
 }
 
