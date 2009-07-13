@@ -146,7 +146,8 @@ public class ViewRepository
                 refView = findView(refMetaClass, refViewName);
                 if (refView == null) {
                     for (Element e : (List<Element>) rootElem.elements("view")) {
-                        if (refMetaClass.getName().equals(e.attributeValue("entity"))
+                        if ((refMetaClass.getName().equals(e.attributeValue("entity"))
+                                || refMetaClass.getJavaClass().getName().equals(e.attributeValue("class")))
                                 && refViewName.equals(e.attributeValue("name")))
                         {
                             refView = deployView(rootElem, e);
