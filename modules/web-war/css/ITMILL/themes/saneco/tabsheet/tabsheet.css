@@ -135,12 +135,10 @@
 
 .i-tabsheet-tabitem .i-caption .i-captiontext{
     font-weight: bold;
-    color: #677faf;
-    /*background: #f2f2f2;*/
+    color: #039;
 }
 
 .i-tabsheet-tabitem-selected .i-caption .i-captiontext{
-    color: #039;
 }
 
 .i-tabsheet-tabitem-selected {
@@ -150,7 +148,6 @@
 
 	height: 29px;
 	cursor: default;
-	color: #ee5311;
     padding: 1px 12px 2px 10px;
 }
 
@@ -160,6 +157,7 @@
     background: #ccc url(img/tab-bg.gif);
 }
 
+/*
 .i-tabsheet-tabitem:hover {
 	color: #4b5257;
 }
@@ -167,6 +165,7 @@
 .i-tabsheet-tabitem-selected:hover {
 	color: #ee5311;
 }
+*/
 
 .i-tabsheet-tabitem-selected .i-caption {
 	background: none; /*transparent url(img/tab-bg.gif) repeat-x right top;*/
