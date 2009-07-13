@@ -21,9 +21,9 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.ObjectUtils;
 
 public class PropertyDatasourceImpl<T extends Entity>
     extends
@@ -39,7 +39,9 @@ public class PropertyDatasourceImpl<T extends Entity>
         this.ds = ds;
         metaProperty = ds.getMetaClass().getProperty(property);
         this.ds.addListener(new DatasourceListener<Entity>() {
+
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                __itemChanged(prevItem, item);
             }
 
             public void stateChanged(Datasource ds, State prevState, State state) {
@@ -49,7 +51,23 @@ public class PropertyDatasourceImpl<T extends Entity>
             }
 
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
+                    __itemChanged((Entity) prevValue, (Entity) value);
+                }
             }
+
+            private void __itemChanged(Entity prevItem, Entity item) {
+                Entity prevValue = getItem((Instance) prevItem);
+                Entity newValue = getItem((Instance) item);
+
+                if (!ObjectUtils.equals(prevValue, newValue)) {
+                    detachListener((Instance) prevValue);
+                    attachListener((Instance) newValue);
+
+                    forceItemChanged(prevValue);
+                }
+            }
+
         });
     }
 
@@ -59,6 +77,10 @@ public class PropertyDatasourceImpl<T extends Entity>
 
     public T getItem() {
         final Instance item = (Instance) ds.getItem();
+        return getItem(item);
+    }
+
+    private T getItem(Instance item) {
         return item == null ? null : (T) item.getValue(metaProperty.getName());
     }
 

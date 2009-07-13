@@ -56,7 +56,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
                                     item == null ? null : ((Versioned) item).getVersion()))
             {
                 if (this.item != null) {
-                    detatchListener((Instance) this.item);
+                    detachListener((Instance) this.item);
                 }
 
                 if (item instanceof Instance) {

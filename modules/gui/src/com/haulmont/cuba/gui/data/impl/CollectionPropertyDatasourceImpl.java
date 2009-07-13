@@ -88,7 +88,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
 
             if (!ObjectUtils.equals(prevItem, item)) {
                 if (this.item != null) {
-                    detatchListener((Instance) this.item);
+                    detachListener((Instance) this.item);
                 }
 
                 if (item instanceof Instance) {

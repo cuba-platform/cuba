@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -116,7 +115,7 @@ public class DatasourceImpl<T extends Entity>
 
     protected void __setItem(T item) {
         if (this.item != null) {
-            detatchListener((Instance) this.item);
+            detachListener((Instance) this.item);
         }
 
         if (item instanceof Instance) {

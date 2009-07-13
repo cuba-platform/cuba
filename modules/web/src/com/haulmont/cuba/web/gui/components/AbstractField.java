@@ -31,6 +31,7 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
 {
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
+    protected MetaPropertyPath metaPropertyPath;
 
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
     protected Map<com.haulmont.cuba.gui.components.Field.Validator, Validator> validators =
@@ -48,11 +49,11 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        this.metaProperty = metaClass.getProperty(property);
+        metaPropertyPath = metaClass.getPropertyEx(property);
+        metaProperty = metaPropertyPath.getMetaProperty();
 
-        final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath));
-        component.setPropertyDataSource(wrapper.getItemProperty(propertyPath));
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+        component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
 
         setRequired(metaProperty.isMandatory());
     }
