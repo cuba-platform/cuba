@@ -18,7 +18,6 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
@@ -28,8 +27,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     implements
         CollectionDatasource.Sortable<T, K>
 {
-
-    protected Data data = new Data(Collections.<K>emptyList(), Collections.<K,T>emptyMap());
+    protected LinkedMap data = new LinkedMap();
 
     private SortInfo<MetaPropertyPath>[] sortInfos;
 
@@ -43,7 +41,6 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     @Override
     public synchronized void invalidate() {
         super.invalidate();
-        this.data = new Data(Collections.<K>emptyList(), Collections.<K, T>emptyMap());
     }
 
     @Override
@@ -52,10 +49,10 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public void refresh(Map<String, Object> parameters) {
-        Collection prevIds = data.itemIds;
+        Collection prevIds = data.keySet();
         invalidate();
 
-        data = loadData(parameters);
+        loadData(parameters);
 
         State prevState = state;
         if (!prevState.equals(State.VALID)) {
@@ -78,7 +75,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         if (State.NOT_INITIALIZAED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
-            final T item = (T) data.itemsByKey.get(key);
+            final T item = (T) data.get(key);
             attachListener((Instance) item);
             return item;
         }
@@ -92,7 +89,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         if (State.NOT_INITIALIZAED.equals(state)) {
             return Collections.emptyList();
         } else {
-            return (Collection<K>) data.itemIds;
+            return (Collection<K>) data.keySet();
         }
     }
 
@@ -100,7 +97,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         if (State.NOT_INITIALIZAED.equals(state)) {
             return 0;
         } else {
-            return data.itemIds.size();
+            return data.size();
         }
     }
 
@@ -120,34 +117,34 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
         @SuppressWarnings({"unchecked"})
-        List<T> order = new ArrayList<T>(data.itemsByKey.values());
-        Collections.sort(order, new EntityComparator<T>(propertyPath, asc));
-        data.itemsByKey.clear();
-        for (T t : order) {
-            data.itemsByKey.put(t.getId(), t);
+        List<T> list = new ArrayList<T>(data.values());
+        Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
+        data.clear();
+        for (T t : list) {
+            data.put(t.getId(), t);
         }
     }
 
     public K firstItemId() {
-        if (!data.itemIds.isEmpty()) {
-            return (K) data.itemsByKey.firstKey();
+        if (!data.isEmpty()) {
+            return (K) data.firstKey();
         }
         return null;
     }
 
     public K lastItemId() {
-        if (!data.itemIds.isEmpty()) {
-            return (K) data.itemsByKey.lastKey();
+        if (!data.isEmpty()) {
+            return (K) data.lastKey();
         }
         return null;
     }
 
     public K nextItemId(K itemId) {
-        return (K) data.itemsByKey.nextKey(itemId);
+        return (K) data.nextKey(itemId);
     }
 
     public K prevItemId(K itemId) {
-        return (K) data.itemsByKey.previousKey(itemId);
+        return (K) data.previousKey(itemId);
     }
 
     public boolean isFirstId(K itemId) {
@@ -166,8 +163,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     public synchronized void addItem(T item) throws UnsupportedOperationException {
         checkState();
 
-        data.itemIds.add((K) item.getId());
-        data.itemsByKey.put((K)item.getId(), item);
+        data.put(item.getId(), item);
 
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.add(item);
@@ -182,8 +178,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
         checkState();
 
-        data.itemIds.remove((K) item.getId());
-        data.itemsByKey.remove((K)item.getId());
+        data.remove(item.getId());
 
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.remove(item);
@@ -200,8 +195,8 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     public void updateItem(T item) {
         checkState();
 
-        if (data.itemsByKey.containsKey((K)item.getId())) {
-            data.itemsByKey.put((K) item.getId(), item);
+        if (data.containsKey(item.getId())) {
+            data.put(item.getId(), item);
             forceCollectionChanged(
                     new CollectionDatasourceListener.CollectionOperation<T>(
                             CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
@@ -209,7 +204,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public synchronized boolean containsItem(K itemId) {
-        return data.itemIds.contains(itemId);
+        return data.containsKey(itemId);
     }
 
     @Override
@@ -243,19 +238,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         clearCommitLists();
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    protected void loadData(Map<String, Object> params) {
+        data.clear();
 
-    protected class Data {
-        protected Collection<K> itemIds = Collections.emptyList();
-        protected final LinkedMap itemsByKey;
-
-        public Data(Collection<K> itemIds, Map<K, T> itemsByKey) {
-            this.itemIds = itemIds;
-            this.itemsByKey = new LinkedMap(itemsByKey);
-        }
-    }
-
-    protected Data loadData(Map<String, Object> params) {
         final DataServiceRemote.CollectionLoadContext context =
                 new DataServiceRemote.CollectionLoadContext(metaClass);
 
@@ -264,7 +249,8 @@ public class CollectionDatasourceImpl<T extends Entity, K>
             for (ParametersHelper.ParameterInfo info : queryParameters) {
                 if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
                     final Object value = parameters.get(info.getFlatName());
-                    if (value == null) return new Data(Collections.<K>emptyList(), Collections.<K,T>emptyMap());
+                    if (value == null)
+                        return;
                 }
             }
 
@@ -276,22 +262,10 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
         context.setView(view);
 
-        @SuppressWarnings({"unchecked"})
-        final Collection<T> entities = (Collection) dataservice.loadList(context);
-        return wrapAsData(entities);
-    }
-
-    protected Data wrapAsData(Collection<T> entities) {
-        List<K> ids = new ArrayList<K>();
-        Map<K, T> itemsById = new HashMap<K,T>();
+        final Collection<T> entities = dataservice.loadList(context);
 
         for (T entity : entities) {
-            final K id = (K) entity.getId();
-            ids.add(id);
-            itemsById.put(id, entity);
+            data.put(entity.getId(), entity);
         }
-
-        return new Data(ids, itemsById);
     }
-
 }

@@ -37,13 +37,14 @@ public class CustomCollectionDatasource<T extends Entity, K>
     }
 
     @Override
-    protected Data loadData(Map<String, Object> params) {
+    protected void loadData(Map<String, Object> params) {
         final Map<String, Object> parameters = getQueryParameters(params);
 
-        @SuppressWarnings({"unchecked"})
-        Collection<T> res = GroovyHelper.evaluate(getGroovyScript(query, parameters), parameters);
+        Collection<T> entities = GroovyHelper.evaluate(getGroovyScript(query, parameters), parameters);
 
-        return wrapAsData(res);
+        for (T entity : entities) {
+            data.put(entity.getId(), entity);
+        }
     }
 
     private String getGroovyScript(String query, Map<String, Object> parameterValues) {

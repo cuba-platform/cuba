@@ -35,26 +35,32 @@ public class EntityComparator<T extends Entity> implements Comparator<T> {
     }
 
     public int compare(T o1, T o2) {
-        Comparable<Object> v1 = getValue((Instance) o1);
-        Comparable<Object> v2 = getValue((Instance) o2);
-
+        Object v1 = getValue((Instance) o1);
+        Object v2 = getValue((Instance) o2);
         int c;
-        if (v1 != null && v2 != null) {
-            c = v1.compareTo(v2);
-        } else if (v1 == null) {
-            if (v2 != null) {
-                c = 1;
-            } else {
-                c = 0;
-            }
-        } else {
-            c = -1;
-        }
 
+        if ((v1 instanceof String) && (v2 instanceof String)) {
+            c = ((String) v1).compareToIgnoreCase((String) v2);
+        } else {
+            Comparable c1 = (Comparable) v1;
+            Comparable c2 = (Comparable) v2;
+
+            if (c1 != null && c2 != null) {
+                c = c1.compareTo(c2);
+            } else if (c1 == null) {
+                if (c2 != null) {
+                    c = 1;
+                } else {
+                    c = 0;
+                }
+            } else {
+                c = -1;
+            }
+        }
         return asc ? c : -c;
     }
 
-    private Comparable<Object> getValue(Instance instance) {
+    private Object getValue(Instance instance) {
         if (property != null) {
             return instance.getValue(property.getName());
         }

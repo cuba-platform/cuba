@@ -14,9 +14,6 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -38,24 +35,21 @@ public abstract class TreeDatasourceWrapper<T extends Entity, K>
         super(context, dataservice, id, metaClass, viewName);
     }
 
-    protected Data loadData(Map<String, Object> params) {
+    protected void loadData(Map<String, Object> params) {
         this.tree = loadTree(params);
 
-        List<K> ids = new ArrayList<K>();
-        Map<K, T> itemsById = new HashMap<K,T>();
         Map<K, Node<T>> targetNodes = new HashMap<K, Node<T>>();
 
         for (Node<T> entity : tree.toList()) {
-            final T data = entity.getData();
-            final K id = (K) data.getId();
-            ids.add(id);
-            itemsById.put(id, data);
+            final T nodeData = entity.getData();
+            final K id = (K) nodeData.getId();
+
+            data.put(id, nodeData);
+
             targetNodes.put(id, entity);
         }
 
         this.nodes = targetNodes;
-
-        return new Data(ids, itemsById);
     }
 
     protected abstract Tree<T> loadTree(Map<String, Object> params);

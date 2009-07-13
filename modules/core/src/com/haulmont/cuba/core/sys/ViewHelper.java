@@ -58,9 +58,12 @@ public class ViewHelper
         Class<? extends BaseEntity> entityClass = view.getEntityClass();
         MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
 
-        Class<?> declaringClass = metaClass.getProperty("createTs").getJavaField().getDeclaringClass();
-        fetchPlan.addField(declaringClass, "createTs");
-        fetchPlan.addField(declaringClass, "createdBy");
+        Class<?> declaringClass;
+        if (BaseEntity.class.isAssignableFrom(entityClass)) {
+            declaringClass = metaClass.getProperty("createTs").getJavaField().getDeclaringClass();
+            fetchPlan.addField(declaringClass, "createTs");
+            fetchPlan.addField(declaringClass, "createdBy");
+        }
         if (Updatable.class.isAssignableFrom(entityClass)) {
             declaringClass = metaClass.getProperty("updateTs").getJavaField().getDeclaringClass();
             fetchPlan.addField(declaringClass, "updateTs");
