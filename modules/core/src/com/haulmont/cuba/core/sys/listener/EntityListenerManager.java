@@ -17,13 +17,12 @@ import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.PersistenceProvider;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.ClassUtils;
 
 public class EntityListenerManager
 {
@@ -132,8 +131,8 @@ public class EntityListenerManager
 
     private Object findListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
         log.trace("get listener " + type + " for class " + entityClass.getName());
-        String[] classNames = getDeclaredListeners(entityClass);
-        if (classNames == null) {
+        List<String> classNames = getDeclaredListeners(entityClass);
+        if (classNames.isEmpty()) {
             log.trace("no annotations, exiting");
             return null;
         }
@@ -161,9 +160,22 @@ public class EntityListenerManager
         return null;
     }
 
-    private String[] getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
-        Listeners annotation = entityClass.getAnnotation(Listeners.class);
-        return annotation == null ? null : annotation.value();
+    private List<String> getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
+        List<String> listeners = new ArrayList<String>();
+
+        Listeners annotation;
+        List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
+        for (Class superclass : superclasses) {
+            annotation = (Listeners) superclass.getAnnotation(Listeners.class);
+            if (annotation != null) {
+                listeners.addAll(Arrays.asList(annotation.value()));
+            }
+        }
+        annotation = entityClass.getAnnotation(Listeners.class);
+        if (annotation != null) {
+            listeners.addAll(Arrays.asList(annotation.value()));
+        }
+        return listeners;
     }
 
 }
