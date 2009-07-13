@@ -2327,7 +2327,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             }
 
             public void showContextMenu(Event event) {
-                if (enabled && actionKeys != null) {
+                if (enabled && actionKeys != null && actionKeys.length > 0) {
                     int left = event.getClientX();
                     int top = event.getClientY();
                     top += Window.getScrollTop();
