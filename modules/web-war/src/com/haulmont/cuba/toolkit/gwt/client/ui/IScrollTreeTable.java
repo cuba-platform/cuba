@@ -606,11 +606,11 @@ public class IScrollTreeTable
 
             @Override
             public void onBrowserEvent(Event event) {
-                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
-                Element parentElement = DOM.getParent(tdOrTr);
-                if (getElement() == tdOrTr
-                        || getElement() == parentElement
-                        || (parentElement != null && getElement() == DOM.getParent(parentElement))) {
+//                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
+//                Element parentElement = DOM.getParent(tdOrTr);
+//                if (getElement() == tdOrTr
+//                        || getElement() == parentElement
+//                        || (parentElement != null && getElement() == DOM.getParent(parentElement))) {
                     switch (DOM.eventGetType(event)) {
                         case Event.ONCLICK:
                             handleClickEvent(event);
@@ -625,7 +625,7 @@ public class IScrollTreeTable
                         default:
                             break;
                     }
-                }
+//                }
             }
 
             public boolean hasChildren() {

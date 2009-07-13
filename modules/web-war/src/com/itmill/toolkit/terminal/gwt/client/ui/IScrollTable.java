@@ -2277,9 +2277,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
              */
             @Override
             public void onBrowserEvent(Event event) {
-                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
-                if (getElement() == tdOrTr
-                        || getElement() == tdOrTr.getParentElement()) {
+//                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
+//                if (getElement() == tdOrTr
+//                        || getElement() == tdOrTr.getParentElement()) {
                     switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
                         handleClickEvent(event);
@@ -2301,7 +2301,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     default:
                         break;
                     }
-                }
+//                }
                 super.onBrowserEvent(event);
             }
 
