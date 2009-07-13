@@ -45,6 +45,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadId(component, element);
         loadVisible(component, element);
         loadEditable(component, element);
+        loadValidators(component, element);
 
         loadStyleName(component, element);
 
@@ -193,6 +194,32 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             }
         } else {
             return null;
+        }
+    }
+
+    protected void loadValidators(T component, Element element) {
+        final List<Element> validatorElements = element.elements("validator");
+
+        for (Element validatorElement : validatorElements) {
+            final String className = validatorElement.attributeValue("class");
+            final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
+
+            try {
+                final Constructor<Field.Validator> constructor = aClass.getConstructor(Element.class);
+                try {
+                    final Field.Validator validator = constructor.newInstance(validatorElement);
+                    component.addValidator(validator);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    final Field.Validator validator = aClass.newInstance();
+                    component.addValidator(validator);
+                } catch (Exception e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
         }
     }
 }

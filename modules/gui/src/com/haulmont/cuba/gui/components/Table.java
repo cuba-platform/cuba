@@ -31,6 +31,8 @@ public interface Table
     void setRequired(Column column, boolean required, String message);
     void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator);
 
+    void addValidator(com.haulmont.cuba.gui.components.Field.Validator validator);
+
     void setSortable(boolean sortable);
     boolean isSortable();
 

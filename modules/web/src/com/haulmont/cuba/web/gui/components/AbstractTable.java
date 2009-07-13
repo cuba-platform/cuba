@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.event.Action;
 import com.itmill.toolkit.ui.AbstractSelect;
 import com.itmill.toolkit.ui.Button;
@@ -256,6 +258,22 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
             validatorsMap.put(column, validators);
         }
         validators.add(validator);
+    }
+
+    public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
+        component.addValidator(new Validator() {
+            public void validate(Object value) throws InvalidValueException {
+                try {
+                    validator.validate(value);
+                } catch (ValidationException e) {
+                    throw new InvalidValueException(e.getMessage());
+                }
+            }
+
+            public boolean isValid(Object value) {
+                return validator.isValid(value);
+            }
+        });
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {

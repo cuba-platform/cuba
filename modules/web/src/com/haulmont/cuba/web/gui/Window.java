@@ -729,7 +729,13 @@ public class Window
 
             showNotification(MessageProvider.getMessage(Window.class, "validationFail.caption"),
                     buffer.toString(), NotificationType.TRAY);
-            if (field != null) field.focus();
+            if (field != null) {
+                try {
+                    field.focus();
+                } catch (UnsupportedOperationException e) {
+                    //
+                }
+            }
 
             return false;
         }
