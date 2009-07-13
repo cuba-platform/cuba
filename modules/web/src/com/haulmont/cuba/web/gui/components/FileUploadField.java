@@ -37,7 +37,7 @@ public class FileUploadField
         component = new Upload(MessageProvider.getMessage(Window.class, "msg://Upload"), new Upload.Receiver() {
             public OutputStream receiveUpload(String filename, String MIMEType) {
                 FileOutputStream fos;
-                file = new File(uploadDir + filename);
+                file = new File(uploadDir != null ? uploadDir : "" + filename);
                 try {
                     fos = new FileOutputStream(file);
                 } catch (final java.io.FileNotFoundException e) {
