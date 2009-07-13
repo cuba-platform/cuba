@@ -620,6 +620,7 @@ public class IScrollTreeTable
                             handleClickEvent(event);
                             break;
                         case Event.ONCONTEXTMENU:
+                            handleRowClick(event);
                             showContextMenu(event);
                             break;
                         default:
@@ -632,6 +633,7 @@ public class IScrollTreeTable
                 return (groupCell != null);
             }
 
+            @Override
             protected void handleRowClick(Event event) {
                 if (groupCell != null
                         && DOM.eventGetTarget(event) == groupCell) {
@@ -641,13 +643,8 @@ public class IScrollTreeTable
                         client.updateVariable(paintableId, "expand", getKey(), true);
                     }
                     DOM.eventCancelBubble(event, true);
-                } else if (selectMode > Table.SELECT_MODE_NONE) {
-                    toggleSelection();
-                    // Note: changing the immediateness of this might
-                    // require changes to "clickEvent" immediateness
-                    // also.
-                    client.updateVariable(paintableId, "selected",
-                            selectedRowKeys.toArray(), immediate);
+                } else {
+                    super.handleRowClick(event);
                 }
             }
         }

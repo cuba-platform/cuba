@@ -2299,19 +2299,13 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
                         handleClickEvent(event);
-                        if (selectMode > Table.SELECT_MODE_NONE) {
-                            toggleSelection();
-                            // Note: changing the immediateness of this might
-                            // require changes to "clickEvent" immediateness
-                            // also.
-                            client.updateVariable(paintableId, "selected",
-                                    selectedRowKeys.toArray(), immediate);
-                        }
+                        handleRowClick(event);
                         break;
                     case Event.ONDBLCLICK:
                         handleClickEvent(event);
                         break;
                     case Event.ONCONTEXTMENU:
+                        handleRowClick(event);
                         showContextMenu(event);
                         break;
                     default:
@@ -2319,6 +2313,17 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     }
 //                }
                 super.onBrowserEvent(event);
+            }
+
+            protected void handleRowClick(Event event) {
+                if (selectMode > Table.SELECT_MODE_NONE) {
+                    toggleSelection();
+                    // Note: changing the immediateness of this might
+                    // require changes to "clickEvent" immediateness
+                    // also.
+                    client.updateVariable(paintableId, "selected",
+                            selectedRowKeys.toArray(), immediate);
+                }
             }
 
             public void showContextMenu(Event event) {
