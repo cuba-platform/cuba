@@ -26,6 +26,8 @@ import com.haulmont.cuba.core.global.View;
 
 import java.util.List;
 import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DeletePolicyHelper
 {
@@ -38,16 +40,30 @@ public class DeletePolicyHelper
     }
 
     public void process() {
-        MetaProperty[] properties = (MetaProperty[]) metaClass.getAnnotations().get(OnDeleteInverse.class.getName());
-        if (properties != null)
+        List<MetaProperty> properties = new ArrayList<MetaProperty>();
+
+        fillProperties(properties, OnDeleteInverse.class.getName());
+        if (!properties.isEmpty())
             processOnDeleteInverse(properties);
 
-        properties = (MetaProperty[]) metaClass.getAnnotations().get(OnDelete.class.getName());
-        if (properties != null)
+        fillProperties(properties, OnDelete.class.getName());
+        if (!properties.isEmpty())
             processOnDelete(properties);
     }
 
-    private void processOnDeleteInverse(MetaProperty[] properties) {
+    private void fillProperties(List<MetaProperty> properties, String annotationName) {
+        properties.clear();
+        MetaProperty[] metaProperties = (MetaProperty[]) metaClass.getAnnotations().get(annotationName);
+        if (metaProperties != null)
+            properties.addAll(Arrays.asList(metaProperties));
+        for (MetaClass aClass : metaClass.getAncestors()) {
+            metaProperties = (MetaProperty[]) aClass.getAnnotations().get(annotationName);
+            if (metaProperties != null)
+                properties.addAll(Arrays.asList(metaProperties));
+        }
+    }
+
+    private void processOnDeleteInverse(List<MetaProperty> properties) {
         for (MetaProperty property : properties) {
             MetaClass metaClass = property.getDomain();
             OnDeleteInverse annotation = property.getJavaField().getAnnotation(OnDeleteInverse.class);
@@ -67,7 +83,7 @@ public class DeletePolicyHelper
         }
     }
 
-    private void processOnDelete(MetaProperty[] properties) {
+    private void processOnDelete(List<MetaProperty> properties) {
         for (MetaProperty property : properties) {
             MetaClass metaClass = property.getRange().asClass();
             OnDelete annotation = property.getJavaField().getAnnotation(OnDelete.class);
