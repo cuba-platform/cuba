@@ -20,5 +20,5 @@ import java.util.Locale;
 @Local
 public interface LoginService extends LoginServiceRemote
 {
-    UserSession loginActiveDirectory(String activeDirectoryUser, Locale locale) throws LoginException;
+    UserSession loginActiveDirectory(String login, Locale locale) throws LoginException;
 }

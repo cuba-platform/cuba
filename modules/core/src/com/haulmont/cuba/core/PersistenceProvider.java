@@ -35,7 +35,7 @@ import java.util.Set;
 
 public abstract class PersistenceProvider
 {
-    public static final int LOGIN_FIELD_LEN = 20;
+    public static final int LOGIN_FIELD_LEN = 50;
 
     private static PersistenceProvider instance;
 

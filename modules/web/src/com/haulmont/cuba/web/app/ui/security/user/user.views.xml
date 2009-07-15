@@ -5,7 +5,6 @@
         <property name="login"/>
         <property name="password"/>
         <property name="email"/>
-        <property name="activeDirectoryUser"/>
         <property name="group">
             <property name="name"/>
         </property>
@@ -21,7 +20,6 @@
         <property name="name"/>
         <property name="login"/>
         <property name="email"/>
-        <property name="activeDirectoryUser"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.User" name="user.changepassw">

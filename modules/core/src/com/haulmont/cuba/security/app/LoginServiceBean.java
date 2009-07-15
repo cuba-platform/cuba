@@ -43,9 +43,9 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
         }
     }
 
-    public UserSession loginActiveDirectory(String activeDirectoryUser, Locale locale) throws LoginException {
+    public UserSession loginActiveDirectory(String login, Locale locale) throws LoginException {
         try {
-            return getLoginWorker().loginActiveDirectory(activeDirectoryUser, locale);
+            return getLoginWorker().loginActiveDirectory(login, locale);
         } catch (Exception e) {
             log.error("Login error", e);
             if (e instanceof LoginException)

@@ -38,7 +38,11 @@ public class PropertyDatasourceImpl<T extends Entity>
         super(id);
         this.ds = ds;
         metaProperty = ds.getMetaClass().getProperty(property);
-        this.ds.addListener(new DatasourceListener<Entity>() {
+        initParentDsListeners();
+    }
+
+    protected void initParentDsListeners() {
+        ds.addListener(new DatasourceListener<Entity>() {
 
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                 __itemChanged(prevItem, item);

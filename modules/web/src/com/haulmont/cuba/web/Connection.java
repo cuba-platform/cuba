@@ -55,8 +55,8 @@ public class Connection
         fireConnectionListeners();
     }
 
-    public void loginActiveDirectory(String activeDirectoryUser) throws LoginException {
-        session = getLoginService().loginActiveDirectory(activeDirectoryUser, App.getInstance().getLocale());
+    public void loginActiveDirectory(String login) throws LoginException {
+        session = getLoginService().loginActiveDirectory(login, App.getInstance().getLocale());
         connected = true;
         ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();

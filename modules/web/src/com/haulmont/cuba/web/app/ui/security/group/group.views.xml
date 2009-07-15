@@ -11,7 +11,6 @@
     <view entity="sec$User" name="group.browse">
         <property name="name"/>
         <property name="login"/>
-        <property name="activeDirectoryUser"/>
         <property name="group"/>
     </view>
 

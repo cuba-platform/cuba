@@ -59,7 +59,6 @@
                                     <columns>
                                         <column id="name" caption="Name"/>
                                         <column id="login" caption="Login"/>
-                                        <column id="activeDirectoryUser" caption="ActiveDirectory User"/>
                                     </columns>
                                     <rows datasource="users"/>
                                 </table>

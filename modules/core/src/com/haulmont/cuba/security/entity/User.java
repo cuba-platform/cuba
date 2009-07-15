@@ -14,6 +14,7 @@ import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.cuba.core.PersistenceProvider;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class User extends StandardEntity
 {
     private static final long serialVersionUID = 5007187642916030394L;
 
-    @Column(name = "LOGIN", length = 20)
+    @Column(name = "LOGIN", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String login;
 
     @Column(name = "PASSWORD", length = 32)
@@ -35,9 +36,6 @@ public class User extends StandardEntity
 
     @Column(name = "EMAIL", length = 100)
     private String email;
-
-    @Column(name = "AD_USER", length = 100)
-    private String activeDirectoryUser;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
@@ -70,14 +68,6 @@ public class User extends StandardEntity
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getActiveDirectoryUser() {
-        return activeDirectoryUser;
-    }
-
-    public void setActiveDirectoryUser(String activeDirectoryUser) {
-        this.activeDirectoryUser = activeDirectoryUser;
     }
 
     public Group getGroup() {

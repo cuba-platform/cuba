@@ -63,12 +63,6 @@
                         </row>
                         <row>
                             <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://activeDirectoryUser" align="MIDDLE_RIGHT"/>
-                            </vbox>
-                            <textField id="activeDirectoryUser" datasource="user" property="activeDirectoryUser" width="300px"/>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://name" align="MIDDLE_RIGHT"/>
                             </vbox>
                             <textField id="name" datasource="user" property="name" width="300px"/>

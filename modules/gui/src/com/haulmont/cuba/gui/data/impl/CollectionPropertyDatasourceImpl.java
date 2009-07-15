@@ -23,6 +23,7 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.ArrayList;
 
 public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     extends
@@ -39,7 +40,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         final MetaClass metaClass = ds.getMetaClass();
         final MetaProperty metaProperty = metaClass.getProperty(property);
         cascadeProperty = MetadataHelper.isCascade(metaProperty);
+    }
 
+    @Override
+    protected void initParentDsListeners() {
         ds.addListener(new DatasourceListener<Entity>() {
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                 forceCollectionChanged(
@@ -48,6 +52,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
             }
 
             public void stateChanged(Datasource<Entity> ds, State prevState, State state) {
+                for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+                    dsListener.stateChanged(CollectionPropertyDatasourceImpl.this, prevState, state);
+                }
                 forceCollectionChanged(
                         new CollectionDatasourceListener.CollectionOperation<T>(
                                 CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));

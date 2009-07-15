@@ -37,38 +37,26 @@ public class LoginWorkerBean implements LoginWorker
             throws LoginException
     {
         EntityManager em = PersistenceProvider.getEntityManager();
-        Query q = em.createQuery(
-                "select u from sec$User u " +
-                "where u.login = ?1 and u.password = ?2");
+        String queryStr = "select u from sec$User u where u.login = ?1";
+        if (password != null)
+            queryStr += " and u.password = ?2";
+
+        Query q = em.createQuery(queryStr);
         q.setParameter(1, login);
-        q.setParameter(2, password);
+        if (password != null)
+            q.setParameter(2, password);
+
         List list = q.getResultList();
         if (list.isEmpty()) {
             log.warn("Failed to authenticate: " + login);
-            throw new LoginException(
-                    String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale),
-                            login));
-        }
-        else {
-            User user = (User) list.get(0);
-            return user;
-        }
-    }
-
-    private User loadUser(String activeDirectoryUser, Locale locale)
-            throws LoginException
-    {
-        EntityManager em = PersistenceProvider.getEntityManager();
-        Query q = em.createQuery(
-                "select u from sec$User u " +
-                "where u.activeDirectoryUser = ?1");
-        q.setParameter(1, activeDirectoryUser);
-        List list = q.getResultList();
-        if (list.isEmpty()) {
-            log.warn("Failed to authenticate: " + activeDirectoryUser);
-            throw new LoginException(
-                    String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidActiveDirectoryUser", locale),
-                            activeDirectoryUser));
+            if (password != null)
+                throw new LoginException(
+                        String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale),
+                                login));
+            else
+                throw new LoginException(
+                        String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidActiveDirectoryUser", locale),
+                                login));
         }
         else {
             User user = (User) list.get(0);
@@ -85,8 +73,8 @@ public class LoginWorkerBean implements LoginWorker
         return session;
     }
 
-    public UserSession loginActiveDirectory(String activeDirectoryUser, Locale locale) throws LoginException {
-        User user = loadUser(activeDirectoryUser, locale);
+    public UserSession loginActiveDirectory(String login, Locale locale) throws LoginException {
+        User user = loadUser(login, null, locale);
         UserSession session = UserSessionManager.getInstance().createSession(user, locale);
         log.info("Logged in: " + session);
         return session;
