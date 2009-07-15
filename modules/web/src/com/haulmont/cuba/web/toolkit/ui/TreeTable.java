@@ -1752,10 +1752,11 @@ public class TreeTable
                 try {
                     final Object[] ids = (Object[]) variables
                             .get("columnorder");
+                    final Object[] ordered = new Object[ids.length];
                     for (int i = 0; i < ids.length; i++) {
-                        ids[i] = columnIdMap.get(ids[i].toString());
+                        ordered[i] = columnIdMap.get(ids[i].toString());
                     }
-                    setColumnOrder(ids);
+                    setColumnOrder(ordered);
                 } catch (final Exception e) {
                     // FIXME: Handle exception
                     e.printStackTrace();
