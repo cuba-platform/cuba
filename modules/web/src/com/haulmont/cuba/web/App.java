@@ -24,7 +24,6 @@ import com.haulmont.cuba.web.sys.LinkHandler;
 import com.itmill.toolkit.Application;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.Terminal;
-import com.itmill.toolkit.terminal.gwt.server.WebBrowser;
 import com.itmill.toolkit.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener

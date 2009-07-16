@@ -38,15 +38,15 @@ public class AppWindow extends Window {
     protected Connection connection;
 
     protected MenuBar menuBar;
-    private TabSheet tabSheet;
+    protected TabSheet tabSheet;
 
-    private Mode mode;
+    protected Mode mode;
 
-    private VerticalLayout rootLayout;
-    private HorizontalLayout titleLayout;
-    private HorizontalLayout menuBarLayout;
-    private HorizontalLayout emptyLayout;
-    private VerticalLayout mainLayout;
+    protected VerticalLayout rootLayout;
+    protected HorizontalLayout titleLayout;
+    protected HorizontalLayout menuBarLayout;
+    protected HorizontalLayout emptyLayout;
+    protected VerticalLayout mainLayout;
 
     public AppWindow(Connection connection) {
         super();

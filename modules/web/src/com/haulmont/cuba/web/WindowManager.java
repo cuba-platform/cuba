@@ -27,9 +27,9 @@ import java.util.*;
 
 public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 {
-    private App app;
+    protected App app;
 
-    private Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
+    protected Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
 
     public WindowManager(App app) {
         this.app = app;
@@ -61,12 +61,21 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         public void setData(Object data) {
             this.data = data;
         }
+
+        public Window getWindow() {
+            return window;
+        }
+
+        public OpenType getOpenType() {
+            return openType;
+        }
     }
 
     public void showWindow(final Window window, final String caption, OpenType type) {
         AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
 
+        Component component;
         if (OpenType.NEW_TAB.equals(type)) {
             if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
                 VerticalLayout mainLayout = appWindow.getMainLayout();
@@ -88,110 +97,24 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
                             showWindow(window, caption, OpenType.NEW_TAB);
                         }
                     });
+
                     return;
                 }
             }
 
-            VerticalLayout layout = new VerticalLayout();
-            layout.setSizeFull();
-
-            final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
-            breadCrumbs.addListener(
-                    new WindowBreadCrumbs.Listener()
-                    {
-                        public void windowClick(final Window window) {
-                            Runnable op = new Runnable() {
-                                public void run() {
-                                    Window currentWindow = breadCrumbs.getCurrentWindow();
-
-                                    if (currentWindow != null && window != currentWindow) {
-                                        com.haulmont.cuba.web.gui.Window webWindow;
-                                        if (currentWindow instanceof Window.Wrapper) {
-                                            webWindow = ((Window.Wrapper) currentWindow).getWrappedWindow();
-                                        } else {
-                                            webWindow = (com.haulmont.cuba.web.gui.Window) currentWindow;
-                                        }
-                                        webWindow.closeAndRun("close", this);
-                                    }
-                                }
-                            };
-                            op.run();
-                        }
-                    }
-            );
-            breadCrumbs.addWindow(window);
-
-            final Component component = ComponentsHelper.unwrap(window);
-            component.setSizeFull();
-
-            layout.addComponent(breadCrumbs);
-            layout.addComponent(component);
-            layout.setExpandRatio(component, 1);
-
-            if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                TabSheet tabSheet = appWindow.getTabSheet();
-                layout.setMargin(true);
-                tabSheet.addTab(layout, caption, null);
-                tabSheet.setSelectedTab(layout);
-            } else {
-                VerticalLayout mainLayout = appWindow.getMainLayout();
-                mainLayout.removeAllComponents();
-                mainLayout.addComponent(layout);
-            }
-            tabs.put(layout, breadCrumbs);
-
-            openMode.setData(layout);
+            component = showWindowNewTab(window, caption, appWindow);
 
         } else if (OpenType.THIS_TAB.equals(type)) {
-            VerticalLayout layout;
-
-            if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                TabSheet tabSheet = appWindow.getTabSheet();
-                layout = (VerticalLayout) tabSheet.getSelectedTab();
-            } else {
-                layout = (VerticalLayout) appWindow.getMainLayout().getComponentIterator().next();
-            }
-
-            final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
-            if (breadCrumbs == null)
-                throw new IllegalStateException("BreadCrumbs not found");
-
-            final Window currentWindow = breadCrumbs.getCurrentWindow();
-            layout.removeComponent(ComponentsHelper.unwrap(currentWindow));
-
-            final Component component = ComponentsHelper.unwrap(window);
-            layout.addComponent(component);
-            component.setSizeFull();
-            layout.setExpandRatio(component, 1);
-
-            breadCrumbs.addWindow(window);
-
-            openMode.setData(layout);
-
-            if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                TabSheet tabSheet = appWindow.getTabSheet();
-                tabSheet.setTabCaption(layout, caption);
-                tabSheet.requestRepaintAll();
-            } else {
-                appWindow.getMainLayout().requestRepaintAll();
-            }
+            component = showWindowThisTab(window, caption, appWindow);
 
         } else if (OpenType.DIALOG.equals(type)) {
-            final com.itmill.toolkit.ui.Window win = createDialogWindow(window);
-
-            win.setLayout((Layout) ComponentsHelper.unwrap(window));
-
-            win.setWidth(600, Sizeable.UNITS_PIXELS);
-            win.setResizable(false);
-            win.setModal(true);
-
-            App.getInstance().getMainWindow().addWindow(win);
-
-            openMode.setData(win);
+            component = showWindowDialog(window, caption, appWindow);
 
         } else {
             throw new UnsupportedOperationException();
         }
+
+        openMode.setData(component);
 
         if (window instanceof Window.Wrapper) {
             Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
@@ -199,6 +122,117 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         } else {
             windowOpenMode.put(window, openMode);
         }
+    }
+
+    protected Component showWindowNewTab(final Window window, final String caption, AppWindow appWindow) {
+        final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
+        breadCrumbs.addListener(
+                    new WindowBreadCrumbs.Listener()
+                {
+                    public void windowClick(final Window window) {
+                        Runnable op = new Runnable() {
+                            public void run() {
+                                Window currentWindow = breadCrumbs.getCurrentWindow();
+
+                                if (currentWindow != null && window != currentWindow) {
+                                    com.haulmont.cuba.web.gui.Window webWindow;
+                                    if (currentWindow instanceof Window.Wrapper) {
+                                        webWindow = ((Window.Wrapper) currentWindow).getWrappedWindow();
+                                    } else {
+                                        webWindow = (com.haulmont.cuba.web.gui.Window) currentWindow;
+                                    }
+                                    webWindow.closeAndRun("close", this);
+                                }
+                            }
+                        };
+                        op.run();
+                    }
+                }
+        );
+        breadCrumbs.addWindow(window);
+
+        final Layout layout = createNewTabLayout(window, caption, appWindow, breadCrumbs);
+
+        tabs.put(layout, breadCrumbs);
+
+        return layout;
+    }
+
+    protected Layout createNewTabLayout(final Window window, final String caption, AppWindow appWindow, Component... components) {
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        if (components != null) {
+            for (final Component c : components) {
+                layout.addComponent(c);
+            }
+        }
+
+        final Component component = ComponentsHelper.unwrap(window);
+        component.setSizeFull();
+        layout.addComponent(component);
+        layout.setExpandRatio(component, 1);
+
+        if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+            TabSheet tabSheet = appWindow.getTabSheet();
+            layout.setMargin(true);
+            tabSheet.addTab(layout, caption, null);
+            tabSheet.setSelectedTab(layout);
+        } else {
+            VerticalLayout mainLayout = appWindow.getMainLayout();
+            mainLayout.removeAllComponents();
+            mainLayout.addComponent(layout);
+        }
+
+        return layout;
+    }
+
+    protected Component showWindowThisTab(Window window, String caption, AppWindow appWindow) {
+        VerticalLayout layout;
+
+        if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+            TabSheet tabSheet = appWindow.getTabSheet();
+            layout = (VerticalLayout) tabSheet.getSelectedTab();
+        } else {
+            layout = (VerticalLayout) appWindow.getMainLayout().getComponentIterator().next();
+        }
+
+        final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+        if (breadCrumbs == null)
+            throw new IllegalStateException("BreadCrumbs not found");
+
+        final Window currentWindow = breadCrumbs.getCurrentWindow();
+        layout.removeComponent(ComponentsHelper.unwrap(currentWindow));
+
+        final Component component = ComponentsHelper.unwrap(window);
+        component.setSizeFull();
+        layout.addComponent(component);
+        layout.setExpandRatio(component, 1);
+
+        breadCrumbs.addWindow(window);
+
+        if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+            TabSheet tabSheet = appWindow.getTabSheet();
+            tabSheet.setTabCaption(layout, caption);
+            tabSheet.requestRepaintAll();
+        } else {
+            appWindow.getMainLayout().requestRepaintAll();
+        }
+
+        return layout;
+    }
+
+    protected Component showWindowDialog(Window window, String caption, AppWindow appWindow) {
+        final com.itmill.toolkit.ui.Window win = createDialogWindow(window);
+
+        win.setLayout((Layout) ComponentsHelper.unwrap(window));
+
+        win.setWidth(600, Sizeable.UNITS_PIXELS);
+        win.setResizable(false);
+        win.setModal(true);
+
+        App.getInstance().getMainWindow().addWindow(win);
+
+        return win;
     }
 
     protected WindowBreadCrumbs createWindowBreadCrumbs() {
