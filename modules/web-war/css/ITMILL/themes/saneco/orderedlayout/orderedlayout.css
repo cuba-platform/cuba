@@ -3,27 +3,27 @@
 }
 
 .i-orderedlayout-margin-top, .i-horizontallayout-margin-top, .i-verticallayout-margin-top {
-	padding-top: 12px;
+	padding-top: 10px;
 }
 
 .i-orderedlayout-margin-right, .i-horizontallayout-margin-right, .i-verticallayout-margin-right {
-	padding-right: 15px;
+	padding-right: 10px;
 }
 
 .i-orderedlayout-margin-bottom, .i-horizontallayout-margin-bottom, .i-verticallayout-margin-bottom {
-	padding-bottom: 12px;
+	padding-bottom: 10px;
 }
 
 .i-orderedlayout-margin-left, .i-horizontallayout-margin-left, .i-verticallayout-margin-left {
-	padding-left: 15px;
+	padding-left: 10px;
 }
 
 .i-orderedlayout-spacing-on, .i-horizontallayout-spacing-on, .i-verticallayout-spacing-on {
-	padding-top: 6px;
-	padding-left: 6px;
+	padding-top: 5px;
+	padding-left: 5px;
 }
 /** This can be used to define spacing if spacing is off server side */
 .i-orderedlayout-spacing-off, .i-horizontallayout-spacing-off, .i-verticallayout-spacing-off {
-	padding-top: 0px;
-	padding-left: 0px;
+	padding-top: 0;
+	padding-left: 0;
 }
