@@ -144,7 +144,12 @@ public class Table
                                 }
 
                                 public boolean isValid(Object value) {
-                                    return (!field.isRequired() && value == null) || validator.isValid(value);
+                                    try {
+                                        validate(value);
+                                        return true;
+                                    } catch (InvalidValueException e) {
+                                        return false;
+                                    }
                                 }
                             });
                             ((com.itmill.toolkit.ui.AbstractField) field).setValidationVisible(false);

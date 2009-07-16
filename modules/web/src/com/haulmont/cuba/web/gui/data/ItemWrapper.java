@@ -41,7 +41,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
         if (item instanceof CollectionDatasource) {
             ((CollectionDatasource) item).addListener(new CollectionDatasourceListener<Entity>() {
-                public void collectionChanged(Datasource<Entity> ds, CollectionOperation operation) {}
+                public void collectionChanged(CollectionDatasource ds, CollectionOperation operation) {}
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                     fireItemProperySetChanged();
                 }

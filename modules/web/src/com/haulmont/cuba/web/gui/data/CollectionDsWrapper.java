@@ -15,7 +15,6 @@ import com.itmill.toolkit.data.Property;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -214,9 +213,17 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             }
         }
 
-        public void valueChanged(Entity source, String property, Object prevValue, Object value) {}
+        public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+            Item wrapper = getItemWrapper(source);
 
-        public void collectionChanged(Datasource ds, CollectionOperation operation) {
+            MetaProperty metaProperty = datasource.getMetaClass().getProperty(property);
+            Property itemProperty = wrapper.getItemProperty(metaProperty);
+            if (itemProperty instanceof PropertyWrapper) {
+                ((PropertyWrapper) itemProperty).fireValueChangeEvent();
+            }
+        }
+
+        public void collectionChanged(CollectionDatasource ds, CollectionOperation operation) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
                 itemsCache.clear();

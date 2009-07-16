@@ -34,7 +34,6 @@ public interface Field
     void validate() throws ValidationException;
 
     interface Validator {
-        boolean isValid(Object value);
         void validate(Object value) throws ValidationException;
     }
 }

@@ -38,5 +38,5 @@ public interface CollectionDatasourceListener<T extends Entity> extends Datasour
         }
     }
 
-    void collectionChanged(Datasource<T> ds, CollectionOperation operation);
+    void collectionChanged(CollectionDatasource ds, CollectionOperation operation);
 }

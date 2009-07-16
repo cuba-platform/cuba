@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -56,6 +57,9 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
     protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap =
             new HashMap<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>>();
+
+    protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators =
+            new LinkedHashSet<com.haulmont.cuba.gui.components.Field.Validator>();
 
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
@@ -125,6 +129,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         component.setMultiSelect(false);
 //        component.setNullSelectionAllowed(false);
         component.setImmediate(true);
+        component.setValidationVisible(false);
 
         if (component instanceof com.itmill.toolkit.event.Action.Container) {
             ((Action.Container) component).addActionHandler(new ActionsAdapter());
@@ -261,19 +266,26 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     }
 
     public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
-        component.addValidator(new Validator() {
-            public void validate(Object value) throws InvalidValueException {
-                try {
-                    validator.validate(value);
-                } catch (ValidationException e) {
-                    throw new InvalidValueException(e.getMessage());
-                }
-            }
+        tableValidators.add(validator);
+//        component.addValidator(new Validator() {
+//            public void validate(Object value) throws InvalidValueException {
+//                try {
+//                    validator.validate(value);
+//                } catch (ValidationException e) {
+//                    throw new InvalidValueException(e.getMessage());
+//                }
+//            }
+//
+//            public boolean isValid(Object value) {
+//                return validator.isValid(value);
+//            }
+//        });
+    }
 
-            public boolean isValid(Object value) {
-                return validator.isValid(value);
-            }
-        });
+    public void validate() throws ValidationException {
+        for (com.haulmont.cuba.gui.components.Field.Validator tableValidator : tableValidators) {
+            tableValidator.validate(getSelected());
+        }
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {

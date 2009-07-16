@@ -127,9 +127,10 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
     public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
         if (!validators.containsKey(validator)) {
             final Validator componentValidator = new Validator() {
-                public void validate(Object value) throws InvalidValueException {
-                    if ((!isRequired() && value == null)) return;
 
+                public void validate(Object value) throws InvalidValueException {
+                    if ((!isRequired() && value == null))
+                        return;
                     try {
                         validator.validate(value);
                     } catch (ValidationException e) {
@@ -138,7 +139,12 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
                 }
 
                 public boolean isValid(Object value) {
-                    return (!isRequired() && value == null) || validator.isValid(value);
+                    try {
+                        validate(value);
+                        return true;
+                    } catch (InvalidValueException e) {
+                        return false;
+                    }
                 }
             };
 

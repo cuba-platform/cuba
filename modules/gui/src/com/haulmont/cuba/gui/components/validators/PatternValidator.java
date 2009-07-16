@@ -29,12 +29,8 @@ public class PatternValidator implements Field.Validator {
         this.pattern = Pattern.compile(pattern);
     }
 
-    public boolean isValid(Object value) {
-        return value != null && pattern.matcher(((String) value)).matches();
-    }
-
     public void validate(Object value) throws ValidationException {
-        if (!isValid(value)) {
+        if (!(value != null && pattern.matcher(((String) value)).matches())) {
             String msg = message != null ? MessageUtils.loadString(message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }

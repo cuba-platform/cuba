@@ -26,25 +26,23 @@ public class DoubleValidator implements Field.Validator{
         message = element.attributeValue("message");
     }
 
-    public boolean isValid(Object value) {
+    public void validate(Object value) throws ValidationException {
+        boolean result;
         if (value instanceof String) {
             try {
                 NumberFormat.getInstance().parse((String) value);
-                return true;
+                result = true;
             } catch (NumberFormatException e) {
-                return false;
+                result = false;
             } catch (ParseException e) {
-                return false;
+                result = false;
             }
         } else if (value instanceof Double) {
-            return true;
+            result = true;
         } else {
-            return false;
+            result = false;
         }
-    }
-
-    public void validate(Object value) throws ValidationException {
-        if (!isValid(value)) {
+        if (!result) {
             String msg = message != null ? MessageUtils.loadString(message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }

@@ -51,7 +51,7 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
 
     protected void fireValueChangeEvent() {
         final ValueChangeEvent changeEvent = new ValueChangeEvent();
-        for (ValueChangeListener listener : listeners) {
+        for (ValueChangeListener listener : new ArrayList<ValueChangeListener>(listeners)) {
             listener.valueChange(changeEvent);
         }
     }

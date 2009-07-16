@@ -26,21 +26,6 @@ public class IntegerValidator implements Field.Validator {
         onlyPositive = element.attributeValue("onlyPositive");
     }
 
-    public boolean isValid(Object value) {
-        if (value instanceof String) {
-            try {
-                Integer i = Integer.valueOf((String) value);
-                return checkIntegerOnPositive(i);
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        } else if (value instanceof Integer) {
-            return checkIntegerOnPositive((Integer) value);
-        } else {
-            return false;
-        }
-    }
-
     private boolean checkIntegerOnPositive(Integer value) {
         if (ObjectUtils.equals("true", onlyPositive)) {
             return value.intValue() >= 0;
@@ -50,7 +35,20 @@ public class IntegerValidator implements Field.Validator {
     }
 
     public void validate(Object value) throws ValidationException {
-        if (!isValid(value)) {
+        boolean result;
+        if (value instanceof String) {
+            try {
+                Integer i = Integer.valueOf((String) value);
+                result = checkIntegerOnPositive(i);
+            } catch (NumberFormatException e) {
+                result = false;
+            }
+        } else if (value instanceof Integer) {
+            result = checkIntegerOnPositive((Integer) value);
+        } else {
+            result = false;
+        }
+        if (!result) {
             String msg = message != null ? MessageUtils.loadString(message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }

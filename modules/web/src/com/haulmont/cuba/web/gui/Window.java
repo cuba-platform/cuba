@@ -28,11 +28,13 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.ComponentVisitor;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.gui.components.VBoxLayout;
+import com.haulmont.cuba.web.gui.components.AbstractTable;
 import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Table;
+import com.itmill.toolkit.ui.Field;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -685,31 +687,41 @@ public class Window
         }
 
         protected boolean __validate() {
-            final Map<Validator.InvalidValueException, com.itmill.toolkit.ui.Field> problems =
-                    new HashMap<Validator.InvalidValueException, com.itmill.toolkit.ui.Field>();
+            final Map<Exception, com.itmill.toolkit.ui.Field> problems =
+                    new HashMap<Exception, com.itmill.toolkit.ui.Field>();
 
             ComponentsHelper.walkComponents(this, new ComponentVisitor() {
                 public void visit(Component component, String name) {
+
                     com.itmill.toolkit.ui.Component impl = ComponentsHelper.unwrap(component);
-                    if (impl instanceof com.itmill.toolkit.ui.Field 
-                            && impl.isVisible() && impl.isEnabled() && !impl.isReadOnly())
-                    {
+
+                    if (component instanceof AbstractTable) {
                         try {
-                            ((com.itmill.toolkit.ui.Field) impl).validate();
-                        } catch (Validator.InvalidValueException e) {
+                            ((AbstractTable) component).validate();
+                        } catch (ValidationException e) {
                             problems.put(e, ((com.itmill.toolkit.ui.Field) impl));
                         }
-                    }
-                    if (impl instanceof com.itmill.toolkit.ui.Table) {
-                        Set visibleComponents = ((Table) impl).getVisibleComponents();
-                        for (Object visibleComponent : visibleComponents) {
-                            if (visibleComponent instanceof com.itmill.toolkit.ui.Field
-                                    && ((com.itmill.toolkit.ui.Field) visibleComponent).isEnabled() &&
-                                    !((com.itmill.toolkit.ui.Field) visibleComponent).isReadOnly()) {
-                                try {
-                                    ((com.itmill.toolkit.ui.Field) visibleComponent).validate();
-                                } catch (Validator.InvalidValueException e) {
-                                    problems.put(e, ((com.itmill.toolkit.ui.Field) visibleComponent));
+                    } else {
+                        if (impl instanceof com.itmill.toolkit.ui.Field
+                                && impl.isVisible() && impl.isEnabled() && !impl.isReadOnly())
+                        {
+                            try {
+                                ((com.itmill.toolkit.ui.Field) impl).validate();
+                            } catch (Validator.InvalidValueException e) {
+                                problems.put(e, ((com.itmill.toolkit.ui.Field) impl));
+                            }
+                        }
+                        if (impl instanceof com.itmill.toolkit.ui.Table) {
+                            Set visibleComponents = ((Table) impl).getVisibleComponents();
+                            for (Object visibleComponent : visibleComponents) {
+                                if (visibleComponent instanceof com.itmill.toolkit.ui.Field
+                                        && ((com.itmill.toolkit.ui.Field) visibleComponent).isEnabled() &&
+                                        !((com.itmill.toolkit.ui.Field) visibleComponent).isReadOnly()) {
+                                    try {
+                                        ((com.itmill.toolkit.ui.Field) visibleComponent).validate();
+                                    } catch (Validator.InvalidValueException e) {
+                                        problems.put(e, ((com.itmill.toolkit.ui.Field) visibleComponent));
+                                    }
                                 }
                             }
                         }
@@ -722,9 +734,9 @@ public class Window
             com.itmill.toolkit.ui.Field field = null;
             StringBuffer buffer = new StringBuffer(
                     MessageProvider.getMessage(Window.class, "validationFail") + "<br>");
-            for (Validator.InvalidValueException problem : problems.keySet()) {
-                if (field == null) field = problems.get(problem);
-                buffer.append(problem.getMessage()).append("<br>");
+            for (Exception exception : problems.keySet()) {
+                if (field == null) field = problems.get(exception);
+                buffer.append(exception.getMessage()).append("<br>");
             }
 
             showNotification(MessageProvider.getMessage(Window.class, "validationFail.caption"),

@@ -158,7 +158,7 @@ public class DsContextImpl implements DsContextImplementation {
                 }
             }
 
-            public void collectionChanged(Datasource ds, CollectionOperation operation) {
+            public void collectionChanged(CollectionDatasource ds, CollectionOperation operation) {
                 if (CollectionOperation.Type.REFRESH.equals(operation.getType())) {
                     datasource.refresh();
                 }
