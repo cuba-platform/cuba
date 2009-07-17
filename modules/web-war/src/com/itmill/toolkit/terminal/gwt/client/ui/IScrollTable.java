@@ -1882,7 +1882,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             if (row.isSelected()) {
                 row.addStyleName("i-selected");
             }
-            DOM.insertChild(tBody, row.getElement(), 1);
+            DOM.insertChild(tBody, row.getElement(), 0);
             adopt(row);
             renderedRows.add(0, row);
         }
