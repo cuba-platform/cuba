@@ -208,7 +208,7 @@ public class Table
             target.addAttribute("multistring", true);
         }
 
-        if (!isNullSelectionAllowed()) {
+        if (isSelectable() && !isMultiSelect() && !isNullSelectionAllowed()) {
             target.addAttribute("nullSelectionDisallowed", true);
         }
 
