@@ -1926,6 +1926,10 @@ public class TreeTable
             target.addAttribute("multistring", true);
         }
 
+        if (!isNullSelectionAllowed()) {
+            target.addAttribute("nullSelectionDisallowed", true);
+        }
+
         // Visible column order
         final Collection sortables = getSortableContainerPropertyIds();
         final ArrayList visibleColOrder = new ArrayList();

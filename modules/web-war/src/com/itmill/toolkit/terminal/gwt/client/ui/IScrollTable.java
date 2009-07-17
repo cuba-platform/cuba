@@ -131,6 +131,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
     protected String width = "";
 
     protected boolean allowMultiStingCells = false;
+    protected boolean nullSelectionDisallowed = false;
 
     public IScrollTable() {
         bodyContainer.addScrollListener(this);
@@ -193,6 +194,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         showRowHeaders = uidl.getBooleanAttribute("rowheaders");
         showColHeaders = uidl.getBooleanAttribute("colheaders");
         allowMultiStingCells = uidl.getBooleanAttribute("multistring");
+        nullSelectionDisallowed = uidl.getBooleanAttribute("nullSelectionDisallowed");
 
         if (uidl.hasVariable("sortascending")) {
             sortAscending = uidl.getBooleanVariable("sortascending");
@@ -2317,12 +2319,14 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
             protected void handleRowClick(Event event) {
                 if (selectMode > Table.SELECT_MODE_NONE) {
-                    toggleSelection();
-                    // Note: changing the immediateness of this might
-                    // require changes to "clickEvent" immediateness
-                    // also.
-                    client.updateVariable(paintableId, "selected",
-                            selectedRowKeys.toArray(), immediate);
+                    if (!nullSelectionDisallowed || !isSelected()) {
+                        toggleSelection();
+                        // Note: changing the immediateness of this might
+                        // require changes to "clickEvent" immediateness
+                        // also.
+                        client.updateVariable(paintableId, "selected",
+                                selectedRowKeys.toArray(), immediate);
+                    }
                 }
             }
 

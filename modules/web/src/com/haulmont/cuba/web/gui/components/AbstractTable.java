@@ -127,7 +127,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
     protected void initComponent(T component) {
         component.setMultiSelect(false);
-//        component.setNullSelectionAllowed(false);
+        component.setNullSelectionAllowed(false);
         component.setImmediate(true);
         component.setValidationVisible(false);
 
