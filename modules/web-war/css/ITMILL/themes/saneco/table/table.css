@@ -103,20 +103,43 @@
 .i-table-row-odd:hover {
 	background-color: #edeeee;
 }
-.i-table .i-selected {
-	background: #dfedf5;
-	color: #fff;
-}
 .i-table-row td,
-.i-table-row-odd td {
+.i-table-row-odd td,
+.i-table-caption-row td {
 	padding: 0;
     border-bottom:1px solid #DCE3EB;
+}
+
+.i-table .i-table-caption-row {
+    background-color: #c6cbcd;
+    cursor: default;
+}
+
+.i-table .i-table-caption-row-content {
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 3px 0 3px 3px;
+    margin-right: 5px;
+    line-height: 15px;
 }
 
 .i-table-cell-content {
     padding: 3px 0 3px 3px;
 	margin-right: 5px;
 	line-height: 15px;
+}
+
+.i-table .i-selected {
+    background: #57a7ed;
+}
+
+.i-table .i-selected .i-table-cell-content {
+    color: #fff;
+}
+
+.i-table-cell-content .i-icon {
+    height: 15px;
+    margin-right: 5px;
 }
 
 .i-table-cell .i-table-cell-content {
@@ -141,7 +164,7 @@
 /* ...but not for datefield textarea */
 .i-table-cell-content .i-datefield .i-textfield {
 	width: auto;
-	
+
 }
 /* datefield button is too high for table cell */
 .i-table-cell-content .i-datefield-button {
@@ -216,18 +239,6 @@
 	display: inline;
 }
 
-.i-table .i-table-caption-row {
-    background-color: #cccccc;
-}
-
-.i-table .i-table-caption-row-content {
-    white-space: nowrap;
-    overflow: hidden;
-    padding: 3px 0 3px 3px;
-    margin-right: 5px;
-    line-height: 15px;
-}
-
 .i-table .i-table-float {
     float: left;
 }
@@ -255,13 +266,13 @@
 /* IE6 hack */
 * html .i-table-scrollposition {
 	background: transparent;
-	/* 
+	/*
 	AlphaImageLoader uses src attribute relative to host page, not CSS
 	We need multiple different filters because we cannot be sure how host page is served compared to theme resources
 	TODO: This actually does not work as expected, since only the last filter is applied.
 	 */
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");
 }
