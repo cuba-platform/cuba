@@ -9,7 +9,10 @@
  */
 package com.haulmont.cuba.gui.data;
 
+import com.haulmont.cuba.core.entity.Entity;
+
 import java.util.Collection;
+import java.util.Map;
 
 public interface DsContext {
     WindowContext getWindowContext();
@@ -26,4 +29,13 @@ public interface DsContext {
     void commit();
 
     void regirterDependency(Datasource ds, Datasource dependFrom, String property);
+
+    void addListener(CommitListener listener);
+    void removeListener(CommitListener listener);
+
+    public interface CommitListener {
+        void beforeCommit(DataService.CommitContext<Entity> context);
+        void afterCommit(DataService.CommitContext<Entity> context, Map<Entity, Entity> result);
+    }
 }
+

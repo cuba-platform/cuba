@@ -9,21 +9,16 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.*;
+import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.entity.BaseLongIdEntity;
+import com.haulmont.cuba.core.global.MetadataProvider;
 
-import javax.persistence.OneToMany;
 import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class MetadataHelper {
     public static Class getTypeClass(MetaProperty metaProperty) {
@@ -85,5 +80,41 @@ public class MetadataHelper {
         }
 
         return res;
+    }
+
+    public static void walkProperties(Instance instance, PropertyVisitor visitor) {
+        Session metadata = MetadataProvider.getSession();
+        __walkProperties(instance, visitor, metadata, new HashSet<Instance>());
+    }
+
+    private static void __walkProperties(Instance instance, PropertyVisitor visitor,
+                                         Session metadata, Set<Instance> visited)
+    {
+        if (visited.contains(instance))
+            return;
+        visited.add(instance);
+
+        MetaClass metaClass = metadata.getClass(instance.getClass());
+        if (metaClass == null)
+            return;
+
+        Collection<MetaProperty> properties = metaClass.getProperties();
+        for (MetaProperty property : properties) {
+
+            visitor.visit(instance, property);
+
+            Object value = instance.getValue(property.getName());
+            if (value != null && property.getRange().isClass()) {
+                if (property.getRange().getCardinality().isMany()) {
+                    Collection collection = (Collection) value;
+                    for (Object o : collection) {
+                        if (o instanceof Instance)
+                            __walkProperties((Instance) o, visitor, metadata, visited);
+                    }
+                } else if (value instanceof Instance) {
+                    __walkProperties((Instance) value, visitor, metadata, visited);
+                }
+            }
+        }
     }
 }

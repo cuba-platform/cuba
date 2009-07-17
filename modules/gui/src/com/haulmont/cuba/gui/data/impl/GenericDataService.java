@@ -15,11 +15,15 @@ import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.gui.PropertyVisitor;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Instance;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import org.apache.openjpa.util.Proxy;
 
 public class GenericDataService implements DataService {
     protected DataServiceRemote service;
@@ -79,7 +83,18 @@ public class GenericDataService implements DataService {
     }
 
     public Map<Entity, Entity> commit(CommitContext<Entity> context) {
-        return service.commit(context);
+        try {
+            Map<Entity, Entity> result = service.commit(context);
+            return result;
+        } catch (RuntimeException e) {
+            for (Entity entity : context.getCommitInstances()) {
+                MetadataHelper.walkProperties((Instance) entity, new RefiningPropertyVisitor());
+            }
+            for (Entity entity : context.getRemoveInstances()) {
+                MetadataHelper.walkProperties((Instance) entity, new RefiningPropertyVisitor());
+            }
+            throw e;
+        }
     }
 
     public <A extends Entity> A load(LoadContext context) {
@@ -88,5 +103,24 @@ public class GenericDataService implements DataService {
 
     public <A extends Entity> List<A> loadList(CollectionLoadContext context) {
         return service.<A>loadList(context);
+    }
+
+    private static class RefiningPropertyVisitor implements PropertyVisitor {
+
+        public void visit(Instance instance, MetaProperty property) {
+            Object value = instance.getValue(property.getName());
+            if (value != null && value instanceof Proxy) {
+                Object newValue;
+                if (value instanceof Set) {
+                    newValue = new HashSet(((Set) value));
+                } else if (value instanceof List) {
+                    newValue = new ArrayList(((List) value));
+                } else if (value instanceof Date) {
+                    newValue = new Date(((Date) value).getTime());
+                } else
+                    throw new UnsupportedOperationException("Unsupported proxy type: " + value.getClass());
+                instance.setValue(property.getName(), newValue);
+            }
+        }
     }
 }

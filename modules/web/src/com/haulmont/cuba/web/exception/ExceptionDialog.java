@@ -11,9 +11,11 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.web.App;
 import com.itmill.toolkit.ui.Label;
 import com.itmill.toolkit.ui.VerticalLayout;
 import com.itmill.toolkit.ui.Window;
+import com.itmill.toolkit.ui.Button;
 
 public class ExceptionDialog extends Window
 {
@@ -39,5 +41,13 @@ public class ExceptionDialog extends Window
         label.setSizeFull();
 
         addComponent(label);
+
+        Button closeBtn = new Button(MessageProvider.getMessage(ExceptionDialog.class, "exceptionDialog.closeBtn"));
+        closeBtn.addListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                App.getInstance().getAppWindow().removeWindow(ExceptionDialog.this);
+            }
+        });
+        addComponent(closeBtn);
     }
 }

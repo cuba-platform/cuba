@@ -30,6 +30,8 @@ public class DsContextImpl implements DsContextImplementation {
 
     protected List<LazyTask> lazyTasks = new ArrayList<LazyTask>();
 
+    private Set<CommitListener> commitListeners = new LinkedHashSet<CommitListener>();
+
     public DsContextImpl(DataService dataservice) {
         this.dataservice = dataservice;
     }
@@ -88,13 +90,30 @@ public class DsContextImpl implements DsContextImplementation {
                 ObjectUtils.equals(services.iterator().next(), dataservice))
         {
             final DataServiceRemote.CommitContext<Entity> context = createCommitContext(dataservice, commitData);
+
+            fireBeforeCommit(context);
+
             final Map<Entity, Entity> map = dataservice.commit(context);
+
+            fireAfterCommit(context, map);
 
             for (Datasource<Entity> datasource : commitData.get(dataservice)) {
                 ((DatasourceImplementation) datasource).commited(map);
             }
         } else {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private void fireBeforeCommit(DataServiceRemote.CommitContext<Entity> context) {
+        for (CommitListener commitListener : commitListeners) {
+            commitListener.beforeCommit(context);
+        }
+    }
+
+    private void fireAfterCommit(DataServiceRemote.CommitContext<Entity> context, Map<Entity, Entity> result) {
+        for (CommitListener commitListener : commitListeners) {
+            commitListener.afterCommit(context, result);
         }
     }
 
@@ -167,6 +186,14 @@ public class DsContextImpl implements DsContextImplementation {
 
         dependFrom.addListener(listener);
         dependencies.put(datasource, dependFrom);
+    }
+
+    public void addListener(CommitListener listener) {
+        commitListeners.add(listener);
+    }
+
+    public void removeListener(CommitListener listener) {
+        commitListeners.remove(listener);
     }
 
     public DataService getDataService() {

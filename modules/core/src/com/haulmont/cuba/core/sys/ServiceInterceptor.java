@@ -28,7 +28,8 @@ public class ServiceInterceptor
         log.trace("Invoking method " + ctx.getMethod().getName() + ", session: " + userSession);
 
         try {
-            return ctx.proceed();
+            Object res = ctx.proceed();
+            return res;
         } catch (Exception e) {
             log.error("ServiceInterceptor caught exception: ", e);
             throw e;

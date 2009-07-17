@@ -265,7 +265,7 @@
     </category>
 
     <category name="com.arjuna">
-        <priority value="INFO"/>
+        <priority value="ERROR"/>
     </category>
 
     <!-- Limit the JSR77 categories -->
