@@ -1,35 +1,31 @@
 .i-window {
 	color: #464f52;
-	/*font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";*/
-	/*font-size: 13px;*/
 	line-height: 18px;
-	background: transparent; /*url(img/bottom-left.png) no-repeat left bottom;*/
+	background: transparent;
 }
 
 .i-window-wrap {
-	/*background: transparent url(img/top-left.png) no-repeat;*/
+    font-family: Tahoma, Arial, sans-serif;
 }
 
 .i-window-outerheader {
-	height: 23px;
 	margin-left: 0;
-	padding: 8px;
-    background: #6A8CCB;
+	padding: 1px;
+    background: #fff;
 	cursor: move;
     border: 1px solid #464f52;
     border-bottom: none;
 }
 
 .i-window-header {
-	font-size: 18px;
-	/*line-height: 12;*/
-    height: 23px;
+	font-size: 11pt;
+    padding: 5px;
 	font-weight: normal;
 	letter-spacing: 0;
     background-color: #6A8CCB;
 	color: #fff;
 	white-space: nowrap;
-	/*text-overflow: ellipsis;*/
+	text-overflow: ellipsis;
 	overflow: hidden;
 	text-shadow: 0 1px 0 #ccc;
 }
@@ -45,6 +41,7 @@
 .i-window-contents {
 	background: #fff;
     padding: 8px;
+    font-size: 10pt;
 	border: 1px solid #464f52;
 	border-top: none;
 	/*border-bottom: none;*/
@@ -86,18 +83,20 @@
 
 .i-window-closebox {
 	position: absolute;
-	top: 15px;
-	right: 15px;
-	width: 12px;
-	height: 12px;
-	background: transparent url(img/close.png);
+	top: 9px;
+	right: 9px;
+	width: 13px;
+	height: 13px;
+	background: transparent url(img/close.gif);
 	cursor: pointer;
 	overflow: hidden;
-    border: 1px solid #fff;
+    /*border: 1px solid #fff;*/
 }
+/*
 .i-window-closebox:hover {
 	background-position: 0 -12px;
 }
+*/
 
 .i-window-modalitycurtain {
 	top: 0;

@@ -368,6 +368,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
         final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
+        layout.setSpacing(true);
         window.setLayout(layout);
 
         HorizontalLayout actionsBar = new HorizontalLayout();
