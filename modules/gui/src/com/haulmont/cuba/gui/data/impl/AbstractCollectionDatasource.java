@@ -199,7 +199,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
         return query;
     }
 
-    protected void forceCollectionChanged(CollectionDatasourceListener.CollectionOperation operation) {
+    protected void forceCollectionChanged(CollectionDatasourceListener.Operation operation) {
         for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             if (dsListener instanceof CollectionDatasourceListener) {
                 ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation);

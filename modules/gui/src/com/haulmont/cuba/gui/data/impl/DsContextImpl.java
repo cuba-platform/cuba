@@ -118,20 +118,26 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     protected DataServiceRemote.CommitContext<Entity> createCommitContext(DataService dataservice, Map<DataService, Collection<Datasource<Entity>>> commitData) {
-        Set<Entity> commitInstances = new HashSet<Entity>();
-        Set<Entity> deleteInstances = new HashSet<Entity>();
+
+        final DataServiceRemote.CommitContext<Entity> context =
+                new DataServiceRemote.CommitContext<Entity>();
 
         for (Datasource<Entity> datasource : commitData.get(dataservice)) {
             final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
 
-            commitInstances.addAll(implementation.getItemsToCreate());
-            commitInstances.addAll(implementation.getItemsToUpdate());
-
-            deleteInstances.addAll(implementation.getItemsToDelete());
+            for (Entity entity : implementation.getItemsToCreate()) {
+                context.getCommitInstances().add(entity);
+                context.getViews().put(entity, datasource.getView());
+            }
+            for (Entity entity : implementation.getItemsToUpdate()) {
+                context.getCommitInstances().add(entity);
+                context.getViews().put(entity, datasource.getView());
+            }
+            for (Entity entity : implementation.getItemsToDelete()) {
+                context.getRemoveInstances().add(entity);
+                context.getViews().put(entity, datasource.getView());
+            }
         }
-
-        final DataServiceRemote.CommitContext<Entity> context =
-                new DataServiceRemote.CommitContext<Entity>(commitInstances, deleteInstances);
         return context;
     }
 
@@ -177,8 +183,8 @@ public class DsContextImpl implements DsContextImplementation {
                 }
             }
 
-            public void collectionChanged(CollectionDatasource ds, CollectionOperation operation) {
-                if (CollectionOperation.Type.REFRESH.equals(operation.getType())) {
+            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                if (Operation.REFRESH.equals(operation)) {
                     datasource.refresh();
                 }
             }

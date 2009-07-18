@@ -89,10 +89,7 @@ public class View implements Serializable
     }
 
     public String toString() {
-        return "View{" +
-                "entityClass=" + entityClass.getName() +
-                ", name='" + name + '\'' +
-                '}';
+        return "View{" + entityClass.getName() + " : " + name + "}";
     }
 
     public ViewProperty getProperty(String name) {

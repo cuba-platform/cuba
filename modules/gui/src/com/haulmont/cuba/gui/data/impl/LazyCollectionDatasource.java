@@ -61,9 +61,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
 
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
-            forceCollectionChanged(
-                    new CollectionDatasourceListener.CollectionOperation<T>(
-                            CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
     }
 

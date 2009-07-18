@@ -223,7 +223,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             }
         }
 
-        public void collectionChanged(CollectionDatasource ds, CollectionOperation operation) {
+        public void collectionChanged(CollectionDatasource ds, Operation operation) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
                 itemsCache.clear();

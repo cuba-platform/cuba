@@ -14,9 +14,13 @@ import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewProperty;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -116,5 +120,43 @@ public class MetadataHelper {
                 }
             }
         }
+    }
+
+    public static boolean viewContainsProperty(View view, MetaPropertyPath propertyPath) {
+        View currentView = view;
+        for (MetaProperty metaProperty : propertyPath.get()) {
+            if (currentView == null) return false;
+
+            final ViewProperty property = currentView.getProperty(metaProperty.getName());
+            if (property == null) return false;
+
+            currentView = property.getView();
+        }
+        return true;
+    }
+
+    public static boolean isAnnotationPresent(Object object, String property,
+                                              Class<? extends Annotation> annotationClass)
+    {
+        Field field;
+        try {
+            field = object.getClass().getDeclaredField(property);
+            return field.isAnnotationPresent(annotationClass);
+        } catch (NoSuchFieldException e) {
+            Class superclass = object.getClass().getSuperclass();
+            while (superclass != null) {
+                try {
+                    field = superclass.getDeclaredField(property);
+                    return field.isAnnotationPresent(annotationClass);
+                } catch (NoSuchFieldException e1) {
+                    superclass = superclass.getSuperclass();
+                }
+            }
+            throw new RuntimeException("Property not found: " + property);
+        }
+    }
+
+    public static boolean isTransient(Object object, String property) {
+        return isAnnotationPresent(object, property, Transient.class);
     }
 }

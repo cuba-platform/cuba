@@ -177,17 +177,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
-            final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
+            final Class<Table.Formatter> aClass = ReflectionHelper.getClass(className);
             try {
-                final Constructor<Field.Validator> constructor = aClass.getConstructor(Element.class);
+                final Constructor<Table.Formatter> constructor = aClass.getConstructor(Element.class);
                 try {
-                    return (Table.Formatter) constructor.newInstance(formatterElement);
+                    return constructor.newInstance(formatterElement);
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
             } catch (NoSuchMethodException e) {
                 try {
-                    return (Table.Formatter) aClass.newInstance();
+                    return aClass.newInstance();
                 } catch (Exception e1) {
                     throw new RuntimeException(e1);
                 }

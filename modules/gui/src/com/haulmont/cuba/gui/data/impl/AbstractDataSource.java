@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.chile.core.common.ValueListener;
@@ -117,8 +118,8 @@ public abstract class AbstractDataSource<T extends Entity>
             for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
                 dsListener.valueChanged(item, property, prevValue, value);
             }
-
-            modified((T)item);
+            if (!MetadataHelper.isTransient(item, property))
+                modified((T)item);
         }
     }
 }

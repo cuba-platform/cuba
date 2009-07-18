@@ -15,9 +15,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -258,7 +258,7 @@ public class TreeTable
             } else {
                 for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
                     final MetaPropertyPath propertyPath = entry.getKey();
-                    if (view == null || ViewHelper.contains(view, propertyPath)) {
+                    if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
                         properties.add(propertyPath);
                     }
                 }

@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
+import com.haulmont.cuba.core.sys.ViewHelper;
 import com.haulmont.cuba.security.entity.PermissionType;
 
 import javax.ejb.Stateless;
@@ -42,19 +43,32 @@ public class DataServiceBean implements DataService, DataServiceRemote
         EntityManager em = PersistenceProvider.getEntityManager();
         checkPermissions(context);
 
+        // persist new
         for (Entity entity : context.getCommitInstances()) {
             if (PersistenceHelper.isNew(entity)) {
                 em.persist(entity);
                 res.put(entity, entity);
-            } else {
-                res.put(entity, em.merge(entity));
             }
         }
-
+        // merge detached
+        for (Entity entity : context.getCommitInstances()) {
+            if (!PersistenceHelper.isNew(entity)) {
+                Entity e = em.merge(entity);
+                res.put(entity, e);
+            }
+        }
+        // remove
         for (Entity entity : context.getRemoveInstances()) {
             Entity e = em.merge(entity);
             em.remove(e);
             res.put(entity, e);
+        }
+
+        for (Map.Entry<Entity, Entity> entry : res.entrySet()) {
+            View view = context.getViews().get(entry.getKey());
+            if (view != null) {
+                ViewHelper.fetchInstance((Instance) entry.getValue(), view);
+            }
         }
 
         return res;

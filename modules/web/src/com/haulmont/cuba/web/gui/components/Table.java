@@ -15,12 +15,12 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -333,7 +333,7 @@ public class Table
             } else {
                 for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
                     final MetaPropertyPath propertyPath = entry.getKey();
-                    if (view == null || ViewHelper.contains(view, propertyPath)) {
+                    if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
                         properties.add(propertyPath);
                     }
                 }
@@ -370,7 +370,7 @@ public class Table
             } else {
                 for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
                     final MetaPropertyPath propertyPath = entry.getKey();
-                    if (view == null || ViewHelper.contains(view, propertyPath)) {
+                    if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
                         properties.add(propertyPath);
                     }
                 }

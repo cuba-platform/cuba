@@ -14,29 +14,12 @@ import com.haulmont.cuba.core.entity.Entity;
 import java.util.Collection;
 
 public interface CollectionDatasourceListener<T extends Entity> extends DatasourceListener<T> {
-    class CollectionOperation<T> {
-        public enum Type {
-            REFRESH,
-            ADD,
-            REMOVE
-        }
 
-        protected Type type;
-        protected Collection<T> items;
-
-        public CollectionOperation(Type type, Collection<T> items) {
-            this.type = type;
-            this.items = items;
-        }
-
-        public Type getType() {
-            return type;
-        }
-
-        public Collection<T> getItems() {
-            return items;
-        }
+    public enum Operation {
+        REFRESH,
+        ADD,
+        REMOVE
     }
 
-    void collectionChanged(CollectionDatasource ds, CollectionOperation operation);
+    void collectionChanged(CollectionDatasource ds, Operation operation);
 }

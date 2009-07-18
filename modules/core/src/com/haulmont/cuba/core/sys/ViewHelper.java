@@ -12,6 +12,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.DeleteDeferred;
 import com.haulmont.cuba.core.entity.Updatable;
@@ -21,18 +22,22 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import org.apache.openjpa.persistence.FetchPlan;
 
 import java.lang.reflect.Field;
+import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class ViewHelper
 {
     public static void setView(FetchPlan fetchPlan, View view) {
         if (fetchPlan == null)
             throw new IllegalArgumentException("FetchPlan is null");
-        if (view == null)
-            throw new IllegalArgumentException("View is null");
 
         fetchPlan.clearFetchGroups();
-        fetchPlan.removeFetchGroup(FetchPlan.GROUP_DEFAULT);
-        processView(view, fetchPlan);
+
+        if (view != null) {
+            fetchPlan.removeFetchGroup(FetchPlan.GROUP_DEFAULT);
+            processView(view, fetchPlan);
+        }
     }
 
     private static void processView(View view, FetchPlan fetchPlan) {
@@ -73,6 +78,31 @@ public class ViewHelper
             declaringClass = metaClass.getProperty("deleteTs").getJavaField().getDeclaringClass();
             fetchPlan.addField(declaringClass, "deleteTs");
             fetchPlan.addField(declaringClass, "deletedBy");
+        }
+    }
+
+    public static void fetchInstance(Instance instance, View view) {
+        __fetchInstance(instance, view, new HashSet<Instance>());
+    }
+
+    private static void __fetchInstance(Instance instance, View view, Set<Instance> visited) {
+        if (visited.contains(instance))
+            return;
+        visited.add(instance);
+
+        for (ViewProperty property : view.getProperties()) {
+            Object value = instance.getValue(property.getName());
+            View propertyView = property.getView();
+            if (value != null && propertyView != null) {
+                if (value instanceof Collection) {
+                    for (Object item : ((Collection) value)) {
+                        if (item instanceof Instance)
+                            __fetchInstance((Instance) item, propertyView, visited);
+                    }
+                } else if (value instanceof Instance) {
+                    __fetchInstance((Instance) value, propertyView, visited);
+                }
+            }
         }
     }
 }

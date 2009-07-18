@@ -32,16 +32,23 @@ public interface DataServiceRemote
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public class CommitContext<Entity> implements Serializable {
-        protected Collection<Entity> commitInstances = new LinkedList<Entity>();
-        protected Collection<Entity> removeInstances = new LinkedList<Entity>();
+        private static final long serialVersionUID = 2510011302544968537L;
+        
+        protected Collection<Entity> commitInstances = new HashSet<Entity>();
+        protected Collection<Entity> removeInstances = new HashSet<Entity>();
+
+        protected Map<Entity, View> views = new HashMap<Entity, View>();
+
+        public CommitContext() {
+        }
 
         public CommitContext(Collection<Entity> commitInstances) {
-            this.commitInstances = commitInstances;
+            this.commitInstances.addAll(commitInstances);
         }
 
         public CommitContext(Collection<Entity> commitInstances, Collection<Entity> removeInstances) {
-            this.commitInstances = commitInstances;
-            this.removeInstances = removeInstances;
+            this.commitInstances.addAll(commitInstances);
+            this.removeInstances.addAll(removeInstances);
         }
 
         public Collection<Entity> getCommitInstances() {
@@ -58,6 +65,10 @@ public interface DataServiceRemote
 
         public void setRemoveInstances(Collection<Entity> removeInstances) {
             this.removeInstances = removeInstances;
+        }
+
+        public Map<Entity, View> getViews() {
+            return views;
         }
     }
 

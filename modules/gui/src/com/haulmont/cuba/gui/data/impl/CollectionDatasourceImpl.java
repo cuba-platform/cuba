@@ -68,7 +68,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
             setItem(null);
         }
 
-        forceCollectionChanged(new CollectionDatasourceListener.CollectionOperation<T>(CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
     public synchronized T getItem(K key) {
@@ -170,9 +170,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         }
 
         modified = true;
-        forceCollectionChanged(
-                new CollectionDatasourceListener.CollectionOperation<T>(
-                        CollectionDatasourceListener.CollectionOperation.Type.ADD, null));
+        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
@@ -187,9 +185,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         }
 
         modified = true;
-        forceCollectionChanged(
-                new CollectionDatasourceListener.CollectionOperation<T>(
-                    CollectionDatasourceListener.CollectionOperation.Type.REMOVE, null));
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     public void updateItem(T item) {
@@ -197,9 +193,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
-            forceCollectionChanged(
-                    new CollectionDatasourceListener.CollectionOperation<T>(
-                            CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
     }
 

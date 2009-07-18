@@ -46,18 +46,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     protected void initParentDsListeners() {
         ds.addListener(new DatasourceListener<Entity>() {
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
-                forceCollectionChanged(
-                        new CollectionDatasourceListener.CollectionOperation<T>(
-                                CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
+                forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
             }
 
             public void stateChanged(Datasource<Entity> ds, State prevState, State state) {
                 for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
                     dsListener.stateChanged(CollectionPropertyDatasourceImpl.this, prevState, state);
                 }
-                forceCollectionChanged(
-                        new CollectionDatasourceListener.CollectionOperation<T>(
-                                CollectionDatasourceListener.CollectionOperation.Type.REFRESH, null));
+                forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
             }
 
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
@@ -114,7 +110,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
 
     @Override
     public void refresh() {
-        // Do nothing
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
     public int size() {
@@ -148,9 +144,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
             modified(item);
         }
 
-        forceCollectionChanged(
-                new CollectionDatasourceListener.CollectionOperation<T>(
-                        CollectionDatasourceListener.CollectionOperation.Type.ADD, null));
+        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     public void removeItem(T item) throws UnsupportedOperationException {
@@ -165,9 +159,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
             deleted(item);
         }
 
-        forceCollectionChanged(
-                new CollectionDatasourceListener.CollectionOperation<T>(
-                    CollectionDatasourceListener.CollectionOperation.Type.REMOVE, null));
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     public void updateItem(T item) {
@@ -202,7 +194,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         clearCommitLists();
     }
 
-    protected void forceCollectionChanged(CollectionDatasourceListener.CollectionOperation operation) {
+    protected void forceCollectionChanged(CollectionDatasourceListener.Operation operation) {
         for (DatasourceListener dsListener : dsListeners) {
             if (dsListener instanceof CollectionDatasourceListener) {
                 ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation);
