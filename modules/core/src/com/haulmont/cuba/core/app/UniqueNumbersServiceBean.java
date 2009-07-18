@@ -8,20 +8,25 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.Transaction;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.interceptor.Interceptors;
 
 @Stateless(name = UniqueNumbersService.JNDI_NAME)
 @Interceptors(ServiceInterceptor.class)
+@TransactionManagement(TransactionManagementType.BEAN)
 public class UniqueNumbersServiceBean implements UniqueNumbersService
 {
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public long getNextNumber(String domain) {
         UniqueNumbersMBean mbean = Locator.lookupMBean(UniqueNumbersMBean.class, UniqueNumbersMBean.OBJECT_NAME);
-        long number = mbean.getAPI().getNextNumber(domain);
-        return number;
+        Transaction tx = Locator.createTransaction();
+        try {
+            long number = mbean.getAPI().getNextNumber(domain);
+            tx.commit();
+            return number;
+        } finally {
+            tx.end();
+        }
     }
 }

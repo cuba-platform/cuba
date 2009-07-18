@@ -13,30 +13,42 @@ package com.haulmont.cuba.core.app;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JRDataSource;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.interceptor.Interceptors;
 import java.util.Map;
 
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 
 @Stateless(name = ReportService.JNDI_NAME)
 @Interceptors(ServiceInterceptor.class)
+@TransactionManagement(TransactionManagementType.BEAN)
 public class ReportServiceBean implements ReportService
 {
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public JasperPrint executeJasperReport(String name, Map<String, Object> params) {
         ReportEngineMBean mbean = Locator.lookupMBean(ReportEngineMBean.class, ReportEngineMBean.OBJECT_NAME);
-        JasperPrint print = mbean.getAPI().executeJasperReport(name, params, null);
+        JasperPrint print;
+        Transaction tx = Locator.createTransaction();
+        try {
+            print = mbean.getAPI().executeJasperReport(name, params, null);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
         return print;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource) {
         ReportEngineMBean mbean = Locator.lookupMBean(ReportEngineMBean.class, ReportEngineMBean.OBJECT_NAME);
-        JasperPrint print = mbean.getAPI().executeJasperReport(name, params, dataSource);
+        JasperPrint print;
+        Transaction tx = Locator.createTransaction();
+        try {
+            print = mbean.getAPI().executeJasperReport(name, params, dataSource);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
         return print;
     }
 }

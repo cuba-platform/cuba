@@ -12,102 +12,121 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import com.haulmont.cuba.security.entity.PermissionType;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.interceptor.Interceptors;
 import java.util.*;
 
 @Stateless(name = DataService.JNDI_NAME)
 @Interceptors({ServiceInterceptor.class})
+@TransactionManagement(TransactionManagementType.BEAN)
 public class DataServiceBean implements DataService, DataServiceRemote
 {
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DbDialect getDbDialect() {
         return PersistenceProvider.getDbDialect();
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Map<Entity, Entity> commit(CommitContext<Entity> context) {
         final Map<Entity, Entity> res = new HashMap<Entity, Entity>();
 
-        EntityManager em = PersistenceProvider.getEntityManager();
-        checkPermissions(context);
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            checkPermissions(context);
 
-        // persist new
-        for (Entity entity : context.getCommitInstances()) {
-            if (PersistenceHelper.isNew(entity)) {
-                em.persist(entity);
-                res.put(entity, entity);
+            // persist new
+            for (Entity entity : context.getCommitInstances()) {
+                if (PersistenceHelper.isNew(entity)) {
+                    em.persist(entity);
+                    res.put(entity, entity);
+                }
             }
-        }
-        // merge detached
-        for (Entity entity : context.getCommitInstances()) {
-            if (!PersistenceHelper.isNew(entity)) {
+            // merge detached
+            for (Entity entity : context.getCommitInstances()) {
+                if (!PersistenceHelper.isNew(entity)) {
+                    Entity e = em.merge(entity);
+                    res.put(entity, e);
+                }
+            }
+            // remove
+            for (Entity entity : context.getRemoveInstances()) {
                 Entity e = em.merge(entity);
+                em.remove(e);
                 res.put(entity, e);
             }
-        }
-        // remove
-        for (Entity entity : context.getRemoveInstances()) {
-            Entity e = em.merge(entity);
-            em.remove(e);
-            res.put(entity, e);
-        }
 
-        for (Map.Entry<Entity, Entity> entry : res.entrySet()) {
-            View view = context.getViews().get(entry.getKey());
-            if (view != null) {
-                ViewHelper.fetchInstance((Instance) entry.getValue(), view);
+            for (Map.Entry<Entity, Entity> entry : res.entrySet()) {
+                View view = context.getViews().get(entry.getKey());
+                if (view != null) {
+                    ViewHelper.fetchInstance((Instance) entry.getValue(), view);
+                }
             }
+
+            tx.commit();
+        } finally {
+            tx.end();
         }
 
         return res;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <A extends Entity> A load(LoadContext context) {
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
         checkPermission(metaClass, "view");
 
-        final EntityManager em = PersistenceProvider.getEntityManager();
+        Object result;
 
-        com.haulmont.cuba.core.Query query;
-        if (context.getId() != null) {
-            final String entityName = PersistenceProvider.getEntityName(metaClass.getJavaClass());
-            String queryString = String.format("select e from %s e where e.id = ?1", entityName);
+        Transaction tx = Locator.getTransaction();
+        try {
+            final EntityManager em = PersistenceProvider.getEntityManager();
 
-            query = em.createQuery(queryString);
-            query.setParameter(1, context.getId());
+            com.haulmont.cuba.core.Query query;
+            if (context.getId() != null) {
+                final String entityName = PersistenceProvider.getEntityName(metaClass.getJavaClass());
+                String queryString = String.format("select e from %s e where e.id = ?1", entityName);
 
-            if (context.getView() != null) {
-                query.setView(context.getView());
+                query = em.createQuery(queryString);
+                query.setParameter(1, context.getId());
+
+                if (context.getView() != null) {
+                    query.setView(context.getView());
+                }
+            } else {
+                query = createQuery(em, context);
             }
-        } else {
-            query = createQuery(em, context);
+
+            result = query.getSingleResult();
+
+            tx.commit();
+        } finally {
+            tx.end();
         }
 
-        Object result = query.getSingleResult();
         return (A) result;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <A extends Entity> List<A> loadList(CollectionLoadContext context) {
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
         checkPermission(metaClass, "read");
 
-        final EntityManager em = PersistenceProvider.getEntityManager();
-        com.haulmont.cuba.core.Query query = createQuery(em, context);
-        List resultList = query.getResultList();
+        List resultList;
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            final EntityManager em = PersistenceProvider.getEntityManager();
+            com.haulmont.cuba.core.Query query = createQuery(em, context);
+            resultList = query.getResultList();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
 
         return resultList;
     }
