@@ -9,8 +9,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import java.io.File;
-
 public interface FileUploadField extends Component, Component.HasCaption, Component.Expandable {
     interface Listener {
         class Event {
@@ -34,8 +32,10 @@ public interface FileUploadField extends Component, Component.HasCaption, Compon
         void updateProgress(long readBytes, long contentLength);
     }
 
+    String getFilePath();
+    String getFileName();
     boolean isUploading();
-    File getFile();
+    byte[] getBytes();
     long getBytesRead();
 
     void addListener(Listener listener);

@@ -14,12 +14,14 @@ import com.haulmont.cuba.core.config.Prefix;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.Config;
+import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 
 @Prefix("cuba.UIComponentsConfig.")
 @Source(type = SourceType.DATABASE)
 public interface UIComponentsConfig extends Config
 {
-    String getUploadDir();
+    @DefaultInteger(20)
+    Integer getMaxUploadSizeMb();
 
     String getResourcesRoot();
 }

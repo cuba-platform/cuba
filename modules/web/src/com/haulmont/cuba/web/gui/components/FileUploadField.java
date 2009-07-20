@@ -18,6 +18,7 @@ import com.itmill.toolkit.ui.Upload;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,28 +28,26 @@ public class FileUploadField
     implements
         com.haulmont.cuba.gui.components.FileUploadField
 {
-    protected File file;
+    protected String fileName;
+    protected byte[] bytes;
+    protected ByteArrayOutputStream outputStream;
     private List<Listener> listeners = new ArrayList<Listener>();
 
     public FileUploadField() {
         UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
-        final String uploadDir = config.getUploadDir();
+        final Integer maxUploadSizeMb = config.getMaxUploadSizeMb();
 
         component = new Upload(MessageProvider.getMessage(Window.class, "msg://Upload"), new Upload.Receiver() {
             public OutputStream receiveUpload(String filename, String MIMEType) {
-                FileOutputStream fos;
-                file = new File(uploadDir != null ? uploadDir : "" + filename);
-                try {
-                    fos = new FileOutputStream(file);
-                } catch (final java.io.FileNotFoundException e) {
-                    return null;
-                }
-
-                return fos;
+                fileName = filename;
+                outputStream = new ByteArrayOutputStream();
+                return outputStream;
             }
         });
+
         component.addListener(new Upload.StartedListener() {
             public void uploadStarted(Upload.StartedEvent event) {
+                bytes = null;
                 final Listener.Event e = new Listener.Event(event.getFilename());
                 for (Listener listener : listeners) {
                     listener.uploadStarted(e);
@@ -57,6 +56,7 @@ public class FileUploadField
         });
         component.addListener(new Upload.FinishedListener() {
             public void uploadFinished(Upload.FinishedEvent event) {
+                bytes = outputStream.toByteArray();
                 final Listener.Event e = new Listener.Event(event.getFilename());
                 for (Listener listener : listeners) {
                     listener.uploadFinished(e);
@@ -81,6 +81,9 @@ public class FileUploadField
         });
         component.addListener(new Upload.ProgressListener() {
             public void updateProgress(long readBytes, long contentLength) {
+                if (readBytes > maxUploadSizeMb * 1000000) {
+                    throw new RuntimeException("File is too big");
+                }
                 for (Listener listener : listeners) {
                     listener.updateProgress(readBytes, contentLength);
                 }
@@ -90,6 +93,15 @@ public class FileUploadField
 
     public <T> T getComponent() {
         return (T) component;
+    }
+
+    public String getFilePath() {
+        return fileName;
+    }
+
+    public String getFileName() {
+        String[] strings = fileName.split("[/\\\\]");
+        return strings[strings.length-1];
     }
 
     public boolean isUploading() {
@@ -108,8 +120,8 @@ public class FileUploadField
         listeners.remove(listener);
     }
 
-    public File getFile() {
-        return file;
+    public byte[] getBytes() {
+        return bytes;
     }
 
     public String getCaption() {
