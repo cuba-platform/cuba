@@ -20,7 +20,6 @@ import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.itmill.toolkit.terminal.gwt.client.*;
-import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 import java.util.*;
 
@@ -133,6 +132,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
     protected boolean allowMultiStingCells = false;
     protected boolean nullSelectionDisallowed = false;
 
+    protected boolean editable = false;
+    protected String mouseDownRow = null;
+
     public IScrollTable() {
         bodyContainer.addScrollListener(this);
         bodyContainer.setStyleName(CLASSNAME + "-body");
@@ -195,6 +197,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         showColHeaders = uidl.getBooleanAttribute("colheaders");
         allowMultiStingCells = uidl.getBooleanAttribute("multistring");
         nullSelectionDisallowed = uidl.getBooleanAttribute("nullSelectionDisallowed");
+        editable = uidl.getBooleanAttribute("editable");
 
         if (uidl.hasVariable("sortascending")) {
             sortAscending = uidl.getBooleanVariable("sortascending");
@@ -2052,8 +2055,13 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             protected IScrollTableRow(int rowKey) {
                 this.rowKey = rowKey;
                 setElement(DOM.createElement("tr"));
-                DOM.sinkEvents(getElement(), Event.ONCLICK | Event.ONDBLCLICK
-                        | Event.ONCONTEXTMENU);
+                if (!editable) {
+                    DOM.sinkEvents(getElement(), Event.ONCLICK | Event.ONDBLCLICK
+                            | Event.ONCONTEXTMENU);
+                } else {
+                    DOM.sinkEvents(getElement(), Event.ONCLICK | Event.ONCONTEXTMENU
+                            | Event.ONMOUSEDOWN | Event.ONMOUSEUP);
+                }
             }
 
             private void paintComponent(Paintable p, UIDL uidl) {
@@ -2298,21 +2306,47 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 //                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
 //                if (getElement() == tdOrTr
 //                        || getElement() == tdOrTr.getParentElement()) {
+                if (!editable) {
                     switch (DOM.eventGetType(event)) {
-                    case Event.ONCLICK:
-                        handleClickEvent(event);
-                        handleRowClick(event);
-                        break;
-                    case Event.ONDBLCLICK:
-                        handleClickEvent(event);
-                        break;
-                    case Event.ONCONTEXTMENU:
-                        handleRowClick(event);
-                        showContextMenu(event);
-                        break;
-                    default:
-                        break;
+                        case Event.ONCLICK:
+                            handleClickEvent(event);
+                            handleRowClick(event);
+                            break;
+                        case Event.ONDBLCLICK:
+                            handleClickEvent(event);
+                            break;
+                        case Event.ONCONTEXTMENU:
+                            handleRowClick(event);
+                            showContextMenu(event);
+                            break;
+                        default:
+                            break;
                     }
+                } else {
+                    switch (DOM.eventGetType(event)) {
+                        case Event.ONCLICK:
+                            handleClickEvent(event);
+                            break;
+                        case Event.ONCONTEXTMENU:
+                            showContextMenu(event);
+                            break;
+                        case Event.ONMOUSEDOWN:
+                            if (event.getButton() == Event.BUTTON_LEFT) {
+                                mouseDownRow = getKey();
+                            } else {
+                                mouseDownRow = null;
+                            }
+                            break;
+                        case Event.ONMOUSEUP:
+                            if (getKey().equals(mouseDownRow)) {
+                                handleRowClick(event);
+                                mouseDownRow = null;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
 //                }
                 super.onBrowserEvent(event);
             }

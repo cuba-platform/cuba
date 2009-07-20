@@ -211,6 +211,10 @@ public class Table
         if (isSelectable() && !isMultiSelect() && !isNullSelectionAllowed()) {
             target.addAttribute("nullSelectionDisallowed", true);
         }
+        
+        if (isEditable()) {
+            target.addAttribute("editable", true);
+        }
 
         // Visible column order
         final Collection sortables = getSortableContainerPropertyIds();

@@ -604,30 +604,30 @@ public class IScrollTreeTable
                 return new RenderSpace(w, getRowHeight());
             }
 
-            @Override
-            public void onBrowserEvent(Event event) {
+//            @Override
+//            public void onBrowserEvent(Event event) {
 //                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
 //                Element parentElement = DOM.getParent(tdOrTr);
 //                if (getElement() == tdOrTr
 //                        || getElement() == parentElement
 //                        || (parentElement != null && getElement() == DOM.getParent(parentElement))) {
-                    switch (DOM.eventGetType(event)) {
-                        case Event.ONCLICK:
-                            handleClickEvent(event);
-                            handleRowClick(event);
-                            break;
-                        case Event.ONDBLCLICK:
-                            handleClickEvent(event);
-                            break;
-                        case Event.ONCONTEXTMENU:
-                            handleRowClick(event);
-                            showContextMenu(event);
-                            break;
-                        default:
-                            break;
-                    }
+//                    switch (DOM.eventGetType(event)) {
+//                        case Event.ONCLICK:
+//                            handleClickEvent(event);
+//                            handleRowClick(event);
+//                            break;
+//                        case Event.ONDBLCLICK:
+//                            handleClickEvent(event);
+//                            break;
+//                        case Event.ONCONTEXTMENU:
+//                            handleRowClick(event);
+//                            showContextMenu(event);
+//                            break;
+//                        default:
+//                            break;
+//                    }
 //                }
-            }
+//            }
 
             public boolean hasChildren() {
                 return (groupCell != null);

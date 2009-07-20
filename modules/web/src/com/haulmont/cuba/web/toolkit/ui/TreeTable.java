@@ -1930,6 +1930,10 @@ public class TreeTable
             target.addAttribute("nullSelectionDisallowed", true);
         }
 
+        if (isEditable()) {
+            target.addAttribute("editable", true);
+        }
+
         // Visible column order
         final Collection sortables = getSortableContainerPropertyIds();
         final ArrayList visibleColOrder = new ArrayList();
