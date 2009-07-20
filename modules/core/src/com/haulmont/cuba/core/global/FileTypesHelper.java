@@ -25,7 +25,7 @@
  * the License.
  */
 
-package com.haulmont.cuba.gui;
+package com.haulmont.cuba.core.global;
 
 import java.io.File;
 import java.util.Collections;

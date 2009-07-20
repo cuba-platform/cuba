@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.global.LoginException;
 
@@ -36,9 +37,10 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.codec.net.QCodec;
+import org.apache.commons.codec.EncoderException;
 
-public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI
-{
+public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI {
     private Log log = LogFactory.getLog(Emailer.class);
 
     private EmailerConfig config = ConfigProvider.getConfig(EmailerConfig.class);
@@ -48,8 +50,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI
     }
 
     public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachment)
-        throws EmailException
-    {
+            throws EmailException {
         String[] addrArr = addresses.split("[,;]");
         Session session = getMailSession();
 
@@ -80,7 +81,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI
         InternetAddress internetAddress = new InternetAddress(addr);
         Transport transp = session.getTransport();
         transp.connect();
-        transp.sendMessage(message, new InternetAddress[] {internetAddress});
+        transp.sendMessage(message, new InternetAddress[]{internetAddress});
     }
 
     private Session getMailSession() {
@@ -99,8 +100,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI
             String address,
             String caption,
             String text,
-            EmailAttachment[] attachments) throws MessagingException
-    {
+            EmailAttachment[] attachments) throws MessagingException {
         MimeMessage msg = new MimeMessage(session);
         msg.addRecipients(Message.RecipientType.TO, address);
         msg.setSubject(caption);
@@ -124,20 +124,19 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI
                 DataSource source = new ByteArrayDataSource(attachment.getData());
                 attachBodyPart.setDataHandler(new DataHandler(source));
 
-                String contentType = null;
-                if (attachment.getName().endsWith(".bmp")) {
-                    contentType = "image/bmp";
-                } else if (attachment.getName().endsWith(".png")) {
-                    contentType = "image/png";
-                } else if (attachment.getName().endsWith(".jpg")) {
-                    contentType = "image/jpg";
+                String contentType = FileTypesHelper.getMIMEType(attachment.getName());
+
+                String encodedFileName;
+                try {
+                    QCodec codec = new QCodec();
+                    encodedFileName = codec.encode(attachment.getName());
+                } catch (EncoderException e) {
+                    encodedFileName = attachment.getName();
                 }
 
-                attachBodyPart.setHeader("Content-ID", "<" + attachment.getName() + ">");
-                if (contentType != null) {
-                    attachBodyPart.setHeader("Content-Type", contentType);
-                }
-                attachBodyPart.setFileName(attachment.getName());
+                attachBodyPart.setHeader("Content-ID", "<" + encodedFileName + ">");
+                attachBodyPart.setHeader("Content-Type", contentType + "; charset=utf-8; name=" + encodedFileName);
+                attachBodyPart.setFileName(encodedFileName);
                 attachBodyPart.setDisposition("inline");
 
                 content.addBodyPart(attachBodyPart);
@@ -178,8 +177,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI
         }
     }
 
-    private static class ByteArrayDataSource implements DataSource
-    {
+    private static class ByteArrayDataSource implements DataSource {
         private byte[] data;
 
         public ByteArrayDataSource(byte[] data) {
