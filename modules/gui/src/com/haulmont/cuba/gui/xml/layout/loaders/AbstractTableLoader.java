@@ -222,4 +222,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             }
         }
     }
+
+    protected void loadSortable(T component, Element element) {
+        final String sortable = element.attributeValue("sortable");
+        if (!StringUtils.isEmpty(sortable) && isBoolean(sortable)) {
+            component.setSortable(Boolean.valueOf(sortable));
+        }
+    }
 }
