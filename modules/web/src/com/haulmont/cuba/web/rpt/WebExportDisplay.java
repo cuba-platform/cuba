@@ -39,9 +39,6 @@ public class WebExportDisplay implements ExportDisplay
     }
 
     public void show(byte[] data, String name, ExportFormat format) {
-        if (format != ExportFormat.XLS && format != ExportFormat.PDF)
-            throw new UnsupportedOperationException("Method WebExportDisplay.show doesn't support this format: " + format);
-
         ReportOutput reportOutput = new ReportOutput(format)
                 .setAttachment(attachment).setNewWindow(newWindow);
 

@@ -11,7 +11,6 @@
 package com.haulmont.cuba.web.rpt;
 
 import com.itmill.toolkit.terminal.DownloadStream;
-import com.itmill.toolkit.ui.Window;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -19,22 +18,30 @@ import java.net.URL;
 
 public class ReportDownloadWindow extends ReportOutputWindow
 {
-    private byte[] report;
-    private String rptName;
+    private byte[] data;
+    private String name;
     private ReportOutput output;
 
-    public ReportDownloadWindow(byte[] report, String rptName, ReportOutput output) {
-        super(rptName);
-        this.report = report;
-        this.rptName = rptName;
+    public ReportDownloadWindow(byte[] data, String name, ReportOutput output) {
+        super(name);
+        this.data = data;
+        this.name = name;
         this.output = output;
     }
 
     public DownloadStream handleURI(URL context, String relativeUri) {
-        String contentType = output.getFormat().getContentType();
-        String[] strings = rptName.split("[/\\\\]");
-        String fileName = strings[strings.length-1] + "." + output.getFormat().getFileExt();
-        InputStream is = new ByteArrayInputStream(report);
+        String[] strings = name.split("[/\\\\]");
+        String fileName = strings[strings.length-1];
+
+        String contentType;
+        if (output.getFormat() != null) {
+            contentType = output.getFormat().getContentType();
+            fileName = "." + output.getFormat().getFileExt();
+        } else {
+            contentType = "application/octet-stream";
+        }
+
+        InputStream is = new ByteArrayInputStream(data);
         DownloadStream downloadStream = new DownloadStream(is, contentType, fileName);
         if (output.isAttachment()) {
             downloadStream.setParameter("Content-Disposition", "attachment; filename=" + fileName);
