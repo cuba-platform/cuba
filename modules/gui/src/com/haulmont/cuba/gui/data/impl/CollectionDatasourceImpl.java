@@ -235,8 +235,8 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     protected void loadData(Map<String, Object> params) {
         data.clear();
 
-        final DataServiceRemote.CollectionLoadContext context =
-                new DataServiceRemote.CollectionLoadContext(metaClass);
+        final DataServiceRemote.LoadContext context =
+                new DataServiceRemote.LoadContext(metaClass);
 
         if (query != null && queryParameters != null) {
             final Map<String, Object> parameters = getQueryParameters(params);

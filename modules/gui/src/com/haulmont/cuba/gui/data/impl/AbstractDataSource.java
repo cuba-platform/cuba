@@ -19,10 +19,15 @@ import com.haulmont.chile.core.model.Instance;
 
 import java.util.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public abstract class AbstractDataSource<T extends Entity>
     implements
         Datasource<T>, DatasourceImplementation<T>
 {
+    private Log log = LogFactory.getLog(AbstractDataSource.class);
+
     protected String id;
     protected boolean modified;
 
@@ -115,6 +120,8 @@ public abstract class AbstractDataSource<T extends Entity>
 
     protected class ItemListener implements ValueListener {
         public void propertyChanged(Object item, String property, Object prevValue, Object value) {
+            log.trace("propertyChanged: item=" + item + ", property=" + property + ", value=" + value + ", prevValue=" + prevValue);
+
             for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
                 dsListener.valueChanged(item, property, prevValue, value);
             }

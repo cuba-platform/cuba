@@ -27,7 +27,7 @@ public interface DataServiceRemote
     Map<Entity, Entity> commit(CommitContext<Entity> context);
 
     <A extends Entity> A load(LoadContext context);
-    <A extends Entity> List<A> loadList(CollectionLoadContext context);
+    <A extends Entity> List<A> loadList(LoadContext context);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,16 +72,21 @@ public interface DataServiceRemote
         }
     }
 
-    public class AbstractLoadContext implements Serializable {
-        protected String metaClass;
-        protected DataServiceRemote.Query query;
-        protected View view;
+    public class LoadContext implements Serializable {
 
-        public AbstractLoadContext(MetaClass metaClass) {
+        private static final long serialVersionUID = -8808320502197308698L;
+
+        protected String metaClass;
+        protected Query query;
+        protected View view;
+        protected Object id;
+        protected Collection<Object> ids;
+
+        public LoadContext(MetaClass metaClass) {
             this.metaClass = metaClass.getName();
         }
 
-        public AbstractLoadContext(Class metaClass) {
+        public LoadContext(Class metaClass) {
             this.metaClass = MetadataProvider.getSession().getClass(metaClass).getName();
         }
 
@@ -93,7 +98,7 @@ public interface DataServiceRemote
             return query;
         }
 
-        public void setQuery(DataServiceRemote.Query query) {
+        public void setQuery(Query query) {
             this.query = query;
         }
 
@@ -101,22 +106,9 @@ public interface DataServiceRemote
             return view;
         }
 
-        public AbstractLoadContext setView(View view) {
+        public LoadContext setView(View view) {
             this.view = view;
             return this;
-        }
-    }
-
-    public class LoadContext extends AbstractLoadContext
-    {
-        protected Object id;
-
-        public LoadContext(MetaClass metaClass) {
-            super(metaClass);
-        }
-
-        public LoadContext(Class metaClass) {
-            super(metaClass);
         }
 
         public Object getId() {
@@ -126,20 +118,6 @@ public interface DataServiceRemote
         public LoadContext setId(Object id) {
             this.id = id;
             return this;
-        }
-
-    }
-
-    public class CollectionLoadContext extends AbstractLoadContext
-    {
-        protected Collection<Object> ids;
-
-        public CollectionLoadContext(MetaClass metaClass) {
-            super(metaClass);
-        }
-
-        public CollectionLoadContext(Class metaClass) {
-            super(metaClass);
         }
 
         public Collection<Object> getIds() {
@@ -153,12 +131,14 @@ public interface DataServiceRemote
         public Query setQueryString(String queryString) {
             final Query query = new Query(queryString);
             setQuery(query);
-            
             return query;
         }
     }
 
     public class Query implements Serializable {
+
+        private static final long serialVersionUID = 3819951144050635838L;
+
         private Map<String, Object> parameters = new HashMap<String, Object>();
         private String queryString;
         private int firstResult;
@@ -168,8 +148,9 @@ public interface DataServiceRemote
             this.queryString = queryString;
         }
 
-        public void addParameter(String name, Object value) {
+        public Query addParameter(String name, Object value) {
             parameters.put(name, value);
+            return this;
         }
 
         public String getQueryString() {

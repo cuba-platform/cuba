@@ -101,7 +101,7 @@ public class GenericDataService implements DataService {
         return service.<A>load(context);
     }
 
-    public <A extends Entity> List<A> loadList(CollectionLoadContext context) {
+    public <A extends Entity> List<A> loadList(LoadContext context) {
         return service.<A>loadList(context);
     }
 

@@ -99,7 +99,7 @@ public class LazyLoadingTableScreen extends Window
         }
 
         private void loadMore(boolean all) {
-            DataService.CollectionLoadContext ctx = new DataServiceRemote.CollectionLoadContext(Server.class);
+            DataService.LoadContext ctx = new DataServiceRemote.LoadContext(Server.class);
             ctx.setQueryString(getQueryStr(false));
             ctx.getQuery().setFirstResult(data.size());
             if (!all)
@@ -140,7 +140,7 @@ public class LazyLoadingTableScreen extends Window
 
         public int getDataSize() {
             if (dataSize == null) {
-                DataService.CollectionLoadContext ctx = new DataServiceRemote.CollectionLoadContext(Server.class);
+                DataService.LoadContext ctx = new DataServiceRemote.LoadContext(Server.class);
                 ctx.setQueryString(getQueryStr(true));
                 log.debug("loading data size");
                 List list = ds.loadList(ctx);

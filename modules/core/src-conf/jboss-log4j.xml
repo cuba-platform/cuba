@@ -214,8 +214,8 @@
 
     <!-- Begin Cuba categories -->
 
-    <category name="com.haulmont.cuba.web.App">
-        <priority value="TRACE"/>
+    <category name="com.haulmont.cuba">
+        <priority value="DEBUG"/>
     </category>
 
     <!-- End Cuba categories -->

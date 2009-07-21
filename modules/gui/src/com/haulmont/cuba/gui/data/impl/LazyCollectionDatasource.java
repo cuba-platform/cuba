@@ -102,8 +102,8 @@ public class LazyCollectionDatasource<T extends Entity, K>
             transformer.replaceWithCount();
             jpqlQuery = transformer.getResult();
 
-            final DataServiceRemote.CollectionLoadContext context =
-                    new DataServiceRemote.CollectionLoadContext(metaClass);
+            final DataServiceRemote.LoadContext context =
+                    new DataServiceRemote.LoadContext(metaClass);
 
             context.setQueryString(jpqlQuery).setParameters(parametersValues);
 
@@ -201,7 +201,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
         }
         jpqlQuery = transformer.getResult();
 
-        DataServiceRemote.CollectionLoadContext ctx = new DataServiceRemote.CollectionLoadContext(Server.class);
+        DataServiceRemote.LoadContext ctx = new DataServiceRemote.LoadContext(Server.class);
         ctx.setQueryString(jpqlQuery);
         ctx.getQuery().setFirstResult(data.size());
         ctx.setView(view);

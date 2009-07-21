@@ -111,7 +111,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
         return (A) result;
     }
 
-    public <A extends Entity> List<A> loadList(CollectionLoadContext context) {
+    public <A extends Entity> List<A> loadList(LoadContext context) {
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
         checkPermission(metaClass, "read");
 
@@ -131,7 +131,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
         return resultList;
     }
 
-    protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, AbstractLoadContext context) {
+    protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, LoadContext context) {
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
 
         com.haulmont.cuba.core.Query query = em.createQuery(context.getQuery().getQueryString());

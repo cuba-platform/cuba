@@ -82,8 +82,8 @@ public class BasicServiceTest extends CubaTestCase
 
         bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
 
-        final DataServiceRemote.CollectionLoadContext loadContext =
-                new DataServiceRemote.CollectionLoadContext(Server.class);
+        final DataServiceRemote.LoadContext loadContext =
+                new DataServiceRemote.LoadContext(Server.class);
         loadContext.setQueryString("select s from " + PersistenceProvider.getEntityName(Server.class) + " s");
         
         List<Server> list = bs.loadList(loadContext);
