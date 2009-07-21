@@ -38,17 +38,19 @@ public class ToolsImpl {
         while (elem.firstChild) {
             elem.removeChild(elem.firstChild);
         }
-        var arr = new Array();
-        arr = text.replace(/\r/g, "").split("\n");
-        if (arr.length > 0) {
-            for (var i = 0; i < arr.length; i++) {
-                if (arr[i]) {
-                    elem.appendChild($doc.createTextNode(arr[i]));
-                    elem.appendChild($doc.createElement("br"));
+        if (text != null) {
+            var arr = new Array();
+            arr = text.replace(/\r/g, "").split("\n");
+            if (arr.length > 0) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i]) {
+                        elem.appendChild($doc.createTextNode(arr[i]));
+                        elem.appendChild($doc.createElement("br"));
+                    }
                 }
+            } else {
+                elem.appendChild($doc.createTextNode(text));
             }
-        } else {
-            elem.appendChild($doc.createTextNode(text));
         }
     }-*/;
 
