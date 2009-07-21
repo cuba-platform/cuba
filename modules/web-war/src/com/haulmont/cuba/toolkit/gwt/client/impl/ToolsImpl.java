@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.impl;
 
+import com.google.gwt.dom.client.Element;
+
 public class ToolsImpl {
 
     public native int parseSize(String s) /*-{
@@ -26,6 +28,28 @@ public class ToolsImpl {
                 .replace(/\[\/b\]/g, "</b>")
                 .replace(/\[i\]/g, "<i>")
                 .replace(/\[\/i\]/g, "</i>");
+    }-*/;
+
+    public native void setInnerHTML(Element elem, String text) /*-{
+        elem.innerHTML = text; //todo
+    }-*/;
+
+    public native void setInnerText(Element elem, String text) /*-{
+        while (elem.firstChild) {
+            elem.removeChild(elem.firstChild);
+        }
+        var arr = new Array();
+        arr = text.replace(/\r/g, "").split("\n");
+        if (arr.length > 0) {
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i]) {
+                    elem.appendChild($doc.createTextNode(arr[i]));
+                    elem.appendChild($doc.createElement("br"));
+                }
+            }
+        } else {
+            elem.appendChild($doc.createTextNode(text));
+        }
     }-*/;
 
 }

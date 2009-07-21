@@ -20,6 +20,7 @@ import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.itmill.toolkit.terminal.gwt.client.*;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 import java.util.*;
 
@@ -2215,9 +2216,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             protected void setCellContent(Element container, String text,
                                           boolean textIsHTML) {
                 if (textIsHTML) {
-                    DOM.setInnerHTML(container, text);
+                    Tools.setInnerHTML(container, text);
                 } else {
-                    DOM.setInnerText(container, text);
+                    Tools.setInnerText(container, text);
                 }
             }
 

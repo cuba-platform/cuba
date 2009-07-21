@@ -36,4 +36,12 @@ public class Tools {
             }
         }
     }
+
+    public static void setInnerHTML(Element elem, String text) {
+        impl.setInnerHTML(elem, text);
+    }
+
+    public static void setInnerText(Element elem, String text) {
+        impl.setInnerText(elem, text);
+    }
 }
