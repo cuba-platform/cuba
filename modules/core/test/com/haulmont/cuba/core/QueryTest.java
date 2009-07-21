@@ -35,4 +35,21 @@ public class QueryTest extends CubaTestCase
             tx.end();
         }
     }
+
+    public void testNullParam() {
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+
+            Query query = em.createQuery("select r from sec$UserRole r where r.deleteTs = :dts");
+            query.setParameter("dts", null);
+            List list = query.getResultList();
+
+            assertFalse(list.isEmpty());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
 }

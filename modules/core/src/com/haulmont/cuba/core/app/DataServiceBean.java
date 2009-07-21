@@ -143,9 +143,13 @@ public class DataServiceBean implements DataService, DataServiceRemote
             query.setMaxResults(context.getQuery().getMaxResults());
 
         final String queryString = context.getQuery().getQueryString();
+
+        QueryParser parser = QueryTransformerFactory.createParser(queryString);
+        Set<String> paramNames = parser.getParamNames();
+
         for (Map.Entry<String, Object> entry : context.getQuery().getParameters().entrySet()) {
             final String name = entry.getKey();
-            if (queryString.contains(":" + name)) {
+            if (paramNames.contains(name)) {
                 final Object value = entry.getValue();
                 if (value instanceof Entity) {
                     query.setParameter(entry.getKey(), ((Entity) value).getId());

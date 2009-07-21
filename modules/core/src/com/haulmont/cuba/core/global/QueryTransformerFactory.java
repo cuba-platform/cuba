@@ -15,4 +15,8 @@ public class QueryTransformerFactory
     public static QueryTransformer createTransformer(String query, String targetEntity) {
         return new QueryTransformerRegex(query, targetEntity);
     }
+
+    public static QueryParser createParser(String query) {
+        return new QueryParserRegex(query);
+    }
 }

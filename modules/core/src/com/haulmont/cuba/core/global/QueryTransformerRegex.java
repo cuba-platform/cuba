@@ -18,33 +18,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class QueryTransformerRegex implements QueryTransformer
+public class QueryTransformerRegex extends QueryParserRegex implements QueryTransformer
 {
-    public static final String ENTITY_PATTERN_REGEX = "(\\b[_A-Za-z]+\\$[A-Z][_A-Za-z]*)(\\s+as\\b)?\\s+([a-z]+[a-z0-9]*)*\\b";
-    public static final Pattern ENTITY_PATTERN = Pattern.compile(ENTITY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
-
-    public static final String WHERE_PATTERN_REGEX = "\\bWHERE\\b";
-    public static final Pattern WHERE_PATTERN = Pattern.compile(WHERE_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
-
-    public static final String LAST_CLAUSE_PATTERN_REGEX = "(\\bGROUP\\s+BY\\b)|(\\bORDER\\s+BY\\b)|(\\bHAVING\\b)";
-    public static final Pattern LAST_CLAUSE_PATTERN = Pattern.compile(LAST_CLAUSE_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
-
-    public static final String ORDER_BY_PATTERN_REGEX = "\\bORDER\\s+BY\\b";
-    public static final Pattern ORDER_BY_PATTERN = Pattern.compile(ORDER_BY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
-
-    public static final String ALIAS_PATTERN_REGEX = "(^|\\s|\\()(\\w+)\\.";
-    public static final Pattern ALIAS_PATTERN = Pattern.compile(ALIAS_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
-
-    public static final String PARAM_PATTERN_REGEX = ":([a-zA-Z_0-9$]+)";
-    public static final Pattern PARAM_PATTERN = Pattern.compile(PARAM_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
-
-    private String source;
     private String targetEntity;
     private StringBuffer buffer;
     private Set<String> addedParams;
 
     QueryTransformerRegex(String source, String targetEntity) {
-        this.source = source;
+        super(source);
         this.targetEntity = targetEntity;
         buffer = new StringBuffer(source);
         addedParams = new HashSet<String>();
