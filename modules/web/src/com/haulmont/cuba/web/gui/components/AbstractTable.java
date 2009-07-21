@@ -70,7 +70,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
             if (column.getId().toString().equals(id))
                 return column;
         }
-        throw new IllegalArgumentException("Column not found: " + id);
+        return null;
     }
 
     public void addColumn(Table.Column column) {
