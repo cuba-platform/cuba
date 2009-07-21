@@ -11,7 +11,11 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.core.sys.JtaTransaction;
 
+import javax.transaction.TransactionManager;
+import javax.transaction.SystemException;
+import javax.naming.NamingException;
 import java.util.UUID;
 
 public class TransactionTest extends CubaTestCase
@@ -160,6 +164,36 @@ public class TransactionTest extends CubaTestCase
             server.setAddress("222");
 
             throwException();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void testRollbackAndContinue() {
+        Transaction tx = Locator.createTransaction();
+        try {
+            try {
+                TransactionManager tm = (TransactionManager) Locator.getJndiContext().lookup("java:/TransactionManager");
+                tm.setRollbackOnly();
+            } catch (NamingException e) {
+                throw new RuntimeException(e);
+            } catch (SystemException e) {
+                throw new RuntimeException(e);
+            }
+        } finally {
+            tx.end();
+        }
+
+        tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Server server = new Server();
+            server.setName("localhost");
+            server.setAddress("127.0.0.1");
+            server.setRunning(true);
+            em.persist(server);
 
             tx.commit();
         } finally {

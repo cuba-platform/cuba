@@ -71,7 +71,7 @@ public class JtaTransaction implements Transaction
 
         if (!committed) {
             try {
-                if (tm.getStatus() == Status.STATUS_ACTIVE) {
+                if (tm.getStatus() == Status.STATUS_ACTIVE || tm.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
                     tm.rollback();
                 }
             } catch (SystemException e) {
