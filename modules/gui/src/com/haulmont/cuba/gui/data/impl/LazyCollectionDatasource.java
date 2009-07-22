@@ -82,6 +82,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
 
     @Override
     public void invalidate() {
+        super.invalidate();
         size = null;
         data.clear();
     }

@@ -144,6 +144,8 @@ public class DatasourceImpl<T extends Entity>
             this.state = State.INVALID;
             forceStateChanged(prevStatus);
         }
+        modified = false;
+        clearCommitLists();
     }
 
     public void initialized() {

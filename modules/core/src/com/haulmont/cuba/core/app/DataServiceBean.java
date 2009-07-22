@@ -101,7 +101,11 @@ public class DataServiceBean implements DataService, DataServiceRemote
                 query = createQuery(em, context);
             }
 
-            result = query.getSingleResult();
+            try {
+                result = query.getSingleResult();
+            } catch (javax.persistence.NoResultException e) {
+                result = null;
+            }
 
             tx.commit();
         } finally {
