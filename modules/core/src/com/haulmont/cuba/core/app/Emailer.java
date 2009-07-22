@@ -51,6 +51,11 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachment)
             throws EmailException {
+        sendEmail(addresses, caption, body, config.getFromAddress(), attachment);
+    }
+
+    public void sendEmail(String addresses, String caption, String body, String from, EmailAttachment... attachment)
+            throws EmailException {
         String[] addrArr = addresses.split("[,;]");
         Session session = getMailSession();
 
@@ -60,7 +65,14 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         for (String addr : addrArr) {
             try {
                 addr = addr.trim();
-                MimeMessage message = createMessage(session, addr, caption, body, attachment);
+                String fromEmail;
+                if (from == null) {
+                    fromEmail = config.getFromAddress();
+                } else {
+                    fromEmail = from;
+                }
+
+                MimeMessage message = createMessage(session, addr, caption, body, attachment, fromEmail);
                 send(session, addr, message);
                 log.info("Email '" + caption + "' to '" + addr + "' sent succesfully");
             } catch (MessagingException e) {
@@ -100,12 +112,11 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             String address,
             String caption,
             String text,
-            EmailAttachment[] attachments) throws MessagingException {
+            EmailAttachment[] attachments, String from) throws MessagingException {
         MimeMessage msg = new MimeMessage(session);
         msg.addRecipients(Message.RecipientType.TO, address);
         msg.setSubject(caption);
         msg.setSentDate(new Date());
-        String from = config.getFromAddress();
         msg.setFrom(new InternetAddress(from));
 
         MimeMultipart content = new MimeMultipart("related");
