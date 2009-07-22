@@ -49,7 +49,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
             }
             // merge detached
             for (Entity entity : context.getCommitInstances()) {
-                if (!PersistenceHelper.isNew(entity)) {
+                if (PersistenceHelper.isDetached(entity)) {
                     Entity e = em.merge(entity);
                     res.put(entity, e);
                 }

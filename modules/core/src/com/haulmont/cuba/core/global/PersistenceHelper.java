@@ -15,15 +15,24 @@ import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.BitSet;
 
 public class PersistenceHelper {
+
     public static boolean isNew(Entity entity) {
         if (entity instanceof PersistenceCapable)
             return ((PersistenceCapable) entity).pcIsDetached() == null;
         else
             return entity.getId() != null;
+    }
+
+    public static boolean isDetached(Entity entity) {
+        if (entity instanceof PersistenceCapable)
+            return BooleanUtils.isTrue(((PersistenceCapable) entity).pcIsDetached());
+        else
+            return true;
     }
 
     public static boolean isLoaded(Entity entity, String property) {

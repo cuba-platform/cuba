@@ -24,6 +24,8 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
 
@@ -73,7 +75,11 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public <T extends Entity> T merge(T entity) {
-        return delegate.merge(entity);
+        if (entity instanceof PersistenceCapable
+                && BooleanUtils.isFalse(((PersistenceCapable) entity).pcIsDetached()))
+            return entity;
+        else
+            return delegate.merge(entity);
     }
 
     public void remove(Entity entity) {

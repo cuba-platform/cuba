@@ -111,6 +111,12 @@ public interface DataServiceRemote
             return this;
         }
 
+        public LoadContext setView(String viewName) {
+            this.view = MetadataProvider.getViewRepository().getView(
+                    MetadataProvider.getSession().getClass(metaClass), viewName);
+            return this;
+        }
+
         public Object getId() {
             return id;
         }

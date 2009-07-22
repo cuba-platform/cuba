@@ -10,19 +10,18 @@
  */
 package com.haulmont.cuba.core.sys.listener;
 
+import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
-import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.ClassUtils;
 
 public class EntityListenerManager
 {
@@ -60,9 +59,12 @@ public class EntityListenerManager
 
     private Log log = LogFactory.getLog(EntityListenerManager.class);
 
-    private Map<Key, Object> cache = new ConcurrentHashMap<Key, Object>();
+    private Map<Key, List> cache = new ConcurrentHashMap<Key, List>();
 
-    private Object nullListener = new Object();
+    private Map<Class<? extends BaseEntity>, Set<String>> dynamicListeners =
+            new ConcurrentHashMap<Class<? extends BaseEntity>, Set<String>>();
+
+    private volatile boolean enabled = true;
 
     public static EntityListenerManager getInstance() {
         if (instance == null) {
@@ -71,29 +73,45 @@ public class EntityListenerManager
         return instance;
     }
 
+    public void addListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClassName) {
+        Set<String> set = dynamicListeners.get(entityClass);
+        if (set == null) {
+            set = new HashSet<String>();
+            dynamicListeners.put(entityClass, set);
+        }
+        set.add(listenerClassName.getName());
+    }
+
     public void fireListener(BaseEntity entity, EntityListenerType type) {
-        Object entityListener = getListener(entity.getClass(), type);
-        if (entityListener != null) {
+        if (!enabled)
+            return;
+        
+        List listeners = getListener(entity.getClass(), type);
+        for (Object listener : listeners) {
             switch (type) {
                 case BEFORE_INSERT: {
                     logExecution(type, entity);
-                    ((BeforeInsertEntityListener) entityListener).onBeforeInsert(entity);
+                    ((BeforeInsertEntityListener) listener).onBeforeInsert(entity);
                     break;
                 }
                 case BEFORE_UPDATE: {
                     logExecution(type, entity);
-                    ((BeforeUpdateEntityListener) entityListener).onBeforeUpdate(entity);
+                    ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity);
                     break;
                 }
                 case BEFORE_DELETE: {
                     logExecution(type, entity);
-                    ((BeforeDeleteEntityListener) entityListener).onBeforeDelete(entity);
+                    ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity);
                     break;
                 }
                 default:
                     throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);
             }
         }
+    }
+
+    public void enable(boolean enable) {
+        this.enabled = enable;
     }
 
     private void logExecution(EntityListenerType type, BaseEntity entity) {
@@ -115,28 +133,29 @@ public class EntityListenerManager
         }
     }
 
-    private Object getListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
+    private List getListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
         Key key = new Key(entityClass, type);
 
         if (!cache.containsKey(key)) {
-            Object listener = findListener(entityClass, type);
-            cache.put(key, listener != null ? listener : nullListener);
-            return listener;
+            List listeners = findListener(entityClass, type);
+            cache.put(key, listeners);
+            return listeners;
         }
         else {
-            Object listener = cache.get(key);
-            return listener != nullListener ? listener : null;
+            List listeners = cache.get(key);
+            return listeners;
         }
     }
 
-    private Object findListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
+    private List findListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
         log.trace("get listener " + type + " for class " + entityClass.getName());
         List<String> classNames = getDeclaredListeners(entityClass);
         if (classNames.isEmpty()) {
             log.trace("no annotations, exiting");
-            return null;
+            return Collections.emptyList();
         }
 
+        List result = new ArrayList();
         for (String className : classNames) {
             try {
                 Class aClass = Thread.currentThread().getContextClassLoader().loadClass(className);
@@ -145,7 +164,7 @@ public class EntityListenerManager
                 for (Class intf : interfaces) {
                     if (intf.equals(type.getListenerInterface())) {
                         log.trace("listener implements " + type.getListenerInterface());
-                        return aClass.newInstance();
+                        result.add(aClass.newInstance());
                     }
                 }
             } catch (ClassNotFoundException e) {
@@ -156,25 +175,35 @@ public class EntityListenerManager
                 throw new RuntimeException("Unable to instantiate an Entity Listener", e);
             }
         }
-        log.trace("no implementors of interface " + type.getListenerInterface() + " found");
-        return null;
+        return result;
     }
 
     private List<String> getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
         List<String> listeners = new ArrayList<String>();
 
-        Listeners annotation;
         List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
         for (Class superclass : superclasses) {
-            annotation = (Listeners) superclass.getAnnotation(Listeners.class);
+            Set<String> set = dynamicListeners.get(superclass);
+            if (set != null) {
+                listeners.addAll(set);
+            }
+
+            Listeners annotation = (Listeners) superclass.getAnnotation(Listeners.class);
             if (annotation != null) {
                 listeners.addAll(Arrays.asList(annotation.value()));
             }
         }
-        annotation = entityClass.getAnnotation(Listeners.class);
+
+        Set<String> set = dynamicListeners.get(entityClass);
+        if (set != null) {
+            listeners.addAll(set);
+        }
+
+        Listeners annotation = entityClass.getAnnotation(Listeners.class);
         if (annotation != null) {
             listeners.addAll(Arrays.asList(annotation.value()));
         }
+
         return listeners;
     }
 
