@@ -25,11 +25,17 @@ import com.itmill.toolkit.ui.*;
 
 import java.util.*;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.lang.text.StrBuilder;
+
 public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 {
     protected App app;
 
     protected Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
+
+    private Log log = LogFactory.getLog(WindowManager.class);
 
     public WindowManager(App app) {
         this.app = app;
@@ -358,7 +364,21 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
     }
 
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
+
+        final com.itmill.toolkit.ui.Window mainWindow = App.getInstance().getMainWindow();
+
+        for (com.itmill.toolkit.ui.Window childWindow : new ArrayList<com.itmill.toolkit.ui.Window>(mainWindow.getChildWindows())) {
+            if ("cuba-option-dialog".equals(childWindow.getName())) {
+                String msg = new StrBuilder("Another OptionDialog window exists, removing it\n")
+                        .appendWithSeparators(Thread.currentThread().getStackTrace(), "\n")
+                        .toString();
+                log.warn(msg);
+                mainWindow.removeWindow(childWindow);
+            }
+        }
+
         final com.itmill.toolkit.ui.Window window = new com.itmill.toolkit.ui.Window(title);
+        window.setName("cuba-option-dialog");
 
         Label messageBox = new Label(message, Label.CONTENT_XHTML);
 
@@ -380,7 +400,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             buttonsContainer.addComponent(new Button(action.getCaption(), new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
-                    App.getInstance().getMainWindow().removeWindow(window);
+                    mainWindow.removeWindow(window);
                 }
             }));
         }
