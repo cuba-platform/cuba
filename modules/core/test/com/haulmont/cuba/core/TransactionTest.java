@@ -201,6 +201,32 @@ public class TransactionTest extends CubaTestCase
         }
     }
 
+    public void testNestedRollback() {
+        try {
+            Transaction tx = Locator.createTransaction();
+            try {
+
+                Transaction tx1 = Locator.getTransaction();
+                try {
+                    throwException();
+                    fail();
+                    tx1.commit();
+                } catch (RuntimeException e) {
+                    assertEquals(TEST_EXCEPTION_MSG, e.getMessage());
+                } finally {
+                    tx1.end();
+                }
+
+                tx.commit();
+                fail();
+            } finally {
+                tx.end();
+            }
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+    }
+
     private void throwException() {
         throw new RuntimeException(TEST_EXCEPTION_MSG);
     }

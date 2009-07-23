@@ -17,6 +17,8 @@ import javax.transaction.SystemException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.Status;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class JtaTransaction implements Transaction
 {
     private TransactionManager tm;
@@ -42,8 +44,13 @@ public class JtaTransaction implements Transaction
     }
 
     public void commit() {
-        if (!started)
+        if (committed)
             return;
+
+        if (!started) {
+            committed = true;
+            return;
+        }
 
         try {
             tm.commit();
@@ -54,8 +61,13 @@ public class JtaTransaction implements Transaction
     }
 
     public void commitRetaining() {
-        if (!started)
+        if (committed)
             return;
+
+        if (!started) {
+            committed = true;
+            return;
+        }
 
         try {
             tm.commit();
@@ -66,18 +78,36 @@ public class JtaTransaction implements Transaction
     }
 
     public void end() {
-        if (!started)
-            return;
+        try {
+            if (!started) {
+                if (!committed && (tm.getStatus() == Status.STATUS_ACTIVE)) {
+                    tm.setRollbackOnly();
+                }
+                return;
+            }
 
-        if (!committed) {
-            try {
+            if (!committed) {
                 if (tm.getStatus() == Status.STATUS_ACTIVE || tm.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
                     tm.rollback();
                 }
-            } catch (SystemException e) {
-                throw new RuntimeException(e);
             }
+        } catch (SystemException e) {
+            throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public String toString() {
+        javax.transaction.Transaction tx = null;
+        try {
+            tx = tm.getTransaction();
+        } catch (SystemException e) { // ignore
+        }
+        ToStringBuilder builder = new ToStringBuilder(this)
+                .append("started", started)
+                .append("committed", committed)
+                .append("tx", tx);
+        return builder.toString();
     }
 }
