@@ -19,6 +19,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +36,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     private T item;
     protected boolean cascadeProperty;
 
+    private Log log = LogFactory.getLog(CollectionPropertyDatasourceImpl.class);
+
     public CollectionPropertyDatasourceImpl(String id, Datasource<Entity> ds, String property) {
         super(id, ds, property);
 
@@ -45,7 +49,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     @Override
     protected void initParentDsListeners() {
         ds.addListener(new DatasourceListener<Entity>() {
+
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
+                log.trace("itemChanged: prevItem=" + prevItem + ", item=" + item);
+
+                Collection prevColl = prevItem == null ? null : (Collection) ((Instance) prevItem).getValue(metaProperty.getName());
+                Collection coll = item == null ? null : (Collection) ((Instance) item).getValue(metaProperty.getName());
+                reattachListeners(prevColl, coll);
+
                 forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
             }
 
@@ -57,7 +68,27 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
             }
 
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                // Do nothing
+                if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
+                    log.trace("valueChanged: prop=" + property + ", prevValue=" + prevValue + ", value=" + value);
+
+                    reattachListeners((Collection) prevValue, (Collection) value);
+
+                    forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+                }
+            }
+
+            private void reattachListeners(Collection prevColl, Collection coll) {
+                if (prevColl != null)
+                    for (Object entity : prevColl) {
+                        if (entity instanceof Instance)
+                            detachListener((Instance) entity);
+                    }
+
+                if (coll != null)
+                    for (Object entity : coll) {
+                        if (entity instanceof Instance)
+                            attachListener((Instance) entity);
+                    }
             }
         });
     }
@@ -90,16 +121,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
             Object prevItem = this.item;
 
             if (!ObjectUtils.equals(prevItem, item)) {
-                if (this.item != null) {
-                    detachListener((Instance) this.item);
-                }
 
                 if (item instanceof Instance) {
                     final MetaClass aClass = ((Instance) item).getMetaClass();
                     if (!aClass.equals(getMetaClass())) {
                         throw new IllegalStateException(String.format("Invalid item metaClass"));
                     }
-                    attachListener((Instance) item);
                 }
                 this.item = item;
 

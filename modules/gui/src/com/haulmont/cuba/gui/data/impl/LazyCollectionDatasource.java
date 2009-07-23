@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.DataServiceRemote;
@@ -61,6 +62,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
 
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
+            attachListener((Instance) item);
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
     }
@@ -84,6 +86,9 @@ public class LazyCollectionDatasource<T extends Entity, K>
     public void invalidate() {
         super.invalidate();
         size = null;
+        for (Object entity : data.values()) {
+            detachListener((Instance) entity);
+        }
         data.clear();
     }
 
@@ -212,6 +217,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
         List<T> res = dataservice.loadList(ctx);
         for (T t : res) {
             data.put(t.getId(), t);
+            attachListener((Instance) t);
         }
 
         if (res.size() < chunk) {
@@ -235,7 +241,6 @@ public class LazyCollectionDatasource<T extends Entity, K>
             final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
             final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
-            @SuppressWarnings({"unchecked"})
             List<T> order = new ArrayList<T>(data.values());
             Collections.sort(order, new EntityComparator<T>(propertyPath, asc));
             data.clear();
@@ -243,6 +248,9 @@ public class LazyCollectionDatasource<T extends Entity, K>
                 data.put(t.getId(), t);
             }
         } else {
+            for (Object entity : data.values()) {
+                detachListener((Instance) entity);
+            }
             data.clear();
             loadNextChunk(false);
         }

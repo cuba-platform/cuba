@@ -76,7 +76,6 @@ public class CollectionDatasourceImpl<T extends Entity, K>
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
             final T item = (T) data.get(key);
-            attachListener((Instance) item);
             return item;
         }
     }
@@ -164,6 +163,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         checkState();
 
         data.put(item.getId(), item);
+        attachListener((Instance) item);
 
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.add(item);
@@ -177,6 +177,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         checkState();
 
         data.remove(item.getId());
+        detachListener((Instance) item);
 
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.remove(item);
@@ -193,6 +194,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
+            attachListener((Instance) item);
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
     }
@@ -242,6 +244,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     protected void loadData(Map<String, Object> params) {
+        for (Object entity : data.values()) {
+            detachListener((Instance) entity);
+        }
         data.clear();
 
         final DataServiceRemote.LoadContext context =
@@ -269,6 +274,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
         for (T entity : entities) {
             data.put(entity.getId(), entity);
+            attachListener((Instance) entity);
         }
     }
 }

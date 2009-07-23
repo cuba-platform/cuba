@@ -45,7 +45,8 @@ public class PropertyDatasourceImpl<T extends Entity>
         ds.addListener(new DatasourceListener<Entity>() {
 
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                __itemChanged(prevItem, item);
+                reattachListeners(prevItem, item);
+                forceItemChanged(prevItem);
             }
 
             public void stateChanged(Datasource ds, State prevState, State state) {
@@ -56,22 +57,20 @@ public class PropertyDatasourceImpl<T extends Entity>
 
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
-                    __itemChanged((Entity) prevValue, (Entity) value);
+                    reattachListeners((Entity) prevValue, (Entity) value);
+                    forceItemChanged(prevValue);
                 }
             }
 
-            private void __itemChanged(Entity prevItem, Entity item) {
+            private void reattachListeners(Entity prevItem, Entity item) {
                 Entity prevValue = getItem((Instance) prevItem);
                 Entity newValue = getItem((Instance) item);
 
                 if (!ObjectUtils.equals(prevValue, newValue)) {
                     detachListener((Instance) prevValue);
                     attachListener((Instance) newValue);
-
-                    forceItemChanged(prevValue);
                 }
             }
-
         });
     }
 

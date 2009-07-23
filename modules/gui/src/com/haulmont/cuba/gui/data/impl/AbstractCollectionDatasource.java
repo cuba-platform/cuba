@@ -55,16 +55,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
                                     prevItem == null ? null : ((Versioned) prevItem).getVersion(),
                                     item == null ? null : ((Versioned) item).getVersion()))
             {
-                if (this.item != null) {
-                    detachListener((Instance) this.item);
-                }
-
                 if (item instanceof Instance) {
                     final MetaClass aClass = ((Instance) item).getMetaClass();
                     if (!aClass.equals(this.metaClass)) {
                         throw new IllegalStateException(String.format("Invalid item metaClass"));
                     }
-                    attachListener((Instance) item);
                 }
                 this.item = item;
 
