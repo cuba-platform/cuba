@@ -56,6 +56,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
     public void invalidateCache() {
         lock.writeLock().lock();
         try {
+            log.debug("Invalidating cache");
             entitiesManual = null;
             entitiesAuto = null;
             loaded = false;
@@ -96,6 +97,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
     }
 
     private void loadEntities() {
+        log.debug("Loading entities");
         entitiesManual = new HashMap<String, Set<String>>();
         entitiesAuto = new HashMap<String, Set<String>>();
         Transaction tx = Locator.getTransaction();
@@ -119,6 +121,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         } finally {
             tx.end();
         }
+        log.debug("Loaded: entitiesAuto=" + entitiesAuto.size() + ", entitiesManual=" + entitiesManual.size());
     }
 
     public void registerCreate(BaseEntity entity) {
