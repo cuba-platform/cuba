@@ -34,7 +34,6 @@ import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Table;
-import com.itmill.toolkit.ui.Field;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -672,7 +671,7 @@ public class Window
                     ds.commit();
                 } else {
                     DataService service = getDataService();
-                    service.commit((Entity) item);
+                    service.commit((Entity) item, null);
                 }
             }
             item = getDatasource().getItem();

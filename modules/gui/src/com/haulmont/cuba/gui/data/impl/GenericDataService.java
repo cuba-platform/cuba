@@ -60,11 +60,14 @@ public class GenericDataService implements DataService {
         return (A)load(context);
     }
 
-    public <A extends Entity> A commit(A instance) {
+    public <A extends Entity> A commit(A instance, View view) {
         final CommitContext<Entity> context =
                 new CommitContext<Entity>(
                         Collections.singleton((Entity) instance),
                         Collections.<Entity>emptyList());
+        if (view != null)
+            context.getViews().put(instance, view);
+
         final Map res = commit(context);
 
         return (A) res.get(instance);

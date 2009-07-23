@@ -18,6 +18,6 @@ public interface DataService extends DataServiceRemote {
     <A extends Entity> A newInstance(MetaClass metaClass);
     <A extends Entity> A reload(A entity, View view);
 
-    <A extends Entity> A commit(A entity);
+    <A extends Entity> A commit(A entity, View view);
     void remove(Entity entity);
 }

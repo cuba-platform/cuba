@@ -212,8 +212,17 @@ public class CollectionDatasourceImpl<T extends Entity, K>
             commitInstances.addAll(itemToUpdate);
             deleteInstances.addAll(itemToDelete);
 
-            final Map<Entity, Entity> map =
-                    service.commit(new DataServiceRemote.CommitContext<Entity>(commitInstances, deleteInstances));
+            DataServiceRemote.CommitContext<Entity> context =
+                    new DataServiceRemote.CommitContext<Entity>(commitInstances, deleteInstances);
+            for (Entity entity : commitInstances) {
+                context.getViews().put(entity, getView());
+            }
+            for (Entity entity : deleteInstances) {
+                context.getViews().put(entity, getView());
+            }
+
+            final Map<Entity, Entity> map = service.commit(context);
+
             commited(map);
         } else {
             throw new UnsupportedOperationException();

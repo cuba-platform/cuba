@@ -67,7 +67,7 @@ public class DatasourceImpl<T extends Entity>
     public void commit() {
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
             final DataService service = getDataService();
-            item = service.commit(item);
+            item = service.commit(item, getView());
 
             clearCommitLists();
             modified = false;
