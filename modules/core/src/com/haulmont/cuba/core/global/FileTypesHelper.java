@@ -27,6 +27,8 @@
 
 package com.haulmont.cuba.core.global;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -227,7 +229,7 @@ public class FileTypesHelper {
         // Calculates the extension of the file
         int dotIndex = fileName.lastIndexOf(".");
         if (dotIndex > -1) {
-            final String ext = fileName.substring(dotIndex);
+            final String ext = StringUtils.substring(fileName, dotIndex + 1);
 
             // Return type from extension map, if found
             final String type = extToMIMEMap.get(ext);
