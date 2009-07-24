@@ -12,15 +12,14 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class HierarchicalDatasourceImpl<T extends Entity, K>
     extends
@@ -46,17 +45,29 @@ public class HierarchicalDatasourceImpl<T extends Entity, K>
     }
 
     public Collection<K> getChildren(K itemId) {
-        Set<K> res = new HashSet<K>();
-
         final Entity item = getItem(itemId);
-        if (item == null) return Collections.emptyList();
+        if (item == null)
+            return Collections.emptyList();
+
+        List<Entity<K>> entities = new ArrayList<Entity<K>>();
 
         Collection<K> ids = getItemIds();
         for (K id : ids) {
             Entity<K> currentItem = getItem(id);
             Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
             if (parentItem != null && parentItem.equals(item))
-                res.add((K) currentItem.getId());
+                entities.add(currentItem);
+        }
+
+        if (sortInfos != null && sortInfos.length > 0) {
+            MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+            Order order = sortInfos[0].getOrder();
+            Collections.sort(entities, new EntityComparator(propertyPath, Order.ASC.equals(order)));
+        }
+
+        List<K> res = new ArrayList<K>();
+        for (Entity<K> entity : entities) {
+            res.add(entity.getId());
         }
 
         return res;
