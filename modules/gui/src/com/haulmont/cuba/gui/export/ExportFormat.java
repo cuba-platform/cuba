@@ -14,7 +14,7 @@ public enum ExportFormat
 {
     HTML("text/html", "html"),
     PDF("application/pdf", "pdf"),
-    XLS("application/xls", "xls");
+    XLS("application/vnd.ms-excel", "xls");
 
     private String contentType;
     private String fileExt;
