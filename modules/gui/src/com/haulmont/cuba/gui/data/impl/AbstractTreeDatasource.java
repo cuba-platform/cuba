@@ -8,18 +8,21 @@
  * $Id$
  */
 
-package com.haulmont.cuba.gui.data;
+package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.DataService;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
-public abstract class TreeDatasourceWrapper<T extends Entity, K>
+public abstract class AbstractTreeDatasource<T extends Entity, K>
     extends
         CollectionDatasourceImpl<T, K>
     implements
@@ -28,7 +31,7 @@ public abstract class TreeDatasourceWrapper<T extends Entity, K>
     protected Tree<T> tree;
     protected Map<K, Node<T>> nodes;
 
-    public TreeDatasourceWrapper(
+    public AbstractTreeDatasource(
             DsContext context, DataService dataservice,
                 String id, MetaClass metaClass, String viewName)
     {
@@ -40,13 +43,14 @@ public abstract class TreeDatasourceWrapper<T extends Entity, K>
 
         Map<K, Node<T>> targetNodes = new HashMap<K, Node<T>>();
 
-        for (Node<T> entity : tree.toList()) {
-            final T nodeData = entity.getData();
-            final K id = (K) nodeData.getId();
+        data.clear();
+        for (Node<T> node : tree.toList()) {
+            final T entity = node.getData();
+            final K id = (K) entity.getId();
 
-            data.put(id, nodeData);
+            data.put(id, entity);
 
-            targetNodes.put(id, entity);
+            targetNodes.put(id, node);
         }
 
         this.nodes = targetNodes;

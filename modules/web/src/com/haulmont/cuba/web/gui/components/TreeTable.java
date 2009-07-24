@@ -25,6 +25,8 @@ import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.itmill.toolkit.terminal.Resource;
+import com.itmill.toolkit.data.Container;
+import com.itmill.toolkit.data.Item;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -153,7 +155,6 @@ public class TreeTable
         component.setFieldFactory(new FieldFactory());
         component.setColumnCollapsingAllowed(true);
         component.setColumnReorderingAllowed(true);
-        setSortable(false);
         setEditable(false);
     }
 
@@ -243,7 +244,7 @@ public class TreeTable
 
     protected class TreeTableDsWrapper
             extends HierarchicalDsWrapper
-            implements TreeTableContainer
+            implements TreeTableContainer, com.itmill.toolkit.data.Container.Sortable
     {
         protected boolean treeTableDatasource;
 
@@ -306,6 +307,57 @@ public class TreeTable
                 return 0;
             }
             return getItemLevel(parentId) + 1;
+        }
+
+        public void sort(Object[] propertyId, boolean[] ascending) {
+            List<CollectionDatasource.Sortable.SortInfo> infos = new ArrayList<CollectionDatasource.Sortable.SortInfo>();
+            for (int i = 0; i < propertyId.length; i++) {
+                final MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId[i];
+
+                final CollectionDatasource.Sortable.SortInfo<MetaPropertyPath> info =
+                        new CollectionDatasource.Sortable.SortInfo<MetaPropertyPath>();
+                info.setPropertyPath(propertyPath);
+                info.setOrder(ascending[i] ? CollectionDatasource.Sortable.Order.ASC : CollectionDatasource.Sortable.Order.DESC);
+
+                infos.add(info);
+            }
+            ((CollectionDatasource.Sortable<Entity, Object>) datasource).sort(infos.toArray(new CollectionDatasource.Sortable.SortInfo[infos.size()]));
+        }
+
+        public Collection getSortableContainerPropertyIds() {
+            return properties;
+        }
+
+        public Object nextItemId(Object itemId) {
+            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).nextItemId(itemId);
+        }
+
+        public Object prevItemId(Object itemId) {
+            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).prevItemId(itemId);
+        }
+
+        public Object firstItemId() {
+            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).firstItemId();
+        }
+
+        public Object lastItemId() {
+            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).lastItemId();
+        }
+
+        public boolean isFirstId(Object itemId) {
+            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).isFirstId(itemId);
+        }
+
+        public boolean isLastId(Object itemId) {
+            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).isLastId(itemId);
+        }
+
+        public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
         }
     }
 }

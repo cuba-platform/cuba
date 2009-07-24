@@ -29,7 +29,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 {
     protected LinkedMap data = new LinkedMap();
 
-    private SortInfo<MetaPropertyPath>[] sortInfos;
+    protected SortInfo<MetaPropertyPath>[] sortInfos;
+
+    private Map<String, Object> savedParameters;
 
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
@@ -45,10 +47,15 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
     @Override
     public synchronized void refresh() {
-        refresh(Collections.<String, Object>emptyMap());
+        if (savedParameters == null)
+            refresh(Collections.<String, Object>emptyMap());
+        else
+            refresh(savedParameters);
     }
 
     public void refresh(Map<String, Object> parameters) {
+        savedParameters = parameters;
+
         Collection prevIds = data.keySet();
         invalidate();
 
@@ -111,7 +118,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         }
     }
 
-    private void doSort() {
+    protected void doSort() {
         final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 

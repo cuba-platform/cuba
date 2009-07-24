@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class TreeTableContainerWrapper
         extends ContainerHierarchicalWrapper
-        implements TreeTableContainer, Container.Ordered
+        implements TreeTableContainer, Container.Ordered, Container.Sortable
 {
     protected Set<Object> expanded = null; // Contains expanded items ids
 
@@ -362,5 +362,20 @@ public class TreeTableContainerWrapper
             return inlineIndex(inlineChildren.getLast());
         }
         return -1;
+    }
+
+    public void sort(Object[] propertyId, boolean[] ascending) {
+        if (container instanceof Sortable) {
+            ((Sortable) container).sort(propertyId, ascending);
+            updateHierarchicalWrapper();
+        } else
+            throw new IllegalStateException("Wrapped container is not Sortable: " + container.getClass());
+    }
+
+    public Collection getSortableContainerPropertyIds() {
+        if (container instanceof Sortable)
+            return ((Sortable) container).getSortableContainerPropertyIds();
+        else
+            throw new IllegalStateException("Wrapped container is not Sortable: " + container.getClass());
     }
 }

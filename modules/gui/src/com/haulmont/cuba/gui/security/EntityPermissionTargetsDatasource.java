@@ -14,13 +14,13 @@ import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.TreeDatasourceWrapper;
+import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 
 import java.util.Map;
 
-public class EntityPermissionTargetsDatasource extends TreeDatasourceWrapper {
+public class EntityPermissionTargetsDatasource extends AbstractTreeDatasource {
     public EntityPermissionTargetsDatasource(
             DsContext context, DataService dataservice,
                 String id, MetaClass metaClass, String viewName)
