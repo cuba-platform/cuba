@@ -12,29 +12,24 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.Validator;
 import com.itmill.toolkit.terminal.Resource;
-import com.itmill.toolkit.ui.AbstractField;
-import com.itmill.toolkit.ui.BaseFieldFactory;
-import com.itmill.toolkit.ui.TextField;
 import org.dom4j.Element;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class Table
     extends
@@ -66,103 +61,12 @@ public class Table
         super.initComponent(component);
 
         component.setSelectable(true);
-        component.setFieldFactory(new BaseFieldFactory() {
-            @Override
-            public com.itmill.toolkit.ui.Field createField(Class type, com.itmill.toolkit.ui.Component uiContext) {
-                return super.createField(type, uiContext);
-            }
+        component.setFieldFactory(new FieldFactory());
 
-            @Override
-            public com.itmill.toolkit.ui.Field createField(Property property, com.itmill.toolkit.ui.Component uiContext) {
-                return super.createField(property, uiContext);
-            }
-
-            @Override
-            public com.itmill.toolkit.ui.Field createField(Item item, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
-                return super.createField(item, propertyId, uiContext);
-            }
-
-            @Override
-            public com.itmill.toolkit.ui.Field createField(com.itmill.toolkit.data.Container container, Object itemId, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
-                final com.itmill.toolkit.ui.Field field;
-                MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
-                final Column column = columns.get(propertyPath);
-                final Range range = propertyPath.getRange();
-                if (range != null) {
-                    if (range.isClass()) {
-                        final LookupField lookupField = new LookupField();
-                        final CollectionDatasource optionsDatasource = getOptionsDatasource(range.asClass(), column);
-//                        final Entity item = optionsDatasource.getItem(itemId);
-
-                        lookupField.setOptionsDatasource(optionsDatasource);
-//                        lookupField.setDatasource(getDatasource(), metaProperty.getName());
-
-                        field = (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
-                    } else if (range.isEnum()) {
-                        final LookupField lookupField = new LookupField();
-                        if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
-
-                        lookupField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
-                        lookupField.setOptionsList(range.asEnumiration().getValues());
-
-                        field = (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
-                    } else {
-                        field = super.createField(container, itemId, propertyId, uiContext);
-                    }
-                } else {
-                    field = super.createField(container, itemId, propertyId, uiContext);
-                }
-                ((AbstractField) field).setImmediate(true);
-                if (field instanceof TextField) {
-                    ((TextField) field).setNullRepresentation("");
-                }
-
-                if (field instanceof com.itmill.toolkit.ui.TextField) {
-                    ((com.itmill.toolkit.ui.TextField) field).setNullRepresentation("");
-                }
-
-                boolean required = requiredColumns.containsKey(column);
-                field.setRequired(required);
-                if (required)
-                    field.setRequiredError(requiredColumns.get(column));
-
-                Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);
-                if (validators != null) {
-                    for (final com.haulmont.cuba.gui.components.Field.Validator validator : validators) {
-
-                        if (field instanceof com.itmill.toolkit.ui.AbstractField) {
-
-                            field.addValidator(new Validator() {
-                                public void validate(Object value) throws InvalidValueException {
-                                    if ((!field.isRequired() && value == null))
-                                        return;
-                                    try {
-                                        validator.validate(value);
-                                    } catch (ValidationException e) {
-                                        throw new InvalidValueException(e.getMessage());
-                                    }
-                                }
-
-                                public boolean isValid(Object value) {
-                                    try {
-                                        validate(value);
-                                        return true;
-                                    } catch (InvalidValueException e) {
-                                        return false;
-                                    }
-                                }
-                            });
-                            ((com.itmill.toolkit.ui.AbstractField) field).setValidationVisible(false);
-                        }
-                    }
-                }
-                return field;
-            }
-        });
-        
         component.setColumnCollapsingAllowed(true);
         component.setColumnReorderingAllowed(true);
         setSortable(true);
+        setEditable(false);
     }
 
     @Override
@@ -176,7 +80,7 @@ public class Table
 
     @Override
     public void setEditable(boolean editable) {
-        this.editable = editable;
+        super.setEditable(editable);
         component.setEditable(editable);
 //        component.setRowHeaderMode(
 //                editable ?

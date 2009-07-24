@@ -306,6 +306,8 @@ public class TreeTable
      */
     protected boolean allowMultiStringCells = false;
 
+    protected LinkedList<Object> editableColumns = null;
+
     /* Table constructors */
 
     /**
@@ -1850,7 +1852,6 @@ public class TreeTable
         final boolean colheads = colHeadMode != COLUMN_HEADER_MODE_HIDDEN;
         final boolean rowheads = getRowHeaderMode() != ROW_HEADER_MODE_HIDDEN;
         final Object[][] cells = getVisibleCells();
-        final boolean iseditable = isEditable();
         int rows;
         if (reqRowsToPaint >= 0) {
             rows = reqRowsToPaint;
@@ -2078,7 +2079,7 @@ public class TreeTable
                                     + columnIdMap.key(columnId), cellStyle);
                         }
                     }
-                    if ((iscomponent[currentColumn] || iseditable)
+                    if ((iscomponent[currentColumn] || isColumnEditable(columnId))
                             && Component.class.isInstance(cells[CELL_FIRSTCOL
                             + currentColumn][i])) {
                         final Component c = (Component) cells[CELL_FIRSTCOL
@@ -2247,7 +2248,7 @@ public class TreeTable
      */
     protected Object getPropertyValue(Object rowId, Object colId,
             Property property) {
-        if (isEditable() && fieldFactory != null) {
+        if (isColumnEditable(colId) && fieldFactory != null) {
             final Field f = fieldFactory.createField(getContainerDataSource(),
                     rowId, colId, this);
             if (f != null) {
@@ -2257,6 +2258,11 @@ public class TreeTable
         }
 
         return formatPropertyValue(rowId, colId, property);
+    }
+
+    protected boolean isColumnEditable(Object columnId) {
+        return isEditable() &&
+                editableColumns != null && editableColumns.contains(columnId);
     }
 
     /**
@@ -2435,6 +2441,10 @@ public class TreeTable
         columnIcons.remove(propertyId);
         columnHeaders.remove(propertyId);
 
+        if (editableColumns != null) {
+            editableColumns.remove(propertyId);
+        }
+
         return super.removeContainerProperty(propertyId);
     }
 
@@ -2507,6 +2517,41 @@ public class TreeTable
         return true;
     }
 
+    public Object[] getEditableColumns() {
+        if (editableColumns == null) {
+            return null;
+        }
+        return editableColumns.toArray();
+    }
+
+    public void setEditableColumns(Object[] editableColumns) {
+        if (editableColumns == null) {
+            throw new NullPointerException("You cannot set null as editable columns");
+        }
+
+        if (this.editableColumns == null) {
+            this.editableColumns = new LinkedList<Object>();
+        } else {
+            this.editableColumns.clear();
+        }
+
+        final Collection properties = getContainerPropertyIds();
+        for (final Object editableColumn : editableColumns) {
+            if (editableColumn == null) {
+                throw new NullPointerException("Ids must be non-nulls");
+            } else if (!properties.contains(editableColumn)
+                    || columnGenerators.containsKey(editableColumn)) {
+                throw new IllegalArgumentException(
+                        "Ids must exist in the Container and it must be not a generated column, incorrect id: "
+                                + editableColumn);
+            }
+            this.editableColumns.add(editableColumn);
+        }
+
+        resetPageBuffer();
+        refreshRenderedCells();
+    }
+
     /**
      * Adds a generated column to the Table.
      * <p>
@@ -2547,6 +2592,11 @@ public class TreeTable
             if (!visibleColumns.contains(id)) {
                 visibleColumns.add(id);
             }
+
+            if (editableColumns != null) {
+                editableColumns.remove(id);
+            }
+            
             resetPageBuffer();
             refreshRenderedCells();
         }
@@ -3175,6 +3225,14 @@ public class TreeTable
                 requestRepaint();
             }
         }
+    }
+
+    public boolean isAllowMultiStringCells() {
+        return allowMultiStringCells;
+    }
+
+    public void setAllowMultiStringCells(boolean allowMultiStringCells) {
+        this.allowMultiStringCells = allowMultiStringCells;
     }
 
     // Virtually identical to AbstractCompoenentContainer.setEnabled();

@@ -150,10 +150,11 @@ public class TreeTable
     protected void initComponent(com.haulmont.cuba.web.toolkit.ui.TreeTable component) {
         super.initComponent(component);
         component.setSelectable(true);
-        component.setSortDisabled(true);
+        component.setFieldFactory(new FieldFactory());
         component.setColumnCollapsingAllowed(true);
         component.setColumnReorderingAllowed(true);
         setSortable(false);
+        setEditable(false);
     }
 
     public void applySettings(Element element) {

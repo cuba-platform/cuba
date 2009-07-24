@@ -370,7 +370,7 @@ public class Window
     public boolean close(final String actionId) {
         com.haulmont.cuba.web.WindowManager windowManager = App.getInstance().getWindowManager();
 
-        if (!forceClose && getDsContext().isModified()) {
+        if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
             windowManager.showOptionDialog(
                     MessageProvider.getMessage(Window.class, "closeUnsaved.caption"),
                     MessageProvider.getMessage(Window.class, "closeUnsaved"),
