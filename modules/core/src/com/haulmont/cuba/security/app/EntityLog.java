@@ -181,16 +181,18 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             User user = em.getReference(User.class, SecurityProvider.currentUserId());
             Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
 
-            EntityLogItem item = new EntityLogItem();
-            item.setEventTs(ts);
-            item.setUser(user);
-            item.setType(EntityLogItem.Type.MODIFY);
-            item.setEntity(entityName);
-            item.setEntityId((UUID) entity.getId());
-            em.persist(item);
-
+            EntityLogItem item = null;
             for (String attr : attributes) {
                 if (dirty.contains(attr)) {
+                    if (item == null) {
+                        item = new EntityLogItem();
+                        item.setEventTs(ts);
+                        item.setUser(user);
+                        item.setType(EntityLogItem.Type.MODIFY);
+                        item.setEntity(entityName);
+                        item.setEntityId((UUID) entity.getId());
+                        em.persist(item);
+                    }
                     EntityLogAttr attribute = new EntityLogAttr();
                     attribute.setName(attr);
                     attribute.setValue(stringify(((Instance) entity).getValue(attr)));
@@ -237,17 +239,19 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
     private String stringify(Object value) {
         if (value == null)
             return "";
+        else
+            return value.toString();
 
-        String s;
-        Datatype datatype = Datatypes.getInstance().get(value.getClass());
-        if (datatype != null) {
-            s = datatype.format(value);
-        } else if (value.getClass().isEnum()) {
-            String nameKey = value.getClass().getSimpleName() + "." + value.toString();
-            s = MessageProvider.getMessage(value.getClass(), nameKey);
-        } else {
-            s = value.toString();
-        }
-        return StringUtils.substring(s, 0, EntityLogItem.VALUE_LEN);
+//        String s;
+//        Datatype datatype = Datatypes.getInstance().get(value.getClass());
+//        if (datatype != null) {
+//            s = datatype.format(value);
+//        } else if (value.getClass().isEnum()) {
+//            String nameKey = value.getClass().getSimpleName() + "." + value.toString();
+//            s = MessageProvider.getMessage(value.getClass(), nameKey);
+//        } else {
+//            s = value.toString();
+//        }
+//        return StringUtils.substring(s, 0, EntityLogItem.VALUE_LEN);
     }
 }
