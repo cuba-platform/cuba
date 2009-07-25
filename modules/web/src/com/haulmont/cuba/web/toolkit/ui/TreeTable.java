@@ -1188,10 +1188,15 @@ public class TreeTable
             // Collects the basic facts about the table page
             final Object[] colids = getVisibleColumns();
             final int cols = colids.length;
-            final int pagelen = getPageLength();
             int firstIndex = getCurrentPageFirstItemIndex();
             int rows, totalRows;
             rows = totalRows = size();
+            int pagelen;
+            if (allowMultiStringCells) {
+                pagelen = totalRows;
+            } else {
+                pagelen = getPageLength();
+            }
             if (rows > 0 && firstIndex >= 0) {
                 rows -= firstIndex;
             }

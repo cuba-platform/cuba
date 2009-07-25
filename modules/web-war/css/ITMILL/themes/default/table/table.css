@@ -17,7 +17,8 @@
 	overflow: hidden;
 }
 
-.i-table-header {
+.i-table-header,
+.i-table-header-container {
 	height: 36px;
 }
 
@@ -37,6 +38,7 @@
 }
 
 .i-table-header td {
+    height: 36px;
 	cursor: pointer;
 }
 

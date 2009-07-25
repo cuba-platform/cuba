@@ -558,17 +558,6 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         tHead.disableBrowserIntelligence();
 
-        // fix "natural" height if height not set
-/*
-        if (height == null || "".equals(height)) {
-            bodyContainer.setHeight((tBody.getRowHeight() * pageLength) + "px");
-        }
-*/
-        if (height == null || "".equals(height)) {
-            bodyContainer.setHeight((tBody.getRowHeight() * (totalRows<pageLength?( (totalRows<1)?1:totalRows ):pageLength) ) + "px");
-            String height = (tBody.getRowHeight() * (totalRows<pageLength?( (totalRows<1)?1:totalRows ):pageLength) ) + "px";
-        }
-
         // fix "natural" width if width not set
         if (width == null || "".equals(width)) {
             int w = total;
@@ -647,6 +636,21 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             }
             i++;
         }
+
+        // fix "natural" height if height not set
+        if (height == null || "".equals(height)) {
+            int bodyHeight;
+            if (!allowMultiStingCells) {
+                bodyHeight = tBody.getRowHeight() *
+                    (totalRows < pageLength ? ((totalRows < 1) ? 1 : totalRows) : pageLength);
+            } else {
+                // totalRows == pageLength
+                tBody.setContainerHeight();
+                bodyHeight = tBody.getContainerHeight();
+            }
+            bodyContainer.setHeight(bodyHeight + "px");
+        }
+        
         if (needsReLayout) {
             tBody.reLayoutComponents();
         }
@@ -1315,6 +1319,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     + "-column-selector");
             DOM.setStyleAttribute(columnSelector, "display", "none");
 
+            DOM.setElementProperty(hTableContainer, "className", CLASSNAME
+                    + "-header-container");
+
             DOM.appendChild(table, headerTableBody);
             DOM.appendChild(headerTableBody, tr);
             DOM.appendChild(hTableContainer, table);
@@ -1952,14 +1959,30 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             setContainerHeight();
         }
 
+        private int containerHeight = -1;
         /**
          * Fix container blocks height according to totalRows to avoid
          * "bouncing" when scrolling
          */
-        protected void setContainerHeight() {
+        public void setContainerHeight() {
             fixSpacers();
-            DOM.setStyleAttribute(container, "height", totalRows
-                    * getRowHeight() + "px");
+            if (!allowMultiStingCells) {
+                containerHeight = totalRows * getRowHeight();
+            } else {
+                containerHeight = 0;
+                for (final Object o : renderedRows) {
+                    final IScrollTableRow row = (IScrollTableRow) o;
+                    containerHeight += row.getHeight();
+                }
+            }
+            DOM.setStyleAttribute(container, "height", containerHeight + "px");
+        }
+
+        public int getContainerHeight() {
+            if (containerHeight == -1) {
+                setContainerHeight();
+            }
+            return containerHeight;
         }
 
         protected void fixSpacers() {
@@ -1981,7 +2004,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             } else {
                 if (DOM.getChildCount(tBody) > 0) {
                     IScrollTableRow row = (IScrollTableRow) renderedRows.get(0);
-                    rowHeight = DOM.getChild(row.getElement(), 0).getOffsetHeight();
+                    rowHeight = row.getHeight();
                 } else {
                     return DEFAULT_ROW_HEIGHT;
                 }
@@ -2211,6 +2234,10 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 } else {
                     Tools.setInnerText(container, text);
                 }
+            }
+
+            public int getHeight() {
+                return DOM.getChild(getElement(), 0).getOffsetHeight();
             }
 
             protected void setCellContent(Element container, Widget w, int colIndex) {

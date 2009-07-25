@@ -465,4 +465,200 @@ public class Table
         target.endTag("visiblecolumns");
     }
 
+    @Override
+    protected void refreshRenderedCells() {
+        if (getParent() == null) {
+            return;
+        }
+
+        if (isContentRefreshesEnabled) {
+
+            HashSet oldListenedProperties = listenedProperties;
+            HashSet oldVisibleComponents = visibleComponents;
+
+            // initialize the listener collections
+            listenedProperties = new HashSet();
+            visibleComponents = new HashSet();
+
+            // Collects the basic facts about the table page
+            final Object[] colids = getVisibleColumns();
+            final int cols = colids.length;
+            int firstIndex = getCurrentPageFirstItemIndex();
+            int rows, totalRows;
+            rows = totalRows = size();
+            int pagelen;
+            if (allowMultiStringCells) {
+                pagelen = totalRows;
+            } else {
+                pagelen = getPageLength();
+            }
+            if (rows > 0 && firstIndex >= 0) {
+                rows -= firstIndex;
+            }
+            if (pagelen > 0 && pagelen < rows) {
+                rows = pagelen;
+            }
+
+            // If "to be painted next" variables are set, use them
+            if (lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
+                rows = lastToBeRenderedInClient - firstToBeRenderedInClient + 1;
+            }
+            Object id;
+            if (firstToBeRenderedInClient >= 0) {
+                if (firstToBeRenderedInClient < totalRows) {
+                    firstIndex = firstToBeRenderedInClient;
+                } else {
+                    firstIndex = totalRows - 1;
+                }
+            } else {
+                // initial load
+                firstToBeRenderedInClient = firstIndex;
+            }
+            if (totalRows > 0) {
+                if (rows + firstIndex > totalRows) {
+                    rows = totalRows - firstIndex;
+                }
+            } else {
+                rows = 0;
+            }
+
+            Object[][] cells = new Object[cols + CELL_FIRSTCOL][rows];
+            if (rows == 0) {
+                pageBuffer = cells;
+                unregisterPropertiesAndComponents(oldListenedProperties,
+                        oldVisibleComponents);
+                return;
+            }
+
+            // Gets the first item id
+            if (items instanceof Container.Indexed) {
+                id = ((Container.Indexed) items).getIdByIndex(firstIndex);
+            } else {
+                id = ((Container.Ordered) items).firstItemId();
+                for (int i = 0; i < firstIndex; i++) {
+                    id = ((Container.Ordered) items).nextItemId(id);
+                }
+            }
+
+            final int headmode = getRowHeaderMode();
+            final boolean[] iscomponent = new boolean[cols];
+            for (int i = 0; i < cols; i++) {
+                iscomponent[i] = columnGenerators.containsKey(colids[i])
+                        || Component.class.isAssignableFrom(getType(colids[i]));
+            }
+            int firstIndexNotInCache;
+            if (pageBuffer != null && pageBuffer[CELL_ITEMID].length > 0) {
+                firstIndexNotInCache = pageBufferFirstIndex
+                        + pageBuffer[CELL_ITEMID].length;
+            } else {
+                firstIndexNotInCache = -1;
+            }
+
+            // Creates the page contents
+            int filledRows = 0;
+            for (int i = 0; i < rows && id != null; i++) {
+                cells[CELL_ITEMID][i] = id;
+                cells[CELL_KEY][i] = itemIdMapper.key(id);
+                if (headmode != ROW_HEADER_MODE_HIDDEN) {
+                    switch (headmode) {
+                    case ROW_HEADER_MODE_INDEX:
+                        cells[CELL_HEADER][i] = String.valueOf(i + firstIndex
+                                + 1);
+                        break;
+                    default:
+                        cells[CELL_HEADER][i] = getItemCaption(id);
+                    }
+                    cells[CELL_ICON][i] = getItemIcon(id);
+                }
+
+                if (cols > 0) {
+                    for (int j = 0; j < cols; j++) {
+                        if (isColumnCollapsed(colids[j])) {
+                            continue;
+                        }
+                        Property p = null;
+                        Object value = "";
+                        boolean isGenerated = columnGenerators
+                                .containsKey(colids[j]);
+
+                        if (!isGenerated) {
+                            p = getContainerProperty(id, colids[j]);
+                        }
+
+                        // check in current pageBuffer already has row
+                        int index = firstIndex + i;
+                        if (p != null || isGenerated) {
+                            if (p instanceof Property.ValueChangeNotifier) {
+                                if (oldListenedProperties == null
+                                        || !oldListenedProperties.contains(p)) {
+                                    ((Property.ValueChangeNotifier) p)
+                                            .addListener(this);
+                                }
+                                listenedProperties.add(p);
+                            }
+                            if (index < firstIndexNotInCache
+                                    && index >= pageBufferFirstIndex) {
+                                // we have data already in our cache,
+                                // recycle it instead of fetching it via
+                                // getValue/getPropertyValue
+                                int indexInOldBuffer = index
+                                        - pageBufferFirstIndex;
+                                value = pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
+                            } else {
+                                if (isGenerated) {
+                                    ColumnGenerator cg = (ColumnGenerator) columnGenerators
+                                            .get(colids[j]);
+                                    value = cg
+                                            .generateCell(this, id, colids[j]);
+
+                                } else if (iscomponent[j]) {
+                                    value = p.getValue();
+                                } else if (p != null) {
+                                    value = getPropertyValue(id, colids[j], p);
+                                } else {
+                                    value = getPropertyValue(id, colids[j],
+                                            null);
+                                }
+                            }
+                        }
+
+                        if (value instanceof Component) {
+                            if (oldVisibleComponents == null
+                                    || !oldVisibleComponents.contains(value)) {
+                                ((Component) value).setParent(this);
+                            }
+                            visibleComponents.add(value);
+                        }
+                        cells[CELL_FIRSTCOL + j][i] = value;
+                    }
+                }
+
+                id = ((Container.Ordered) items).nextItemId(id);
+
+                filledRows++;
+            }
+
+            // Assures that all the rows of the cell-buffer are valid
+            if (filledRows != cells[0].length) {
+                final Object[][] temp = new Object[cells.length][filledRows];
+                for (int i = 0; i < cells.length; i++) {
+                    for (int j = 0; j < filledRows; j++) {
+                        temp[i][j] = cells[i][j];
+                    }
+                }
+                cells = temp;
+            }
+
+            pageBufferFirstIndex = firstIndex;
+
+            // Saves the results to internal buffer
+            pageBuffer = cells;
+
+            unregisterPropertiesAndComponents(oldListenedProperties,
+                    oldVisibleComponents);
+
+            requestRepaint();
+        }
+
+    }
 }

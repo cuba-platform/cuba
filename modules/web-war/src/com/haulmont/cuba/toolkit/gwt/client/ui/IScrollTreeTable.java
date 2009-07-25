@@ -60,17 +60,6 @@ public class IScrollTreeTable
 
         tHead.disableBrowserIntelligence();
 
-        // fix "natural" height if height not set
-/*
-        if (height == null || "".equals(height)) {
-            bodyContainer.setHeight((tBody.getRowHeight() * pageLength) + "px");
-        }
-*/
-        if (height == null || "".equals(height)) {
-            bodyContainer.setHeight((tBody.getRowHeight() * (totalRows<pageLength?( (totalRows<1)?1:totalRows ):pageLength) ) + "px");
-            String height = (tBody.getRowHeight() * (totalRows<pageLength?( (totalRows<1)?1:totalRows ):pageLength) ) + "px";
-        }
-
         // fix "natural" width if width not set
         if (width == null || "".equals(width)) {
             //            w += getScrollbarWidth();
@@ -149,6 +138,20 @@ public class IScrollTreeTable
             i++;
         }
 
+        // fix "natural" height if height not set
+        if (height == null || "".equals(height)) {
+            int bodyHeight;
+            if (!allowMultiStingCells) {
+                bodyHeight = tBody.getRowHeight() *
+                    (totalRows < pageLength ? ((totalRows < 1) ? 1 : totalRows) : pageLength);
+            } else {
+                // totalRows == pageLength
+                tBody.setContainerHeight();
+                bodyHeight = tBody.getContainerHeight();
+            }
+            bodyContainer.setHeight(bodyHeight + "px");
+        }
+
         isNewBody = false;
 
         if (firstvisible > 0) {
@@ -182,6 +185,11 @@ public class IScrollTreeTable
 //        if (needsReLayout) {
         tBody.reLayoutComponents();
 //        }
+
+        if (height == null || "".equals(height) && allowMultiStingCells) {
+            tBody.setContainerHeight();
+            bodyContainer.setHeight(tBody.getContainerHeight() + "px");
+        }
     }
 
     public class IScrollTreeTableBody extends IScrollTableBody {
