@@ -188,7 +188,11 @@ public class IScrollTreeTable
 
         if (height == null || "".equals(height) && allowMultiStingCells) {
             tBody.setContainerHeight();
-            bodyContainer.setHeight(tBody.getContainerHeight() + "px");
+            int bodyHeight = tBody.getContainerHeight();
+            if (bodyHeight == 0) {
+                bodyHeight = IScrollTableBody.DEFAULT_ROW_HEIGHT;
+            }
+            bodyContainer.setHeight(bodyHeight + "px");
         }
     }
 

@@ -647,6 +647,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 // totalRows == pageLength
                 tBody.setContainerHeight();
                 bodyHeight = tBody.getContainerHeight();
+                if (bodyHeight == 0) {
+                    bodyHeight = IScrollTableBody.DEFAULT_ROW_HEIGHT;
+                }
             }
             bodyContainer.setHeight(bodyHeight + "px");
         }
