@@ -13,6 +13,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.PersistenceProvider;
 
@@ -21,12 +22,16 @@ import java.util.Set;
 
 @Entity(name = "sec$User")
 @Table(name = "SEC_USER")
+@Listeners("com.haulmont.cuba.security.listener.UserEntityListener")
 public class User extends StandardEntity
 {
     private static final long serialVersionUID = 5007187642916030394L;
 
     @Column(name = "LOGIN", length = PersistenceProvider.LOGIN_FIELD_LEN)
     private String login;
+
+    @Column(name = "LOGIN_LC", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    private String loginLowerCase;
 
     @Column(name = "PASSWORD", length = 32)
     private String password;
@@ -52,6 +57,14 @@ public class User extends StandardEntity
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getLoginLowerCase() {
+        return loginLowerCase;
+    }
+
+    public void setLoginLowerCase(String loginLowerCase) {
+        this.loginLowerCase = loginLowerCase;
     }
 
     public String getPassword() {

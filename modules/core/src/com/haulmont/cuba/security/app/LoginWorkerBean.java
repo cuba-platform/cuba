@@ -10,23 +10,22 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.security.global.NoUserSessionException;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.sys.UserSessionManager;
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 @Stateless(name = LoginWorker.JNDI_NAME)
 public class LoginWorkerBean implements LoginWorker
@@ -36,13 +35,16 @@ public class LoginWorkerBean implements LoginWorker
     private User loadUser(String login, String password, Locale locale)
             throws LoginException
     {
+        if (login == null)
+            throw new IllegalArgumentException("Login is null");
+
         EntityManager em = PersistenceProvider.getEntityManager();
-        String queryStr = "select u from sec$User u where u.login = ?1";
+        String queryStr = "select u from sec$User u where u.loginLowerCase = ?1";
         if (password != null)
             queryStr += " and u.password = ?2";
 
         Query q = em.createQuery(queryStr);
-        q.setParameter(1, login);
+        q.setParameter(1, login.toLowerCase());
         if (password != null)
             q.setParameter(2, password);
 

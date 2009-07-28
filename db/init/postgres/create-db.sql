@@ -94,7 +94,8 @@ create table SEC_USER (
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    LOGIN varchar(20),
+    LOGIN varchar(50),
+    LOGIN_LC varchar(50),
     PASSWORD varchar(32),
     NAME varchar(255),
     EMAIL varchar(100),
@@ -104,7 +105,7 @@ create table SEC_USER (
 
 alter table SEC_USER add constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
 
-create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN) where DELETE_TS is null^
+create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN_LC) where DELETE_TS is null^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -258,8 +259,8 @@ volatile strict language c^
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', now(), 0, 'Company', null)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, PASSWORD, NAME, GROUP_ID)
-values ('60885987-1b61-4247-94c7-dff348347f93', now(), 0, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93')^
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID)
+values ('60885987-1b61-4247-94c7-dff348347f93', now(), 0, 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93')^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, IS_SUPER)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', now(), 0, 'Administrators', true)^
