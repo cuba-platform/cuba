@@ -15,9 +15,12 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.exception.AccessDeniedHandler;
+import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
 import com.haulmont.chile.core.model.MetaClass;
 
 import java.util.Map;
@@ -43,32 +46,38 @@ public class LinkHandler {
     }
 
     public void handle() {
-        String screenName = requestParams.get("screen");
-        if (screenName == null) {
-            log.warn("ScreenId not found in request parameters");
-            return;
-        }
-
-        WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(screenName);
-        if (windowInfo == null) {
-            log.warn("WindowInfo not found for screen: " + screenName);
-            return;
-        }
-
-        String itemStr = requestParams.get("item");
-        if (itemStr == null) {
-            app.getWindowManager().openWindow(windowInfo,
-                    com.haulmont.cuba.gui.WindowManager.OpenType.NEW_TAB,
-                    getParamsMap());
-        } else {
-            Entity entity = loadEntityInstance(itemStr);
-            if (entity != null) {
-                app.getWindowManager().openEditor(windowInfo,
-                        entity,
-                        com.haulmont.cuba.gui.WindowManager.OpenType.NEW_TAB,
-                        getParamsMap());
+        try {
+            String screenName = requestParams.get("screen");
+            if (screenName == null) {
+                log.warn("ScreenId not found in request parameters");
+                return;
             }
+
+            WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+            WindowInfo windowInfo = windowConfig.getWindowInfo(screenName);
+            if (windowInfo == null) {
+                log.warn("WindowInfo not found for screen: " + screenName);
+                return;
+            }
+
+            String itemStr = requestParams.get("item");
+            if (itemStr == null) {
+                app.getWindowManager().openWindow(windowInfo,
+                        WindowManager.OpenType.NEW_TAB,
+                        getParamsMap());
+            } else {
+                Entity entity = loadEntityInstance(itemStr);
+                if (entity != null) {
+                    app.getWindowManager().openEditor(windowInfo,
+                            entity,
+                            WindowManager.OpenType.NEW_TAB,
+                            getParamsMap());
+                }
+            }
+        } catch (AccessDeniedException e) {
+            new AccessDeniedHandler().handle(e, app);
+        } catch (NoSuchScreenException e) {
+            new NoSuchScreenHandler().handle(e, app);
         }
     }
 

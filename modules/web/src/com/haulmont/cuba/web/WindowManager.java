@@ -35,6 +35,8 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
     protected Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
 
+    protected Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
+
     private Log log = LogFactory.getLog(WindowManager.class);
 
     public WindowManager(App app) {
@@ -48,7 +50,10 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         return new GenericDataService(false);
     }
 
-    protected Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
+    @Override
+    public Collection<Window> getOpenWindows() {
+        return new ArrayList(windowOpenMode.keySet());
+    }
 
     protected static class WindowOpenMode {
         protected Window window;

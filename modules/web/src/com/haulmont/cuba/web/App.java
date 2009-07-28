@@ -18,6 +18,8 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.exception.UniqueConstraintViolationHandler;
+import com.haulmont.cuba.web.exception.AccessDeniedHandler;
+import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
@@ -98,6 +100,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
     protected void initExceptionHandlers(boolean isConnected) {
         if (isConnected) {
             exceptionHandlers.addHandler(new UniqueConstraintViolationHandler());
+            exceptionHandlers.addHandler(new AccessDeniedHandler());
+            exceptionHandlers.addHandler(new NoSuchScreenHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }
@@ -142,6 +146,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
             }
         }
         else {
+            getWindowManager().closeAll();
             Window window = createLoginWindow();
             setMainWindow(window);
             initExceptionHandlers(false);

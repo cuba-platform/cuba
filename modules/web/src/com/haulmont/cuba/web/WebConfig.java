@@ -33,4 +33,7 @@ public interface WebConfig extends Config
 
     @Default("TABBED")
     String getAppWindowMode();
+
+    @DefaultBoolean(false)
+    boolean getEnableGenericScreens();
 }

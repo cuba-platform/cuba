@@ -97,7 +97,7 @@ public class PermissionConfig {
      private Tree<Target> entities;
      private Tree<Target> specific;
 
-     public static String getScreenPermissionTarget(ClientType clientType, String screenId) {
+     public String getScreenPermissionTarget(String screenId) {
          return clientType.getId() + ":" + screenId;
      }
 
@@ -138,7 +138,7 @@ public class PermissionConfig {
                 walkMenu(item, n);
              }
          } else {
-             Node<Target> n = new Node<Target>(new Target("item:" + id, caption, getScreenPermissionTarget(clientType, id)));
+             Node<Target> n = new Node<Target>(new Target("item:" + id, caption, getScreenPermissionTarget(id)));
              node.addChild(n);
          }
      }

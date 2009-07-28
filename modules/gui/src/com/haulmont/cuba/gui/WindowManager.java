@@ -12,8 +12,10 @@ package com.haulmont.cuba.gui;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -27,6 +29,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.app.UserSettingService;
+import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -70,7 +73,11 @@ public abstract class WindowManager {
         DIALOG
     }
 
+    public abstract Collection<Window> getOpenWindows();
+
     protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
+        checkPermission(windowInfo);
+
         Document document = parseDescriptor(windowInfo.getTemplate(), params, true);
 
         final Element element = document.getRootElement();
@@ -93,6 +100,15 @@ public abstract class WindowManager {
         windowWrapper.applySettings(new SettingsImpl(windowInfo.getId(), getSettingService()));
 
         return windowWrapper;
+    }
+
+    private void checkPermission(WindowInfo windowInfo) {
+        boolean permitted = UserSessionClient.getUserSession().isPermitted(
+                PermissionType.SCREEN,
+                AppConfig.getInstance().getPermissionConfig().getScreenPermissionTarget(windowInfo.getId())
+        );
+        if (!permitted)
+            throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());
     }
 
     protected void deployViews(Document document) {
