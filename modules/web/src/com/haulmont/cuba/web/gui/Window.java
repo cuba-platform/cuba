@@ -811,7 +811,7 @@ public class Window
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
             okbar.setStyleName("Window-actionsPane");
-            okbar.setMargin(true);
+            okbar.setMargin(true, false, false, false);
             okbar.setSpacing(true);
             okbar.setWidth("100%");
 

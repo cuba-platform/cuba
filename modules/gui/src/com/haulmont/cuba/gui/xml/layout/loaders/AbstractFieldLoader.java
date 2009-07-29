@@ -51,6 +51,8 @@ public class AbstractFieldLoader extends ComponentLoader {
         loadHeight(component, element);
         loadWidth(component, element);
 
+        loadExpandable(component, element);
+
         addAssignWindowTask(component);
 
         return component;

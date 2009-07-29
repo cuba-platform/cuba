@@ -22,16 +22,17 @@ import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.TextField;
+import com.itmill.toolkit.terminal.Resource;
+import com.itmill.toolkit.terminal.ThemeResource;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
 
 public class PickerField
-    extends
+        extends
         com.haulmont.cuba.web.gui.components.AbstractField<PickerField.PickerFieldComponent>
-    implements
-        com.haulmont.cuba.gui.components.PickerField, Component.Wrapper
-{
+        implements
+        com.haulmont.cuba.gui.components.PickerField, Component.Wrapper {
     private CaptionMode captionMode = CaptionMode.ITEM;
     private String captionProperty;
 
@@ -134,27 +135,57 @@ public class PickerField
         this.captionProperty = captionProperty;
     }
 
+    public void setPickerButtonCaption(String caption) {
+       component.setPickerButtonCaption(caption);
+    }
+
+    public void setPickerButtonIcon(String iconName) {
+        component.setPickerButtonIcon(new ThemeResource(iconName));
+    }
+
+    public void setClearButtonCaption(String caption) {
+        component.setClearButtonCaption(caption);
+    }
+
+    public void setClearButtonIcon(String iconName) {
+        component.setClearButtonIcon(new ThemeResource(iconName));
+    }
+
     public static class PickerFieldComponent extends CustomComponent implements com.itmill.toolkit.ui.Field {
+
+        public static final int DEFAULT_WIDTH = 250;
+
         protected com.itmill.toolkit.ui.TextField field;
-        protected com.itmill.toolkit.ui.Button button;
+        protected com.itmill.toolkit.ui.Button pickerButton;
+        protected com.itmill.toolkit.ui.Button clearButton;
+
+        protected String buttonIcon;
+        protected String clearButtonIcon;
 
         public PickerFieldComponent(Button.ClickListener listener) {
             field = new TextField();
             field.setReadOnly(true);
+            field.setWidth("100%");
+            field.setNullRepresentation("");
 
-            button = new Button("...", listener);
+            pickerButton = new Button("...", listener);
+            clearButton = new Button("Clear", new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent event) {
+                    setValue(null);
+                }
+            });
 
-            VerticalLayout layout = new VerticalLayout();
             final HorizontalLayout container = new HorizontalLayout();
+            container.setWidth("100%");
 
             container.addComponent(field);
-            container.addComponent(button);
+            container.addComponent(pickerButton);
+            container.addComponent(clearButton);
             container.setExpandRatio(field, 1);
 
-            layout.addComponent(container);
-            layout.setComponentAlignment(container, com.itmill.toolkit.ui.Alignment.BOTTOM_LEFT);
-
-            setCompositionRoot(layout);
+            setCompositionRoot(container);
+            setStyleName("pickerfield");
+            setWidth(DEFAULT_WIDTH + "px");
         }
 
         public boolean isInvalidCommitted() {
@@ -165,7 +196,7 @@ public class PickerField
             field.setInvalidCommitted(isCommitted);
         }
 
-        public void commit() throws SourceException, com.itmill.toolkit.data.Validator.InvalidValueException  {
+        public void commit() throws SourceException, com.itmill.toolkit.data.Validator.InvalidValueException {
             field.commit();
         }
 
@@ -181,7 +212,7 @@ public class PickerField
             return field.isWriteThrough();
         }
 
-        public void setWriteThrough(boolean writeTrough) throws SourceException, com.itmill.toolkit.data.Validator.InvalidValueException  {
+        public void setWriteThrough(boolean writeTrough) throws SourceException, com.itmill.toolkit.data.Validator.InvalidValueException {
             field.setWriteThrough(writeTrough);
         }
 
@@ -231,7 +262,7 @@ public class PickerField
             return field.isValid();
         }
 
-        public void validate() throws com.itmill.toolkit.data.Validator.InvalidValueException  {
+        public void validate() throws com.itmill.toolkit.data.Validator.InvalidValueException {
             field.validate();
         }
 
@@ -282,6 +313,40 @@ public class PickerField
         public String getRequiredError() {
             return field.getRequiredError();
         }
+
+        public void setPickerButtonCaption(String caption) {
+            pickerButton.setCaption(caption);
+        }
+
+        public String getPickerButtonCaption() {
+            return pickerButton.getCaption();
+        }
+
+        public void setClearButtonCaption(String caption) {
+            clearButton.setCaption(caption);
+        }
+
+        public String getClearButtonCaption() {
+            return clearButton.getCaption();
+        }
+
+        public void setPickerButtonIcon(Resource icon) {
+            pickerButton.setIcon(icon);
+            pickerButton.setStyleName("link");
+        }
+
+        public Resource getPickerButtonIcon() {
+            return pickerButton.getIcon();
+        }
+
+        public void setClearButtonIcon(Resource icon) {
+            clearButton.setIcon(icon);
+            clearButton.setStyleName("link");
+        }
+
+        public Resource getClearButtonIcon() {
+            return clearButton.getIcon();
+        }
     }
 
     protected class DsListener implements DatasourceListener<Entity> {
@@ -294,8 +359,7 @@ public class PickerField
 
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             if (ObjectUtils.equals(property, PickerField.this.metaProperty.getName()) &&
-                    ObjectUtils.equals(datasource.getItem(), source))
-            {
+                    ObjectUtils.equals(datasource.getItem(), source)) {
                 value = source == null ? null : ((Instance) source).getValue(property);
                 component.setValue(getItemCaption(value));
             }

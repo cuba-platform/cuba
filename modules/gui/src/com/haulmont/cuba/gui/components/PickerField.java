@@ -20,4 +20,12 @@ public interface PickerField extends Field {
 
     MetaClass getMetaClass();
     void setMetaClass(MetaClass metaClass);
+
+    void setPickerButtonCaption(String caption);
+
+    void setPickerButtonIcon(String iconName);
+
+    void setClearButtonCaption(String caption);
+
+    void setClearButtonIcon(String iconName);
 }

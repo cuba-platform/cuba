@@ -36,7 +36,22 @@ public class PickerFieldLoader extends AbstractFieldLoader{
             component.setMetaClass(MetadataProvider.getSession().getClass(metaClass));
         }
 
-        loadExpandable(component, element);
+        String caption = element.attributeValue("pickerCaption");
+        if (caption != null) {
+            component.setPickerButtonCaption(loadResourceString(caption));
+        }
+        caption = element.attributeValue("clearCaption");
+        if (caption != null) {
+            component.setClearButtonCaption(loadResourceString(caption));
+        }
+        caption = element.attributeValue("pickerIcon");
+        if (caption != null) {
+            component.setPickerButtonIcon(loadResourceString(caption));
+        }
+        caption = element.attributeValue("clearIcon");
+        if (caption != null) {
+            component.setClearButtonIcon(loadResourceString(caption));
+        }
 
         return component;
     }

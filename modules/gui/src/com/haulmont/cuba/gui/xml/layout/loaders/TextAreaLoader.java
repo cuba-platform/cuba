@@ -35,8 +35,6 @@ public class TextAreaLoader extends AbstractFieldLoader {
             component.setRows(Integer.valueOf(rows));
         }
 
-        loadExpandable(component, element);
-
         return component;
     }
 }
