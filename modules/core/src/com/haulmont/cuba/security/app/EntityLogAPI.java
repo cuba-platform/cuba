@@ -14,6 +14,9 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 
 public interface EntityLogAPI
 {
+    boolean isEnabled();
+    void setEnabled(boolean enabled);
+
     void registerCreate(BaseEntity entity);
 
     void registerCreate(BaseEntity entity, boolean auto);
