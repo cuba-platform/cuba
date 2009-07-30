@@ -16,10 +16,7 @@ import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.exception.ExceptionHandlers;
-import com.haulmont.cuba.web.exception.UniqueConstraintViolationHandler;
-import com.haulmont.cuba.web.exception.AccessDeniedHandler;
-import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
+import com.haulmont.cuba.web.exception.*;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
@@ -102,6 +99,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
             exceptionHandlers.addHandler(new UniqueConstraintViolationHandler());
             exceptionHandlers.addHandler(new AccessDeniedHandler());
             exceptionHandlers.addHandler(new NoSuchScreenHandler());
+            exceptionHandlers.addHandler(new DeletePolicyHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }
