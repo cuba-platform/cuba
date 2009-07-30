@@ -232,16 +232,33 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         return layout;
     }
 
-    protected Component showWindowDialog(Window window, String caption, AppWindow appWindow) {
-        final com.itmill.toolkit.ui.Window win = createDialogWindow(window);
+    protected Component showWindowDialog(final Window window, String caption, AppWindow appWindow) {
+        removeWindowsWithName(window.getId());
 
-        win.setLayout((Layout) ComponentsHelper.unwrap(window));
+        final com.itmill.toolkit.ui.Window win = createDialogWindow(window);
+        win.setName(window.getId());
+
+        Layout layout = (Layout) ComponentsHelper.unwrap(window);
+
+        // surrond window layout with outer layout to prevent double painting
+        VerticalLayout outerLayout = new VerticalLayout();
+        outerLayout.addComponent(layout);
+        outerLayout.setExpandRatio(layout, 1);
+
+        win.setLayout(outerLayout);
+
+        win.addListener(new com.itmill.toolkit.ui.Window.CloseListener() {
+            public void windowClose(com.itmill.toolkit.ui.Window.CloseEvent e) {
+                window.close("close");
+            }
+        });
 
         win.setWidth(600, Sizeable.UNITS_PIXELS);
-        win.setResizable(false);
+//        win.setResizable(false);
         win.setModal(true);
 
         App.getInstance().getMainWindow().addWindow(win);
+        win.center();
 
         return win;
     }
@@ -350,7 +367,16 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
+        removeWindowsWithName("cuba-message-dialog");
+
         final com.itmill.toolkit.ui.Window window = new com.itmill.toolkit.ui.Window(title);
+        window.setName("cuba-message-dialog");
+
+        window.addListener(new com.itmill.toolkit.ui.Window.CloseListener() {
+            public void windowClose(com.itmill.toolkit.ui.Window.CloseEvent e) {
+                App.getInstance().getMainWindow().removeWindow(window);
+            }
+        });
 
         final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
@@ -368,22 +394,19 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         App.getInstance().getMainWindow().addWindow(window);
     }
 
-    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
-
-        final com.itmill.toolkit.ui.Window mainWindow = App.getInstance().getMainWindow();
-
-        for (com.itmill.toolkit.ui.Window childWindow : new ArrayList<com.itmill.toolkit.ui.Window>(mainWindow.getChildWindows())) {
-            if ("cuba-option-dialog".equals(childWindow.getName())) {
-                String msg = new StrBuilder("Another OptionDialog window exists, removing it\n")
-                        .appendWithSeparators(Thread.currentThread().getStackTrace(), "\n")
-                        .toString();
-                log.warn(msg);
-                mainWindow.removeWindow(childWindow);
-            }
-        }
+    public void showOptionDialog(String title, String message,
+                                 IFrame.MessageType messageType, Action[] actions)
+    {
+        removeWindowsWithName("cuba-option-dialog");
 
         final com.itmill.toolkit.ui.Window window = new com.itmill.toolkit.ui.Window(title);
         window.setName("cuba-option-dialog");
+
+        window.addListener(new com.itmill.toolkit.ui.Window.CloseListener() {
+            public void windowClose(com.itmill.toolkit.ui.Window.CloseEvent e) {
+                app.getMainWindow().removeWindow(window);
+            }
+        });
 
         Label messageBox = new Label(message, Label.CONTENT_XHTML);
 
@@ -405,7 +428,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
             buttonsContainer.addComponent(new Button(action.getCaption(), new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
-                    mainWindow.removeWindow(window);
+                    app.getMainWindow().removeWindow(window);
                 }
             }));
         }
@@ -421,5 +444,19 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
         App.getInstance().getMainWindow().addWindow(window);
         window.center();
+    }
+
+    private void removeWindowsWithName(String name) {
+        final com.itmill.toolkit.ui.Window mainWindow = app.getMainWindow();
+
+        for (com.itmill.toolkit.ui.Window childWindow : new ArrayList<com.itmill.toolkit.ui.Window>(mainWindow.getChildWindows())) {
+            if (name.equals(childWindow.getName())) {
+                String msg = new StrBuilder("Another " + name + " window exists, removing it\n")
+                        .appendWithSeparators(Thread.currentThread().getStackTrace(), "\n")
+                        .toString();
+                log.warn(msg);
+                mainWindow.removeWindow(childWindow);
+            }
+        }
     }
 }
