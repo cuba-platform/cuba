@@ -162,6 +162,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     public void addItem(T item) throws UnsupportedOperationException {
         checkState();
         __getCollection().add(item);
+        attachListener((Instance) item);
 
         modified = true;
         if (cascadeProperty) {
@@ -177,6 +178,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     public void removeItem(T item) throws UnsupportedOperationException {
         checkState();
         __getCollection().remove(item);
+        detachListener((Instance) item);
 
         modified = true;
         if (cascadeProperty) {
