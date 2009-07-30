@@ -653,7 +653,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             }
             bodyContainer.setHeight(bodyHeight + "px");
         }
-        
+
         if (needsReLayout) {
             tBody.reLayoutComponents();
         }
@@ -2328,21 +2328,26 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 //                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
 //                if (getElement() == tdOrTr
 //                        || getElement() == tdOrTr.getParentElement()) {
-                    switch (DOM.eventGetType(event)) {
-                    case Event.ONCLICK:
-                        handleClickEvent(event);
-                        handleRowClick(event);
-                        break;
-                    case Event.ONDBLCLICK:
-                        handleClickEvent(event);
-                        break;
-                    case Event.ONCONTEXTMENU:
-                        handleRowClick(event);
-                        showContextMenu(event);
-                        break;
-                    default:
-                        break;
-                    }
+                final Element targetElement = DOM.eventGetTarget(event);
+                //todo gorodnov: review this code when we will be use a multi selection
+                if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
+                    return;
+
+                switch (DOM.eventGetType(event)) {
+                case Event.ONCLICK:
+                    handleClickEvent(event);
+                    handleRowClick(event);
+                    break;
+                case Event.ONDBLCLICK:
+                    handleClickEvent(event);
+                    break;
+                case Event.ONCONTEXTMENU:
+                    handleRowClick(event);
+                    showContextMenu(event);
+                    break;
+                default:
+                    break;
+                }
 //                }
                 super.onBrowserEvent(event);
             }

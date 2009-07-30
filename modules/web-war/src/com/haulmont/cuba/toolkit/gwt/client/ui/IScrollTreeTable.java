@@ -6,6 +6,7 @@ import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
 import com.itmill.toolkit.terminal.gwt.client.Util;
 import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 import java.util.Iterator;
 
@@ -622,21 +623,26 @@ public class IScrollTreeTable
 //                if (getElement() == tdOrTr
 //                        || getElement() == parentElement
 //                        || (parentElement != null && getElement() == DOM.getParent(parentElement))) {
-                    switch (DOM.eventGetType(event)) {
-                        case Event.ONCLICK:
-                            handleClickEvent(event);
-                            handleRowClick(event);
-                            break;
-                        case Event.ONDBLCLICK:
-                            handleClickEvent(event);
-                            break;
-                        case Event.ONCONTEXTMENU:
-                            handleRowClick(event);
-                            showContextMenu(event);
-                            break;
-                        default:
-                            break;
-                    }
+                final Element targetElement = DOM.eventGetTarget(event);
+                //todo gorodnov: review this code when we will be use a multi selection
+                if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
+                    return;
+
+                switch (DOM.eventGetType(event)) {
+                    case Event.ONCLICK:
+                        handleClickEvent(event);
+                        handleRowClick(event);
+                        break;
+                    case Event.ONDBLCLICK:
+                        handleClickEvent(event);
+                        break;
+                    case Event.ONCONTEXTMENU:
+                        handleRowClick(event);
+                        showContextMenu(event);
+                        break;
+                    default:
+                        break;
+                }
 //                }
             }
 

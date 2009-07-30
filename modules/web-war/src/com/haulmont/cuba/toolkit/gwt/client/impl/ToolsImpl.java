@@ -31,7 +31,7 @@ public class ToolsImpl {
     }-*/;
 
     public native void setInnerHTML(Element elem, String text) /*-{
-        elem.innerHTML = text; //todo
+        elem.innerHTML = text; //todo gorodnov: support line breaks
     }-*/;
 
     public native void setInnerText(Element elem, String text) /*-{
@@ -52,6 +52,14 @@ public class ToolsImpl {
                 elem.appendChild($doc.createTextNode(text));
             }
         }
+    }-*/;
+
+    public native boolean isRadio(Element e) /*-{
+         return (e && e.tagName.toUpperCase() == "INPUT" && e.type == "radio"); 
+    }-*/;
+
+    public native boolean isCheckbox(Element e) /*-{
+         return (e && e.tagName.toUpperCase() == "INPUT" && e.type == "checkbox");
     }-*/;
 
 }

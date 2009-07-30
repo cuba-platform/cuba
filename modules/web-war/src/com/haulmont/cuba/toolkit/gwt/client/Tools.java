@@ -44,4 +44,12 @@ public class Tools {
     public static void setInnerText(Element elem, String text) {
         impl.setInnerText(elem, text);
     }
+
+    public static boolean isRadio(Element elem) {
+        return impl.isRadio(elem);
+    }
+
+    public static boolean isCheckbox(Element elem) {
+        return impl.isCheckbox(elem);
+    }
 }
