@@ -140,7 +140,12 @@ abstract class ListActionsHelper<T extends List> {
                                     }
 
                                     if (autocommit) {
-                                        ds.commit();
+                                        try {
+                                            ds.commit();
+                                        } catch (RuntimeException e) {
+                                            ds.refresh();
+                                            throw e;
+                                        }
                                     }
                                 }
                             }, new AbstractAction("cancel") {
