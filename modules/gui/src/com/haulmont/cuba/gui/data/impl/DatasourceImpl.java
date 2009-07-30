@@ -155,6 +155,7 @@ public class DatasourceImpl<T extends Entity>
     public void commited(Map<Entity, Entity> map) {
         if (map.containsKey(item)) {
             item = (T) map.get(item);
+            attachListener((Instance) item);
         }
 
         modified = false;
