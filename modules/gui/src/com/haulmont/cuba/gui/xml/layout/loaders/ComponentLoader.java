@@ -135,8 +135,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 }
             } else if (caption.startsWith("icon://")) {
                 caption = caption.substring("icon://".length());
-            } else {
-                throw new UnsupportedOperationException("Unsupported resource string format: " + caption);
             }
         }
         return caption;
