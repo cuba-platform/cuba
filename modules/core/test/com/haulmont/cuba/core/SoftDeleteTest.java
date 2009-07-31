@@ -18,8 +18,9 @@ import com.haulmont.cuba.core.global.View;
 
 import java.util.UUID;
 import java.util.Set;
+import java.util.List;
 
-public class DeletedCollectionItemTest extends CubaTestCase
+public class SoftDeleteTest extends CubaTestCase
 {
     private UUID groupId;
     private UUID userId;
@@ -56,7 +57,7 @@ public class DeletedCollectionItemTest extends CubaTestCase
 
             Role role2 = new Role();
             role2Id = role2.getId();
-            role2.setName("role2");
+            role2.setName("roleToBeDeleted");
             em.persist(role2);
 
             UserRole userRole2 = new UserRole();
@@ -113,6 +114,8 @@ public class DeletedCollectionItemTest extends CubaTestCase
     }
 
     public void testNormalMode() {
+        System.out.println("===================== BEGIN testNormalMode =====================");
+
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -124,9 +127,12 @@ public class DeletedCollectionItemTest extends CubaTestCase
         } finally {
             tx.end();
         }
+        System.out.println("===================== END testNormalMode =====================");
     }
 
     public void testCleanupMode() {
+        System.out.println("===================== BEGIN testCleanupMode =====================");
+
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -140,9 +146,12 @@ public class DeletedCollectionItemTest extends CubaTestCase
         } finally {
             tx.end();
         }
+        System.out.println("===================== END testCleanupMode =====================");
     }
 
     public void testOneToMany() {
+        System.out.println("===================== BEGIN testOneToMany =====================");
+
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -169,9 +178,33 @@ public class DeletedCollectionItemTest extends CubaTestCase
         } finally {
             tx.end();
         }
+        System.out.println("===================== END testOneToMany =====================");
+    }
+
+    public void testOneToManyLazy() {
+        System.out.println("===================== BEGIN testOneToManyLazy =====================");
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+
+            User user = em.find(User.class, userId);
+
+            Set<UserRole> userRoles = user.getUserRoles();
+            assertEquals(1, userRoles.size());
+            for (UserRole ur : userRoles) {
+                assertNotNull(ur.getRole());
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testOneToManyLazy =====================");
     }
 
     public void testOneToMany_CleanupMode() {
+        System.out.println("===================== BEGIN testOneToMany_CleanupMode =====================");
+
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -199,9 +232,12 @@ public class DeletedCollectionItemTest extends CubaTestCase
         } finally {
             tx.end();
         }
+        System.out.println("===================== END testOneToMany_CleanupMode =====================");
     }
 
     public void testOneToMany_Query() {
+        System.out.println("===================== BEGIN testOneToMany_Query =====================");
+
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -220,9 +256,12 @@ public class DeletedCollectionItemTest extends CubaTestCase
         } finally {
             tx.end();
         }
+        System.out.println("===================== END testOneToMany_Query =====================");
     }
 
     public void testOneToMany_JoinFetchQuery() {
+        System.out.println("===================== BEGIN testOneToMany_JoinFetchQuery =====================");
+
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
@@ -241,28 +280,68 @@ public class DeletedCollectionItemTest extends CubaTestCase
         } finally {
             tx.end();
         }
+        System.out.println("===================== END testOneToMany_JoinFetchQuery =====================");
     }
 
-//    public void testManyToOne() {
-//        Transaction tx = Locator.createTransaction();
-//        try {
-//            EntityManager em = PersistenceProvider.getEntityManager();
-//
-//            em.setView(
-//                    new View(Profile.class, "testView")
-//                            .addProperty("name")
-//                            .addProperty("group",
-//                                    new View(Group.class, "testView")
-//                                        .addProperty("name")
-//                            )
-//            );
-//            Profile profile = em.find(Profile.class, profile1Id);
-//            assertNotNull(profile.getGroup());
-//            assertTrue(profile.getGroup().isDeleted());
-//
-//            tx.commit();
-//        } finally {
-//            tx.end();
-//        }
-//    }
+    public void testQuery() {
+        System.out.println("===================== BEGIN testQuery =====================");
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery("select r from sec$Role r where r.name = ?1");
+            query.setParameter(1, "roleToBeDeleted");
+
+            List<Role> list = query.getResultList();
+            assertTrue(list.isEmpty());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testQuery =====================");
+    }
+
+    public void testQuery_CleanupMode() {
+        System.out.println("===================== BEGIN testQuery_CleanupMode =====================");
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            em.setDeleteDeferred(false);
+            Query query = em.createQuery("select r from sec$Role r where r.name = ?1");
+            query.setParameter(1, "roleToBeDeleted");
+
+            List<Role> list = query.getResultList();
+            assertTrue(!list.isEmpty());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testQuery_CleanupMode =====================");
+    }
+
+    public void testQueryWithoutConditions() {
+        System.out.println("===================== BEGIN testQueryWithoutConditions =====================");
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery("select r from sec$Role r");
+
+            List<Role> list = query.getResultList();
+            for (Role role : list) {
+                if (role.getId().equals(role2Id)) {
+                    fail();
+                }
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testQueryWithoutConditions =====================");
+    }
+
 }

@@ -56,7 +56,7 @@ public interface EntityManager
      * @throws IllegalArgumentException if the first argument does
      * not denote an entity type or the second argument is not a valid type for that entity’s primary key
      */
-    <T extends Entity> T find(Class<T> clazz, Object key);
+    <T extends Entity> T find(Class<T> entityClass, Object primaryKey);
 
     /**
      * Get an instance, whose state may be lazily fetched.<br>
@@ -73,7 +73,7 @@ public interface EntityManager
      * not denote an entity type or the second argument is not a valid type for that entity’s primary key
      * @throws javax.persistence.EntityNotFoundException if the entity state cannot be accessed
      */
-    <T extends Entity> T getReference(Class<T> clazz, Object key);
+    <T extends Entity> T getReference(Class<T> entityClass, Object primaryKey);
 
     /**
      * Create an instance of Query for executing a Java Persistence query language statement.
@@ -86,7 +86,7 @@ public interface EntityManager
      * @param qlString a Java Persistence query string
      * @return the new query instance
      */
-    Query createQuery(String qlStr);
+    Query createQuery(String qlString);
 
     /**
      * Create an instance of Query for executing
@@ -101,7 +101,7 @@ public interface EntityManager
      * @param sqlString a native SQL query string
      * @return the new query instance
      */
-    Query createNativeQuery(String sql);
+    Query createNativeQuery(String sqlString);
 
     /**
      * Set View for this EntityManager instance

@@ -10,14 +10,19 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.DeleteDeferred;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ClassUtils;
 
 import java.util.BitSet;
+import java.util.List;
+import java.lang.annotation.Annotation;
 
 public class PersistenceHelper {
 
@@ -52,5 +57,31 @@ public class PersistenceHelper {
         } else {
             return true;
         }
+    }
+
+    public static String getEntityName(Class entityClass) {
+        Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
+        if (annotation == null)
+            throw new IllegalArgumentException("Class " + entityClass + " is not an entity");
+        String name = ((javax.persistence.Entity) annotation).name();
+        if (!StringUtils.isEmpty(name))
+            return name;
+        else
+            return entityClass.getSimpleName();
+    }
+
+    public static boolean isSoftDeleted(Class entityClass) {
+        boolean softDelete = false;
+        if (DeleteDeferred.class.isAssignableFrom(entityClass)) {
+            softDelete = true;
+        } else {
+            for (Class c : (List<Class>) ClassUtils.getAllSuperclasses(entityClass)) {
+                if (DeleteDeferred.class.isAssignableFrom(c)) {
+                    softDelete = true;
+                    break;
+                }
+            }
+        }
+        return softDelete;
     }
 }

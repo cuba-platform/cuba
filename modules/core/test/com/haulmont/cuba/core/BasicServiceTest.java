@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 
 import java.util.Collections;
 import java.util.List;
@@ -84,7 +85,7 @@ public class BasicServiceTest extends CubaTestCase
 
         final DataServiceRemote.LoadContext loadContext =
                 new DataServiceRemote.LoadContext(Server.class);
-        loadContext.setQueryString("select s from " + PersistenceProvider.getEntityName(Server.class) + " s");
+        loadContext.setQueryString("select s from " + PersistenceHelper.getEntityName(Server.class) + " s");
         
         List<Server> list = bs.loadList(loadContext);
         assertTrue(list.size() > 0);

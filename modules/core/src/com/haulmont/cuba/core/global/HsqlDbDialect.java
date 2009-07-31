@@ -35,14 +35,22 @@ public class HsqlDbDialect extends DbDialect implements SequenceSupport
                 + sequenceName.toUpperCase() + "'";
     }
 
+    @Override
+    public String getIdColumn() {
+        return "ID";
+    }
+
+    @Override
     public String getDeleteTsColumn() {
         return "DELETE_TS";
     }
 
+    @Override
     public String getUniqueConstraintViolationMarker() {
         return "Violation of unique index";
     }
 
+    @Override
     public String getUniqueConstraintViolationPattern() {
         return "Violation of unique index (.+): duplicate value\\(s\\) for column\\(s\\) (.+) in statement";
     }

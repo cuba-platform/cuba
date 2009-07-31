@@ -14,6 +14,8 @@ import java.io.Serializable;
 
 public abstract class DbDialect implements Serializable
 {
+    public abstract String getIdColumn();
+
     public abstract String getDeleteTsColumn();
 
     public abstract String getUniqueConstraintViolationMarker();

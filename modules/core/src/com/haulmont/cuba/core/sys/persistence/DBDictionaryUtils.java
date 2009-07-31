@@ -20,16 +20,13 @@ import com.haulmont.cuba.core.app.PersistenceConfigMBean;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public class DBDictionaryUtils
 {
     private static PersistenceConfigAPI persistenceConfig;
 
-    private static Pattern ALIAS_PATTERN = Pattern.compile("\\b(\\w+)\\.");
-
     public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join) {
-        String deleteTsCol = getDeleteTsCol();
+        final String deleteTsCol = PersistenceProvider.getDbDialect().getDeleteTsColumn();
 
         ForeignKey fk = join.getForeignKey();
         if (fk == null)
@@ -103,7 +100,8 @@ public class DBDictionaryUtils
     }
 
     public static SQLBuffer getWhere(DBDictionary dbDictionary, Select sel, boolean forUpdate, boolean useSchema) {
-        String deleteTsCol = getDeleteTsCol();
+        final String deleteTsCol = PersistenceProvider.getDbDialect().getDeleteTsColumn();
+        final String idCol = PersistenceProvider.getDbDialect().getIdColumn();
 
         Joins joins = sel.getJoins();
         if (sel.getJoinSyntax() == JoinSyntaxes.SYNTAX_SQL92
@@ -115,38 +113,29 @@ public class DBDictionaryUtils
 
             Set<String> aliases = new HashSet<String>();
 
-            List selectAliases = sel.getSelectAliases();
-            for (String s : (Collection<String>) sel.getTableAliases()) {
-                int i = s.indexOf(' ');
-                String alias = s.substring(i + 1);
+            for (String tableAlias : (Collection<String>) sel.getTableAliases()) {
+                int i = tableAlias.indexOf(' ');
+                String alias = tableAlias.substring(i + 1);
 
-                boolean tableInSelect = false;
-                for (Iterator it = selectAliases.iterator(); it.hasNext();) {
-                    Object obj = it.next();
-                    if (obj instanceof String) {
-                        String selectAlias = (String) obj;
-                        if (alias.equals(selectAlias.substring(0, selectAlias.indexOf('.')))) {
-                            tableInSelect = true;
-                            break;
-                        }
-                    } else if (obj instanceof SQLBuffer) {
-                        String selectAlias = ((SQLBuffer) obj).getSQL();
-                        Matcher matcher = ALIAS_PATTERN.matcher(selectAlias);
-                        if (matcher.find() && alias.equals(matcher.group(1))) {
-                            tableInSelect = true;
-                            break;
-                        }
-                    } else
-                        throw new UnsupportedOperationException("Unsupported SelectAlias type: " + obj.getClass());
+                String tableName = tableAlias.substring(0, i);
+                if (useSchema) {
+                    tableName = tableName.substring(tableName.indexOf('.') + 1);
                 }
-                if (tableInSelect) {
-                    String tableName = s.substring(0, i);
-                    if (useSchema) {
-                        tableName = tableName.substring(tableName.indexOf('.') + 1);
+                boolean add = false;
+                if (buf != null && buf.getColumns() != null) {
+                    String whereSql = buf.getSQL();
+                    for (Column col : (Collection<Column>) buf.getColumns()) {
+                        if (col != null && col.getTableName().equals(tableName)
+                                && !col.getName().equals(idCol)
+                                && !whereSql.contains(alias + "." + deleteTsCol + " IS NULL"))
+                        {
+                            add = true;
+                            break;
+                        }
                     }
-                    if (getPersistenceConfigAPI().isDeleteDeferredFor(tableName)) {
-                        aliases.add(alias);
-                    }
+                }
+                if (add && getPersistenceConfigAPI().isDeleteDeferredFor(tableName)) {
+                    aliases.add(alias);
                 }
             }
 
@@ -158,40 +147,37 @@ public class DBDictionaryUtils
             }
             sel.where(sb.toString());
             return sel.getWhere();
-        }
 
-        SQLBuffer where = new SQLBuffer(dbDictionary);
-        if (sel.getWhere() != null)
-            where.append(sel.getWhere());
-        if (joins != null)
-            sel.append(where, joins);
-        if (sel instanceof SelectImpl && PersistenceProvider.getEntityManager().isDeleteDeferred()) {
-            StringBuilder sb = new StringBuilder();
-            Map tables = ((SelectImpl) sel).getTables();
-            for (Object table : tables.values()) {
-                int p = ((String) table).indexOf(' ');
-                if (p > 0) {
-                    String t = ((String) table).substring(0, p);
-                    int dot = t.indexOf('.');
-                    if (dot > 0)
-                        t = t.substring(dot + 1);
-                    if (getPersistenceConfigAPI().isDeleteDeferredFor(t)) {
-                        String alias = ((String) table).substring(p + 1);
-                        if (sb.length() > 0)
-                            sb.append(" AND ");
-                        sb.append(alias).append(".").append(deleteTsCol).append(" IS NULL");
+        } else {
+            SQLBuffer where = new SQLBuffer(dbDictionary);
+            if (sel.getWhere() != null)
+                where.append(sel.getWhere());
+            if (joins != null)
+                sel.append(where, joins);
+            if (sel instanceof SelectImpl && PersistenceProvider.getEntityManager().isDeleteDeferred()) {
+                StringBuilder sb = new StringBuilder();
+                Map tables = ((SelectImpl) sel).getTables();
+                for (Object table : tables.values()) {
+                    int p = ((String) table).indexOf(' ');
+                    if (p > 0) {
+                        String t = ((String) table).substring(0, p);
+                        int dot = t.indexOf('.');
+                        if (dot > 0)
+                            t = t.substring(dot + 1);
+                        if (getPersistenceConfigAPI().isDeleteDeferredFor(t)) {
+                            String alias = ((String) table).substring(p + 1);
+                            if (sb.length() > 0)
+                                sb.append(" AND ");
+                            sb.append(alias).append(".").append(deleteTsCol).append(" IS NULL");
+                        }
                     }
                 }
+                if (!where.isEmpty())
+                    where.append(" AND ");
+                where.append(sb.toString());
             }
-            if (!where.isEmpty())
-                where.append(" AND ");
-            where.append(sb.toString());
+            return where;
         }
-        return where;
-    }
-
-    private static String getDeleteTsCol() {
-        return PersistenceProvider.getDbDialect().getDeleteTsColumn();
     }
 
     private static PersistenceConfigAPI getPersistenceConfigAPI() {

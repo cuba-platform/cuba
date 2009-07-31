@@ -34,14 +34,22 @@ public class PostgresDbDialect extends DbDialect implements SequenceSupport
         return "select currval('" + sequenceName + "')";
     }
 
+    @Override
+    public String getIdColumn() {
+        return "id";
+    }
+
+    @Override
     public String getDeleteTsColumn() {
         return "delete_ts";
     }
 
+    @Override
     public String getUniqueConstraintViolationMarker() {
         return "ERROR: duplicate key value violates unique constraint";
     }
 
+    @Override
     public String getUniqueConstraintViolationPattern() {
         return "ERROR: duplicate key value violates unique constraint \"(.+)\"";
     }

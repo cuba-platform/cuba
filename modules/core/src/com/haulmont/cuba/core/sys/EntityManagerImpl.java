@@ -51,6 +51,10 @@ public class EntityManagerImpl implements EntityManager
         delegate.setAutoDetach(EnumSet.noneOf(AutoDetachType.class));
     }
 
+    public OpenJPAEntityManager getDelegate() {
+        return delegate;
+    }
+
     public boolean isDeleteDeferred() {
         return deleteDeferred;
     }
@@ -83,7 +87,7 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public void remove(Entity entity) {
-        if (entity instanceof DeleteDeferred) {
+        if (entity instanceof DeleteDeferred && deleteDeferred) {
             ((DeleteDeferred) entity).setDeleteTs(TimeProvider.currentTimestamp());
             ((DeleteDeferred) entity).setDeletedBy(SecurityProvider.currentUserSession().getUser().getLogin());
         }
@@ -93,7 +97,11 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public <T extends Entity> T find(Class<T> clazz, Object key) {
-        return delegate.find(clazz, key);
+        T entity = delegate.find(clazz, key);
+        if (entity instanceof DeleteDeferred && ((DeleteDeferred) entity).isDeleted() && deleteDeferred)
+            return null;
+        else
+            return entity;
     }
 
     public <T extends Entity> T getReference(Class<T> clazz, Object key) {
@@ -101,21 +109,21 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public Query createQuery() {
-        return new QueryImpl(delegate, false);
+        return new QueryImpl(this, false);
     }
 
     public Query createQuery(String qlStr) {
-        QueryImpl query = new QueryImpl(delegate, false);
+        QueryImpl query = new QueryImpl(this, false);
         query.setQueryString(qlStr);
         return query;
     }
 
     public Query createNativeQuery() {
-        return new QueryImpl(delegate, true);
+        return new QueryImpl(this, true);
     }
 
     public Query createNativeQuery(String sql) {
-        QueryImpl query = new QueryImpl(delegate, true);
+        QueryImpl query = new QueryImpl(this, true);
         query.setQueryString(sql);
         return query;
     }

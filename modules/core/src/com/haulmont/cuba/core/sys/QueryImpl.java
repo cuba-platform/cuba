@@ -13,6 +13,9 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.QueryTransformer;
 
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
@@ -28,13 +31,15 @@ public class QueryImpl implements Query
 {
     private Log log = LogFactory.getLog(QueryImpl.class);
 
-    private OpenJPAEntityManager em;
+    private EntityManagerImpl em;
+    private OpenJPAEntityManager emDelegate;
     private OpenJPAQuery query;
     private boolean isNative;
     private String queryString;
 
-    public QueryImpl(OpenJPAEntityManager entityManager, boolean isNative) {
+    public QueryImpl(EntityManagerImpl entityManager, boolean isNative) {
         this.em = entityManager;
+        this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
     }
 
@@ -42,23 +47,50 @@ public class QueryImpl implements Query
         if (query == null) {
             if (isNative) {
                 log.trace("Creating SQL query: " + queryString);
-                query = em.createNativeQuery(queryString);
+                query = emDelegate.createNativeQuery(queryString);
                 query.setFlushMode(FlushModeType.COMMIT);
             }
             else {
                 log.trace("Creating JPQL query: " + queryString);
-                query = em.createQuery(queryString);
+                String s = transformQueryString();
+                log.trace("Transformed JPQL query: " + s);
+                query = emDelegate.createQuery(s);
                 query.setFlushMode(FlushModeType.COMMIT);
             }
         }
         return query;
     }
 
+    private String transformQueryString() {
+        if (!em.isDeleteDeferred())
+            return queryString;
+
+        OpenJPAQuery tmpQuery = emDelegate.createQuery(queryString);
+        Class cls = tmpQuery.getResultClass();
+        if (cls == null
+                || !BaseEntity.class.isAssignableFrom(cls)
+                || !PersistenceHelper.isSoftDeleted(cls))
+        {
+            return queryString;
+        } else {
+            String entityName = PersistenceHelper.getEntityName(cls);
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(queryString, entityName);
+            transformer.addWhere("e.deleteTs is null");
+            return transformer.getResult();
+        }
+    }
+
     public List getResultList() {
+        if (!isNative && log.isTraceEnabled())
+            log.trace("JPQL query result class: " + getQuery().getResultClass());
+
         return getQuery().getResultList();
     }
 
     public Object getSingleResult() {
+        if (!isNative && log.isTraceEnabled())
+            log.trace("JPQL query result class: " + getQuery().getResultClass());
+
         return getQuery().getSingleResult();
     }
 

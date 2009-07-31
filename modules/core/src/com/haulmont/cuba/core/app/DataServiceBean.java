@@ -90,7 +90,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
 
             com.haulmont.cuba.core.Query query;
             if (context.getId() != null) {
-                final String entityName = PersistenceProvider.getEntityName(metaClass.getJavaClass());
+                final String entityName = PersistenceHelper.getEntityName(metaClass.getJavaClass());
                 String queryString = String.format("select e from %s e where e.id = ?1", entityName);
 
                 query = em.createQuery(queryString);

@@ -86,17 +86,6 @@ public abstract class PersistenceProvider
         return getInstance().__getEntityManager();
     }
 
-    public static String getEntityName(Class entityClass) {
-        Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
-        if (annotation == null)
-            throw new IllegalArgumentException("Class " + entityClass + " is not an entity");
-        String name = ((javax.persistence.Entity) annotation).name();
-        if (!StringUtils.isEmpty(name))
-            return name;
-        else
-            return entityClass.getSimpleName();
-    }
-
     public static Set<String> getDirtyFields(BaseEntity entity) {
         if (!(entity instanceof PersistenceCapable))
             return Collections.emptySet();
