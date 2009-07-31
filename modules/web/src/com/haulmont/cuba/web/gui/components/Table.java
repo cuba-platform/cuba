@@ -69,9 +69,12 @@ public class Table
         setEditable(false);
     }
 
-    @Override
     protected void addGeneratedColumn(Object id, Object generator) {
         component.addGeneratedColumn(id, (com.itmill.toolkit.ui.Table.ColumnGenerator) generator);
+    }
+
+    protected void removeGeneratedColumn(Object id) {
+        component.removeGeneratedColumn(id);
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {

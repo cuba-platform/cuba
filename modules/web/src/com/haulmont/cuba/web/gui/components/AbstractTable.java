@@ -87,6 +87,7 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     }
 
     protected abstract void addGeneratedColumn(Object id, Object generator);
+    protected abstract void removeGeneratedColumn(Object id);
 
     public boolean isEditable() {
         return editable;
@@ -94,6 +95,9 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+        if (datasource != null) {
+            refreshColumns(component.getContainerDataSource());
+        }
     }
 
     public boolean isSortable() {
@@ -150,12 +154,12 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         });
     }
 
-    protected Collection<MetaPropertyPath> createColumns(CollectionDsWrapper ds) {
+    protected Collection<MetaPropertyPath> createColumns(com.itmill.toolkit.data.Container ds) {
         @SuppressWarnings({"unchecked"})
         final Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
         for (MetaPropertyPath propertyPath : properties) {
             final Table.Column column = columns.get(propertyPath);
-            if (column != null && !BooleanUtils.toBoolean(column.isEditable())) {
+            if (column != null && !(editable && BooleanUtils.toBoolean(column.isEditable()))) {
                 final String clickAction =
                         column.getXmlDescriptor() == null ?
                                 null : column.getXmlDescriptor().attributeValue("clickAction");
@@ -191,6 +195,15 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         }
 
         return properties;
+    }
+
+    protected void refreshColumns(com.itmill.toolkit.data.Container ds) {
+        @SuppressWarnings({"unchecked"})
+        final Collection<MetaPropertyPath> propertyIds = ds.getContainerPropertyIds();
+        for (final MetaPropertyPath id : propertyIds) {
+            removeGeneratedColumn(id);
+        }
+        createColumns(ds);
     }
 
     public void setDatasource(CollectionDatasource datasource) {

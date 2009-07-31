@@ -119,9 +119,12 @@ public class TreeTable
         });
     }
 
-    @Override
     protected void addGeneratedColumn(Object id, Object generator) {
         component.addGeneratedColumn(id, (TableSupport.ColumnGenerator) generator);
+    }
+
+    protected void removeGeneratedColumn(Object id) {
+        component.removeGeneratedColumn(id);
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
