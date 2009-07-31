@@ -11,14 +11,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.web.gui.Window;
 import com.itmill.toolkit.ui.Upload;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,6 +88,8 @@ public class FileUploadField
                 }
             }
         });
+        component.setButtonCaption(MessageProvider.getMessage(App.getInstance().getClass(),
+                "upload.submit"));
     }
 
     public <T> T getComponent() {
