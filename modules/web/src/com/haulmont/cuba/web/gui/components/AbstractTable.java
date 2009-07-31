@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.Instance;
@@ -19,9 +20,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -30,7 +29,6 @@ import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.data.Validator;
-import com.itmill.toolkit.event.Action;
 import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Label;
@@ -43,7 +41,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public abstract class AbstractTable<T extends AbstractSelect> extends AbstractListComponent<T> {
+public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
+        extends AbstractListComponent<T>
+{
 
     protected Map<MetaPropertyPath, Table.Column> columns = new HashMap<MetaPropertyPath, Table.Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
@@ -86,8 +86,13 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         columnsOrder.remove(column);
     }
 
-    protected abstract void addGeneratedColumn(Object id, Object generator);
-    protected abstract void removeGeneratedColumn(Object id);
+    protected void addGeneratedColumn(Object id, Object generator) {
+        component.addGeneratedColumn(id, (com.itmill.toolkit.ui.Table.ColumnGenerator) generator);
+    }
+
+    protected void removeGeneratedColumn(Object id) {
+        component.removeGeneratedColumn(id);
+    }
 
     public boolean isEditable() {
         return editable;
@@ -98,6 +103,11 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         if (datasource != null) {
             refreshColumns(component.getContainerDataSource());
         }
+        component.setEditable(editable);
+    }
+
+    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
+        component.setEditableColumns(editableColumns.toArray());
     }
 
     public boolean isSortable() {
@@ -135,9 +145,8 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         component.setImmediate(true);
         component.setValidationVisible(false);
 
-        if (component instanceof com.itmill.toolkit.event.Action.Container) {
-            ((Action.Container) component).addActionHandler(new ActionsAdapter());
-        }
+        component.addActionHandler(new ActionsAdapter());
+
         component.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 if (datasource == null) return;
@@ -226,7 +235,11 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
             editableColumns = new LinkedList<MetaPropertyPath>();
         }
 
-        for (MetaPropertyPath propertyPath : columns) {
+        if (columns == null) {
+            throw new NullPointerException("Columns cannot be null");
+        }
+
+        for (final MetaPropertyPath propertyPath : columns) {
             final Table.Column column = this.columns.get(propertyPath);
 
             final String caption;
@@ -258,9 +271,30 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
     }
 
     protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
-    protected abstract void setVisibleColumns(List<MetaPropertyPath> columnsOrder);
-    protected abstract void setColumnHeader(MetaPropertyPath propertyPath, String caption);
-    protected abstract void setEditableColumns(List<MetaPropertyPath> editableColumns);
+
+    protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
+        component.setVisibleColumns(columnsOrder.toArray());
+    }
+
+    protected void setColumnHeader(MetaPropertyPath propertyPath, String caption) {
+        component.setColumnHeader(propertyPath, caption);
+    }
+
+    public void setRowHeaderMode(com.haulmont.cuba.gui.components.Table.RowHeaderMode rowHeaderMode) {
+        switch (rowHeaderMode) {
+            case NONE: {
+                component.setRowHeaderMode(com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_HIDDEN);
+                break;
+            }
+            case ICON: {
+                component.setRowHeaderMode(com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_ICON_ONLY);
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException();
+            }
+        }
+    }
 
     public void setRequired(Table.Column column, boolean required, String message) {
         if (required)
@@ -299,6 +333,103 @@ public abstract class AbstractTable<T extends AbstractSelect> extends AbstractLi
         for (com.haulmont.cuba.gui.components.Field.Validator tableValidator : tableValidators) {
             tableValidator.validate(getSelected());
         }
+    }
+
+    public void setStyleProvider(final Table.StyleProvider styleProvider) {
+        this.styleProvider = styleProvider;
+        if (styleProvider == null) { component.setCellStyleGenerator(null); return; }
+
+        component.setCellStyleGenerator(new com.haulmont.cuba.web.toolkit.ui.TreeTable.CellStyleGenerator () {
+            public String getStyle(Object itemId, Object propertyId) {
+                @SuppressWarnings({"unchecked"})
+                final Entity item = datasource.getItem(itemId);
+                return styleProvider.getStyleName(item, propertyId);
+            }
+        });
+    }
+
+    public void applySettings(Element element) {
+        final Element columnsElem = element.element("columns");
+        if (columnsElem != null) {
+            if (!Datasource.State.VALID.equals(getDatasource().getState())) {
+                getDatasource().addListener(new DatasourceListener<Entity>() {
+                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                    }
+
+                    public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+                        __applySettings(columnsElem);
+                    }
+
+                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                    }
+                });
+            } else {
+                __applySettings(columnsElem);
+            }
+        }
+    }
+
+    private void __applySettings(Element columnsElem) {
+        Object[] oldColumns = component.getVisibleColumns();
+        List<Object> newColumns = new ArrayList<Object>();
+        // add columns from saved settings
+        for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+            for (Object column : oldColumns) {
+                if (column.toString().equals(colElem.attributeValue("id"))) {
+                    newColumns.add(column);
+
+                    String width = colElem.attributeValue("width");
+                    if (width != null)
+                        component.setColumnWidth(column, Integer.valueOf(width));
+
+                    String visible = colElem.attributeValue("visible");
+                    if (visible != null)
+                        try {
+                            component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                        } catch (IllegalAccessException e) {
+                            // ignore
+                        }
+                    break;
+                }
+            }
+        }
+        // add columns not saved in settings (perhaps new)
+        for (Object column : oldColumns) {
+            if (!newColumns.contains(column)) {
+                newColumns.add(column);
+            }
+        }
+        // if the table contains only one column, always show it
+        if (newColumns.size() == 1) {
+            try {
+                component.setColumnCollapsed(newColumns.get(0), false);
+            } catch (IllegalAccessException e) {
+                //
+            }
+        }
+
+        component.setVisibleColumns(newColumns.toArray());
+    }
+
+    public boolean saveSettings(Element element) {
+        Element columnsElem = element.element("columns");
+        if (columnsElem != null)
+            element.remove(columnsElem);
+        columnsElem = element.addElement("columns");
+
+        Object[] visibleColumns = component.getVisibleColumns();
+        for (Object column : visibleColumns) {
+            Element colElem = columnsElem.addElement("columns");
+            colElem.addAttribute("id", column.toString());
+
+            int width = component.getColumnWidth(column);
+            if (width > -1)
+                colElem.addAttribute("width", String.valueOf(width));
+
+            Boolean visible = !component.isColumnCollapsed(column);
+            colElem.addAttribute("visible", visible.toString());
+        }
+        return true;
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {
