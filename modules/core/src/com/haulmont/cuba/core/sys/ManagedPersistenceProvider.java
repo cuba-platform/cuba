@@ -44,6 +44,8 @@ public class ManagedPersistenceProvider extends PersistenceProvider
 
     private Log log = LogFactory.getLog(ManagedPersistenceProvider.class);
 
+    private volatile boolean softDeletion = true;
+
     public ManagedPersistenceProvider(Context jndiContext) {
         this.jndiContext = jndiContext;
     }
@@ -128,12 +130,23 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                     emThreadLocal.set(em);
                 }
             }
+            em.setDeleteDeferred(softDeletion);
             return em;
         } catch (NamingException e) {
             throw new RuntimeException(e);
         } catch (SystemException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    protected boolean __isSoftDeletion() {
+        return softDeletion;
+    }
+
+    @Override
+    protected void __setSoftDeletion(boolean value) {
+        softDeletion = value;
     }
 
     private TransactionManager getTransactionManager() throws NamingException {

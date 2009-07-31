@@ -105,6 +105,14 @@ public abstract class PersistenceProvider
         return set;
     }
 
+    public static boolean isSoftDeletion() {
+        return getInstance().__isSoftDeletion();
+    }
+
+    public static void setSoftDeletion(boolean value) {
+        getInstance().__setSoftDeletion(value);
+    }
+
     protected DbDialect __getDbDialect() {
         if (dbDialect == null) {
             OpenJPAEntityManagerFactory factory = ((EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory()).getDelegate();
@@ -128,4 +136,8 @@ public abstract class PersistenceProvider
     protected abstract EntityManagerFactory __getEntityManagerFactory();
 
     protected abstract EntityManager __getEntityManager();
+
+    protected abstract boolean __isSoftDeletion();
+
+    protected abstract void __setSoftDeletion(boolean value);
 }
