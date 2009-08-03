@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.itmill.toolkit.Application;
+import com.itmill.toolkit.event.Action;
+import com.itmill.toolkit.event.ShortcutAction;
 import com.itmill.toolkit.service.ApplicationContext;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.ui.*;
@@ -24,13 +26,17 @@ import org.apache.commons.lang.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
-public class LoginWindow extends Window implements ApplicationContext.TransactionListener
+public class LoginWindow extends Window
+        implements ApplicationContext.TransactionListener,
+        Action.Handler, Action.Container
 {
     private Connection connection;
 
     protected TextField loginField;
     protected TextField passwdField;
     protected Locale loc;
+
+    protected Button okButton;
 
     public LoginWindow(App app, Connection connection) {
         super();
@@ -45,10 +51,11 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
 
         initUI();
 
+        addActionHandler(this);
     }
 
     protected void initUI() {
-        OrderedLayout layout = new FormLayout();
+        FormLayout layout = new FormLayout();
         layout.setSpacing(true);
         layout.setMargin(true);
 
@@ -64,8 +71,9 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
         layout.addComponent(passwdField);
 
         initFields();
+        loginField.focus();
 
-        Button okButton = new Button(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc),
+        okButton = new Button(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc),
                 new SubmitListener());
         layout.addComponent(okButton);
 
@@ -110,20 +118,35 @@ public class LoginWindow extends Window implements ApplicationContext.Transactio
     public class SubmitListener implements Button.ClickListener
     {
         public void buttonClick(Button.ClickEvent event) {
-            String login = (String) loginField.getValue();
-            try {
-                if (ActiveDirectoryHelper.useActiveDirectory()) {
-                    ActiveDirectoryHelper.authenticate(login, (String) passwdField.getValue(), loc);
-                    connection.loginActiveDirectory(login);
-                }
-                else {
-                    String passwd = DigestUtils.md5Hex((String) passwdField.getValue());
-                    connection.login(login, passwd);
-                }
-                open(new ExternalResource(App.getInstance().getURL()));
-            } catch (LoginException e) {
-                showNotification(MessageProvider.getMessage(getClass(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+            login();
+        }
+    }
+
+    public Action[] getActions(Object target, Object sender) {
+        final Action[] actions = new Action[1];
+        actions[0] = new ShortcutAction("Default key",
+                ShortcutAction.KeyCode.ENTER, null);
+        return actions;
+    }
+
+    public void handleAction(Action action, Object sender, Object target) {
+        login();
+    }
+
+    protected void login() {
+        String login = (String) loginField.getValue();
+        try {
+            if (ActiveDirectoryHelper.useActiveDirectory()) {
+                ActiveDirectoryHelper.authenticate(login, (String) passwdField.getValue(), loc);
+                connection.loginActiveDirectory(login);
             }
+            else {
+                String passwd = DigestUtils.md5Hex((String) passwdField.getValue());
+                connection.login(login, passwd);
+            }
+            open(new ExternalResource(App.getInstance().getURL()));
+        } catch (LoginException e) {
+            showNotification(MessageProvider.getMessage(getClass(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
