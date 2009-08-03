@@ -109,8 +109,14 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             q.setView(null);
             List<LoggedEntity> list = q.getResultList();
             for (LoggedEntity loggedEntity : list) {
+                if (loggedEntity.getName() == null) {
+                    throw new IllegalStateException("Unable to initialize EntityLog: empty LoggedEntity.name");
+                }
                 Set<String> attributes = new HashSet<String>();
                 for (LoggedAttribute loggedAttribute : loggedEntity.getAttributes()) {
+                    if (loggedAttribute.getName() == null) {
+                        throw new IllegalStateException("Unable to initialize EntityLog: empty LoggedAttribute.name");
+                    }
                     attributes.add(loggedAttribute.getName());
                 }
                 if (BooleanUtils.isTrue(loggedEntity.getAuto()))

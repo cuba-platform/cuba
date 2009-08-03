@@ -37,6 +37,8 @@ public class ViewHelper
         if (view != null) {
             fetchPlan.removeFetchGroup(FetchPlan.GROUP_DEFAULT);
             processView(view, fetchPlan);
+        } else {
+            fetchPlan.addFetchGroup(FetchPlan.GROUP_DEFAULT);
         }
     }
 
