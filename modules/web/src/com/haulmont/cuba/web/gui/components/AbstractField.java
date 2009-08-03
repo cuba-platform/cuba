@@ -149,12 +149,18 @@ public abstract class AbstractField<T extends com.itmill.toolkit.ui.Field>
             };
 
             component.addValidator(componentValidator);
+            if (component.isInvalidAllowed()) {
+                component.setInvalidAllowed(false);
+            }
             validators.put(validator, componentValidator);
         }
     }
 
     public void removeValidator(com.haulmont.cuba.gui.components.Field.Validator validator) {
         validators.remove(validators.get(validator));
+        if (validators.isEmpty()) {
+            component.setInvalidAllowed(true);
+        }
     }
 
     public boolean isValid() {
