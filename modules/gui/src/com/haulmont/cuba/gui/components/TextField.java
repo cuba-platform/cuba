@@ -18,4 +18,7 @@ public interface TextField extends Field {
 
     boolean isSecret();
     void setSecret(boolean secret);
+
+    int getMaxLength();
+    void setMaxLength(int value);
 }

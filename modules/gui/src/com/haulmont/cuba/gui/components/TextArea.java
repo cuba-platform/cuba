@@ -15,4 +15,7 @@ public interface TextArea extends Field {
 
     int getColumns();
     void setColumns(int columns);
+
+    int getMaxLength();
+    void setMaxLength(int value);
 }

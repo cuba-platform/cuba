@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.itmill.toolkit.ui.RichTextArea;
 
 public class TextArea
@@ -39,5 +40,22 @@ public class TextArea
 
     public void setColumns(int columns) {
         component.setColumns(columns);
+    }
+
+    public int getMaxLength() {
+        return component.getMaxLength();
+    }
+
+    public void setMaxLength(int value) {
+        component.setMaxLength(value);
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+        super.setDatasource(datasource, property);
+        Integer len = (Integer) metaProperty.getAnnotations().get("length");
+        if (len != null) {
+            component.setMaxLength(len);
+        }
     }
 }
