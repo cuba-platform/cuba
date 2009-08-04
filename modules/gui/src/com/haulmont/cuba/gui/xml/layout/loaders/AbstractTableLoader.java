@@ -168,6 +168,15 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         column.setXmlDescriptor(element);
         column.setType(metaPropertyPath.getRangeJavaClass());
 
+        String width = element.attributeValue("width");
+        if (!StringUtils.isBlank(width)) {
+            try {
+                column.setWidth(Integer.parseInt(width));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Property 'width' must contain only numeric value");
+            }
+        }
+
         column.setFormatter(loadFormatter(element));
 
         return column;

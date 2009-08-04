@@ -9,13 +9,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import org.dom4j.Element;
 
 import java.util.List;
-import java.util.Set;
-
-import org.dom4j.Element;
 
 public interface Table
     extends
@@ -41,6 +39,7 @@ public interface Table
         protected String caption;
         protected boolean editable;
         protected Formatter formatter;
+        protected Integer width;
 
         protected Class type;
         private Element element;
@@ -83,6 +82,14 @@ public interface Table
 
         public void setFormatter(Formatter formatter) {
             this.formatter = formatter;
+        }
+
+        public Integer getWidth() {
+            return width;
+        }
+
+        public void setWidth(Integer width) {
+            this.width = width;
         }
 
         @Override

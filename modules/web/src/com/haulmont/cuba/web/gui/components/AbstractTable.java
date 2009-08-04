@@ -77,6 +77,9 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         component.addContainerProperty(column.getId(), column.getType(), null);
         columns.put((MetaPropertyPath) column.getId(), column);
         columnsOrder.add(column);
+        if (column.getWidth() != null) { //todo gorodnov: do not forget about settings
+            component.setColumnWidth(column.getId(), column.getWidth());
+        }
     }
 
     public void removeColumn(Table.Column column) {
