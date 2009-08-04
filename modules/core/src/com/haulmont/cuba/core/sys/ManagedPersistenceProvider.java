@@ -108,7 +108,8 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                         throw new RuntimeException("Unable to register synchronization with JTA transaction", e);
                     }
 
-                    em = getEntityManagerFactory().createEntityManager();
+                    em = __getEntityManagerFactory().createEntityManager();
+                    em.setDeleteDeferred(softDeletion);
 
                     sync.setEntityManager(em);
                     emMap.put(tx, em);
@@ -119,6 +120,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                 em = emThreadLocal.get();
                 if (em == null || em.isClosed()) {
                     em = __getEntityManagerFactory().createEntityManager();
+                    em.setDeleteDeferred(softDeletion);
                     ((EntityManagerImpl) em).addCloseListener(
                             new EntityManagerImpl.CloseListener()
                             {
@@ -130,7 +132,6 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                     emThreadLocal.set(em);
                 }
             }
-            em.setDeleteDeferred(softDeletion);
             return em;
         } catch (NamingException e) {
             throw new RuntimeException(e);
