@@ -146,7 +146,7 @@ public class LoginWindow extends Window
             }
             open(new ExternalResource(App.getInstance().getURL()));
         } catch (LoginException e) {
-            showNotification(MessageProvider.getMessage(getClass(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+            showNotification(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
