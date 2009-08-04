@@ -238,6 +238,14 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             item.setEntityId((UUID) entity.getId());
 
             em.persist(item);
+
+            for (String attr : attributes) {
+                EntityLogAttr attribute = new EntityLogAttr();
+                attribute.setName(attr);
+                attribute.setValue(stringify(((Instance) entity).getValue(attr)));
+                attribute.setLogItem(item);
+                em.persist(attribute);
+            }
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
         }
