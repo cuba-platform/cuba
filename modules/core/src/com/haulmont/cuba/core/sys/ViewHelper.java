@@ -51,6 +51,10 @@ public class ViewHelper
 
         for (ViewProperty property : view.getProperties()) {
             MetaProperty metaProperty = metaClass.getProperty(property.getName());
+            if (metaProperty == null)
+                throw new RuntimeException("View '" + view + "' definition error: property '"
+                        + property.getName() + "' not found in entity '" + metaClass + "'");
+
             Field field = metaProperty.getJavaField();
             if (field != null) {
                 fetchPlan.addField(field.getDeclaringClass(), property.getName());
