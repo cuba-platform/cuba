@@ -895,6 +895,13 @@ public class TreeTable
         requestRepaint();
     }
 
+    public void collapseAll() {
+        ((TreeTableContainerWrapper) items).collapseAll();
+        resetPageBuffer();
+        refreshRenderedCells();
+        requestRepaint();
+    }
+
     public void setCollapsed(Object itemId) {
         setCollapsed(itemId, true);
     }

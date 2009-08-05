@@ -17,4 +17,7 @@ public interface TreeTable extends Table {
 
     void expandAll();
     void expand(Object itemId);
+
+    void collapseAll();
+    void collapse(Object itemId);
 }

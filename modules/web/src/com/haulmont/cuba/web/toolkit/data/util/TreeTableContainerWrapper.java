@@ -301,7 +301,7 @@ public class TreeTableContainerWrapper
             expandAll(rootItemIds());
         } else {
             if (children != null) {
-                for (Object itemId : children.keySet()) {
+                for (final Object itemId : children.keySet()) {
                     setExpanded(itemId);
                 }
             }
@@ -313,6 +313,27 @@ public class TreeTableContainerWrapper
             if (areChildrenAllowed(itemId) && hasChildren(itemId)) {
                 setExpanded(itemId);
                 expandAll(getChildren(itemId));
+            }
+        }
+    }
+
+    public void collapseAll() {
+        if (hierarchical) {
+            collapseAll(rootItemIds());
+        } else {
+            if (children != null) {
+                for (final Object itemId : children.keySet()) {
+                    setCollapsed(itemId);
+                }
+            }
+        }
+    }
+
+    protected void collapseAll(Collection itemIds) {
+        for (final Object itemId : itemIds) {
+            if (areChildrenAllowed(itemId) && hasChildren(itemId)) {
+                setCollapsed(itemId);
+                collapseAll(getChildren(itemId));
             }
         }
     }
