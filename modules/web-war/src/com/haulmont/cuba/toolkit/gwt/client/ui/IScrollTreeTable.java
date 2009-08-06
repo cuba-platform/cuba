@@ -412,6 +412,12 @@ public class IScrollTreeTable
                 final Element td = DOM.createTD();
                 DOM.setElementAttribute(td, "colSpan", String.valueOf(columnCount));
 
+                String classNameTd = CLASSNAME + "-cell";
+                if (allowMultiStingCells) {
+                    classNameTd += " " + CLASSNAME + "-cell-wrap";
+                }
+                DOM.setElementProperty(td, "className", classNameTd);
+
                 final Element container = DOM.createDiv();
                 DOM.setElementProperty(container, "className", CLASSNAME + "-caption-row-content");
                 if (groupCell != null) {

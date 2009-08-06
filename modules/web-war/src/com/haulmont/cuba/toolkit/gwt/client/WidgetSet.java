@@ -10,12 +10,9 @@
 package com.haulmont.cuba.toolkit.gwt.client;
 
 import com.haulmont.cuba.toolkit.gwt.client.ui.*;
-import com.haulmont.cuba.toolkit.gwt.client.ui.IFilterSelect;
-import com.haulmont.cuba.toolkit.gwt.client.ui.ILabel;
 import com.itmill.toolkit.terminal.gwt.client.DefaultWidgetSet;
 import com.itmill.toolkit.terminal.gwt.client.Paintable;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.ui.*;
 
 public class WidgetSet extends DefaultWidgetSet {
     protected Class resolveWidgetType(UIDL uidl) {
@@ -53,6 +50,8 @@ public class WidgetSet extends DefaultWidgetSet {
             }
         } else if ("label".equals(tag)) {
             return ILabel.class;
+        } else if ("horizontalBox".equals(tag) || "verticalBox".equals(tag)) {
+            return IBox.class;
         }
 
         return super.resolveWidgetType(uidl);
@@ -70,6 +69,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return new IFilterSelect();
         } else if (ILabel.class.equals(classType)) {
             return new ILabel();
+        } else if (IBox.class.equals(classType)) {
+            return new IBox();
         }
         return super.createWidget(uidl);
     }
