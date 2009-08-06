@@ -9,7 +9,9 @@ import com.itmill.toolkit.terminal.StreamResource;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,10 +60,14 @@ public class Embedded
             }
         };
 
-        component.setSource(new StreamResource(
-                source,
-                fileName,
-                App.getInstance()));
+        try {
+            component.setSource(new StreamResource(
+                    source,
+                    URLEncoder.encode(fileName, "UTF-8"),
+                    App.getInstance()));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setMIMEType(String mt) {
