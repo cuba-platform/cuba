@@ -31,9 +31,11 @@
 	border: 0;
 }
 
+/*
 .i-table-table table{
     border-bottom: 2px solid #829fd6;
 }
+*/
 
 .i-table-header td,
 .i-table-table td {
@@ -81,7 +83,7 @@
 .i-table-body {
 	background: #fff;
 	border: 0;
-    border-bottom: 2px solid #829fd6/*#829fd6*/;
+    border-bottom: 2px solid #829fd6;
 }
 
 .i-table-row-spacer {
@@ -105,9 +107,9 @@
 .i-table-row-odd:hover {
 	background-color: #edeeee;
 }
-.i-table-row td,
-.i-table-row-odd td,
-.i-table-caption-row td {
+.i-table-row .i-table-cell,
+.i-table-row-odd .i-table-cell,
+.i-table-caption-row .i-table-cell {
 	padding: 0;
     border-bottom:1px solid #DCE3EB;
 }
