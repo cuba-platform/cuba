@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.DeleteDeferred;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.core.sys.ViewHelper;
@@ -88,26 +89,31 @@ public class DataServiceBean implements DataService, DataServiceRemote
         try {
             final EntityManager em = PersistenceProvider.getEntityManager();
 
-            com.haulmont.cuba.core.Query query;
+            // Set view only if StoreCache is disabled
+            DataCacheMBean bean = Locator.lookupMBean(DataCacheMBean.class, DataCacheMBean.OBJECT_NAME);
+            if (!bean.isStoreCacheEnabled() && context.getView() != null) {
+                em.setView(context.getView());
+            }
+
             if (context.getId() != null) {
-                final String entityName = PersistenceHelper.getEntityName(metaClass.getJavaClass());
-                String queryString = String.format("select e from %s e where e.id = ?1", entityName);
+                result = em.find(metaClass.getJavaClass(), context.getId());
 
-                query = em.createQuery(queryString);
-                query.setParameter(1, context.getId());
-
-                if (context.getView() != null) {
-                    query.setView(context.getView());
+                if (em.isDeleteDeferred()
+                        && result instanceof DeleteDeferred
+                        && ((DeleteDeferred) result).isDeleted()) {
+                    result = null;
                 }
             } else {
-                query = createQuery(em, context);
+                com.haulmont.cuba.core.Query query = createQuery(em, context);
+                try {
+                    result = query.getSingleResult();
+                } catch (javax.persistence.NoResultException e) {
+                    result = null;
+                }
             }
 
-            try {
-                result = query.getSingleResult();
-            } catch (javax.persistence.NoResultException e) {
-                result = null;
-            }
+            if (result != null && context.getView() != null)
+                ViewHelper.fetchInstance((Instance) result, context.getView());
 
             tx.commit();
         } finally {
@@ -128,6 +134,14 @@ public class DataServiceBean implements DataService, DataServiceRemote
             final EntityManager em = PersistenceProvider.getEntityManager();
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             resultList = query.getResultList();
+
+            // Fetch if StoreCache is enabled
+            DataCacheMBean bean = Locator.lookupMBean(DataCacheMBean.class, DataCacheMBean.OBJECT_NAME);
+            if (bean.isStoreCacheEnabled() && context.getView() != null) {
+                for (Object entity : resultList) {
+                    ViewHelper.fetchInstance((Instance) entity, context.getView());
+                }
+            }
 
             tx.commit();
         } finally {

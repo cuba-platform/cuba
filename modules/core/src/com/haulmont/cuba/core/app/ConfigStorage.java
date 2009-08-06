@@ -12,17 +12,12 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Config;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI
@@ -35,11 +30,6 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     public ConfigStorageAPI getAPI() {
         return this;
-    }
-
-    public void start() {
-        log.debug("start");
-        loadSystemProperties();
     }
 
     public String printProperties() {
@@ -121,49 +111,8 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
     }
 
     public String loadSystemProperties() {
-        String confUrl = System.getProperty("jboss.server.config.url");
-        try {
-            StringBuilder sb = new StringBuilder();
-
-            String fileName = URI.create(confUrl).getPath() + "system.properties";
-            File file = new File(fileName);
-            if (file.exists()) {
-                InputStream is = new FileInputStream(fileName);
-                Properties props;
-                try {
-                    props = new Properties();
-                    props.load(is);
-                } finally {
-                    is.close();
-                }
-
-                for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                    if ("".equals(entry.getValue())) {
-                        System.getProperties().remove(entry.getKey());
-                    }
-                    else {
-                        System.getProperties().put(entry.getKey(), entry.getValue());
-                    }
-                }
-                sb.append("Properties from ").append(fileName).append(" loaded succesfully\n\n");
-            }
-            else {
-                sb.append("File ").append(fileName).append(" not found\n\n");
-            }
-
-            List<String> strings = new ArrayList<String>(System.getProperties().size());
-            for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
-                strings.add(entry.getKey().toString() + "=" + entry.getValue().toString());
-            }
-            Collections.sort(strings);
-            sb.append("Current system properties:\n\n");
-            for (String s : strings) {
-                sb.append(StringEscapeUtils.escapeHtml(s)).append("\n");
-            }
-            return sb.toString();
-        } catch (IOException e) {
-            return ExceptionUtils.getStackTrace(e);
-        }
+        PersistenceConfigMBean mbean = Locator.lookupMBean(PersistenceConfigMBean.class, PersistenceConfigMBean.OBJECT_NAME);
+        return mbean.loadSystemProperties();
     }
 
     public String getConfigProperty(String name) {

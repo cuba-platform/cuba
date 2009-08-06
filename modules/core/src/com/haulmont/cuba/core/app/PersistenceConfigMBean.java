@@ -23,4 +23,6 @@ public interface PersistenceConfigMBean
     void initDbMetadata();
 
     String printSoftDeleteTables();
+
+    String loadSystemProperties();
 }

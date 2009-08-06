@@ -5,6 +5,11 @@
         <depends>jboss:service=TransactionManager</depends>
     </mbean>
 
+    <mbean code="com.haulmont.cuba.core.app.DataCache"
+           name="haulmont.cuba:service=DataCache">
+        <depends>haulmont.cuba:service=PersistenceConfig</depends>
+    </mbean>
+
     <mbean code="com.haulmont.cuba.core.app.ResourceRepository"
            name="haulmont.cuba:service=ResourceRepository">
         <depends>jboss:service=TransactionManager</depends>
@@ -44,6 +49,7 @@
     <mbean code="com.haulmont.cuba.core.app.CubaDeployer"
            name="haulmont.cuba:service=CubaDeployer">
         <depends>haulmont.cuba:service=PersistenceConfig</depends>
+        <depends>haulmont.cuba:service=DataCache</depends>
         <depends>haulmont.cuba:service=ResourceRepository</depends>
         <depends>haulmont.cuba:service=UserSessions</depends>
         <depends>haulmont.cuba:service=ConfigStorage</depends>

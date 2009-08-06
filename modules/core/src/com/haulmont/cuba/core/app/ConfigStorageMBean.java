@@ -16,8 +16,6 @@ public interface ConfigStorageMBean
 
     ConfigStorageAPI getAPI();
 
-    void start();
-
     String printProperties();
 
     String printProperties(String prefix);

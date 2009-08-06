@@ -10,13 +10,17 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.app.DataCacheMBean;
 import com.haulmont.cuba.core.entity.DeleteDeferred;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.View;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpCallbacks;
@@ -24,8 +28,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.openjpa.persistence.StoreCache;
 
 import java.util.*;
 
@@ -45,10 +48,22 @@ public class EntityManagerImpl implements EntityManager
 
     private OpCallbacksImpl dummyOpCallbacks = new OpCallbacksImpl();
 
+    private static Boolean storeCacheEnabled;
+
+    private List<Entity> entitiesToEvict;
+
     EntityManagerImpl(OpenJPAEntityManager jpaEntityManager) {
         delegate = jpaEntityManager;
         // Set AutoDetachType to none to prevent automatic detach after transaction rollback 
         delegate.setAutoDetach(EnumSet.noneOf(AutoDetachType.class));
+    }
+
+    private static boolean isStoreCacheEnabled() {
+        if (storeCacheEnabled == null) {
+            DataCacheMBean bean = Locator.lookupMBean(DataCacheMBean.class, DataCacheMBean.OBJECT_NAME);
+            storeCacheEnabled = bean.isStoreCacheEnabled();
+        }
+        return storeCacheEnabled;
     }
 
     public OpenJPAEntityManager getDelegate() {
@@ -137,6 +152,17 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public void close() {
+        if (isStoreCacheEnabled()) {
+            // Evict from L2 cache all updated entities
+            StoreCache storeCache = delegate.getEntityManagerFactory().getStoreCache();
+            if (storeCache != null && entitiesToEvict != null) {
+                for (Entity entity : entitiesToEvict) {
+                    storeCache.evict(entity.getClass(), entity.getId());
+                }
+            }
+            entitiesToEvict = null;
+        }
+
         delegate.close();
         closed = true;
         for (CloseListener listener : closeListeners) {
@@ -162,6 +188,26 @@ public class EntityManagerImpl implements EntityManager
 
     public void detachAll() {
         Broker broker = ((org.apache.openjpa.persistence.EntityManagerImpl) delegate).getBroker();
+
+        if (isStoreCacheEnabled()) {
+            // When using L2 cache we have to evict all updated entities, because they are being put
+            // into cache after detaching, with all fields = null.
+            // This is because DataCacheStoreManager remembers StateManagers before detaching, but
+            // commits states into cache after detaching.
+
+            // For new entities go standard way
+            broker.setPopulateDataCache(false);
+
+            // Save updated entities to evict them on close() 
+            entitiesToEvict = new ArrayList<Entity>();
+            for (Object obj : broker.getManagedObjects()) {
+                PersistenceCapable pc = (PersistenceCapable) obj;
+                if (!pc.pcIsNew() && pc.pcIsDirty() && pc instanceof Entity) {
+                    entitiesToEvict.add((Entity) pc);
+                }
+            }
+        }
+
         broker.detachAll(dummyOpCallbacks);
     }
 

@@ -22,6 +22,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.transaction.*;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                 log.debug(String.format("Using persistence unit %s from %s", unitName, xmlPath));
 
                 OpenJPAEntityManagerFactory jpaFactory =
-                        OpenJPAPersistence.createEntityManagerFactory(unitName, xmlPath);
+                        OpenJPAPersistence.createEntityManagerFactory(unitName, xmlPath, createEmfParams());
                 initJpaFactory(jpaFactory);
 
                 EntityManagerFactory emf = new EntityManagerFactoryImpl(jpaFactory);
@@ -78,6 +79,17 @@ public class ManagedPersistenceProvider extends PersistenceProvider
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Map createEmfParams() {
+        Map params = new HashMap();
+        for (Map.Entry entry : System.getProperties().entrySet()) {
+            String name = (String) entry.getKey();
+            if (name.startsWith("cuba.openjpa.")) {
+                params.put(name.substring(5), entry.getValue());
+            }
+        }
+        return params;
     }
 
     private void initJpaFactory(OpenJPAEntityManagerFactory jpaFactory) {
