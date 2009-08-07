@@ -20,4 +20,6 @@ public interface TreeTable extends Table {
 
     void collapseAll();
     void collapse(Object itemId);
+
+    int getLevel(Object itemId);
 }

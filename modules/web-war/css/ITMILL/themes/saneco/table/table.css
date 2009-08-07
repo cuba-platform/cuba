@@ -133,11 +133,13 @@
 	line-height: 15px;
 }
 
-.i-table .i-selected {
-    background: #57a7ed;
+.i-table-row.i-selected,
+.i-table-row-odd.i-selected,
+.i-table-caption-row.i-selected {
+    background-color: #57a7ed;
 }
 
-.i-table .i-selected .i-table-cell-content {
+.i-selected .i-table-cell-content {
     color: #fff;
 }
 

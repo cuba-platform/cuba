@@ -108,6 +108,10 @@ public class TreeTable
         component.setCollapsed(itemId);
     }
 
+    public int getLevel(Object itemId) {
+        return component.getLevel(itemId);
+    }
+
     protected class TreeTableDsWrapper
             extends HierarchicalDsWrapper
             implements TreeTableContainer, com.itmill.toolkit.data.Container.Sortable
