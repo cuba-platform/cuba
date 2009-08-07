@@ -12,12 +12,18 @@ package com.haulmont.cuba.gui;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.cache.StringTemplateLoader;
+import freemarker.ext.beans.BeansWrapper;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.io.StringWriter;
 
 public class TemplateHelper {
     public static String processTemplate(String templateStr, Map<String, Object> parameterValues) {
+
+        Map<String, Object> params = new HashMap<String, Object>(parameterValues);
+        params.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
+
         final StringWriter writer = new StringWriter();
 
         try {
@@ -28,7 +34,7 @@ public class TemplateHelper {
             configuration.setTemplateLoader(templateLoader);
 
             final Template template = configuration.getTemplate("template");
-            template.process(parameterValues, writer);
+            template.process(params, writer);
 
             return writer.toString();
         } catch (Throwable e) {

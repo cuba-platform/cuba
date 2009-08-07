@@ -123,23 +123,33 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
     @SuppressWarnings({"UnusedDeclaration"})
     protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, Table.Column column) {
-        CollectionDatasource ds = optionsDatasources.get(metaClass);
-        if (ds != null) return ds;
+        if (datasource == null)
+            throw new IllegalStateException("Table datasource is null");
 
-        if (datasource == null) throw new UnsupportedOperationException("Table datasource is null");
-
-        final DataService dataservice = datasource.getDataService();
         final DsContext dsContext = datasource.getDsContext();
 
-        final String id = metaClass.getName();
-        final String viewName = null; //metaClass.getName() + ".lookup";
+        String optDsName = column.getXmlDescriptor().attributeValue("optionsDatasource");
+        if (StringUtils.isBlank(optDsName)) {
+            CollectionDatasource ds = optionsDatasources.get(metaClass);
+            if (ds != null) return ds;
 
-        ds = new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
-        ds.refresh();
+            final DataService dataservice = datasource.getDataService();
 
-        optionsDatasources.put(metaClass, ds);
+            final String id = metaClass.getName();
+            final String viewName = null; //metaClass.getName() + ".lookup";
 
-        return ds;
+            ds = new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
+            ds.refresh();
+
+            optionsDatasources.put(metaClass, ds);
+
+            return ds;
+        } else {
+            CollectionDatasource ds = dsContext.get(optDsName);
+            if (ds == null)
+                throw new IllegalStateException("Options datasource not found: " + optDsName);
+            return ds;
+        }
     }
 
     protected void initComponent(T component) {
