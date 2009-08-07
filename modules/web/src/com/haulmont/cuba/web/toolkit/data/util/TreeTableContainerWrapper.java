@@ -260,6 +260,9 @@ public class TreeTableContainerWrapper
 
         if (areChildrenAllowed(itemId))
         {
+            if (isExpanded(itemId)) {
+                return true;
+            }
             expanded.add(itemId);
 
             int itemIndex;
@@ -282,6 +285,10 @@ public class TreeTableContainerWrapper
 
         if (areChildrenAllowed(itemId))
         {
+            if (!isExpanded(itemId)) {
+                return true;
+            }
+
             if (containsInline(itemId)) {
                 final List<Object> inlineChildren = getInlineChildren(itemId);
                 if (inlineChildren != null) {
@@ -297,6 +304,7 @@ public class TreeTableContainerWrapper
     }
 
     public void expandAll() {
+        collapseAll();
         if (hierarchical) {
             expandAll(rootItemIds());
         } else {
@@ -318,15 +326,9 @@ public class TreeTableContainerWrapper
     }
 
     public void collapseAll() {
-        if (hierarchical) {
-            collapseAll(rootItemIds());
-        } else {
-            if (children != null) {
-                for (final Object itemId : children.keySet()) {
-                    setCollapsed(itemId);
-                }
-            }
-        }
+        expanded.clear();
+        inline.clear();
+        makeInlineElements(inline, rootItemIds());
     }
 
     protected void collapseAll(Collection itemIds) {
