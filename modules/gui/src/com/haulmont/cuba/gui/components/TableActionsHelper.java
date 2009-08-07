@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 
 import java.util.Collection;
 import java.util.Map;
@@ -62,8 +63,11 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                     public void windowClosed(String actionId) {
                         if (window instanceof Window.Editor) {
                             Object item = ((Window.Editor) window).getItem();
-                            if (item instanceof Entity)
+                            if (item instanceof Entity) {
+                                boolean modified = datasource.isModified();
                                 datasource.addItem((Entity) item);
+                                ((DatasourceImplementation) datasource).setModified(modified);
+                            }
                         }
                     }
                 });
