@@ -11,8 +11,8 @@
 package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.cuba.gui.MessageUtils;
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
 
 import java.text.NumberFormat;
@@ -24,6 +24,10 @@ public class DoubleValidator implements Field.Validator{
 
     public DoubleValidator(Element element) {
         message = element.attributeValue("message");
+    }
+
+    public DoubleValidator(String message) {
+        this.message = message;
     }
 
     public void validate(Object value) throws ValidationException {
