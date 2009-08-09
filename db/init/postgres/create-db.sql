@@ -247,6 +247,8 @@ create table SEC_ENTITY_LOG_ATTR (
 
 alter table SEC_ENTITY_LOG_ATTR add constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID)^
 
+create index IDX_SEC_ENTITY_LOG_ATTR_ITEM on SEC_ENTITY_LOG_ATTR (ITEM_ID)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create or replace function newid()

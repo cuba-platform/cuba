@@ -29,28 +29,31 @@ public class ValuePathHelper {
     }
 
     public static String[] parse(String path) {
+        if (!path.contains(".") && !path.contains("["))
+            return new String[] {path};
+
         List<String> elements = new ArrayList<String>();
 
-        int breaketCount = 0;
+        int bracketCount = 0;
 
         StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < path.length(); i++) {
             char c = path.charAt(i);
             if (c == '[') {
-                breaketCount++;
+                bracketCount++;
                 continue;
             }
 
             if (c == ']') {
-                breaketCount--;
+                bracketCount--;
                 continue;
             }
 
-            if ('.' != c || breaketCount > 0)
+            if ('.' != c || bracketCount > 0)
                 buffer.append(c);
 
-            if ('.' == c && breaketCount == 0) {
+            if ('.' == c && bracketCount == 0) {
                 String element = buffer.toString();
                 if (!StringUtils.isEmpty(element)) {
                     elements.add(element);
@@ -62,6 +65,6 @@ public class ValuePathHelper {
         }
         elements.add(buffer.toString());
 
-        return elements.toArray(new String[]{});
+        return elements.toArray(new String[elements.size()]);
     }
 }

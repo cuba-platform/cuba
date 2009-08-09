@@ -31,6 +31,8 @@ import org.apache.commons.lang.StringUtils;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DataServiceBean implements DataService, DataServiceRemote
 {
+    private volatile static Boolean storeCacheEnabled;
+
     public DbDialect getDbDialect() {
         return PersistenceProvider.getDbDialect();
     }
@@ -90,8 +92,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
             final EntityManager em = PersistenceProvider.getEntityManager();
 
             // Set view only if StoreCache is disabled
-            DataCacheMBean bean = Locator.lookupMBean(DataCacheMBean.class, DataCacheMBean.OBJECT_NAME);
-            if (!bean.isStoreCacheEnabled() && context.getView() != null) {
+            if (!isStoreCacheEnabled() && context.getView() != null) {
                 em.setView(context.getView());
             }
 
@@ -136,8 +137,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
             resultList = query.getResultList();
 
             // Fetch if StoreCache is enabled
-            DataCacheMBean bean = Locator.lookupMBean(DataCacheMBean.class, DataCacheMBean.OBJECT_NAME);
-            if (bean.isStoreCacheEnabled() && context.getView() != null) {
+            if (isStoreCacheEnabled() && context.getView() != null) {
                 for (Object entity : resultList) {
                     ViewHelper.fetchInstance((Instance) entity, context.getView());
                 }
@@ -223,5 +223,13 @@ public class DataServiceBean implements DataService, DataServiceRemote
         if (cache.contains(metaClass)) return;
         checkPermission(metaClass, operation);
         cache.add(metaClass);
+    }
+
+    private static boolean isStoreCacheEnabled() {
+        if (storeCacheEnabled == null) {
+            DataCacheMBean bean = Locator.lookupMBean(DataCacheMBean.class, DataCacheMBean.OBJECT_NAME);
+            storeCacheEnabled = bean.isStoreCacheEnabled();
+        }
+        return storeCacheEnabled;
     }
 }
