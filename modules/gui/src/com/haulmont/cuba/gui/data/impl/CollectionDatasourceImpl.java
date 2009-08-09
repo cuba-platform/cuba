@@ -18,6 +18,8 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.collections.map.LinkedMap;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
@@ -251,6 +253,8 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     protected void loadData(Map<String, Object> params) {
+        StopWatch sw = new Log4JStopWatch("CDS " + id);
+
         for (Object entity : data.values()) {
             detachListener((Instance) entity);
         }
@@ -283,5 +287,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
             data.put(entity.getId(), entity);
             attachListener((Instance) entity);
         }
+
+        sw.stop();
     }
 }

@@ -20,6 +20,9 @@ import com.haulmont.cuba.gui.xml.ParametersHelper;
 import java.util.Collection;
 import java.util.Map;
 
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
+
 public class CustomCollectionDatasource<T extends Entity, K>
     extends
         CollectionDatasourceImpl<T, K>
@@ -38,6 +41,8 @@ public class CustomCollectionDatasource<T extends Entity, K>
 
     @Override
     protected void loadData(Map<String, Object> params) {
+        StopWatch sw = new Log4JStopWatch("CCDS " + id);
+
         final Map<String, Object> parameters = getQueryParameters(params);
 
         Collection<T> entities = GroovyHelper.evaluate(getGroovyScript(query, parameters), parameters);
@@ -45,6 +50,8 @@ public class CustomCollectionDatasource<T extends Entity, K>
         for (T entity : entities) {
             data.put(entity.getId(), entity);
         }
+
+        sw.stop();
     }
 
     private String getGroovyScript(String query, Map<String, Object> parameterValues) {

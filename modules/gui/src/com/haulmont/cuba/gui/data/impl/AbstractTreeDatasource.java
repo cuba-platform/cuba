@@ -19,6 +19,8 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
 import org.apache.commons.lang.ObjectUtils;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
@@ -39,6 +41,8 @@ public abstract class AbstractTreeDatasource<T extends Entity, K>
     }
 
     protected void loadData(Map<String, Object> params) {
+        StopWatch sw = new Log4JStopWatch("TDS " + id);
+
         this.tree = loadTree(params);
 
         Map<K, Node<T>> targetNodes = new HashMap<K, Node<T>>();
@@ -54,6 +58,8 @@ public abstract class AbstractTreeDatasource<T extends Entity, K>
         }
 
         this.nodes = targetNodes;
+
+        sw.stop();
     }
 
     protected abstract Tree<T> loadTree(Map<String, Object> params);
