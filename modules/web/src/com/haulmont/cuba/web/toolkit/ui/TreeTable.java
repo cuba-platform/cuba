@@ -68,9 +68,6 @@ public class TreeTable
             if (rows > 0 && firstIndex >= 0) {
                 rows -= firstIndex;
             }
-            if (rows < 0) {
-                rows = 0;
-            }
             if (pagelen > 0 && pagelen < rows) {
                 rows = pagelen;
             }
@@ -95,6 +92,10 @@ public class TreeTable
                     rows = totalRows - firstIndex;
                 }
             } else {
+                rows = 0;
+            }
+
+            if (rows < 0) {
                 rows = 0;
             }
 
@@ -899,8 +900,15 @@ public class TreeTable
     }
 
     public void collapseAll() {
+        if (((TreeTableContainerWrapper) items).isAllCollapsed()) {
+            return;
+        }
         ((TreeTableContainerWrapper) items).collapseAll();
+
         resetPageBuffer();
+        currentPageFirstItemId = null;
+        currentPageFirstItemIndex = 0;
+
         refreshRenderedCells();
         requestRepaint();
     }

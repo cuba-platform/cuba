@@ -325,6 +325,10 @@ public class TreeTableContainerWrapper
         }
     }
 
+    public boolean isAllCollapsed() {
+        return expanded.isEmpty();
+    }
+
     public void collapseAll() {
         expanded.clear();
         inline.clear();
