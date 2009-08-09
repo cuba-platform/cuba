@@ -149,6 +149,12 @@ public class IScrollTreeTable
                 // totalRows == pageLength
                 tBody.setContainerHeight();
                 bodyHeight = tBody.getContainerHeight();
+                if (bodyHeight == 0) {
+                    bodyHeight = IScrollTableBody.DEFAULT_ROW_HEIGHT;
+                }
+            }
+            if (total >= availW) {
+                bodyHeight += Util.getNativeScrollbarSize(); //fix an issue with a horizontal scrollbar;
             }
             bodyContainer.setHeight(bodyHeight + "px");
         }
@@ -187,6 +193,7 @@ public class IScrollTreeTable
         tBody.reLayoutComponents();
 //        }
 
+/*
         if (height == null || "".equals(height) && allowMultiStingCells) {
             tBody.setContainerHeight();
             int bodyHeight = tBody.getContainerHeight();
@@ -195,6 +202,7 @@ public class IScrollTreeTable
             }
             bodyContainer.setHeight(bodyHeight + "px");
         }
+*/
     }
 
     public class IScrollTreeTableBody extends IScrollTableBody {

@@ -651,6 +651,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     bodyHeight = IScrollTableBody.DEFAULT_ROW_HEIGHT;
                 }
             }
+            if (total >= availW) {
+                bodyHeight += Util.getNativeScrollbarSize(); //fix an issue with a horizontal scrollbar;
+            }
             bodyContainer.setHeight(bodyHeight + "px");
         }
 
