@@ -14,7 +14,7 @@
         <ant dir="modules/gui" target="${target}" inheritAll="false"/>
 		<ant dir="modules/web" target="${target}" inheritAll="false"/>
         <ant dir="modules/web-war" target="${target}" inheritAll="false"/>
-        <ant dir="modules/admin-console-war" target="${target}" inheritAll="false"/>
+        <!--<ant dir="modules/admin-console-war" target="${target}" inheritAll="false"/>-->
 	</target>
 
 	<target name="clean">
@@ -125,5 +125,41 @@
     <target name="clean-build-deploy" depends="clean,build,deploy"/>
 
     <target name="clean-build-deploy-start" depends="clean,build,deploy,start"/>
+
+    <target name="output">
+        <mkdir dir="${output.replace.dir}/deploy"/>
+        <mkdir dir="${output.replace.dir}/conf"/>
+        <mkdir dir="${output.merge.dir}/deploy"/>
+        <mkdir dir="${output.merge.dir}/conf"/>
+
+        <copy todir="${output.replace.dir}/deploy">
+            <fileset dir="build">
+                <include name="*.jar"/>
+                <include name="*.war"/>
+                <include name="21cuba-core-service.xml"/>
+                <exclude name="cuba-core-test.jar"/>
+                <exclude name="web-toolkit.jar"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${output.merge.dir}/deploy">
+            <fileset dir="build">
+                <include name="cuba-ds.xml"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${output.replace.dir}/conf">
+            <fileset dir="build/conf">
+                <include name="cuba/**/*"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${output.merge.dir}/conf">
+            <fileset dir="build/conf">
+                <include name="jboss-log4j.xml"/>
+                <include name="system.properties"/>
+            </fileset>
+        </copy>
+    </target>
 
 </project>
