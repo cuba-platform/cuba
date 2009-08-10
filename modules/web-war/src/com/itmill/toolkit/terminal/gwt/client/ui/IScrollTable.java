@@ -623,6 +623,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             }
         } else {
             // bodys size will be more than available and scrollbar will appear
+            calculatedWidth = total;
         }
 
         // last loop: set possibly modified values or reset if new tBody
