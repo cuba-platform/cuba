@@ -14,7 +14,9 @@ import com.itmill.toolkit.terminal.DownloadStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class ReportDownloadWindow extends ReportOutputWindow
 {
@@ -39,6 +41,12 @@ public class ReportDownloadWindow extends ReportOutputWindow
             fileName = "." + output.getFormat().getFileExt();
         } else {
             contentType = "application/octet-stream";
+        }
+
+        try {
+            fileName = URLEncoder.encode(fileName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
 
         InputStream is = new ByteArrayInputStream(data);
