@@ -257,6 +257,10 @@ public class Table
         if (start > cells[CELL_ITEMID].length || start < 0) {
             start = 0;
         }
+        // trying to fix ArrayIndexOutOfBoundsException
+        if (end > cells[CELL_ITEMID].length) {
+            end = cells[CELL_ITEMID].length;
+        }
 
         for (int i = start; i < end; i++) {
             final Object itemId = cells[CELL_ITEMID][i];
