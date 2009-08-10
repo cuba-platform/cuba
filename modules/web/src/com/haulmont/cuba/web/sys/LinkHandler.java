@@ -121,6 +121,11 @@ public class LinkHandler {
             return null;
         }
 
+        String viewName = null;
+        if ("saneco$GenDoc".equals(entityName)) {
+            viewName = "gen-doc-search";
+        }
+
         String entityIdStr = str.substring(p + 1);
         UUID id;
         try {
@@ -132,6 +137,8 @@ public class LinkHandler {
 
         DataService ds = ServiceLocator.getDataService();
         DataServiceRemote.LoadContext ctx = new DataService.LoadContext(metaClass).setId(id);
+        if (viewName != null)
+            ctx.setView(viewName);
         Entity entity;
         try {
             entity = ds.load(ctx);
