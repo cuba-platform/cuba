@@ -1,12 +1,13 @@
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
 import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
-import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 import java.util.Iterator;
 
@@ -24,188 +25,6 @@ public class IScrollTreeTable
         return new IScrollTreeTableBody();
     }
 
-    @Override
-    protected void sizeInit() {
-        /*
-         * We will use browsers table rendering algorithm to find proper column
-         * widths. If content and header take less space than available, we will
-         * divide extra space relatively to each column which has not width set.
-         *
-         * Overflow pixels are added to last column.
-         */
-
-        Iterator<Widget> headCells = tHead.iterator();
-        int i = 0;
-        int totalExplicitColumnsWidths = 0;
-        int total = 0;
-
-        final int[] widths = new int[tHead.getVisibleCellCount()];
-
-        tHead.enableBrowserIntelligence();
-        // first loop: collect natural widths
-        while (headCells.hasNext()) {
-            final HeaderCell hCell = (HeaderCell) headCells.next();
-            int w = hCell.getWidth();
-            if (w > 0) {
-                // server has defined column width explicitly
-                totalExplicitColumnsWidths += w;
-            } else {
-                final int hw = hCell.getOffsetWidth();
-                final int cw = tBody.getColWidth(i);
-                w = (hw > cw ? hw : cw) + IScrollTableBody.CELL_EXTRA_WIDTH;
-            }
-            widths[i] = w;
-            total += w;
-            i++;
-        }
-
-        tHead.disableBrowserIntelligence();
-
-        // fix "natural" width if width not set
-        if (width == null || "".equals(width)) {
-            //            w += getScrollbarWidth();
-            setContentWidth(total);
-        }
-
-        int availW = tBody.getAvailableWidth();
-        // Hey IE, are you really sure about this?
-        availW = tBody.getAvailableWidth() - Util.getNativeScrollbarSize();//todo fix an issue with scroll bar
-
-//        boolean needsReLayout = false;
-
-        if (availW > total || allowMultiStingCells/*fix an issue with the scrollbar appearing*/) {
-            // natural size is smaller than available space
-            int extraSpace = availW - total;
-            int totalWidthR = total - totalExplicitColumnsWidths;
-            if (totalWidthR > 0) {
-//                needsReLayout = true;
-
-                /*
-                 * If the table has a relative width and there is enough space
-                 * for a scrollbar we reserve this in the last column
-                 */
-                int scrollbarWidth = Util.getNativeScrollbarSize();
-                if (relativeWidth && totalWidthR >= scrollbarWidth) {
-                    scrollbarWidthReserved = scrollbarWidth + 1; //
-                    int columnindex = tHead.getVisibleCellCount() - 1;
-                    widths[columnindex] += scrollbarWidthReserved;
-                    HeaderCell headerCell = tHead.getHeaderCell(columnindex);
-                    if (headerCell.getWidth() == -1) {
-                        totalWidthR += scrollbarWidthReserved;
-                    }
-                    extraSpace -= scrollbarWidthReserved;
-                    scrollbarWidthReservedInColumn = columnindex;
-                }
-
-                calculatedWidth = 0;
-
-                // now we will share this sum relatively to those without
-                // explicit width
-                headCells = tHead.iterator();
-                i = 0;
-                HeaderCell hCell;
-                while (headCells.hasNext()) {
-                    hCell = (HeaderCell) headCells.next();
-                    if (hCell.getWidth() == -1) {
-                        int w = widths[i];
-                        final int newSpace;
-                        if (availW > total) {
-                            newSpace = extraSpace * w / totalWidthR;
-                        } else {
-                            newSpace = (int) Math.floor((double) extraSpace * (double) w / (double) totalWidthR);
-                        }
-                        w += newSpace;
-                        widths[i] = w;
-                        calculatedWidth += w;
-                    } else {
-                        calculatedWidth += hCell.getWidth();
-                    }
-                    i++;
-                }
-            }
-        } else {
-            // bodys size will be more than available and scrollbar will appear
-            calculatedWidth = total;
-        }
-
-        // last loop: set possibly modified values or reset if new tBody
-        i = 0;
-        headCells = tHead.iterator();
-        while (headCells.hasNext()) {
-            final HeaderCell hCell = (HeaderCell) headCells.next();
-            if (isNewBody || hCell.getWidth() == -1) {
-                final int w = widths[i];
-                setColWidth(i, w);
-            }
-            i++;
-        }
-
-        // fix "natural" height if height not set
-        if (height == null || "".equals(height)) {
-            int bodyHeight;
-            if (!allowMultiStingCells) {
-                bodyHeight = tBody.getRowHeight() *
-                        (totalRows < pageLength ? ((totalRows < 1) ? 1 : totalRows) : pageLength);
-            } else {
-                // totalRows == pageLength
-                tBody.setContainerHeight();
-                bodyHeight = tBody.getContainerHeight();
-                if (bodyHeight == 0) {
-                    bodyHeight = IScrollTableBody.DEFAULT_ROW_HEIGHT;
-                }
-            }
-            if (total >= availW) {
-                bodyHeight += Util.getNativeScrollbarSize(); //fix an issue with a horizontal scrollbar;
-            }
-            bodyContainer.setHeight(bodyHeight + "px");
-        }
-
-        isNewBody = false;
-
-        if (firstvisible > 0) {
-            // Deferred due some Firefox oddities. IE & Safari could survive
-            // without
-            DeferredCommand.addCommand(new Command() {
-                public void execute() {
-                    bodyContainer.setScrollPosition(firstvisible
-                            * tBody.getRowHeight());
-                    firstRowInViewPort = firstvisible;
-                }
-            });
-        }
-
-        if (enabled) {
-            // Do we need cache rows
-            if (tBody.getLastRendered() + 1 < firstRowInViewPort + pageLength
-                    + CACHE_REACT_RATE * pageLength) {
-                if (totalRows - 1 > tBody.getLastRendered()) {
-                    // fetch cache rows
-                    rowRequestHandler
-                            .setReqFirstRow(tBody.getLastRendered() + 1);
-                    rowRequestHandler
-                            .setReqRows((int) (pageLength * CACHE_RATE));
-                    rowRequestHandler.deferRowFetch(1);
-                }
-            }
-        }
-        initializedAndAttached = true;
-
-//        if (needsReLayout) {
-        tBody.reLayoutComponents();
-//        }
-
-/*
-        if (height == null || "".equals(height) && allowMultiStingCells) {
-            tBody.setContainerHeight();
-            int bodyHeight = tBody.getContainerHeight();
-            if (bodyHeight == 0) {
-                bodyHeight = IScrollTableBody.DEFAULT_ROW_HEIGHT;
-            }
-            bodyContainer.setHeight(bodyHeight + "px");
-        }
-*/
-    }
-
     public class IScrollTreeTableBody extends IScrollTableBody {
 
         protected int groupColIndex =
@@ -213,7 +32,6 @@ public class IScrollTreeTable
 
         @Override
         public void renderRows(UIDL rowData, int firstIndex, int rows) {
-            // FIXME REVIEW
             aligns = tHead.getColumnAlignments();
             final Iterator it = rowData.getChildIterator();
             if (firstIndex == lastRendered + 1) {
@@ -270,14 +88,6 @@ public class IScrollTreeTable
                 rowRequestHandler.setReqRows(reactLastRow - lastRendered - 1);
                 rowRequestHandler.deferRowFetch(1);
             } else if (IScrollTreeTable.this.tBody.getFirstRendered() > reactFirstRow) {
-                /*
-                 * Branch for fetching cache above visible area.
-                 *
-                 * If cache needed for both before and after visible area, this
-                 * will be rendered after-cache is reveived and rendered. So in
-                 * some rare situations table may take two cache visits to
-                 * server.
-                 */
                 rowRequestHandler.setReqFirstRow(reactFirstRow);
                 rowRequestHandler.setReqRows(firstRendered - reactFirstRow);
                 rowRequestHandler.deferRowFetch(1);

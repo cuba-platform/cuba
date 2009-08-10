@@ -558,16 +558,16 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
         tHead.disableBrowserIntelligence();
 
+        int scrollbarWidth = Util.getNativeScrollbarSize();
+
         // fix "natural" width if width not set
         if (width == null || "".equals(width)) {
-            int w = total;
-            w += getScrollbarWidth();
-            setContentWidth(w);
+            setContentWidth(total);
         }
 
         int availW = tBody.getAvailableWidth();
         // Hey IE, are you really sure about this?
-        availW = tBody.getAvailableWidth();
+        availW = tBody.getAvailableWidth() - scrollbarWidth;
 
         boolean needsReLayout = false;
 
@@ -582,7 +582,6 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                  * If the table has a relative width and there is enough space
                  * for a scrollbar we reserve this in the last column
                  */
-                int scrollbarWidth = Util.getNativeScrollbarSize();
                 if (relativeWidth && totalWidthR >= scrollbarWidth) {
                     scrollbarWidthReserved = scrollbarWidth + 1; //
                     int columnindex = tHead.getVisibleCellCount() - 1;
@@ -645,16 +644,22 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 bodyHeight = tBody.getRowHeight() *
                     (totalRows < pageLength ? ((totalRows < 1) ? 1 : totalRows) : pageLength);
             } else {
-                // totalRows == pageLength
                 tBody.setContainerHeight();
                 bodyHeight = tBody.getContainerHeight();
                 if (bodyHeight == 0) {
                     bodyHeight = IScrollTableBody.DEFAULT_ROW_HEIGHT;
                 }
             }
-            if (total >= availW) {
-                bodyHeight += Util.getNativeScrollbarSize(); //fix an issue with a horizontal scrollbar;
+            if (total + scrollbarWidth >= availW) {
+                bodyHeight = bodyHeight + scrollbarWidth; //fix an issue with a horizontal scrollbar;
             }
+
+            //It should fix an issue with a vertical scrollbar in Chrome
+            int h = bodyContainer.getOffsetHeight();
+            if (h > bodyHeight) {
+                bodyHeight = h;
+            }
+
             bodyContainer.setHeight(bodyHeight + "px");
         }
 
@@ -691,16 +696,6 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             }
         }
         initializedAndAttached = true;
-    }
-
-    protected int getScrollbarWidth() {
-        if (BrowserInfo.get().isIE6()) {
-            return Util.measureHorizontalBorder(bodyContainer.getElement());
-        }
-
-        return bodyContainer.getOffsetWidth()
-                - DOM.getElementPropertyInt(bodyContainer.getElement(),
-                        "clientWidth");
     }
 
     /**
