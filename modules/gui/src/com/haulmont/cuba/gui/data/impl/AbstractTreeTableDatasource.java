@@ -12,6 +12,9 @@ import com.haulmont.bali.datastruct.Node;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * User: Nikolay Gorodnov
  * Date: 03.06.2009
@@ -20,6 +23,8 @@ public abstract class AbstractTreeTableDatasource<T extends Entity, K>
         extends AbstractTreeDatasource<T, K>
         implements TreeTableDatasource<T, K>
 {
+    private Log log = LogFactory.getLog(AbstractTreeTableDatasource.class);
+
     private static class TreeTableNodeComparator implements Comparator<Node> {
         private final EntityComparator entityComparator;
 
@@ -46,6 +51,11 @@ public abstract class AbstractTreeTableDatasource<T extends Entity, K>
 
     @Override
     protected void doSort() {
+        if (tree == null) {
+            log.warn("AbstractTreeTableDatasource.doSort: Tree is null, exiting");
+            return;
+        }
+
         final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 

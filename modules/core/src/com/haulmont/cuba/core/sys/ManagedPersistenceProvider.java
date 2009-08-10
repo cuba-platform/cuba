@@ -30,9 +30,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
 {
     private Context jndiContext;
 
-    private final Object mutex = new Object();
-
-    private boolean emfInitialized;
+    private volatile boolean emfInitialized;
 
     private Map<javax.transaction.Transaction, EntityManager> emMap = 
             new Hashtable<javax.transaction.Transaction, EntityManager>();
@@ -52,8 +50,8 @@ public class ManagedPersistenceProvider extends PersistenceProvider
     }
 
     protected EntityManagerFactory __getEntityManagerFactory() {
-        synchronized (mutex) {
-            if (!emfInitialized) {
+        if (!emfInitialized) {
+            synchronized (this) {
                 log.debug("Creating new EntityManagerFactory");
 
                 String xmlPath = getPersistenceXmlPath();
@@ -71,8 +69,8 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                 } catch (NamingException e) {
                     throw new RuntimeException(e);
                 }
-                emfInitialized = true;
             }
+            emfInitialized = true;
         }
         try {
             return (EntityManagerFactory) jndiContext.lookup(EMF_JNDI_NAME);
