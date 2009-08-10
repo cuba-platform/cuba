@@ -229,7 +229,7 @@ public class FileTypesHelper {
         // Calculates the extension of the file
         int dotIndex = fileName.lastIndexOf(".");
         if (dotIndex > -1) {
-            final String ext = StringUtils.substring(fileName, dotIndex + 1);
+            final String ext = StringUtils.substring(fileName, dotIndex + 1).toLowerCase();
 
             // Return type from extension map, if found
             final String type = extToMIMEMap.get(ext);

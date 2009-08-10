@@ -52,25 +52,27 @@ public class ManagedPersistenceProvider extends PersistenceProvider
     protected EntityManagerFactory __getEntityManagerFactory() {
         if (!emfInitialized) {
             synchronized (this) {
-                log.debug("Creating new EntityManagerFactory");
+                if (!emfInitialized) {
+                    log.debug("Creating new EntityManagerFactory");
 
-                String xmlPath = getPersistenceXmlPath();
-                String unitName = getPersistenceUnitName();
-                log.debug(String.format("Using persistence unit %s from %s", unitName, xmlPath));
+                    String xmlPath = getPersistenceXmlPath();
+                    String unitName = getPersistenceUnitName();
+                    log.debug(String.format("Using persistence unit %s from %s", unitName, xmlPath));
 
-                OpenJPAEntityManagerFactory jpaFactory =
-                        OpenJPAPersistence.createEntityManagerFactory(unitName, xmlPath, createEmfParams());
-                initJpaFactory(jpaFactory);
+                    OpenJPAEntityManagerFactory jpaFactory =
+                            OpenJPAPersistence.createEntityManagerFactory(unitName, xmlPath, createEmfParams());
+                    initJpaFactory(jpaFactory);
 
-                EntityManagerFactory emf = new EntityManagerFactoryImpl(jpaFactory);
-                try {
-                    log.debug("Binding new EntityManagerFactory to JNDI context " + EMF_JNDI_NAME);
-                    jndiContext.bind(EMF_JNDI_NAME, emf);
-                } catch (NamingException e) {
-                    throw new RuntimeException(e);
+                    EntityManagerFactory emf = new EntityManagerFactoryImpl(jpaFactory);
+                    try {
+                        log.debug("Binding new EntityManagerFactory to JNDI context " + EMF_JNDI_NAME);
+                        jndiContext.bind(EMF_JNDI_NAME, emf);
+                    } catch (NamingException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+                emfInitialized = true;
             }
-            emfInitialized = true;
         }
         try {
             return (EntityManagerFactory) jndiContext.lookup(EMF_JNDI_NAME);
