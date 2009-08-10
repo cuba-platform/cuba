@@ -19,22 +19,16 @@ import com.itmill.toolkit.terminal.gwt.client.*;
 import java.util.Iterator;
 import java.util.Set;
 
-public class IBox extends FlowPanel
+public class IBox extends FlowPanel //todo gorodnov: make table cell wrapper component
         implements Container {
 
     public static final String CLASSNAME = "i-box";
 
     protected String paintableId;
     protected ApplicationConnection client;
-
-    protected Element table = DOM.createTable();
-    protected Element container = DOM.createTR();
     
     public IBox() {
         DOM.setElementProperty(getElement(), "className", CLASSNAME);
-
-        DOM.setElementAttribute(table, "cellPadding", "0");
-        DOM.setElementAttribute(table, "cellSpacing", "0");
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
@@ -45,34 +39,22 @@ public class IBox extends FlowPanel
         this.client = client;
         paintableId = uidl.getId();
 
-        Element tBody = DOM.createTBody();
-
-        DOM.appendChild(tBody, container);
-        DOM.appendChild(table, tBody);
-        DOM.appendChild(getElement(), table);
-
         for (final Iterator<UIDL> it = uidl.getChildIterator(); it.hasNext();) {
             final UIDL childUIDL = it.next();
             final Paintable child = client.getPaintable(childUIDL);
             add((Widget) child);
             paintChild(child, childUIDL);
         }
-
-/*
-        Element clear = DOM.createDiv();
-        DOM.setElementProperty(clear, "className", CLASSNAME + "-clear");
-        DOM.appendChild(getElement(), clear);
-*/
     }
 
     @Override
     public void add(Widget w) {
-        Element childWrapper = DOM.createTD();
-        DOM.setElementProperty(childWrapper, "className", CLASSNAME + "-child");
+        Element container = DOM.createDiv();
+        DOM.setElementProperty(container, "className", CLASSNAME + "-child");
 
-        DOM.appendChild(container, childWrapper);
+        DOM.appendChild(getElement(), container);
 
-        add(w, childWrapper);
+        add(w, container);
     }
 
     protected void paintChild(Paintable p, UIDL uidl) {

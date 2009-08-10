@@ -145,7 +145,7 @@ public class IScrollTreeTable
             int bodyHeight;
             if (!allowMultiStingCells) {
                 bodyHeight = tBody.getRowHeight() *
-                    (totalRows < pageLength ? ((totalRows < 1) ? 1 : totalRows) : pageLength);
+                        (totalRows < pageLength ? ((totalRows < 1) ? 1 : totalRows) : pageLength);
             } else {
                 // totalRows == pageLength
                 tBody.setContainerHeight();
@@ -353,7 +353,7 @@ public class IScrollTreeTable
                 }
                 if (row != null) {
                     final Element e = DOM.getChild(row.getElement(), i);
-                     DOM.getElementPropertyInt(e, "offsetWidth");
+                    DOM.getElementPropertyInt(e, "offsetWidth");
                 }
             }
             return 0;
@@ -377,8 +377,7 @@ public class IScrollTreeTable
         }
 
         protected void applyCellWidth(IScrollTreeTableRow row,
-                int colIndex, int w)
-        {
+                                      int colIndex, int w) {
             final Element cell = DOM.getChild(row.getElement(),
                     colIndex);
             int innerWidth = w;
@@ -396,8 +395,7 @@ public class IScrollTreeTable
 
         @Override
         protected void applyAlternatingRowColor(IScrollTableRow row,
-                    String style)
-        {
+                                                String style) {
             if (row instanceof IScrollTreeTableCaptionRow) {
                 row.addStyleName(CLASSNAME + "-caption-row");
             } else {
@@ -453,8 +451,7 @@ public class IScrollTreeTable
         }
 
         public class IScrollTreeTableRow
-                extends IScrollTableBody.IScrollTableRow
-        {
+                extends IScrollTableBody.IScrollTableRow {
             private boolean expanded;
             private int level;
 
@@ -568,19 +565,25 @@ public class IScrollTreeTable
                 Element contentDiv = container;
 
                 if (col == groupColIndex) {
+                    int k;
                     if (groupCell != null) {
+                        Element d = DOM.createDiv();
+                        DOM.setStyleAttribute(d, "width", 9000 + "px");
+
                         contentDiv = DOM.createDiv();
-
-                        DOM.setStyleAttribute(groupCell, "marginLeft", getLevel() * LEVEL_STEP_SIZE
-                                + "px");
-
                         DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
-                        DOM.appendChild(container, groupCell);
-                        DOM.appendChild(container, contentDiv);
+                        DOM.appendChild(d, groupCell);
+                        DOM.appendChild(d, contentDiv);
+
+                        DOM.appendChild(container, d);
+
+                        k = getLevel();
+
                     } else {
-                        DOM.setStyleAttribute(container, "marginLeft", (getLevel() + 1) * LEVEL_STEP_SIZE
-                                + "px");
+                        k = getLevel() + 1;
                     }
+                    DOM.setStyleAttribute(container, "marginLeft", k * LEVEL_STEP_SIZE
+                            + "px");
                 }
 
                 setCellAlignment(contentDiv, align);
