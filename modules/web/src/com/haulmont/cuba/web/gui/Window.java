@@ -659,7 +659,12 @@ public class Window
         }
 
         public boolean commit() {
-            if (!__validate()) return false;
+            return commit(true);
+        }
+
+        public boolean commit(boolean validate) {
+            if (validate && !__validate())
+                return false;
             form.commit();
 
             final DsContext context = getDsContext();
