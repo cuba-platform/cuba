@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
+import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
@@ -244,7 +245,7 @@ public abstract class WindowManager {
         if (!StringUtils.isEmpty(caption)) {
             caption = TemplateHelper.processTemplate(caption, params);
         } else {
-            caption = (String) params.get("parameter$caption");
+            caption = (String) params.get("param$caption");
             if (StringUtils.isEmpty(caption)) {
                 String msgPack = window.getMessagesPack();
                 if (msgPack != null) {
@@ -264,7 +265,7 @@ public abstract class WindowManager {
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Object item, OpenType openType, Map<String, Object> params) {
         params = createParametersMap(windowInfo, params);
-        params.put("parameter$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
+        params.put("param$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
         String template = windowInfo.getTemplate();
         Window window;
@@ -344,14 +345,14 @@ public abstract class WindowManager {
                     final String name = paramElement.attributeValue("name");
                     final String value = paramElement.attributeValue("value");
 
-                    map.put("parameter$" + name, value);
+                    map.put(ParametersHelper.ParameterInfo.Type.PARAM.getPrefix() + "$" + name, value);
                 }
             }
         }
 
 
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            map.put("parameter$" + entry.getKey(), entry.getValue());
+            map.put(ParametersHelper.ParameterInfo.Type.PARAM.getPrefix() + "$" + entry.getKey(), entry.getValue());
         }
 
         return map;

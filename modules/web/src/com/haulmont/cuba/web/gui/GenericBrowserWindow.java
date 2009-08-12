@@ -137,7 +137,7 @@ public class GenericBrowserWindow extends Window
     }
 
     protected void initEditable(Map<String, Object> params) {
-        String editable = (String) params.get("parameter$editable");
+        String editable = (String) params.get("param$editable");
         if (!StringUtils.isEmpty(editable)) {
             table.setEditable(BooleanUtils.toBoolean(editable));
         }
@@ -150,7 +150,7 @@ public class GenericBrowserWindow extends Window
     protected View getView(Map<String, Object> params) {
         final MetaClass metaClass = getMetaClass(params);
 
-        final Object o = params.get("parameter$view");
+        final Object o = params.get("param$view");
         if (o == null) return null;
 
         if (o instanceof View) {
@@ -163,7 +163,7 @@ public class GenericBrowserWindow extends Window
     }
 
     protected MetaClass getMetaClass(Map<String, Object> params) {
-        final Object o = params.get("parameter$metaClass");
+        final Object o = params.get("param$metaClass");
         if (o == null) return null;
 
         if (o instanceof MetaClass) {

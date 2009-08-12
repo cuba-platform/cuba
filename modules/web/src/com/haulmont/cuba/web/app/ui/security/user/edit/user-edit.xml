@@ -49,13 +49,13 @@
                             </vbox>
                             <textField id="login" datasource="user" property="login" width="300px"/>
                         </row>
-                        <row visible="return PersistenceHelper.isNew(parameter$item)">
+                        <row visible="return PersistenceHelper.isNew(param$item)">
                             <vbox align="MIDDLE_RIGHT">
                                 <label id="passwLab" value="msg://password" align="MIDDLE_RIGHT"/>
                             </vbox>
                             <textField id="passw" secret="true" width="300px"/>
                         </row>
-                        <row visible="return PersistenceHelper.isNew(parameter$item)">
+                        <row visible="return PersistenceHelper.isNew(param$item)">
                             <vbox align="MIDDLE_RIGHT">
                                 <label id="confirmPasswLab" value="msg://confirmPassword"/>
                             </vbox>

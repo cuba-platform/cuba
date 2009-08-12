@@ -110,6 +110,10 @@ public class UserSession implements Serializable
         attributes.put(name, value);
     }
 
+    public Collection<String> getAttributeNames() {
+        return new ArrayList(attributes.keySet());
+    }
+
     public String toString() {
         return id + " [" + user.getLogin() + "]";
     }

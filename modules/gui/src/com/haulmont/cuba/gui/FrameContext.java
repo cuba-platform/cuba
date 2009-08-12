@@ -31,14 +31,14 @@ public class FrameContext implements WindowContext {
     public Collection<String> getParameterNames() {
         List<String> names = new ArrayList<String>();
         for (String s : params.keySet()) {
-            names.add(s.substring("parameter$".length()));
+            names.add(s.substring("param$".length()));
         }
         return names;
     }
 
     public <T> T getParameterValue(String property) {
         //noinspection unchecked
-        return (T) params.get("parameter$" + property);
+        return (T) params.get("param$" + property);
     }
 
     public <T> T getValue(String property) {

@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
@@ -182,14 +183,15 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
     }
 
     protected String getJPQLQuery(String query, Map<String, Object> parameterValues) {
+
+        query = TemplateHelper.processTemplate(query, parameterValues);
+
         for (ParametersHelper.ParameterInfo info : queryParameters) {
             final String paramName = info.getName();
             final String jpaParamName = info.getFlatName();
 
             query = query.replaceAll(paramName.replaceAll("\\$", "\\\\\\$"), jpaParamName);
         }
-
-        query = TemplateHelper.processTemplate(query, parameterValues);
 
         return query;
     }
@@ -202,8 +204,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
         }
     }
 
-    protected Map<String, Object> getTemplateParams(Map<String, Object> queryParams, Map<String, Object> customParams) {
-        Map<String, Object> templateParams = new HashMap<String, Object>(queryParams);
+    protected Map<String, Object> getTemplateParams(Map<String, Object> customParams) {
+
+        Map<String, Object> templateParams = new HashMap<String, Object>();
+
         String customPerfix = ParametersHelper.ParameterInfo.Type.CUSTOM.getPrefix() + "$";
         for (Map.Entry<String, Object> entry : customParams.entrySet()) {
             templateParams.put(customPerfix + entry.getKey(), entry.getValue());
@@ -216,6 +220,14 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
                 templateParams.put(paramPrefix + name, windowContext.getParameterValue(name));
             }
         }
+
+        UserSession userSession = UserSessionClient.getUserSession();
+        String sessionPrefix = ParametersHelper.ParameterInfo.Type.SESSION.getPrefix() + "$";
+        templateParams.put(sessionPrefix + "userId", userSession.getUser().getId());
+        for (String name : userSession.getAttributeNames()) {
+            templateParams.put(sessionPrefix + name, userSession.getAttribute(name));
+        }
+
         return templateParams;
     }
 }

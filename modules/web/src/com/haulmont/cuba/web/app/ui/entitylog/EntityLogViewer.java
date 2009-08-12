@@ -19,7 +19,7 @@ import java.util.List;
 
 public class EntityLogViewer extends AbstractWindow {
 
-    private final String ENTITY_UUID = "parameter$entityUUID";
+    private final String ENTITY_UUID = "param$entityUUID";
 
     public EntityLogViewer(IFrame frame) {
         super(frame);
