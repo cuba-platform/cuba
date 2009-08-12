@@ -12,9 +12,18 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.itmill.toolkit.data.Property;
+import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.ui.AbstractSelect;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class LookupField
     extends
@@ -112,5 +121,75 @@ public class LookupField
         this.nullName = nullName;
 //        component.setNullSelectionItemId(nullName);
 //        component.requestRepaint();
+    }
+
+    @Override
+    public void setOptionsDatasource(CollectionDatasource datasource) {
+        this.optionsDatasource = datasource;
+        component.setContainerDataSource(new DsWrapper(datasource, true));
+
+        if (captionProperty != null) {
+            component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
+        }
+    }
+
+    private class DsWrapper extends CollectionDsWrapper {
+
+        public DsWrapper(CollectionDatasource datasource) {
+            super(datasource);
+        }
+
+        public DsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
+            super(datasource, autoRefresh);
+        }
+
+        public DsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+            super(datasource, properties);
+        }
+
+        public DsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
+            super(datasource, properties, autoRefresh);
+        }
+
+        @Override
+        public Collection getItemIds() {
+            Collection itemIds = super.getItemIds();
+            Object valueKey = LookupField.super.getValue();
+            if (valueKey != null && !itemIds.contains(valueKey)) {
+                itemIds = new HashSet(itemIds);
+                itemIds.add(valueKey);
+            }
+            return itemIds;
+        }
+
+        @Override
+        public Item getItem(Object itemId) {
+            Item item = super.getItem(itemId);
+            if (item == null && LookupField.this.datasource != null) {
+                Entity containingEntity = LookupField.this.datasource.getItem();
+
+                Object value;
+                if (LookupField.this.metaPropertyPath != null)
+                    value = InstanceUtils.getValueEx((Instance) containingEntity, LookupField.this.metaPropertyPath.getPath());
+                else
+                    value = ((Instance) containingEntity).getValue(LookupField.this.metaProperty.getName());
+
+                if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
+                    item = getItemWrapper(value);
+                }
+            }
+            return item;
+        }
+
+        @Override
+        public int size() {
+            return getItemIds().size();
+        }
+
+        @Override
+        public boolean containsId(Object itemId) {
+            Collection itemIds = getItemIds();
+            return itemIds.contains(itemId);
+        }
     }
 }

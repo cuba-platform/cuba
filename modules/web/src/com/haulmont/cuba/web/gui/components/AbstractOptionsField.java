@@ -35,8 +35,8 @@ public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.Abstr
     protected List optionsList;
     protected CollectionDatasource optionsDatasource;
 
-    private CaptionMode captionMode = CaptionMode.ITEM;
-    private String captionProperty;
+    protected CaptionMode captionMode = CaptionMode.ITEM;
+    protected String captionProperty;
 
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
