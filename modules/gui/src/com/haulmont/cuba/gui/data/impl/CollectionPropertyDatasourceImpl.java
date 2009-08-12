@@ -219,6 +219,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
 
     @Override
     public void commited(Map<Entity, Entity> map) {
+        for (T item : __getCollection()) {
+            attachListener((Instance) item);
+        }
         modified = false;
         clearCommitLists();
     }
