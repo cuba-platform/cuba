@@ -25,6 +25,8 @@ import javax.interceptor.Interceptors;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 @Stateless(name = DataService.JNDI_NAME)
 @Interceptors({ServiceInterceptor.class})
@@ -33,11 +35,17 @@ public class DataServiceBean implements DataService, DataServiceRemote
 {
     private volatile static Boolean storeCacheEnabled;
 
+    private Log log = LogFactory.getLog(DataServiceBean.class);
+
     public DbDialect getDbDialect() {
         return PersistenceProvider.getDbDialect();
     }
 
     public Map<Entity, Entity> commit(CommitContext<Entity> context) {
+        if (log.isDebugEnabled())
+            log.debug("commit: commitInstances=" + context.getCommitInstances()
+                    + ", removeInstances=" + context.getRemoveInstances());
+
         final Map<Entity, Entity> res = new HashMap<Entity, Entity>();
 
         Transaction tx = Locator.getTransaction();
@@ -82,6 +90,9 @@ public class DataServiceBean implements DataService, DataServiceRemote
     }
 
     public <A extends Entity> A load(LoadContext context) {
+        if (log.isDebugEnabled())
+            log.debug("load: metaClass=" + context.getMetaClass() + ", id=" + context.getId() + ", view=" + context.getView());
+
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
         checkPermission(metaClass, "view");
 
@@ -125,6 +136,10 @@ public class DataServiceBean implements DataService, DataServiceRemote
     }
 
     public <A extends Entity> List<A> loadList(LoadContext context) {
+        if (log.isDebugEnabled())
+            log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
+                    + ", query=" + printQuery(context.getQuery()));
+
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
         checkPermission(metaClass, "read");
 
@@ -149,6 +164,17 @@ public class DataServiceBean implements DataService, DataServiceRemote
         }
 
         return resultList;
+    }
+
+    private String printQuery(Query query) {
+        if (query == null || query.getQueryString() == null)
+            return null;
+
+        String str = query.getQueryString().trim();
+        String res = StringUtils.substring(str, 0, 50).replaceAll("[\\n\\r]", " ");
+        if (str.length() > 50)
+            res = res + "...";
+        return res;
     }
 
     protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, LoadContext context) {

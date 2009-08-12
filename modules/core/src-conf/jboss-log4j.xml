@@ -40,8 +40,10 @@
         -->
 
         <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
+
             <!-- The default pattern: Date Priority [Category] (Thread) Message\n -->
-            <param name="ConversionPattern" value="%d %-5p [%c] (%t) %m%n"/>
+            <!--<param name="ConversionPattern" value="%d %-5p [%c] (%t) %m%n"/>-->
 
             <!-- The full pattern: Date MS Priority [Category] (Thread:NDC) Message\n
            <param name="ConversionPattern" value="%d %-5r %-5p [%c] (%t:%x) %m%n"/>
@@ -111,6 +113,10 @@
     <!-- End Cuba categories -->
 
     <category name="openjpa">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="freemarker">
         <priority value="INFO"/>
     </category>
 
