@@ -121,4 +121,10 @@ public interface Component {
         void setExpandable(boolean expandable);
         boolean isExpandable();
     }
+
+    interface Toggle {
+        void toggle();
+        void setOn(boolean on);
+        boolean isOn();
+    }
 }

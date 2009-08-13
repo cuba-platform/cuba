@@ -74,7 +74,21 @@
 	background: transparent url(img/bottom-left.png) no-repeat;
 }
 
+.i-panel-toggle {
+    border: 1px solid #babfc0;
+}
 
+/*
+.i-panel-toggle-top,
+.i-panel-toggle-right,
+.i-panel-toggle-bottom {
+    border: 1px solid #babfc0;
+}
+
+.i-panel-toggle-left {
+    border: 1px solid #babfc0;
+}
+*/
 
 
 

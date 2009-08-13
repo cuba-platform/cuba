@@ -52,6 +52,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return ILabel.class;
         } else if ("horizontalBox".equals(tag) || "verticalBox".equals(tag)) {
             return IBox.class;
+        } else if ("togglepanel".equals(tag)) {
+            return ITogglePanel.class;
         }
 
         return super.resolveWidgetType(uidl);
@@ -71,6 +73,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return new ILabel();
         } else if (IBox.class.equals(classType)) {
             return new IBox();
+        } else if (ITogglePanel.class.equals(classType)) {
+            return new ITogglePanel();
         }
         return super.createWidget(uidl);
     }

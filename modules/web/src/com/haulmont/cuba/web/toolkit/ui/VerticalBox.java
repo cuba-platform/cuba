@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+@Deprecated
 public class VerticalBox extends Box {
     public String getTag() {
         return "verticalBox";
