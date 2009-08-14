@@ -34,16 +34,26 @@ toggle position
 public class ITogglePanel extends ComplexPanel implements Container, ClickListener {
 
     private class ToggleButtonPanel extends FlowPanel {
-        private ToggleButton button = new ToggleButton("+", "-");
+        private ToggleButton button;
 
-        private ToggleButtonPanel(ClickListener listener) {
+        public ToggleButtonPanel(String upText, String downText, ClickListener listener) {
+            button = new ToggleButton(upText, downText);
             add(button);
             button.addClickListener(listener);
             setStyleName(CLASSNAME + "-toggle");
         }
 
-        public void updateButton(boolean newValue) {
-            button.setDown(newValue);
+        public void updateText(String upText, String downText) {
+            if (upText != null) {
+                button.getUpFace().setText(upText);
+            }
+            if (downText != null) {
+                button.getDownFace().setText(downText);
+            }
+        }
+
+        public void setDown(boolean b) {
+            button.setDown(b);
         }
     }
 
@@ -106,23 +116,15 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         this.client = client;
         paintableId = uidl.getId();
 
-        updateComponent(uidl);
+        updateToggle(uidl);
 
-        if (uidl.getBooleanAttribute("hideToggle")) {
-            if (toggleButtonPanel != null) {
-                remove(toggleButtonPanel);
-                toggleButtonPanel = null;
-            }
-        } else if (toggleButtonPanel == null) {
-            toggleButtonPanel = new ToggleButtonPanel(this);
-            add(toggleButtonPanel, toggleButtonContainer);
-        }
+        updateComponent(uidl);
 
         //Apply forsed value
         if (uidl.hasAttribute("expanded")) {
             expanded = uidl.getBooleanAttribute("expanded");
             if (toggleButtonPanel != null) {
-                toggleButtonPanel.updateButton(expanded);
+                toggleButtonPanel.setDown(expanded);
             }
         }
 
@@ -161,6 +163,23 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         rendering = false;
     }
 
+    protected void updateToggle(UIDL uidl) {
+        if (uidl.getBooleanAttribute("hideToggle")) {
+            if (toggleButtonPanel != null) {
+                remove(toggleButtonPanel);
+                toggleButtonPanel = null;
+            }
+        } else if (toggleButtonPanel == null) {
+            String upText = uidl.getStringAttribute("expandText");
+            String downText = uidl.getStringAttribute("collapseText");
+            toggleButtonPanel = new ToggleButtonPanel(
+                    upText == null ? "+" : upText,
+                    downText == null ? "-" : downText,
+                    this);
+            add(toggleButtonPanel, toggleButtonContainer);
+        }
+    }
+
     protected void reSize() {
 
         updateContentHeight();
@@ -179,6 +198,18 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         }
 
         widgetsPanel.fixVisibleTabSize(w, h, minWidth);
+        runHacks();
+    }
+
+    private void runHacks() {
+        //Fix issue with height in Safari and Chrome
+        if (BrowserInfo.get().isSafari()) { //and Chrome too
+            if (height == null || "".equals(height)) {
+                Widget widget = widgetsPanel.getWidget(widgetsPanel.getVisibleWidget());
+                int h = widget.getOffsetHeight();
+                DOM.setStyleAttribute(contentContainer, "height", h + "px");
+            }
+        }
     }
 
     protected void updateComponent(UIDL uidl) {
@@ -190,6 +221,9 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         DOM.setElementProperty(contentContainer, "className", CLASSNAME + "-content");
         DOM.setElementProperty(captionContainer, "className", CLASSNAME + "-caption");
         DOM.setElementProperty(bottomDecoration, "className", CLASSNAME + "-deco");
+        if (toggleButtonPanel != null) {
+            toggleButtonPanel.setStyleName(CLASSNAME + "-toggle");
+        }
         boolean hasCaption = false;
         if (uidl.hasAttribute("caption")
                 && !uidl.getStringAttribute("caption").equals("")) {
@@ -220,6 +254,13 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
             DOM.setElementProperty(contentContainer, "className", contentClass);
             DOM.setElementProperty(captionContainer, "className", captionClass);
             DOM.setElementProperty(bottomDecoration, "className", decoClass);
+            if (toggleButtonPanel != null) {
+                String toggleStyle = CLASSNAME + "-toggle";
+                for (final String style : styles) {
+                    toggleStyle += " " + (CLASSNAME + "-toggle-") + style;
+                }
+                toggleButtonPanel.setStyleName(toggleStyle);
+            }
         }
     }
 
@@ -264,9 +305,9 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
 
 //        DeferredCommand.addCommand(new Command() {
 //            public void execute() {
-                Widget w = widgetsPanel.getWidget(widgetsPanel.getVisibleWidget());
-                DOM.setStyleAttribute(DOM.getParent(w.getElement()),
-                        "visibility", "hidden");
+//                Widget w = widgetsPanel.getWidget(widgetsPanel.getVisibleWidget());
+//                DOM.setStyleAttribute(DOM.getParent(w.getElement()),
+//                        "visibility", "hidden");
                 client.updateVariable(paintableId, "toggle", "", true);
 //            }
 //        });
@@ -279,7 +320,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
     protected void togglePanel() {
         expanded = !expanded;
         if (toggleButtonPanel != null) {
-            toggleButtonPanel.updateButton(expanded);
+            toggleButtonPanel.setDown(expanded);
         }
     }
 

@@ -23,6 +23,9 @@ public class TogglePanel extends Panel {
     private boolean forsedValue = false;
     private boolean hideToggle = false;
 
+    private String expandText;
+    private String collapseText;
+
     private Layout expandLayout = null;
 
     public TogglePanel() {
@@ -56,6 +59,12 @@ public class TogglePanel extends Panel {
         }
         if (isHideToggle()) {
             target.addAttribute("hideToggle", true);
+        }
+        if (getExpandText() != null) {
+            target.addAttribute("expandText", getExpandText());
+        }
+        if (getCollapseText() != null) {
+            target.addAttribute("collapseText", getCollapseText());
         }
 
         paintActions(target);
@@ -124,8 +133,10 @@ public class TogglePanel extends Panel {
     }
 
     public void setExpanded(boolean expanded) {
-        setExpanded(expanded,  true);
-        forsedValue = true;
+        if (isExpanded() != expanded) {
+            setExpanded(expanded,  true);
+            forsedValue = true;
+        }
     }
 
     protected void setExpanded(boolean expanded, boolean repaint) {
@@ -154,7 +165,27 @@ public class TogglePanel extends Panel {
     }
 
     public void setHideToggle(boolean hideToggle) {
-        this.hideToggle = hideToggle;
+        if (isHideToggle() != hideToggle) {
+            this.hideToggle = hideToggle;
+            requestRepaint();
+        }
+    }
+
+    public String getExpandText() {
+        return expandText;
+    }
+
+    public void setExpandText(String expandText) {
+        this.expandText = expandText;
+        requestRepaint();
+    }
+
+    public String getCollapseText() {
+        return collapseText;
+    }
+
+    public void setCollapseText(String collapseText) {
+        this.collapseText = collapseText;
         requestRepaint();
     }
 

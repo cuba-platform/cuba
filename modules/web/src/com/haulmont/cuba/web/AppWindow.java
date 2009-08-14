@@ -43,7 +43,7 @@ public class AppWindow extends Window {
     protected Mode mode;
 
     protected VerticalLayout rootLayout;
-    protected HorizontalLayout titleLayout;
+    protected Layout titleLayout;
     protected HorizontalLayout menuBarLayout;
     protected HorizontalLayout emptyLayout;
     protected VerticalLayout mainLayout;
@@ -123,7 +123,7 @@ public class AppWindow extends Window {
         return rootLayout;
     }
 
-    public HorizontalLayout getTitleLayout() {
+    public Layout getTitleLayout() {
         return titleLayout;
     }
 
@@ -167,7 +167,7 @@ public class AppWindow extends Window {
         return menuBar;
     }
 
-    protected HorizontalLayout createTitleLayout() {
+    protected Layout createTitleLayout() {
         HorizontalLayout titleLayout = new HorizontalLayout();
 
         titleLayout.setWidth(100, Sizeable.UNITS_PERCENTAGE);
