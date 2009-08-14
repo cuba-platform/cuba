@@ -96,7 +96,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         entity.setCreateTs(ts);
 
         if (entity instanceof Updatable) {
-            ((Updatable) entity).setUpdateTs(TimeProvider.currentTimestamp());
+            ((Updatable) entity).setUpdateTs(ts);
         }
     }
 
