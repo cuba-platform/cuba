@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
@@ -133,6 +134,8 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         } else {
             windowOpenMode.put(window, openMode);
         }
+
+        window.applySettings(new SettingsImpl(window.getId(), getSettingService()));
     }
 
     protected Component showWindowNewTab(final Window window, final String caption, AppWindow appWindow) {

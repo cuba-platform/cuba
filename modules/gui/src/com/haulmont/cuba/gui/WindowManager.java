@@ -98,8 +98,6 @@ public abstract class WindowManager {
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executeLazyTasks();
 
-        windowWrapper.applySettings(new SettingsImpl(windowInfo.getId(), getSettingService()));
-
         return windowWrapper;
     }
 
