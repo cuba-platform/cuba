@@ -95,9 +95,13 @@ public class ViewRepository
                 throw new IllegalStateException("Invalid view definition: no 'entity' or 'class' attribute");
             Class entityClass = ReflectionHelper.getClass(className);
             metaClass = session.getClass(entityClass);
+            if (metaClass == null)
+                throw new IllegalStateException("No MetaClass found for class " + className);
         }
         else {
             metaClass = session.getClass(entity);
+            if (metaClass == null)
+                throw new IllegalStateException("No MetaClass found for entity " + entity);
         }
 
         View v = findView(metaClass, viewName);

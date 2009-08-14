@@ -39,12 +39,15 @@ import java.net.URISyntaxException;
 
 public class MetadataProviderImpl extends MetadataProvider
 {
-    private Session session;
+    private volatile Session session;
     private ViewRepository viewRepository;
 
-    protected synchronized Session __getSession() {
+    protected Session __getSession() {
         if (session == null) {
-            initialize();
+            synchronized (this) {
+                if (session == null)
+                    initialize();
+            }
         }
 
         return session;
