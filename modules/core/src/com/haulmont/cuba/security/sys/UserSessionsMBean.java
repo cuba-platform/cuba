@@ -16,8 +16,8 @@ public interface UserSessionsMBean {
 
     UserSessionsAPI getAPI();
 
-    int getExpirationTimeout();
-    void setExpirationTimeout(int value);
+    int getExpirationTimeoutSec();
+    void setExpirationTimeoutSec(int value);
 
     int getCount();
 

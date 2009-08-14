@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.app;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.security.sys.UserSessionsMBean;
 
 public class CubaDeployer implements CubaDeployerMBean
 {
@@ -23,5 +26,9 @@ public class CubaDeployer implements CubaDeployerMBean
 
     public void start() {
         log.debug("start");
+
+        ServerConfig config = ConfigProvider.getConfig(ServerConfig.class);
+        UserSessionsMBean mBean = Locator.lookupMBean(UserSessionsMBean.class, UserSessionsMBean.OBJECT_NAME);
+        mBean.setExpirationTimeoutSec(config.getUserSessionExpirationTimeoutSec());
     }
 }

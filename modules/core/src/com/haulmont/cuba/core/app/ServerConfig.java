@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 @Source(type = SourceType.SYSTEM)
 public interface ServerConfig extends Config {
@@ -26,4 +27,9 @@ public interface ServerConfig extends Config {
 
     @Property("jboss.server.data.dir")
     String getServerDataDir();
+
+    @Property("cuba.userSessionExpirationTimeoutSec")
+    @DefaultInt(1800)
+    int getUserSessionExpirationTimeoutSec();
+    void setUserSessionExpirationTimeoutSec(int timeout);
 }

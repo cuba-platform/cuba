@@ -6,7 +6,7 @@
  * Author: Konstantin Krivopustov
  * Created: 02.12.2008 11:18:40
  *
- * $Id$
+ * $Id: UserSessions.java 517 2009-07-08 12:31:10Z krivopustov $
  */
 package com.haulmont.cuba.security.sys;
 
@@ -73,11 +73,11 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
         return this;
     }
 
-    public int getExpirationTimeout() {
+    public int getExpirationTimeoutSec() {
         return expirationTimeout;
     }
 
-    public void setExpirationTimeout(int value) {
+    public void setExpirationTimeoutSec(int value) {
         expirationTimeout = value;
     }
 
