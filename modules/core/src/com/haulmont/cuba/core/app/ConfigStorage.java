@@ -125,7 +125,13 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         Transaction tx = Locator.getTransaction();
         try {
             Config instance = getConfigInstance(name);
-            value = instance == null ? null : instance.getValue();
+            if (instance == null) {
+                value = null;
+            } else {
+                value = instance.getValue();
+                if (value == null)
+                    throw new IllegalStateException("Config property '" + name + "' value is null");
+            }
             tx.commit();
         } finally {
             tx.end();
@@ -164,6 +170,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         EntityManager em = PersistenceProvider.getEntityManager();
         Query query = em.createQuery("select c from core$Config c where c.name = ?1");
         query.setParameter(1, name);
+        query.setView(null);
         List<Config> list = query.getResultList();
         if (list.isEmpty())
             return null;
