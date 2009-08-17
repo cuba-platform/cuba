@@ -14,6 +14,7 @@ import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
 import com.itmill.toolkit.terminal.gwt.client.*;
 import com.itmill.toolkit.terminal.gwt.client.ui.ITabsheetPanel;
+import com.itmill.toolkit.terminal.gwt.client.ui.ShortcutActionHandler;
 
 import java.util.Set;
 
@@ -32,6 +33,8 @@ toggle position
 может лучше сделать DeckPanel которая будет управляться с сервера?
  */
 public class ITogglePanel extends ComplexPanel implements Container, ClickListener {
+
+    protected ShortcutActionHandler shortcutHandler;
 
     private class ToggleButtonPanel extends FlowPanel {
         private ToggleButton button;
@@ -83,6 +86,8 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         setElement(DOM.createDiv());
         createDOM();
         add(widgetsPanel, contentContainer);
+
+        DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
     }
 
     protected void createDOM() {
@@ -152,6 +157,20 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
 
             if (contentUidl.hasAttribute("cached")) {
                 client.handleComponentRelativeSize(newWidget);
+            }
+        }
+
+        // We may have actions attached to this panel
+        if (uidl.getChildCount() > 1) {
+            final int cnt = uidl.getChildCount();
+            for (int i = 1; i < cnt; i++) {
+                UIDL childUidl = uidl.getChildUIDL(i);
+                if (childUidl.getTag().equals("actions")) {
+                    if (shortcutHandler == null) {
+                        shortcutHandler = new ShortcutActionHandler(paintableId, client);
+                    }
+                    shortcutHandler.updateActionMap(childUidl);
+                }
             }
         }
 
@@ -376,6 +395,14 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         this.height = height;
         
         updateContentHeight();
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        final int type = DOM.eventGetType(event);
+        if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+            shortcutHandler.handleKeyboardEvent(event);
+        }
     }
 
     protected void updateContentHeight() {
