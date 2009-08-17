@@ -10,7 +10,9 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.itmill.toolkit.terminal.gwt.client.*;
 import com.itmill.toolkit.terminal.gwt.client.ui.ITabsheetPanel;
@@ -20,7 +22,6 @@ import java.util.Set;
 
 /*
 todo
-support actions
 upCaption/downCaption in button
 upImage/downImage
 icon
@@ -35,6 +36,7 @@ toggle position
 public class ITogglePanel extends ComplexPanel implements Container, ClickListener {
 
     protected ShortcutActionHandler shortcutHandler;
+    protected RenderInformation renderInformation = new RenderInformation();
 
     private class ToggleButtonPanel extends FlowPanel {
         private ToggleButton button;
@@ -175,7 +177,12 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         }
 
         if (isAttached()) {
+
+            updateContentHeight();
+
             reSize();
+
+            renderInformation.updateSize(getElement());
         }
 
         waitingForResponse = false;
@@ -200,9 +207,6 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
     }
 
     protected void reSize() {
-
-        updateContentHeight();
-
         int w = -1;
         int h = -1;
         int minWidth = 0;
@@ -356,7 +360,14 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
     }
 
     public boolean requestLayout(Set<Paintable> children) {
-        return false;
+        if (height != null && !"".equals(height)
+                && width != null && !"".equals(width)) {
+            return true;
+        }
+
+        reSize();
+
+        return !renderInformation.updateSize(getElement());
     }
 
     private RenderSpace renderSpace = new RenderSpace(0, 0, false);
@@ -386,6 +397,10 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
             renderSpace.setWidth(contentWidth);
             DOM.setStyleAttribute(contentContainer, "width", contentWidth + "px");
         }
+
+        if (!rendering) {
+            reSize();
+        }
     }
 
     @Override
@@ -395,6 +410,10 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         this.height = height;
         
         updateContentHeight();
+
+        if (!rendering) {
+            reSize();
+        }
     }
 
     @Override
