@@ -46,6 +46,7 @@ public class LayoutLoaderConfig {
         config.register("grid", GridLayoutLoader.class);
         config.register("scrollbox", ScrollBoxLayoutLoader.class);
         config.register("togglebox", ToggleBoxLoader.class);
+        config.register("htmlbox", HtmlBoxLoader.class);
 
         config.register("button", ButtonLoader.class);
         config.register("groupBox", GroupBoxLoader.class);
