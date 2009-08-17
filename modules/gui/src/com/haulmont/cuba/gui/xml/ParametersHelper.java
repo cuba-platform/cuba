@@ -88,6 +88,11 @@ public class ParametersHelper {
             result = 31 * result + path.hashCode();
             return result;
         }
+
+        @Override
+        public String toString() {
+            return type + " : " + path;
+        }
     }
 
     public static ParameterInfo parse(String parameterInfo) {

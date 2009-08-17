@@ -184,14 +184,19 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
 
     protected String getJPQLQuery(String query, Map<String, Object> parameterValues) {
 
-        query = TemplateHelper.processTemplate(query, parameterValues);
-
         for (ParametersHelper.ParameterInfo info : queryParameters) {
             final String paramName = info.getName();
             final String jpaParamName = info.getFlatName();
 
             query = query.replaceAll(paramName.replaceAll("\\$", "\\\\\\$"), jpaParamName);
+
+            Object value = parameterValues.get(paramName);
+            if (value != null) {
+                parameterValues.put(jpaParamName, value);
+            }
         }
+
+        query = TemplateHelper.processTemplate(query, parameterValues);
 
         return query;
     }
@@ -207,6 +212,15 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
     protected Map<String, Object> getTemplateParams(Map<String, Object> customParams) {
 
         Map<String, Object> templateParams = new HashMap<String, Object>();
+
+        String compPerfix = ParametersHelper.ParameterInfo.Type.COMPONENT.getPrefix() + "$";
+        for (ParametersHelper.ParameterInfo info : queryParameters) {
+            if (ParametersHelper.ParameterInfo.Type.COMPONENT.equals(info.getType())) {
+                Object value = dsContext.getWindowContext() == null ?
+                        null : dsContext.getWindowContext().getValue(info.getPath());
+                templateParams.put(compPerfix + info.getPath(), value);
+            }
+        }
 
         String customPerfix = ParametersHelper.ParameterInfo.Type.CUSTOM.getPrefix() + "$";
         for (Map.Entry<String, Object> entry : customParams.entrySet()) {
