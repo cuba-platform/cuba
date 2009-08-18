@@ -392,20 +392,23 @@ public class Window
             return false;
         }
         
-        if (settings != null) {
-            ComponentsHelper.walkComponents(
-                    this,
-                    new ComponentVisitor() {
-                        public void visit(Component component, String name) {
-                            if (component instanceof HasSettings) {
-                                log.trace("Saving settings for : " + name + " : " + component);
-                                Element e = Window.this.settings.get(name);
-                                boolean modified = ((HasSettings) component).saveSettings(e);
-                                Window.this.settings.setModified(modified);
-                            }
+        ComponentsHelper.walkComponents(
+                this,
+                new ComponentVisitor() {
+                    public void visit(Component component, String name) {
+                        if (component instanceof HasSettings) {
+                            log.trace("Saving settings for : " + name + " : " + component);
+                            Element e = Window.this.settings.get(name);
+                            boolean modified = ((HasSettings) component).saveSettings(e);
+                            Window.this.settings.setModified(modified);
+                        }
+                        if (component instanceof Disposable) {
+                            ((Disposable) component).dispose();
                         }
                     }
-            );
+                }
+        );
+        if (settings != null) {
             settings.commit();
         }
         windowManager.close(this);

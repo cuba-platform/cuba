@@ -127,4 +127,9 @@ public interface Component {
         void setOn(boolean on);
         boolean isOn();
     }
+
+    interface Disposable {
+        void dispose();
+        boolean isDisposed();
+    }
 }

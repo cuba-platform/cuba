@@ -3,9 +3,11 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
+import com.haulmont.cuba.gui.components.Component;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.FileResource;
 import com.itmill.toolkit.terminal.StreamResource;
+import com.itmill.toolkit.terminal.ApplicationResource;
 
 import java.io.File;
 import java.io.InputStream;
@@ -22,10 +24,12 @@ import java.util.Map;
  */
 public class Embedded
         extends AbstractComponent<com.itmill.toolkit.ui.Embedded>
-        implements com.haulmont.cuba.gui.components.Embedded
+        implements com.haulmont.cuba.gui.components.Embedded, Component.Disposable
 {
     private Map<String, String> parameters = null;
     private Type type = Type.OBJECT;
+    private ApplicationResource resource;
+    private boolean disposed;
 
     public Embedded() {
         component = new com.itmill.toolkit.ui.Embedded();
@@ -49,7 +53,8 @@ public class Embedded
             }
         }
 
-        component.setSource(new FileResource(file, App.getInstance()));
+        resource = new FileResource(file, App.getInstance());
+        component.setSource(resource);
     }
 
     public void setSource(String fileName, final InputStream src) {
@@ -61,10 +66,11 @@ public class Embedded
         };
 
         try {
-            component.setSource(new StreamResource(
+            resource = new StreamResource(
                     source,
                     URLEncoder.encode(fileName, "UTF-8"),
-                    App.getInstance()));
+                    App.getInstance());
+            component.setSource(resource);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -114,5 +120,16 @@ public class Embedded
                 component.setType(com.itmill.toolkit.ui.Embedded.TYPE_BROWSER);
                 break;
         }
+    }
+
+    public void dispose() {
+        if (resource != null) {
+            App.getInstance().removeResource(resource);
+        }
+        disposed = true;
+    }
+
+    public boolean isDisposed() {
+        return disposed;
     }
 }
