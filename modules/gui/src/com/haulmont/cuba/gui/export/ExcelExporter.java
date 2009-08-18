@@ -10,10 +10,11 @@
  */
 package com.haulmont.cuba.gui.export;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -24,12 +25,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.text.SimpleDateFormat;
 
 public class ExcelExporter
 {
     private static final int COL_WIDTH_MAGIC = 48;
-    private static final String DATE_FMT = "dd/MM/yyyy HH:mm:ss";
 
     public void exportTable(Table table, ExportDisplay display) {
         if (display == null)
@@ -77,15 +76,20 @@ public class ExcelExporter
                 if (val == null)
                     continue;
                 if (val instanceof BigDecimal) {
-                    cell.setCellValue(((BigDecimal) val).doubleValue());
+                    cell.setCellValue(Datatypes.getInstance().get(BigDecimal.class).format((BigDecimal) val));
                     if (sizers[c].isNotificationRequired(r)) {
-                        String str = String.valueOf(((BigDecimal) val).doubleValue());
+                        String str = Datatypes.getInstance().get(BigDecimal.class).format((BigDecimal) val);
                         sizers[c].notifyCellValue(str, stdFont);
                     }
                 } else if (val instanceof Date) {
                     cell.setCellValue(((Date) val));
+
+                    final HSSFCellStyle cellStyle = wb.createCellStyle();
+                    cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
+                    cell.setCellStyle(cellStyle);
+
                     if (sizers[c].isNotificationRequired(r)) {
-                        String str = new SimpleDateFormat(DATE_FMT).format(val);
+                        String str = Datatypes.getInstance().get(Date.class).format((Date) val);
                         sizers[c].notifyCellValue(str, stdFont);
                     }
                 } else if (val instanceof Boolean) {
