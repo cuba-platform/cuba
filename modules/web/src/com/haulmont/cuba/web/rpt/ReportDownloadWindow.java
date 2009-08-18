@@ -38,7 +38,7 @@ public class ReportDownloadWindow extends ReportOutputWindow
         String contentType;
         if (output.getFormat() != null) {
             contentType = output.getFormat().getContentType();
-            fileName = "." + output.getFormat().getFileExt();
+            fileName += "." + output.getFormat().getFileExt();
         } else {
             contentType = "application/octet-stream";
         }

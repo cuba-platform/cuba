@@ -31,6 +31,10 @@ public class ExcelExporter
     private static final int COL_WIDTH_MAGIC = 48;
 
     public void exportTable(Table table, ExportDisplay display) {
+        exportTable(table, table.getColumns(), display);
+    }
+
+    public void exportTable(Table table, List<Table.Column> columns, ExportDisplay display) {
         if (display == null)
             throw new IllegalArgumentException("ExportDisplay is null");
 
@@ -43,8 +47,6 @@ public class ExcelExporter
         HSSFFont stdFont = wb.createFont();
         HSSFFont boldFont = wb.createFont();
         boldFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-
-        List<Table.Column> columns = table.getColumns();
 
         ExcelAutoColumnSizer[] sizers = new ExcelAutoColumnSizer[columns.size()];
 
