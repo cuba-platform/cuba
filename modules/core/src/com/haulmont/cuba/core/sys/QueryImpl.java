@@ -11,16 +11,17 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.sys.persistence.PostgresUUID;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.QueryTransformer;
+import com.haulmont.cuba.core.global.*;
 
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
 import java.util.List;
 import java.util.Date;
+import java.util.UUID;
+import java.sql.SQLException;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -123,6 +124,15 @@ public class QueryImpl implements Query
     public Query setParameter(int position, Object value) {
         if (value instanceof BaseEntity)
             value = ((BaseEntity) value).getId();
+        else if (isNative
+                && value instanceof UUID
+                && PersistenceProvider.getDbDialect() instanceof PostgresDbDialect) {
+            try {
+                value = new PostgresUUID((UUID) value);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
         getQuery().setParameter(position, value);
         return this;
     }

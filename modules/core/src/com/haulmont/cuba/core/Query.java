@@ -66,7 +66,8 @@ public interface Query
     Query setFirstResult(int startPosition);
 
     /**
-     * Bind an argument to a named parameter.
+     * Bind an argument to a named parameter.<br>
+     * Native Query doesn't support named parameters.
      * @param name the parameter name
      * @param value
      * @return the same query instance
@@ -76,7 +77,8 @@ public interface Query
     Query setParameter(String name, Object value);
 
     /**
-     * Bind an instance of java.util.Date to a named parameter.
+     * Bind an instance of java.util.Date to a named parameter.<br>
+     * Native Query doesn't support named parameters.
      * @param name
      * @param value
      * @param temporalType
