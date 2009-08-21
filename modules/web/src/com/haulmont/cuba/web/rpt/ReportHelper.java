@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.rpt;
 import com.haulmont.cuba.core.app.ReportService;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.web.App;
 import com.itmill.toolkit.terminal.gwt.server.WebApplicationContext;
 import net.sf.jasperreports.engine.*;
@@ -69,7 +70,7 @@ public class ReportHelper
 
         if (output.getFormat() == ExportFormat.PDF || output.getFormat() == ExportFormat.XLS) {
             byte[] bytes = exportJasperReportPdfXls(name, jasperPrint, output);
-            display.show(bytes, name, output.getFormat());
+            display.show(new ByteArrayDataProvider(bytes), name, output.getFormat());
         } else if (output.getFormat() == ExportFormat.HTML) {
             HttpSession httpSession = ((WebApplicationContext) App.getInstance().getContext()).getHttpSession();
             httpSession.setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);

@@ -1,5 +1,7 @@
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.export.ExportDataProvider;
+
 import java.util.Map;
 import java.io.InputStream;
 import java.io.File;
@@ -17,6 +19,7 @@ public interface Embedded
     void setSource(URL src);
     void setSource(String src);
     void setSource(String fileName, InputStream src);
+    void setSource(String fileName, ExportDataProvider dataProvider);
 
     void addParameter(String name, String value);
     void removeParameter(String name);

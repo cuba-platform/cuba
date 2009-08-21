@@ -17,4 +17,7 @@ public class ReportOutputWindow extends Window
     public ReportOutputWindow(String caption) {
         super(caption);
     }
+
+    public void dispose() {
+    }
 }

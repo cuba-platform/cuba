@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.rpt;
 
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.App;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.ui.Window;
@@ -38,13 +39,13 @@ public class WebExportDisplay implements ExportDisplay
         return newWindow;
     }
 
-    public void show(byte[] data, String name, ExportFormat format) {
+    public void show(ExportDataProvider dataProvider, String name, ExportFormat format) {
         ReportOutput reportOutput = new ReportOutput(format)
                 .setAttachment(attachment).setNewWindow(newWindow);
 
         App app = App.getInstance();
         cleanupWindows(app);
-        ReportOutputWindow window = new ReportDownloadWindow(data, name, reportOutput);
+        ReportOutputWindow window = new ReportDownloadWindow(dataProvider, name, reportOutput);
         showWindow(app, window);
     }
 
@@ -55,7 +56,16 @@ public class WebExportDisplay implements ExportDisplay
         showWindow(app, window);
     }
 
-    private void showWindow(App app, ReportOutputWindow window) {
+    private void showWindow(final App app, final ReportOutputWindow window) {
+
+        // this listener is useless, it doesn't work for closing of browser window
+        window.addListener(new Window.CloseListener() {
+            public void windowClose(Window.CloseEvent e) {
+                window.dispose();
+                app.removeWindow(window);
+            }
+        });
+
         app.addWindow(window);
         if (newWindow)
             app.getAppWindow().open(

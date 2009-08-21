@@ -4,6 +4,7 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.FileResource;
 import com.itmill.toolkit.terminal.StreamResource;
@@ -68,6 +69,18 @@ public class Embedded
         try {
             resource = new StreamResource(
                     source,
+                    URLEncoder.encode(fileName, "UTF-8"),
+                    App.getInstance());
+            component.setSource(resource);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setSource(String fileName, ExportDataProvider dataProvider) {
+        try {
+            resource = new EmbeddedApplicationResource(
+                    dataProvider,
                     URLEncoder.encode(fileName, "UTF-8"),
                     App.getInstance());
             component.setSource(resource);

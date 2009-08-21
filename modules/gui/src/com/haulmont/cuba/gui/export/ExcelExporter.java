@@ -127,6 +127,6 @@ public class ExcelExporter
         }
 
         String fileName = datasource.getMetaClass().getName();
-        display.show(out.toByteArray(), fileName, ExportFormat.XLS);
+        display.show(new ByteArrayDataProvider(out.toByteArray()), fileName, ExportFormat.XLS);
     }
 }

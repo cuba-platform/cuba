@@ -11,24 +11,23 @@
 package com.haulmont.cuba.web.rpt;
 
 import com.itmill.toolkit.terminal.DownloadStream;
+import com.haulmont.cuba.gui.export.ExportDataProvider;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 
 public class ReportDownloadWindow extends ReportOutputWindow
 {
-    private byte[] data;
     private String name;
     private ReportOutput output;
+    private ExportDataProvider dataProvider;
 
-    public ReportDownloadWindow(byte[] data, String name, ReportOutput output) {
+    public ReportDownloadWindow(ExportDataProvider dataProvider, String name, ReportOutput output) {
         super(name);
-        this.data = data;
         this.name = name;
         this.output = output;
+        this.dataProvider = dataProvider;
     }
 
     public DownloadStream handleURI(URL context, String relativeUri) {
@@ -49,11 +48,17 @@ public class ReportDownloadWindow extends ReportOutputWindow
             throw new RuntimeException(e);
         }
 
-        InputStream is = new ByteArrayInputStream(data);
-        DownloadStream downloadStream = new DownloadStream(is, contentType, fileName);
+        DownloadStream downloadStream = new CloseableDownloadStream(dataProvider, contentType, fileName);
         if (output.isAttachment()) {
             downloadStream.setParameter("Content-Disposition", "attachment; filename=" + fileName);
         }
         return downloadStream;
     }
+
+    @Override
+    public void dispose() {
+        dataProvider.close();
+        super.dispose();
+    }
+
 }
