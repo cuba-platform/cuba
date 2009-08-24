@@ -1,0 +1,158 @@
+/*
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Maksim Tulupov
+ * Created: 21.08.2009 13:18:20
+ *
+ * $Id$
+ */
+package com.haulmont.cuba.web.app.ui.export.excel;
+
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.export.ExcelExporter;
+import com.haulmont.cuba.gui.export.ExportDisplay;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+public class ExcelExportBrowser extends AbstractWindow {
+
+    protected Table table;
+
+    protected ExportDisplay exportDisplay;
+
+    protected OptionsGroup optionsGroup;
+
+    public ExcelExportBrowser(IFrame frame) {
+        super(frame);
+    }
+
+    @Override
+    protected void init(Map<String, Object> params) {
+        super.init(params);
+        table = (Table) params.get("param$table");
+        exportDisplay = (ExportDisplay) params.get("param$exportDisplay");
+        optionsGroup = ((OptionsGroup) getComponent("optionsGroup"));
+        initValues();
+
+        Button commitButton = getComponent("commit");
+        commitButton.setAction(new ExcelExportAction("actions.Ok"));
+
+        Button closeButton = getComponent("close");
+        closeButton.setAction(new AbstractAction("actions.Cancel") {
+
+            public void actionPerform(Component component) {
+                ExcelExportBrowser.this.close(null);
+            }
+        });
+
+        Button upButton = getComponent("up");
+        upButton.setAction(new AbstractAction("up") {
+
+            public void actionPerform(Component component) {
+                moveColumns(true);
+            }
+        });
+
+        Button downButton = getComponent("down");
+        downButton.setAction(new AbstractAction("down") {
+
+            public void actionPerform(Component component) {
+                moveColumns(false);
+            }
+        });
+    }
+
+    protected void initValues() {
+        optionsGroup.setOptionsList(new ArrayList(table.getColumns()));
+    }
+
+    protected void moveColumns(boolean up) {
+        final List<Table.Column> selectedColumns = getSelectedColumns();
+
+        if (selectedColumns != null) {
+            for (Table.Column c : selectedColumns) {
+                moveColumn(up, c);
+            }
+        }
+
+    }
+
+    protected List<Table.Column> getSelectedColumns() {
+        final Set<Set> optionsList = optionsGroup.getValue();
+
+        java.util.List<Table.Column> columns = new ArrayList<Table.Column>();
+        final List list = new ArrayList(optionsGroup.getOptionsList());
+        if (optionsList != null) {
+            for (Set s : optionsList) {
+                for (Object o : s) {
+                    if (o instanceof Table.Column) {
+                        for (Object o1 : list) {
+                            final Object obj = findElement(s, o1);
+                            if (obj != null && s.contains(obj)) {
+                                columns.add((Table.Column) obj);
+                                list.remove(o1);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return columns;
+    }
+
+    protected void moveColumn(boolean up, Table.Column column) {
+        final List<Table.Column> optionsList = optionsGroup.getOptionsList();
+
+        if (optionsList != null) {
+            final int oldPosition = optionsList.indexOf(column);
+            int step = up ? -1 : 1;
+            if (oldPosition >= 0) {
+                int newPosition = oldPosition + step;
+                if (newPosition < 0) {
+                    newPosition += optionsList.size();
+                } else if (newPosition >= optionsList.size()) {
+                    newPosition -= optionsList.size();
+                }
+                moveElement(optionsList, oldPosition, newPosition);
+            }
+        }
+        optionsGroup.setOptionsList(optionsList);
+    }
+
+    protected void moveElement(List list, int sourceIndex, int destIndex) {
+        Object o1 = list.get(sourceIndex);
+        Object o2 = list.get(destIndex);
+
+        list.set(sourceIndex, o2);
+        list.set(destIndex, o1);
+    }
+
+    protected Object findElement(Set elements, Object obj) {
+        for (Object o : elements) {
+            if (o.equals(obj)) {
+                return o;
+            }
+        }
+        return null;
+    }
+
+
+    private class ExcelExportAction extends AbstractAction {
+        protected ExcelExportAction(String id) {
+            super(id);
+        }
+
+        public void actionPerform(Component component) {
+
+            ExcelExporter ee = new ExcelExporter();
+            ee.exportTable(table, getSelectedColumns(), exportDisplay);
+            ExcelExportBrowser.this.close(null);
+        }
+    }
+}

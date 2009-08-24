@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.AbstractSelect;
 
@@ -77,10 +78,10 @@ public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.Abstr
             final Object o = optionsList.iterator().next();
             if (o instanceof Enum) {
                 component.setContainerDataSource(new EnumerationContainer(optionsList));
-                setCaptionMode(CaptionMode.ITEM);
             } else {
-                throw new UnsupportedOperationException();
+                component.setContainerDataSource(new ObjectContainer(optionsList));
             }
+            setCaptionMode(CaptionMode.ITEM);
             this.optionsList = optionsList;
         } else {
             throw new UnsupportedOperationException();

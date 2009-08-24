@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.HashMap;
 
 public class TableActionsHelper extends ListActionsHelper<Table>{
     public TableActionsHelper(IFrame frame, Table table) {
@@ -93,4 +94,23 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
         TableActionsHelper.this.component.addAction(action);
         return action;
     }
+
+    public Action createParametrizedExcelAction(final ExportDisplay display) {
+        AbstractAction action = new AbstractAction("excel") {
+            public String getCaption() {
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                return MessageProvider.getMessage(messagesPackage, "actions.Excel");
+            }
+
+            public void actionPerform(Component component) {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("table", TableActionsHelper.this.component);
+                params.put("exportDisplay", display);                
+                frame.openWindow("cuba$ExcelExport", WindowManager.OpenType.DIALOG, params);
+            }
+        };
+        TableActionsHelper.this.component.addAction(action);
+        return action;
+    }
+
 }

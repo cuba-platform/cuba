@@ -42,5 +42,8 @@
             template="/com/haulmont/cuba/web/app/ui/security/role/edit/screen-permission-lookup.xml"/>
     <screen id="sec$Target.specificPermissions.lookup"
             template="/com/haulmont/cuba/web/app/ui/security/role/edit/specific-permission-lookup.xml"/>
+    
+    <screen id="cuba$ExcelExport"
+            template="/com/haulmont/cuba/web/app/ui/export/excel/excel-export.xml"/>
 
 </screen-config>
