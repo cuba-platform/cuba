@@ -197,14 +197,9 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
                         final Datatype datatype = propertyPath.getRange()
                                 .asDatatype();
-                        if (BooleanDatatype.NAME.equals(datatype.getName())) {
+
+                        if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
                             addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
-/*
-                        } else {
-                            if (editable) {
-                                addGeneratedColumn(propertyPath, new ReadOnlyDatatypeGenerator());
-                            }
-*/
                         }
 
                     }
