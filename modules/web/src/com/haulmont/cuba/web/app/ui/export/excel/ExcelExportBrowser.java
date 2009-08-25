@@ -14,10 +14,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class ExcelExportBrowser extends AbstractWindow {
 
@@ -72,7 +70,7 @@ public class ExcelExportBrowser extends AbstractWindow {
     }
 
     protected void moveColumns(boolean up) {
-        final List<Table.Column> selectedColumns = getSelectedColumns();
+        final List<Table.Column> selectedColumns = getSelectedColumns(up);
 
         if (selectedColumns != null) {
             for (Table.Column c : selectedColumns) {
@@ -82,7 +80,7 @@ public class ExcelExportBrowser extends AbstractWindow {
 
     }
 
-    protected List<Table.Column> getSelectedColumns() {
+    protected List<Table.Column> getSelectedColumns(boolean asc) {
         final Set<Set> optionsList = optionsGroup.getValue();
 
         java.util.List<Table.Column> columns = new ArrayList<Table.Column>();
@@ -91,12 +89,24 @@ public class ExcelExportBrowser extends AbstractWindow {
             for (Set s : optionsList) {
                 for (Object o : s) {
                     if (o instanceof Table.Column) {
-                        for (Object o1 : list) {
-                            final Object obj = findElement(s, o1);
-                            if (obj != null && s.contains(obj)) {
-                                columns.add((Table.Column) obj);
-                                list.remove(o1);
-                                break;
+                        if (asc) {
+                            for (Object o1 : list) {
+                                final Object obj = findElement(s, o1);
+                                if (obj != null && s.contains(obj)) {
+                                    columns.add((Table.Column) obj);
+                                    list.remove(o1);
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (ListIterator it = list.listIterator(list.size()); it.hasPrevious();) {
+                                final Object o1 = it.previous();
+                                final Object obj = findElement(s, o1);
+                                if (obj != null && s.contains(obj)) {
+                                    columns.add((Table.Column) obj);
+                                    it.remove();
+                                    break;
+                                }
                             }
                         }
                     }
@@ -151,7 +161,7 @@ public class ExcelExportBrowser extends AbstractWindow {
         public void actionPerform(Component component) {
 
             ExcelExporter ee = new ExcelExporter();
-            ee.exportTable(table, getSelectedColumns(), exportDisplay);
+            ee.exportTable(table, getSelectedColumns(true), exportDisplay);
             ExcelExportBrowser.this.close(null);
         }
     }
