@@ -10,12 +10,11 @@
  */
 package com.haulmont.cuba.web.log;
 
+import com.haulmont.cuba.core.app.CubaDeployerService;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.ui.VerticalLayout;
-import com.itmill.toolkit.ui.Window;
+import com.itmill.toolkit.ui.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 
@@ -42,6 +41,9 @@ public class LogWindow extends Window
         label.setValue(writeLog());
         label.setSizeFull();
 
+        HorizontalLayout topLayout = new HorizontalLayout();
+        topLayout.setWidth("100%");
+
         Button refreshBtn = new Button(MessageProvider.getMessage(getClass(), "logWindow.refreshBtn"),
                 new Button.ClickListener()
                 {
@@ -51,9 +53,23 @@ public class LogWindow extends Window
                 }
         );
 
-        addComponent(refreshBtn);
-        addComponent(label);
+        Label versionLabel = new Label();
+        versionLabel.setValue(getVersionString());
 
+        topLayout.addComponent(refreshBtn);
+        topLayout.addComponent(versionLabel);
+        topLayout.setComponentAlignment(versionLabel, Alignment.MIDDLE_RIGHT);
+
+        addComponent(topLayout);
+        addComponent(label);
+    }
+
+    private String getVersionString() {
+        CubaDeployerService service = ServiceLocator.lookup(CubaDeployerService.JNDI_NAME);
+        String releaseNumber = service.getReleaseNumber();
+        String releaseTimestamp = service.getReleaseTimestamp();
+        String str = MessageProvider.formatMessage(getClass(), "logWindow.versionString", releaseNumber, releaseTimestamp);
+        return str;
     }
 
     private String writeLog() {

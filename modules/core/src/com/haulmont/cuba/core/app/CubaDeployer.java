@@ -12,17 +12,20 @@ package com.haulmont.cuba.core.app;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.IOUtils;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.security.sys.UserSessionsMBean;
+
+import java.io.InputStream;
+import java.io.IOException;
 
 public class CubaDeployer implements CubaDeployerMBean
 {
     private Log log = LogFactory.getLog(CubaDeployer.class);
 
-    public void create() {
-        log.debug("create");
-    }
+    private String releaseNumber = "?";
+    private String releaseTimestamp = "?";
 
     public void start() {
         log.debug("start");
@@ -30,5 +33,29 @@ public class CubaDeployer implements CubaDeployerMBean
         ServerConfig config = ConfigProvider.getConfig(ServerConfig.class);
         UserSessionsMBean mBean = Locator.lookupMBean(UserSessionsMBean.class, UserSessionsMBean.OBJECT_NAME);
         mBean.setExpirationTimeoutSec(config.getUserSessionExpirationTimeoutSec());
+
+        InputStream stream = getClass().getResourceAsStream("/com/haulmont/cuba/core/global/release.number");
+        if (stream != null)
+            try {
+                releaseNumber = IOUtils.toString(stream);
+            } catch (IOException e) {
+                log.warn("Unable to read release number", e);
+            }
+
+        stream = getClass().getResourceAsStream("/com/haulmont/cuba/core/global/release.timestamp");
+        if (stream != null)
+            try {
+                releaseTimestamp = IOUtils.toString(stream);
+            } catch (IOException e) {
+                log.warn("Unable to read release timestamp", e);
+            }
+    }
+
+    public String getReleaseNumber() {
+        return releaseNumber;
+    }
+
+    public String getReleaseTimestamp() {
+        return releaseTimestamp;
     }
 }

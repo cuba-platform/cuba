@@ -4,17 +4,18 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 17.03.2009 17:42:45
+ * Created: 25.08.2009 12:49:45
  *
  * $Id$
  */
 package com.haulmont.cuba.core.app;
 
-public interface CubaDeployerMBean
-{
-    String OBJECT_NAME = "haulmont.cuba:service=CubaDeployer";
+import javax.ejb.Local;
 
-    void start();
+@Local
+public interface CubaDeployerService {
+
+    String JNDI_NAME = "cuba/core/DeployerService";
 
     String getReleaseNumber();
 
