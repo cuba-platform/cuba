@@ -30,6 +30,8 @@ public abstract class AbstractDataSource<T extends Entity>
 
     protected String id;
     protected boolean modified;
+    protected CommitMode commitMode;
+    protected Datasource parentDs;
 
     protected List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
 
@@ -41,6 +43,7 @@ public abstract class AbstractDataSource<T extends Entity>
     public AbstractDataSource(String id) {
         this.id = id;
         listener = new ItemListener();
+        commitMode = CommitMode.DATASTORE;
     }
 
     public String getId() {
@@ -78,6 +81,22 @@ public abstract class AbstractDataSource<T extends Entity>
 
     public void deleted(T item) {
         itemToDelete.add(item);
+    }
+
+    public CommitMode getCommitMode() {
+        return commitMode;
+    }
+
+    public void setCommitMode(CommitMode commitMode) {
+        this.commitMode = commitMode;
+    }
+
+    public Datasource getParent() {
+        return parentDs;
+    }
+
+    public void setParent(Datasource datasource) {
+        parentDs = datasource;
     }
 
     public void addListener(DatasourceListener<T> listener) {

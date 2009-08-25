@@ -15,10 +15,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.*;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -29,7 +26,7 @@ public class PropertyDatasourceImpl<T extends Entity>
     extends
         AbstractDataSource<T>
     implements
-        Datasource<T>, DatasourceImplementation<T>
+        Datasource<T>, DatasourceImplementation<T>, PropertyDatasource<T>
 {
     protected Datasource ds;
     protected MetaProperty metaProperty;
@@ -104,11 +101,6 @@ public class PropertyDatasourceImpl<T extends Entity>
         return ds.getDataService();
     }
 
-    public CommitMode getCommitMode() {
-        // TODO support embedded
-        return CommitMode.DATASTORE;
-    }
-
     public void commit() {
         throw new UnsupportedOperationException();
     }
@@ -130,5 +122,9 @@ public class PropertyDatasourceImpl<T extends Entity>
     public void commited(Map<Entity, Entity> map) {
         modified = false;
         clearCommitLists();
+    }
+
+    public MetaProperty getProperty() {
+        return metaProperty;
     }
 }

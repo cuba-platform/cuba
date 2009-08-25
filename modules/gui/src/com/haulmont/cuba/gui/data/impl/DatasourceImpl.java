@@ -15,10 +15,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.*;
 
 import java.util.Map;
 
@@ -60,10 +57,6 @@ public class DatasourceImpl<T extends Entity>
         return dataservice;
     }
 
-    public CommitMode getCommitMode() {
-        return CommitMode.DATASTORE;
-    }
-
     public void commit() {
         if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
             final DataService service = getDataService();
@@ -71,6 +64,24 @@ public class DatasourceImpl<T extends Entity>
 
             clearCommitLists();
             modified = false;
+
+        } else if (Datasource.CommitMode.PARENT.equals(getCommitMode())) {
+            if (parentDs == null)
+                throw new IllegalStateException("parentDs is null while commitMode=PARENT");
+
+            if (parentDs instanceof CollectionDatasource) {
+                CollectionDatasource ds = (CollectionDatasource) parentDs;
+                if (ds.containsItem(item.getId())) {
+                    ds.updateItem(item);
+                } else {
+                    ds.addItem(item);
+                }
+            } else {
+                parentDs.setItem(item);
+            }
+            clearCommitLists();
+            modified = false;
+
         } else {
             throw new UnsupportedOperationException();
         }

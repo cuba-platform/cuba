@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -192,11 +193,24 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     }
 
     public void updateItem(T item) {
-        // do nothing ?
+        for (T t : __getCollection()) {
+            if (t.equals(item)) {
+                InstanceUtils.copy((Instance) item, (Instance) t);
+            }
+        }
     }
 
     public boolean containsItem(K itemId) {
-        return __getCollection().contains(itemId);
+        if (itemId instanceof Entity)
+            return __getCollection().contains(itemId);
+        else {
+            Collection<T> collection = __getCollection();
+            for (T item : collection) {
+                if (item.getId().equals(itemId))
+                    return true;
+            }
+            return false;
+        }
     }
 
     public String getQuery() {
@@ -212,16 +226,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     }
 
     @Override
-    public CommitMode getCommitMode() {
-        final MetaProperty.Type type = metaProperty.getType();
-        return MetaProperty.Type.AGGREGATION.equals(type) ? CommitMode.NOT_SUPPORTED : CommitMode.DATASTORE;
-    }
-
-    @Override
     public void commited(Map<Entity, Entity> map) {
         for (T item : __getCollection()) {
             attachListener((Instance) item);
         }
+        
+        if (map.containsKey(item)) {
+            item = (T) map.get(item);
+        }
+
         modified = false;
         clearCommitLists();
     }

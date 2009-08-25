@@ -38,11 +38,6 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
     }
 
     @Override
-    public CommitMode getCommitMode() {
-        return CommitMode.DATASTORE;
-    }
-
-    @Override
     public synchronized void setItem(T item) {
         if (State.VALID.equals(state)) {
             Object prevItem = this.item;

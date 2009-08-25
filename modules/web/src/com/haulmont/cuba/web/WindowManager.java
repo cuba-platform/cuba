@@ -251,7 +251,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
         win.addListener(new com.itmill.toolkit.ui.Window.CloseListener() {
             public void windowClose(com.itmill.toolkit.ui.Window.CloseEvent e) {
-                window.close("close");
+                window.close("close", true);
             }
         });
 

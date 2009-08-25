@@ -12,6 +12,8 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
@@ -23,6 +25,8 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.ComponentVisitor;
@@ -576,6 +580,7 @@ public class Window
             this.item = item;
             //noinspection unchecked
             ds.setItem(entity);
+            ((DatasourceImplementation) ds).setModified(false);
         }
 
         protected Collection<com.itmill.toolkit.ui.Field> getFields() {
@@ -605,11 +610,22 @@ public class Window
                 final Datasource itemDs = (Datasource) item;
                 entity = itemDs.getItem();
 
-                if (entity == null) return null;
+                if (entity == null)
+                    return null;
+
+                if (itemDs instanceof PropertyDatasource) {
+                    MetaProperty.Type type = ((PropertyDatasource) itemDs).getProperty().getType();
+                    if (MetaProperty.Type.AGGREGATION.equals(type)) {
+                        ((DatasourceImplementation) ds).setCommitMode(Datasource.CommitMode.PARENT);
+                        ((DatasourceImplementation) ds).setParent(itemDs);
+                        entity = (Entity) InstanceUtils.copy((Instance) entity);
+                        return entity;
+                    }
+                }
 
                 if (!PersistenceHelper.isNew(entity)) {
                     // TODO (abramov) refactor this trick
-                    if (Datasource.CommitMode.DATASTORE.equals(itemDs.getCommitMode())) {
+                    if (Datasource.CommitMode.DATASTORE.equals(ds.getCommitMode())) {
                         final DataService dataservice = ds.getDataService();
                         entity = dataservice.reload(entity, ds.getView());
                     }

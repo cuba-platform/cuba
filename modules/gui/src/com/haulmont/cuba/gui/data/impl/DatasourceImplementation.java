@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.Map;
 import java.util.Collection;
@@ -17,6 +18,10 @@ import java.util.Collection;
 public interface DatasourceImplementation<T extends Entity> {
     void initialized();
     void setModified(boolean modified);
+    void setCommitMode(Datasource.CommitMode commitMode);
+
+    Datasource getParent();
+    void setParent(Datasource datasource);
 
     Collection<T> getItemsToCreate();
     Collection<T> getItemsToUpdate();

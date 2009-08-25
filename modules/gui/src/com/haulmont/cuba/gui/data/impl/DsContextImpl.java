@@ -79,6 +79,12 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     public void commit() {
+        for (Datasource datasource : datasourceMap.values()) {
+            if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())) {
+                datasource.commit();
+            }
+        }
+
         final Map<DataService, Collection<Datasource<Entity>>> commitData = collectCommitData();
 
         if (commitData.isEmpty()) return;
@@ -147,7 +153,7 @@ public class DsContextImpl implements DsContextImplementation {
                 new HashMap<DataService,Collection<Datasource<Entity>>>();
 
         for (Datasource datasource : datasources) {
-            if (!Datasource.CommitMode.NOT_SUPPORTED.equals(datasource.getCommitMode()) &&
+            if (Datasource.CommitMode.DATASTORE.equals(datasource.getCommitMode()) &&
                     datasource.isModified())
             {
                 final DataService dataservice = datasource.getDataService();
