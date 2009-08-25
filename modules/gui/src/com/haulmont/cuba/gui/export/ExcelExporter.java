@@ -97,14 +97,12 @@ public class ExcelExporter {
             TreeTable treeTable = (TreeTable) table;
             HierarchicalDatasource ds = (HierarchicalDatasource) treeTable.getDatasource();
             for (Object itemId : ds.getRootItemIds()) {
-                r++;
-                createRow(table, columns, r, itemId);
-                r += createHierarhicalRow(treeTable, columns, r, itemId) - 1;
+                createRow(table, columns, ++r, itemId);
+                r = createHierarhicalRow(treeTable, columns, r, itemId);
             }
         } else {
             for (Object itemId : datasource.getItemIds()) {
-                r++;
-                createRow(table, columns, r, itemId);
+                createRow(table, columns, ++r, itemId);
             }
         }
         for (int c = 0; c < columns.size(); c++) {
@@ -128,7 +126,7 @@ public class ExcelExporter {
         if (children != null && !children.isEmpty()) {
             for (Object id : children) {
                 createRow(table, columns, ++rowNumber, id);
-                createHierarhicalRow(table, columns, rowNumber, id);
+                rowNumber = createHierarhicalRow(table, columns, rowNumber, id);
             }
         }
         return rowNumber;
@@ -140,7 +138,7 @@ public class ExcelExporter {
 
         int level = 0;
         if (table instanceof TreeTable) {
-            level = ((TreeTable)table).getLevel(itemId) - 1;
+            level = ((TreeTable)table).getLevel(itemId);
         }
         for (int c = 0; c < columns.size(); c++) {
             HSSFCell cell = row.createCell(c);
@@ -168,7 +166,8 @@ public class ExcelExporter {
         if (val == null)
             return;
         if (val instanceof BigDecimal) {
-            final String str = createSpaceString(level) + Datatypes.getInstance().get(BigDecimal.class).format((BigDecimal) val);
+            final String str = sizersIndex == 0 ? createSpaceString(level) + Datatypes.getInstance().get(BigDecimal.class).format((BigDecimal) val)
+                    : Datatypes.getInstance().get(BigDecimal.class).format((BigDecimal) val);
             cell.setCellValue(str);
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
@@ -185,22 +184,28 @@ public class ExcelExporter {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (val instanceof Boolean) {
-            String str = ((Boolean) val) ? createSpaceString(level) + trueStr : createSpaceString(level) + falseStr;
+            String str = "";
+            if (sizersIndex == 0) {
+                str += createSpaceString(level);
+            }
+            str += ((Boolean) val) ? trueStr : falseStr;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (val instanceof EnumClass) {
             String nameKey = val.getClass().getSimpleName() + "." + val.toString();
-            final String message = createSpaceString(level) + MessageProvider.getMessage(val.getClass(), nameKey);
+            final String message = sizersIndex == 0 ? createSpaceString(level) + MessageProvider.getMessage(val.getClass(), nameKey)
+                    : MessageProvider.getMessage(val.getClass(), nameKey);
             cell.setCellValue(message);
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(message, stdFont);
             }
         } else {
-            cell.setCellValue(new HSSFRichTextString(createSpaceString(level) + val.toString()));
+            String str = sizersIndex == 0 ? createSpaceString(level) + val.toString() : val.toString();
+            cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                sizers[sizersIndex].notifyCellValue(createSpaceString(level) + val.toString(), stdFont);
+                sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         }
     }
