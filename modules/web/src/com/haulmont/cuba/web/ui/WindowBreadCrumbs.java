@@ -109,7 +109,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
     }
 
-    protected void update() {
+    public void update() {
         linksLayout.removeAllComponents();
         btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {

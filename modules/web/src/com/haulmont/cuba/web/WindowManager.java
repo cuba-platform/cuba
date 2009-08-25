@@ -15,20 +15,19 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
+import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.lang.text.StrBuilder;
 
 public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 {
@@ -459,6 +458,29 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
                         .toString();
                 log.warn(msg);
                 mainWindow.removeWindow(childWindow);
+            }
+        }
+    }
+
+    public void reloadBreadCrumbs() {
+        Layout layout;
+
+        final AppWindow appWindow = App.getInstance().getAppWindow();
+        final AppWindow.Mode viewMode = appWindow.getMode();
+
+        if (viewMode == AppWindow.Mode.SINGLE) 
+        {
+            final Layout mainLayout = appWindow.getMainLayout();
+            layout = (Layout) mainLayout.getComponentIterator().next();
+        }
+        else {
+            layout = (Layout) appWindow.getTabSheet().getSelectedTab();
+        }
+
+        if (layout != null) {
+            WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+            if (breadCrumbs != null) {
+                breadCrumbs.update();
             }
         }
     }
