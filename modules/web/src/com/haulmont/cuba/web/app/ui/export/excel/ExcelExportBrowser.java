@@ -11,8 +11,14 @@
 package com.haulmont.cuba.web.app.ui.export.excel;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.web.gui.components.ComponentsHelper;
+import com.itmill.toolkit.ui.*;
+import com.itmill.toolkit.terminal.ThemeResource;
 
 import java.util.*;
 import java.util.List;
@@ -49,7 +55,7 @@ public class ExcelExportBrowser extends AbstractWindow {
         });
 
         Button upButton = getComponent("up");
-        upButton.setAction(new AbstractAction("up") {
+        upButton.setAction(new AbstractAction("") {
 
             public void actionPerform(Component component) {
                 moveColumns(true);
@@ -57,12 +63,17 @@ public class ExcelExportBrowser extends AbstractWindow {
         });
 
         Button downButton = getComponent("down");
-        downButton.setAction(new AbstractAction("down") {
+        downButton.setAction(new AbstractAction("") {
 
             public void actionPerform(Component component) {
                 moveColumns(false);
             }
         });
+        final com.itmill.toolkit.ui.Component upButtonIT = ComponentsHelper.unwrap(upButton);
+        upButtonIT.setIcon(new ThemeResource("icons/32/arrow-up.png"));
+
+        final com.itmill.toolkit.ui.Component downButtonIT = ComponentsHelper.unwrap(downButton);
+        downButtonIT.setIcon(new ThemeResource("icons/32/arrow-down.png"));
     }
 
     protected void initValues() {
