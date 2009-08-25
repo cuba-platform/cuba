@@ -11,20 +11,20 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.bali.util.Dom4j;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.ui.OptionGroup;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
+import org.dom4j.Element;
 
 public class OptionsGroup
-    extends
+        extends
         AbstractOptionsField<OptionGroup>
-    implements
-        com.haulmont.cuba.gui.components.OptionsGroup, Component.Wrapper
-{
+        implements
+        com.haulmont.cuba.gui.components.OptionsGroup, Component.Wrapper, Component.HasSettings {
     public OptionsGroup() {
         component = new OptionGroup() {
             @Override
@@ -133,5 +133,76 @@ public class OptionsGroup
             t = o;
         }
         return t;
+    }
+
+    public void applySettings(Element element) {
+        if (!CaptionMode.ITEM.equals(this.captionMode)) {
+            //TODO develop settings for DS optionGroup
+            return;
+        }
+        final Element allOptionsElement = element.element("allOptions");
+        final List optionsList = getOptionsList();
+        if (allOptionsElement != null && optionsList != null) {
+            List newOptionList = new ArrayList();
+            List selectedOptionList = new ArrayList();
+            final Element sortedOptionsElement = allOptionsElement.element("sortedOptions");
+            final Element selectedOptionsElement = allOptionsElement.element("selectedOptions");
+
+            for (Element e : Dom4j.elements(sortedOptionsElement, "option")) {
+                for (Object o : optionsList) {
+                    if (o.toString().equals(e.attributeValue("id"))) {
+                        newOptionList.add(o);
+                    }
+                }
+            }
+
+            for (Element e : Dom4j.elements(selectedOptionsElement, "option")) {
+                for (Object o : optionsList) {
+                    if (o.toString().equals(e.attributeValue("id"))) {
+                        selectedOptionList.add(o);
+                    }
+                }
+            }
+            for (Object o : optionsList) {
+                if (!newOptionList.contains(o)) {
+                    newOptionList.add(o);
+                }
+            }
+
+            setOptionsList(newOptionList);
+            setValue(selectedOptionList);
+        }
+    }
+
+    public boolean saveSettings(Element element) {
+        if (!CaptionMode.ITEM.equals(this.captionMode)) {
+            //TODO develop settings for DS optionGroup
+            return true;
+        }
+        Element allOptionsElement = element.element("allOptions");
+        if (allOptionsElement != null) {
+            element.remove(allOptionsElement);
+        }
+        allOptionsElement = element.addElement("allOptions");
+        Element sortedOptionsElement = allOptionsElement.addElement("sortedOptions");
+        Element selectedOptionsElement = allOptionsElement.addElement("selectedOptions");
+        final List optionsList = getOptionsList();
+        if (optionsList != null) {
+            for (Object o : optionsList) {
+                Element option = sortedOptionsElement.addElement("option");
+                option.addAttribute("id", o.toString());
+            }
+        }
+
+        final Set<Set> selectedSet = getValue();
+        if (selectedSet != null) {
+            for (Set set : selectedSet) {
+                for (Object o : set) {
+                    Element option = selectedOptionsElement.addElement("option");
+                    option.addAttribute("id", o.toString());
+                }
+            }
+        }
+        return true;
     }
 }

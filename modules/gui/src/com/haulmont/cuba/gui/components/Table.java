@@ -115,6 +115,11 @@ public interface Table
         public void setXmlDescriptor(Element element) {
             this.element = element;
         }
+
+        @Override
+        public String toString() {
+            return id == null ? super.toString() : id.toString();
+        }
     }
 
     public interface Formatter<T extends Object> {
