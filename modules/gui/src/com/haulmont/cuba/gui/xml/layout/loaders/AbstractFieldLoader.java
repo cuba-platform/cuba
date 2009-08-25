@@ -12,7 +12,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
@@ -22,7 +21,7 @@ import org.dom4j.Element;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-public class AbstractFieldLoader extends ComponentLoader {
+public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
 
@@ -56,23 +55,6 @@ public class AbstractFieldLoader extends ComponentLoader {
         addAssignWindowTask(component);
 
         return component;
-    }
-
-    protected void loadDatasource(Field component, Element element) {
-        final String datasource = element.attributeValue("datasource");
-        if (!StringUtils.isEmpty(datasource)) {
-            final Datasource ds = context.getDSContext().get(datasource);
-
-            final String property = element.attributeValue("property");
-            if (StringUtils.isEmpty(property))
-                throw new IllegalStateException(
-                        String.format(
-                                "Can't set assign datasource '%s' for component '%s' due 'property' " +
-                                        "attribute is not defined",
-                                datasource, component.getId()));
-
-            component.setDatasource(ds, property);
-        }
     }
 
     protected void loadRequired(Field component, Element element) {

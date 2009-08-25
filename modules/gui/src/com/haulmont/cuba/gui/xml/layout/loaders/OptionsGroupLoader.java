@@ -38,7 +38,7 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
     }
 
     @Override
-    protected void loadDatasource(Field component, Element element) {
+    protected void loadDatasource(DatasourceComponent component, Element element) {
         final String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDSContext().get(datasource);

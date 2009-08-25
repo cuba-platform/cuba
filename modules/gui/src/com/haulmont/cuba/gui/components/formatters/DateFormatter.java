@@ -11,13 +11,14 @@
 package com.haulmont.cuba.gui.components.formatters;
 
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Formatter;
 import org.dom4j.Element;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DateFormatter implements Table.Formatter<Date> {
+public class DateFormatter implements Formatter<Date> {
 
     private Element element;
 

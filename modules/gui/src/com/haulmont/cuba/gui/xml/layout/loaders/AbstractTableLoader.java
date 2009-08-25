@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -182,13 +183,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         return column;
     }
 
-    protected Table.Formatter loadFormatter(Element element) {
+    protected Formatter loadFormatter(Element element) {
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
-            final Class<Table.Formatter> aClass = ReflectionHelper.getClass(className);
+            final Class<Formatter> aClass = ReflectionHelper.getClass(className);
             try {
-                final Constructor<Table.Formatter> constructor = aClass.getConstructor(Element.class);
+                final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
                 try {
                     return constructor.newInstance(formatterElement);
                 } catch (Throwable e) {

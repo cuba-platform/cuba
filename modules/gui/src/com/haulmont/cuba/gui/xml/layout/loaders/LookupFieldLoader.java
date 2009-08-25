@@ -9,10 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -45,7 +42,7 @@ public class LookupFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    protected void loadDatasource(Field component, Element element) {
+    protected void loadDatasource(DatasourceComponent component, Element element) {
         final String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDSContext().get(datasource);

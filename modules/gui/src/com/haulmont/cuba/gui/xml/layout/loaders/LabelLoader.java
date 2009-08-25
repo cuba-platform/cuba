@@ -11,16 +11,19 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.xml.layout.*;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
-public class LabelLoader extends ComponentLoader {
+public class LabelLoader extends AbstractDatasourceComponentLoader {
     public LabelLoader(Context context) {
         super(context);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+    public Component loadComponent(
+            ComponentsFactory factory,
+            Element element, Component parent
+    ) throws InstantiationException, IllegalAccessException {
         final Label component = factory.createComponent("label");
 
         assignXmlDescriptor(component, element);
@@ -34,6 +37,12 @@ public class LabelLoader extends ComponentLoader {
             caption = loadResourceString(caption);
             component.setValue(caption);
         }
+
+        loadWidth(component, element, "-1px");
+
+        loadDatasource(component, element);
+
+        component.setFormatter(loadFormatter(element));
 
         addAssignWindowTask(component);
 

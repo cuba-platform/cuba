@@ -4,6 +4,8 @@
 .i-captionwrapper {
 	margin: 0.3em 0 0 0;
 	text-align: left /* Force default alignment */
+	
+	clear: both; /*todo gorodnov: I don't know does it need here ? */
 }
 
 .i-caption {

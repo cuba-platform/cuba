@@ -14,6 +14,8 @@ import org.dom4j.Element;
 import java.util.Collection;
 
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.chile.core.model.MetaProperty;
 
 public interface Component {
     enum Alignment {
@@ -91,6 +93,11 @@ public interface Component {
 
         void addListener(ValueListener listener);
         void removeListener(ValueListener listener);
+    }
+
+    interface HasFomatter {
+        Formatter getFormatter();
+        void setFormatter(Formatter formatter);
     }
 
     interface HasXmlDescriptor {

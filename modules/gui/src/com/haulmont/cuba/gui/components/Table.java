@@ -34,7 +34,7 @@ public interface Table
     void setSortable(boolean sortable);
     boolean isSortable();
 
-    public class Column implements HasXmlDescriptor, HasCaption {
+    public class Column implements HasXmlDescriptor, HasCaption, HasFomatter {
         protected Object id;
         protected String caption;
         protected boolean editable;
@@ -120,11 +120,6 @@ public interface Table
         public String toString() {
             return id == null ? super.toString() : id.toString();
         }
-    }
-
-    public interface Formatter<T extends Object> {
-
-        String format(T value);
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
