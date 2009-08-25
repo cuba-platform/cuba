@@ -152,6 +152,7 @@ public class OptionsGroup
                 for (Object o : optionsList) {
                     if (o.toString().equals(e.attributeValue("id"))) {
                         newOptionList.add(o);
+                        break;
                     }
                 }
             }
@@ -160,6 +161,7 @@ public class OptionsGroup
                 for (Object o : optionsList) {
                     if (o.toString().equals(e.attributeValue("id"))) {
                         selectedOptionList.add(o);
+                        break;
                     }
                 }
             }
@@ -194,14 +196,20 @@ public class OptionsGroup
             }
         }
 
-        final Set<Set> selectedSet = getValue();
-        if (selectedSet != null) {
-            for (Set set : selectedSet) {
-                for (Object o : set) {
-                    Element option = selectedOptionsElement.addElement("option");
-                    option.addAttribute("id", o.toString());
+        if (isMultiSelect()) {
+            final Set<Set> selectedSet = getValue();
+            if (selectedSet != null) {
+                for (Set set : selectedSet) {
+                    for (Object o : set) {
+                        Element option = selectedOptionsElement.addElement("option");
+                        option.addAttribute("id", o.toString());
+                    }
                 }
             }
+        } else {
+            final Object value = getValue();
+            Element option = selectedOptionsElement.addElement("option");
+            option.addAttribute("id", value.toString());
         }
         return true;
     }
