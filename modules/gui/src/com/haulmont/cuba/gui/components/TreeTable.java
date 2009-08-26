@@ -22,4 +22,6 @@ public interface TreeTable extends Table {
     void collapse(Object itemId);
 
     int getLevel(Object itemId);
+
+    boolean isExpanded(Object itemId);
 }
