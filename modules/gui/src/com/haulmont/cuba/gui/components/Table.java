@@ -31,6 +31,9 @@ public interface Table
 
     void addValidator(com.haulmont.cuba.gui.components.Field.Validator validator);
 
+    void setItemClickAction(Action action);
+    Action getItemClickAction();
+
     void setSortable(boolean sortable);
     boolean isSortable();
 

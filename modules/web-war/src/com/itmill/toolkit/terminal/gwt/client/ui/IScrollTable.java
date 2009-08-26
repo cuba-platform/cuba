@@ -2314,8 +2314,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                                     paintableId,
                                     "clickEvent",
                                     details.toString(),
-                                    !(!dbl
-                                            && selectMode > Table.SELECT_MODE_NONE && immediate));
+                                    (dbl || selectMode > Table.SELECT_MODE_NONE || immediate));
                 }
             }
 

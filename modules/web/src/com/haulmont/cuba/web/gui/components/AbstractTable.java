@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -33,6 +34,7 @@ import com.itmill.toolkit.ui.*;
 import com.itmill.toolkit.ui.Button;
 import com.itmill.toolkit.ui.Label;
 import com.itmill.toolkit.ui.TextField;
+import com.itmill.toolkit.event.ItemClickEvent;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -50,6 +52,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
     protected boolean editable;
     protected boolean sortable;
+    protected Action itemClickAction;
 
     protected Table.StyleProvider styleProvider;
 
@@ -171,6 +174,23 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
                 } else {
                     //noinspection unchecked
                     datasource.setItem((Entity) selected.iterator().next());
+                }
+            }
+        });
+
+        component.addListener(new ItemClickEvent.ItemClickListener() {
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick() && event.getItem() != null) {
+                    Action action = getItemClickAction();
+                    if (action == null) {
+                        action = getAction("edit"); //todo gorodnov: check rights before the action performing
+                        if (action == null) {
+                            action = getAction("view");
+                        }
+                    }
+                    if (action != null) {
+                        action.actionPerform(AbstractTable.this);
+                    }
                 }
             }
         });
@@ -438,6 +458,20 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
             colElem.addAttribute("visible", visible.toString());
         }
         return true;
+    }
+
+    public void setItemClickAction(Action action) {
+        if (itemClickAction != null) {
+            removeAction(itemClickAction);
+        }
+        itemClickAction = action;
+        if (!getActions().contains(action)) {
+            addAction(action);
+        }
+    }
+
+    public Action getItemClickAction() {
+        return itemClickAction;
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {
