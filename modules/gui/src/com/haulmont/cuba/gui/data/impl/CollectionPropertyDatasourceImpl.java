@@ -165,6 +165,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
         __getCollection().add(item);
         attachListener((Instance) item);
 
+        if (ObjectUtils.equals(this.item, item)) {
+            this.item = item;
+        }
+
         modified = true;
         if (cascadeProperty) {
             final Entity parentItem = ds.getItem();
