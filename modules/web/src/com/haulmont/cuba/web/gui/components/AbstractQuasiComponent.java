@@ -29,6 +29,13 @@ public abstract class AbstractQuasiComponent implements QuasiComponent {
         this.id = id;
     }
 
+    public String getDebugId() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setDebugId(String id) {
+    }
+
     public boolean isEnabled() {
         throw new UnsupportedOperationException();
     }
