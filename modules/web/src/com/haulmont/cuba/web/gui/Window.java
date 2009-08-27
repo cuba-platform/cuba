@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -29,7 +30,6 @@ import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.ComponentVisitor;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.gui.components.VBoxLayout;
 import com.haulmont.cuba.web.gui.components.AbstractTable;
@@ -56,6 +56,7 @@ public class Window
         WindowImplementation
 {
     private String id;
+    private String debugId;
 
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
     protected Collection<Component> ownComponents = new HashSet<Component>();
@@ -220,7 +221,7 @@ public class Window
 
     public void applySettings(Settings settings) {
         this.settings = settings;
-        ComponentsHelper.walkComponents(
+        com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
                 this,
                 new ComponentVisitor() {
                     public void visit(Component component, String name) {
@@ -287,6 +288,14 @@ public class Window
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDebugId() {
+        return debugId;
+    }
+
+    public void setDebugId(String debugId) {
+        this.debugId = debugId;
     }
 
     public boolean isEnabled() {
@@ -396,7 +405,7 @@ public class Window
             return false;
         }
         
-        ComponentsHelper.walkComponents(
+        com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
                 this,
                 new ComponentVisitor() {
                     public void visit(Component component, String name) {
@@ -713,7 +722,7 @@ public class Window
             final Map<Exception, com.itmill.toolkit.ui.Field> problems =
                     new HashMap<Exception, com.itmill.toolkit.ui.Field>();
 
-            ComponentsHelper.walkComponents(this, new ComponentVisitor() {
+            com.haulmont.cuba.gui.ComponentsHelper.walkComponents(this, new ComponentVisitor() {
                 public void visit(Component component, String name) {
 
                     com.itmill.toolkit.ui.Component impl = ComponentsHelper.unwrap(component);

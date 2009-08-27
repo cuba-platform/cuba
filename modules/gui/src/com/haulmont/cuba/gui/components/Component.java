@@ -36,6 +36,9 @@ public interface Component {
     String getId();
     void setId(String id);
 
+    String getDebugId();
+    void setDebugId(String id);
+
     boolean isEnabled();
     void setEnabled(boolean enabled);
 

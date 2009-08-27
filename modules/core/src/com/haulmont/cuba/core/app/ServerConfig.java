@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
 @Source(type = SourceType.SYSTEM)
 public interface ServerConfig extends Config {
@@ -32,4 +33,9 @@ public interface ServerConfig extends Config {
     @DefaultInt(1800)
     int getUserSessionExpirationTimeoutSec();
     void setUserSessionExpirationTimeoutSec(int timeout);
+
+    @Property("cuba.testMode")
+    @DefaultBoolean(false)
+    boolean getTestMode();
+
 }

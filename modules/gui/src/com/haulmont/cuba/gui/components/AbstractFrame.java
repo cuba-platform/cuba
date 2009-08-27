@@ -33,6 +33,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.setId(id);
     }
 
+    public String getDebugId() {
+        return frame.getDebugId();
+    }
+
+    public void setDebugId(String id) {
+        frame.setDebugId(id);
+    }
+
     public boolean isEnabled() {
         return frame.isEnabled();
     }

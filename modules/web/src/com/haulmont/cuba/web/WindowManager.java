@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
@@ -28,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
+import java.util.List;
 
 public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 {
@@ -36,6 +38,8 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
     protected Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
 
     protected Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
+
+    protected Map<String, Integer> debugIds = new HashMap<String, Integer>();
 
     private Log log = LogFactory.getLog(WindowManager.class);
 
@@ -483,5 +487,22 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
                 breadCrumbs.update();
             }
         }
+    }
+
+    @Override
+    protected void initDebugIds(final Window window) {
+        com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
+            public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
+                final String debugId = window.getId() + "." + name;
+                Integer count = debugIds.get(debugId);
+                if (count == null) {
+                    count = 0;
+                }
+
+                debugIds.put(debugId, ++count);
+                
+                component.setDebugId(debugId + "." + count);
+            }
+        });
     }
 }

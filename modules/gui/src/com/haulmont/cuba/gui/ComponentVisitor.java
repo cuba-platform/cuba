@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.gui.components;
+package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.Component;
 

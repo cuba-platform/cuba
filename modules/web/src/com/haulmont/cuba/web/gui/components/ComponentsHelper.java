@@ -157,28 +157,6 @@ public class ComponentsHelper {
         return null;
     }
 
-    public static void walkComponents(com.haulmont.cuba.gui.components.Component.Container container,
-                                      ComponentVisitor visitor)
-    {
-        __walkComponents(container, visitor, "");
-    }
-
-    private static void __walkComponents(com.haulmont.cuba.gui.components.Component.Container container,
-                                      ComponentVisitor visitor,
-                                      String path)
-    {
-        for (com.haulmont.cuba.gui.components.Component component : container.getOwnComponents()) {
-            visitor.visit(component, path + component.getId());
-
-            if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                String p = component instanceof IFrame ? 
-                        path + component.getId() + "." :
-                        path;
-                __walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), visitor, p);
-            }
-        }
-    }
-
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {
         if (StringUtils.isEmpty(height) && StringUtils.isEmpty(width)) {
             component.setSizeFull();

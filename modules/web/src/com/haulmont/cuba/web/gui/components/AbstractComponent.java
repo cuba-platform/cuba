@@ -41,7 +41,14 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
 
     public void setId(String id) {
         this.id = id;
-//        component.setDebugId(id);
+    }
+
+    public String getDebugId() {
+        return component.getDebugId();
+    }
+
+    public void setDebugId(String id) {
+        component.setDebugId(id);
     }
 
     public String getStyleName() {

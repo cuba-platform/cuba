@@ -10,25 +10,25 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.AccessDeniedException;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
-import com.haulmont.cuba.gui.xml.ParametersHelper;
-import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.io.IOUtils;
@@ -98,7 +98,19 @@ public abstract class WindowManager {
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executeLazyTasks();
 
+        if (ConfigProvider.getConfig(ServerConfig.class).getTestMode()) {
+            initDebugIds(window);
+        }
+
         return windowWrapper;
+    }
+
+    protected void initDebugIds(final Window window) {
+        ComponentsHelper.walkComponents(window, new ComponentVisitor() {
+            public void visit(Component component, String name) {
+                component.setDebugId(window.getId() + "." + name);
+            }
+        });
     }
 
     private void checkPermission(WindowInfo windowInfo) {

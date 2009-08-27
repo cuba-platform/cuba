@@ -7,7 +7,7 @@
 
     <servlet>
         <servlet-name>cuba_servlet</servlet-name>
-        <servlet-class>com.itmill.toolkit.terminal.gwt.server.ApplicationServlet
+        <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet
         </servlet-class>
         <init-param>
             <param-name>application</param-name>
@@ -43,5 +43,14 @@
         <filter-name>CubaHttpFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <servlet>
+        <servlet-name>HumanResourcesServlet</servlet-name>
+        <servlet-class>com.haulmont.cuba.web.app.ui.demo.HumanResourcesModelServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HumanResourcesServlet</servlet-name>
+        <url-pattern>/humanresources</url-pattern>
+    </servlet-mapping>
 
 </web-app>
