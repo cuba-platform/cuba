@@ -543,6 +543,10 @@ public class TreeTable
             target.addAttribute("nullSelectionDisallowed", true);
         }
 
+        if (isStoreColWidth()) {
+            target.addAttribute("storeColWidth", true);
+        }
+
         // Visible column order
         final Collection sortables = getSortableContainerPropertyIds();
         final List<Object> visibleColOrder =
