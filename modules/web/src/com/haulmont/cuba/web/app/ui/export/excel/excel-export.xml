@@ -21,6 +21,8 @@
                     <button id="up" stylename="link"/>
                     <button id="down" stylename="link"/>
                 </hbox>
+                <label />
+                <checkBox id="exportExpanded" caption="msg://exportExpanded" />
             </vbox>
             <!--<vbox>-->
 

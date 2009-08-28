@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -68,7 +69,11 @@ public class ExcelExporter {
     }
 
     public void exportTable(Table table, List<Table.Column> columns, ExportDisplay display) {
-        if (display == null)
+        exportTable(table, columns, false, display);
+    }
+
+    public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded, ExportDisplay display) {
+         if (display == null)
             throw new IllegalArgumentException("ExportDisplay is null");
 
         createWorkbookWithSheet();
@@ -97,8 +102,7 @@ public class ExcelExporter {
             TreeTable treeTable = (TreeTable) table;
             HierarchicalDatasource ds = (HierarchicalDatasource) treeTable.getDatasource();
             for (Object itemId : ds.getRootItemIds()) {
-                createRow(table, columns, ++r, itemId);
-                r = createHierarhicalRow(treeTable, columns, r, itemId);
+                r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
             }
         } else {
             for (Object itemId : datasource.getItemIds()) {
@@ -120,13 +124,22 @@ public class ExcelExporter {
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName, ExportFormat.XLS);
     }
 
-    protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns, int rowNumber, Object itemId) {
+    protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
+                                       Boolean exportExpanded, int rowNumber, Object itemId) {
         HierarchicalDatasource hd = (HierarchicalDatasource) table.getDatasource();
-        final Collection children = hd.getChildren(itemId);
-        if (children != null && !children.isEmpty()) {
-            for (Object id : children) {
-                createRow(table, columns, ++rowNumber, id);
-                rowNumber = createHierarhicalRow(table, columns, rowNumber, id);
+        createRow(table, columns, ++rowNumber, itemId);
+        if (BooleanUtils.isTrue(exportExpanded) && !table.isExpanded(itemId) && !hd.getChildren(itemId).isEmpty()) {
+            return rowNumber;
+        } else {
+            final Collection children = hd.getChildren(itemId);
+            if (children != null && !children.isEmpty()) {
+                for (Object id : children) {
+                    if (BooleanUtils.isTrue(exportExpanded) && !table.isExpanded(id) && !hd.getChildren(id).isEmpty()) {
+                        createRow(table, columns, ++rowNumber, id);
+                        continue;
+                    }
+                    rowNumber = createHierarhicalRow(table, columns, exportExpanded, rowNumber, id);
+                }
             }
         }
         return rowNumber;

@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
@@ -42,6 +43,7 @@ public class ExcelExportBrowser extends AbstractWindow {
         exportDisplay = (ExportDisplay) params.get("param$exportDisplay");
         optionsGroup = ((OptionsGroup) getComponent("optionsGroup"));
         initValues();
+        initCheckBox();
 
         Button commitButton = getComponent("commit");
         commitButton.setAction(new ExcelExportAction("actions.Ok"));
@@ -78,6 +80,18 @@ public class ExcelExportBrowser extends AbstractWindow {
 
     protected void initValues() {
         optionsGroup.setOptionsList(new ArrayList(table.getColumns()));
+    }
+
+    protected void initCheckBox() {
+        final CheckBox cb = getComponent("exportExpanded");
+        if (table instanceof TreeTable) {
+                        cb.setEnabled(true);
+            cb.setValue(Boolean.TRUE);
+
+        } else {
+                cb.setEnabled(false);
+            cb.setValue(Boolean.FALSE);
+        }
     }
 
     protected void moveColumns(boolean up) {
@@ -172,7 +186,8 @@ public class ExcelExportBrowser extends AbstractWindow {
         public void actionPerform(Component component) {
 
             ExcelExporter ee = new ExcelExporter();
-            ee.exportTable(table, getSelectedColumns(true), exportDisplay);
+            ee.exportTable(table, getSelectedColumns(true),
+                    (Boolean) ((CheckBox)getComponent("exportExpanded")).getValue(), exportDisplay);
             ExcelExportBrowser.this.close(null);
         }
     }
