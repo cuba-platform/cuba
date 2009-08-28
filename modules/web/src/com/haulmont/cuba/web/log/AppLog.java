@@ -33,7 +33,7 @@ public class AppLog
     private Log log = LogFactory.getLog(AppLog.class);
 
     public void log(LogItem item) {
-        log.debug(item.getLevel() + ": " + item.getMessage(), item.getThrowable());
+        log.debug(item.getLevel() + ": " + item.getMessage() + "\n" + item.getStacktrace());
         
         if (items.size() >= capacity) {
             items.removeLast();

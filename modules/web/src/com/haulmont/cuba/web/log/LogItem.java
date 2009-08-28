@@ -14,18 +14,21 @@ import com.haulmont.cuba.core.global.TimeProvider;
 
 import java.util.Date;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 public class LogItem
 {
     private Date timestamp;
     private LogLevel level;
     private String message;
-    private Throwable throwable;
+    private String stacktrace;
 
     public LogItem(LogLevel level, String message, Throwable throwable) {
         this.timestamp = TimeProvider.currentTimestamp();
         this.level = level;
         this.message = message;
-        this.throwable = throwable;
+        if (throwable != null)
+            this.stacktrace = ExceptionUtils.getStackTrace(throwable);
     }
 
     public LogLevel getLevel() {
@@ -36,8 +39,8 @@ public class LogItem
         return message;
     }
 
-    public Throwable getThrowable() {
-        return throwable;
+    public String getStacktrace() {
+        return stacktrace;
     }
 
     public Date getTimestamp() {

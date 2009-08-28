@@ -82,9 +82,9 @@ public class LogWindow extends Window
             sb.append(item.getLevel().name());
             sb.append("</b> ");
             sb.append(item.getMessage());
-            if (item.getThrowable() != null) {
+            if (item.getStacktrace() != null) {
                 sb.append(" ");
-                sb.append(ExceptionUtils.getStackTrace(item.getThrowable()).replace("\n", "<br>"));
+                sb.append(item.getStacktrace().replace("\n", "<br>"));
             }
             sb.append("<br>");
         }
