@@ -21,6 +21,7 @@
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/core"/>
         <pathelement location="${prod.out.dir}/gui"/>
+        <pathelement location="${prod.out.dir}/web-war"/>
     </path>
 
     <path id="test-compile-cp">
@@ -34,6 +35,14 @@
         <pathelement location="${prod.out.dir}/${module.name}"/>
         <pathelement location="${test.out.dir}/core"/>
     </path>
+
+    <target name="compile-module" depends="base-mod.compile-module">
+        <copy todir="${prod.out.dir}/${module.name}">
+            <fileset dir="${prod.out.dir}/web-war">
+                <include name="**/ColumnWidth.class"/>
+            </fileset>
+        </copy>
+    </target>
 
     <target name="build-module" depends="base-mod.build-module">
         <mkdir dir="${build.dir}/conf"/>

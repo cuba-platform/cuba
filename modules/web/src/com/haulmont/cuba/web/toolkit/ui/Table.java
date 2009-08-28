@@ -17,6 +17,7 @@ import com.itmill.toolkit.ui.Field;
 import com.itmill.toolkit.terminal.PaintTarget;
 import com.itmill.toolkit.terminal.PaintException;
 import com.itmill.toolkit.terminal.Resource;
+import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.itmill.toolkit.event.Action;
 
 import java.util.*;
@@ -25,6 +26,7 @@ public class Table
         extends com.itmill.toolkit.ui.Table
 {
     protected LinkedList<Object> editableColumns = null;
+    protected boolean storeColWidth = false;
 
     public Object[] getEditableColumns() {
         if (editableColumns == null) {
@@ -59,6 +61,22 @@ public class Table
 
         resetPageBuffer();
         refreshRenderedCells();
+    }
+
+    @Override
+    protected boolean changeVariables(Map variables) {
+
+        if (variables.containsKey("colwidth")) {
+            try {
+                final ColumnWidth colWidth = ColumnWidth.deSerialize((String) variables.get("colwidth"));
+                final Object id = columnIdMap.get(colWidth.getColId());
+                setColumnWidth(id, colWidth.getWidth());
+            } catch (Exception e) {
+                //ignore
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -210,6 +228,10 @@ public class Table
 
         if (isSelectable() && !isMultiSelect() && !isNullSelectionAllowed()) {
             target.addAttribute("nullSelectionDisallowed", true);
+        }
+
+        if (isStoreColWidth()) {
+            target.addAttribute("storeColWidth", true);
         }
 
         // Visible column order
@@ -664,5 +686,13 @@ public class Table
             requestRepaint();
         }
 
+    }
+
+    public boolean isStoreColWidth() {
+        return storeColWidth;
+    }
+
+    public void setStoreColWidth(boolean storeColWidth) {
+        this.storeColWidth = storeColWidth;
     }
 }

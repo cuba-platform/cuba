@@ -160,6 +160,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         component.setNullSelectionAllowed(false);
         component.setImmediate(true);
         component.setValidationVisible(false);
+        component.setStoreColWidth(true);
 
         component.addActionHandler(new ActionsAdapter());
 
@@ -437,6 +438,20 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         }
 
         component.setVisibleColumns(newColumns.toArray());
+
+        //apply sorting
+        String sortProp = columnsElem.attributeValue("sortProperty");
+        if (!StringUtils.isEmpty(sortProp)) {
+            MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyEx(sortProp);
+            if (newColumns.contains(sortProperty)) {
+                boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
+
+                component.setSortContainerPropertyId(null);
+                component.setSortAscending(sortAscending);
+                component.setSortContainerPropertyId(sortProperty);
+            }
+        }
+
     }
 
     public boolean saveSettings(Element element) {
@@ -457,6 +472,15 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
             Boolean visible = !component.isColumnCollapsed(column);
             colElem.addAttribute("visible", visible.toString());
         }
+
+        MetaPropertyPath sortProperty = (MetaPropertyPath) component.getSortContainerPropertyId();
+        if (sortProperty != null) {
+            Boolean sortAscending = component.isSortAscending();
+
+            columnsElem.addAttribute("sortProperty", sortProperty.toString());
+            columnsElem.addAttribute("sortAscending", sortAscending.toString());
+        }
+
         return true;
     }
 

@@ -21,6 +21,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.itmill.toolkit.terminal.gwt.client.*;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
+import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 
 import java.util.*;
 
@@ -133,6 +134,8 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
     protected boolean allowMultiStingCells = false;
     protected boolean nullSelectionDisallowed = false;
 
+    protected boolean storeColWidth = false;
+
     public IScrollTable() {
         bodyContainer.addScrollListener(this);
         bodyContainer.setStyleName(CLASSNAME + "-body");
@@ -195,6 +198,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
         showColHeaders = uidl.getBooleanAttribute("colheaders");
         allowMultiStingCells = uidl.getBooleanAttribute("multistring");
         nullSelectionDisallowed = uidl.getBooleanAttribute("nullSelectionDisallowed");
+        storeColWidth = uidl.getBooleanAttribute("storeColWidth");
 
         if (uidl.hasVariable("sortascending")) {
             sortAscending = uidl.getBooleanVariable("sortascending");
@@ -1204,6 +1208,7 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             case Event.ONMOUSEUP:
                 isResizing = false;
                 DOM.releaseCapture(getElement());
+                handleColResize();
                 tBody.reLayoutComponents();
                 break;
             case Event.ONMOUSEMOVE:
@@ -1223,6 +1228,14 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 break;
             default:
                 break;
+            }
+        }
+
+        protected void handleColResize() {
+            if (storeColWidth) {
+                final ColumnWidth colWidth = new ColumnWidth(cid, getColWidth(cid));
+                client.updateVariable(paintableId, "colwidth", colWidth.toString(),
+                        true);
             }
         }
 
