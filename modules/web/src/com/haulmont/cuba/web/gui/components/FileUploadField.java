@@ -113,6 +113,11 @@ public class FileUploadField
         return component.getBytesRead();
     }
 
+    public void release() {
+        outputStream = null;
+        bytes = null;
+    }
+
     public void addListener(Listener listener) {
         if (!listeners.contains(listener)) listeners.add(listener);
     }

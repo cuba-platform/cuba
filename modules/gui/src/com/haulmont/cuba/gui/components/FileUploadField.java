@@ -37,6 +37,7 @@ public interface FileUploadField extends Component, Component.HasCaption, Compon
     boolean isUploading();
     byte[] getBytes();
     long getBytesRead();
+    void release();
 
     void addListener(Listener listener);
     void removeListener(Listener listener);
