@@ -45,7 +45,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
             button = new ToggleButton(upText, downText);
             add(button);
             button.addClickListener(listener);
-            setStyleName(CLASSNAME + "-toggle");
+            setStyleName(getStyle());
         }
 
         public void updateText(String upText, String downText) {
@@ -123,10 +123,6 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         this.client = client;
         paintableId = uidl.getId();
 
-        updateToggle(uidl);
-
-        updateComponent(uidl);
-
         //Apply forsed value
         if (uidl.hasAttribute("expanded")) {
             expanded = uidl.getBooleanAttribute("expanded");
@@ -134,6 +130,10 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
                 toggleButtonPanel.setDown(expanded);
             }
         }
+
+        updateToggle(uidl);
+
+        updateComponent(uidl);
 
         UIDL contentUidl = uidl.getChildUIDL(0);
 
@@ -245,7 +245,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         DOM.setElementProperty(captionContainer, "className", CLASSNAME + "-caption");
         DOM.setElementProperty(bottomDecoration, "className", CLASSNAME + "-deco");
         if (toggleButtonPanel != null) {
-            toggleButtonPanel.setStyleName(CLASSNAME + "-toggle");
+            toggleButtonPanel.setStyleName(getStyle());
         }
         boolean hasCaption = false;
         if (uidl.hasAttribute("caption")
@@ -278,7 +278,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
             DOM.setElementProperty(captionContainer, "className", captionClass);
             DOM.setElementProperty(bottomDecoration, "className", decoClass);
             if (toggleButtonPanel != null) {
-                String toggleStyle = CLASSNAME + "-toggle";
+                String toggleStyle = getStyle();
                 for (final String style : styles) {
                     toggleStyle += " " + (CLASSNAME + "-toggle-") + style;
                 }
@@ -345,6 +345,10 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         if (toggleButtonPanel != null) {
             toggleButtonPanel.setDown(expanded);
         }
+    }
+
+    private String getStyle() {
+        return CLASSNAME + "-toggle" + " " + CLASSNAME + "-toggle-" + (expanded ? "down" : "up");
     }
 
     public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
