@@ -95,7 +95,16 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     }
 
     public T getItem(K key) {
-        return (T) key;
+        if (key instanceof Entity)
+            return (T) key;
+        else {
+            Collection<T> collection = __getCollection();
+            for (T t : collection) {
+                if (t.getId().equals(key))
+                    return t;
+            }
+            return null;
+        }
     }
 
     public K getItemId(T item) {
