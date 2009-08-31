@@ -48,8 +48,6 @@ public class WidgetSet extends DefaultWidgetSet {
                     return IFilterSelect.class;
                 }
             }
-        } else if ("label".equals(tag)) {
-            return ILabel.class;
         } else if ("horizontalBox".equals(tag) || "verticalBox".equals(tag)) {
             return IBox.class;
         } else if ("togglepanel".equals(tag)) {
@@ -69,8 +67,6 @@ public class WidgetSet extends DefaultWidgetSet {
             return new IScrollablePanel();
         } else if (IFilterSelect.class.equals(classType)) {
             return new IFilterSelect();
-        } else if (ILabel.class.equals(classType)) {
-            return new ILabel();
         } else if (IBox.class.equals(classType)) {
             return new IBox();
         } else if (ITogglePanel.class.equals(classType)) {

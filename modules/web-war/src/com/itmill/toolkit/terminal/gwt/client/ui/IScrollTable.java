@@ -2087,6 +2087,8 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
             protected Map widgetColumns = null;
 
+            protected Map widgetWrappers = null;
+
             protected IScrollTableRow(int rowKey) {
                 this.rowKey = rowKey;
                 setElement(DOM.createElement("tr"));
@@ -2259,13 +2261,15 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                 // ensure widget not attached to another element (possible tBody
                 // change)
                 w.removeFromParent();
-                DOM.appendChild(container, w.getElement());
-                adopt(w);
+
+                final CellWrapper cw = new CellWrapper(container, w);
                 childWidgets.add(w);
-                if (widgetColumns == null) {
+                if (widgetColumns == null || widgetWrappers == null) {
                     widgetColumns = new HashMap();
+                    widgetWrappers = new HashMap();
                 }
                 widgetColumns.put(w, colIndex);
+                widgetWrappers.put(w, cw);
             }
 
             protected void setCellAlignment(Element container, char align) {
@@ -2295,6 +2299,9 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
                     childWidgets.remove(w);
                     if (widgetColumns != null) {
                         widgetColumns.remove(w);
+                    }
+                    if (widgetWrappers != null) {
+                        widgetWrappers.remove(w);
                     }
                     return true;
                 } else {
@@ -2480,11 +2487,18 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
 
                 parentElement.appendChild(newComponent.getElement());
                 childWidgets.insertElementAt(newComponent, index);
-                if (widgetColumns == null) {
+                if (widgetColumns == null || widgetWrappers != null) {
                     widgetColumns = new HashMap();
+                    widgetWrappers = new HashMap();
                 }
                 widgetColumns.remove(oldComponent);
                 widgetColumns.put(newComponent, index);
+
+                CellWrapper wrapper = (CellWrapper) widgetWrappers.remove(oldComponent);
+                if (oldComponent != null) {
+                    widgetWrappers.put(newComponent, wrapper);
+                }
+
                 adopt(newComponent);
 
             }
@@ -2496,13 +2510,55 @@ public class IScrollTable extends FlowPanel implements Table, ScrollListener {
             }
 
             public void updateCaption(Paintable component, UIDL uidl) {
-                // NOP, not rendered
+                if (component != null) {
+                    final CellWrapper wrapper = (CellWrapper) widgetWrappers.get(component);
+                    if (wrapper != null) {
+                        wrapper.updateCell(uidl);
+                    }
+                }
             }
 
             public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
                 // Should never be called,
                 // Component container interface faked here to get layouts
                 // render properly
+            }
+
+            protected class CellWrapper {
+                private Element container = DOM.createDiv();
+                private Widget widget;
+                private Icon icon;
+
+                public CellWrapper(Element div, Widget w) {
+                    this.widget = w;
+
+                    DOM.appendChild(container, w.getElement());
+
+                    DOM.appendChild(div, container);
+                    IScrollTableRow.this.adopt(w);
+                }
+
+                public void updateCell(UIDL uidl) {
+                    if (uidl.hasAttribute("icon")) {
+                        if (icon == null) {
+                            DOM.setStyleAttribute(container, "width", 9000 + "px");
+
+                            icon = new Icon(client);
+                            DOM.insertChild(container, icon.getElement(), 0);
+                            Util.setFloat(icon.getElement(), "left");
+                            Util.setFloat(widget.getElement(), "left");
+                        }
+                        icon.setUri(uidl.getStringAttribute("icon"));
+                    }
+                    else if (icon != null) {
+                        DOM.setStyleAttribute(container, "width", "");
+                        
+                        DOM.removeChild(container, icon.getElement());
+                        Util.setFloat(icon.getElement(), "");
+                        Util.setFloat(widget.getElement(), "");
+                        icon = null;
+                    }
+                }
             }
         }
     }
