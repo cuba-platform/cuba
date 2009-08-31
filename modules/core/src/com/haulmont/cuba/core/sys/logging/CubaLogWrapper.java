@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.sys.logging;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.UUID;
 
@@ -27,11 +28,14 @@ public class CubaLogWrapper implements Log {
     }
 
     private String getCurrentUser() {
-        UUID sessionId = ServerSecurityUtils.getSessionId();
-        if (sessionId != null) {
-            UserSession session = UserSessionManager.getInstance().findSession(sessionId);
-            if (session != null) {
-                return "[" + session.getUser().getLogin() + "] ";
+        String prop = System.getProperty("cuba.logUserName");
+        if (Boolean.valueOf(prop)) {
+            UUID sessionId = ServerSecurityUtils.getSessionId();
+            if (sessionId != null) {
+                UserSession session = UserSessionManager.getInstance().findSession(sessionId);
+                if (session != null) {
+                    return "[" + session.getUser().getLogin() + "] ";
+                }
             }
         }
         return "";

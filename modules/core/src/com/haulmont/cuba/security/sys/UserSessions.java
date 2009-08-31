@@ -49,6 +49,7 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
     private volatile int expirationTimeout = 1800;
 
     public UserSessions() {
+        System.setProperty("cuba.logUserName", "true");
         Heartbeat.getInstance().addListener(this, 10);
     }
 
