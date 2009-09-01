@@ -11,6 +11,7 @@
 package com.haulmont.cuba.gui.export;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -29,6 +30,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.text.ParseException;
 
 public class ExcelExporter {
     private static final int COL_WIDTH_MAGIC = 48;
@@ -178,10 +180,27 @@ public class ExcelExporter {
     protected void formatValueCell(HSSFCell cell, Object val, int sizersIndex, int notificationReqiured, int level) {
         if (val == null)
             return;
-        if (val instanceof BigDecimal) {
-            final String str = sizersIndex == 0 ? createSpaceString(level) + Datatypes.getInstance().get(BigDecimal.class).format((BigDecimal) val)
-                    : Datatypes.getInstance().get(BigDecimal.class).format((BigDecimal) val);
-            cell.setCellValue(str);
+        if (val instanceof Number) {
+            Number n = (Number) val;
+            final Datatype datatype = Datatypes.getInstance().get(n.getClass());
+            String str;
+            if (sizersIndex == 0) {
+                str = createSpaceString(level) + datatype.format(n);
+                cell.setCellValue(str);
+            } else {
+                try {
+                    str = datatype.format(n);
+                    Number result = (Number) datatype.parse(str);
+                    if (n instanceof Integer || n instanceof Long || n instanceof Byte || n instanceof Short) {
+                        cell.setCellValue(result.longValue());
+                    } else {
+                        cell.setCellValue(result.doubleValue());
+                    }
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+                cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+            }
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
