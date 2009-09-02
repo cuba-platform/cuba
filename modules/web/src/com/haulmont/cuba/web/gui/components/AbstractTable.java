@@ -161,6 +161,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         component.setImmediate(true);
         component.setValidationVisible(false);
         component.setStoreColWidth(true);
+        component.setStyleName("table"); //It helps us to manage a caption style
 
         component.addActionHandler(new ActionsAdapter());
 
@@ -496,6 +497,14 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
     public Action getItemClickAction() {
         return itemClickAction;
+    }
+
+    public String getCaption() {
+        return component.getCaption();
+    }
+
+    public void setCaption(String caption) {
+        component.setCaption(caption);
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {
