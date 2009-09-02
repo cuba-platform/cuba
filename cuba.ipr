@@ -433,7 +433,7 @@
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../chile/build/11chile-jpa.jar!/" />
         <root url="jar://$PROJECT_DIR$/../chile/build/10chile-core.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../chile/build/05bali.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../chile/build/bali.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
