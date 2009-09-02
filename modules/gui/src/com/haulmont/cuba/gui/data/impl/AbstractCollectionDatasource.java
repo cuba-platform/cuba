@@ -32,9 +32,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
 {
     protected String query;
     protected ParametersHelper.ParameterInfo[] queryParameters;
+    protected boolean softDeletion;
 
     public AbstractCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
         super(dsContext, dataservice, id, metaClass, viewName);
+        this.softDeletion = true;
     }
 
     @Override
@@ -238,5 +240,13 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
         }
 
         return templateParams;
+    }
+
+    public boolean isSoftDeletion() {
+        return softDeletion;
+    }
+
+    public void setSoftDeletion(boolean softDeletion) {
+        this.softDeletion = softDeletion;
     }
 }

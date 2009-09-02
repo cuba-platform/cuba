@@ -259,4 +259,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
             }
         }
     }
+
+    public boolean isSoftDeletion() {
+        return false;
+    }
+
+    public void setSoftDeletion(boolean softDeletion) {
+    }
 }

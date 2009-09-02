@@ -48,6 +48,14 @@ public class LazyCollectionDatasource<T extends Entity, K>
         super(dsContext, dataservice, id, metaClass, viewName);
     }
 
+    public LazyCollectionDatasource(
+            DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
+                String id, MetaClass metaClass, String viewName, boolean softDeletion)
+    {
+        super(dsContext, dataservice, id, metaClass, viewName);
+        setSoftDeletion(softDeletion);
+    }
+
     public void addItem(T item) throws UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }

@@ -18,10 +18,10 @@ public interface DatasourceFactory {
                 String id, MetaClass metaClass, String viewName);
     CollectionDatasource createCollectionDatasource(
             DsContext dsContext, DataService dataservice,
-                String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode);
+                String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode, boolean softDeletion);
     HierarchicalDatasource createHierarchicalDatasource(
             DsContext dsContext, DataService dataservice,
-                String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode);
+                String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode, boolean softDeletion);
 
     Datasource createDatasource(String id, Datasource ds, String property);
     CollectionDatasource createCollectionDatasource(String id, Datasource ds, String property);

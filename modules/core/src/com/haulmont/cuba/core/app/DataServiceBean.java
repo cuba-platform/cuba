@@ -148,6 +148,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
         Transaction tx = Locator.getTransaction();
         try {
             final EntityManager em = PersistenceProvider.getEntityManager();
+            em.setDeleteDeferred(context.isSoftDeletion());
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             resultList = query.getResultList();
 

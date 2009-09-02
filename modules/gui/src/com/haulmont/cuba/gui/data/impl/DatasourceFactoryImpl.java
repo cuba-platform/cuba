@@ -22,18 +22,18 @@ public class DatasourceFactoryImpl implements DatasourceFactory {
 
     public CollectionDatasource createCollectionDatasource(
             DsContext dsContext, DataService dataservice,
-                String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode)
+                String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode, boolean softDeletion)
     {
         if (CollectionDatasource.FetchMode.LAZY.equals(fetchMode)) {
-            return new LazyCollectionDatasource(dsContext, dataservice, id, metaClass, viewName);
+            return new LazyCollectionDatasource(dsContext, dataservice, id, metaClass, viewName, softDeletion);
         } else
-            return new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
+            return new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName, softDeletion);
     }
 
     public HierarchicalDatasource createHierarchicalDatasource(
             DsContext dsContext, DataService dataservice,
-                String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode) {
-        return new HierarchicalDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
+                String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode, boolean softDeletion) {
+        return new HierarchicalDatasourceImpl(dsContext, dataservice, id, metaClass, viewName, softDeletion);
     }
 
     public Datasource createDatasource(String id, Datasource ds, String property) {

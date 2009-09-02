@@ -94,6 +94,8 @@ public class DsContextLoader {
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
         final String hierarchyProperty = element.attributeValue("hierarchyProperty");
+        String deletion = element.attributeValue("softDeletion");
+        boolean softDeletion = deletion == null || "true".equals(deletion);
 
         final Element datasourceClassElement = element.element("datasourceClass");
 
@@ -109,12 +111,13 @@ public class DsContextLoader {
                                 DsContext.class, DataService.class,
                                     String.class, MetaClass.class, String.class);
                 datasource = constructor.newInstance(context, dataservice, id, metaClass, viewName);
+                datasource.setSoftDeletion(softDeletion);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         } else {
             final CollectionDatasource.FetchMode mode = getFetchMode(element);
-            datasource = factory.createHierarchicalDatasource(context, dataservice, id, metaClass, viewName, mode);
+            datasource = factory.createHierarchicalDatasource(context, dataservice, id, metaClass, viewName, mode, softDeletion);
         }
 
         if (!StringUtils.isEmpty(hierarchyProperty)) {
@@ -234,6 +237,8 @@ public class DsContextLoader {
         final String id = element.attributeValue("id");
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
+        String deletion = element.attributeValue("softDeletion");
+        boolean softDeletion = deletion == null || "true".equals(deletion);
 
         final Element datasourceClassElement = element.element("datasourceClass");
 
@@ -249,12 +254,13 @@ public class DsContextLoader {
                                 DsContext.class, DataService.class,
                                     String.class, MetaClass.class, String.class);
                 datasource = constructor.newInstance(context, dataservice, id, metaClass, viewName);
+                datasource.setSoftDeletion(softDeletion);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         } else {
             final CollectionDatasource.FetchMode mode = getFetchMode(element);
-            datasource = factory.createCollectionDatasource(context, dataservice, id, metaClass, viewName, mode);
+            datasource = factory.createCollectionDatasource(context, dataservice, id, metaClass, viewName, mode, softDeletion);
         }
 
         final String query = element.elementText("query");

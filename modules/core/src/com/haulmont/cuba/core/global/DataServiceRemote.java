@@ -81,13 +81,16 @@ public interface DataServiceRemote
         protected View view;
         protected Object id;
         protected Collection<Object> ids;
+        protected boolean softDeletion;
 
         public LoadContext(MetaClass metaClass) {
             this.metaClass = metaClass.getName();
+            this.softDeletion = true;
         }
 
         public LoadContext(Class metaClass) {
             this.metaClass = MetadataProvider.getSession().getClass(metaClass).getName();
+            this.softDeletion = true;
         }
 
         public String getMetaClass() {
@@ -138,6 +141,14 @@ public interface DataServiceRemote
             final Query query = new Query(queryString);
             setQuery(query);
             return query;
+        }
+
+        public boolean isSoftDeletion() {
+            return softDeletion;
+        }
+
+        public void setSoftDeletion(boolean softDeletion) {
+            this.softDeletion = softDeletion;
         }
     }
 

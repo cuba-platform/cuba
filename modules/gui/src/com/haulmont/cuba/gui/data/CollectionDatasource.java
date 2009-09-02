@@ -30,6 +30,9 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
     void removeItem(T item) throws UnsupportedOperationException;
     void updateItem(T item);
 
+    boolean isSoftDeletion();
+    void setSoftDeletion(boolean softDeletion);
+
     boolean containsItem(K itemId);
 
     interface Ordered<T extends Entity, K> extends CollectionDatasource<T, K> {

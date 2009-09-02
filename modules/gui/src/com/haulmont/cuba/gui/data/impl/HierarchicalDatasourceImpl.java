@@ -36,6 +36,14 @@ public class HierarchicalDatasourceImpl<T extends Entity, K>
         super(context, dataservice, id, metaClass, viewName);
     }
 
+    public HierarchicalDatasourceImpl(
+            DsContext context, DataService dataservice,
+                String id, MetaClass metaClass, String viewName, boolean softDeletion)
+    {
+        super(context, dataservice, id, metaClass, viewName);
+        setSoftDeletion(softDeletion);
+    }
+
     public String getHierarchyPropertyName() {
         return hierarchyPropertyName;
     }

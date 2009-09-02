@@ -42,6 +42,14 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         super(context, dataservice, id, metaClass, viewName);
     }
 
+    public CollectionDatasourceImpl(
+            DsContext context, DataService dataservice,
+                String id, MetaClass metaClass, String viewName, boolean softDeletion)
+    {
+        super(context, dataservice, id, metaClass, viewName);
+        setSoftDeletion(softDeletion);
+    }
+
     @Override
     public synchronized void invalidate() {
         super.invalidate();
@@ -280,6 +288,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
         }
 
         context.setView(view);
+        context.setSoftDeletion(isSoftDeletion());
 
         final Collection<T> entities = dataservice.loadList(context);
 
