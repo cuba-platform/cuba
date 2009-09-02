@@ -391,13 +391,12 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         Label desc = new Label(message, Label.CONTENT_XHTML);
         layout.addComponent(desc);
 
-        window.addComponent(layout);
-
         window.setWidth(400, Sizeable.UNITS_PIXELS);
         window.setResizable(false);
         window.setModal(true);
 
         App.getInstance().getMainWindow().addWindow(window);
+        window.center();
     }
 
     public void showOptionDialog(String title, String message,

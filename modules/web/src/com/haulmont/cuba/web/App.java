@@ -135,6 +135,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
+            log.debug("Creating AppWindow");
             Window window = createAppWindow();
             setMainWindow(window);
             initExceptionHandlers(true);
@@ -144,6 +145,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
             }
         }
         else {
+            log.debug("Closing all windows");
             getWindowManager().closeAll();
             Window window = createLoginWindow();
             setMainWindow(window);

@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.bali.util.Dom4j;
@@ -54,8 +55,7 @@ public class AppWindow extends Window {
         this.connection = connection;
         setCaption(getAppCaption());
 
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
-        mode = Mode.valueOf(webConfig.getAppWindowMode().toUpperCase());
+        mode = UserSettingHelper.loadAppWindowMode();
 
         rootLayout = createLayout();
         initLayout();
