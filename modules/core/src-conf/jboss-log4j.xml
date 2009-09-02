@@ -66,6 +66,26 @@
         </layout>
     </appender>
 
+    <!-- ============================== -->
+    <!-- Send messages by email -->
+    <!-- ============================== -->
+
+    <appender name="EMAIL" class="com.haulmont.bali.log4j.SMTPAppender">
+        <param name="BufferSize" value="512"/>
+        <param name="Interval" value="10"/>
+        <param name="SMTPHost" value="smtp host"/>
+        <param name="From" value="logging@haulmont.com"/>
+        <param name="To" value="comma-separated list of recipients"/>
+        <param name="Subject" value="Error Log Messages"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{ISO8601}]%n%n%-5p%n%n%c%n%n%m%n%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="ERROR"/>
+            <param name="LevelMax" value="FATAL"/>
+        </filter>
+    </appender>
+
     <!-- Perf4J appenders -->
     <!--
       This AsyncCoalescingStatisticsAppender groups StopWatch log messages

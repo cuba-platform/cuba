@@ -422,6 +422,7 @@
       </map>
     </option>
     <option name="myVersion" value="124" />
+    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
@@ -453,7 +454,6 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-vfs.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2se.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/postgresql-8.3-603.jdbc4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/mail.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-digester-1.7.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-beanutils-1.7.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.3.0-rc11-patch1.jar!/" />
@@ -488,6 +488,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/asm-2.2.3.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-pool-1.5.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/openjpa-1.2.1-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/mail.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
