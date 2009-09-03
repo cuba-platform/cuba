@@ -227,6 +227,59 @@ public class TransactionTest extends CubaTestCase
         }
     }
 
+    public void testSuspend() {
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Server server = new Server();
+            server.setName("localhost");
+            server.setAddress("127.0.0.1");
+            server.setRunning(true);
+            em.persist(server);
+
+            Transaction tx1 = Locator.createTransaction();
+            try {
+                EntityManager em1 = PersistenceProvider.getEntityManager();
+                assertTrue(em != em1);
+                tx1.commit();
+            } finally {
+                tx1.end();
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void testSuspendRollback() {
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Server server = new Server();
+            server.setName("localhost");
+            server.setAddress("127.0.0.1");
+            server.setRunning(true);
+            em.persist(server);
+
+            Transaction tx1 = Locator.createTransaction();
+            try {
+                EntityManager em1 = PersistenceProvider.getEntityManager();
+                assertTrue(em != em1);
+                throwException();
+                tx1.commit();
+            } catch (Exception e) {
+                //
+            } finally {
+                tx1.end();
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
     private void throwException() {
         throw new RuntimeException(TEST_EXCEPTION_MSG);
     }

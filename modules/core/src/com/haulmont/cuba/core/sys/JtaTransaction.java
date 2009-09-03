@@ -25,16 +25,20 @@ public class JtaTransaction implements Transaction
 
     private boolean started;
     private boolean committed;
+    private javax.transaction.Transaction prevTx;
 
     public JtaTransaction(TransactionManager tm, boolean join) {
         this.tm = tm;
         try {
-            if (tm.getTransaction() == null) {
+            javax.transaction.Transaction currTx = tm.getTransaction();
+            if (currTx == null) {
                 tm.begin();
                 started = true;
             }
             else if (!join) {
-                throw new IllegalStateException("JTA transaction exists while join = false : " + tm.getTransaction());
+                prevTx = tm.suspend();
+                tm.begin();
+                started = true;
             }
         } catch (SystemException e) {
             throw new RuntimeException(e);
@@ -91,7 +95,11 @@ public class JtaTransaction implements Transaction
                     tm.rollback();
                 }
             }
-        } catch (SystemException e) {
+
+            if (prevTx != null) {
+                tm.resume(prevTx);
+            }
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
