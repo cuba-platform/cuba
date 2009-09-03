@@ -106,11 +106,11 @@ public class Table
 
     protected class SortableTableDsWrapper extends SortableCollectionDsWrapper {
         public SortableTableDsWrapper(CollectionDatasource datasource) {
-            super(datasource);
+            super(datasource, true);
         }
 
         public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties);
+            super(datasource, properties, true);
         }
 
         @Override

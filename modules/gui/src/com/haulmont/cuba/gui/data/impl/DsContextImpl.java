@@ -175,7 +175,8 @@ public class DsContextImpl implements DsContextImplementation {
 
         final DatasourceListener listener = new CollectionDatasourceListener<Entity>() {
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
-                datasource.refresh();
+                if (Datasource.State.VALID.equals(datasource.getState()))
+                    datasource.refresh();
             }
 
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {}
