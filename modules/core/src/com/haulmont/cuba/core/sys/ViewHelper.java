@@ -48,6 +48,10 @@ public class ViewHelper
         }
 
         MetaClass metaClass = MetadataProvider.getSession().getClass(view.getEntityClass());
+        if (metaClass == null)
+            throw new RuntimeException("View '" + view + "' definition error: metaClass not found for '"
+                    + view.getEntityClass() + "'");
+
 
         for (ViewProperty property : view.getProperties()) {
             MetaProperty metaProperty = metaClass.getProperty(property.getName());

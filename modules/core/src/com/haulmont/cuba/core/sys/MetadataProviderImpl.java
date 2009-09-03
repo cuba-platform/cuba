@@ -73,26 +73,13 @@ public class MetadataProviderImpl extends MetadataProvider
                         return super.isMetaPropertyField(field) &&
                                 !name.startsWith("pc") && !name.startsWith("__") && super.isMetaPropertyField(field);
                     }
-
-                    protected URL normalize(URL url) throws IOException, URISyntaxException {
-                        return super.normalize(ServerUtils.translateUrl(url));
-                    }
                 };
             }
         };
         packages = getJPAClassesPackageNames();
         loadMetadata(jpaMetadataLoader, packages);
 
-        ChileMetadataLoader metadataLoader = new ChileMetadataLoader(session) {
-            @Override
-            protected ClassMetadataLoader createAnnotationsLoader(Session session) {
-                return new ChileAnnotationsLoader(session) {
-                    protected URL normalize(URL url) throws IOException, URISyntaxException {
-                        return super.normalize(ServerUtils.translateUrl(url));
-                    }
-                };
-            }
-        };
+        ChileMetadataLoader metadataLoader = new ChileMetadataLoader(session);
         packages = getMetaClassesPackageNames();
         loadMetadata(metadataLoader, packages);
 

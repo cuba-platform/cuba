@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AbstractActionOwnerComponent<T extends com.itmill.toolkit.ui.Component> extends AbstractComponent<T> {
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
-    protected BiMap<com.haulmont.cuba.gui.components.Action, Action> actions = new HashBiMap<com.haulmont.cuba.gui.components.Action,Action>();
+    protected BiMap<com.haulmont.cuba.gui.components.Action, Action> actions = HashBiMap.create();
 
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
         actions.put(action, new ActionWrapper(action));
