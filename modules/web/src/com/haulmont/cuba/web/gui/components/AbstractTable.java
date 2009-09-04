@@ -381,78 +381,59 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
     public void applySettings(Element element) {
         final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
-            if (!Datasource.State.VALID.equals(getDatasource().getState())) {
-                getDatasource().addListener(new DatasourceListener<Entity>() {
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                    }
+            Object[] oldColumns = component.getVisibleColumns();
+            List<Object> newColumns = new ArrayList<Object>();
+            // add columns from saved settings
+            for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+                for (Object column : oldColumns) {
+                    if (column.toString().equals(colElem.attributeValue("id"))) {
+                        newColumns.add(column);
 
-                    public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                        __applySettings(columnsElem);
-                    }
+                        String width = colElem.attributeValue("width");
+                        if (width != null)
+                            component.setColumnWidth(column, Integer.valueOf(width));
 
-                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                        String visible = colElem.attributeValue("visible");
+                        if (visible != null)
+                            try {
+                                component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                            } catch (IllegalAccessException e) {
+                                // ignore
+                            }
+                        break;
                     }
-                });
-            } else {
-                __applySettings(columnsElem);
+                }
             }
-        }
-    }
-
-    private void __applySettings(Element columnsElem) {
-        Object[] oldColumns = component.getVisibleColumns();
-        List<Object> newColumns = new ArrayList<Object>();
-        // add columns from saved settings
-        for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
+            // add columns not saved in settings (perhaps new)
             for (Object column : oldColumns) {
-                if (column.toString().equals(colElem.attributeValue("id"))) {
+                if (!newColumns.contains(column)) {
                     newColumns.add(column);
+                }
+            }
+            // if the table contains only one column, always show it
+            if (newColumns.size() == 1) {
+                try {
+                    component.setColumnCollapsed(newColumns.get(0), false);
+                } catch (IllegalAccessException e) {
+                    //
+                }
+            }
 
-                    String width = colElem.attributeValue("width");
-                    if (width != null)
-                        component.setColumnWidth(column, Integer.valueOf(width));
+            component.setVisibleColumns(newColumns.toArray());
 
-                    String visible = colElem.attributeValue("visible");
-                    if (visible != null)
-                        try {
-                            component.setColumnCollapsed(column, !Boolean.valueOf(visible));
-                        } catch (IllegalAccessException e) {
-                            // ignore
-                        }
-                    break;
+            //apply sorting
+            String sortProp = columnsElem.attributeValue("sortProperty");
+            if (!StringUtils.isEmpty(sortProp)) {
+                MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyEx(sortProp);
+                if (newColumns.contains(sortProperty)) {
+                    boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
+
+                    component.setSortContainerPropertyId(null);
+                    component.setSortAscending(sortAscending);
+                    component.setSortContainerPropertyId(sortProperty);
                 }
             }
         }
-        // add columns not saved in settings (perhaps new)
-        for (Object column : oldColumns) {
-            if (!newColumns.contains(column)) {
-                newColumns.add(column);
-            }
-        }
-        // if the table contains only one column, always show it
-        if (newColumns.size() == 1) {
-            try {
-                component.setColumnCollapsed(newColumns.get(0), false);
-            } catch (IllegalAccessException e) {
-                //
-            }
-        }
-
-        component.setVisibleColumns(newColumns.toArray());
-
-        //apply sorting
-        String sortProp = columnsElem.attributeValue("sortProperty");
-        if (!StringUtils.isEmpty(sortProp)) {
-            MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyEx(sortProp);
-            if (newColumns.contains(sortProperty)) {
-                boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
-
-                component.setSortContainerPropertyId(null);
-                component.setSortAscending(sortAscending);
-                component.setSortContainerPropertyId(sortProperty);
-            }
-        }
-
     }
 
     public boolean saveSettings(Element element) {
