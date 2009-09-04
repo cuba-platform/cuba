@@ -35,6 +35,8 @@ public class CollectionDatasourceImpl<T extends Entity, K>
 
     private Map<String, Object> savedParameters;
 
+    private boolean inRefresh;
+
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
                 String id, MetaClass metaClass, String viewName)
@@ -64,28 +66,36 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public void refresh(Map<String, Object> parameters) {
-        savedParameters = parameters;
+        if (inRefresh)
+            return;
 
-        Collection prevIds = data.keySet();
-        invalidate();
+        inRefresh = true;
+        try {
+            savedParameters = parameters;
 
-        loadData(parameters);
+            Collection prevIds = data.keySet();
+            invalidate();
 
-        State prevState = state;
-        if (!prevState.equals(State.VALID)) {
-            state = State.VALID;
-            forceStateChanged(prevState);
+            loadData(parameters);
+
+            State prevState = state;
+            if (!prevState.equals(State.VALID)) {
+                state = State.VALID;
+                forceStateChanged(prevState);
+            }
+
+            if (prevIds != null && this.item != null && !prevIds.contains(this.item.getId())) {
+                setItem(null);
+            } else if (this.item != null) {
+                setItem(getItem((K) this.item.getId()));
+            } else {
+                setItem(null);
+            }
+
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        } finally {
+            inRefresh = false;
         }
-
-        if (prevIds != null && this.item != null && !prevIds.contains(this.item.getId())) {
-            setItem(null);
-        } else if (this.item != null) {
-            setItem(getItem((K) this.item.getId()));
-        } else {
-            setItem(null);
-        }
-
-        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
     public synchronized T getItem(K key) {
@@ -172,8 +182,9 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     private void checkState() {
-        if (!State.VALID.equals(state))
-            throw new IllegalStateException("Invalid datasource state: " + state);
+        if (!State.VALID.equals(state)) {
+            refresh();
+        }
     }
 
     public synchronized void addItem(T item) throws UnsupportedOperationException {
