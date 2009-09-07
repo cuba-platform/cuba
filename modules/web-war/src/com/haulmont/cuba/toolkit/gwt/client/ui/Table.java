@@ -210,6 +210,8 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
 
     protected abstract void updateBody(UIDL uidl);
 
+    protected abstract boolean updateImmediate();
+
     protected ITableBody.ITableRow getRenderedRowByKey(String key) {
         final Iterator it = tBody.iterator();
         ITableBody.ITableRow r;
@@ -376,7 +378,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
                 visibleColOrder[i++] = cid;
             }
         }
-        client.updateVariable(paintableId, "columnorder", columnOrder, false);
+        client.updateVariable(paintableId, "columnorder", columnOrder, updateImmediate());
     }
 
     @Override
@@ -739,11 +741,11 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
                         if (sortColumn.equals(cid)) {
                             // just toggle order
                             client.updateVariable(paintableId, "sortascending",
-                                    !sortAscending, false);
+                                    !sortAscending, updateImmediate());
                         } else {
                             // set table scrolled by this column
                             client.updateVariable(paintableId, "sortcolumn",
-                                    cid, false);
+                                    cid, updateImmediate());
                         }
                         // get also cache columns at the same request
                         bodyContainer.setScrollPosition(0);
@@ -1198,7 +1200,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
 
                 // update variable to server
                 client.updateVariable(paintableId, "collapsedcolumns",
-                        collapsedColumns.toArray(), false);
+                        collapsedColumns.toArray(), updateImmediate());
             }
 
             public void setCollapsed(boolean b) {

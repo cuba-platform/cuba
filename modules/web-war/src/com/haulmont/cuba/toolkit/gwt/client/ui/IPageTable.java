@@ -35,6 +35,10 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
         return new TableHead();
     }
 
+    protected boolean updateImmediate() {
+        return true;
+    }
+
     @Override
     protected void updateFromUIDL(UIDL uidl) {
         super.updateFromUIDL(uidl);

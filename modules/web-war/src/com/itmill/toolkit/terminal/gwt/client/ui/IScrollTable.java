@@ -104,6 +104,10 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         return new IScrollTableHead();
     }
 
+    protected boolean updateImmediate() {
+        return false;
+    }
+
     protected void updateBody(UIDL uidl) {
         UIDL rowData = null;
         for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
