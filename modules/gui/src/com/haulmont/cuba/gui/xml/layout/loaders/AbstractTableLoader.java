@@ -100,9 +100,18 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
 
+        loadPagingMode(component, element);
+
         addAssignWindowTask(component);
 
         return component;
+    }
+
+    private void loadPagingMode(Table component, Element element) {
+        final String s = element.attributeValue("pagingMode");
+        if (!StringUtils.isEmpty(s)) {
+            component.setPagingMode(Table.PagingMode.valueOf(s));
+        }
     }
 
     private void loadRequired(T component, Table.Column column) {

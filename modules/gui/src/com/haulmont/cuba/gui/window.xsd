@@ -117,7 +117,7 @@
 
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
                         <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="margin" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="margin" type="xs:string" use="optional"/>
                         <xs:attribute name="align" type="align" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
@@ -190,7 +190,7 @@
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:boolean" use="optional"/>
                         <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="margin" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="margin" type="xs:string" use="optional"/>
 
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -459,12 +459,13 @@
                         <xs:attribute name="id" type="xs:string" use="required"/>
                         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="margin" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="margin" type="xs:string" use="optional"/>
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="treeTable">
@@ -489,6 +490,7 @@
                         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
                         <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
             </xs:choice>
