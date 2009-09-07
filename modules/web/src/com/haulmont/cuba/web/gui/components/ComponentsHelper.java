@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.toolkit.ui.Table;
 import com.itmill.toolkit.terminal.ClassResource;
 import com.itmill.toolkit.terminal.FileResource;
 import com.itmill.toolkit.terminal.Resource;
@@ -205,6 +206,14 @@ public class ComponentsHelper {
             case STARTS_WITH: return 1;
             case CONTAINS: return 2;
             default: return 0;
+        }
+    }
+
+    public static Table.PagingMode convertPagingMode(com.haulmont.cuba.gui.components.Table.PagingMode pagingMode) {
+        switch (pagingMode) {
+            case SCROLLING: return Table.PagingMode.SCROLLING;
+            case PAGE: return Table.PagingMode.PAGE;
+            default: throw new IllegalArgumentException();
         }
     }
 }

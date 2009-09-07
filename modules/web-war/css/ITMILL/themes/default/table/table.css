@@ -271,3 +271,21 @@
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ITMILL/themes/default/table/img/scroll-position-bg.png", sizingMethod="scale");
 }
+
+.i-pager {
+    height: 18px;
+}
+
+.i-pager .i-pager-link,
+.i-pager .i-pager-page,
+.i-pager .i-pager-spacer {
+    margin: 0 5px;
+    float: left;
+    height: 18px;
+}
+
+.i-pager .i-pager-link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #464f52;
+}

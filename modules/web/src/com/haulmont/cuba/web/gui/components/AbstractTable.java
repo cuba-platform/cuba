@@ -58,6 +58,10 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<Table.Column, String>();
 
+    protected Table.PagingMode pagingMode;
+
+    protected Table.PagingProvider pagingProvider;
+
     protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap =
             new HashMap<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>>();
 
@@ -164,6 +168,8 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         component.setStyleName("table"); //It helps us to manage a caption style
 
         component.addActionHandler(new ActionsAdapter());
+
+        setPagingMode(Table.PagingMode.SCROLLING);
 
         component.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
@@ -369,7 +375,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         this.styleProvider = styleProvider;
         if (styleProvider == null) { component.setCellStyleGenerator(null); return; }
 
-        component.setCellStyleGenerator(new com.haulmont.cuba.web.toolkit.ui.TreeTable.CellStyleGenerator () {
+        component.setCellStyleGenerator(new com.itmill.toolkit.ui.Table.CellStyleGenerator () {
             public String getStyle(Object itemId, Object propertyId) {
                 @SuppressWarnings({"unchecked"})
                 final Entity item = datasource.getItem(itemId);
@@ -486,6 +492,36 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
     public void setCaption(String caption) {
         component.setCaption(caption);
+    }
+
+    public Table.PagingMode getPagingMode() {
+        return pagingMode;
+    }
+
+    public void setPagingMode(Table.PagingMode pagingMode) {
+        this.pagingMode = pagingMode;
+        component.setPagingMode(ComponentsHelper.convertPagingMode(pagingMode));
+    }
+
+    public void setPagingProvider(final Table.PagingProvider pagingProvider) {
+        this.pagingProvider = pagingProvider;
+        component.setPagingProvider(new com.haulmont.cuba.web.toolkit.ui.Table.PagingProvider() {
+            public String firstCaption() {
+                return pagingProvider.firstCaption();
+            }
+
+            public String prevCaption() {
+                return pagingProvider.prevCaption();
+            }
+
+            public String nextCaption() {
+                return pagingProvider.nextCaption();
+            }
+
+            public String lastCaption() {
+                return pagingProvider.lastCaption();
+            }
+        });
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {

@@ -17,6 +17,7 @@ import com.itmill.toolkit.terminal.PaintException;
 
 import java.util.*;
 
+@Deprecated
 public class PagingTable extends AbstractSelect {
 
     public static final String TAG_NAME = "pagingtable";

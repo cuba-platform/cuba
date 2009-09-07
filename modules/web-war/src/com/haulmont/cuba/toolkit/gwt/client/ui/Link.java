@@ -11,6 +11,7 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 
 import com.google.gwt.user.client.ui.Label;
 
+@Deprecated
 public class Link extends Label {
 
     public static final String CLASSNAME = "i-link";

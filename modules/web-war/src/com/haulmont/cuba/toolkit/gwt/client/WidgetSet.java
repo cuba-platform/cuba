@@ -13,15 +13,27 @@ import com.haulmont.cuba.toolkit.gwt.client.ui.*;
 import com.itmill.toolkit.terminal.gwt.client.DefaultWidgetSet;
 import com.itmill.toolkit.terminal.gwt.client.Paintable;
 import com.itmill.toolkit.terminal.gwt.client.UIDL;
+import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
 
 public class WidgetSet extends DefaultWidgetSet {
     protected Class resolveWidgetType(UIDL uidl) {
         final String tag = uidl.getTag();
-        /*if ("pagingtable".equals(tag)) {
-            return IPagingTable.class;
-        } else */
         if ("treetable".equals(tag)) {
-            return IScrollTreeTable.class;
+            if ("PAGE".equals(uidl.getStringAttribute("pagingMode"))) {
+                return IPageTreeTable.class;
+            } else if ("SCROLLING".equals(uidl.getStringAttribute("pagingMode"))) {
+                return IScrollTreeTable.class;
+            } else {
+                throw new IllegalStateException("Unknown paging mode");
+            }
+        } else if ("table".equals(tag)) {
+            if ("PAGE".equals(uidl.getStringAttribute("pagingMode"))) {
+                return IPageTable.class;
+            } else if ("SCROLLING".equals(uidl.getStringAttribute("pagingMode"))) {
+                return IScrollTable.class;
+            } else {
+                throw new IllegalStateException("Unknown paging mode");
+            }
         } else if ("scrollablepanel".equals(tag)) {
             return IScrollablePanel.class;
         } else if ("select".equals(tag)) {
@@ -59,10 +71,10 @@ public class WidgetSet extends DefaultWidgetSet {
 
     public Paintable createWidget(UIDL uidl) {
         final Class classType = resolveWidgetType(uidl);
-        if (IPagingTable.class.equals(classType)) {
-            return new IPagingTable();
-        } else if (IScrollTreeTable.class.equals(classType)) {
+        if (IScrollTreeTable.class.equals(classType)) {
             return new IScrollTreeTable();
+        } if (IPageTreeTable.class.equals(classType)) {
+            return new IPageTreeTable();
         } else if (IScrollablePanel.class.equals(classType)) {
             return new IScrollablePanel();
         } else if (IFilterSelect.class.equals(classType)) {
@@ -71,6 +83,10 @@ public class WidgetSet extends DefaultWidgetSet {
             return new IBox();
         } else if (ITogglePanel.class.equals(classType)) {
             return new ITogglePanel();
+        } else if (IPageTable.class.equals(classType)) {
+            return new IPageTable();
+        } else if (IScrollTable.class.equals(classType)) {
+            return new IScrollTable();
         }
         return super.createWidget(uidl);
     }

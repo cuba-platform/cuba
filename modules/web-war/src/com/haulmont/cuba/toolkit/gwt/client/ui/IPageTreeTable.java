@@ -1,69 +1,51 @@
+/*
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Nikolay Gorodnov
+ * Created: 04.09.2009 18:19:34
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.google.gwt.user.client.DOM;
+import com.itmill.toolkit.terminal.gwt.client.UIDL;
+import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
-import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
 
-/**
- * User: Nikolay Gorodnov
- * Date: 03.06.2009
- */
-public class IScrollTreeTable
-        extends IScrollTable {
+public class IPageTreeTable extends IPageTable {
 
     private static int LEVEL_STEP_SIZE = 19;
 
     @Override
-    protected IScrollTableBody createBody() {
-        return new IScrollTreeTableBody();
+    protected ITableBody createBody() {
+        return new IPageTreeTableBody();
     }
 
-    public class IScrollTreeTableBody extends IScrollTableBody {
-
+    protected class IPageTreeTableBody extends IPageTableBody {
         protected int groupColIndex =
                 showRowHeaders ? 1 : 0;
 
         @Override
-        protected IScrollTreeTableRow[] createRowsArray(int rows) {
-            return new IScrollTreeTableRow[rows];
-        }
-
-        @Override
-        protected void addRowBeforeFirstRendered(IScrollTableRow row) {
-            super.addRowBeforeFirstRendered(row);
-            if (((IScrollTreeTableRow) row).isExpanded()) {
-                row.addStyleName("i-expanded");
-            }
-        }
-
-        @Override
-        protected void addRow(IScrollTableRow row) {
+        protected void addRow(ITableRow row) {
             super.addRow(row);
-            if (((IScrollTreeTableRow) row).isExpanded()) {
+            if (((IPageTreeTableRow) row).isExpanded()) {
                 row.addStyleName("i-expanded");
             }
         }
 
-        protected IScrollTreeTableRow createRowInstance(UIDL uidl) {
-            if (isCaptionRow(uidl)) {
-                return new IScrollTreeTableCaptionRow(uidl, aligns);
-            } else {
-                return new IScrollTreeTableRow(uidl, aligns);
-            }
-        }
-
         @Override
-        protected IScrollTableRow createRow(UIDL uidl) {
-            final IScrollTreeTableRow row = createRowInstance(uidl);
+        protected ITableRow createRow(UIDL uidl) {
+            final IPageTreeTableRow row = createRowInstance(uidl);
             if (!isCaptionRow(uidl)) {
                 final int cells = DOM.getChildCount(row.getElement());
                 for (int i = 0; i < cells; i++) {
-                    final int w = IScrollTreeTable.this
+                    final int w = IPageTreeTable.this
                             .getColWidth(getColKeyByIndex(i));
                     applyCellWidth(row, i, w);
                 }
@@ -72,12 +54,21 @@ public class IScrollTreeTable
         }
 
         @Override
+        protected IPageTreeTableRow createRowInstance(UIDL uidl) {
+            if (isCaptionRow(uidl)) {
+                return new IPageTreeTableCaptionRow(uidl, aligns);
+            } else {
+                return new IPageTreeTableRow(uidl, aligns);
+            }
+        }
+
+        @Override
         public int getColWidth(int i) {
             if (initDone) {
-                IScrollTreeTableRow row = null;
+                IPageTreeTableRow row = null;
                 for (Object o : renderedRows) {
-                    if (!(o instanceof IScrollTreeTableCaptionRow)) {
-                        row = (IScrollTreeTableRow) o;
+                    if (!(o instanceof IPageTreeTableCaptionRow)) {
+                        row = (IPageTreeTableRow) o;
                         break;
                     }
                 }
@@ -92,21 +83,21 @@ public class IScrollTreeTable
         @Override
         public void setColWidth(int colIndex, int w) {
             for (final Object o : renderedRows) {
-                if (o instanceof IScrollTreeTableCaptionRow) {
+                if (o instanceof IPageTreeTableCaptionRow) {
                     if (colIndex < groupColIndex) {
-                        applyCellWidth((IScrollTreeTableRow) o, colIndex, w);
+                        applyCellWidth((IPageTreeTableRow) o, colIndex, w);
                     } else {
                         int rowWidth = scrollbarWidthReserved > 0
                                 ? calculatedWidth - scrollbarWidthReserved : calculatedWidth;
-                        applyCellWidth((IScrollTreeTableRow) o, groupColIndex, rowWidth);
+                        applyCellWidth((IPageTreeTableRow) o, groupColIndex, rowWidth);
                     }
                 } else {
-                    applyCellWidth((IScrollTreeTableRow) o, colIndex, w);
+                    applyCellWidth((IPageTreeTableRow) o, colIndex, w);
                 }
             }
         }
 
-        protected void applyCellWidth(IScrollTreeTableRow row,
+        protected void applyCellWidth(IPageTreeTableRow row,
                                       int colIndex, int w) {
             final Element cell = DOM.getChild(row.getElement(),
                     colIndex);
@@ -123,70 +114,17 @@ public class IScrollTreeTable
             DOM.setStyleAttribute(cell, "width", w + "px");
         }
 
-        @Override
-        protected void applyAlternatingRowColor(IScrollTableRow row,
-                                                String style) {
-            if (row instanceof IScrollTreeTableCaptionRow) {
-                row.addStyleName(CLASSNAME + "-caption-row");
-            } else {
-                super.applyAlternatingRowColor(row, style);
-            }
-        }
-
         private boolean isCaptionRow(UIDL uidl) {
             return uidl.hasAttribute("rowCaption");
         }
 
-        public class IScrollTreeTableCaptionRow extends IScrollTreeTableRow {
-            public IScrollTreeTableCaptionRow(UIDL uidl, char[] aligns) {
-                super(uidl, aligns);
-            }
-
-            @Override
-            protected void addCells(UIDL uidl, int col) {
-                int columnCount = IScrollTreeTable.this.tHead.getVisibleCellCount();
-
-                final Element td = DOM.createTD();
-                DOM.setElementAttribute(td, "colSpan", String.valueOf(columnCount));
-
-                String classNameTd = CLASSNAME + "-cell";
-                if (allowMultiStingCells) {
-                    classNameTd += " " + CLASSNAME + "-cell-wrap";
-                }
-                DOM.setElementProperty(td, "className", classNameTd);
-
-                final Element container = DOM.createDiv();
-                DOM.setElementProperty(container, "className", CLASSNAME + "-caption-row-content");
-                if (groupCell != null) {
-                    final Element contentDiv = DOM.createDiv();
-                    DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
-                            + "px");
-                    DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
-                    DOM.setInnerText(contentDiv, uidl.getStringAttribute("rowCaption"));
-                    DOM.appendChild(container, groupCell);
-                    DOM.appendChild(container, contentDiv);
-                } else {
-                    DOM.setStyleAttribute(container, "marginLeft", (getLevel() + 1) * LEVEL_STEP_SIZE
-                            + "px");
-                    DOM.setInnerText(container, uidl.getStringAttribute("rowCaption"));
-                }
-
-                DOM.appendChild(td, container);
-                DOM.appendChild(getElement(), td);
-            }
-
-            @Override
-            protected void moveCol(int oldIndex, int newIndex) {
-            }
-        }
-
-        public class IScrollTreeTableRow extends IScrollTableRow {
+        protected class IPageTreeTableRow extends ITableRow {
             private boolean expanded;
             private int level;
 
             protected Element groupCell = null;
 
-            public IScrollTreeTableRow(UIDL uidl, char[] aligns) {
+            public IPageTreeTableRow(UIDL uidl, char[] aligns) {
                 super(uidl.getIntAttribute("key"));
 
                 String rowStyle = uidl.getStringAttribute("rowstyle");
@@ -323,21 +261,6 @@ public class IScrollTreeTable
                 setCellContent(contentDiv, w, col);
             }
 
-            public boolean isExpanded() {
-                return expanded;
-            }
-
-            public int getLevel() {
-                return level;
-            }
-
-            protected Element createGroupContainer() {
-                Element groupContainer = DOM.createDiv();
-                DOM.setInnerHTML(groupContainer, "&nbsp;");
-                DOM.setElementProperty(groupContainer, "className", CLASSNAME + "-group-cell");
-                return groupContainer;
-            }
-
             @Override
             public RenderSpace getAllocatedSpace(Widget child) {
                 int w = 0;
@@ -365,11 +288,6 @@ public class IScrollTreeTable
 
             @Override
             public void onBrowserEvent(Event event) {
-//                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
-//                Element parentElement = DOM.getParent(tdOrTr);
-//                if (getElement() == tdOrTr
-//                        || getElement() == parentElement
-//                        || (parentElement != null && getElement() == DOM.getParent(parentElement))) {
                 final Element targetElement = DOM.eventGetTarget(event);
                 //todo gorodnov: review this code when we will be use a multi selection
                 if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
@@ -390,7 +308,6 @@ public class IScrollTreeTable
                     default:
                         break;
                 }
-//                }
             }
 
             public boolean hasChildren() {
@@ -410,6 +327,64 @@ public class IScrollTreeTable
                 } else {
                     super.handleRowClick(event);
                 }
+            }
+
+            protected Element createGroupContainer() {
+                Element groupContainer = DOM.createDiv();
+                DOM.setInnerHTML(groupContainer, "&nbsp;");
+                DOM.setElementProperty(groupContainer, "className", CLASSNAME + "-group-cell");
+                return groupContainer;
+            }
+
+            public boolean isExpanded() {
+                return expanded;
+            }
+
+            public int getLevel() {
+                return level;
+            }
+        }
+
+        protected class IPageTreeTableCaptionRow extends IPageTreeTableRow {
+            public IPageTreeTableCaptionRow(UIDL uidl, char[] aligns) {
+                super(uidl, aligns);
+            }
+
+            @Override
+            protected void addCells(UIDL uidl, int col) {
+                int columnCount = IPageTreeTable.this.tHead.getVisibleCellCount();
+
+                final Element td = DOM.createTD();
+                DOM.setElementAttribute(td, "colSpan", String.valueOf(columnCount));
+
+                String classNameTd = CLASSNAME + "-cell";
+                if (allowMultiStingCells) {
+                    classNameTd += " " + CLASSNAME + "-cell-wrap";
+                }
+                DOM.setElementProperty(td, "className", classNameTd);
+
+                final Element container = DOM.createDiv();
+                DOM.setElementProperty(container, "className", CLASSNAME + "-caption-row-content");
+                if (groupCell != null) {
+                    final Element contentDiv = DOM.createDiv();
+                    DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
+                            + "px");
+                    DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
+                    DOM.setInnerText(contentDiv, uidl.getStringAttribute("rowCaption"));
+                    DOM.appendChild(container, groupCell);
+                    DOM.appendChild(container, contentDiv);
+                } else {
+                    DOM.setStyleAttribute(container, "marginLeft", (getLevel() + 1) * LEVEL_STEP_SIZE
+                            + "px");
+                    DOM.setInnerText(container, uidl.getStringAttribute("rowCaption"));
+                }
+
+                DOM.appendChild(td, container);
+                DOM.appendChild(getElement(), td);
+            }
+
+            @Override
+            protected void moveCol(int oldIndex, int newIndex) {
             }
         }
     }

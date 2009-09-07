@@ -28,6 +28,18 @@ public class Table
     protected LinkedList<Object> editableColumns = null;
     protected boolean storeColWidth = false;
 
+    protected PagingMode pagingMode;
+
+    protected int currentPage = 1;
+    protected int pagesCount = -1;
+
+    protected PagingProvider pagingProvider;
+
+    public enum PagingMode {
+        PAGE,
+        SCROLLING
+    }
+
     public Object[] getEditableColumns() {
         if (editableColumns == null) {
             return null;
@@ -66,6 +78,8 @@ public class Table
     @Override
     protected boolean changeVariables(Map variables) {
 
+        boolean clientNeedsContentRefresh = false;
+
         if (variables.containsKey("colwidth")) {
             try {
                 final ColumnWidth colWidth = ColumnWidth.deSerialize((String) variables.get("colwidth"));
@@ -76,7 +90,17 @@ public class Table
             }
         }
 
-        return false;
+        if (variables.containsKey("curpage")) {
+            currentPage = ((Integer) variables.get("curpage")).intValue();
+            clientNeedsContentRefresh = true;
+        }
+
+        if (variables.containsKey("pagelength")) {
+            setPageLength(((Integer) variables.get("pagelength")).intValue());
+            clientNeedsContentRefresh = true;
+        }
+
+        return clientNeedsContentRefresh;
     }
 
     @Override
@@ -233,6 +257,14 @@ public class Table
         if (isStoreColWidth()) {
             target.addAttribute("storeColWidth", true);
         }
+
+        if (pagingMode == PagingMode.PAGE) {
+            target.addAttribute("pagescount", pagesCount);
+            target.addAttribute("curpage", currentPage);
+            paintPaging(target);
+        }
+
+        target.addAttribute("pagingMode", pagingMode.name());
 
         // Visible column order
         final Collection sortables = getSortableContainerPropertyIds();
@@ -509,7 +541,6 @@ public class Table
             // Collects the basic facts about the table page
             final Object[] colids = getVisibleColumns();
             final int cols = colids.length;
-            int firstIndex = getCurrentPageFirstItemIndex();
             int rows, totalRows;
             rows = totalRows = size();
             int pagelen;
@@ -518,34 +549,39 @@ public class Table
             } else {
                 pagelen = getPageLength();
             }
+
+            int firstIndex = pagingMode == PagingMode.PAGE
+                    ? currentPageFirstItemIndex() : getCurrentPageFirstItemIndex();
             if (rows > 0 && firstIndex >= 0) {
                 rows -= firstIndex;
             }
+
             if (pagelen > 0 && pagelen < rows) {
                 rows = pagelen;
             }
 
-            // If "to be painted next" variables are set, use them
-            if (lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
-                rows = lastToBeRenderedInClient - firstToBeRenderedInClient + 1;
-            }
-            Object id;
-            if (firstToBeRenderedInClient >= 0) {
-                if (firstToBeRenderedInClient < totalRows) {
-                    firstIndex = firstToBeRenderedInClient;
+            if (pagingMode == PagingMode.SCROLLING) {
+                // If "to be painted next" variables are set, use them
+                if (lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
+                    rows = lastToBeRenderedInClient - firstToBeRenderedInClient + 1;
+                }
+                if (firstToBeRenderedInClient >= 0) {
+                    if (firstToBeRenderedInClient < totalRows) {
+                        firstIndex = firstToBeRenderedInClient;
+                    } else {
+                        firstIndex = totalRows - 1;
+                    }
                 } else {
-                    firstIndex = totalRows - 1;
+                    // initial load
+                    firstToBeRenderedInClient = firstIndex;
                 }
-            } else {
-                // initial load
-                firstToBeRenderedInClient = firstIndex;
-            }
-            if (totalRows > 0) {
-                if (rows + firstIndex > totalRows) {
-                    rows = totalRows - firstIndex;
+                if (totalRows > 0) {
+                    if (rows + firstIndex > totalRows) {
+                        rows = totalRows - firstIndex;
+                    }
+                } else {
+                    rows = 0;
                 }
-            } else {
-                rows = 0;
             }
 
             Object[][] cells = new Object[cols + CELL_FIRSTCOL][rows];
@@ -556,6 +592,14 @@ public class Table
                 return;
             }
 
+            if (pagingMode == PagingMode.PAGE) {
+                pagesCount = totalRows % pagelen == 0
+                        ? totalRows / pagelen
+                        : totalRows / pagelen + 1;
+                if (currentPage > pagesCount) currentPage = pagesCount;
+            }
+
+            Object id;
             // Gets the first item id
             if (items instanceof Container.Indexed) {
                 id = ((Container.Indexed) items).getIdByIndex(firstIndex);
@@ -685,7 +729,25 @@ public class Table
 
             requestRepaint();
         }
+    }
 
+    protected void paintPaging(PaintTarget target) throws PaintException {
+        if (pagingProvider != null) {
+            target.startTag("paging");
+            if (pagingProvider.firstCaption() != null) {
+                target.addAttribute("fc", pagingProvider.firstCaption());
+            }
+            if (pagingProvider.prevCaption() != null) {
+                target.addAttribute("pc", pagingProvider.prevCaption());
+            }
+            if (pagingProvider.nextCaption() != null) {
+                target.addAttribute("nc", pagingProvider.nextCaption());
+            }
+            if (pagingProvider.lastCaption() != null) {
+                target.addAttribute("lc", pagingProvider.lastCaption());
+            }
+            target.endTag("paging");
+        }
     }
 
     public boolean isStoreColWidth() {
@@ -694,5 +756,34 @@ public class Table
 
     public void setStoreColWidth(boolean storeColWidth) {
         this.storeColWidth = storeColWidth;
+    }
+
+    protected int currentPageFirstItemIndex() {
+        return (currentPage - 1) * getPageLength();
+    }
+
+    public PagingMode getPagingMode() {
+        return pagingMode;
+    }
+
+    public void setPagingMode(PagingMode pagingMode) {
+        this.pagingMode = pagingMode;
+        requestRepaint();
+    }
+
+    public PagingProvider getPagingProvider() {
+        return pagingProvider;
+    }
+
+    public void setPagingProvider(PagingProvider pagingProvider) {
+        this.pagingProvider = pagingProvider;
+        requestRepaint();
+    }
+
+    public interface PagingProvider {
+        String firstCaption();
+        String prevCaption();
+        String nextCaption();
+        String lastCaption();
     }
 }

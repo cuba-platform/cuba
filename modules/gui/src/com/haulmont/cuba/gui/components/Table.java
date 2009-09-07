@@ -139,4 +139,20 @@ public interface Table
     }
 
     void setStyleProvider(StyleProvider styleProvider);
+
+    enum PagingMode {
+        PAGE,
+        SCROLLING
+    }
+
+    void setPagingMode(PagingMode mode);
+
+    interface PagingProvider {
+        String firstCaption();
+        String prevCaption();
+        String nextCaption();
+        String lastCaption();
+    }
+
+    void setPagingProvider(PagingProvider pagingProvider);
 }

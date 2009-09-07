@@ -56,7 +56,6 @@ public class TreeTable
             // Collects the basic facts about the table page
             final Object[] colids = getVisibleColumns();
             final int cols = colids.length;
-            int firstIndex = getCurrentPageFirstItemIndex();
             int rows, totalRows;
             rows = totalRows = size();
             int pagelen;
@@ -65,34 +64,40 @@ public class TreeTable
             } else {
                 pagelen = getPageLength();
             }
+
+            int firstIndex = pagingMode == PagingMode.PAGE
+                    ? currentPageFirstItemIndex() : getCurrentPageFirstItemIndex();
+
             if (rows > 0 && firstIndex >= 0) {
                 rows -= firstIndex;
             }
+
             if (pagelen > 0 && pagelen < rows) {
                 rows = pagelen;
             }
 
-            // If "to be painted next" variables are set, use them
-            if (lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
-                rows = lastToBeRenderedInClient - firstToBeRenderedInClient + 1;
-            }
-            Object id;
-            if (firstToBeRenderedInClient >= 0) {
-                if (firstToBeRenderedInClient < totalRows) {
-                    firstIndex = firstToBeRenderedInClient;
+            if (pagingMode == PagingMode.SCROLLING) {
+                // If "to be painted next" variables are set, use them
+                if (lastToBeRenderedInClient - firstToBeRenderedInClient > 0) {
+                    rows = lastToBeRenderedInClient - firstToBeRenderedInClient + 1;
+                }
+                if (firstToBeRenderedInClient >= 0) {
+                    if (firstToBeRenderedInClient < totalRows) {
+                        firstIndex = firstToBeRenderedInClient;
+                    } else {
+                        firstIndex = totalRows - 1;
+                    }
                 } else {
-                    firstIndex = totalRows - 1;
+                    // initial load
+                    firstToBeRenderedInClient = firstIndex;
                 }
-            } else {
-                // initial load
-                firstToBeRenderedInClient = firstIndex;
-            }
-            if (totalRows > 0) {
-                if (rows + firstIndex > totalRows) {
-                    rows = totalRows - firstIndex;
+                if (totalRows > 0) {
+                    if (rows + firstIndex > totalRows) {
+                        rows = totalRows - firstIndex;
+                    }
+                } else {
+                    rows = 0;
                 }
-            } else {
-                rows = 0;
             }
 
             if (rows < 0) {
@@ -107,6 +112,14 @@ public class TreeTable
                 return;
             }
 
+            if (pagingMode == PagingMode.PAGE) {
+                pagesCount = totalRows % pagelen == 0
+                        ? totalRows / pagelen
+                        : totalRows / pagelen + 1;
+                if (currentPage > pagesCount) currentPage = pagesCount;
+            }
+
+            Object id;
             // Gets the first item id
             if (items instanceof Container.Indexed) {
                 id = ((Container.Indexed) items).getIdByIndex(firstIndex);
@@ -256,160 +269,6 @@ public class TreeTable
 
     }
 
-/*
-    @Override
-    public void changeVariables(Object source, Map variables) {
-
-        boolean clientNeedsContentRefresh = false;
-
-        boolean needsResetPageBuffer = false;
-
-        handleClickEvent(variables);
-
-        disableContentRefreshing();
-
-        if (!isSelectable() && variables.containsKey("selected")) {
-            // Not-selectable is a special case, AbstractSelect does not support
-            // TODO could be optimized.
-            variables = new HashMap(variables);
-            variables.remove("selected");
-        }
-
-        super.changeVariables(source, variables);
-
-        // Page start index
-        if (variables.containsKey("firstvisible")) {
-            final Integer value = (Integer) variables.get("firstvisible");
-            if (value != null) {
-                setCurrentPageFirstItemIndex(value.intValue(), false);
-            }
-        }
-
-        // Sets requested firstrow and rows for the next paint
-        if (variables.containsKey("reqfirstrow")
-                || variables.containsKey("reqrows")) {
-
-            try {
-                firstToBeRenderedInClient = ((Integer) variables
-                        .get("firstToBeRendered")).intValue();
-                lastToBeRenderedInClient = ((Integer) variables
-                        .get("lastToBeRendered")).intValue();
-            } catch (Exception e) {
-                // FIXME: Handle exception
-                e.printStackTrace();
-            }
-
-            // respect suggested rows only if table is not otherwise updated
-            // (row caches emptied by other event)
-            if (!containerChangeToBeRendered) {
-                Integer value = (Integer) variables.get("reqfirstrow");
-                if (value != null) {
-                    reqFirstRowToPaint = value.intValue();
-                }
-                value = (Integer) variables.get("reqrows");
-                if (value != null) {
-                    reqRowsToPaint = value.intValue();
-                    // sanity check
-                    if (reqFirstRowToPaint + reqRowsToPaint > size()) {
-                        reqRowsToPaint = size() - reqFirstRowToPaint;
-                    }
-                }
-            }
-            clientNeedsContentRefresh = true;
-        }
-
-        // Actions
-        if (variables.containsKey("action")) {
-            final StringTokenizer st = new StringTokenizer((String) variables
-                    .get("action"), ",");
-            if (st.countTokens() == 2) {
-                final Object itemId = itemIdMapper.get(st.nextToken());
-                final Action action = (Action) actionMapper.get(st.nextToken());
-                if (action != null && containsId(itemId)
-                        && actionHandlers != null) {
-                    for (final Iterator i = actionHandlers.iterator(); i
-                            .hasNext();) {
-                        ((Action.Handler) i.next()).handleAction(action, this,
-                                itemId);
-                    }
-                }
-            }
-        }
-
-        if (!sortDisabled) {
-            // Sorting
-            boolean doSort = false;
-            if (variables.containsKey("sortcolumn")) {
-                final String colId = (String) variables.get("sortcolumn");
-                if (colId != null && !"".equals(colId) && !"null".equals(colId)) {
-                    final Object id = columnIdMap.get(colId);
-                    setSortContainerPropertyId(id, false);
-                    doSort = true;
-                }
-            }
-            if (variables.containsKey("sortascending")) {
-                final boolean state = ((Boolean) variables.get("sortascending"))
-                        .booleanValue();
-                if (state != sortAscending) {
-                    setSortAscending(state, false);
-                    doSort = true;
-                }
-            }
-            if (doSort) {
-                this.sort();
-                resetPageBuffer();
-            }
-        }
-
-        // Dynamic column hide/show and order
-        // Update visible columns
-        if (isColumnCollapsingAllowed()) {
-            if (variables.containsKey("collapsedcolumns")) {
-                try {
-                    final Object[] ids = (Object[]) variables
-                            .get("collapsedcolumns");
-                    for (final Iterator it = visibleColumns.iterator(); it
-                            .hasNext();) {
-                        setColumnCollapsed(it.next(), false);
-                    }
-                    for (int i = 0; i < ids.length; i++) {
-                        setColumnCollapsed(columnIdMap.get(ids[i].toString()),
-                                true);
-                    }
-                } catch (final Exception e) {
-                    // FIXME: Handle exception
-                    e.printStackTrace();
-                }
-                clientNeedsContentRefresh = true;
-            }
-        }
-        if (isColumnReorderingAllowed()) {
-            if (variables.containsKey("columnorder")) {
-                try {
-                    final Object[] ids = (Object[]) variables
-                            .get("columnorder");
-                    final Object[] ordered = new Object[ids.length];
-                    for (int i = 0; i < ids.length; i++) {
-                        ordered[i] = columnIdMap.get(ids[i].toString());
-                    }
-                    setColumnOrder(ordered);
-                } catch (final Exception e) {
-                    // FIXME: Handle exception
-                    e.printStackTrace();
-
-                }
-                clientNeedsContentRefresh = true;
-            }
-        }
-
-        if (needsResetPageBuffer) {
-            resetPageBuffer();
-        }
-
-        enableContentRefreshing(clientNeedsContentRefresh);
-    }
-
-*/
     @Override
     protected boolean changeVariables(Map variables) {
         boolean clientNeedsContentRefresh = super.changeVariables(variables);
@@ -546,6 +405,14 @@ public class TreeTable
         if (isStoreColWidth()) {
             target.addAttribute("storeColWidth", true);
         }
+
+        if (pagingMode == PagingMode.PAGE) {
+            target.addAttribute("pagescount", pagesCount);
+            target.addAttribute("curpage", currentPage);
+            paintPaging(target);
+        }
+
+        target.addAttribute("pagingMode", pagingMode.name());
 
         // Visible column order
         final Collection sortables = getSortableContainerPropertyIds();
