@@ -27,6 +27,10 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
 
     private static Console log = ApplicationConnection.getConsole();
 
+    public IPageTable() {
+        bodyContainer.addScrollListener(this);
+    }
+
     protected ITableBody createBody() {
         return new IPageTableBody();
     }
