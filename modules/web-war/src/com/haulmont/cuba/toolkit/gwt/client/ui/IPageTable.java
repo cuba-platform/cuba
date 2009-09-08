@@ -21,7 +21,7 @@ import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import java.util.Vector;
 import java.util.Iterator;
 
-public class IPageTable extends Table implements Pager.PageChangeListener {
+public class IPageTable extends Table implements Pager.PageChangeListener, ScrollListener {
 
     protected IPager pager;
 
@@ -78,6 +78,11 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
                 sizeInit();
             }
         }
+    }
+
+    public void onScroll(Widget widget, int scrollLeft, int scrollTop) {
+        // fix headers horizontal scrolling
+        tHead.setHorizontalScrollPosition(scrollLeft);
     }
 
     @Override
