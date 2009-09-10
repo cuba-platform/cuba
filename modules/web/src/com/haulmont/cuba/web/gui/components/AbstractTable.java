@@ -84,7 +84,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         component.addContainerProperty(column.getId(), column.getType(), null);
         columns.put((MetaPropertyPath) column.getId(), column);
         columnsOrder.add(column);
-        if (column.getWidth() != null) { //todo gorodnov: do not forget about settings
+        if (column.getWidth() != null) {
             component.setColumnWidth(column.getId(), column.getWidth());
         }
     }
@@ -232,7 +232,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
                     }
                 } else if (propertyPath.getRange().isEnum()) {
-                    // TODO (abramov) 
+                    // TODO (abramov)
                 } else {
                     throw new UnsupportedOperationException();
                 }
@@ -266,13 +266,13 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
         component.setContainerDataSource(containerDatasource);
 
+        if (columns == null) {
+            throw new NullPointerException("Columns cannot be null");
+        }
+
         List<MetaPropertyPath> editableColumns = null;
         if (isEditable()) {
             editableColumns = new LinkedList<MetaPropertyPath>();
-        }
-
-        if (columns == null) {
-            throw new NullPointerException("Columns cannot be null");
         }
 
         for (final MetaPropertyPath propertyPath : columns) {
@@ -287,8 +287,18 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
             setColumnHeader(propertyPath, caption);
 
-            if (editableColumns != null && column != null && column.isEditable()) {
-                editableColumns.add((MetaPropertyPath) column.getId());
+            if (column != null) {
+                if (editableColumns != null && column.isEditable()) {
+                    editableColumns.add((MetaPropertyPath) column.getId());
+                }
+
+                if (column.isCollapsed() && component.isColumnCollapsingAllowed()) {
+                    try {
+                        component.setColumnCollapsed(column.getId(), true);
+                    } catch (IllegalAccessException e) {
+                        // do nothing
+                    }
+                }
             }
         }
 

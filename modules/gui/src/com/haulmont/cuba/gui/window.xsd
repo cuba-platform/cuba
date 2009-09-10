@@ -543,5 +543,9 @@
                       default="msg://"/>
         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
         <xs:attribute name="clickAction" type="xs:string" use="optional"/>
+        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="visible" type="xs:boolean" use="optional"/>
+        <xs:attribute name="width" type="xs:integer" use="optional"/>
+        <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
     </xs:complexType>
 </xs:schema>

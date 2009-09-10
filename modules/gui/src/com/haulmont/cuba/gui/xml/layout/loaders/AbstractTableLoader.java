@@ -173,6 +173,18 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             column.setEditable(evaluateBoolean(editable));
         }
 
+        String collapsed = element.attributeValue("collapsed");
+        if (collapsed == null) {
+            final Element e = element.element("collapsed");
+            if (e != null) {
+                collapsed = e.getText();
+            }
+        }
+
+        if (!StringUtils.isEmpty(collapsed)) {
+            column.setCollapsed(evaluateBoolean(collapsed));
+        }
+
         loadCaption(column, element);
 
         column.setXmlDescriptor(element);

@@ -43,6 +43,7 @@ public interface Table
         protected boolean editable;
         protected Formatter formatter;
         protected Integer width;
+        protected boolean collapsed;
 
         protected Class type;
         private Element element;
@@ -93,6 +94,14 @@ public interface Table
 
         public void setWidth(Integer width) {
             this.width = width;
+        }
+
+        public boolean isCollapsed() {
+            return collapsed;
+        }
+
+        public void setCollapsed(boolean collapsed) {
+            this.collapsed = collapsed;
         }
 
         @Override
