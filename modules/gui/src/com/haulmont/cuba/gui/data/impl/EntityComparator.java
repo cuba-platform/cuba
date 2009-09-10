@@ -29,9 +29,11 @@ public class EntityComparator<T extends Entity> implements Comparator<T> {
         }
         this.asc = asc;
 
+/*
         Class<?> javaClass = this.propertyPath.getRangeJavaClass();
         if (!Comparable.class.isAssignableFrom(javaClass))
             throw new UnsupportedOperationException(javaClass + " is not comparable");
+*/
     }
 
     public int compare(T o1, T o2) {
@@ -61,9 +63,17 @@ public class EntityComparator<T extends Entity> implements Comparator<T> {
     }
 
     private Object getValue(Instance instance) {
+        Object value;
         if (property != null) {
-            return instance.getValue(property.getName());
+            value = instance.getValue(property.getName());
+        } else {
+            value = instance.getValueEx(propertyPath.toString());
         }
-        return instance.getValueEx(propertyPath.toString());
+
+        if (!(value == null || value instanceof Comparable)) {
+            value = value.toString();
+        }
+
+        return value;
     }
 }
