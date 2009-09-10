@@ -19,20 +19,16 @@ public class WidgetSet extends DefaultWidgetSet {
     protected Class resolveWidgetType(UIDL uidl) {
         final String tag = uidl.getTag();
         if ("treetable".equals(tag)) {
-            if ("PAGE".equals(uidl.getStringAttribute("pagingMode"))) {
+            if (uidl.hasAttribute("pagingMode") && "PAGE".equals(uidl.getStringAttribute("pagingMode"))) {
                 return IPageTreeTable.class;
-            } else if ("SCROLLING".equals(uidl.getStringAttribute("pagingMode"))) {
-                return IScrollTreeTable.class;
             } else {
-                throw new IllegalStateException("Unknown paging mode");
+                return IScrollTreeTable.class;
             }
         } else if ("table".equals(tag)) {
-            if ("PAGE".equals(uidl.getStringAttribute("pagingMode"))) {
+            if (uidl.hasAttribute("pagingMode") && "PAGE".equals(uidl.getStringAttribute("pagingMode"))) {
                 return IPageTable.class;
-            } else if ("SCROLLING".equals(uidl.getStringAttribute("pagingMode"))) {
-                return IScrollTable.class;
             } else {
-                throw new IllegalStateException("Unknown paging mode");
+                return IScrollTable.class;
             }
         } else if ("scrollablepanel".equals(tag)) {
             return IScrollablePanel.class;
