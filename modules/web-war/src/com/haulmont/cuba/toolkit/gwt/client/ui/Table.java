@@ -10,15 +10,17 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.itmill.toolkit.terminal.gwt.client.*;
-import com.itmill.toolkit.terminal.gwt.client.ui.ActionOwner;
-import com.itmill.toolkit.terminal.gwt.client.ui.Action;
-import com.itmill.toolkit.terminal.gwt.client.ui.TreeAction;
-import com.itmill.toolkit.terminal.gwt.client.ui.Icon;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.*;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
+import com.itmill.toolkit.terminal.gwt.client.*;
+import com.itmill.toolkit.terminal.gwt.client.ui.Action;
+import com.itmill.toolkit.terminal.gwt.client.ui.ActionOwner;
+import com.itmill.toolkit.terminal.gwt.client.ui.TreeAction;
 
 import java.util.*;
 
@@ -1431,8 +1433,6 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
 
             protected Map widgetColumns = null;
 
-            protected Map widgetWrappers = null;
-
             protected ITableRow(int rowKey) {
                 this.rowKey = rowKey;
                 setElement(DOM.createElement("tr"));
@@ -1605,15 +1605,13 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
                 // ensure widget not attached to another element (possible tBody
                 // change)
                 w.removeFromParent();
-
-                final CellWrapper cw = new CellWrapper(container, w);
+                DOM.appendChild(container, w.getElement());
+                adopt(w);
                 childWidgets.add(w);
-                if (widgetColumns == null || widgetWrappers == null) {
+                if (widgetColumns == null) {
                     widgetColumns = new HashMap();
-                    widgetWrappers = new HashMap();
                 }
                 widgetColumns.put(w, colIndex);
-                widgetWrappers.put(w, cw);
             }
 
             protected void setCellAlignment(Element container, char align) {
@@ -1643,9 +1641,6 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
                     childWidgets.remove(w);
                     if (widgetColumns != null) {
                         widgetColumns.remove(w);
-                    }
-                    if (widgetWrappers != null) {
-                        widgetWrappers.remove(w);
                     }
                     return true;
                 } else {
@@ -1831,18 +1826,11 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
 
                 parentElement.appendChild(newComponent.getElement());
                 childWidgets.insertElementAt(newComponent, index);
-                if (widgetColumns == null || widgetWrappers != null) {
+                if (widgetColumns == null) {
                     widgetColumns = new HashMap();
-                    widgetWrappers = new HashMap();
                 }
                 widgetColumns.remove(oldComponent);
                 widgetColumns.put(newComponent, index);
-
-                CellWrapper wrapper = (CellWrapper) widgetWrappers.remove(oldComponent);
-                if (oldComponent != null) {
-                    widgetWrappers.put(newComponent, wrapper);
-                }
-
                 adopt(newComponent);
 
             }
@@ -1854,55 +1842,13 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
             }
 
             public void updateCaption(Paintable component, UIDL uidl) {
-                if (component != null) {
-                    final CellWrapper wrapper = (CellWrapper) widgetWrappers.get(component);
-                    if (wrapper != null) {
-                        wrapper.updateCell(uidl);
-                    }
-                }
+                // NOP, not rendered
             }
 
             public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
                 // Should never be called,
                 // Component container interface faked here to get layouts
                 // render properly
-            }
-
-            protected class CellWrapper {
-                private Element container = DOM.createDiv();
-                private Widget widget;
-                private Icon icon;
-
-                public CellWrapper(Element div, Widget w) {
-                    this.widget = w;
-
-                    DOM.appendChild(container, w.getElement());
-
-                    DOM.appendChild(div, container);
-                    ITableRow.this.adopt(w);
-                }
-
-                public void updateCell(UIDL uidl) {
-                    if (uidl.hasAttribute("icon")) {
-                        if (icon == null) {
-                            DOM.setStyleAttribute(container, "width", 9000 + "px");
-
-                            icon = new Icon(client);
-                            DOM.insertChild(container, icon.getElement(), 0);
-                            Util.setFloat(icon.getElement(), "left");
-                            Util.setFloat(widget.getElement(), "left");
-                        }
-                        icon.setUri(uidl.getStringAttribute("icon"));
-                    }
-                    else if (icon != null) {
-                        DOM.setStyleAttribute(container, "width", "");
-
-                        DOM.removeChild(container, icon.getElement());
-                        Util.setFloat(icon.getElement(), "");
-                        Util.setFloat(widget.getElement(), "");
-                        icon = null;
-                    }
-                }
             }
         }
     }

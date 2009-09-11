@@ -263,6 +263,8 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
         private Label prev;
         private Label next;
 
+        private TablePageLengthEditor editor;
+
         public static final String CLASSNAME = "i-pager";
 
         public IPager(String prevCaption, String nextCaption, String firstCaption, String lastCaption) {
@@ -330,6 +332,17 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
                 final UIDL data = (UIDL) it.next();
                 if ("paging".equals(data.getTag())) {
                     updatePaging(data);
+
+                    if (data.hasAttribute("lengths")) {
+                        if (editor == null) {
+                            editor = new TablePageLengthEditor();
+                            pagerRoot.add(editor);
+                        }
+                        editor.updateFromUIDL(uidl);
+                    } else if (editor != null) {
+                        pagerRoot.remove(editor);
+                        editor = null;
+                    }
                     break;
                 }
             }
@@ -519,6 +532,69 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             }
         }
     }
+
+    class TablePageLengthEditor
+            extends Composite implements ChangeListener
+    {
+        public static final String CLASSNAME = "i-pager-editor";
+
+        private final ListBox select = new ListBox(false);
+        private final Element captionContainer = DOM.createSpan();
+
+        public TablePageLengthEditor() {
+            final Panel rootPanel = new FlowPanel();
+            DOM.setElementProperty(rootPanel.getElement(), "className", CLASSNAME);
+            DOM.setElementProperty(captionContainer, "className", CLASSNAME + "-caption");
+
+            rootPanel.add(select);
+
+            select.addChangeListener(this);
+
+            initWidget(rootPanel);
+
+            DOM.insertChild(getElement(), captionContainer, 0);
+        }
+
+        public void updateFromUIDL(UIDL uidl) {
+            int pageLength = uidl.getIntAttribute("pagelength");
+
+            for (Iterator it = uidl.getChildIterator(); it.hasNext();) {
+                final UIDL data = (UIDL) it.next();
+                if (data.getTag().equals("paging")) {
+                    select.clear();
+                    boolean pageLengthUsed = false;
+                    int[] lengths = data.getIntArrayAttribute("lengths");
+                    int selectedIndex = 0;
+                    for (int i = 0; i < lengths.length; i++) {
+                        if (pageLength == lengths[i]) {
+                            pageLengthUsed = true;
+                            selectedIndex = i;
+                        } else if (pageLength < lengths[i] && !pageLengthUsed) {
+                            select.addItem(String.valueOf(pageLength));
+                            pageLengthUsed = true;
+                            selectedIndex = i;
+                        }
+                        select.addItem(String.valueOf(lengths[i]));
+                    }
+                    select.setSelectedIndex(selectedIndex);
+
+                    if (data.hasAttribute("sc")) {
+                        captionContainer.setInnerText(data.getStringAttribute("sc"));
+                    }
+                    
+                    break;
+                }
+            }
+        }
+
+        public void onChange(Widget sender) {
+            if (sender != null && sender.equals(select)) {
+                client.updateVariable(paintableId, "pagelength", Integer.parseInt(select.getValue(select.getSelectedIndex())),
+                        true);
+            }
+        }
+    }
+
 
     private static boolean isEmpty(String s) {
         return s == null || "".equals(s);

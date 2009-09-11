@@ -746,6 +746,17 @@ public class Table
             if (pagingProvider.lastCaption() != null) {
                 target.addAttribute("lc", pagingProvider.lastCaption());
             }
+            if (pagingProvider.showPageLengthSelector() && pagingProvider.pageLengths() != null) {
+                final int[] arr = pagingProvider.pageLengths();
+                Arrays.sort(arr);
+                Integer[] lengths = new Integer[arr.length];
+                for (int i = 0; i < arr.length; i++) {
+                    lengths[i] = arr[i];
+                }
+                target.addAttribute("lengths", lengths);
+
+                target.addAttribute("sc", pagingProvider.pageLengthSelectorCaption());
+            }
             target.endTag("paging");
         }
     }
@@ -785,5 +796,9 @@ public class Table
         String prevCaption();
         String nextCaption();
         String lastCaption();
+
+        String pageLengthSelectorCaption();
+        boolean showPageLengthSelector();
+        int[] pageLengths();
     }
 }

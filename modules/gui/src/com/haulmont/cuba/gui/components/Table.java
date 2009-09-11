@@ -161,6 +161,10 @@ public interface Table
         String prevCaption();
         String nextCaption();
         String lastCaption();
+
+        String pageLengthSelectorCaption();
+        boolean showPageLengthSelection();
+        int[] pageLengths();
     }
 
     void setPagingProvider(PagingProvider pagingProvider);

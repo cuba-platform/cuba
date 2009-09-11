@@ -273,7 +273,8 @@
 }
 
 .i-pager {
-    height: 18px;
+    height: 20px;
+    padding-right: 5px;
 }
 
 .i-pager .i-pager-link,
@@ -281,11 +282,16 @@
 .i-pager .i-pager-spacer {
     margin: 0 5px;
     float: left;
-    height: 18px;
+    height: 20px;
 }
 
 .i-pager .i-pager-link {
     cursor: pointer;
     text-decoration: underline;
     color: #464f52;
+}
+
+.i-pager .i-pager-editor {
+    float: right;
+    line-height: 18px;
 }

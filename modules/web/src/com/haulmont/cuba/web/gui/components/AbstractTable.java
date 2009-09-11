@@ -531,6 +531,18 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
             public String lastCaption() {
                 return pagingProvider.lastCaption();
             }
+
+            public String pageLengthSelectorCaption() {
+                return pagingProvider.pageLengthSelectorCaption();
+            }
+
+            public boolean showPageLengthSelector() {
+                return pagingProvider.showPageLengthSelection();
+            }
+
+            public int[] pageLengths() {
+                return pagingProvider.pageLengths();
+            }
         });
     }
 
