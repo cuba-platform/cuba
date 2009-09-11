@@ -163,7 +163,7 @@ public interface Table
         String lastCaption();
 
         String pageLengthSelectorCaption();
-        boolean showPageLengthSelection();
+        boolean showPageLengthSelector();
         int[] pageLengths();
     }
 

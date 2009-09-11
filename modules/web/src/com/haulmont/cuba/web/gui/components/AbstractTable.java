@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
+import com.haulmont.cuba.web.App;
 import com.itmill.toolkit.data.Item;
 import com.itmill.toolkit.data.Property;
 import com.itmill.toolkit.data.Validator;
@@ -511,6 +513,9 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
     public void setPagingMode(Table.PagingMode pagingMode) {
         this.pagingMode = pagingMode;
         component.setPagingMode(ComponentsHelper.convertPagingMode(pagingMode));
+        if (pagingMode == Table.PagingMode.PAGE) {
+            setPagingProvider(new DefaultPagingProvider());
+        }
     }
 
     public void setPagingProvider(final Table.PagingProvider pagingProvider) {
@@ -537,7 +542,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
             }
 
             public boolean showPageLengthSelector() {
-                return pagingProvider.showPageLengthSelection();
+                return pagingProvider.showPageLengthSelector();
             }
 
             public int[] pageLengths() {
@@ -803,6 +808,36 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
                 }
             }
             return field;
+        }
+    }
+
+    class DefaultPagingProvider implements Table.PagingProvider {
+        public String firstCaption() {
+            return null;
+        }
+
+        public String prevCaption() {
+            return MessageProvider.getMessage(App.class, "paging.prevCaption");
+        }
+
+        public String nextCaption() {
+            return MessageProvider.getMessage(App.class, "paging.nextCaption");
+        }
+
+        public String lastCaption() {
+            return null;
+        }
+
+        public String pageLengthSelectorCaption() {
+            return null;
+        }
+
+        public boolean showPageLengthSelector() {
+            return false;
+        }
+
+        public int[] pageLengths() {
+            return new int[0];
         }
     }
 }
