@@ -108,7 +108,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         DOM.appendChild(getElement(), contentContainer);
         DOM.appendChild(getElement(), toggleButtonContainer);
         DOM.appendChild(getElement(), bottomDecoration);
-        
+
         DOM.setStyleAttribute(contentContainer, "position", "relative");
     }
 
@@ -326,14 +326,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
             return;
         }
 
-//        DeferredCommand.addCommand(new Command() {
-//            public void execute() {
-//                Widget w = widgetsPanel.getWidget(widgetsPanel.getVisibleWidget());
-//                DOM.setStyleAttribute(DOM.getParent(w.getElement()),
-//                        "visibility", "hidden");
-                client.updateVariable(paintableId, "toggle", "", true);
-//            }
-//        });
+        client.updateVariable(paintableId, "toggle", "", true);
 
         togglePanel();
 
@@ -412,7 +405,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         super.setHeight(height);
 
         this.height = height;
-        
+
         updateContentHeight();
 
         if (!rendering) {

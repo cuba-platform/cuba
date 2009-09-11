@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 public class TogglePanel extends Panel {
 
     private boolean expanded = false;
-    private boolean forsedValue = false;
     private boolean hideToggle = false;
 
     private String expandText;
@@ -53,10 +52,7 @@ public class TogglePanel extends Panel {
         } else {
             getCollapseLayout().paint(target);
         }
-        if (forsedValue) {
-            target.addAttribute("expanded", isExpanded());
-            forsedValue = false;
-        }
+        target.addAttribute("expanded", isExpanded());
         if (isHideToggle()) {
             target.addAttribute("hideToggle", true);
         }
@@ -135,7 +131,6 @@ public class TogglePanel extends Panel {
     public void setExpanded(boolean expanded) {
         if (isExpanded() != expanded) {
             setExpanded(expanded,  true);
-            forsedValue = true;
         }
     }
 
@@ -152,7 +147,6 @@ public class TogglePanel extends Panel {
 
     public void togglePanel() {
         togglePanel(true);
-        forsedValue = true;
     }
 
     protected void togglePanel(boolean repaint) {
@@ -235,6 +229,6 @@ public class TogglePanel extends Panel {
     public interface TogglePanelListener {
 
         void togglePanel(TogglePanelEvent event);
-        
+
     }
 }
