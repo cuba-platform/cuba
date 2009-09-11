@@ -9,7 +9,7 @@
 .i-datefield-button {
 	font-size:13px;
 	width: 22px;
-	height: 24px;
+	height: 22px;
 	padding: 0;
 	overflow: hidden;
 	border: none;
@@ -91,7 +91,6 @@
 .i-datefield-calendarpanel .i-button-nextyear {
 	background: transparent url(img/nextyear.png) no-repeat;
 }
-.i-datefield-calendarpanel .i-button-prevyear:hover,
 .i-datefield-calendarpanel .i-button-nextyear:hover {
 	background-position: left bottom;
 }
@@ -206,11 +205,12 @@
     display: none;
 }
 
+
 /* IE specific styles */
 
 *+html .i-datefield-button {
 	background-position: right 1px;
-	height: 25px;
+	height: 23px;
 	margin: 0;
 }
 

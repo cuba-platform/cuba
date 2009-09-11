@@ -1,3 +1,7 @@
+fieldset {
+    border: none;
+}
+
 .i-formlayout-cell .i-errorindicator {
 	width: 10px;
 	height: 16px;
@@ -64,8 +68,8 @@
 }
 
 .i-form fieldset {
-	/*border: none;*/
-	border-top: 0 solid #babfc0;
+	border: none;
+	/*border-top: 0 solid #babfc0;*/
     margin: 0;
     padding: 0;
 }
@@ -81,5 +85,13 @@
 	float: none;
     color: #f00;
     font-weight:bold;
+}
+*/
+
+/*
+.i-form-description div
+{
+    border: 0;
+    backgound-color: #000;
 }
 */

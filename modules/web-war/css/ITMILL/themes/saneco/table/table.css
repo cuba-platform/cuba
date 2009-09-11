@@ -6,14 +6,12 @@
 .i-table.table-inline .i-table-header-wrap {
 	border-left: none;
 	border-right: none;
-	/*margin: -16px -18px 0 -18px;*/
 }
 
 .i-table-header-wrap {
 	height: 21px;
 	background: #DCE3EB url(img/table-header-bg.gif) repeat-x;
 	border: 1px solid #DCE3EB;
-    /*border-top: 2px solid #829fd6;*/
 	border-bottom: none;
 	overflow: hidden;
 }
@@ -32,7 +30,7 @@
 }
 
 /*
-.i-table-table table{
+.i-table-table {
     border-bottom: 2px solid #829fd6;
 }
 */
@@ -46,7 +44,7 @@
 
 .i-table-header td {
     height: 21px;
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .i-table-resizer {
@@ -64,7 +62,6 @@
 
     font-weight: bold;
 	padding-top: 2px;
-	text-shadow: #ffffff 1px 1px 0;
 }
 
 .i-table-header-cell-asc .i-table-caption-container {
@@ -228,7 +225,6 @@
 	margin-top: 8px;
 	text-align: center;
     font-weight:bold;
-	text-shadow: #ffffff 2px 2px 0;
 }
 
 
@@ -281,4 +277,28 @@
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");
+}
+
+.i-pager {
+    height: 20px;
+    padding-right: 5px;
+}
+
+.i-pager .i-pager-link,
+.i-pager .i-pager-page,
+.i-pager .i-pager-spacer {
+    margin: 0 5px;
+    float: left;
+    height: 20px;
+}
+
+.i-pager .i-pager-link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #464f52;
+}
+
+.i-pager .i-pager-editor {
+    float: right;
+    line-height: 18px;
 }

@@ -22,9 +22,14 @@
 	font-size: 13px;
 }
 
+.i-textfield:focus,
+.i-textarea:focus {
+    outline: 0;
+}
+
 .i-textfield-focus,
 .i-textarea-focus {
-	border-color: #5daee8;
+    outline: 0;
 }
 
 .i-textfield.i-readonly,
@@ -78,5 +83,5 @@
 /* Safari focus glow fix */
 .i-sa input:focus, 
 .i-sa textarea:focus{
-	outline-width: medium;
+    outline: 0;
 }

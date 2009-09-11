@@ -2,10 +2,9 @@
    (these elements usually need the extra space, since
    they aren't even handling their own caption) */
 .i-captionwrapper {
-	margin: 0.3em 0 0 0;
-	text-align: left /* Force default alignment */
-	
-	clear: both; /*todo gorodnov: I don't know does it need here ? */
+	margin: 0;
+	text-align: left; /* Force default alignment */
+    clear: both;
 }
 
 .i-caption {

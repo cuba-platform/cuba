@@ -3,12 +3,29 @@
     text-align:inherit;
 }
 
-/*fix for IE*/
+/*fix for IE6*/
 * html .i-upload-submit
 {
     float:left;
-    height:18px;
+    height:20px;
+    line-height:9pt;
+    padding: 0;
+}
+* html .gwt-FileUpload {
+    height: 20px;
+}
+
+/*fix for IE7*/
+*+ html .i-upload-submit
+{
+    float:left;
+    height:20px;
     line-height:8pt;
+    padding: 0;
+    margin-top: 1px;
+}
+*+ html .gwt-FileUpload {
+    height: 20px;
 }
 
 .i-upload-panel,

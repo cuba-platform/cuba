@@ -3,6 +3,7 @@
 	font-size: 13px;
 	white-space: nowrap;
 	margin: 0;
+    padding: 3px 8px;
 }
 .i-checkbox input {
 	vertical-align: middle;
@@ -22,9 +23,12 @@
 	background: none;
 	padding: 0;
 }
-.i-sa .i-button-link:focus {
-	outline-offset: -3px;
+
+.i-button-link,
+.i-button-link:focus {
+    outline: 0;
 }
+
 .i-button-link span {
 	text-decoration: underline;
 }
@@ -45,15 +49,13 @@
 * html .i-button {
 	width: 1px;
 	overflow: visible;
-	padding-left: 10px;
-	padding-right: 10px;
+    padding: 2px 10px;
 }
 
 /* fixes streched buttons in IE7 */
 *+html .i-button {
 	overflow: visible;
-	padding-left: 10px;
-	padding-right: 10px;
+    padding: 2px 10px;
 }
 
 /* Error indicator on checkbox fix for IE6 */

@@ -1,3 +1,8 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
 .i-app-loading {
 	background-image: url(img/loading-indicator.gif);
 	background-repeat: no-repeat;
@@ -94,7 +99,7 @@
 
 .i-required-field-indicator {
 	padding-left: 2px;
-    float: left;
+    float:left;
 	color: red;
 }
 
@@ -358,46 +363,4 @@ input.i-modified,
 .i-label .i-label-undef-w
 {
     float: left;
-}
-
-.box-spacer
-{
-    margin-top:-1px;
-    background: #fff;
-    float:left;
-}
-
-.white-spacer
-{
-    background: #fff;
-}
-
-.edit-area
-{
-    border-top: 1px solid #829fd6;
-    border-bottom: 1px solid #829fd6;
-    background: #f2f2f2;
-    float:left;
-}
-
-.description-area
-{
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    padding: 6px 0;
-}
-
-.top-line-spacer
-{
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    background: #f2f2f2;
-    padding: 6px 0;
-}
-
-.bottom-line-spacer
-{
-    border-top: 0 solid #ccc;
-    border-bottom: 1px solid #ccc;
-    padding: 6px 0;
 }

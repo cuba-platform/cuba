@@ -78,6 +78,7 @@ public class LoginWindow extends Window
         layout.addComponent(okButton);
 
         setLayout(layout);
+        setTheme("saneco");
     }
 
     protected void initFields() {

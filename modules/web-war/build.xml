@@ -56,7 +56,7 @@
         </copy>
         <mkdir dir="${themes.out.dir}"/>
         <copy todir="${themes.out.dir}">
-            <fileset dir="${themes.src.dir}" includes="default/**"/>
+            <fileset dir="${themes.src.dir}" includes="saneco/**"/>
         </copy>
 
         <taskdef name="build-theme" classname="com.haulmont.cuba.ant.BuildThemeTask">
@@ -66,7 +66,7 @@
             </classpath>
         </taskdef>
 
-        <build-theme themeDir="${themes.out.dir}/default" destFile="styles.css"/>
+        <build-theme themeDir="${themes.out.dir}/saneco" destFile="styles.css"/>
 
         <condition property="do-build-gwt" value="true">
             <not>

@@ -52,10 +52,7 @@
 }
 
 .i-panel-nocaption {
-	height: 9px;
-	margin-left: 10px;
-	background: transparent;
-	overflow: hidden;
+    display: none;
 }
 
 .i-panel-content {

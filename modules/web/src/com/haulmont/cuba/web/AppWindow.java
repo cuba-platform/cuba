@@ -10,25 +10,28 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
-import com.haulmont.cuba.web.app.UserSettingHelper;
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.bali.util.Dom4j;
 import com.itmill.toolkit.terminal.ExternalResource;
 import com.itmill.toolkit.terminal.Sizeable;
 import com.itmill.toolkit.ui.*;
-
-import java.util.*;
-
 import org.dom4j.Element;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class AppWindow extends Window {
 
@@ -60,6 +63,7 @@ public class AppWindow extends Window {
         rootLayout = createLayout();
         initLayout();
         setLayout(rootLayout);
+        setTheme("saneco");
         postInitLayout();
     }
 
