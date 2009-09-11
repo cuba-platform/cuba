@@ -23,10 +23,7 @@ import javax.activation.DataSource;
 import javax.activation.DataHandler;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.io.*;
 
 import org.apache.commons.logging.Log;
@@ -46,11 +43,17 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         return this;
     }
 
-    public void sendEmail(EmailDto dto) throws IOException, EmailException {
+    public void sendEmail(EmailDto dto) throws EmailException {
         if (dto.getTemplatePath() != null) {
             File f = new File(dto.getTemplatePath());
-            String template = FileUtils.readFileToString(f);
-            dto.setBody(TemplateHelper.processTemplate(template, dto.getTemplateParameters()));
+            String template;
+            try {
+                template = FileUtils.readFileToString(f);
+            } catch (IOException e) {
+                throw new RuntimeException("File is not available: "+dto.getTemplatePath());
+            }
+            Map map = dto.getTemplateParameters();
+            dto.setBody(TemplateHelper.processTemplate(template, map));
         }
         sendEmail(dto.getAddresses(), dto.getCaption(), dto.getBody(), config.getFromAddress(), dto.getAttachment());
     }
@@ -189,7 +192,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             String att = "<html><body><h1>Test attachment</h1></body></html>";
             EmailAttachment emailAtt = new EmailAttachment(att.getBytes(), "test attachment.html");
             //sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
-            EmailDto dto = new EmailDto(addresses, "Test email from mailer", "../server/default/conf/cuba/templates/testEmail.html", new HashMap<String, Object>(), null, emailAtt);
+            EmailDto dto = new EmailDto(addresses, "Test email from mailer", "../server/default/conf/cuba/templates/testEmail.html", new HashMap<String, Serializable>(), null, emailAtt);
             sendEmail(dto);
             return "Email to '" + addresses + "' sent succesfully";
         } catch (Exception e) {

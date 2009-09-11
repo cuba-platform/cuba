@@ -18,11 +18,12 @@ public class EmailDto implements Serializable {
     private String addresses;
     private String caption;
     private String templatePath;
-    private Map<String, Object> templateParameters;
+    private Map<String, Serializable> templateParameters;
     private String body;
     private EmailAttachment[] attachment;
+    private static final long serialVersionUID = -382773435130109083L;
 
-    public EmailDto(String addresses, String caption, String templatePath,Map<String, Object> templateParameters, String body, EmailAttachment... attachment) {
+    public EmailDto(String addresses, String caption, String templatePath,Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
         this.addresses = addresses;
         this.caption = caption;
         this.templatePath = templatePath;
@@ -71,11 +72,11 @@ public class EmailDto implements Serializable {
         this.attachment = attachment;
     }
 
-    public Map<String, Object> getTemplateParameters() {
+    public Map<String, Serializable> getTemplateParameters() {
         return templateParameters;
     }
 
-    public void setTemplateParameters(Map<String, Object> templateParameters) {
+    public void setTemplateParameters(Map<String, Serializable> templateParameters) {
         this.templateParameters = templateParameters;
     }
 }

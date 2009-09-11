@@ -14,12 +14,10 @@ import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.EmailDto;
 
-import java.io.IOException;
-
 public interface EmailerAPI
 {
     void sendEmail(String address, String caption, String body, EmailAttachment... attachment)
             throws EmailException;
 
-    void sendEmail(EmailDto dto) throws IOException, EmailException;
+    void sendEmail(EmailDto dto) throws EmailException;
 }
