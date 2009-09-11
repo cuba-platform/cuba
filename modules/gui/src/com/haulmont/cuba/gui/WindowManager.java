@@ -14,7 +14,8 @@ import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.app.ServerConfig;
+import com.haulmont.cuba.core.app.*;
+import com.haulmont.cuba.core.app.TemplateHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
@@ -440,7 +441,7 @@ public abstract class WindowManager {
                     final Document dsContextDocument = loadDocument("<dsContext>" + dsContext + "</dsContext>");
                     document.getRootElement().add(dsContextDocument.getRootElement());
                 } else {
-                    template = TemplateHelper.processTemplate(template, params);
+                    template = com.haulmont.cuba.core.app.TemplateHelper.processTemplate(template, params);
                     document = loadDocument(template);
                 }
             } catch (IOException e) {

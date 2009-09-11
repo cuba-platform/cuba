@@ -15,7 +15,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Versioned;
-import com.haulmont.cuba.gui.TemplateHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
@@ -193,7 +192,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
             }
         }
 
-        query = TemplateHelper.processTemplate(query, parameterValues);
+        query = com.haulmont.cuba.core.app.TemplateHelper.processTemplate(query, parameterValues);
 
         return query;
     }

@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.EncoderException;
-import com.haulmont.cuba.gui.*;
 import org.apache.commons.io.FileUtils;
 
 public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI {

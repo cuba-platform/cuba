@@ -60,7 +60,7 @@ public class LayoutLoaderConfig {
         config.register("optionsGroup", OptionsGroupLoader.class);
         config.register("upload", FileUploadFieldLoader.class);
         config.register("table", TableLoader.class);
-        config.register("treeTable", TreeTableLoader.class);
+                config.register("treeTable", TreeTableLoader.class);
         config.register("iframe", IFrameLoader.class);
         config.register("split", SplitPanelLoader.class);
         config.register("tree", TreeLoader.class);
