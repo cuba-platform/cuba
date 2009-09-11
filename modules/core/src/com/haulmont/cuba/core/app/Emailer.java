@@ -10,10 +10,7 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.global.EmailAttachment;
-import com.haulmont.cuba.core.global.EmailException;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.FileTypesHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.global.LoginException;
 
@@ -29,16 +26,16 @@ import javax.naming.NamingException;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.util.HashMap;
+import java.io.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.EncoderException;
+import com.haulmont.cuba.gui.*;
+import org.apache.commons.io.FileUtils;
 
 public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI {
     private Log log = LogFactory.getLog(Emailer.class);
@@ -49,6 +46,16 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         return this;
     }
 
+    public void sendEmail(EmailDto dto) throws IOException, EmailException {
+        if (dto.getTemplatePath() != null) {
+            File f = new File(dto.getTemplatePath());
+            String template = FileUtils.readFileToString(f);
+            dto.setBody(TemplateHelper.processTemplate(template, dto.getTemplateParameters()));
+        }
+        sendEmail(dto.getAddresses(), dto.getCaption(), dto.getBody(), config.getFromAddress(), dto.getAttachment());
+    }
+
+    @Deprecated
     public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachment)
             throws EmailException {
         sendEmail(addresses, caption, body, config.getFromAddress(), attachment);
@@ -181,7 +188,9 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         try {
             String att = "<html><body><h1>Test attachment</h1></body></html>";
             EmailAttachment emailAtt = new EmailAttachment(att.getBytes(), "test attachment.html");
-            sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
+            //sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
+            EmailDto dto = new EmailDto(addresses, "Test email from mailer", "../server/default/conf/cuba/templates/testEmail.html", new HashMap<String, Object>(), null, emailAtt);
+            sendEmail(dto);
             return "Email to '" + addresses + "' sent succesfully";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
