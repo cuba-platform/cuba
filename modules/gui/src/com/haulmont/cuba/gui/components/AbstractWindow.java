@@ -134,4 +134,12 @@ public class AbstractWindow extends AbstractFrame
             throw new UnsupportedOperationException();
         }
     }
+
+    public Settings getSettings() {
+        if (frame instanceof Window) {
+            return ((Window) frame).getSettings();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

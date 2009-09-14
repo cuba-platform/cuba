@@ -10,11 +10,15 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.gui.ComponentVisitor;
+import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.itmill.toolkit.ui.TabSheet;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import org.dom4j.Element;
 
 public class Tabsheet
     extends
@@ -22,12 +26,19 @@ public class Tabsheet
     implements
         com.haulmont.cuba.gui.components.Tabsheet, Component.Wrapper, Component.Container
 {
+    private boolean componentTabChangeListenerInitialized;
+
     public Tabsheet() {
         component = new TabSheetEx(this);
     }
 
     protected Map<String, Tab> tabs = new HashMap<String, Tab>();
+
     protected Map<Component, String> components = new HashMap<Component, String>();
+
+    protected Set<com.itmill.toolkit.ui.Component> lazyTabs = new HashSet<com.itmill.toolkit.ui.Component>();
+
+    protected Set<TabChangeListener> listeners = new HashSet<TabChangeListener>();
 
     public void add(Component component) {
         throw new UnsupportedOperationException();
@@ -104,6 +115,29 @@ public class Tabsheet
         return tab;
     }
 
+    public com.haulmont.cuba.gui.components.Tabsheet.Tab addLazyTab(String name,
+                                                                    Element descriptor,
+                                                                    ComponentLoader loader)
+    {
+        VBoxLayout tabContent = new VBoxLayout();
+        tabContent.setSizeFull();
+        
+        final Tab tab = new Tab(name, tabContent);
+
+        tabs.put(name, tab);
+        components.put(tabContent, name);
+
+        final com.itmill.toolkit.ui.Component tabComponent = ComponentsHelper.unwrap(tabContent);
+        tabComponent.setSizeFull();
+
+        this.component.addTab(tabComponent);
+        lazyTabs.add(tabComponent);
+
+        this.component.addListener(new LazyTabChangeListener(tabContent, descriptor, loader));
+
+        return tab;
+    }
+
     public void removeTab(String name) {
         final Tab tab = tabs.get(name);
         if (tab == null) throw new IllegalStateException(String.format("Can't find tab '%s'", name));
@@ -132,6 +166,31 @@ public class Tabsheet
         return (Collection)tabs.values();
     }
 
+    public void addListener(TabChangeListener listener) {
+        // init component SelectedTabChangeListener only when needed, making sure it is
+        // after all lazy tabs listeners
+        if (!componentTabChangeListenerInitialized) {
+            component.addListener(new TabSheet.SelectedTabChangeListener() {
+                public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
+                    fireTabChanged();
+                }
+            });
+            componentTabChangeListenerInitialized = true;
+        }
+
+        listeners.add(listener);
+    }
+
+    public void removeListener(TabChangeListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void fireTabChanged() {
+        for (TabChangeListener listener : listeners) {
+            listener.tabChanged(getTab());
+        }
+    }
+
     private static class TabSheetEx extends TabSheet implements ComponentEx {
         private Component component;
 
@@ -144,4 +203,52 @@ public class Tabsheet
         }
     }
 
+    private class LazyTabChangeListener implements TabSheet.SelectedTabChangeListener {
+
+        private AbstractContainer tabContent;
+        private Element descriptor;
+        private ComponentLoader loader;
+
+        public LazyTabChangeListener(AbstractContainer tabContent, Element descriptor, ComponentLoader loader) {
+            this.tabContent = tabContent;
+            this.descriptor = descriptor;
+            this.loader = loader;
+        }
+
+        public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
+            com.itmill.toolkit.ui.Component selectedTab = Tabsheet.this.component.getSelectedTab();
+            if (selectedTab == tabContent && lazyTabs.remove(tabContent)) {
+                Component comp;
+                try {
+                    comp = loader.loadComponent(new WebComponentsFactory(), descriptor, null);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+
+                tabContent.add(comp);
+                com.itmill.toolkit.ui.Component impl = ComponentsHelper.unwrap(comp);
+                impl.setSizeFull();
+
+                final Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(Tabsheet.this);
+                if (window != null) {
+                    com.haulmont.cuba.gui.ComponentsHelper.walkComponents(
+                            tabContent,
+                            new ComponentVisitor() {
+                                public void visit(Component component, String name) {
+                                    if (component instanceof HasSettings) {
+                                        Element e = window.getSettings().get(name);
+                                        ((HasSettings) component).applySettings(e);
+                                    }
+                                    if (component instanceof BelongToFrame) {
+                                        ((BelongToFrame) component).setFrame(getFrame());
+                                    }
+                                }
+                            }
+                    );
+                }
+            }
+        }
+    }
 }

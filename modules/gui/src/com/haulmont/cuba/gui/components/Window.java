@@ -18,6 +18,7 @@ public interface Window extends IFrame, Component.HasCaption, Component.Actions 
     void removeListener(CloseListener listener);
 
     void applySettings(Settings settings);
+    Settings getSettings();
 
     boolean close(String actionId);
     boolean close(String actionId, boolean force);

@@ -42,9 +42,17 @@ public class TabsheetLoader extends ContainerLoader {
         for (Element tabElement : tabElements) {
             final String name = tabElement.attributeValue("id");
 
-            final ComponentLoader loader = getLoader("vbox");
+            boolean lazy = Boolean.valueOf(tabElement.attributeValue("lazy"));
 
-            final Tabsheet.Tab tab = component.addTab(name, loader.loadComponent(factory, tabElement, null));
+            final ComponentLoader loader = getLoader("vbox");
+            final Tabsheet.Tab tab;
+
+            if (lazy) {
+                tab = component.addLazyTab(name, tabElement, loader);
+            } else {
+                tab = component.addTab(name, loader.loadComponent(factory, tabElement, null));
+            }
+
             String caption = tabElement.attributeValue("caption");
 
             if (!StringUtils.isEmpty(caption)) {

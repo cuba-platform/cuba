@@ -235,6 +235,10 @@ public class Window
         );
     }
 
+    public Settings getSettings() {
+        return settings;
+    }
+
     public Element getXmlDescriptor() {
         return element;
     }

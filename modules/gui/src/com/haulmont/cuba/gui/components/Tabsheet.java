@@ -9,13 +9,18 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import org.dom4j.Element;
+
 import java.util.Collection;
+
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 
 public interface Tabsheet 
     extends
         Component, Component.BelongToFrame, Component.Expandable
 {
     Tab addTab(String name, Component component);
+    Tab addLazyTab(String name, Element descriptor, ComponentLoader loader);
     void removeTab(String name);
 
     Tab getTab();
@@ -24,11 +29,18 @@ public interface Tabsheet
 
     Collection<Tab> getTabs();
 
+    void addListener(TabChangeListener listener);
+    void removeListener(TabChangeListener listener);
+
     interface Tab {
         String getName();
         void setName(String name);
 
         String getCaption();
         void setCaption(String caption);
+    }
+
+    interface TabChangeListener {
+        void tabChanged(Tab newTab);
     }
 }

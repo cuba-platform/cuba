@@ -11,8 +11,11 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.Component;
 
 public abstract class ComponentsHelper {
+
     public static void walkComponents(
             com.haulmont.cuba.gui.components.Component.Container container,
             ComponentVisitor visitor
@@ -35,5 +38,15 @@ public abstract class ComponentsHelper {
                 __walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), visitor, p);
             }
         }
+    }
+
+    public static Window getWindow(Component.BelongToFrame component) {
+        IFrame frame = component.getFrame();
+        while (frame != null) {
+            if (frame instanceof Window)
+                return (Window) frame;
+            frame = component.getFrame();
+        }
+        return null;
     }
 }

@@ -153,6 +153,7 @@
                                     <xs:group ref="layoutOrComponent"/>
                                     <xs:attribute name="id" type="xs:string" use="required"/>
                                     <xs:attribute name="caption" type="xs:string" use="required" default="msg://"/>
+                                    <xs:attribute name="lazy" type="xs:boolean" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
