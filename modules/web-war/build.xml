@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <project xmlns:ext="http://haulmont.com/schema/ant"
-	name="cuba-web-war" default="build-module" basedir=".">
+         name="cuba-web-war" default="build-module" basedir=".">
 
-	<property name="project.dir" location="../.."/>
-	<property name="root.dir" location="${project.dir}/.."/>
-	
-	<property name="module.name" value="web-war"/>
-	<property name="module.jar" value="24cuba.war"/>
+    <property name="project.dir" location="../.."/>
+    <property name="root.dir" location="${project.dir}/.."/>
+
+    <property name="module.name" value="web-war"/>
+    <property name="module.jar" value="24cuba.war"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
@@ -38,7 +38,7 @@
     </path>
 
     <target name="clean-module" depends="base-mod.clean-module">
-		<delete dir="${build.dir}/${module.name}"/>
+        <delete dir="${build.dir}/${module.name}"/>
     </target>
 
     <target name="build-module" depends="base-mod.compile-module">
@@ -62,7 +62,7 @@
         <taskdef name="build-theme" classname="com.haulmont.cuba.ant.BuildThemeTask">
             <classpath>
                 <fileset refid="gwt-lib-fs"/>
-                <path location="${prod.out.dir}/${module.name}" />
+                <path location="${prod.out.dir}/${module.name}"/>
             </classpath>
         </taskdef>
 
@@ -81,8 +81,8 @@
 
     <target name="build-gwt" if="do-build-gwt">
         <echo>==> building GWT module</echo>
-        <java classname="com.google.gwt.dev.GWTCompiler" failonerror="yes" fork="yes" maxmemory="128m">
-            <arg value="-out"/>
+        <java classname="com.google.gwt.dev.Compiler" failonerror="yes" fork="yes" maxmemory="128m">
+            <arg value="-war"/>
             <arg value="${widgets.out.dir}"/>
             <arg value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>
             <classpath>
@@ -94,10 +94,29 @@
         </java>
     </target>
 
+    <target name="run-in-hoted-mode">
+        <java failonerror="true" fork="true" classname="com.google.gwt.dev.HostedMode">
+            <classpath>
+                <pathelement path="${java.src.dir}"/>
+                <pathelement path="d:/exchange/gwt1.7"/>
+                <pathelement location="d:/exchange/gwt1.7/gwt-dev-windows.jar"/>
+                <pathelement location="${lib.server.dir}/vaadin-${vaadin.version}.jar"/>
+                <pathelement location="${lib.gwt.dir}/gwt-user-${gwt-user.version}.jar"/>
+                <pathelement location="${lib.gwt.dir}/gwt-dev-windows-${gwt-dev-windows.version}.jar"/>
+            </classpath>
+            <jvmarg value="-Xmx256M"/>
+            <arg value="-startupUrl"/>
+            <arg value="/cuba"/>
+            <arg value="-logLevel"/>
+            <arg value="DEBUG"/>
+            <arg value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>
+        </java>
+    </target>
+
     <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
 
     <target name="deploy4test-module">
         <!-- do nothing -->
     </target>
-    
+
 </project>
