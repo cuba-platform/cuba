@@ -6,25 +6,22 @@
  * Author: Konstantin Krivopustov
  * Created: 02.12.2008 11:18:40
  *
- * $Id: UserSessions.java 517 2009-07-08 12:31:10Z krivopustov $
+ * $Id$
  */
 package com.haulmont.cuba.security.sys;
 
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.app.Heartbeat;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.Iterator;
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.io.Serializable;
 
 import org.apache.commons.lang.text.StrBuilder;
 
-public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbeat.Listener
-{
+public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbeat.Listener {
     private static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
 
@@ -92,6 +89,26 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
         return sb.toString();
     }
 
+    public Collection<UserSessionEntity> getUserSessionInfo() {
+        ArrayList<UserSessionEntity> sessionInfoList = new ArrayList<UserSessionEntity>();
+        for (UserSessionInfo nfo : cache.values()) {
+            UserSessionEntity userSession = new UserSessionEntity();
+            userSession.setId(nfo.session.getId());
+            userSession.setLogin(nfo.session.getUser().getLogin());
+            userSession.setUserName(nfo.session.getUser().getName());
+            Date since = TimeProvider.currentTimestamp();
+            since.setTime(nfo.since);
+            userSession.setSince(since);
+            Date last = TimeProvider.currentTimestamp();
+            last.setTime(nfo.lastUsedTs);
+            userSession.setLastUsedTs(last);
+            sessionInfoList.add(userSession);
+        }
+        return sessionInfoList;
+    }
+    public void killSession(UUID id){
+        cache.remove(id);
+    }
     public void processEviction() {
         long now = TimeProvider.currentTimestamp().getTime();
         for (Iterator<UserSessionInfo> it = cache.values().iterator(); it.hasNext();) {

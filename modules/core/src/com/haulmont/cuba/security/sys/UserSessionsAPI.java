@@ -11,8 +11,10 @@
 package com.haulmont.cuba.security.sys;
 
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.UserSessionEntity;
 
 import java.util.UUID;
+import java.util.Collection;
 
 public interface UserSessionsAPI
 {
@@ -21,4 +23,8 @@ public interface UserSessionsAPI
     void remove(UserSession session);
 
     UserSession get(UUID id);
+
+    Collection<UserSessionEntity> getUserSessionInfo();
+
+    void killSession(UUID id);
 }

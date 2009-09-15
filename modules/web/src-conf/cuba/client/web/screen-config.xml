@@ -46,4 +46,7 @@
     <screen id="cuba$ExcelExport"
             template="/com/haulmont/cuba/web/app/ui/export/excel/excel-export.xml"/>
 
+    <screen id="sec$UserSessionEntity.browse"
+            template="/com/haulmont/cuba/web/app/ui/security/session/browse/session-browse.xml"/>
+
 </screen-config>

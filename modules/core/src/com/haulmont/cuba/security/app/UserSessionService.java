@@ -10,8 +10,11 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.security.entity.UserSessionEntity;
+
 import javax.ejb.Local;
 import java.util.UUID;
+import java.util.Collection;
 import java.io.Serializable;
 
 @Local
@@ -20,4 +23,8 @@ public interface UserSessionService
     String JNDI_NAME = "cuba/security/UserSessionService";
 
     void putSessionAttribute(UUID sessionId, String name, Serializable value);
+
+    Collection<UserSessionEntity> getUserSessionInfo();
+
+    void killSession(UUID id);
 }

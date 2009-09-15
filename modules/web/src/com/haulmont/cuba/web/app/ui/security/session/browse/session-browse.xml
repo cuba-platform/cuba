@@ -1,0 +1,36 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.security.session.browse.SessionBrowser"
+        caption="msg://caption"
+>
+    <metadataContext>
+      <deployViews name="/com/haulmont/cuba/web/app/ui/security/session/session.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource id="sessions" class="com.haulmont.cuba.security.entity.UserSessionEntity" view="session.browse">
+            <datasourceClass>com.haulmont.cuba.web.app.ui.security.session.browse.SessionsCollectionDataSouce</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout >
+        <vbox expand="table-panel" spacing="true">
+            <vbox id="table-panel" expand="sessions_table" spacing="true">
+                <table id="sessions_table" editable="false">
+                    <columns>
+                        <column id="id" caption="msg://id"/>
+                        <column id="login" caption="msg://login"/>
+                        <column id="userName" caption="msg://userName"/>
+                        <column id="since" caption="msg://since"/>
+                        <column id="lastUsedTs" caption="msg://lastUsedTs"/>
+                    </columns>
+                    <rows datasource="sessions"/>
+                </table>
+                <hbox align="MIDDLE_RIGHT">
+                    <button action="sessions_table.refresh" caption="msg://refresh"/>
+                    <button action="sessions_table.kill" caption="msg://kill"/>
+                </hbox>
+            </vbox>
+        </vbox>
+    </layout>
+</window>
