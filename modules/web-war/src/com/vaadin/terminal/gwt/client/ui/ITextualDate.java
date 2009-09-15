@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.Date;
 
@@ -23,17 +23,17 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.BrowserInfo;
-import com.itmill.toolkit.terminal.gwt.client.ClientExceptionHandler;
-import com.itmill.toolkit.terminal.gwt.client.ContainerResizedListener;
-import com.itmill.toolkit.terminal.gwt.client.Focusable;
-import com.itmill.toolkit.terminal.gwt.client.LocaleNotLoadedException;
-import com.itmill.toolkit.terminal.gwt.client.LocaleService;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.ClientExceptionHandler;
+import com.vaadin.terminal.gwt.client.ContainerResizedListener;
+import com.vaadin.terminal.gwt.client.Focusable;
+import com.vaadin.terminal.gwt.client.LocaleNotLoadedException;
+import com.vaadin.terminal.gwt.client.LocaleService;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
 
-public class ITextualDate extends IDateField implements Paintable, Field,
+public class ITextualDate extends VDateField implements Paintable, Field,
         ChangeListener, ContainerResizedListener, Focusable {
 
     private static final String PARSE_ERROR_CLASSNAME = CLASSNAME
@@ -53,7 +53,7 @@ public class ITextualDate extends IDateField implements Paintable, Field,
         super();
         text = new TextBox();
         // use normal textfield styles as a basis
-        text.setStyleName(ITextField.CLASSNAME);
+        text.setStyleName(VTextField.CLASSNAME);
         // add datefield spesific style name also
         text.addStyleName(CLASSNAME + "-textfield");
         text.addChangeListener(this);
@@ -179,38 +179,38 @@ public class ITextualDate extends IDateField implements Paintable, Field,
             // immediate)
             client.updateVariable(id, "year",
                     date != null ? date.getYear() + 1900 : -1,
-                    currentResolution == IDateField.RESOLUTION_YEAR
+                    currentResolution == VDateField.RESOLUTION_YEAR
                             && immediate);
-            if (currentResolution >= IDateField.RESOLUTION_MONTH) {
+            if (currentResolution >= VDateField.RESOLUTION_MONTH) {
                 client.updateVariable(id, "month", date != null ? date
                         .getMonth() + 1 : -1,
-                        currentResolution == IDateField.RESOLUTION_MONTH
+                        currentResolution == VDateField.RESOLUTION_MONTH
                                 && immediate);
             }
-            if (currentResolution >= IDateField.RESOLUTION_DAY) {
+            if (currentResolution >= VDateField.RESOLUTION_DAY) {
                 client.updateVariable(id, "day", date != null ? date.getDate()
-                        : -1, currentResolution == IDateField.RESOLUTION_DAY
+                        : -1, currentResolution == VDateField.RESOLUTION_DAY
                         && immediate);
             }
-            if (currentResolution >= IDateField.RESOLUTION_HOUR) {
+            if (currentResolution >= VDateField.RESOLUTION_HOUR) {
                 client.updateVariable(id, "hour", date != null ? date
                         .getHours() : -1,
-                        currentResolution == IDateField.RESOLUTION_HOUR
+                        currentResolution == VDateField.RESOLUTION_HOUR
                                 && immediate);
             }
-            if (currentResolution >= IDateField.RESOLUTION_MIN) {
+            if (currentResolution >= VDateField.RESOLUTION_MIN) {
                 client.updateVariable(id, "min", date != null ? date
                         .getMinutes() : -1,
-                        currentResolution == IDateField.RESOLUTION_MIN
+                        currentResolution == VDateField.RESOLUTION_MIN
                                 && immediate);
             }
-            if (currentResolution >= IDateField.RESOLUTION_SEC) {
+            if (currentResolution >= VDateField.RESOLUTION_SEC) {
                 client.updateVariable(id, "sec", date != null ? date
                         .getSeconds() : -1,
-                        currentResolution == IDateField.RESOLUTION_SEC
+                        currentResolution == VDateField.RESOLUTION_SEC
                                 && immediate);
             }
-            if (currentResolution == IDateField.RESOLUTION_MSEC) {
+            if (currentResolution == VDateField.RESOLUTION_MSEC) {
                 client.updateVariable(id, "msec",
                         date != null ? getMilliseconds() : -1, immediate);
             }
@@ -220,10 +220,10 @@ public class ITextualDate extends IDateField implements Paintable, Field,
 
     private String cleanFormat(String format) {
         // Remove unnecessary d & M if resolution is too low
-        if (currentResolution < IDateField.RESOLUTION_DAY) {
+        if (currentResolution < VDateField.RESOLUTION_DAY) {
             format = format.replaceAll("d", "");
         }
-        if (currentResolution < IDateField.RESOLUTION_MONTH) {
+        if (currentResolution < VDateField.RESOLUTION_MONTH) {
             format = format.replaceAll("M", "");
         }
 

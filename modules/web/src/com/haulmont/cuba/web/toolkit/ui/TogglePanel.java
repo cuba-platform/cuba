@@ -10,9 +10,9 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.itmill.toolkit.terminal.PaintException;
-import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.ui.*;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.ui.*;
 
 import java.util.Map;
 import java.lang.reflect.Method;

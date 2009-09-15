@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.Iterator;
 import java.util.Arrays;
@@ -28,10 +28,10 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
 
 public class IEmbedded extends HTML implements Paintable {
     private static String CLASSNAME = "i-embedded";
@@ -202,7 +202,7 @@ public class IEmbedded extends HTML implements Paintable {
      * @return
      */
     private String getSrc(UIDL uidl, ApplicationConnection client) {
-        String url = client.translateToolkitUri(uidl.getStringAttribute("src"));
+        String url = client.translateVaadinUri(uidl.getStringAttribute("src"));
         if (url == null) {
             return "";
         }

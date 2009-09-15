@@ -20,7 +20,7 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
-import com.itmill.toolkit.terminal.Resource;
+import com.vaadin.terminal.Resource;
 
 import java.util.Collection;
 import java.util.Map;

@@ -5,11 +5,11 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import com.itmill.toolkit.terminal.gwt.client.*;
-import com.itmill.toolkit.terminal.gwt.client.ui.Table;
-import com.itmill.toolkit.terminal.gwt.client.ui.ActionOwner;
-import com.itmill.toolkit.terminal.gwt.client.ui.Action;
-import com.itmill.toolkit.terminal.gwt.client.ui.IContextMenu;
+import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.Table;
+import com.vaadin.terminal.gwt.client.ui.ActionOwner;
+import com.vaadin.terminal.gwt.client.ui.Action;
+import com.vaadin.terminal.gwt.client.ui.VContextMenu;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 import java.util.*;
@@ -681,7 +681,7 @@ public class IPagingTable
             }
         }
 
-        class VisibleColumnsMenu extends IContextMenu {
+        class VisibleColumnsMenu extends VContextMenu {
             VisibleColumnsMenu() {
                 super();
                 setActionOwner(TableHeader.this);

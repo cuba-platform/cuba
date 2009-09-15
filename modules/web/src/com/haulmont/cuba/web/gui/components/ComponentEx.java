@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.itmill.toolkit.ui.Component;
+import com.vaadin.ui.Component;
 
 public interface ComponentEx extends Component {
      com.haulmont.cuba.gui.components.Component asComponent();

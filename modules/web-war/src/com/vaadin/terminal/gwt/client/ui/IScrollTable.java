@@ -14,13 +14,13 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.ScrollListener;
 import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.UIDL;
 
 import java.util.Iterator;
 

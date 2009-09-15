@@ -10,7 +10,7 @@
 package com.haulmont.cuba.web.app.ui;
 
 import com.haulmont.cuba.web.gui.Window;
-import com.itmill.toolkit.ui.ComponentContainer;
+import com.vaadin.ui.ComponentContainer;
 
 import java.util.Map;
 

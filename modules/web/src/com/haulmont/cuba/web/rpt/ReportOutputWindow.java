@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.web.rpt;
 
-import com.itmill.toolkit.ui.Window;
+import com.vaadin.ui.Window;
 
 public class ReportOutputWindow extends Window
 {

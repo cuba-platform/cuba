@@ -17,9 +17,9 @@ import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.security.global.UserSession;
-import com.itmill.toolkit.event.ItemClickEvent;
-import com.itmill.toolkit.ui.Tree;
-import com.itmill.toolkit.ui.Window;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Window;
 
 import java.util.Collections;
 import java.util.List;

@@ -5,10 +5,10 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.itmill.toolkit.terminal.FileResource;
-import com.itmill.toolkit.terminal.StreamResource;
-import com.itmill.toolkit.terminal.ApplicationResource;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.FileResource;
+import com.vaadin.terminal.StreamResource;
+import com.vaadin.terminal.ApplicationResource;
 
 import java.io.File;
 import java.io.InputStream;
@@ -24,7 +24,7 @@ import java.util.Map;
  * Date: 22.06.2009
  */
 public class Embedded
-        extends AbstractComponent<com.itmill.toolkit.ui.Embedded>
+        extends AbstractComponent<com.vaadin.ui.Embedded>
         implements com.haulmont.cuba.gui.components.Embedded, Component.Disposable
 {
     private Map<String, String> parameters = null;
@@ -33,7 +33,7 @@ public class Embedded
     private boolean disposed;
 
     public Embedded() {
-        component = new com.itmill.toolkit.ui.Embedded();
+        component = new com.vaadin.ui.Embedded();
         provideType();
     }
 
@@ -124,13 +124,13 @@ public class Embedded
     private void provideType() {
         switch (type) {
             case OBJECT:
-                component.setType(com.itmill.toolkit.ui.Embedded.TYPE_OBJECT);
+                component.setType(com.vaadin.ui.Embedded.TYPE_OBJECT);
                 break;
             case IMAGE:
-                component.setType(com.itmill.toolkit.ui.Embedded.TYPE_IMAGE);
+                component.setType(com.vaadin.ui.Embedded.TYPE_IMAGE);
                 break;
             case BROWSER:
-                component.setType(com.itmill.toolkit.ui.Embedded.TYPE_BROWSER);
+                component.setType(com.vaadin.ui.Embedded.TYPE_BROWSER);
                 break;
         }
     }

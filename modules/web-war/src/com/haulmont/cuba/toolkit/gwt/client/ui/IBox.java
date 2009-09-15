@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.itmill.toolkit.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.*;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -39,8 +39,8 @@ public class IBox extends FlowPanel //todo gorodnov: make table cell wrapper com
         this.client = client;
         paintableId = uidl.getId();
 
-        for (final Iterator<UIDL> it = uidl.getChildIterator(); it.hasNext();) {
-            final UIDL childUIDL = it.next();
+        for (final Iterator<Object> it = uidl.getChildIterator(); it.hasNext();) {
+            final UIDL childUIDL = (UIDL) it.next();
             final Paintable child = client.getPaintable(childUIDL);
             add((Widget) child);
             paintChild(child, childUIDL);

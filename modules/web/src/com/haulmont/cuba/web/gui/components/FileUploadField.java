@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.web.gui.Window;
-import com.itmill.toolkit.ui.Upload;
+import com.vaadin.ui.Upload;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;

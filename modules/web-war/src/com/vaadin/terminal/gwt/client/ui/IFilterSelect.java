@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,13 +30,13 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.BrowserInfo;
-import com.itmill.toolkit.terminal.gwt.client.Focusable;
-import com.itmill.toolkit.terminal.gwt.client.ITooltip;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.Focusable;
+import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
 
 /**
  *
@@ -55,7 +55,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
             key = uidl.getStringAttribute("key");
             caption = uidl.getStringAttribute("caption");
             if (uidl.hasAttribute("icon")) {
-                iconUri = client.translateToolkitUri(uidl
+                iconUri = client.translateVaadinUri(uidl
                         .getStringAttribute("icon"));
             }
         }
@@ -88,7 +88,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
         }
     }
 
-    public class SuggestionPopup extends IToolkitOverlay implements
+    public class SuggestionPopup extends VOverlay implements
             PositionCallback, PopupListener {
 
         private static final String Z_INDEX = "30000";
@@ -582,7 +582,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
         });
 
         panel.add(selectedItemIcon);
-        tb.sinkEvents(ITooltip.TOOLTIP_EVENTS);
+        tb.sinkEvents(VTooltip.TOOLTIP_EVENTS);
         panel.add(tb);
         panel.add(popupOpener);
         initWidget(panel);

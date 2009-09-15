@@ -10,13 +10,13 @@
  */
 package com.haulmont.cuba.web.app.ui;
 
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.terminal.Sizeable;
+import com.vaadin.ui.*;
+import com.vaadin.terminal.Sizeable;
 
 public class DemoScreen extends com.haulmont.cuba.web.gui.Window
 {
     public void init() {
-        component.getWindow().showNotification("Opening screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
+        component.getWindow().showNotification("Opening screen", com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
 
         final OrderedLayout vbox = new OrderedLayout(OrderedLayout.ORIENTATION_VERTICAL);
         vbox.addComponent(createIFrame());
@@ -78,7 +78,7 @@ public class DemoScreen extends com.haulmont.cuba.web.gui.Window
     }
 
     public boolean onClose(String actionId) {
-        component.getWindow().showNotification("Closing screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
+        component.getWindow().showNotification("Closing screen", com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
         return true;
     }
 }

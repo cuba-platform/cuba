@@ -13,9 +13,9 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TableActionsHelper;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.chile.core.model.MetaClass;
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.Table;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Table;
 
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
     private Handler handler;
 
     @Override
-    protected com.itmill.toolkit.ui.Component createLayout() {
+    protected com.vaadin.ui.Component createLayout() {
         final VerticalLayout layout = (VerticalLayout) super.createLayout();
 
         HorizontalLayout okbar = new HorizontalLayout();
@@ -42,7 +42,7 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
         okbar.addComponent(cancelButton);
         
         layout.addComponent(okbar);
-        layout.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
+        layout.setComponentAlignment(okbar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         return layout;
     }

@@ -5,9 +5,9 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
-import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.ui.IScrollTable;
 
 /**
  * User: Nikolay Gorodnov

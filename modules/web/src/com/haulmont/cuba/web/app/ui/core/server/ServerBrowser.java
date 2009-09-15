@@ -31,7 +31,7 @@ public class ServerBrowser extends AbstractWindow
         TableActionsHelper helper = new TableActionsHelper(this, table);
         helper.createRefreshAction();
 
-        com.itmill.toolkit.ui.Table impl = (com.itmill.toolkit.ui.Table) ComponentsHelper.unwrap(table);
+        com.vaadin.ui.Table impl = (com.vaadin.ui.Table) ComponentsHelper.unwrap(table);
         impl.setPageLength(10);
     }
 }

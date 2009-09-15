@@ -4,11 +4,11 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
-import com.itmill.toolkit.terminal.gwt.client.*;
-import com.itmill.toolkit.terminal.gwt.client.ui.Action;
-import com.itmill.toolkit.terminal.gwt.client.ui.ActionOwner;
-import com.itmill.toolkit.terminal.gwt.client.ui.IContextMenu;
-import com.itmill.toolkit.terminal.gwt.client.ui.Table;
+import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.Action;
+import com.vaadin.terminal.gwt.client.ui.ActionOwner;
+import com.vaadin.terminal.gwt.client.ui.VContextMenu;
+import com.vaadin.terminal.gwt.client.ui.Table;
 
 import java.util.*;
 
@@ -547,7 +547,7 @@ public class ITreeTable
             }
         }
 
-        class VisibleColumnsMenu extends IContextMenu {
+        class VisibleColumnsMenu extends VContextMenu {
             VisibleColumnsMenu() {
                 super();
                 setActionOwner(TableHeader.this);

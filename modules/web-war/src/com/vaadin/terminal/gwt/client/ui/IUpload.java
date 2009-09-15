@@ -14,13 +14,13 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
 
 public class IUpload extends FormPanel implements Paintable, ClickListener,
         FormHandler {

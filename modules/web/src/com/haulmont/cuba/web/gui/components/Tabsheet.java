@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
-import com.itmill.toolkit.ui.TabSheet;
+import com.vaadin.ui.TabSheet;
 
 import java.util.*;
 
@@ -36,7 +36,7 @@ public class Tabsheet
 
     protected Map<Component, String> components = new HashMap<Component, String>();
 
-    protected Set<com.itmill.toolkit.ui.Component> lazyTabs = new HashSet<com.itmill.toolkit.ui.Component>();
+    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<com.vaadin.ui.Component>();
 
     protected Set<TabChangeListener> listeners = new HashSet<TabChangeListener>();
 
@@ -107,7 +107,7 @@ public class Tabsheet
         this.tabs.put(name, tab);
         this.components.put(component, name);
 
-        final com.itmill.toolkit.ui.Component tabComponent = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component tabComponent = ComponentsHelper.unwrap(component);
         tabComponent.setSizeFull();
         
         this.component.addTab(tabComponent);
@@ -127,7 +127,7 @@ public class Tabsheet
         tabs.put(name, tab);
         components.put(tabContent, name);
 
-        final com.itmill.toolkit.ui.Component tabComponent = ComponentsHelper.unwrap(tabContent);
+        final com.vaadin.ui.Component tabComponent = ComponentsHelper.unwrap(tabContent);
         tabComponent.setSizeFull();
 
         this.component.addTab(tabComponent);
@@ -146,7 +146,7 @@ public class Tabsheet
     }
 
     public Tab getTab() {
-        final com.itmill.toolkit.ui.Component component = this.component.getSelectedTab();
+        final com.vaadin.ui.Component component = this.component.getSelectedTab();
         final String name = components.get(component);
         return tabs.get(name);
     }
@@ -216,7 +216,7 @@ public class Tabsheet
         }
 
         public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
-            com.itmill.toolkit.ui.Component selectedTab = Tabsheet.this.component.getSelectedTab();
+            com.vaadin.ui.Component selectedTab = Tabsheet.this.component.getSelectedTab();
             if (selectedTab == tabContent && lazyTabs.remove(tabContent)) {
                 Component comp;
                 try {
@@ -228,7 +228,7 @@ public class Tabsheet
                 }
 
                 tabContent.add(comp);
-                com.itmill.toolkit.ui.Component impl = ComponentsHelper.unwrap(comp);
+                com.vaadin.ui.Component impl = ComponentsHelper.unwrap(comp);
                 impl.setSizeFull();
 
                 final Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(Tabsheet.this);

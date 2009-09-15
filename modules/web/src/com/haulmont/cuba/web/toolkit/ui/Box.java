@@ -10,12 +10,12 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.itmill.toolkit.ui.AbstractComponentContainer;
-import com.itmill.toolkit.ui.Component;
-import com.itmill.toolkit.ui.ComponentContainer;
-import com.itmill.toolkit.ui.Layout;
-import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.terminal.PaintException;
+import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Layout;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.PaintException;
 
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +73,12 @@ public abstract class Box extends AbstractComponentContainer
         spacing = enabled;
     }
 
+    @Deprecated
     public boolean isSpacingEnabled() {
+        return spacing;
+    }
+
+    public boolean isSpacing() {
         return spacing;
     }
 }

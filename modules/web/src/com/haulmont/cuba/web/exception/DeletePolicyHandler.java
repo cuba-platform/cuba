@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.DeletePolicyException;
 import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.ui.Window;
+import com.vaadin.ui.Window;
 
 public class DeletePolicyHandler extends AbstractExceptionHandler {
     public DeletePolicyHandler() {

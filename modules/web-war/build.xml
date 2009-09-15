@@ -13,10 +13,10 @@
     <property file="${project.dir}/lib.properties"/>
 
     <property name="web.src.dir" location="${module.dir}/web"/>
-    <property name="themes.src.dir" location="${module.dir}/css/ITMILL/themes"/>
+    <property name="themes.src.dir" location="${module.dir}/css/VAADIN/themes"/>
 
-    <property name="widgets.out.dir" value="${build.dir}/${module.name}/ITMILL/widgetsets"/>
-    <property name="themes.out.dir" value="${build.dir}/${module.name}/ITMILL/themes"/>
+    <property name="widgets.out.dir" value="${build.dir}/${module.name}/VAADIN/widgetsets"/>
+    <property name="themes.out.dir" value="${build.dir}/${module.name}/VAADIN/themes"/>
 
     <fileset id="gwt-lib-fs" dir="${lib.gwt.dir}">
         <include name="*.jar"/>
@@ -87,7 +87,7 @@
             <arg value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>
             <classpath>
                 <pathelement path="${java.src.dir}"/>
-                <pathelement location="${lib.server.dir}/itmill-toolkit-${itmill-toolkit.version}.jar"/>
+                <pathelement location="${lib.server.dir}/vaadin-${vaadin.version}.jar"/>
                 <pathelement location="${lib.gwt.dir}/gwt-user-${gwt-user.version}.jar"/>
                 <pathelement location="${lib.gwt.dir}/gwt-dev-windows-${gwt-dev-windows.version}.jar"/>
             </classpath>

@@ -12,10 +12,10 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.ui.VerticalLayout;
-import com.itmill.toolkit.ui.Window;
-import com.itmill.toolkit.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Button;
 
 public class ExceptionDialog extends Window
 {

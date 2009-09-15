@@ -11,10 +11,10 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.itmill.toolkit.ui.Layout;
+import com.vaadin.ui.Layout;
 import org.dom4j.Element;
 
-class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
+class AbstractComponent<T extends com.vaadin.ui.Component>
     implements
         Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable
 {
@@ -76,8 +76,8 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
     }
 
     public void requestFocus() {
-        if (component instanceof com.itmill.toolkit.ui.Component.Focusable) {
-            ((com.itmill.toolkit.ui.Component.Focusable) component).focus();
+        if (component instanceof com.vaadin.ui.Component.Focusable) {
+            ((com.vaadin.ui.Component.Focusable) component).focus();
         }
     }
 
@@ -119,7 +119,7 @@ class AbstractComponent<T extends com.itmill.toolkit.ui.Component>
 
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.itmill.toolkit.ui.Component component = this.component.getParent();
+        final com.vaadin.ui.Component component = this.component.getParent();
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this.component, ComponentsHelper.convertAlignment(alignment));
         }

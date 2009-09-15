@@ -15,16 +15,16 @@ import org.apache.commons.lang.StringUtils;
 
 public class Button
     extends
-        AbstractComponent<com.itmill.toolkit.ui.Button>
+        AbstractComponent<com.vaadin.ui.Button>
     implements 
         com.haulmont.cuba.gui.components.Button, Component.Wrapper
 {
     private Action action;
 
     public Button() {
-        component = new com.itmill.toolkit.ui.Button();
-        component.addListener(new com.itmill.toolkit.ui.Button.ClickListener() {
-            public void buttonClick(com.itmill.toolkit.ui.Button.ClickEvent event) {
+        component = new com.vaadin.ui.Button();
+        component.addListener(new com.vaadin.ui.Button.ClickListener() {
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (action != null) {
                     action.actionPerform(Button.this);
                 }

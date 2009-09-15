@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.web.toolkit.data;
 
-import com.itmill.toolkit.data.Container;
+import com.vaadin.data.Container;
 
 public interface TreeTableContainer
         extends Container.Hierarchical

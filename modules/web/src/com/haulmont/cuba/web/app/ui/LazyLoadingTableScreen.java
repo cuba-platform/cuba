@@ -23,12 +23,12 @@ import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.gui.Window;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.ui.ComponentContainer;
-import com.itmill.toolkit.ui.CustomComponent;
-import com.itmill.toolkit.ui.Table;
-import com.itmill.toolkit.ui.VerticalLayout;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,7 +74,7 @@ public class LazyLoadingTableScreen extends Window
         }
     }
 
-    private class TableTestContainer implements com.itmill.toolkit.data.Container.Sortable
+    private class TableTestContainer implements com.vaadin.data.Container.Sortable
     {
         private MetaClass metaClass = MetadataProvider.getSession().getClass(Server.class);
 

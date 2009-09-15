@@ -5,8 +5,8 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.*;
-import com.itmill.toolkit.terminal.gwt.client.ui.ShortcutActionHandler;
+import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
 
 import java.util.Set;
 

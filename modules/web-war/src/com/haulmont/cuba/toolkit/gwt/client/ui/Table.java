@@ -17,14 +17,14 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
-import com.itmill.toolkit.terminal.gwt.client.*;
-import com.itmill.toolkit.terminal.gwt.client.ui.Action;
-import com.itmill.toolkit.terminal.gwt.client.ui.ActionOwner;
-import com.itmill.toolkit.terminal.gwt.client.ui.TreeAction;
+import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.Action;
+import com.vaadin.terminal.gwt.client.ui.ActionOwner;
+import com.vaadin.terminal.gwt.client.ui.TreeAction;
 
 import java.util.*;
 
-public abstract class Table extends FlowPanel implements com.itmill.toolkit.terminal.gwt.client.ui.Table {
+public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table {
     public static final String CLASSNAME = "i-table";
 
     public static final char ALIGN_CENTER = 'c';
@@ -41,7 +41,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
 
     protected boolean immediate;
 
-    protected int selectMode = com.itmill.toolkit.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
+    protected int selectMode = com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
 
     protected final HashSet selectedRowKeys = new HashSet();
 
@@ -173,13 +173,13 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
 
         if (uidl.hasAttribute("selectmode")) {
             if (uidl.getBooleanAttribute("readonly")) {
-                selectMode = com.itmill.toolkit.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
+                selectMode = com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
             } else if (uidl.getStringAttribute("selectmode").equals("multi")) {
-                selectMode = com.itmill.toolkit.terminal.gwt.client.ui.Table.SELECT_MODE_MULTI;
+                selectMode = com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_MULTI;
             } else if (uidl.getStringAttribute("selectmode").equals("single")) {
-                selectMode = com.itmill.toolkit.terminal.gwt.client.ui.Table.SELECT_MODE_SINGLE;
+                selectMode = com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_SINGLE;
             } else {
-                selectMode = com.itmill.toolkit.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
+                selectMode = com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
             }
         }
 
@@ -235,7 +235,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
             actionMap.put(key + "_c", caption);
             if (action.hasAttribute("icon")) {
                 // TODO need some uri handling ??
-                actionMap.put(key + "_i", client.translateToolkitUri(action
+                actionMap.put(key + "_i", client.translateVaadinUri(action
                         .getStringAttribute("icon")));
             }
         }
@@ -1673,7 +1673,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
                                     paintableId,
                                     "clickEvent",
                                     details.toString(),
-                                    (dbl || selectMode > com.itmill.toolkit.terminal.gwt.client.ui.Table.SELECT_MODE_NONE || immediate));
+                                    (dbl || selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE || immediate));
                 }
             }
 
@@ -1710,7 +1710,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
             }
 
             protected void handleRowClick(Event event) {
-                if (selectMode > com.itmill.toolkit.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
+                if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
                     if (!nullSelectionDisallowed || !isSelected()) {
                         toggleSelection();
                         // Note: changing the immediateness of this might
@@ -1741,7 +1741,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
             public void toggleSelection() {
                 selected = !selected;
                 if (selected) {
-                    if (selectMode == com.itmill.toolkit.terminal.gwt.client.ui.Table.SELECT_MODE_SINGLE) {
+                    if (selectMode == com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_SINGLE) {
                         deselectAll();
                     }
                     selectedRowKeys.add(String.valueOf(rowKey));
@@ -1756,7 +1756,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
              * (non-Javadoc)
              *
              * @see
-             * com.itmill.toolkit.terminal.gwt.client.ui.IActionOwner#getActions
+             * com.vaadin.terminal.gwt.client.ui.IActionOwner#getActions
              * ()
              */
             public Action[] getActions() {
@@ -1972,7 +1972,7 @@ public abstract class Table extends FlowPanel implements com.itmill.toolkit.term
         String s = uidl.getStringAttribute("caption");
         if (uidl.hasAttribute("icon")) {
             s = "<img src=\""
-                    + client.translateToolkitUri(uidl
+                    + client.translateVaadinUri(uidl
                             .getStringAttribute("icon"))
                     + "\" alt=\"icon\" class=\"i-icon\">" + s;
         }

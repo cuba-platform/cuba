@@ -29,14 +29,14 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.Validator;
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.ui.TextField;
-import com.itmill.toolkit.event.ItemClickEvent;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.event.ItemClickEvent;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -99,7 +99,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
     }
 
     protected void addGeneratedColumn(Object id, Object generator) {
-        component.addGeneratedColumn(id, (com.itmill.toolkit.ui.Table.ColumnGenerator) generator);
+        component.addGeneratedColumn(id, (com.vaadin.ui.Table.ColumnGenerator) generator);
     }
 
     protected void removeGeneratedColumn(Object id) {
@@ -206,7 +206,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         });
     }
 
-    protected Collection<MetaPropertyPath> createColumns(com.itmill.toolkit.data.Container ds) {
+    protected Collection<MetaPropertyPath> createColumns(com.vaadin.data.Container ds) {
         @SuppressWarnings({"unchecked"})
         final Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
         for (MetaPropertyPath propertyPath : properties) {
@@ -244,9 +244,9 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         return properties;
     }
 
-    protected void refreshColumns(com.itmill.toolkit.data.Container ds) {
+    protected void refreshColumns(com.vaadin.data.Container ds) {
         @SuppressWarnings({"unchecked"})
-        final Collection<MetaPropertyPath> propertyIds = ds.getContainerPropertyIds();
+        final Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
         for (final MetaPropertyPath id : propertyIds) {
             removeGeneratedColumn(id);
         }
@@ -331,11 +331,11 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
     public void setRowHeaderMode(com.haulmont.cuba.gui.components.Table.RowHeaderMode rowHeaderMode) {
         switch (rowHeaderMode) {
             case NONE: {
-                component.setRowHeaderMode(com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_HIDDEN);
+                component.setRowHeaderMode(com.vaadin.ui.Table.ROW_HEADER_MODE_HIDDEN);
                 break;
             }
             case ICON: {
-                component.setRowHeaderMode(com.itmill.toolkit.ui.Table.ROW_HEADER_MODE_ICON_ONLY);
+                component.setRowHeaderMode(com.vaadin.ui.Table.ROW_HEADER_MODE_ICON_ONLY);
                 break;
             }
             default: {
@@ -387,7 +387,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         this.styleProvider = styleProvider;
         if (styleProvider == null) { component.setCellStyleGenerator(null); return; }
 
-        component.setCellStyleGenerator(new com.itmill.toolkit.ui.Table.CellStyleGenerator () {
+        component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator () {
             public String getStyle(Object itemId, Object propertyId) {
                 @SuppressWarnings({"unchecked"})
                 final Entity item = datasource.getItem(itemId);
@@ -592,19 +592,19 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         }
     }
 
-    protected abstract class LinkGenerator implements com.itmill.toolkit.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+    protected abstract class LinkGenerator implements com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
         protected Table.Column column;
 
         public LinkGenerator(Table.Column column) {
             this.column = column;
         }
 
-        public com.itmill.toolkit.ui.Component generateCell(AbstractSelect source, final Object itemId, Object columnId) {
+        public com.vaadin.ui.Component generateCell(AbstractSelect source, final Object itemId, Object columnId) {
             final Item item = source.getItem(itemId);
             final Property property = item.getItemProperty(columnId);
             final Object value = property.getValue();
 
-            final com.itmill.toolkit.ui.Button component = new Button();
+            final com.vaadin.ui.Button component = new Button();
             component.setData(value);
             component.setCaption(value == null ? "" : property.toString());
             component.setStyleName("link");
@@ -645,7 +645,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
             return component;
         }
 
-        public Component generateCell(com.itmill.toolkit.ui.Table source, Object itemId, Object columnId) {
+        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
 
@@ -676,8 +676,8 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
         }
     }
 
-    private class ReadOnlyDatatypeGenerator implements com.itmill.toolkit.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
-        protected Component generateCell(com.itmill.toolkit.ui.AbstractSelect source, Object itemId, Object columnId) {
+    private class ReadOnlyDatatypeGenerator implements com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+        protected Component generateCell(com.vaadin.ui.AbstractSelect source, Object itemId, Object columnId) {
             Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
@@ -687,7 +687,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
             return label;
         }
 
-        public Component generateCell(com.itmill.toolkit.ui.Table source, Object itemId, Object columnId) {
+        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
 
@@ -697,10 +697,10 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
     }
 
     private class ReadOnlyBooleanDatatypeGenerator
-            implements com.itmill.toolkit.ui.Table.ColumnGenerator,
+            implements com.vaadin.ui.Table.ColumnGenerator,
             TableSupport.ColumnGenerator
     {
-        public Component generateCell(com.itmill.toolkit.ui.Table source, Object itemId, Object columnId) {
+        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
@@ -712,7 +712,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
-            final com.itmill.toolkit.ui.CheckBox checkBox = new com.itmill.toolkit.ui.CheckBox();
+            final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
             checkBox.setValue(BooleanUtils.toBoolean((Boolean) value));
             checkBox.setEnabled(false);
 
@@ -722,23 +722,23 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
 
     protected class FieldFactory extends BaseFieldFactory {
         @Override
-        public com.itmill.toolkit.ui.Field createField(Class type, com.itmill.toolkit.ui.Component uiContext) {
+        public com.vaadin.ui.Field createField(Class type, com.vaadin.ui.Component uiContext) {
             return super.createField(type, uiContext);
         }
 
         @Override
-        public com.itmill.toolkit.ui.Field createField(Property property, com.itmill.toolkit.ui.Component uiContext) {
+        public com.vaadin.ui.Field createField(Property property, com.vaadin.ui.Component uiContext) {
             return super.createField(property, uiContext);
         }
 
         @Override
-        public com.itmill.toolkit.ui.Field createField(Item item, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
+        public com.vaadin.ui.Field createField(Item item, Object propertyId, com.vaadin.ui.Component uiContext) {
             return super.createField(item, propertyId, uiContext);
         }
 
         @Override
-        public com.itmill.toolkit.ui.Field createField(com.itmill.toolkit.data.Container container, Object itemId, Object propertyId, com.itmill.toolkit.ui.Component uiContext) {
-            final com.itmill.toolkit.ui.Field field;
+        public com.vaadin.ui.Field createField(com.vaadin.data.Container container, Object itemId, Object propertyId, com.vaadin.ui.Component uiContext) {
+            final com.vaadin.ui.Field field;
             MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
             final Table.Column column = columns.get(propertyPath);
             final Range range = propertyPath.getRange();
@@ -748,7 +748,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
                     final CollectionDatasource optionsDatasource = getOptionsDatasource(range.asClass(), column);
                     lookupField.setOptionsDatasource(optionsDatasource);
 
-                    field = (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
+                    field = (com.vaadin.ui.Field) ComponentsHelper.unwrap(lookupField);
                 } else if (range.isEnum()) {
                     final LookupField lookupField = new LookupField();
                     if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
@@ -756,20 +756,20 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
                     lookupField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
                     lookupField.setOptionsList(range.asEnumiration().getValues());
 
-                    field = (com.itmill.toolkit.ui.Field) ComponentsHelper.unwrap(lookupField);
+                    field = (com.vaadin.ui.Field) ComponentsHelper.unwrap(lookupField);
                 } else {
                     field = super.createField(container, itemId, propertyId, uiContext);
                 }
             } else {
                 field = super.createField(container, itemId, propertyId, uiContext);
             }
-            ((com.itmill.toolkit.ui.AbstractField) field).setImmediate(true);
+            ((com.vaadin.ui.AbstractField) field).setImmediate(true);
             if (field instanceof TextField) {
                 ((TextField) field).setNullRepresentation("");
             }
 
-            if (field instanceof com.itmill.toolkit.ui.TextField) {
-                ((com.itmill.toolkit.ui.TextField) field).setNullRepresentation("");
+            if (field instanceof com.vaadin.ui.TextField) {
+                ((com.vaadin.ui.TextField) field).setNullRepresentation("");
             }
 
             boolean required = requiredColumns.containsKey(column);
@@ -781,7 +781,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
             if (validators != null) {
                 for (final com.haulmont.cuba.gui.components.Field.Validator validator : validators) {
 
-                    if (field instanceof com.itmill.toolkit.ui.AbstractField) {
+                    if (field instanceof com.vaadin.ui.AbstractField) {
 
                         field.addValidator(new Validator() {
                             public void validate(Object value) throws InvalidValueException {
@@ -803,7 +803,7 @@ public abstract class AbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.T
                                 }
                             }
                         });
-                        ((com.itmill.toolkit.ui.AbstractField) field).setValidationVisible(false);
+                        ((com.vaadin.ui.AbstractField) field).setValidationVisible(false);
                     }
                 }
             }

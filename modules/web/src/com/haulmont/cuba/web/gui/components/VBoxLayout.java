@@ -24,7 +24,7 @@ public class VBoxLayout extends AbstractContainer implements BoxLayout {
     }
 
     public void expand(Component component, String height, String width) {
-        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
         ComponentsHelper.expand(this, expandedComponent, height, width);
     }
 }

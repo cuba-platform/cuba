@@ -11,7 +11,7 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.terminal.Terminal;
+import com.vaadin.terminal.Terminal;
 
 import java.util.LinkedList;
 

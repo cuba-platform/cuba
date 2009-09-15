@@ -1,9 +1,9 @@
 package com.haulmont.cuba.web.toolkit.data.util;
 
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
-import com.itmill.toolkit.data.Container;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.util.ContainerHierarchicalWrapper;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.ContainerHierarchicalWrapper;
 
 import java.util.*;
 

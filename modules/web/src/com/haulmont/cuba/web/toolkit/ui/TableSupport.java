@@ -9,9 +9,9 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.itmill.toolkit.ui.AbstractSelect;
-import com.itmill.toolkit.ui.Component;
-import com.itmill.toolkit.data.Container;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Component;
+import com.vaadin.data.Container;
 
 import java.util.Collection;
 

@@ -68,8 +68,8 @@ public class UserBrowser extends AbstractLookup {
     }
 
     public boolean close(String actionId) {
-        final com.itmill.toolkit.ui.Window window = ComponentsHelper.unwrap(this).getWindow();
-        window.showNotification("Closing screen", com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
+        final com.vaadin.ui.Window window = ComponentsHelper.unwrap(this).getWindow();
+        window.showNotification("Closing screen", com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
         return super.close(actionId);
     }
 }

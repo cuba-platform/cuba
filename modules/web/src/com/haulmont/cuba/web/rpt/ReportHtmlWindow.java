@@ -10,9 +10,9 @@
  */
 package com.haulmont.cuba.web.rpt;
 
-import com.itmill.toolkit.ui.Window;
-import com.itmill.toolkit.ui.VerticalLayout;
-import com.itmill.toolkit.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Label;
 
 public class ReportHtmlWindow extends ReportOutputWindow
 {

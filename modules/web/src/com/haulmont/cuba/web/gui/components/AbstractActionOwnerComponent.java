@@ -2,7 +2,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.itmill.toolkit.event.Action;
+import com.vaadin.event.Action;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class AbstractActionOwnerComponent<T extends com.itmill.toolkit.ui.Component> extends AbstractComponent<T> {
+public class AbstractActionOwnerComponent<T extends com.vaadin.ui.Component> extends AbstractComponent<T> {
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
     protected BiMap<com.haulmont.cuba.gui.components.Action, Action> actions = HashBiMap.create();
 
@@ -38,8 +38,8 @@ public class AbstractActionOwnerComponent<T extends com.itmill.toolkit.ui.Compon
         return null;
     }
 
-    protected class ActionsAdapter implements com.itmill.toolkit.event.Action.Handler {
-        public com.itmill.toolkit.event.Action[] getActions(Object target, Object sender) {
+    protected class ActionsAdapter implements com.vaadin.event.Action.Handler {
+        public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             final List<Action> res = new ArrayList<Action>();
             for (com.haulmont.cuba.gui.components.Action action : actionsOrder) {
 //                if (action.isEnabled()) {

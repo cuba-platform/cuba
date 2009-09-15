@@ -11,14 +11,14 @@ package com.haulmont.cuba.web.app.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.PagingTable;
 import com.haulmont.cuba.web.gui.Window;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.util.BeanItem;
-import com.itmill.toolkit.data.util.ObjectProperty;
-import com.itmill.toolkit.ui.CustomComponent;
-import com.itmill.toolkit.ui.ExpandLayout;
-import com.itmill.toolkit.ui.Layout;
-import com.itmill.toolkit.ui.ComponentContainer;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.ExpandLayout;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.ComponentContainer;
 
 import java.util.*;
 
@@ -42,7 +42,7 @@ public class DemoTableScreen extends Window {
                 values.add(value);
             }
 
-            com.itmill.toolkit.data.Container dataSource = new ListBeanContainer(values);
+            com.vaadin.data.Container dataSource = new ListBeanContainer(values);
 
             PagingTable table = new PagingTable("Paging Table Example", dataSource);
             table.setPageLength(10);
@@ -56,7 +56,7 @@ public class DemoTableScreen extends Window {
         }
     }
 
-    static class ListBeanContainer implements com.itmill.toolkit.data.Container {
+    static class ListBeanContainer implements com.vaadin.data.Container {
 
         private static Collection propertyIds = new ArrayList(3);
 

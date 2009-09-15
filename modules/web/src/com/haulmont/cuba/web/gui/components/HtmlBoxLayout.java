@@ -11,8 +11,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.CustomLayout;
-import com.itmill.toolkit.ui.Layout;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Layout;
 
 import java.util.*;
 
@@ -36,7 +36,7 @@ public class HtmlBoxLayout extends CustomLayout implements com.haulmont.cuba.gui
     }
 
     public void add(Component component) {
-        final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
 
         if (component.getId() != null) {
             addComponent(itmillComponent, component.getId());
@@ -92,7 +92,7 @@ public class HtmlBoxLayout extends CustomLayout implements com.haulmont.cuba.gui
 
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.itmill.toolkit.ui.Component component = this.getParent();
+        final com.vaadin.ui.Component component = this.getParent();
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this,
                     ComponentsHelper.convertAlignment(alignment));

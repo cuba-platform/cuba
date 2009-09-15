@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.gui.components.Table;
 import com.haulmont.cuba.web.gui.components.Button;
-import com.itmill.toolkit.ui.*;
+import com.vaadin.ui.*;
 
 import java.util.Map;
 import java.util.Collection;

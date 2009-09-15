@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,17 +28,17 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.BrowserInfo;
-import com.itmill.toolkit.terminal.gwt.client.Container;
-import com.itmill.toolkit.terminal.gwt.client.ContainerResizedListener;
-import com.itmill.toolkit.terminal.gwt.client.ICaption;
-import com.itmill.toolkit.terminal.gwt.client.ICaptionWrapper;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
-import com.itmill.toolkit.terminal.gwt.client.RenderInformation.FloatSize;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.Container;
+import com.vaadin.terminal.gwt.client.ContainerResizedListener;
+import com.vaadin.terminal.gwt.client.ICaption;
+import com.vaadin.terminal.gwt.client.ICaptionWrapper;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
 
 /**
  * Custom Layout implements complex layout defined with HTML template.
@@ -495,7 +495,7 @@ public class ICustomLayout extends ComplexPanel implements Paintable,
     /*-{
     	var self = this;
     	element.notifyChildrenOfSizeChange = function() {
-    		self.@com.itmill.toolkit.terminal.gwt.client.ui.ICustomLayout::notifyChildrenOfSizeChange()();
+    		self.@com.vaadin.terminal.gwt.client.ui.ICustomLayout::notifyChildrenOfSizeChange()();
     	};
     }-*/;
 

@@ -11,12 +11,12 @@
 
 package com.haulmont.cuba.web.ui;
 
-import com.itmill.toolkit.ui.HorizontalLayout;
-import com.itmill.toolkit.ui.Embedded;
-import com.itmill.toolkit.ui.Alignment;
-import com.itmill.toolkit.ui.Label;
-import com.itmill.toolkit.terminal.Sizeable;
-import com.itmill.toolkit.terminal.ThemeResource;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 
 public class SubTitleCap extends HorizontalLayout {
 

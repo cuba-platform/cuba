@@ -14,8 +14,8 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.itmill.toolkit.ui.Window;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Window;
 
 public class WebExportDisplay implements ExportDisplay
 {

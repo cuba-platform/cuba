@@ -21,9 +21,9 @@ import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.terminal.Sizeable;
-import com.itmill.toolkit.ui.*;
+import com.vaadin.data.Item;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.FieldPosition;
@@ -71,7 +71,7 @@ public class GenericEditorWindow
 
         form.setSizeFull();
         layout.setExpandRatio(form, 1);
-        layout.setComponentAlignment(actionsBar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
+        layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         form.setFieldFactory(new FieldFactory());
         form.setImmediate(true);
@@ -97,7 +97,7 @@ public class GenericEditorWindow
         form.setVisibleItemProperties(propertyPaths);
 
         for (MetaPropertyPath propertyPath : propertyPaths) {
-            final com.itmill.toolkit.ui.Field field = form.getField(propertyPath);
+            final com.vaadin.ui.Field field = form.getField(propertyPath);
             if (field != null) {
                 field.setRequired(propertyPath.getMetaProperty().isMandatory());
             }
@@ -131,8 +131,8 @@ public class GenericEditorWindow
 
     private static class FieldFactory extends BaseFieldFactory {
         @Override
-        public com.itmill.toolkit.ui.Field createField(Item item, Object propertyId, Component uiContext) {
-            com.itmill.toolkit.ui.Field field = null;
+        public com.vaadin.ui.Field createField(Item item, Object propertyId, Component uiContext) {
+            com.vaadin.ui.Field field = null;
 
             MetaPropertyPath metaProperty = (MetaPropertyPath) propertyId;
             final Range range = metaProperty.getRange();
@@ -160,7 +160,7 @@ public class GenericEditorWindow
         }
 
         @Override
-        public com.itmill.toolkit.ui.Field createField(final Class type, Component uiContext) {
+        public com.vaadin.ui.Field createField(final Class type, Component uiContext) {
             // Null typed properties can not be edited
             if (type == null) {
                 return null;

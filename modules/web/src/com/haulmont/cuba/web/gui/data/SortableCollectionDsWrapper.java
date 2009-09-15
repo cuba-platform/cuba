@@ -14,8 +14,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.itmill.toolkit.data.Container;
-import com.itmill.toolkit.data.Item;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
 
 import java.util.Collection;
 import java.util.List;

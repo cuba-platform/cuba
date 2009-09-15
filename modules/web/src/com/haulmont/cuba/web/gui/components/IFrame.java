@@ -17,10 +17,10 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.ui.AbstractOrderedLayout;
-import com.itmill.toolkit.ui.Component;
-import com.itmill.toolkit.ui.Layout;
-import com.itmill.toolkit.ui.VerticalLayout;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.VerticalLayout;
 
 import java.util.*;
 
@@ -40,7 +40,7 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
     public void add(com.haulmont.cuba.gui.components.Component component) {
         final VerticalLayout layout = (VerticalLayout) getLayout();
 
-        final com.itmill.toolkit.ui.Component comp = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component comp = ComponentsHelper.unwrap(component);
         layout.addComponent(comp);
         layout.setComponentAlignment(comp, ComponentsHelper.convertAlignment(component.getAlignment()));
 
@@ -164,12 +164,12 @@ public class IFrame extends AbstractPanel implements com.haulmont.cuba.gui.compo
         layout.setComponentAlignment(childComponent, horizontalAlignment, verticalAlignment);
     }
 
-    public void setComponentAlignment(Component childComponent, com.itmill.toolkit.ui.Alignment alignment) {
+    public void setComponentAlignment(Component childComponent, com.vaadin.ui.Alignment alignment) {
         final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
         layout.setComponentAlignment(childComponent, alignment);
     }
 
-    public com.itmill.toolkit.ui.Alignment getComponentAlignment(Component childComponent) {
+    public com.vaadin.ui.Alignment getComponentAlignment(Component childComponent) {
         final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
         return layout.getComponentAlignment(childComponent);
     }

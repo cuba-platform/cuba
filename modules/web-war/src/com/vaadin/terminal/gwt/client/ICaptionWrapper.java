@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client;
+package com.vaadin.terminal.gwt.client;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;

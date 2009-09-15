@@ -13,11 +13,11 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.Table;
-import com.itmill.toolkit.terminal.ClassResource;
-import com.itmill.toolkit.terminal.FileResource;
-import com.itmill.toolkit.terminal.Resource;
-import com.itmill.toolkit.terminal.ThemeResource;
-import com.itmill.toolkit.ui.*;
+import com.vaadin.terminal.ClassResource;
+import com.vaadin.terminal.FileResource;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -78,7 +78,7 @@ public class ComponentsHelper {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComponent();
         }
 
-        return  (com.itmill.toolkit.ui.Component) comp;
+        return  (com.vaadin.ui.Component) comp;
     }
 
     public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
@@ -192,11 +192,11 @@ public class ComponentsHelper {
 
     public static int convertNotificationType(IFrame.NotificationType type) {
         switch (type) {
-            case TRAY: return com.itmill.toolkit.ui.Window.Notification.TYPE_TRAY_NOTIFICATION;
-            case HUMANIZED: return com.itmill.toolkit.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE;
-            case WARNING: return com.itmill.toolkit.ui.Window.Notification.TYPE_WARNING_MESSAGE;
-            case ERROR: return com.itmill.toolkit.ui.Window.Notification.TYPE_ERROR_MESSAGE;
-            default: return com.itmill.toolkit.ui.Window.Notification.TYPE_WARNING_MESSAGE;
+            case TRAY: return com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION;
+            case HUMANIZED: return com.vaadin.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE;
+            case WARNING: return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
+            case ERROR: return com.vaadin.ui.Window.Notification.TYPE_ERROR_MESSAGE;
+            default: return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
         }
     }
 

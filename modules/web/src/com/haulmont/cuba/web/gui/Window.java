@@ -33,11 +33,11 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.gui.components.VBoxLayout;
 import com.haulmont.cuba.web.gui.components.AbstractTable;
-import com.itmill.toolkit.data.Validator;
-import com.itmill.toolkit.terminal.Sizeable;
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.Table;
+import com.vaadin.data.Validator;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Table;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -63,7 +63,7 @@ public class Window
 
     private String messagePack;
 
-    protected com.itmill.toolkit.ui.Component component;
+    protected com.vaadin.ui.Component component;
     private Element element;
 
     private DsContext dsContext;
@@ -85,7 +85,7 @@ public class Window
         component = createLayout();
     }
 
-    protected com.itmill.toolkit.ui.Component createLayout() {
+    protected com.vaadin.ui.Component createLayout() {
         VerticalLayout layout = new VerticalLayout();
 
 //        layout.setMargin(true);
@@ -361,7 +361,7 @@ public class Window
     public void setAlignment(Alignment alignment) {}
 
     public void expand(Component component, String height, String width) {
-        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
         if (getContainer() instanceof AbstractOrderedLayout) {
             ComponentsHelper.expand((AbstractOrderedLayout) getContainer(), expandedComponent, height, width);
         } else {
@@ -526,7 +526,7 @@ public class Window
         }
 
         @Override
-        protected com.itmill.toolkit.ui.Component createLayout() {
+        protected com.vaadin.ui.Component createLayout() {
             VerticalLayout layout = new VerticalLayout();
 
             form = createForm();
@@ -596,19 +596,19 @@ public class Window
             ((DatasourceImplementation) ds).setModified(false);
         }
 
-        protected Collection<com.itmill.toolkit.ui.Field> getFields() {
-            return ComponentsHelper.getComponents(getContainer(), com.itmill.toolkit.ui.Field.class);
+        protected Collection<com.vaadin.ui.Field> getFields() {
+            return ComponentsHelper.getComponents(getContainer(), com.vaadin.ui.Field.class);
         }
 
         public boolean isValid() {
-            for (com.itmill.toolkit.ui.Field  field : getFields()) {
+            for (com.vaadin.ui.Field  field : getFields()) {
                 if (!field.isValid()) return false;
             }
             return true;
         }
 
         public void validate() throws ValidationException {
-            for (com.itmill.toolkit.ui.Field  field : getFields()) {
+            for (com.vaadin.ui.Field  field : getFields()) {
                 try {
                     field.validate();
                 } catch (Validator.InvalidValueException e) {
@@ -723,42 +723,42 @@ public class Window
         }
 
         protected boolean __validate() {
-            final Map<Exception, com.itmill.toolkit.ui.Field> problems =
-                    new HashMap<Exception, com.itmill.toolkit.ui.Field>();
+            final Map<Exception, com.vaadin.ui.Field> problems =
+                    new HashMap<Exception, com.vaadin.ui.Field>();
 
             com.haulmont.cuba.gui.ComponentsHelper.walkComponents(this, new ComponentVisitor() {
                 public void visit(Component component, String name) {
 
-                    com.itmill.toolkit.ui.Component impl = ComponentsHelper.unwrap(component);
+                    com.vaadin.ui.Component impl = ComponentsHelper.unwrap(component);
 
                     // validate component
                     if (component instanceof AbstractTable) {
                         try {
                             ((AbstractTable) component).validate();
                         } catch (ValidationException e) {
-                            problems.put(e, ((com.itmill.toolkit.ui.Field) impl));
+                            problems.put(e, ((com.vaadin.ui.Field) impl));
                         }
-                    } else if (impl instanceof com.itmill.toolkit.ui.Field
+                    } else if (impl instanceof com.vaadin.ui.Field
                             && impl.isVisible() && impl.isEnabled() && !impl.isReadOnly())
                     {
                         try {
-                            ((com.itmill.toolkit.ui.Field) impl).validate();
+                            ((com.vaadin.ui.Field) impl).validate();
                         } catch (Validator.InvalidValueException e) {
-                            problems.put(e, ((com.itmill.toolkit.ui.Field) impl));
+                            problems.put(e, ((com.vaadin.ui.Field) impl));
                         }
                     }
 
                     // validate table columns
-                    if (impl instanceof com.itmill.toolkit.ui.Table) {
+                    if (impl instanceof com.vaadin.ui.Table) {
                         Set visibleComponents = ((Table) impl).getVisibleComponents();
                         for (Object visibleComponent : visibleComponents) {
-                            if (visibleComponent instanceof com.itmill.toolkit.ui.Field
-                                    && ((com.itmill.toolkit.ui.Field) visibleComponent).isEnabled() &&
-                                    !((com.itmill.toolkit.ui.Field) visibleComponent).isReadOnly()) {
+                            if (visibleComponent instanceof com.vaadin.ui.Field
+                                    && ((com.vaadin.ui.Field) visibleComponent).isEnabled() &&
+                                    !((com.vaadin.ui.Field) visibleComponent).isReadOnly()) {
                                 try {
-                                    ((com.itmill.toolkit.ui.Field) visibleComponent).validate();
+                                    ((com.vaadin.ui.Field) visibleComponent).validate();
                                 } catch (Validator.InvalidValueException e) {
-                                    problems.put(e, ((com.itmill.toolkit.ui.Field) visibleComponent));
+                                    problems.put(e, ((com.vaadin.ui.Field) visibleComponent));
                                 }
                             }
                         }
@@ -769,7 +769,7 @@ public class Window
 
             if (problems.isEmpty()) return true;
 
-            com.itmill.toolkit.ui.Field field = null;
+            com.vaadin.ui.Field field = null;
             StringBuffer buffer = new StringBuffer(
                     MessageProvider.getMessage(Window.class, "validationFail") + "<br>");
             for (Exception exception : problems.keySet()) {
@@ -840,7 +840,7 @@ public class Window
         }
 
         @Override
-        protected com.itmill.toolkit.ui.Component createLayout() {
+        protected com.vaadin.ui.Component createLayout() {
             final VerticalLayout form = new VerticalLayout();
 
             contaiter = new VerticalLayout();
@@ -876,7 +876,7 @@ public class Window
 
             contaiter.setSizeFull();
             form.setExpandRatio(contaiter, 1);
-            form.setComponentAlignment(okbar, com.itmill.toolkit.ui.Alignment.MIDDLE_LEFT);
+            form.setComponentAlignment(okbar, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
             return form;
         }

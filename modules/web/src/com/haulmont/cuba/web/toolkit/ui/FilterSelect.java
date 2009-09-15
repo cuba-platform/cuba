@@ -1,8 +1,8 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.itmill.toolkit.ui.Select;
-import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.terminal.PaintException;
+import com.vaadin.ui.Select;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.PaintException;
 
 /**
  * User: Nikolay Gorodnov

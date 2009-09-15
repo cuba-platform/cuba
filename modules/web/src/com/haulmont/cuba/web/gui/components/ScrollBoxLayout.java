@@ -11,7 +11,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
-import com.itmill.toolkit.ui.Layout;
+import com.vaadin.ui.Layout;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class ScrollBoxLayout extends ScrollablePanel implements com.haulmont.cub
     private Alignment alignment = Alignment.TOP_LEFT;
 
     public void add(Component component) {
-        final com.itmill.toolkit.ui.Component comp = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component comp = ComponentsHelper.unwrap(component);
         if (comp instanceof Layout) {
             setLayout(((Layout) comp));
             this.component = component;
@@ -49,7 +49,7 @@ public class ScrollBoxLayout extends ScrollablePanel implements com.haulmont.cub
 
     public void requestFocus() {
         if (getComponentIterator().hasNext()) {
-            com.itmill.toolkit.ui.Component component = (com.itmill.toolkit.ui.Component) getComponentIterator().next();
+            com.vaadin.ui.Component component = (com.vaadin.ui.Component) getComponentIterator().next();
             if (component instanceof Focusable) {
                 ((Focusable) component).focus();
             }
@@ -89,14 +89,14 @@ public class ScrollBoxLayout extends ScrollablePanel implements com.haulmont.cub
 
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.itmill.toolkit.ui.Component component = getParent();
+        final com.vaadin.ui.Component component = getParent();
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this, ComponentsHelper.convertAlignment(alignment));
         }
     }
 
     public void expand(Component component, String height, String width) {
-//        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+//        final com.vaadin.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
 //        if (getLayout() instanceof AbstractOrderedLayout) {
 //            ComponentsHelper.expand((AbstractOrderedLayout) getLayout(), expandedComponent, height, width);
 //        } else {

@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.web.gui;
 
-import com.itmill.toolkit.ui.Button;
+import com.vaadin.ui.Button;
 import com.haulmont.cuba.gui.components.*;
 
 import java.util.Collection;

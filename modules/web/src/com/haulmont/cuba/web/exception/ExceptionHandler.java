@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.itmill.toolkit.terminal.Terminal;
+import com.vaadin.terminal.Terminal;
 import com.haulmont.cuba.web.App;
 
 public interface ExceptionHandler

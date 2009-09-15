@@ -14,12 +14,12 @@ import com.haulmont.cuba.gui.data.Datasource;
 
 public class TextField
     extends
-        AbstractField<com.itmill.toolkit.ui.TextField>
+        AbstractField<com.vaadin.ui.TextField>
     implements
         com.haulmont.cuba.gui.components.TextField, Component.Wrapper {
 
     public TextField() {
-        this.component = new com.itmill.toolkit.ui.TextField();
+        this.component = new com.vaadin.ui.TextField();
         attachListener(component);
         component.setImmediate(true);
         component.setNullRepresentation("");

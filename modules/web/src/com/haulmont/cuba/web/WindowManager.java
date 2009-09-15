@@ -21,9 +21,9 @@ import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.itmill.toolkit.terminal.Sizeable;
-import com.itmill.toolkit.ui.*;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -241,7 +241,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
     protected Component showWindowDialog(final Window window, String caption, AppWindow appWindow) {
         removeWindowsWithName(window.getId());
 
-        final com.itmill.toolkit.ui.Window win = createDialogWindow(window);
+        final com.vaadin.ui.Window win = createDialogWindow(window);
         win.setName(window.getId());
 
         Layout layout = (Layout) ComponentsHelper.unwrap(window);
@@ -253,8 +253,8 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
         win.setLayout(outerLayout);
 
-        win.addListener(new com.itmill.toolkit.ui.Window.CloseListener() {
-            public void windowClose(com.itmill.toolkit.ui.Window.CloseEvent e) {
+        win.addListener(new com.vaadin.ui.Window.CloseListener() {
+            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 window.close("close", true);
             }
         });
@@ -273,8 +273,8 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         return new WindowBreadCrumbs();
     }
 
-    protected com.itmill.toolkit.ui.Window createDialogWindow(Window window) {
-        return new com.itmill.toolkit.ui.Window(window.getCaption());
+    protected com.vaadin.ui.Window createDialogWindow(Window window) {
+        return new com.vaadin.ui.Window(window.getCaption());
     }
 
     protected Locale getLocale() {
@@ -314,7 +314,7 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
         AppWindow appWindow = app.getAppWindow();
         switch (openMode.openType) {
             case DIALOG: {
-                final com.itmill.toolkit.ui.Window win = (com.itmill.toolkit.ui.Window) openMode.getData();
+                final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
                 App.getInstance().getMainWindow().removeWindow(win);
                 return false;
             }
@@ -375,11 +375,11 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
         removeWindowsWithName("cuba-message-dialog");
 
-        final com.itmill.toolkit.ui.Window window = new com.itmill.toolkit.ui.Window(title);
+        final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setName("cuba-message-dialog");
 
-        window.addListener(new com.itmill.toolkit.ui.Window.CloseListener() {
-            public void windowClose(com.itmill.toolkit.ui.Window.CloseEvent e) {
+        window.addListener(new com.vaadin.ui.Window.CloseListener() {
+            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 App.getInstance().getMainWindow().removeWindow(window);
             }
         });
@@ -404,11 +404,11 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
     {
         removeWindowsWithName("cuba-option-dialog");
 
-        final com.itmill.toolkit.ui.Window window = new com.itmill.toolkit.ui.Window(title);
+        final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setName("cuba-option-dialog");
 
-        window.addListener(new com.itmill.toolkit.ui.Window.CloseListener() {
-            public void windowClose(com.itmill.toolkit.ui.Window.CloseEvent e) {
+        window.addListener(new com.vaadin.ui.Window.CloseListener() {
+            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 app.getMainWindow().removeWindow(window);
             }
         });
@@ -445,16 +445,16 @@ public class WindowManager extends com.haulmont.cuba.gui.WindowManager
 
         messageBox.setSizeFull();
         layout.setExpandRatio(messageBox, 1);
-        layout.setComponentAlignment(actionsBar, com.itmill.toolkit.ui.Alignment.BOTTOM_RIGHT);
+        layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         App.getInstance().getMainWindow().addWindow(window);
         window.center();
     }
 
     private void removeWindowsWithName(String name) {
-        final com.itmill.toolkit.ui.Window mainWindow = app.getMainWindow();
+        final com.vaadin.ui.Window mainWindow = app.getMainWindow();
 
-        for (com.itmill.toolkit.ui.Window childWindow : new ArrayList<com.itmill.toolkit.ui.Window>(mainWindow.getChildWindows())) {
+        for (com.vaadin.ui.Window childWindow : new ArrayList<com.vaadin.ui.Window>(mainWindow.getChildWindows())) {
             if (name.equals(childWindow.getName())) {
                 String msg = new StrBuilder("Another " + name + " window exists, removing it\n")
                         .appendWithSeparators(Thread.currentThread().getStackTrace(), "\n")

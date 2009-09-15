@@ -23,9 +23,9 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.itmill.toolkit.terminal.Sizeable;
-import com.itmill.toolkit.ui.*;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.*;
 import org.dom4j.Element;
 
 import java.util.HashMap;

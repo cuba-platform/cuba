@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.itmill.toolkit.terminal.ParameterHandler;
-import com.itmill.toolkit.terminal.Terminal;
-import com.itmill.toolkit.terminal.URIHandler;
-import com.itmill.toolkit.terminal.VariableOwner;
-import com.itmill.toolkit.terminal.gwt.server.ChangeVariablesErrorEvent;
+import com.vaadin.terminal.ParameterHandler;
+import com.vaadin.terminal.Terminal;
+import com.vaadin.terminal.URIHandler;
+import com.vaadin.terminal.VariableOwner;
+import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
 
 import java.net.SocketException;
 import java.util.ArrayList;

@@ -9,7 +9,7 @@ import com.haulmont.cuba.gui.components.Action;
 * Time: 23:11:14
 * To change this template use File | Settings | File Templates.
 */
-class ActionWrapper extends com.itmill.toolkit.event.Action {
+class ActionWrapper extends com.vaadin.event.Action {
     private final Action action;
 
     public ActionWrapper(Action action) {

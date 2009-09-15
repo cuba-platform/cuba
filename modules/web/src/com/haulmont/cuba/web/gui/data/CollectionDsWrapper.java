@@ -9,9 +9,9 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
-import com.itmill.toolkit.data.Container;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;

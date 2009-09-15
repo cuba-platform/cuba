@@ -18,8 +18,8 @@ import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.web.gui.components.ComponentsHelper;
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.terminal.ThemeResource;
+import com.vaadin.ui.*;
+import com.vaadin.terminal.ThemeResource;
 
 import java.util.*;
 import java.util.List;
@@ -71,10 +71,10 @@ public class ExcelExportBrowser extends AbstractWindow {
                 moveColumns(false);
             }
         });
-        final com.itmill.toolkit.ui.Component upButtonIT = ComponentsHelper.unwrap(upButton);
+        final com.vaadin.ui.Component upButtonIT = ComponentsHelper.unwrap(upButton);
         upButtonIT.setIcon(new ThemeResource("icons/32/arrow-up.png"));
 
-        final com.itmill.toolkit.ui.Component downButtonIT = ComponentsHelper.unwrap(downButton);
+        final com.vaadin.ui.Component downButtonIT = ComponentsHelper.unwrap(downButton);
         downButtonIT.setIcon(new ThemeResource("icons/32/arrow-down.png"));
     }
 

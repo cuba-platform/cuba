@@ -1,15 +1,15 @@
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
 import com.google.gwt.user.client.DOM;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
 
 /**
  * User: Nikolay Gorodnov
  * Date: 19.06.2009
  */
 public class IFilterSelect extends
-        com.itmill.toolkit.terminal.gwt.client.ui.IFilterSelect
+        com.vaadin.terminal.gwt.client.ui.IFilterSelect
 {
     protected boolean fixedTextBoxWidth = false;
 

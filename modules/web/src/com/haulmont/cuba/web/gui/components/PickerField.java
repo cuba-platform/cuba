@@ -18,12 +18,12 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.ui.Button;
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.ui.TextField;
-import com.itmill.toolkit.terminal.Resource;
-import com.itmill.toolkit.terminal.ThemeResource;
+import com.vaadin.data.Property;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
+import com.vaadin.ui.TextField;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
@@ -151,13 +151,13 @@ public class PickerField
         component.setClearButtonIcon(new ThemeResource(iconName));
     }
 
-    public static class PickerFieldComponent extends CustomComponent implements com.itmill.toolkit.ui.Field {
+    public static class PickerFieldComponent extends CustomComponent implements com.vaadin.ui.Field {
 
         public static final int DEFAULT_WIDTH = 250;
 
-        protected com.itmill.toolkit.ui.TextField field;
-        protected com.itmill.toolkit.ui.Button pickerButton;
-        protected com.itmill.toolkit.ui.Button clearButton;
+        protected com.vaadin.ui.TextField field;
+        protected com.vaadin.ui.Button pickerButton;
+        protected com.vaadin.ui.Button clearButton;
 
         protected String buttonIcon;
         protected String clearButtonIcon;
@@ -196,7 +196,7 @@ public class PickerField
             field.setInvalidCommitted(isCommitted);
         }
 
-        public void commit() throws SourceException, com.itmill.toolkit.data.Validator.InvalidValueException {
+        public void commit() throws SourceException, com.vaadin.data.Validator.InvalidValueException {
             field.commit();
         }
 
@@ -212,7 +212,7 @@ public class PickerField
             return field.isWriteThrough();
         }
 
-        public void setWriteThrough(boolean writeTrough) throws SourceException, com.itmill.toolkit.data.Validator.InvalidValueException {
+        public void setWriteThrough(boolean writeTrough) throws SourceException, com.vaadin.data.Validator.InvalidValueException {
             field.setWriteThrough(writeTrough);
         }
 
@@ -246,7 +246,7 @@ public class PickerField
             field.setPropertyDataSource(newDataSource);
         }
 
-        public void addValidator(com.itmill.toolkit.data.Validator validator) {
+        public void addValidator(com.vaadin.data.Validator validator) {
             field.addValidator(validator);
         }
 
@@ -254,7 +254,7 @@ public class PickerField
             return field.getValidators();
         }
 
-        public void removeValidator(com.itmill.toolkit.data.Validator validator) {
+        public void removeValidator(com.vaadin.data.Validator validator) {
             field.removeValidator(validator);
         }
 
@@ -262,7 +262,7 @@ public class PickerField
             return field.isValid();
         }
 
-        public void validate() throws com.itmill.toolkit.data.Validator.InvalidValueException {
+        public void validate() throws com.vaadin.data.Validator.InvalidValueException {
             field.validate();
         }
 

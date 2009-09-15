@@ -1,6 +1,6 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.itmill.toolkit.ui.Panel;
+import com.vaadin.ui.Panel;
 
 /**
  * User: Nikolay Gorodnov

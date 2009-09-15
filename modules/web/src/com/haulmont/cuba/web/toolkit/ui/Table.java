@@ -10,20 +10,20 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.Container;
-import com.itmill.toolkit.ui.Component;
-import com.itmill.toolkit.ui.Field;
-import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.terminal.PaintException;
-import com.itmill.toolkit.terminal.Resource;
+import com.vaadin.data.Property;
+import com.vaadin.data.Container;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.Resource;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
-import com.itmill.toolkit.event.Action;
+import com.vaadin.event.Action;
 
 import java.util.*;
 
 public class Table
-        extends com.itmill.toolkit.ui.Table
+        extends com.vaadin.ui.Table
 {
     protected LinkedList<Object> editableColumns = null;
     protected boolean storeColWidth = false;
@@ -697,7 +697,7 @@ public class Table
                                     || !oldVisibleComponents.contains(value)) {
                                 ((Component) value).setParent(this);
                             }
-                            visibleComponents.add(value);
+                            visibleComponents.add((Component) value);
                         }
                         cells[CELL_FIRSTCOL + j][i] = value;
                     }

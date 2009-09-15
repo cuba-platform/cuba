@@ -14,9 +14,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
-import com.itmill.toolkit.terminal.gwt.client.*;
-import com.itmill.toolkit.terminal.gwt.client.ui.ITabsheetPanel;
-import com.itmill.toolkit.terminal.gwt.client.ui.ShortcutActionHandler;
+import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.VTabsheetPanel;
+import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
 
 import java.util.Set;
 
@@ -74,7 +74,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
     protected Element bottomDecoration = DOM.createDiv(); //as in Panel
 
     protected ToggleButtonPanel toggleButtonPanel = null;
-    protected ITabsheetPanel widgetsPanel = new ITabsheetPanel();
+    protected VTabsheetPanel widgetsPanel = new VTabsheetPanel();
 
     protected boolean rendering = false;
     protected boolean waitingForResponse = false;

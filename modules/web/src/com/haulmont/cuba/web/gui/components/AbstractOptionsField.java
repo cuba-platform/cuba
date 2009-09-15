@@ -20,14 +20,14 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.ui.AbstractSelect;
+import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractSelect;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractOptionsField<T extends com.itmill.toolkit.ui.AbstractSelect>
+public abstract class AbstractOptionsField<T extends com.vaadin.ui.AbstractSelect>
     extends
         com.haulmont.cuba.web.gui.components.AbstractField<T>
     implements

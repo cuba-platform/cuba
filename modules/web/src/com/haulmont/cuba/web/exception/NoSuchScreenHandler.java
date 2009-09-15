@@ -13,7 +13,7 @@ package com.haulmont.cuba.web.exception;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.itmill.toolkit.ui.Window;
+import com.vaadin.ui.Window;
 
 public class NoSuchScreenHandler extends AbstractExceptionHandler {
 

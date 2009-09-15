@@ -20,11 +20,11 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.event.Action;
-import com.itmill.toolkit.ui.*;
-import com.itmill.toolkit.ui.Button.ClickEvent;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.event.Action;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * Table example.

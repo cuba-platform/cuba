@@ -24,8 +24,8 @@ import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.terminal.Resource;
+import com.vaadin.data.Item;
+import com.vaadin.terminal.Resource;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,7 +118,7 @@ public class TreeTable
 
     protected class TreeTableDsWrapper
             extends HierarchicalDsWrapper
-            implements TreeTableContainer, com.itmill.toolkit.data.Container.Sortable
+            implements TreeTableContainer, com.vaadin.data.Container.Sortable
     {
         protected boolean treeTableDatasource;
 

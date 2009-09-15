@@ -13,8 +13,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.bali.util.Dom4j;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.ui.OptionGroup;
+import com.vaadin.data.Property;
+import com.vaadin.ui.OptionGroup;
 
 import java.util.*;
 

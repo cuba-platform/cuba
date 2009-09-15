@@ -10,7 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.VerticalLayout;
+import com.vaadin.ui.VerticalLayout;
 
 public class GroupBox extends AbstractPanel implements com.haulmont.cuba.gui.components.GroupBox {
 
@@ -20,7 +20,7 @@ public class GroupBox extends AbstractPanel implements com.haulmont.cuba.gui.com
     }
 
     public void expand(Component component, String height, String width) {
-        final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
         expandedComponent.setSizeFull();
     }
 }

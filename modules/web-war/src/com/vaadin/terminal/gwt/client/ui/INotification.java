@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -22,14 +22,14 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EventObject;
 import java.util.Iterator;
 
-public class INotification extends IToolkitOverlay {
+public class INotification extends VOverlay {
 
     public static final int CENTERED = 1;
     public static final int CENTERED_TOP = 2;

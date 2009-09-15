@@ -1,5 +1,5 @@
 <module>
-    <inherits name="com.itmill.toolkit.terminal.gwt.DefaultWidgetSetNoEntry" />
+    <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSetNoEntry" />
 
     <!--<stylesheet src="css/link/link.css"/>-->
     <!--<stylesheet src="css/pagingtable/pagingtable.css"/>-->

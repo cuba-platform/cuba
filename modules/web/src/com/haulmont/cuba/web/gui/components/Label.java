@@ -27,7 +27,7 @@ import java.util.Collection;
 
 public class Label
     extends
-        AbstractComponent<com.itmill.toolkit.ui.Label> 
+        AbstractComponent<com.vaadin.ui.Label>
     implements
         com.haulmont.cuba.gui.components.Label, Component.Wrapper
 {
@@ -40,7 +40,7 @@ public class Label
     protected Formatter formatter;
 
     public Label() {
-        component = new com.itmill.toolkit.ui.Label();
+        component = new com.vaadin.ui.Label();
     }
 
     public String getCaption() {

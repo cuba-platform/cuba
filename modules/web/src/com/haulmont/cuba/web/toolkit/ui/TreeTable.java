@@ -2,14 +2,14 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
-import com.itmill.toolkit.data.Container;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.util.HierarchicalContainer;
-import com.itmill.toolkit.event.Action;
-import com.itmill.toolkit.terminal.PaintException;
-import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.terminal.Resource;
-import com.itmill.toolkit.ui.Component;
+import com.vaadin.data.Container;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.Resource;
+import com.vaadin.ui.Component;
 
 import java.util.*;
 
@@ -219,7 +219,7 @@ public class TreeTable
                                     || !oldVisibleComponents.contains(value)) {
                                 ((Component) value).setParent(this);
                             }
-                            visibleComponents.add(value);
+                            visibleComponents.add((Component) value);
                         }
                         cells[CELL_FIRSTCOL + j][i] = value;
                     }

@@ -18,9 +18,9 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.ui.AbstractSelect;
+import com.vaadin.data.Property;
+import com.vaadin.data.Item;
+import com.vaadin.ui.AbstractSelect;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.web.toolkit.utils;
 
-import com.itmill.toolkit.event.Action;
-import com.itmill.toolkit.event.ShortcutAction;
-import com.itmill.toolkit.terminal.KeyMapper;
-import com.itmill.toolkit.terminal.PaintException;
-import com.itmill.toolkit.terminal.PaintTarget;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.terminal.KeyMapper;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 
 import java.util.List;
 import java.util.LinkedList;

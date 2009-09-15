@@ -10,10 +10,10 @@
 package com.haulmont.cuba.toolkit.gwt.client;
 
 import com.haulmont.cuba.toolkit.gwt.client.ui.*;
-import com.itmill.toolkit.terminal.gwt.client.DefaultWidgetSet;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.ui.IScrollTable;
+import com.vaadin.terminal.gwt.client.DefaultWidgetSet;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.ui.IScrollTable;
 
 public class WidgetSet extends DefaultWidgetSet {
     protected Class resolveWidgetType(UIDL uidl) {
@@ -36,22 +36,22 @@ public class WidgetSet extends DefaultWidgetSet {
             if (uidl.hasAttribute("type")) {
                 final String type = uidl.getStringAttribute("type");
                 if (type.equals("twincol")) {
-                    return com.itmill.toolkit.terminal.gwt.client.ui.ITwinColSelect.class;
+                    return com.vaadin.terminal.gwt.client.ui.VTwinColSelect.class;
                 }
                 if (type.equals("optiongroup")) {
-                    return com.itmill.toolkit.terminal.gwt.client.ui.IOptionGroup.class;
+                    return com.vaadin.terminal.gwt.client.ui.VOptionGroup.class;
                 }
                 if (type.equals("native")) {
-                    return com.itmill.toolkit.terminal.gwt.client.ui.INativeSelect.class;
+                    return com.vaadin.terminal.gwt.client.ui.VNativeSelect.class;
                 }
                 if (type.equals("list")) {
-                    return com.itmill.toolkit.terminal.gwt.client.ui.IListSelect.class;
+                    return com.vaadin.terminal.gwt.client.ui.VListSelect.class;
                 }
             } else {
                 if (uidl.hasAttribute("selectmode")
                         && uidl.getStringAttribute("selectmode")
                                 .equals("multi")) {
-                    return com.itmill.toolkit.terminal.gwt.client.ui.IListSelect.class;
+                    return com.vaadin.terminal.gwt.client.ui.VListSelect.class;
                 } else {
                     return IFilterSelect.class;
                 }

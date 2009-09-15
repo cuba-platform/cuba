@@ -3,7 +3,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.List;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.itmill.toolkit.ui.AbstractSelect;
+import com.vaadin.ui.AbstractSelect;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -9,11 +9,11 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.itmill.toolkit.ui.AbstractSelect;
-import com.itmill.toolkit.data.Container;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.terminal.PaintTarget;
-import com.itmill.toolkit.terminal.PaintException;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.data.Container;
+import com.vaadin.data.Property;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.PaintException;
 
 import java.util.*;
 

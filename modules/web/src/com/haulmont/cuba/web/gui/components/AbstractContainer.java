@@ -10,8 +10,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.AbstractOrderedLayout;
-import com.itmill.toolkit.ui.Layout;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Layout;
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ class AbstractContainer extends AbstractOrderedLayout implements Component.Conta
     private boolean expandable = true;
 
     public void add(Component component) {
-        final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
 
         addComponent(itmillComponent);
         setComponentAlignment(itmillComponent, ComponentsHelper.convertAlignment(component.getAlignment()));
@@ -95,7 +95,7 @@ class AbstractContainer extends AbstractOrderedLayout implements Component.Conta
 
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.itmill.toolkit.ui.Component component = this.getParent();
+        final com.vaadin.ui.Component component = this.getParent();
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this, ComponentsHelper.convertAlignment(alignment));
         }

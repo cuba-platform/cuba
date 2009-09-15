@@ -14,12 +14,12 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
-import com.itmill.toolkit.Application;
-import com.itmill.toolkit.event.Action;
-import com.itmill.toolkit.event.ShortcutAction;
-import com.itmill.toolkit.service.ApplicationContext;
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.itmill.toolkit.ui.*;
+import com.vaadin.Application;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.service.ApplicationContext;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 

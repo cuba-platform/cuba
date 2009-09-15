@@ -456,17 +456,17 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/postgresql-8.3-603.jdbc4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-digester-1.7.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-beanutils-1.7.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.3.0-rc11-patch1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/scheduler-plugin.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jcifs-1.3.10.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jespa-1.0.4.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jboss-vfs-src.zip!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/itmill-toolkit-5.3.0-rc11-patch1.jar!/" />
         <root url="NullVirtualFilePointer" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jcifs-1.3.10-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
       </SOURCES>
     </library>
     <library name="common">

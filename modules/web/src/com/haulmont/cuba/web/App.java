@@ -20,10 +20,10 @@ import com.haulmont.cuba.web.exception.*;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
-import com.itmill.toolkit.Application;
-import com.itmill.toolkit.service.ApplicationContext;
-import com.itmill.toolkit.terminal.Terminal;
-import com.itmill.toolkit.ui.Window;
+import com.vaadin.Application;
+import com.vaadin.service.ApplicationContext;
+import com.vaadin.terminal.Terminal;
+import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

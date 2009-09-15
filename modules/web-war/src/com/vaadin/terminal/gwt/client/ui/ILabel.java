@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -23,11 +23,11 @@ import com.google.gwt.dom.client.PreElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.ITooltip;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 public class ILabel extends HTML implements Paintable {
@@ -42,13 +42,13 @@ public class ILabel extends HTML implements Paintable {
     public ILabel() {
         super();
         setStyleName(CLASSNAME);
-        sinkEvents(ITooltip.TOOLTIP_EVENTS);
+        sinkEvents(VTooltip.TOOLTIP_EVENTS);
     }
 
     public ILabel(String text) {
         super(Tools.format(text));
         setStyleName(CLASSNAME);
-        sinkEvents(ITooltip.TOOLTIP_EVENTS);
+        sinkEvents(VTooltip.TOOLTIP_EVENTS);
     }
 
     @Override

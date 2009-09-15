@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class ObjectContainer implements com.itmill.toolkit.data.Container {
+public class ObjectContainer implements com.vaadin.data.Container {
 
     private Log log = LogFactory.getLog(getClass());
 

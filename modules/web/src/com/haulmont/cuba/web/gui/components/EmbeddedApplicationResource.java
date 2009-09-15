@@ -10,10 +10,10 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.itmill.toolkit.terminal.ApplicationResource;
-import com.itmill.toolkit.terminal.DownloadStream;
-import com.itmill.toolkit.Application;
-import com.itmill.toolkit.service.FileTypeResolver;
+import com.vaadin.terminal.ApplicationResource;
+import com.vaadin.terminal.DownloadStream;
+import com.vaadin.Application;
+import com.vaadin.service.FileTypeResolver;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.rpt.CloseableDownloadStream;
 

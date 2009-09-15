@@ -13,7 +13,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Layout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.toolkit.ui.TogglePanel;
-import com.itmill.toolkit.ui.VerticalLayout;
+import com.vaadin.ui.VerticalLayout;
 import org.dom4j.Element;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -24,8 +24,8 @@ public class ToggleBoxLayout
         implements com.haulmont.cuba.gui.components.ToggleBoxLayout
 {
 
-    protected com.itmill.toolkit.ui.Layout onLayout = new LayoutWrapper();
-    protected com.itmill.toolkit.ui.Layout offLayout = new LayoutWrapper();
+    protected com.vaadin.ui.Layout onLayout = new LayoutWrapper();
+    protected com.vaadin.ui.Layout offLayout = new LayoutWrapper();
 
     public ToggleBoxLayout() {
         component = new ToggleBoxWrapper(this);
@@ -130,7 +130,7 @@ public class ToggleBoxLayout
         protected Map<String, Component> componentByIds = new HashMap<String, Component>();
 
         public void expand(Component component, String height, String width) {
-            final com.itmill.toolkit.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
+            final com.vaadin.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
             ComponentsHelper.expand(this, expandedComponent, height, width);
         }
 

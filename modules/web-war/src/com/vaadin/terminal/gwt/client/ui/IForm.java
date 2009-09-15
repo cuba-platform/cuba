@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.Set;
 
@@ -22,15 +22,15 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.BrowserInfo;
-import com.itmill.toolkit.terminal.gwt.client.Container;
-import com.itmill.toolkit.terminal.gwt.client.IErrorMessage;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.RenderInformation;
-import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.Container;
+import com.vaadin.terminal.gwt.client.VErrorMessage;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.RenderInformation;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
 
 public class IForm extends ComplexPanel implements Container {
 
@@ -47,7 +47,7 @@ public class IForm extends ComplexPanel implements Container {
     private Element desc = DOM.createDiv();
     private boolean descHidden = false;
     private Icon icon;
-    private IErrorMessage errorMessage = new IErrorMessage();
+    private VErrorMessage errorMessage = new VErrorMessage();
 
     private Element fieldContainer = DOM.createDiv();
 

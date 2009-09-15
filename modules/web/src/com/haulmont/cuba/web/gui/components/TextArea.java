@@ -11,7 +11,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.itmill.toolkit.ui.RichTextArea;
+import com.vaadin.ui.RichTextArea;
 
 public class TextArea
     extends

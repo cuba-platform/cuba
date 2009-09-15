@@ -16,14 +16,14 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
-import com.itmill.toolkit.data.Property;
-import com.itmill.toolkit.ui.AbstractSelect;
+import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractSelect;
 
 import java.util.Set;
 
 public class Tree
     extends
-        AbstractListComponent<com.itmill.toolkit.ui.Tree>
+        AbstractListComponent<com.vaadin.ui.Tree>
     implements
         com.haulmont.cuba.gui.components.Tree, Component.Wrapper
 {
@@ -32,7 +32,7 @@ public class Tree
     private String captionProperty;
 
     public Tree() {
-        component = new com.itmill.toolkit.ui.Tree();
+        component = new com.vaadin.ui.Tree();
         component.setMultiSelect(false);
         component.setImmediate(true);
 
@@ -93,8 +93,8 @@ public class Tree
     }
 
     public void expandTree() {
-        com.itmill.toolkit.data.Container.Hierarchical container =
-                (com.itmill.toolkit.data.Container.Hierarchical) component.getContainerDataSource();
+        com.vaadin.data.Container.Hierarchical container =
+                (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
         if (container != null) {
             for (Object id : container.rootItemIds()) {
                 component.expandItemsRecursively(id);

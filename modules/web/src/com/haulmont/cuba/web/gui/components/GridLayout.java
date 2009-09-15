@@ -10,11 +10,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.itmill.toolkit.ui.Layout;
+import com.vaadin.ui.Layout;
 
 import java.util.*;
 
-public class GridLayout extends com.itmill.toolkit.ui.GridLayout implements com.haulmont.cuba.gui.components.GridLayout {
+public class GridLayout extends com.vaadin.ui.GridLayout implements com.haulmont.cuba.gui.components.GridLayout {
     protected String id;
 
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
@@ -25,7 +25,7 @@ public class GridLayout extends com.itmill.toolkit.ui.GridLayout implements com.
     private boolean expandable = true;
 
     public void add(Component component) {
-        final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
 
         addComponent(itmillComponent);
         setComponentAlignment(itmillComponent, ComponentsHelper.convertAlignment(component.getAlignment()));
@@ -40,7 +40,7 @@ public class GridLayout extends com.itmill.toolkit.ui.GridLayout implements com.
     }
 
     public void add(Component component, int col, int row, int col2, int row2) {
-        final com.itmill.toolkit.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = ComponentsHelper.unwrap(component);
 
         addComponent(itmillComponent, col, row, col2, row2);
         setComponentAlignment(itmillComponent, ComponentsHelper.convertAlignment(component.getAlignment()));
@@ -100,7 +100,7 @@ public class GridLayout extends com.itmill.toolkit.ui.GridLayout implements com.
 
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.itmill.toolkit.ui.Component component = getParent();
+        final com.vaadin.ui.Component component = getParent();
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this, ComponentsHelper.convertAlignment(alignment));
         }

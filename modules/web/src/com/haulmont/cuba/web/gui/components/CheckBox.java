@@ -20,12 +20,12 @@ import java.util.Collection;
 
 public class CheckBox
     extends
-        AbstractField<com.itmill.toolkit.ui.CheckBox>
+        AbstractField<com.vaadin.ui.CheckBox>
     implements
         com.haulmont.cuba.gui.components.CheckBox, Component.Wrapper {
 
     public CheckBox() {
-        this.component = new com.itmill.toolkit.ui.CheckBox();
+        this.component = new com.vaadin.ui.CheckBox();
         attachListener(component);
         component.setImmediate(true);
     }

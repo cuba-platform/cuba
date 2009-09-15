@@ -1,4 +1,4 @@
-package com.itmill.toolkit.terminal.gwt.client.ui;
+package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,16 +14,16 @@ import com.google.gwt.user.client.ui.PopupListener;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
-import com.itmill.toolkit.terminal.gwt.client.Container;
-import com.itmill.toolkit.terminal.gwt.client.ICaption;
-import com.itmill.toolkit.terminal.gwt.client.ICaptionWrapper;
-import com.itmill.toolkit.terminal.gwt.client.ITooltip;
-import com.itmill.toolkit.terminal.gwt.client.Paintable;
-import com.itmill.toolkit.terminal.gwt.client.RenderSpace;
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Util;
-import com.itmill.toolkit.terminal.gwt.client.RenderInformation.Size;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.Container;
+import com.vaadin.terminal.gwt.client.ICaption;
+import com.vaadin.terminal.gwt.client.ICaptionWrapper;
+import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.RenderInformation.Size;
 
 public class IPopupView extends HTML implements Container {
 
@@ -67,14 +67,14 @@ public class IPopupView extends HTML implements Container {
         });
 
         popup.setAnimationEnabled(true);
-        sinkEvents(ITooltip.TOOLTIP_EVENTS);
+        sinkEvents(VTooltip.TOOLTIP_EVENTS);
     }
 
     /**
      *
      *
-     * @see com.itmill.toolkit.terminal.gwt.client.Paintable#updateFromUIDL(com.itmill.toolkit.terminal.gwt.client.UIDL,
-     *      com.itmill.toolkit.terminal.gwt.client.ApplicationConnection)
+     * @see com.vaadin.terminal.gwt.client.Paintable#updateFromUIDL(com.vaadin.terminal.gwt.client.UIDL,
+     *      com.vaadin.terminal.gwt.client.ApplicationConnection)
      */
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         // This call should be made first. Ensure correct implementation,
@@ -192,7 +192,7 @@ public class IPopupView extends HTML implements Container {
         }
     }-*/;
 
-    private class CustomPopup extends IToolkitOverlay {
+    private class CustomPopup extends VOverlay {
 
         private Paintable popupComponentPaintable = null;
         private Widget popupComponentWidget = null;

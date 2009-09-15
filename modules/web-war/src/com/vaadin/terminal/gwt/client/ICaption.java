@@ -14,13 +14,13 @@
  * the License.
  */
 
-package com.itmill.toolkit.terminal.gwt.client;
+package com.vaadin.terminal.gwt.client;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML;
-import com.itmill.toolkit.terminal.gwt.client.ui.Icon;
+import com.vaadin.terminal.gwt.client.ui.Icon;
 
 public class ICaption extends HTML {
 
@@ -66,7 +66,7 @@ public class ICaption extends HTML {
         this.client = client;
         owner = component;
         setStyleName(CLASSNAME);
-        sinkEvents(ITooltip.TOOLTIP_EVENTS);
+        sinkEvents(VTooltip.TOOLTIP_EVENTS);
 
     }
 

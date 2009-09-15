@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.app.CubaDeployerService;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
-import com.itmill.toolkit.ui.*;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 

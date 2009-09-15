@@ -17,8 +17,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 
 import java.util.*;
 

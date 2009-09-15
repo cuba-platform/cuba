@@ -10,9 +10,9 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.itmill.toolkit.terminal.*;
-import com.itmill.toolkit.terminal.gwt.server.ChangeVariablesErrorEvent;
-import com.itmill.toolkit.ui.AbstractComponent;
+import com.vaadin.terminal.*;
+import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
+import com.vaadin.ui.AbstractComponent;
 import com.haulmont.cuba.web.App;
 
 import java.net.SocketException;
@@ -20,7 +20,7 @@ import java.net.SocketException;
 public class DefaultExceptionHandler implements ExceptionHandler
 {
     public boolean handle(Terminal.ErrorEvent event, App app) {
-        // Copied from com.itmill.toolkit.Application.terminalError()
+        // Copied from com.vaadin.Application.terminalError()
 
         Throwable t = event.getThrowable();
         if (t instanceof SocketException) {

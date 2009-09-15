@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.web.rpt;
 
-import com.itmill.toolkit.terminal.DownloadStream;
+import com.vaadin.terminal.DownloadStream;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 
 import java.io.UnsupportedEncodingException;

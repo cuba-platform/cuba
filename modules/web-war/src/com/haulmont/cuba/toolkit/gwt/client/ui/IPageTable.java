@@ -10,9 +10,9 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.itmill.toolkit.terminal.gwt.client.UIDL;
-import com.itmill.toolkit.terminal.gwt.client.Console;
-import com.itmill.toolkit.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Console;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;

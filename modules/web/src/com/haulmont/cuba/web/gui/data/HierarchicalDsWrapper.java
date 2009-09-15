@@ -14,7 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.itmill.toolkit.data.Container;
+import com.vaadin.data.Container;
 
 import java.util.Collection;
 

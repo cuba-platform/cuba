@@ -9,8 +9,8 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
-import com.itmill.toolkit.data.Item;
-import com.itmill.toolkit.data.Property;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.Collections;
 
 import org.apache.commons.lang.StringUtils;
 
-public class EnumerationContainer implements com.itmill.toolkit.data.Container {
+public class EnumerationContainer implements com.vaadin.data.Container {
     private List<Enum> values;
 
     public EnumerationContainer(List<Enum> values) {
