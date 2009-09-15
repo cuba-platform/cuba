@@ -62,7 +62,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         }
     }
 
-    public static final String CLASSNAME = "i-panel";
+    public static final String CLASSNAME = "v-panel";
 
     protected ApplicationConnection client;
     protected String paintableId;

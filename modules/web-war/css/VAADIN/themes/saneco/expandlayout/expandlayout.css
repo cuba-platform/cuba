@@ -1,18 +1,18 @@
-.i-expandlayout-lo-table {
+.v-expandlayout-lo-table {
 	margin:0;
 	padding:0;
 	height:100%;
 	border:0;
 	border-spacing: 0;
 }
-.i-expandlayout-lo-td {
+.v-expandlayout-lo-td {
 	margin:0;
 	padding:0;
 	height:100%;
 	border:0;
 }
 
-.i-expandlayout-valign {
+.v-expandlayout-valign {
 	margin:0;
 	padding:0;
 	border:0;
@@ -22,22 +22,22 @@
 	width:100%;
 }
 
-.i-expandlayout-margin-top {
+.v-expandlayout-margin-top {
 	padding-top: 15px;
 }
-.i-expandlayout-margin-right {
+.v-expandlayout-margin-right {
 	padding-right: 18px;
 }
-.i-expandlayout-margin-bottom {
+.v-expandlayout-margin-bottom {
 	padding-bottom: 15px;
 }
-.i-expandlayout-margin-left {
+.v-expandlayout-margin-left {
 	padding-left: 18px;
 }
 
-.i-expandlayout-vspacing {
+.v-expandlayout-vspacing {
 	margin-top: 8px;
 }
-.i-expandlayout-hspacing {
+.v-expandlayout-hspacing {
 	margin-left: 8px;
 }

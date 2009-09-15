@@ -1,14 +1,14 @@
-.i-window {
+.v-window {
 	color: #464f52;
 	line-height: 18px;
 	background: transparent;
 }
 
-.i-window-wrap {
+.v-window-wrap {
     font-family: Tahoma, Arial, sans-serif;
 }
 
-.i-window-outerheader {
+.v-window-outerheader {
 	margin-left: 0;
 	padding: 1px;
     background: #fff;
@@ -17,7 +17,7 @@
     border-bottom: none;
 }
 
-.i-window-header {
+.v-window-header {
 	font-size: 11pt;
     padding: 5px;
 	font-weight: normal;
@@ -29,15 +29,15 @@
 	overflow: hidden;
 }
 
-* html .i-window-header {
+* html .v-window-header {
 	width: 100%;
 }
 
-.i-window-header .i-icon {
+.v-window-header .v-icon {
 	vertical-align: middle; /* This has to be 'middle', not 'bottom', to allow larger icons than 16px */
 }
 
-.i-window-contents {
+.v-window-contents {
 	background: #fff;
     padding: 8px;
     font-size: 10pt;
@@ -48,15 +48,15 @@
 
 /* Partial fix for bug #1106 */
 /* Target Firefox 2 (somehow this will force almost all window borders on top of a Flash object) */
-.i-window-contents, x:-moz-any-link {
+.v-window-contents, x:-moz-any-link {
 	overflow: hidden;
 }
 /* Target Firefox 3 (it doesn't need any trickery, so revert the previous) */
-.i-window-contents, x:-moz-any-link, x:default {
+.v-window-contents, x:-moz-any-link, x:default {
 	overflow: visible;
 }
 
-.i-window-footer {
+.v-window-footer {
 	height: 8px;
 	margin-left: 9px;
 	background: transparent; /*url(img/bottom-right.png) no-repeat right top;*/
@@ -64,7 +64,7 @@
 	position:relative;
 }
 
-.i-window-resizebox {
+.v-window-resizebox {
 	position: absolute; /* Needed to position the element over ScrollPanel, which is also relatively positioned */
 	right: 10px;
 	width: 10px;
@@ -75,12 +75,12 @@
 	overflow: hidden;
 }
 
-.i-window-resizebox-disabled {
+.v-window-resizebox-disabled {
 	cursor: default;
 	background: transparent;
 }
 
-.i-window-closebox {
+.v-window-closebox {
 	position: absolute;
 	top: 9px;
 	right: 9px;
@@ -92,12 +92,12 @@
     /*border: 1px solid #fff;*/
 }
 /*
-.i-window-closebox:hover {
+.v-window-closebox:hover {
 	background-position: 0 -12px;
 }
 */
 
-.i-window-modalitycurtain {
+.v-window-modalitycurtain {
 	top: 0;
 	left: 0;
 	background: white;
@@ -109,31 +109,31 @@
 }
 
 /* IE6 workaround for position:fixed; */
-* html .i-window-modalitycurtain {
+* html .v-window-modalitycurtain {
 	position: absolute;
 	top: expression(document.documentElement.scrollTop + "px");
 }
 
 /* IE specific styles */
 
-* html .i-window {
+* html .v-window {
 	width: 0; /* min-size for IE6 */
 }
 
 /* Shadow for window */
 
-.i-shadow-window {
+.v-shadow-window {
 	position: absolute;
 }
 
-.i-shadow-window .top-left {
+.v-shadow-window .top-left {
     position: absolute; overflow: hidden;
     top: -13px;             left: -20px;
     width: 39px;         height: 39px;
     background: transparent url(img/shadow/top-left.png);
 }
 
-.i-shadow-window .top {
+.v-shadow-window .top {
     position: absolute; overflow: hidden;
     top: -13px;             left: 19px;
     height: 39px;
@@ -141,14 +141,14 @@
     background: transparent url(img/shadow/top.png);
 }
 
-.i-shadow-window .top-right {
+.v-shadow-window .top-right {
     position: absolute; overflow: hidden;
     top: -13px;             right: -20px;
     width: 39px;         height: 39px;
     background: transparent url(img/shadow/top-right.png);
 }
 
-.i-shadow-window .left {
+.v-shadow-window .left {
     position: absolute; overflow: hidden;
     top: 26px;           left: -20px;
     width: 39px;
@@ -156,14 +156,14 @@
     background: transparent url(img/shadow/left.png);
 }
 
-.i-shadow-window .center {
+.v-shadow-window .center {
     position: absolute; overflow: hidden;
     top: 26px;           left: 19px;
     bottom: 12px;        right: 19px;
     background: transparent url(img/shadow/center.png);
 }
 
-.i-shadow-window .right {
+.v-shadow-window .right {
     position: absolute; overflow: hidden;
     top: 26px;           right: -20px;
     width: 39px;
@@ -171,21 +171,21 @@
     background: transparent url(img/shadow/right.png);
 }
 
-.i-shadow-window .bottom-left {
+.v-shadow-window .bottom-left {
     position: absolute; overflow: hidden;
     bottom: -27px;           left: -20px;
     width: 39px;          height: 39px;
     background: transparent url(img/shadow/bottom-left.png);
 }
 
-.i-shadow-window .bottom {
+.v-shadow-window .bottom {
     position: absolute; overflow: hidden;
     bottom: -27px;           left: 19px;
     right: 19px;          height: 39px;
     background: transparent url(img/shadow/bottom.png);
 }
 
-.i-shadow-window .bottom-right {
+.v-shadow-window .bottom-right {
     position: absolute; overflow: hidden;
     bottom: -27px;           right: -20px;
     width: 39px;          height: 39px;
@@ -195,11 +195,11 @@
 
 /* For IE6 (no transparent png's, we use a blur filter) */
 
-* html .i-shadow-window * {
+* html .v-shadow-window * {
 	display: none;
 }
 
-* html .i-shadow-window {
+* html .v-shadow-window {
 	background: #000;
 	filter: progid:DXImageTransform.Microsoft.Blur(pixelRadius=5) alpha(opacity=20);
 	margin-top: 2px;

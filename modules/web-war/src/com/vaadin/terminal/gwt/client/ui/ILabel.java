@@ -32,8 +32,8 @@ import com.haulmont.cuba.toolkit.gwt.client.Tools;
 
 public class ILabel extends HTML implements Paintable {
 
-    public static final String CLASSNAME = "i-label";
-    private static final String CLASSNAME_UNDEFINED_WIDTH = "i-label-undef-w";
+    public static final String CLASSNAME = "v-label";
+    private static final String CLASSNAME_UNDEFINED_WIDTH = "v-label-undef-w";
 
     protected ApplicationConnection client;
     protected int verticalPaddingBorder = 0;

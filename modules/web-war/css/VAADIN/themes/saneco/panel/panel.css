@@ -1,43 +1,43 @@
-.i-panel,
-.i-panel-caption,
-.i-panel-content,
-.i-panel-deco,
-.i-panel-light,
-.i-panel-caption-light,
-.i-panel-content-light,
-.i-panel-deco-light {
+.v-panel,
+.v-panel-caption,
+.v-panel-content,
+.v-panel-deco,
+.v-panel-light,
+.v-panel-caption-light,
+.v-panel-content-light,
+.v-panel-deco-light {
 	outline: none; /* Prevent selection outline which might break layouts or cause scrollbars */
 	text-align: left; /* Force default alignment */
     border: 0;
 }
 
-.i-panel {
+.v-panel {
 	background: transparent;
 }
 
-.i-panel-caption .i-errorindicator {
+.v-panel-caption .v-errorindicator {
 	float: none;
 	padding-right:10px;
 	display:inline;
 	background: transparent;
 }
 
-.i-panel-caption .i-icon {
+.v-panel-caption .v-icon {
 	display:inline;
 	vertical-align: middle;
 }
-.i-panel-caption span {
+.v-panel-caption span {
 	vertical-align: middle;
 }
 
-.i-panel-caption-group-box
+.v-panel-caption-group-box
 {
     font-weight: bold;
     font-size: 14pt;
 }
 
-.i-panel-caption,
-.i-panel-caption-light {
+.v-panel-caption,
+.v-panel-caption-light {
 	/*font-size: 18px;*/
 	line-height: 18px;
 	font-weight: normal;
@@ -51,24 +51,24 @@
 	overflow: hidden;
 }
 
-.i-panel-nocaption {
+.v-panel-nocaption {
     display: none;
 }
 
-.i-panel-content {
+.v-panel-content {
 	border: 0px solid #babfc0;
 	border-bottom: 0px solid #dee2e3;
 	background-color: #fff;
 	overflow: auto;
 }
 
-.i-panel-deco {
+.v-panel-deco {
 	height: 0px;
 	background: transparent;
 	margin-left: 0px;
 }
 
-.i-panel-deco:before {
+.v-panel-deco:before {
 	display: block;
 	content: "";
 	width: 0px;
@@ -79,25 +79,25 @@
 
 /* Light panel style */
 
-.i-panel-light,
-.i-panel-caption-light {
+.v-panel-light,
+.v-panel-caption-light {
 	background: transparent;
     
 }
 
-.i-panel-nocaption-light {
+.v-panel-nocaption-light {
 	background: transparent;
 	height: 0;
 	margin: 0;
 }
 
-.i-panel-content-light {
+.v-panel-content-light {
 	border: none;
 	border-top: 0px solid #babfc0;
 	background: transparent;
 }
 
-.i-panel-deco-light {
+.v-panel-deco-light {
 	height: 0;
 	overflow: hidden;
 }
@@ -114,47 +114,47 @@
  * apply them if they are grouped together 
  * (it doesn't recognize the '+' selector).
 */
-* html .i-panel {
+* html .v-panel {
 	background: transparent;
 }
-* html .i-panel-caption {
+* html .v-panel-caption {
 	/*border: 1px solid #babfc0;*/
 	border-bottom: none;
 	background: #fff;
 	margin: 0;
 	padding-left: 4px
 }
-* html .i-panel-nocaption {
+* html .v-panel-nocaption {
 	border: none;
 	background: transparent;
 	margin: 0;
 	height: 0;
 }
 
-* html .i-panel-caption-light {
+* html .v-panel-caption-light {
 	border: none;
 	background: transparent;
 }
 
-* html .i-panel-content {
+* html .v-panel-content {
 	/*border-bottom: 1px solid #babfc0;*/
 }
-*+html .i-panel-content {
+*+html .v-panel-content {
 	/*border-bottom: 1px solid #babfc0;*/
 }
 
-* html .i-panel-content-light {
+* html .v-panel-content-light {
 	border-bottom: none;
 }
-*+html .i-panel-content-light {
+*+html .v-panel-content-light {
 	border-bottom: none;
 }
 
-* html .i-panel-deco {
+* html .v-panel-deco {
 	height: 0;
 	overflow: hidden;
 }
-*+html .i-panel-deco {
+*+html .v-panel-deco {
 	height: 0;
 	overflow: hidden;
 }

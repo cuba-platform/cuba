@@ -49,7 +49,7 @@ import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
 public class ICustomLayout extends ComplexPanel implements Paintable,
         Container, ContainerResizedListener {
 
-    public static final String CLASSNAME = "i-customlayout";
+    public static final String CLASSNAME = "v-customlayout";
 
     /** Location-name to containing element in DOM map */
     private final HashMap locationToElement = new HashMap();

@@ -35,7 +35,7 @@ public class IPageTreeTable extends IPageTable {
         protected void addRow(ITableRow row) {
             super.addRow(row);
             if (((IPageTreeTableRow) row).isExpanded()) {
-                row.addStyleName("i-expanded");
+                row.addStyleName("v-expanded");
             }
         }
 

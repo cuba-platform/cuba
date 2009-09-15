@@ -17,9 +17,9 @@ public class ITreeTable
         implements Table,
         ClickListener
 {
-    public static final String CLASSNAME = "i-tree-table";
-    public static final String CLASSNAME_ROW_SELECTED = "i-selected";
-    public static final String CLASSNAME_ROW_EXPANDED = "i-expanded";
+    public static final String CLASSNAME = "v-tree-table";
+    public static final String CLASSNAME_ROW_SELECTED = "v-selected";
+    public static final String CLASSNAME_ROW_EXPANDED = "v-expanded";
 
     public static final char ALIGN_CENTER = 'c';
     public static final char ALIGN_LEFT = 'b';

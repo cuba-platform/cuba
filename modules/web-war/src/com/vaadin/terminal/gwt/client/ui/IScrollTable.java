@@ -326,7 +326,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         if (scrollPositionElement == null) {
             scrollPositionElement = DOM.createDiv();
             DOM.setElementProperty(scrollPositionElement, "className",
-                    "i-table-scrollposition");
+                    "v-table-scrollposition");
             DOM.appendChild(getElement(), scrollPositionElement);
         }
 
@@ -668,7 +668,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
                 applyAlternatingRowColor(row, "-row");
             }
             if (row.isSelected()) {
-                row.addStyleName("i-selected");
+                row.addStyleName("v-selected");
             }
             DOM.insertChild(tBody, row.getElement(), 0);
             adopt(row);
@@ -687,7 +687,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
                 applyAlternatingRowColor(row, "-row");
             }
             if (row.isSelected()) {
-                row.addStyleName("i-selected");
+                row.addStyleName("v-selected");
             }
             DOM.appendChild(tBody, row.getElement());
             adopt(row);

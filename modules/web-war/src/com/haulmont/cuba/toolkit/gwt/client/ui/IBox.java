@@ -22,7 +22,7 @@ import java.util.Set;
 public class IBox extends FlowPanel //todo gorodnov: make table cell wrapper component
         implements Container {
 
-    public static final String CLASSNAME = "i-box";
+    public static final String CLASSNAME = "v-box";
 
     protected String paintableId;
     protected ApplicationConnection client;

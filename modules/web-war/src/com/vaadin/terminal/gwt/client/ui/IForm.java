@@ -38,7 +38,7 @@ public class IForm extends ComplexPanel implements Container {
 
     private String width = "";
 
-    public static final String CLASSNAME = "i-form";
+    public static final String CLASSNAME = "v-form";
 
     private Container lo;
     private Element legend = DOM.createLegend();
@@ -72,10 +72,10 @@ public class IForm extends ComplexPanel implements Container {
         DOM.appendChild(fieldSet, legend);
         DOM.appendChild(legend, caption);
         DOM.setElementProperty(errorIndicatorElement, "className",
-                "i-errorindicator");
+                "v-errorindicator");
         DOM.setStyleAttribute(errorIndicatorElement, "display", "none");
         DOM.setInnerText(errorIndicatorElement, " "); // needed for IE
-        DOM.setElementProperty(desc, "className", "i-form-description");
+        DOM.setElementProperty(desc, "className", "v-form-description");
         DOM.appendChild(fieldSet, desc);
         DOM.appendChild(fieldSet, fieldContainer);
         errorMessage.setVisible(false);

@@ -1,4 +1,4 @@
-.i-textfield {
+.v-textfield {
 	background: #fff url(img/bg.png) repeat-x;
 	padding: 2px;
 	border: 1px solid #b6b6b6;
@@ -11,7 +11,7 @@
 	text-align: left /* Force default alignment */
 }
 
-.i-textarea {
+.v-textarea {
 	background: #fff url(img/bg.png) repeat-x;
 	padding: 2px;
 	border: 1px solid #b6b6b6;
@@ -22,66 +22,66 @@
 	font-size: 13px;
 }
 
-.i-textfield:focus,
-.i-textarea:focus {
+.v-textfield:focus,
+.v-textarea:focus {
     outline: 0;
 }
 
-.i-textfield-focus,
-.i-textarea-focus {
+.v-textfield-focus,
+.v-textarea-focus {
     outline: 0;
 }
 
-.i-textfield.i-readonly,
-.i-textarea.i-readonly {
+.v-textfield.v-readonly,
+.v-textarea.v-readonly {
 	background: transparent;
 	color: #222;
 	border: none;
     cursor: default;
 }
 
-.i-textarea.i-readonly {
+.v-textarea.v-readonly {
     overflow: hidden;
 }
 
-.i-richtextarea {
+.v-richtextarea {
 	border: 1px solid #b6b6b6;
 	overflow: hidden;
 }
-.i-richtextarea .gwt-RichTextToolbar .gwt-ToggleButton,
-.i-richtextarea .gwt-RichTextToolbar .gwt-PushButton {
+.v-richtextarea .gwt-RichTextToolbar .gwt-ToggleButton,
+.v-richtextarea .gwt-RichTextToolbar .gwt-PushButton {
 	float:left;
 }
-.i-richtextarea .gwt-RichTextToolbar {
+.v-richtextarea .gwt-RichTextToolbar {
 	white-space: nowrap;
 }
-.i-richtextarea .gwt-RichTextArea {
+.v-richtextarea .gwt-RichTextArea {
 	background: #fff url(img/bg.png) repeat-x;
 }
-.i-richtextarea iframe {
+.v-richtextarea iframe {
 	border: 0;
 }
 
 /* Disabled by default
-.i-textarea-error,
-.i-textfield-error,
-.i-richtextarea-error iframe.gwt-RichTextArea {
+.v-textarea-error,
+.v-textfield-error,
+.v-richtextarea-error iframe.gwt-RichTextArea {
 	background:transparent;
 	background-color: #FFE0E0;	
 }
 */
 
 /* Disabled by default
-.i-textarea-required,
-.i-textfield-required,
-.i-richtextarea-required iframe.gwt-RichTextArea {
+.v-textarea-required,
+.v-textfield-required,
+.v-richtextarea-required iframe.gwt-RichTextArea {
 	background:transparent;
 	background-color: #FFE0E0;	
 }
 */
 
 /* Safari focus glow fix */
-.i-sa input:focus, 
-.i-sa textarea:focus{
+.v-sa input:focus,
+.v-sa textarea:focus{
     outline: 0;
 }

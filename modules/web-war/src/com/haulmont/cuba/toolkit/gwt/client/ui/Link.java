@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.Label;
 @Deprecated
 public class Link extends Label {
 
-    public static final String CLASSNAME = "i-link";
+    public static final String CLASSNAME = "v-link";
 
     private String href = null;
 

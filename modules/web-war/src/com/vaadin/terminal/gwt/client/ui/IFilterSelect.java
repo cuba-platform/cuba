@@ -65,7 +65,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
             if (iconUri != null) {
                 sb.append("<img src=\"");
                 sb.append(iconUri);
-                sb.append("\" alt=\"\" class=\"i-icon\" />");
+                sb.append("\" alt=\"\" class=\"v-icon\" />");
             }
             sb.append("<span>" + Util.escapeHTML(caption) + "</span>");
             return sb.toString();
@@ -502,7 +502,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
     public static final int FILTERINGMODE_STARTSWITH = 1;
     public static final int FILTERINGMODE_CONTAINS = 2;
 
-    private static final String CLASSNAME = "i-filterselect";
+    private static final String CLASSNAME = "v-filterselect";
 
     public static final int PAGELENTH = 10;
 
@@ -570,7 +570,7 @@ public class IFilterSelect extends Composite implements Paintable, Field,
 
     public IFilterSelect() {
         selectedItemIcon.setVisible(false);
-        selectedItemIcon.setStyleName("i-icon");
+        selectedItemIcon.setStyleName("v-icon");
         selectedItemIcon.addLoadListener(new LoadListener() {
             public void onError(Widget sender) {
             }

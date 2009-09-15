@@ -1,19 +1,19 @@
 
-.pickerfield .i-textfield {
+.pickerfield .v-textfield {
     padding: 0;
 }
 
-.pickerfield .i-button {
+.pickerfield .v-button {
     height: 18px;
     line-height: 18px;
 }
 
-.pickerfield .i-button-link {
+.pickerfield .v-button-link {
     padding: 0 5px;
 }
 
-.pickerfield .i-readonly.i-textfield,
-.pickerfield .i-textfield-readonly {
+.pickerfield .v-readonly.v-textfield,
+.pickerfield .v-textfield-readonly {
     border: 1px solid #b6b6b6;
     overflow: hidden;
 }

@@ -25,7 +25,7 @@ import com.vaadin.terminal.gwt.client.UIDL;
 public class IUpload extends FormPanel implements Paintable, ClickListener,
         FormHandler {
 
-    public static final String CLASSNAME = "i-upload";
+    public static final String CLASSNAME = "v-upload";
 
     /**
      * FileUpload component that opens native OS dialog to select file.
@@ -66,14 +66,14 @@ public class IUpload extends FormPanel implements Paintable, ClickListener,
 
 
         setWidget(panel);
-//        panel.setStyleName("i-upload-panel");
+//        panel.setStyleName("v-upload-panel");
         panel.add(fu);
         submitButton = new Button();
-        submitButton.setStyleName("i-upload-submit");
+        submitButton.setStyleName("v-upload-submit");
         submitButton.addClickListener(this);
         panel.add(submitButton);
 /*        Panel clearPanel = new HorizontalPanel();
-        clearPanel.setStyleName("i-upload-clear");
+        clearPanel.setStyleName("v-upload-clear");
         panel.add(clearPanel);*/
 
         addFormHandler(this);

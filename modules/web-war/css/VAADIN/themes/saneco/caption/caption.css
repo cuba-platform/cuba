@@ -1,50 +1,50 @@
 /* Provide some extra whitespace for wrapped elements
    (these elements usually need the extra space, since
    they aren't even handling their own caption) */
-.i-captionwrapper {
+.v-captionwrapper {
 	margin: 0;
 	text-align: left; /* Force default alignment */
     clear: both;
 }
 
-.i-caption {
+.v-caption {
 	overflow: hidden;
 	white-space: nowrap;
 }
 
-.i-errorindicator {
+.v-errorindicator {
 	width: 12px;
 	height: 16px;
 	float: left;
 	background: transparent url(../icons/16/error.png) no-repeat top right;
 }
 
-* html .i-errorindicator {
+* html .v-errorindicator {
 	background: transparent none;
 	/* gif for transparency */
 	background: transparent url(../icons/16/error.gif) no-repeat top right;
 }
-*+html .i-errorindicator {
+*+html .v-errorindicator {
 	margin-left:-3px;
 }
-.i-caption .i-icon {
+.v-caption .v-icon {
 	padding-right: 2px;
 	vertical-align: middle;
 	float: left;
 }
-.i-caption .i-captiontext {
+.v-caption .v-captiontext {
 	float: left;
 	overflow: hidden;
 	vertical-align: middle;
 }
 
 
-.i-panel-caption-group-box
+.v-panel-caption-group-box
 {
     font-weight: bold;
     font-size: 14pt;
 }
 
-.i-caption .i-required-field-indicator {
+.v-caption .v-required-field-indicator {
     color: #f00;
 }

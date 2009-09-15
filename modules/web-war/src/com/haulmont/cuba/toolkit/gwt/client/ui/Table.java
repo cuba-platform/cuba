@@ -25,7 +25,7 @@ import com.vaadin.terminal.gwt.client.ui.TreeAction;
 import java.util.*;
 
 public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table {
-    public static final String CLASSNAME = "i-table";
+    public static final String CLASSNAME = "v-table";
 
     public static final char ALIGN_CENTER = 'c';
     public static final char ALIGN_LEFT = 'b';
@@ -1216,9 +1216,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             public String getHTML() {
                 final StringBuffer buf = new StringBuffer();
                 if (collapsed) {
-                    buf.append("<span class=\"i-off\">");
+                    buf.append("<span class=\"v-off\">");
                 } else {
-                    buf.append("<span class=\"i-on\">");
+                    buf.append("<span class=\"v-on\">");
                 }
                 buf.append(super.getHTML());
                 buf.append("</span>");
@@ -1745,10 +1745,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         deselectAll();
                     }
                     selectedRowKeys.add(String.valueOf(rowKey));
-                    addStyleName("i-selected");
+                    addStyleName("v-selected");
                 } else {
                     selectedRowKeys.remove(String.valueOf(rowKey));
-                    removeStyleName("i-selected");
+                    removeStyleName("v-selected");
                 }
             }
 
@@ -1974,7 +1974,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             s = "<img src=\""
                     + client.translateVaadinUri(uidl
                             .getStringAttribute("icon"))
-                    + "\" alt=\"icon\" class=\"i-icon\">" + s;
+                    + "\" alt=\"icon\" class=\"v-icon\">" + s;
         }
         return s;
     }

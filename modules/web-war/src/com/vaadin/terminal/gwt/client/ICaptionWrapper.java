@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ICaptionWrapper extends ComplexPanel {
 
-    public static final String CLASSNAME = "i-captionwrapper";
+    public static final String CLASSNAME = "v-captionwrapper";
     protected ICaption caption;
     protected Paintable widget;
 

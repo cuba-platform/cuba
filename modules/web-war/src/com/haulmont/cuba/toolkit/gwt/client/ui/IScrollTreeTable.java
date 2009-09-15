@@ -37,7 +37,7 @@ public class IScrollTreeTable
         protected void addRowBeforeFirstRendered(IScrollTableRow row) {
             super.addRowBeforeFirstRendered(row);
             if (((IScrollTreeTableRow) row).isExpanded()) {
-                row.addStyleName("i-expanded");
+                row.addStyleName("v-expanded");
             }
         }
 
@@ -45,7 +45,7 @@ public class IScrollTreeTable
         protected void addRow(IScrollTableRow row) {
             super.addRow(row);
             if (((IScrollTreeTableRow) row).isExpanded()) {
-                row.addStyleName("i-expanded");
+                row.addStyleName("v-expanded");
             }
         }
 

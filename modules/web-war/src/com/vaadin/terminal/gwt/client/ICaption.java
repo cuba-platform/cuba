@@ -24,7 +24,7 @@ import com.vaadin.terminal.gwt.client.ui.Icon;
 
 public class ICaption extends HTML {
 
-    public static final String CLASSNAME = "i-caption";
+    public static final String CLASSNAME = "v-caption";
 
     private final Paintable owner;
 
@@ -95,7 +95,7 @@ public class ICaption extends HTML {
         }
 
         if (uidl.hasAttribute("disabled")) {
-            style += " " + "i-disabled";
+            style += " " + "v-disabled";
         }
 
         setStyleName(style);
@@ -123,7 +123,7 @@ public class ICaption extends HTML {
         if (uidl.hasAttribute(ATTRIBUTE_CAPTION)) {
             if (captionText == null) {
                 captionText = DOM.createDiv();
-                captionText.setClassName("i-captiontext");
+                captionText.setClassName("v-captiontext");
 
                 DOM.insertChild(getElement(), captionText,
                         getInsertPosition(ATTRIBUTE_CAPTION));
@@ -155,7 +155,7 @@ public class ICaption extends HTML {
             if (requiredFieldIndicator == null && !readonly) {
                 requiredFieldIndicator = DOM.createDiv();
                 requiredFieldIndicator
-                        .setClassName("i-required-field-indicator");
+                        .setClassName("v-required-field-indicator");
                 DOM.setInnerText(requiredFieldIndicator, "*");
 
                 DOM.insertChild(getElement(), requiredFieldIndicator,
@@ -173,7 +173,7 @@ public class ICaption extends HTML {
                 errorIndicatorElement = DOM.createDiv();
                 DOM.setInnerHTML(errorIndicatorElement, "&nbsp;");
                 DOM.setElementProperty(errorIndicatorElement, "className",
-                        "i-errorindicator");
+                        "v-errorindicator");
 
                 DOM.insertChild(getElement(), errorIndicatorElement,
                         getInsertPosition(ATTRIBUTE_ERROR));

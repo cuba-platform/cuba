@@ -207,7 +207,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
                 applyAlternatingRowColor(row, "-row");
             }
             if (row.isSelected()) {
-                row.addStyleName("i-selected");
+                row.addStyleName("v-selected");
             }
             DOM.appendChild(tBody, row.getElement());
             adopt(row);
@@ -265,7 +265,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
 
         private TablePageLengthEditor editor;
 
-        public static final String CLASSNAME = "i-pager";
+        public static final String CLASSNAME = "v-pager";
 
         public IPager(String prevCaption, String nextCaption, String firstCaption, String lastCaption) {
             pagerRoot.setStyleName(CLASSNAME);
@@ -536,7 +536,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
     class TablePageLengthEditor
             extends Composite implements ChangeListener
     {
-        public static final String CLASSNAME = "i-pager-editor";
+        public static final String CLASSNAME = "v-pager-editor";
 
         private final ListBox select = new ListBox(false);
         private final Element captionContainer = DOM.createSpan();

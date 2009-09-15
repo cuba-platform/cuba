@@ -1,16 +1,16 @@
-.i-accordion {
+.v-accordion {
 	position: relative;
 	outline: none;
 	overflow: hidden;
 	text-align: left /* Force default alignment */
 }
 
-.i-accordion-item {
+.v-accordion-item {
 	position: relative; 
 	background-color: #fff;
 }
 
-.i-accordion-item-caption {
+.v-accordion-item-caption {
 	height: 31px;
 	overflow: hidden;
 	white-space: nowrap;
@@ -20,12 +20,12 @@
 	border-top: 1px solid #c8cccd;
 }
 
-.i-accordion-item-caption .i-caption {
+.v-accordion-item-caption .v-caption {
 	padding: 7px 0 6px 18px;
 	cursor: pointer;
 }
 
-.i-accordion-item-open .i-accordion-item-caption {
+.v-accordion-item-open .v-accordion-item-caption {
 	color: #3b4b57;
 	background: #d5dee2 url(img/selected-bg.png);
 	border-top-color: #cbd7de;
@@ -36,7 +36,7 @@
 }
 
 
-.i-accordion-item-content {
+.v-accordion-item-content {
 	position: absolute;
 	overflow: auto;
 	width: 100%;

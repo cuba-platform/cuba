@@ -27,7 +27,7 @@ import com.vaadin.terminal.gwt.client.RenderInformation.Size;
 
 public class IPopupView extends HTML implements Container {
 
-    public static final String CLASSNAME = "i-popupview";
+    public static final String CLASSNAME = "v-popupview";
 
     /** For server-client communication */
     private String uidlId;

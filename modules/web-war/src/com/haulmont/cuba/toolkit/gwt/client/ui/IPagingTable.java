@@ -22,8 +22,8 @@ public class IPagingTable
         ContainerResizedListener,
         Pager.PageChangeListener
 {
-    public static final String CLASSNAME = "i-page-table";
-    public static final String CLASSNAME_ROW_SELECTED = "i-selected";
+    public static final String CLASSNAME = "v-page-table";
+    public static final String CLASSNAME_ROW_SELECTED = "v-selected";
 
     public static final char ALIGN_CENTER = 'c';
     public static final char ALIGN_LEFT = 'b';
@@ -988,7 +988,7 @@ public class IPagingTable
         private Link prev = new Link("<<Prev", "Page:prev");
         private Link next = new Link("Next>>", "Page:next");
 
-        public static final String CLASSNAME = "i-pager";
+        public static final String CLASSNAME = "v-pager";
 
         public IPager() {
             pagerRoot.setStyleName(CLASSNAME);
@@ -1205,7 +1205,7 @@ public class IPagingTable
     class TablePageLengthEditor
             extends Composite
     {
-        public static final String CLASSNAME = "i-page-length-editor";
+        public static final String CLASSNAME = "v-page-length-editor";
 
         private final Button applyButton = new Button("Apply");
 

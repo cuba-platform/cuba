@@ -1,4 +1,4 @@
-.i-menubar table {
+.v-menubar table {
     font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
     color: #fff;
     background: transparent url(img/menubar-bg.gif) repeat-x;
@@ -9,7 +9,7 @@
     margin-left: 5px;
 }
 
-.i-menubar .menuitem {
+.v-menubar .menuitem {
     cursor: pointer;
     padding-left: 10px;
     padding-right: 10px;
@@ -17,12 +17,12 @@
     background: transparent;
 }
 
-.i-menubar .menuitem-selected {
+.v-menubar .menuitem-selected {
     background: transparent url(img/menu-selected2.gif) repeat-x 4px 4px;
     color: #002d96;
 }
 
-.i-menubar-submenu {
+.v-menubar-submenu {
     font-size: 13px;
     padding: 3px;
     font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
@@ -31,11 +31,11 @@
     border: thin ridge #D3D3D3;
 }
 
-.i-menubar-submenu table {
+.v-menubar-submenu table {
     background: #fff url(img/submenu-bg.gif) repeat-y;
 }
 
-.i-menubar-submenu .menuitem {
+.v-menubar-submenu .menuitem {
     cursor: pointer;
     padding-left: 10px;
     padding-right: 10px;
@@ -43,6 +43,6 @@
     color: #002d96;
 }
 
-.i-menubar-submenu .menuitem-selected {
+.v-menubar-submenu .menuitem-selected {
     background-color: #DCE3EB;
 }

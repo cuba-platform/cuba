@@ -23,7 +23,7 @@ public class IMenuBar
         extends Composite
         implements Paintable
 {
-    public static final String CLASSNAME = "i-menubar";
+    public static final String CLASSNAME = "v-menubar";
     public static final String CLASSNAME_SUBMENU = CLASSNAME + "-submenu";
 
     private ApplicationConnection client;

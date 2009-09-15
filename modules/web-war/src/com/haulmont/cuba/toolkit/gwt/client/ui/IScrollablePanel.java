@@ -18,7 +18,7 @@ public class IScrollablePanel
         extends SimplePanel implements Container
 {
 
-    public static final String CLASSNAME = "i-scrollable-panel";
+    public static final String CLASSNAME = "v-scrollable-panel";
 
     ApplicationConnection client;
 
@@ -161,7 +161,7 @@ public class IScrollablePanel
             if (errorIndicatorElement == null) {
                 errorIndicatorElement = DOM.createDiv();
                 DOM.setElementProperty(errorIndicatorElement, "className",
-                        "i-errorindicator");
+                        "v-errorindicator");
                 DOM.sinkEvents(errorIndicatorElement, Event.MOUSEEVENTS);
                 sinkEvents(Event.MOUSEEVENTS);
             }

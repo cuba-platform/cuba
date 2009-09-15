@@ -1,10 +1,10 @@
-.i-upload-submit
+.v-upload-submit
 {
     text-align:inherit;
 }
 
 /*fix for IE6*/
-* html .i-upload-submit
+* html .v-upload-submit
 {
     float:left;
     height:20px;
@@ -16,7 +16,7 @@
 }
 
 /*fix for IE7*/
-*+ html .i-upload-submit
+*+ html .v-upload-submit
 {
     float:left;
     height:20px;
@@ -28,13 +28,13 @@
     height: 20px;
 }
 
-.i-upload-panel,
-.i-upload-submit
+.v-upload-panel,
+.v-upload-submit
 {
     float:left;
 }
 
-.i-upload-clear
+.v-upload-clear
 {
     clear: right;
 }
