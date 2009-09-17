@@ -35,8 +35,8 @@
     </dsContext>
 
     <layout>
-        <vbox expand="roles-pane" spacing="true">
-            <hbox expand="expand-box" stylename="edit-area" spacing="true" margin="true">
+        <vbox expand="roles" spacing="true">
+            <hbox stylename="edit-area" spacing="true" margin="true">
                 <grid spacing="true">
                     <columns>
                         <column flex="1"/>
@@ -86,20 +86,19 @@
                         </row>
                     </rows>
                 </grid>
-                <hbox id="expand-box"/>
             </hbox>
-            <vbox id="roles-pane" expand="roles" spacing="true">
-                <table id="roles">
-                    <columns>
-                        <column id="role" caption="Role" captionProperty="name" clickAction="open:sec$Role.edit"/>
-                    </columns>
-                    <rows datasource="roles"/>
-                </table>
-                <hbox align="MIDDLE_RIGHT">
-                    <button action="roles.include"/>
-                    <button action="roles.remove"/>
-                </hbox>
-            </vbox>
+
+            <table id="roles">
+                <columns>
+                    <column id="role" caption="Role" captionProperty="name" clickAction="open:sec$Role.edit"/>
+                </columns>
+                <rows datasource="roles"/>
+            </table>
+
+            <hbox align="MIDDLE_RIGHT">
+                <button action="roles.include"/>
+                <button action="roles.remove"/>
+            </hbox>
 
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>

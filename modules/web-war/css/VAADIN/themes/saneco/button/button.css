@@ -4,6 +4,7 @@
 	white-space: nowrap;
 	margin: 0;
     padding: 3px 8px;
+    font-weight: bold;
 }
 .v-checkbox input {
 	vertical-align: middle;
@@ -17,7 +18,7 @@
 	vertical-align: middle;
 }
 
-.v-button-link {
+.v-button-link,.v-button-title{
 	border: none;
 	text-align: left;
 	background: none;
@@ -25,11 +26,13 @@
 }
 
 .v-button-link,
-.v-button-link:focus {
+.v-button-link:focus,
+.v-button-title{
     outline: 0;
 }
 
-.v-button-link span {
+.v-button-link span,
+.v-button-title span {
 	text-decoration: underline;
 }
 
@@ -78,7 +81,10 @@
 .v-button a,
 .v-button-link .v-link,
 .v-button-link a,
-.v-button-link span
+.v-button-link span,
+.v-button-title .v-link,
+.v-button-title a,
+.v-button-title span
 {
     padding-top: 1px;
     text-decoration: none;
@@ -88,20 +94,35 @@
 .v-button .v-link a:hover,
 .v-button-link .v-link a:hover,
 .v-button-link a:hover,
-.v-button-link .v-link span:hover
+.v-button-link .v-link span:hover,
+.v-button-title .v-link a:hover,
+.v-button-title a:hover,
+.v-button-title .v-link span:hover
 {
     padding-top: 1px;
     text-decoration: underline;
     text-align:center;
 }
 
-.v-app .v-button-link span
+.v-app .v-button-link span,
+.v-app .v-button-title span,
 {
     color: #0033cc;
     text-decoration: underline;
+    padding: 8px 8px; 
 }
 
-.v-app .v-button-link span:hover
+.v-app .v-button-link span:hover,
+.v-app .v-button-title span:hover
 {
     text-decoration: underline;
+}
+
+.v-app .v-horizontallayout .v-button-title span{
+    color: #FFFFFF;
+    font-weight: bold;
+}
+.v-app .v-horizontallayout .v-button-title{
+    background-color: #829fd6;
+    height:20px;
 }

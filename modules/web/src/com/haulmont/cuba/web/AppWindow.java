@@ -181,10 +181,10 @@ public class AppWindow extends Window {
         titleLayout.setSpacing(false);
 
         Label logoLabel = new Label(MessageProvider.getMessage(getClass(), "logoLabel"));
-
+        logoLabel.setStyleName("logo");
         Label loggedInLabel = new Label(String.format(MessageProvider.getMessage(getClass(), "loggedInLabel"),
                 connection.getSession().getUser().getName()));
-
+        loggedInLabel.setStyleName("logo");
         Button logoutBtn = new Button(MessageProvider.getMessage(getClass(), "logoutBtn"),
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
@@ -194,7 +194,7 @@ public class AppWindow extends Window {
                     }
                 }
         );
-        logoutBtn.setStyleName(Button.STYLE_LINK);
+        logoutBtn.setStyleName("title");
 
         Button viewLogBtn = new Button(MessageProvider.getMessage(getClass(), "viewLogBtn"),
                 new Button.ClickListener()
@@ -205,7 +205,7 @@ public class AppWindow extends Window {
                     }
                 }
         );
-        viewLogBtn.setStyleName(Button.STYLE_LINK);
+        viewLogBtn.setStyleName("title");
 
         logoLabel.setSizeFull();
 

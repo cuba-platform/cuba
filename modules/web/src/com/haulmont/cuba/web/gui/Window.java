@@ -535,6 +535,8 @@ public class Window
             form.setSizeFull();
             layout.setExpandRatio(form, 1);
 
+            layout.setSizeFull();
+
             return layout;
         }
 
@@ -573,10 +575,7 @@ public class Window
         }
 
         protected Form createForm() {
-            final VerticalLayout formLayout = new VerticalLayout();
-            formLayout.setSizeFull();
-
-            return new Form(formLayout);
+            return new Form();
         }
 
         @Override
