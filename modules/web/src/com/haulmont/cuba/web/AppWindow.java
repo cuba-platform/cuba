@@ -181,7 +181,7 @@ public class AppWindow extends Window {
         titleLayout.setSpacing(false);
 
         Label logoLabel = new Label(MessageProvider.getMessage(getClass(), "logoLabel"));
-        logoLabel.setStyleName("logo");
+        logoLabel.setStyleName("logo");//new style for logo
         Label loggedInLabel = new Label(String.format(MessageProvider.getMessage(getClass(), "loggedInLabel"),
                 connection.getSession().getUser().getName()));
         loggedInLabel.setStyleName("logo");

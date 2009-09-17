@@ -74,7 +74,7 @@ public class VButton extends Button implements Paintable {
         sinkEvents(Event.ONMOUSEDOWN);
         sinkEvents(Event.ONMOUSEUP);
     }
-
+    // Old style button
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 
         // Ensure correct implementation,

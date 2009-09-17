@@ -575,6 +575,7 @@ public class Window
         }
 
         protected Form createForm() {
+            //simple form layout using
             return new Form();
         }
 
