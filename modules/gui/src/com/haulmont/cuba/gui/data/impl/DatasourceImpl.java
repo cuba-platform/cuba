@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class DatasourceImpl<T extends Entity>
     extends
-        AbstractDataSource<T>
+        AbstractDatasource<T>
     implements
         DatasourceImplementation<T>
 {

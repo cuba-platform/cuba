@@ -24,7 +24,7 @@ import org.apache.commons.lang.ObjectUtils;
 
 public class PropertyDatasourceImpl<T extends Entity>
     extends
-        AbstractDataSource<T>
+        AbstractDatasource<T>
     implements
         Datasource<T>, DatasourceImplementation<T>, PropertyDatasource<T>
 {
