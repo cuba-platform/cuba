@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.sys;
+package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
@@ -20,6 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.io.Serializable;
 
 import org.apache.commons.lang.text.StrBuilder;
+
+/**
+ * UserSessions MBean implementation.
+ * <p>
+ * Holds and controls the current user sessions list.
+ */
 
 public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbeat.Listener {
     private static class UserSessionInfo implements Serializable {

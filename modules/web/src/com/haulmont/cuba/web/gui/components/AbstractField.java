@@ -27,7 +27,7 @@ public abstract class AbstractField<T extends com.vaadin.ui.Field>
     extends
         AbstractComponent<T>
     implements
-        Component.Field
+        Component.HasValue
 {
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;

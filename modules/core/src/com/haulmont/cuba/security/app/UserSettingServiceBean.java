@@ -21,6 +21,11 @@ import javax.ejb.*;
 import javax.interceptor.Interceptors;
 import java.util.List;
 
+/**
+ * Service providing current user settings functionality:
+ * an application can save/load some "setting" (plain or XML string) for current user.
+ * <br>Ususally used by UI forms and components. 
+ */
 @Stateless(name = UserSettingService.JNDI_NAME)
 @Interceptors({ServiceInterceptor.class})
 @TransactionManagement(TransactionManagementType.BEAN)

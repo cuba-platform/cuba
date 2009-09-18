@@ -22,6 +22,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Connection to the middleware.
+ * <br>Can be obtained via {@link com.haulmont.cuba.web.App#getConnection()} method.
+ */
 public class Connection
 {
     private Log log = LogFactory.getLog(Connection.class);
@@ -31,14 +35,23 @@ public class Connection
     private boolean connected;
     private UserSession session;
 
+    /**
+     * True if the web application is succesfully logged in to middleware and a user session exists.
+     */
     public boolean isConnected() {
         return connected;
     }
 
+    /**
+     * Current user session. Null if not connected.
+     */
     public UserSession getSession() {
         return session;
     }
 
+    /**
+     * Set user session for this connection
+     */
     public void setSession(UserSession session) {
         this.session = session;
     }
@@ -48,6 +61,12 @@ public class Connection
         return ls;
     }
 
+    /**
+     * Perform login
+     * @param login login name
+     * @param password encrypted password
+     * @throws LoginException
+     */
     public void login(String login, String password) throws LoginException {
         session = getLoginService().login(login, password, App.getInstance().getLocale());
         connected = true;
@@ -55,6 +74,11 @@ public class Connection
         fireConnectionListeners();
     }
 
+    /**
+     * Perform login using password stored in ActiveDirectory
+     * @param login login name
+     * @throws LoginException
+     */
     public void loginActiveDirectory(String login) throws LoginException {
         session = getLoginService().loginActiveDirectory(login, App.getInstance().getLocale());
         connected = true;
@@ -62,6 +86,9 @@ public class Connection
         fireConnectionListeners();
     }
 
+    /**
+     * Perform logout
+     */
     public void logout() {
         if (!connected)
             return;
@@ -78,10 +105,16 @@ public class Connection
         }
     }
 
+    /**
+     * Register connection listener
+     */
     public void addListener(ConnectionListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Unregister connection listener
+     */
     public void removeListener(ConnectionListener listener) {
         listeners.remove(listener);
     }

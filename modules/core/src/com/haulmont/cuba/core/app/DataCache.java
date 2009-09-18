@@ -20,6 +20,12 @@ import com.haulmont.cuba.core.PersistenceProvider;
 
 import java.util.Collection;
 
+/**
+ * DataCache MBean implementation.
+ * <p>
+ * This MBean is a facade to OpenJPA data cache functionality.
+ * It allows to control data cache through JMX-console. 
+ */
 public class DataCache implements DataCacheAPI, DataCacheMBean {
 
     private StoreCache getStoreCache() {
@@ -30,6 +36,10 @@ public class DataCache implements DataCacheAPI, DataCacheMBean {
     private QueryResultCache getQueryCache() {
         return ((EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory())
                 .getDelegate().getQueryResultCache();
+    }
+
+    public DataCacheAPI getAPI() {
+        return this;
     }
 
     public boolean isStoreCacheEnabled() {

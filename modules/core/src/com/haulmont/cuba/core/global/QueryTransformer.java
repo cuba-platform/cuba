@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.global;
 
 import java.util.Set;
 
+/**
+ * Transforms JPQL query
+ */
 public interface QueryTransformer
 {
     /** Adds 'where' clause replacing entity alias */

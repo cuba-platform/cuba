@@ -121,7 +121,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                     }
 
                     em = __getEntityManagerFactory().createEntityManager();
-                    em.setDeleteDeferred(softDeletion);
+                    em.setSoftDeletion(softDeletion);
 
                     sync.setEntityManager(em);
                     emMap.put(tx, em);
@@ -132,7 +132,7 @@ public class ManagedPersistenceProvider extends PersistenceProvider
                 em = emThreadLocal.get();
                 if (em == null || em.isClosed()) {
                     em = __getEntityManagerFactory().createEntityManager();
-                    em.setDeleteDeferred(softDeletion);
+                    em.setSoftDeletion(softDeletion);
                     ((EntityManagerImpl) em).addCloseListener(
                             new EntityManagerImpl.CloseListener()
                             {

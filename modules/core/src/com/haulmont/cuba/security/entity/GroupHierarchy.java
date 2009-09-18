@@ -14,6 +14,9 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 
 import javax.persistence.*;
 
+/**
+ * User group hierarchy
+ */
 @Entity(name = "sec$GroupHierarchy")
 @Table(name = "SEC_GROUP_HIERARCHY")
 public class GroupHierarchy extends BaseUuidEntity

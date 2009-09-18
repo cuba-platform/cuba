@@ -9,7 +9,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * Component container which can expand enclosing components
+ */
 public interface Layout extends Component.Container {
+
     void expand(Component component, String height, String width);
 
     interface Spacing{

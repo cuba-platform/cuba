@@ -18,22 +18,37 @@ import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
+/**
+ * Common web layer configuration parameters. Can be set up in <code>conf/system.properties</code> file.
+ */
 @Source(type = SourceType.SYSTEM)
 @Prefix("cuba.web.")
 public interface WebConfig extends Config
 {
+    /** Default user login to place into login dialog */
     String getLoginDialogDefaultUser();
 
+    /** Default user password to place into login dialog */
     String getLoginDialogDefaultPassword();
 
+    /** Use ActiveDirectory authentication */
     @DefaultBoolean(false)
     boolean getUseActiveDirectory();
 
+    /** ActiveDirectory domains configuration info */
     String getActiveDirectoryDomains();
 
+    /**
+     * Default main window mode.
+     * Takes place until the user did not change its own preference through user settings
+    */
     @Default("TABBED")
     String getAppWindowMode();
 
+    /**
+     * If true, {@link com.haulmont.cuba.web.WindowManager} will try to create generic screens
+     * instead of undefined screens. See {@link WindowConfig#getWindowInfo(String)} 
+     */
     @DefaultBoolean(false)
     boolean getEnableGenericScreens();
 }

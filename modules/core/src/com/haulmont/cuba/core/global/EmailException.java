@@ -10,6 +10,10 @@
  */
 package com.haulmont.cuba.core.global;
 
+/**
+ * Email sending error.<br>
+ * Contains failed addresses and corresponding error messages.
+ */
 public class EmailException extends Exception
 {
     private static final long serialVersionUID = -2559499596752714382L;

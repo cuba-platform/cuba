@@ -24,7 +24,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * Metadata utility methods for use on GenericUI layer
+ */
 public class MetadataHelper {
+
     public static Class getTypeClass(MetaProperty metaProperty) {
         if (metaProperty == null)
             throw new IllegalArgumentException("MetaProperty is null");
@@ -86,6 +90,9 @@ public class MetadataHelper {
         return res;
     }
 
+    /**
+     * Visit all properties of an object graph starting from the specified instance
+     */
     public static void walkProperties(Instance instance, PropertyVisitor visitor) {
         Session metadata = MetadataProvider.getSession();
         __walkProperties(instance, visitor, metadata, new HashSet<Instance>());

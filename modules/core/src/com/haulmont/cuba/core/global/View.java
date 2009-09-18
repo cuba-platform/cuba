@@ -17,6 +17,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * View is used to declare a graph of objects which must be retrieved from the database.<br>
+ * A view can be constructed in Java code or defined in XML and deployed
+ * to the {@link com.haulmont.cuba.core.global.ViewRepository} for multiple usage.
+ */
 public class View implements Serializable
 {
     private static final long serialVersionUID = 4313784222934349594L;

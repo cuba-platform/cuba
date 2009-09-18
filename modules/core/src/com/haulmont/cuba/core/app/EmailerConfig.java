@@ -16,6 +16,9 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.Prefix;
 import com.haulmont.cuba.core.config.defaults.Default;
 
+/**
+ * Parameters 
+ */
 @Prefix("cuba.Emailer.")
 @Source(type = SourceType.DATABASE)
 public interface EmailerConfig extends Config

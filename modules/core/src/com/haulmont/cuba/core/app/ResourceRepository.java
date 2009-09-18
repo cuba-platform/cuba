@@ -25,6 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * ResourceRepository MBean implementation.
+ * <p>
+ * This MBean allows to read and cache external resources placed in files 
+ * inside <code>jboss/server/default/conf</code> directory.
+ */
 public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepositoryAPI
 {
     private Log log = LogFactory.getLog(ResourceRepository.class);

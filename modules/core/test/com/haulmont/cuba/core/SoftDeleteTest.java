@@ -136,7 +136,7 @@ public class SoftDeleteTest extends CubaTestCase
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            em.setDeleteDeferred(false);
+            em.setSoftDeletion(false);
 
             Role role = em.find(Role.class, role2Id);
             assertNotNull(role);
@@ -208,7 +208,7 @@ public class SoftDeleteTest extends CubaTestCase
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            em.setDeleteDeferred(false);
+            em.setSoftDeletion(false);
 
             em.setView(
                     new View(User.class, "testView")
@@ -308,7 +308,7 @@ public class SoftDeleteTest extends CubaTestCase
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            em.setDeleteDeferred(false);
+            em.setSoftDeletion(false);
             Query query = em.createQuery("select r from sec$Role r where r.name = ?1");
             query.setParameter(1, "roleToBeDeleted");
 

@@ -33,10 +33,29 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Main application window.
+ * <p>
+ * Specific application should inherit from this class and create appropriate
+ * instance in {@link com.haulmont.cuba.web.App#createAppWindow()} method
+ */
 public class AppWindow extends Window {
 
+    /**
+     * Main window mode. See {@link #TABBED}, {@link #SINGLE}
+     */
     public enum Mode {
-        TABBED, SINGLE
+        /**
+         * If the main window is in TABBED mode, it creates the Tabsheet inside
+         * and opens screens with {@link com.haulmont.cuba.gui.WindowManager.OpenType#NEW_TAB} as tabs.
+         */
+        TABBED,
+
+        /**
+         * In SINGLE mode each new screen opened with {@link com.haulmont.cuba.gui.WindowManager.OpenType#NEW_TAB}
+         * opening type will replace the current screen.
+         */
+        SINGLE
     }
 
     protected Connection connection;
@@ -46,10 +65,19 @@ public class AppWindow extends Window {
 
     protected Mode mode;
 
+    /** Very root layout of the window. Contains all other layouts */
     protected VerticalLayout rootLayout;
+
+    /** Title layout. Topmost by default */
     protected Layout titleLayout;
+
+    /** Layout containing the menu bar. Next to title layout by default */
     protected HorizontalLayout menuBarLayout;
+
+    /** Empty layout, below menu bar layout by default*/
     protected HorizontalLayout emptyLayout;
+
+    /** Layout containing application screens */
     protected VerticalLayout mainLayout;
 
     public AppWindow(Connection connection) {
@@ -67,10 +95,17 @@ public class AppWindow extends Window {
         postInitLayout();
     }
 
+    /**
+     * Current mode
+     */
     public Mode getMode() {
         return mode;
     }
 
+    /**
+     * Creates root and enclosed layouts.
+     * <br>Can be overridden in descendant to create an app-specific root layout
+     */
     protected VerticalLayout createLayout() {
         final VerticalLayout layout = new VerticalLayout();
 
@@ -111,10 +146,17 @@ public class AppWindow extends Window {
         return layout;
     }
 
+    /**
+     * Can be overridden in descendant to create an app-specific caption
+     */
     protected String getAppCaption() {
         return MessageProvider.getMessage(getClass(), "application.caption", Locale.getDefault());
     }
 
+    /**
+     * Enclosed Tabsheet
+     * @return the tabsheet in TABBED mode, null in SINGLE mode
+     */
     public TabSheet getTabSheet() {
         return tabSheet;
     }
@@ -123,32 +165,46 @@ public class AppWindow extends Window {
         return menuBar;
     }
 
+    /** See {@link #rootLayout} */
     public VerticalLayout getRootLayout() {
         return rootLayout;
     }
 
+    /** See {@link #titleLayout} */
     public Layout getTitleLayout() {
         return titleLayout;
     }
 
+    /** See {@link #menuBarLayout} */
     public HorizontalLayout getMenuBarLayout() {
         return menuBarLayout;
     }
 
+    /** See {@link #emptyLayout} */
     public HorizontalLayout getEmptyLayout() {
         return emptyLayout;
     }
 
+    /** See {@link #mainLayout} */
     public VerticalLayout getMainLayout() {
         return mainLayout;
     }
 
+    /**
+     * Can be overridden in descendant to init an app-specific layout
+     */
     protected void initLayout() {
     }
 
+    /**
+     * Can be overridden in descendant to init an app-specific layout
+     */
     protected void postInitLayout() {
     }
 
+    /**
+     * Can be overridden in descendant to create an app-specific menu bar layout
+     */
     protected HorizontalLayout createMenuBarLayout() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setMargin(false);
@@ -159,6 +215,9 @@ public class AppWindow extends Window {
         return layout;
     }
 
+    /**
+     * Can be overridden in descendant to create an app-specific menu bar
+     */
     protected MenuBar createMenuBar() {
         menuBar = new MenuBar();
 
@@ -171,6 +230,9 @@ public class AppWindow extends Window {
         return menuBar;
     }
 
+    /**
+     * Can be overridden in descendant to create an app-specific title layout
+     */
     protected Layout createTitleLayout() {
         HorizontalLayout titleLayout = new HorizontalLayout();
 

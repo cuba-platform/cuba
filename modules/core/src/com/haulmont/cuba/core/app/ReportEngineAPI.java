@@ -16,6 +16,10 @@ import net.sf.jasperreports.engine.JRDataSource;
 
 import java.util.Map;
 
+/**
+ * API of {@link ReportEngine} MBean.<br>
+ * Reference to this interface must be obtained through {@link ReportEngineMBean#getAPI()} method
+ */
 public interface ReportEngineAPI
 {
     JasperReport getJasperReport(String name);

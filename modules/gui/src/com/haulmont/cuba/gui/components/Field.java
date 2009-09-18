@@ -11,7 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 public interface Field
     extends
-        DatasourceComponent, Component.HasCaption, Component.Field, Component.Editable,
+        DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
         Component.BelongToFrame, Component.Expandable
 {
 

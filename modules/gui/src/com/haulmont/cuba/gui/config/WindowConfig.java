@@ -24,6 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
+import com.haulmont.cuba.gui.NoSuchScreenException;
+
+/**
+ * GenericUI class holding information about all registered screens.
+ * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getWindowConfig()}
+ */
 public class WindowConfig
 {
     protected Map<String, WindowInfo> screens = new HashMap<String, WindowInfo>();
@@ -51,13 +57,22 @@ public class WindowConfig
         }
     }
 
+    /**
+     * Get screen information by screen ID.
+     * Can be overridden for specific client type.
+     * @param id screen ID as set up in <code>screen-config.xml</code>
+     * @throws NoSuchScreenException if the screen with specified ID is not registered
+     */
     public WindowInfo getWindowInfo(String id) {
         WindowInfo windowInfo = screens.get(id);
         if (windowInfo == null)
-            throw new IllegalStateException("Screen '" + id + "' is not defined");
+            throw new NoSuchScreenException("Screen '" + id + "' is not defined");
         return windowInfo;
     }
 
+    /**
+     * All registered screens
+     */
     public Collection<WindowInfo> getWindows() {
         return screens.values();
     }

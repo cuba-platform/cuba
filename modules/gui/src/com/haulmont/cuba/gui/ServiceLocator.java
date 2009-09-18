@@ -14,6 +14,9 @@ import com.haulmont.cuba.core.app.DataService;
 
 import javax.naming.Context;
 
+/**
+ * Locator of middleware services for use on presentation layer
+ */
 public abstract class ServiceLocator
 {
     public static final String IMPL_PROP = "cuba.ServiceLocator.impl";
@@ -43,14 +46,23 @@ public abstract class ServiceLocator
         return instance;
     }
 
+    /**
+     * JNDI context
+     */
     public static Context getJndiContext() {
         return getInstance().__getJndiContext();
     }
 
+    /**
+     * Locate service reference by its JNDI name
+     */
     public static <T> T lookup(String jndiName) {
         return (T) getInstance().__lookup(jndiName);
     }
 
+    /**
+     * Reference to DataService
+     */
     public static DataService getDataService() {
         return getInstance().__getBasicService();
     }

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.security.sys;
+package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
@@ -16,6 +16,10 @@ import com.haulmont.cuba.security.entity.UserSessionEntity;
 import java.util.UUID;
 import java.util.Collection;
 
+/**
+ * API of {@link UserSession} MBean.<br>
+ * Reference to this interface must be obtained through {@link UserSessionsMBean#getAPI()} method
+ */
 public interface UserSessionsAPI
 {
     void add(UserSession session);

@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.entity;
 
 import java.util.Date;
 
+/**
+ * Interface implemented by entities supporting update information saving
+ */
 public interface Updatable
 {
     Date getUpdateTs();

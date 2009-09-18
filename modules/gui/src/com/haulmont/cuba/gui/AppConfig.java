@@ -21,6 +21,9 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
 
+/**
+ * GenericUI singleton class holding common information about application configuration
+ */
 public class AppConfig
 {
     public static final String IMPL_PROP = "cuba.AppConfig.impl";
@@ -74,6 +77,11 @@ public class AppConfig
         }
     }
 
+    /**
+     * PermissionConfig instance.
+     * Implementation class is set up through system property
+     * by specific client implementation.
+     */
     public PermissionConfig getPermissionConfig() {
         if (permissionsConfig == null) {
             permissionsConfig = createInstance(PERMISSION_CONFIG_IMPL_PROP, PERMISSION_CONFIG_DEFAULT_IMPL);
@@ -83,7 +91,13 @@ public class AppConfig
         return permissionsConfig;
     }
 
+    /**
+     * MenuConfig instance.
+     * Implementation class and XML storage are set up through system property
+     * by specific client implementation.
+     */
     public MenuConfig getMenuConfig() {
+        // TODO KK: menu config instance must depend on user's locale, so we have to pass locale here
         if (menuConfig == null) {
             ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
 
@@ -94,6 +108,11 @@ public class AppConfig
         return menuConfig;
     }
 
+    /**
+     * WindowConfig instance.
+     * Implementation class and XML storage are set up through system property
+     * by specific client implementation.
+     */
     public WindowConfig getWindowConfig() {
         if (windowConfig == null) {
             ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
@@ -105,6 +124,10 @@ public class AppConfig
         return windowConfig;
     }
 
+    /**
+     * Current client type.
+     * Set up through system property by specific client implementation.
+     */
     public ClientType getClientType() {
         if (clientType == null) {
             clientType = ClientType.valueOf(System.getProperty(CLIENT_TYPE_PROP));
@@ -112,6 +135,10 @@ public class AppConfig
         return clientType;
     }
 
+    /**
+     * Message pack used by GenericUI components.
+     * Set up through system property by specific client implementation.
+     */
     public String getMessagesPack() {
         if (messagesPackage == null) {
             messagesPackage = System.getProperty(MESSAGES_PACK_PROP);

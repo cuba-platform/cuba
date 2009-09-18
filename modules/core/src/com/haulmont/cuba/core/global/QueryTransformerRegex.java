@@ -18,6 +18,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Implementation of {@link QueryTransformer} based on regular expressions
+ */
 public class QueryTransformerRegex extends QueryParserRegex implements QueryTransformer
 {
     private String targetEntity;

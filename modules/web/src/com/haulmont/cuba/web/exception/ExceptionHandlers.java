@@ -15,6 +15,10 @@ import com.vaadin.terminal.Terminal;
 
 import java.util.LinkedList;
 
+/**
+ * Provides extensible exception handling functionality.
+ * See also {@link App#initExceptionHandlers(boolean)} 
+ */
 public class ExceptionHandlers
 {
     private LinkedList<ExceptionHandler> handlers = new LinkedList<ExceptionHandler>();
@@ -28,15 +32,24 @@ public class ExceptionHandlers
         this.defaultHandler = new DefaultExceptionHandler();
     }
 
+    /**
+     * Adds new handler if it is not yet registered
+     */
     public void addHandler(ExceptionHandler handler) {
         if (!handlers.contains(handler))
             handlers.add(handler);
     }
 
+    /**
+     * All registered handlers
+     */
     public LinkedList<ExceptionHandler> getHandlers() {
         return handlers;
     }
 
+    /**
+     * Delegates exception handling to registered handlers
+     */
     public void handle(Terminal.ErrorEvent event) {
         for (ExceptionHandler handler : handlers) {
             if (handler.handle(event, app))

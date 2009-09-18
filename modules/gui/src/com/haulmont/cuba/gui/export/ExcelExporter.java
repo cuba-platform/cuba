@@ -32,6 +32,11 @@ import java.util.Date;
 import java.util.List;
 import java.text.ParseException;
 
+/**
+ * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
+ * and show using {@link ExportDisplay}.
+ * <br>Just create an instance of this class and invoke one of <code>exportTable</code> methods.
+ */
 public class ExcelExporter {
     private static final int COL_WIDTH_MAGIC = 48;
 

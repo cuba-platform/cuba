@@ -14,6 +14,10 @@ package com.haulmont.cuba.core.global;
 import java.util.Map;
 import java.io.Serializable;
 
+/**
+ * Contains information about email sending.<br>
+ * Used by {@link com.haulmont.cuba.core.app.EmailerAPI#sendEmail(EmailDto)} method.
+ */
 public class EmailDto implements Serializable {
     private String addresses;
     private String caption;

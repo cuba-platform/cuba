@@ -46,7 +46,12 @@ public abstract class Locator
         return (T) getInstance().__lookupRemote(name);
     }
 
-    /** Lookups MBean by object name */
+    /**
+     * Lookups MBean by interface and object name
+     *
+     * @param mbeanClass management interface class
+     * @param name JMX object name 
+    */
     public static <T> T lookupMBean(Class<T> mbeanClass, String name) {
         return (T) getInstance().__lookupMBean(mbeanClass, name);
     }

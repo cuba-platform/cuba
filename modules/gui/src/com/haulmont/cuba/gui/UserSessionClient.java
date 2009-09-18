@@ -12,6 +12,9 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.security.global.UserSession;
 
+/**
+ * GenericUI class providing access to the current user session
+ */
 public abstract class UserSessionClient
 {
     public static final String IMPL_PROP = "cuba.UserSessionClient.impl";
@@ -38,6 +41,9 @@ public abstract class UserSessionClient
         return instance;
     }
 
+    /**
+     * Current user session
+     */
     public static UserSession getUserSession() {
         return getInstance().__getUserSession();
     }

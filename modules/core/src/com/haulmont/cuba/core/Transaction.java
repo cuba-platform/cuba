@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core;
 
+/**
+ * Interface to control transaction
+ */
 public interface Transaction
 {
     /**

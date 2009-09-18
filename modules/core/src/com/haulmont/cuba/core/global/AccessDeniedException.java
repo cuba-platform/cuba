@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.security.entity.PermissionType;
 
+/**
+ * This exception is raised on attempt to violate a security constraint
+ */
 public class AccessDeniedException extends RuntimeException
 {
     private static final long serialVersionUID = -3097861878301424338L;

@@ -17,15 +17,28 @@ import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Window;
 
+/**
+ * Allows to show exported data in web browser or download it
+ */
 public class WebExportDisplay implements ExportDisplay
 {
     private boolean newWindow;
     private boolean attachment;
 
+    /**
+     * Constructor with attachment=true, newWindow=false 
+     * (see {@link com.haulmont.cuba.web.rpt.WebExportDisplay#WebExportDisplay(boolean, boolean)})
+     */
     public WebExportDisplay() {
         this(true, false);
     }
 
+    /**
+     * Constructor
+     * @param attachment if true, force download data instead of show in browser
+     * @param newWindow if true, show data in the same browser window;
+     * if false, open new browser window
+     */
     public WebExportDisplay(boolean attachment, boolean newWindow) {
         this.attachment = attachment;
         this.newWindow = newWindow;

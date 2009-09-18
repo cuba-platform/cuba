@@ -15,6 +15,9 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
+/**
+ * Configuration element of {@link com.haulmont.cuba.security.app.EntityLog}
+ */
 @Entity(name = "sec$LoggedAttribute")
 @Table(name = "SEC_LOGGED_ATTR")
 public class LoggedAttribute extends BaseUuidEntity

@@ -13,13 +13,25 @@ import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Collection;
 
+/**
+ * Listener to {@link CollectionDatasource} events
+ * @param <T> type of entity the datasource contains
+ */
 public interface CollectionDatasourceListener<T extends Entity> extends DatasourceListener<T> {
 
+    /**
+     * Operation which caused the datasource change
+     */
     public enum Operation {
         REFRESH,
         ADD,
         REMOVE
     }
 
+    /**
+     * Enclosed collection changed
+     * @param ds datasource
+     * @param operation operation which caused the datasource change
+     */
     void collectionChanged(CollectionDatasource ds, Operation operation);
 }

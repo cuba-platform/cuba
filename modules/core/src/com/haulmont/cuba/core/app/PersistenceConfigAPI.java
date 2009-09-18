@@ -10,6 +10,10 @@
  */
 package com.haulmont.cuba.core.app;
 
+/**
+ * API of {@link PersistenceConfig} MBean.<br>
+ * Reference to this interface must be obtained through {@link PersistenceConfigMBean#getAPI()} method
+ */
 public interface PersistenceConfigAPI
 {
     boolean isDeleteDeferredFor(String table);

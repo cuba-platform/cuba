@@ -41,7 +41,7 @@ public interface EntityManager
 
     /**
      * Remove the entity instance.<br>
-     * What actually happens depends on {@link #isDeleteDeferred} flag
+     * What actually happens depends on {@link #isSoftDeletion} flag
      * @param entity
      * @throws IllegalArgumentException if not an entity
      * or if a detached entity
@@ -135,12 +135,12 @@ public interface EntityManager
     boolean isClosed();
 
     /**
-     * Determine whether the EntityManager is in DeleteDeferred mode
+     * Determine whether the EntityManager is in SoftDeletion mode
      */
-    boolean isDeleteDeferred();
+    boolean isSoftDeletion();
 
     /**
-     * Set DeleteDeferred mode for this EntityManager
+     * Set SoftDeletion mode for this EntityManager
      */
-    void setDeleteDeferred(boolean deleteDeferred);
+    void setSoftDeletion(boolean softDeletion);
 }

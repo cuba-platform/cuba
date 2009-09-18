@@ -16,6 +16,10 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 
 import javax.persistence.*;
 
+/**
+ * Record containing changed entity attribute
+ * Created by {@link com.haulmont.cuba.security.app.EntityLog} MBean
+ */
 @Entity(name = "sec$EntityLogAttr")
 @Table(name = "SEC_ENTITY_LOG_ATTR")
 public class EntityLogAttr extends BaseUuidEntity

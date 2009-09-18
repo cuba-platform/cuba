@@ -12,6 +12,10 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
 
+/**
+ * API of {@link com.haulmont.cuba.security.app.EntityLog} MBean.<br>
+ * Reference to this interface must be obtained through {@link EntityLogMBean#getAPI()} method
+ */
 public interface EntityLogAPI
 {
     boolean isEnabled();

@@ -12,6 +12,9 @@ package com.haulmont.cuba.gui.settings;
 
 import org.dom4j.Element;
 
+/**
+ * Interface to user settings of a window
+ */
 public interface Settings {
 
     Element get();

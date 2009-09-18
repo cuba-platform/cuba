@@ -6,7 +6,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import java.util.Set;
 import java.util.Collection;
 
-public interface List  extends Component, Component.BelongToFrame, Component.Actions {
+public interface List  extends Component, Component.BelongToFrame, Component.ActionsHolder {
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);
 

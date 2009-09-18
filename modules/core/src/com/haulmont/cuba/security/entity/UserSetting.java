@@ -16,6 +16,10 @@ import com.haulmont.cuba.core.global.ClientType;
 
 import javax.persistence.*;
 
+/**
+ * Record for user setting.
+ * Used by {@link com.haulmont.cuba.security.app.UserSettingServiceBean}
+ */
 @Entity(name = "sec$UserSetting")
 @Table(name = "SEC_USER_SETTING")
 public class UserSetting extends BaseUuidEntity

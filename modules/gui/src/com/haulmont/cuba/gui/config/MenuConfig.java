@@ -25,6 +25,10 @@ import org.dom4j.io.SAXReader;
 import java.io.StringReader;
 import java.util.*;
 
+/**
+ * GenericUI class holding information about main menu structure.
+ * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getMenuConfig()}
+ */
 public class MenuConfig
 {
     private Log log = LogFactory.getLog(MenuConfig.class);
@@ -32,6 +36,9 @@ public class MenuConfig
     private List<MenuItem> rootItems = new ArrayList<MenuItem>();
     private String msgPack;
 
+    /**
+     * Main menu root items
+     */
     public List<MenuItem> getRootItems() {
         return Collections.unmodifiableList(rootItems);
     }
@@ -65,7 +72,7 @@ public class MenuConfig
                     log.warn(String.format("Invalid menu-config: 'id' attribute not defined"));
                 }
 
-                menuItem = new MenuItem(parentItem, id, MessageProvider.getMessage(msgPack, "menu-config." + id));
+                menuItem = new MenuItem(parentItem, id, getCaption("menu-config." + id, id));
                 menuItem.setDescriptor(element);
 
                 loadMenuItems(element, menuItem);

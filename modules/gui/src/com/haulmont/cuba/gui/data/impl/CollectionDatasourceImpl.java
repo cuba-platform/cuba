@@ -99,7 +99,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public synchronized T getItem(K key) {
-        if (State.NOT_INITIALIZAED.equals(state)) {
+        if (State.NOT_INITIALIZED.equals(state)) {
             throw new IllegalStateException("Invalid datasource state " + state);
         } else {
             final T item = (T) data.get(key);
@@ -112,7 +112,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public synchronized Collection<K> getItemIds() {
-        if (State.NOT_INITIALIZAED.equals(state)) {
+        if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
         } else {
             return (Collection<K>) data.keySet();
@@ -120,7 +120,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public synchronized int size() {
-        if (State.NOT_INITIALIZAED.equals(state)) {
+        if (State.NOT_INITIALIZED.equals(state)) {
             return 0;
         } else {
             return data.size();

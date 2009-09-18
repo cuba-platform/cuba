@@ -14,6 +14,10 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 
 import javax.persistence.*;
 
+/**
+ * Security permission record.
+ * <br>The {@link #value} may be 0,1,2 for {@link PermissionType#ENTITY_ATTR} and 0,1 for others
+ */
 @Entity(name = "sec$Permission")
 @Table(name = "SEC_PERMISSION")
 public class Permission extends StandardEntity
@@ -25,8 +29,11 @@ public class Permission extends StandardEntity
     private Integer type;
 
     @Column(name = "TARGET", length = 100)
-    private String target;                    
+    private String target;
 
+    /**
+     * May be 0,1,2 for {@link PermissionType#ENTITY_ATTR} and 0,1 for others
+     */
     @Column(name = "VALUE")
     private Integer value;
 
@@ -58,10 +65,12 @@ public class Permission extends StandardEntity
         this.type = type == null ? null : type.getId();
     }
 
+    /** See {@link #value} */
     public Integer getValue() {
         return value;
     }
 
+    /** See {@link #value} */
     public void setValue(Integer value) {
         this.value = value;
     }

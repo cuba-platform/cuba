@@ -14,7 +14,13 @@ import com.haulmont.cuba.gui.data.DsContext;
 
 import java.util.Map;
 
-public interface IFrame extends Layout, Component.Container, Component.BelongToFrame, Component.HasLayout {
+/**
+ * Represents a reusable part of a window.
+ * Having its own XML descriptor, but can be instantiated only inside a {@link Window}.
+ * Includes functionality for work with datasources and other windows.
+ */
+public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLayout {
+
     DsContext getDsContext();
     void setDsContext(DsContext dsContext);
 

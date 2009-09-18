@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+/**
+ * Implementation of {@link QueryParser} based on regular expressions
+ */
 public class QueryParserRegex implements QueryParser {
 
     public static final String ENTITY_PATTERN_REGEX = "(\\b[_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)(\\s+as\\b)?\\s+([a-z]+[a-z0-9]*)*\\b";

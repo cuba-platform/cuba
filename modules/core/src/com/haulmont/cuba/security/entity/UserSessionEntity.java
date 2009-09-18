@@ -18,6 +18,9 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import java.util.UUID;
 import java.util.Date;
 
+/**
+ * Non-persistent entity to show user sessions list in UI 
+ */
 @MetaClass(name = "sec$UserSessionEntity")
 public class UserSessionEntity extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = 7730031482721158275L;

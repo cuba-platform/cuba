@@ -13,8 +13,15 @@ package com.haulmont.cuba.gui;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 
+/**
+ * Visitor used by {@link MetadataHelper#walkProperties(com.haulmont.chile.core.model.Instance, PropertyVisitor)}
+ */
 public interface PropertyVisitor {
 
+    /**
+     * @param instance visiting instance
+     * @param property visiting property
+     */
     void visit(Instance instance, MetaProperty property);
 
 }

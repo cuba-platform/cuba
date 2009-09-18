@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.global;
 
 import java.io.Serializable;
 
+/**
+ * Implementations of this interface define some database-specific persistence properties
+ */
 public abstract class DbDialect implements Serializable
 {
     public abstract String getIdColumn();

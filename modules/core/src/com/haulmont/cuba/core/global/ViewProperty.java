@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.global;
 
 import java.io.Serializable;
 
+/**
+ * Defines one property in a view
+ */
 public class ViewProperty implements Serializable
 {
     private static final long serialVersionUID = 4098678639930287203L;

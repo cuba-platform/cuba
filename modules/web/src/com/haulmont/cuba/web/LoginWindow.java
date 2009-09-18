@@ -26,6 +26,12 @@ import org.apache.commons.lang.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
+/**
+ * Login window.
+ * <p>
+ * Specific application should inherit from this class and create appropriate
+ * instance in {@link App#createLoginWindow()} method
+ */
 public class LoginWindow extends Window
         implements ApplicationContext.TransactionListener,
         Action.Handler, Action.Container

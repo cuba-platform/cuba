@@ -13,6 +13,9 @@ import com.haulmont.cuba.core.Transaction;
 import javax.ejb.*;
 import javax.interceptor.Interceptors;
 
+/**
+ * Service facade for {@link com.haulmont.cuba.core.app.UniqueNumbers} MBean
+ */
 @Stateless(name = UniqueNumbersService.JNDI_NAME)
 @Interceptors(ServiceInterceptor.class)
 @TransactionManagement(TransactionManagementType.BEAN)

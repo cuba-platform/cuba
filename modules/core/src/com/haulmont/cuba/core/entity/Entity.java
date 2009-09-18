@@ -11,6 +11,10 @@ package com.haulmont.cuba.core.entity;
 
 import java.io.Serializable;
 
+/**
+ * This interface must be implemented by all domain model objects
+ * @param <T> identifier type
+ */
 public interface Entity<T> extends Serializable {
     T getId();
 }

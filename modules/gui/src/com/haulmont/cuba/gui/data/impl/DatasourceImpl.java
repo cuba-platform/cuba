@@ -33,7 +33,7 @@ public class DatasourceImpl<T extends Entity>
     protected MetaClass metaClass;
     protected View view;
 
-    protected State state = State.NOT_INITIALIZAED;
+    protected State state = State.NOT_INITIALIZED;
     protected T item;
 
     public DatasourceImpl(
@@ -110,7 +110,7 @@ public class DatasourceImpl<T extends Entity>
     }
 
     public synchronized void setItem(T item) {
-        if (State.NOT_INITIALIZAED.equals(this.state)) {
+        if (State.NOT_INITIALIZED.equals(this.state)) {
             __setItem(item);
         } else {
             Object prevItem = this.item;
@@ -150,7 +150,7 @@ public class DatasourceImpl<T extends Entity>
     }
 
     public void invalidate() {
-        if (State.NOT_INITIALIZAED != this.state) {
+        if (State.NOT_INITIALIZED != this.state) {
             final State prevStatus = this.state;
             this.state = State.INVALID;
             forceStateChanged(prevStatus);

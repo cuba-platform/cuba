@@ -18,6 +18,9 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.Map;
 
+/**
+ * Local interface for {@link com.haulmont.cuba.core.app.ReportServiceBean}
+ */
 @Local
 public interface ReportService
 {

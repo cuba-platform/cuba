@@ -27,6 +27,13 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * EntityLog MBean implementation.
+ * <p>
+ * Allows to log entity lifecycle events: create, modify, delete.<br>
+ * Configured by {@link com.haulmont.cuba.security.entity.LoggedEntity} and {@link com.haulmont.cuba.security.entity.LoggedAttribute} entities.
+ * See also {@link com.haulmont.cuba.security.app.EntityLogConfig} configuration parameters. 
+ */
 public class EntityLog implements EntityLogMBean, EntityLogAPI {
     private Log log = LogFactory.getLog(EntityLog.class);
 

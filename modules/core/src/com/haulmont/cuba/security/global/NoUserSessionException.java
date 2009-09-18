@@ -14,6 +14,9 @@ import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.UUID;
 
+/**
+ * Raised by middleware if client provides an invalid user session ID (e.g. if the user session is expired)
+ */
 public class NoUserSessionException extends RuntimeException
 {
     private static final long serialVersionUID = 4820628023682230319L;

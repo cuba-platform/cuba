@@ -33,6 +33,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Entry point to middleware persistence functionality.
+ * <p>
+ * Main purpose is to create references to {@link com.haulmont.cuba.core.EntityManager}.
+ * Also has some helper methods.
+ */
 public abstract class PersistenceProvider
 {
     public static final int LOGIN_FIELD_LEN = 50;
@@ -54,6 +60,9 @@ public abstract class PersistenceProvider
         return instance;
     }
 
+    /**
+     * Path to persistence.xml which is currently in use
+     */
     public static String getPersistenceXmlPath() {
         String xmlPath = System.getProperty(PERSISTENCE_XML);
         if (StringUtils.isBlank(xmlPath))
@@ -61,6 +70,9 @@ public abstract class PersistenceProvider
         return xmlPath;
     }
 
+    /**
+     * Persistence unit name which is currently in use
+     */
     public static String getPersistenceUnitName() {
         String unitName = System.getProperty(PERSISTENCE_UNIT);
         if (StringUtils.isBlank(unitName))
@@ -68,10 +80,16 @@ public abstract class PersistenceProvider
         return unitName;
     }
 
+    /**
+     * The DB dialect instance
+     */
     public static DbDialect getDbDialect() {
         return getInstance().__getDbDialect();
     }
 
+    /**
+     * Current {@link com.haulmont.cuba.core.EntityManagerFactory} instance
+     */
     public static EntityManagerFactory getEntityManagerFactory() {
         return getInstance().__getEntityManagerFactory();
     }
@@ -86,6 +104,10 @@ public abstract class PersistenceProvider
         return getInstance().__getEntityManager();
     }
 
+    /**
+     * Returns the set of dirty fields (fields changed since last load from DB)
+     * @param entity entity instance
+     */
     public static Set<String> getDirtyFields(BaseEntity entity) {
         if (!(entity instanceof PersistenceCapable))
             return Collections.emptySet();
@@ -105,10 +127,18 @@ public abstract class PersistenceProvider
         return set;
     }
 
+    /**
+     * Global soft deletion sign. If true, each new {@link com.haulmont.cuba.core.EntityManager}
+     * will be created with the same SoftDeletion sign value.
+     */
     public static boolean isSoftDeletion() {
         return getInstance().__isSoftDeletion();
     }
 
+    /**
+     * Global soft deletion sign. If true, each new {@link com.haulmont.cuba.core.EntityManager}
+     * will be created with the same SoftDeletion sign value.
+     */
     public static void setSoftDeletion(boolean value) {
         getInstance().__setSoftDeletion(value);
     }

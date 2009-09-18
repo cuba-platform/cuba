@@ -27,6 +27,10 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Worker bean providing middleware login/logout functionality.
+ * Used by {@link com.haulmont.cuba.security.app.LoginServiceBean} and MBeans
+ */
 @Stateless(name = LoginWorker.JNDI_NAME)
 public class LoginWorkerBean implements LoginWorker
 {

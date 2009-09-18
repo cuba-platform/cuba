@@ -34,181 +34,198 @@ import org.dom4j.io.SAXReader;
 import java.io.StringReader;
 import java.util.*;
 
+/**
+ * GenericUI class holding information about all permission targets.
+ * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getPermissionConfig()}
+ */
 public class PermissionConfig {
-     @com.haulmont.chile.core.annotations.MetaClass(name = "sec$Target")
-     public static class Target
-         extends
-             AbstractInstance
-         implements
-             Entity<String>
-     {
-         protected static transient MethodsCache __cache = new MethodsCache(Target.class);
 
-         @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-         private String id;
-         @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-         private String caption;
-         @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-         private String value;
+    /**
+     * Non-persistent entity to show permission targets in UI
+     */
+    @com.haulmont.chile.core.annotations.MetaClass(name = "sec$Target")
+    public static class Target
+            extends
+            AbstractInstance
+            implements
+            Entity<String>
+    {
+        protected static transient MethodsCache __cache = new MethodsCache(Target.class);
 
-         private UUID uuid = UUID.randomUUID();
+        @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+        private String id;
+        @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+        private String caption;
+        @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+        private String value;
 
-         public Target(String id, String caption, String value) {
-             this.caption = caption;
-             this.id = id;
-             this.value = value;
-         }
+        private UUID uuid = UUID.randomUUID();
 
-         public String getId() {
-             return id;
-         }
+        public Target(String id, String caption, String value) {
+            this.caption = caption;
+            this.id = id;
+            this.value = value;
+        }
 
-         public String getCaption() {
-             return caption;
-         }
+        public String getId() {
+            return id;
+        }
 
-         public String getValue() {
-             return value;
-         }
+        public String getCaption() {
+            return caption;
+        }
 
-         public String toString() {
-             return caption;
-         }
+        public String getValue() {
+            return value;
+        }
 
-         protected MethodsCache getMethodsCache() {
-             return __cache;  
-         }
+        public String toString() {
+            return caption;
+        }
 
-         public UUID getUuid() {
-             return uuid;
-         }
+        protected MethodsCache getMethodsCache() {
+            return __cache;
+        }
 
-         public MetaClass getMetaClass() {
-             return MetadataProvider.getSession().getClass(getClass());
-         }
-     }
+        public UUID getUuid() {
+            return uuid;
+        }
 
-     private ResourceRepositoryService repository;
-     private ClientType clientType;
-     private String messagePack;
-     private Locale locale;
+        public MetaClass getMetaClass() {
+            return MetadataProvider.getSession().getClass(getClass());
+        }
+    }
 
-     private Tree<Target> screens;
-     private Tree<Target> entities;
-     private Tree<Target> specific;
+    private ResourceRepositoryService repository;
+    private ClientType clientType;
+    private String messagePack;
+    private Locale locale;
 
-     public String getScreenPermissionTarget(String screenId) {
-         return clientType.getId() + ":" + screenId;
-     }
+    private Tree<Target> screens;
+    private Tree<Target> entities;
+    private Tree<Target> specific;
 
-     public PermissionConfig() {
-         this.repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
-         this.clientType = AppConfig.getInstance().getClientType();
-         this.messagePack = AppConfig.getInstance().getMessagesPack();
-         this.locale = Locale.getDefault();
-     }
+    public String getScreenPermissionTarget(String screenId) {
+        return clientType.getId() + ":" + screenId;
+    }
 
-     public void compile() {
-         compileScreens();
-         compileEntities();
-         compileSpecific();
-     }
+    public PermissionConfig() {
+        this.repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
+        this.clientType = AppConfig.getInstance().getClientType();
+        this.messagePack = AppConfig.getInstance().getMessagesPack();
+        this.locale = Locale.getDefault();
+    }
 
-     private void compileScreens() {
-         Node<Target> root = new Node<Target>(new Target("menu", getMessage("permissionConfig.screenRoot"), null));
-         screens = new Tree<Target>(root);
+    public void compile() {
+        compileScreens();
+        compileEntities();
+        compileSpecific();
+    }
 
-         final MenuConfig config = AppConfig.getInstance().getMenuConfig();
-         walkMenu(config, root);
-     }
+    private void compileScreens() {
+        Node<Target> root = new Node<Target>(new Target("menu", getMessage("permissionConfig.screenRoot"), null));
+        screens = new Tree<Target>(root);
 
-     private void walkMenu(MenuConfig config, Node<Target> node) {
-         for (MenuItem info : config.getRootItems()) {
-             walkMenu(info, node);
-         }
-     }
+        final MenuConfig config = AppConfig.getInstance().getMenuConfig();
+        walkMenu(config, root);
+    }
 
-     private void walkMenu(MenuItem info, Node<Target> node) {
-         String id = info.getId();
-         String caption = getMessage("menu-config." + id);
-         if (info.getChildren() != null && !info.getChildren().isEmpty()) {
-             Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
-             node.addChild(n);
-             for (MenuItem item : info.getChildren()) {
+    private void walkMenu(MenuConfig config, Node<Target> node) {
+        for (MenuItem info : config.getRootItems()) {
+            walkMenu(info, node);
+        }
+    }
+
+    private void walkMenu(MenuItem info, Node<Target> node) {
+        String id = info.getId();
+        String caption = getMessage("menu-config." + id);
+        if (info.getChildren() != null && !info.getChildren().isEmpty()) {
+            Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
+            node.addChild(n);
+            for (MenuItem item : info.getChildren()) {
                 walkMenu(item, n);
-             }
-         } else {
-             Node<Target> n = new Node<Target>(new Target("item:" + id, caption, getScreenPermissionTarget(id)));
-             node.addChild(n);
-         }
-     }
+            }
+        } else {
+            Node<Target> n = new Node<Target>(new Target("item:" + id, caption, getScreenPermissionTarget(id)));
+            node.addChild(n);
+        }
+    }
 
-     private void compileEntities() {
-         Node<Target> root = new Node<Target>(new Target("session", getMessage("permissionConfig.entityRoot"), null));
-         entities = new Tree<Target>(root);
+    private void compileEntities() {
+        Node<Target> root = new Node<Target>(new Target("session", getMessage("permissionConfig.entityRoot"), null));
+        entities = new Tree<Target>(root);
 
-         Session session = MetadataProvider.getSession();
-         for (MetaModel model : session.getModels()) {
-             Node<Target> modelNode = new Node<Target>(new Target("model:" + model.getName(), model.getName(), null));
-             root.addChild(modelNode);
-             for (MetaClass metaClass : model.getClasses()) {
-                 String name = metaClass.getName();
-                 if (name.contains("$")) {
-                     Node<Target> node = new Node<Target>(new Target("entity:" + name, name, name));
-                     modelNode.addChild(node);
-                 }
-             }
-         }
-     }
+        Session session = MetadataProvider.getSession();
+        for (MetaModel model : session.getModels()) {
+            Node<Target> modelNode = new Node<Target>(new Target("model:" + model.getName(), model.getName(), null));
+            root.addChild(modelNode);
+            for (MetaClass metaClass : model.getClasses()) {
+                String name = metaClass.getName();
+                if (name.contains("$")) {
+                    Node<Target> node = new Node<Target>(new Target("entity:" + name, name, name));
+                    modelNode.addChild(node);
+                }
+            }
+        }
+    }
 
-     private void compileSpecific() {
-         Node<Target> root = new Node<Target>(new Target("specific", getMessage("permissionConfig.specificRoot"), null));
-         specific = new Tree<Target>(root);
+    private void compileSpecific() {
+        Node<Target> root = new Node<Target>(new Target("specific", getMessage("permissionConfig.specificRoot"), null));
+        specific = new Tree<Target>(root);
 
-         final String configPath = System.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
-         String xml = repository.getResAsString(configPath);
-         SAXReader reader = new SAXReader();
-         Document doc;
-         try {
-             doc = reader.read(new StringReader(xml));
-         } catch (DocumentException e) {
-             throw new RuntimeException(e);
-         }
-         Element rootElem = doc.getRootElement().element("specific");
-         if (rootElem == null)
-             return;
+        final String configPath = System.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
+        String xml = repository.getResAsString(configPath);
+        SAXReader reader = new SAXReader();
+        Document doc;
+        try {
+            doc = reader.read(new StringReader(xml));
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
+        Element rootElem = doc.getRootElement().element("specific");
+        if (rootElem == null)
+            return;
 
-         walkSpecific(rootElem, root);
-     }
+        walkSpecific(rootElem, root);
+    }
 
-     private void walkSpecific(Element element, Node<Target> node) {
-         //noinspection unchecked
-         for (Element elem : (List<Element>) element.elements()) {
-             String id = elem.attributeValue("id");
-             String caption = getMessage("permission-config." + id);
-             if ("category".equals(elem.getName())) {
-                 Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
-                 node.addChild(n);
-                 walkSpecific(elem, n);
-             } else if ("permission".equals(elem.getName())) {
-                 Node<Target> n = new Node<Target>(new Target("permission:" + id, caption, id));
-                 node.addChild(n);
-             }
-         }
-     }
+    private void walkSpecific(Element element, Node<Target> node) {
+        //noinspection unchecked
+        for (Element elem : (List<Element>) element.elements()) {
+            String id = elem.attributeValue("id");
+            String caption = getMessage("permission-config." + id);
+            if ("category".equals(elem.getName())) {
+                Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
+                node.addChild(n);
+                walkSpecific(elem, n);
+            } else if ("permission".equals(elem.getName())) {
+                Node<Target> n = new Node<Target>(new Target("permission:" + id, caption, id));
+                node.addChild(n);
+            }
+        }
+    }
 
-     private String getMessage(String key) {
-         return MessageProvider.getMessage(messagePack, key, locale);
-     }
+    private String getMessage(String key) {
+        return MessageProvider.getMessage(messagePack, key, locale);
+    }
 
-     public Tree<Target> getScreens() {
-         return screens;
-     }
+    /**
+     * All registered screens
+     */
+    public Tree<Target> getScreens() {
+        return screens;
+    }
 
-     public Tree<Target> getEntities() {
-         return entities;
-     }
+    /**
+     * All registered entities
+     */
+    public Tree<Target> getEntities() {
+        return entities;
+    }
 
+    /**
+     * Entity operations for specified target
+     */
     public List<Target> getEntityOperations(Target entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
 
@@ -233,6 +250,9 @@ public class PermissionConfig {
         return result;
     }
 
+    /**
+     * Entity attributes for specified target
+     */
     public List<Target> getEntityAttributes(Target entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
 
@@ -252,7 +272,10 @@ public class PermissionConfig {
         return result;
     }
 
-     public Tree<Target> getSpecific() {
-         return specific;
-     }
- }
+    /**
+     * All specific permissions
+     */
+    public Tree<Target> getSpecific() {
+        return specific;
+    }
+}

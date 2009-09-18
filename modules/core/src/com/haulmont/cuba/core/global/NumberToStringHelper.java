@@ -13,6 +13,9 @@ package com.haulmont.cuba.core.global;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Helper to transform numbers into string representations
+ */
 public class NumberToStringHelper {
 
     public static String getStringNumber(Number number, String messagePackForUnit, String messagePackForDigit, int multiplier) {

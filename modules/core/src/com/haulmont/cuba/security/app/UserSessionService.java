@@ -17,6 +17,9 @@ import java.util.UUID;
 import java.util.Collection;
 import java.io.Serializable;
 
+/**
+ * Local interface to {@link com.haulmont.cuba.security.app.UserSessionServiceBean}
+ */
 @Local
 public interface UserSessionService
 {

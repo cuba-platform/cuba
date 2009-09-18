@@ -11,19 +11,29 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.model.utils.MethodsCache;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.UuidProvider;
 
 import java.util.UUID;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractNotPersistentEntity extends com.haulmont.chile.core.model.impl.AbstractInstance implements Entity<UUID>{
+/**
+ * Base class for non-persistent entities
+ */
+public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID> {
+
     private static final long serialVersionUID = -2846020822531467401L;
 
-    private UUID uuid = UUID.randomUUID();
+    private UUID uuid;
 
     private static transient Map<Class, MethodsCache> methodCacheMap =
             new ConcurrentHashMap<Class, MethodsCache>();
+
+    protected AbstractNotPersistentEntity() {
+        uuid = UuidProvider.createUuid();
+    }
 
     protected MethodsCache getMethodsCache() {
         Class cls = getClass();

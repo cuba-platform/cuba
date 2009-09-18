@@ -12,6 +12,10 @@ package com.haulmont.cuba.core.app;
 
 import java.io.InputStream;
 
+/**
+ * API of {@link ResourceRepository} MBean.<br>
+ * Reference to this interface must be obtained through {@link ResourceRepositoryMBean#getAPI()} method
+ */
 public interface ResourceRepositoryAPI
 {
     /**

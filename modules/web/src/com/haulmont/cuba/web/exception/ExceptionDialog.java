@@ -17,6 +17,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Button;
 
+/**
+ * This dialog can be used by exception handlers to show an information about error
+ */
 public class ExceptionDialog extends Window
 {
     private String message;

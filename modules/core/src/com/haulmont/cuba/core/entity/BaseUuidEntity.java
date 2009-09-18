@@ -19,6 +19,10 @@ import javax.persistence.MappedSuperclass;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Base class for persistent entities with UUID identifier.<br>
+ * Inherit from it if you need an entity without optimistic locking, update and soft deletion info.
+ */
 @MappedSuperclass
 public class BaseUuidEntity implements BaseEntity<UUID>
 {

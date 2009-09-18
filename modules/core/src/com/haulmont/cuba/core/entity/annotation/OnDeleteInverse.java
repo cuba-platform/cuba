@@ -17,6 +17,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
+/**
+ * Marks a link to other entity for specific soft deletion behaviour.<br>
+ * <b>Taken into account by persistence when "linked" entity (which is referenced by the marked field)
+ * is deleted.</b><br>
+ * See also {@link DeletePolicy}
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface OnDeleteInverse

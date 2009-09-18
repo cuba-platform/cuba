@@ -170,7 +170,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     protected Map<Datasource, Datasource> dependencies = new HashMap<Datasource, Datasource>();
 
-    public void regirterDependency(final Datasource datasource, final Datasource dependFrom, final String propertyName) {
+    public void registerDependency(final Datasource datasource, final Datasource dependFrom, final String propertyName) {
         if (dependencies.containsKey(datasource)) throw new UnsupportedOperationException();
 
         final DatasourceListener listener = new CollectionDatasourceListener<Entity>() {

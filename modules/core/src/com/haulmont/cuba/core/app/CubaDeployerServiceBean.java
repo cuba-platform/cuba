@@ -18,6 +18,9 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.interceptor.Interceptors;
 
+/**
+ * Service facade for {@link com.haulmont.cuba.core.app.CubaDeployer} MBean
+ */
 @Stateless(name = CubaDeployerService.JNDI_NAME)
 @Interceptors({ServiceInterceptor.class})
 @TransactionManagement(TransactionManagementType.BEAN)

@@ -16,6 +16,9 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 
+/**
+ * Link between users and roles
+ */
 @Entity(name = "sec$UserRole")
 @Table(name = "SEC_USER_ROLE")
 public class UserRole extends StandardEntity

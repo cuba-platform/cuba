@@ -12,6 +12,10 @@ package com.haulmont.cuba.core.app;
 
 import java.util.Collection;
 
+/**
+ * API of DataCache MBean.<br>
+ * Reference to this interface must be obtained through {@link DataCacheMBean#getAPI()} method
+ */
 public interface DataCacheAPI {
 
     boolean isStoreCacheEnabled();

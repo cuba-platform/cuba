@@ -11,7 +11,11 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 
+/**
+ * Base class for actions
+ */
 public abstract class AbstractAction implements Action {
+
     private String id;
 
     protected AbstractAction(String id) {

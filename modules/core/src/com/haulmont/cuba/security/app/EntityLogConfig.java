@@ -16,6 +16,9 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
+/**
+ * {@link com.haulmont.cuba.security.app.EntityLog} configuration parameters
+ */
 @Prefix("cuba.security.EntityLog.")
 @Source(type = SourceType.DATABASE)
 public interface EntityLogConfig extends Config

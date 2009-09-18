@@ -24,8 +24,17 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jboss.varia.scheduler.Schedulable;
 
+/**
+ * Base class for MBeans.<br>
+ * Main purpose is to provide login/logout support for methods invoked
+ * from JBoss schedulers or JMX-console.
+ */
 public class ManagementBean
 {
+    /**
+     * Base class for creating of <code>org.jboss.varia.scheduler.Schedulable</code> instances.<br>
+     * Used for setting login credentials when invoking MBean methods from JBoss schedulers.
+     */
     public static abstract class LoginSupport implements Schedulable
     {
         protected String user;
@@ -46,6 +55,12 @@ public class ManagementBean
 
     private ThreadLocal<Boolean> loginPerformed = new ThreadLocal<Boolean>();
 
+    /**
+     * Performs login with credentials set by web container (JMX-console)
+     * or a {@link LoginSupport} instance.<br>
+     * Should be placed inside try/finally block with logout in "finally" section
+     * @throws LoginException
+     */
     protected void login() throws LoginException {
         UUID sessionId = ServerSecurityUtils.getSessionId();
         if (sessionId == null) {
@@ -65,6 +80,10 @@ public class ManagementBean
         }
     }
 
+    /**
+     * Performs logout if there was previous login in this thread.<br>
+     * Should be placed into "finally" section of a try/finally block. 
+     */
     protected void logout() {
         if (BooleanUtils.isTrue(loginPerformed.get())) {
             UUID sessionId = ServerSecurityUtils.getSessionId();

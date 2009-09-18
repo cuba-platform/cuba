@@ -13,6 +13,13 @@ package com.haulmont.cuba.web.exception;
 import com.vaadin.terminal.Terminal;
 import com.haulmont.cuba.web.App;
 
+/**
+ * Base class for exception handler bound to specific exception type.
+ * <p>
+ * If you need to handle a specific exception, create a descendant of this class,
+ * pass handling exception class into constructor, implement {@link #doHandle(com.haulmont.cuba.web.App)} method
+ * and register the new handler in {@link App#initExceptionHandlers(boolean)}.
+ */
 public abstract class AbstractExceptionHandler implements ExceptionHandler {
 
     private final Class<? extends Throwable> tClass;

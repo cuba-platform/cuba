@@ -13,6 +13,10 @@ package com.haulmont.cuba.core.global;
 import java.util.Locale;
 import java.util.IllegalFormatException;
 
+/**
+ * Entry point to the localized messages functionality.<br>
+ * Use static methods.
+ */
 public abstract class MessageProvider
 {
     public static final String IMPL_PROP = "cuba.MetadataProvider.impl";

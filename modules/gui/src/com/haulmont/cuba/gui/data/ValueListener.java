@@ -9,6 +9,10 @@
  */
 package com.haulmont.cuba.gui.data;
 
+/**
+ * Listener to value change events
+ * @param <T> type of event source 
+ */
 public interface ValueListener<T> {
     void valueChanged(T source, String property, Object prevValue, Object value);
 }

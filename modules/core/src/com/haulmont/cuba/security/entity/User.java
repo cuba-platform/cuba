@@ -20,6 +20,9 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * User
+ */
 @Entity(name = "sec$User")
 @Table(name = "SEC_USER")
 @Listeners("com.haulmont.cuba.security.listener.UserEntityListener")

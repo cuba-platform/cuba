@@ -15,6 +15,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Collections;
 
+/**
+ * UniqueNumbers MBean implementation.
+ * <p>
+ * Provides unique numbers based on database sequences.
+ */
 public class UniqueNumbers
         extends ManagementBean implements UniqueNumbersMBean, UniqueNumbersAPI
 {

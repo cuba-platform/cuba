@@ -63,7 +63,7 @@ public class QueryImpl implements Query
     }
 
     private String transformQueryString() {
-        if (!em.isDeleteDeferred())
+        if (!em.isSoftDeletion())
             return queryString;
 
         OpenJPAQuery tmpQuery = emDelegate.createQuery(queryString);

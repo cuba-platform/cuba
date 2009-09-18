@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.gui.export;
 
+/**
+ * Format of data exported by {@link ExportDisplay}
+ */
 public enum ExportFormat
 {
     HTML("text/html", "html"),

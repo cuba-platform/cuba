@@ -17,8 +17,18 @@ import com.haulmont.cuba.security.global.UserSession;
 import javax.ejb.Local;
 import java.util.Locale;
 
+/**
+ * Local interface to {@link com.haulmont.cuba.security.app.LoginServiceBean}
+ */
 @Local
 public interface LoginService extends LoginServiceRemote
 {
+    /**
+     * Login using password stored in ActiveDirectory. For local clients (e.g. web) only.
+     * @param login login name
+     * @param locale client locale
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
     UserSession loginActiveDirectory(String login, Locale locale) throws LoginException;
 }

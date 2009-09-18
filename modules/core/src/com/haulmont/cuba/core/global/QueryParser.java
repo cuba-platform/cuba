@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.global;
 
 import java.util.Set;
 
+/**
+ * Parses JPQL query and returns some information about it
+ */
 public interface QueryParser {
 
     /** Get all parameter names */

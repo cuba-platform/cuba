@@ -9,6 +9,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * Base class for editor screen controllers
+ */
 public class AbstractEditor extends AbstractWindow implements Window.Editor {
     public AbstractEditor(IFrame frame) {
         super(frame);

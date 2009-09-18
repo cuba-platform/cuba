@@ -18,7 +18,11 @@ import java.util.Map;
 import java.util.HashMap;
 import java.io.StringWriter;
 
+/**
+ * Use static methods of this class to process Freemarker templates.
+ */
 public class TemplateHelper {
+
     public static String processTemplate(String templateStr, Map<String, Object> parameterValues) {
 
         Map<String, Object> params = new HashMap<String, Object>(parameterValues);

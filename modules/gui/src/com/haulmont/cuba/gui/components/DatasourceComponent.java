@@ -13,7 +13,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.chile.core.model.MetaProperty;
 
-public interface DatasourceComponent extends Component, Component.Field {
+public interface DatasourceComponent extends Component, Component.HasValue {
     Datasource getDatasource();
     MetaProperty getMetaProperty();
 

@@ -17,6 +17,9 @@ import java.util.Set;
 
 import org.apache.commons.lang.BooleanUtils;
 
+/**
+ * Configuration element of {@link com.haulmont.cuba.security.app.EntityLog}
+ */
 @Entity(name = "sec$LoggedEntity")
 @Table(name = "SEC_LOGGED_ENTITY")
 public class LoggedEntity extends BaseUuidEntity

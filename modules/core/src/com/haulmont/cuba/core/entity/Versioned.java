@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core.entity;
 
+/**
+ * Interface implemented by optimistically locked entities
+ */
 public interface Versioned
 {
     Integer getVersion();

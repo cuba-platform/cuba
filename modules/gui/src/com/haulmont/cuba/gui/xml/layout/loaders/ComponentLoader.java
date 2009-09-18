@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.GroovyHelper;
+import com.haulmont.cuba.gui.MessageUtils;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.BooleanUtils;
@@ -121,20 +122,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected String loadResourceString(String caption) {
         if (!StringUtils.isEmpty(caption)) {
-            if (caption.startsWith("msg://")) {
-                String path = caption.substring("msg://".length());
-                final String[] strings = path.split("/");
-                if (strings.length == 1) {
-                    if (messagesPack != null) {
-                        caption = MessageProvider.getMessage(messagesPack, strings[0]);
-                    }
-                } else if (strings.length == 2) {
-                    caption = MessageProvider.getMessage(strings[0], strings[1]);
-                } else {
-                    throw new UnsupportedOperationException("Unsupported resource string format: " + caption);
-                }
-            } else if (caption.startsWith("icon://")) {
+            if (caption.startsWith("icon://")) {
                 caption = caption.substring("icon://".length());
+            } else {
+                caption = MessageUtils.loadString(messagesPack, caption);
             }
         }
         return caption;

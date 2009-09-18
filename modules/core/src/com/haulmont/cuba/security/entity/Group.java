@@ -20,6 +20,9 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * User group
+ */
 @Entity(name = "sec$Group")
 @Table(name = "SEC_GROUP")
 @Listeners({"com.haulmont.cuba.security.listener.GroupEntityListener"})

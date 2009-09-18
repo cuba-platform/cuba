@@ -110,7 +110,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
             if (context.getId() != null) {
                 result = em.find(metaClass.getJavaClass(), context.getId());
 
-                if (em.isDeleteDeferred()
+                if (em.isSoftDeletion()
                         && result instanceof DeleteDeferred
                         && ((DeleteDeferred) result).isDeleted()) {
                     result = null;
@@ -148,7 +148,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
         Transaction tx = Locator.getTransaction();
         try {
             final EntityManager em = PersistenceProvider.getEntityManager();
-            em.setDeleteDeferred(context.isSoftDeletion());
+            em.setSoftDeletion(context.isSoftDeletion());
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             resultList = query.getResultList();
 

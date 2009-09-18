@@ -21,6 +21,9 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.core.global.ClientType;
 
+/**
+ * Main menu item descriptor
+ */
 public class MenuItem
 {
     private MenuItem parent;
@@ -37,18 +40,27 @@ public class MenuItem
         this.caption = caption;
     }
 
+    /** Parent item. Null if this is root item. */
     public MenuItem getParent() {
         return parent;
     }
 
+    /** Children items */
     public List<MenuItem> getChildren() {
         return children;
     }
 
+    /**
+     * Menu item ID as defined in <code>menu-config.xml</code>
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Localized menu item caption.
+     * Defined in message pack which in turn defined by {@link com.haulmont.cuba.gui.AppConfig#getMessagesPack()} method. 
+     */
     public String getCaption() {
         return caption;
     }

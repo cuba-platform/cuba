@@ -13,6 +13,10 @@ import java.io.Serializable;
 import java.util.UUID;
 import java.util.Date;
 
+/**
+ * Base interface for persistent entities
+ * @param <T> identifier type
+ */
 public interface BaseEntity<T> extends Entity<T>
 {
     UUID getUuid();

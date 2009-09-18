@@ -6,6 +6,10 @@
  */
 package com.haulmont.cuba.core.global;
 
+/**
+ * Interface implemented by {@link com.haulmont.cuba.core.global.DbDialect} implementation
+ *  if the underlaying database supports sequences 
+ */
 public interface SequenceSupport
 {
     String sequenceExistsSql(String sequenceName);

@@ -13,6 +13,8 @@ package com.haulmont.cuba.security.sys;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
+import com.haulmont.cuba.security.app.UserSessionsMBean;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;

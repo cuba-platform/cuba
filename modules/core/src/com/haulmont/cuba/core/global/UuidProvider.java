@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.global;
 
 import java.util.UUID;
 
+/**
+ * Global UUID provider. Must be used everywhere instead of <code>UUID.randomUUID()</code>
+ */
 public abstract class UuidProvider
 {
     public static final String IMPL_PROP = "cuba.UuidProvider.impl";

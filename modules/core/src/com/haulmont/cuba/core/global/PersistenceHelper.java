@@ -24,6 +24,9 @@ import java.util.BitSet;
 import java.util.List;
 import java.lang.annotation.Annotation;
 
+/**
+ * Helper providing some information about persistent entities.
+ */
 public class PersistenceHelper {
 
     public static boolean isNew(Entity entity) {

@@ -17,6 +17,9 @@ import com.haulmont.cuba.web.App;
 
 import java.net.SocketException;
 
+/**
+ * This exception handler comes into play if no other handler has handled the exception
+ */
 public class DefaultExceptionHandler implements ExceptionHandler
 {
     public boolean handle(Terminal.ErrorEvent event, App app) {

@@ -21,6 +21,9 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 
+/**
+ * Service facade for {@link com.haulmont.cuba.core.app.ReportEngine} MBean
+ */
 @Stateless(name = ReportService.JNDI_NAME)
 @Interceptors(ServiceInterceptor.class)
 @TransactionManagement(TransactionManagementType.BEAN)

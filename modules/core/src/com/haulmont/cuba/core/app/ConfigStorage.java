@@ -20,6 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * ConfigStorage MBean implementation.
+ * <p>
+ * This MBean is intended to support configuration parameters functionality.
+ * It works with database and caches parameters.
+ */
 public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI
 {
     private Log log = LogFactory.getLog(ConfigStorage.class);

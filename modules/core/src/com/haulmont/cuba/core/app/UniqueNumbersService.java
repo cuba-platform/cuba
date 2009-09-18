@@ -8,6 +8,9 @@ package com.haulmont.cuba.core.app;
 
 import javax.ejb.Local;
 
+/**
+ * Local interface to {@link com.haulmont.cuba.core.app.UniqueNumbersServiceBean}
+ */
 @Local
 public interface UniqueNumbersService
 {

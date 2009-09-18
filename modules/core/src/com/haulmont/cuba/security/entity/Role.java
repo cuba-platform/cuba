@@ -24,6 +24,9 @@ import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Set;
 
+/**
+ * User role
+ */
 @Entity(name = "sec$Role")
 @Table(name = "SEC_ROLE")
 public class Role extends StandardEntity

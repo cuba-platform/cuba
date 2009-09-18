@@ -20,6 +20,10 @@ import java.util.Set;
 
 import org.apache.openjpa.persistence.Persistent;
 
+/**
+ * Record containing information about entity lifecycle event.
+ * Created by {@link com.haulmont.cuba.security.app.EntityLog} MBean
+ */
 @Entity(name = "sec$EntityLog")
 @Table(name = "SEC_ENTITY_LOG")
 public class EntityLogItem extends BaseUuidEntity

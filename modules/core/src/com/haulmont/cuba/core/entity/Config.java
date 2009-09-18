@@ -18,6 +18,10 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 import java.util.Date;
 
+/**
+ * Entity for working with configuration parameters (see com.haulmont.cuba.core.config.Config).<br>
+ * Should not be used in application code.
+ */
 @Entity(name = "core$Config")
 @Table(name = "SYS_CONFIG")
 public class Config extends BaseUuidEntity implements Versioned, Updatable

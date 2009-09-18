@@ -16,6 +16,9 @@ import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 
+/**
+ * Service facade for {@link com.haulmont.cuba.core.app.ResourceRepository} MBean
+ */
 @Stateless(name = ResourceRepositoryService.JNDI_NAME)
 @Interceptors({ServiceInterceptor.class})
 public class ResourceRepositoryServiceBean implements ResourceRepositoryService

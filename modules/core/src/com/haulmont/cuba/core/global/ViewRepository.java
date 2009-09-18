@@ -29,6 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Class containing all views defined in XML and deployed at runtime.<br>
+ * The reference to the ViewRepository can be obtained through {@link com.haulmont.cuba.core.global.MetadataProvider}
+ */
 public class ViewRepository
 {
     private Map<MetaClass, Map<String, View>> storage =

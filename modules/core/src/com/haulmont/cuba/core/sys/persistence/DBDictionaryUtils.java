@@ -19,7 +19,6 @@ import com.haulmont.cuba.core.app.PersistenceConfigAPI;
 import com.haulmont.cuba.core.app.PersistenceConfigMBean;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class DBDictionaryUtils
 {
@@ -51,7 +50,7 @@ public class DBDictionaryUtils
             // KK: support deferred delete for collections
             if (inverse
                     && to[i].getTable().containsColumn(deleteTsCol)
-                    && PersistenceProvider.getEntityManager().isDeleteDeferred())
+                    && PersistenceProvider.getEntityManager().isSoftDeletion())
             {
                 buf.append(" AND ");
                 buf.append(join.getAlias2()).append(".").append(deleteTsCol).append(" IS NULL");
@@ -108,7 +107,7 @@ public class DBDictionaryUtils
             || joins == null || joins.isEmpty())
         {
             SQLBuffer buf = sel.getWhere();
-            if (!PersistenceProvider.getEntityManager().isDeleteDeferred())
+            if (!PersistenceProvider.getEntityManager().isSoftDeletion())
                 return buf;
 
             Set<String> aliases = new HashSet<String>();
@@ -154,7 +153,7 @@ public class DBDictionaryUtils
                 where.append(sel.getWhere());
             if (joins != null)
                 sel.append(where, joins);
-            if (sel instanceof SelectImpl && PersistenceProvider.getEntityManager().isDeleteDeferred()) {
+            if (sel instanceof SelectImpl && PersistenceProvider.getEntityManager().isSoftDeletion()) {
                 StringBuilder sb = new StringBuilder();
                 Map tables = ((SelectImpl) sel).getTables();
                 for (Object table : tables.values()) {

@@ -10,6 +10,10 @@
  */
 package com.haulmont.cuba.gui.export;
 
+/**
+ * Generic interace to show data exported from the system.
+ * <br>Use one of client-specific implementations.
+ */
 public interface ExportDisplay
 {
     void show(ExportDataProvider dataProvider, String name, ExportFormat format);

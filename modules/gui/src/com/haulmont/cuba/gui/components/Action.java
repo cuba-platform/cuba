@@ -9,6 +9,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * A named listener to UI events
+ */
 public interface Action {
     String getId();
     String getCaption();

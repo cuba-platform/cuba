@@ -14,6 +14,9 @@ import com.haulmont.cuba.core.global.ClientType;
 
 import javax.ejb.Local;
 
+/**
+ * Local interface to {@link com.haulmont.cuba.security.app.UserSettingServiceBean}
+ */
 @Local
 public interface UserSettingService
 {

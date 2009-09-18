@@ -20,6 +20,9 @@ import org.apache.commons.logging.LogFactory;
 import javax.ejb.Stateless;
 import java.util.Locale;
 
+/**
+ * Service providing methods for user login/logout to the middleware
+ */
 @Stateless(name = LoginServiceRemote.JNDI_NAME)
 public class LoginServiceBean implements LoginService, LoginServiceRemote
 {

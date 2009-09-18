@@ -17,6 +17,10 @@ import javax.persistence.Column;
 import javax.persistence.Version;
 import java.util.Date;
 
+/**
+ * Most commonly used base class for persistent entities.<br>
+ * Optimistically locked, implements Updatable and SoftDelete
+ */
 @MappedSuperclass
 public class StandardEntity
         extends BaseUuidEntity

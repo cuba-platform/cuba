@@ -12,6 +12,10 @@ package com.haulmont.cuba.gui.export;
 
 import java.io.InputStream;
 
+/**
+ * Provides data for {@link ExportDisplay}.
+ * Can be closed after usage to release resources.
+ */
 public interface ExportDataProvider {
 
     InputStream provide();

@@ -15,13 +15,20 @@ import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Type of permission<br>
- * id - corresponding database value
+ * {@link #id} - corresponding database value
  */
 public enum PermissionType implements EnumClass<Integer>
 {
+    /** Permission to screen */
     SCREEN(10),
+
+    /** Permission to entity operation (view, create, update, delete) */
     ENTITY_OP(20),
+
+    /** Permission to entity attribute (none, view, modify) */
     ENTITY_ATTR(30),
+
+    /** Application-specific permission */
     SPECIFIC(40);
 
     private int id;

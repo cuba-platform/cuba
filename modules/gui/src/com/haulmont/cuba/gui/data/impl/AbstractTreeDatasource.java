@@ -73,7 +73,7 @@ public abstract class AbstractTreeDatasource<T extends Entity, K>
     }
 
     public Collection<K> getRootItemIds() {
-        if (State.NOT_INITIALIZAED.equals(state)) {
+        if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
         } else {
             if (tree == null) return Collections.emptyList();

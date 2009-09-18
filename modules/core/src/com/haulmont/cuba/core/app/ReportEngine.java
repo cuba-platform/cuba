@@ -26,6 +26,11 @@ import com.haulmont.cuba.core.Locator;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+/**
+ * ReportEngine MBean implementation.
+ * <p>
+ * This MBean is intended for compiling and executing of Jasper Reports
+ */
 public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
 {
     private static final String SRC_EXT = ".jrxml";

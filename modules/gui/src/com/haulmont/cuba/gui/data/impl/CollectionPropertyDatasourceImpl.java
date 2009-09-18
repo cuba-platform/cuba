@@ -112,7 +112,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     }
 
     public Collection<K> getItemIds() {
-        if (State.NOT_INITIALIZAED.equals(ds.getState())) {
+        if (State.NOT_INITIALIZED.equals(ds.getState())) {
             return Collections.emptyList();
         } else {
             return (Collection<K>) __getCollection();
@@ -151,7 +151,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     }
 
     public int size() {
-        if (State.NOT_INITIALIZAED.equals(ds.getState())) {
+        if (State.NOT_INITIALIZED.equals(ds.getState())) {
             return 0;
         } else {
             final Collection<T> collection = __getCollection();

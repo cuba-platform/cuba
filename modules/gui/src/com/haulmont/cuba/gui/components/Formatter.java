@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface Formatter<T extends Object> {
+public interface Formatter<T> {
 
     String format(T value);
 

@@ -10,6 +10,10 @@
  */
 package com.haulmont.cuba.core.app;
 
+/**
+ * API of {@link ConfigStorage} MBean.<br>
+ * Reference to this interface must be obtained through {@link ConfigStorageMBean#getAPI()} method
+ */
 public interface ConfigStorageAPI
 {
     String getConfigProperty(String name);

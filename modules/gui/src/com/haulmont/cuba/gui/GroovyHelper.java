@@ -19,6 +19,9 @@ import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 
 import java.util.Map;
 
+/**
+ * Utility class for work with Groovy expressions
+ */
 public class GroovyHelper {
 
     private static Log log = LogFactory.getLog(GroovyHelper.class);

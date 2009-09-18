@@ -14,8 +14,14 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Component;
 
+/**
+ * Utility class to work for GenericUI components
+ */
 public abstract class ComponentsHelper {
 
+    /**
+     * Visit all components below the specified container
+     */
     public static void walkComponents(
             com.haulmont.cuba.gui.components.Component.Container container,
             ComponentVisitor visitor
@@ -40,6 +46,9 @@ public abstract class ComponentsHelper {
         }
     }
 
+    /**
+     * Get the topmost window for the specified component
+     */
     public static Window getWindow(Component.BelongToFrame component) {
         IFrame frame = component.getFrame();
         while (frame != null) {

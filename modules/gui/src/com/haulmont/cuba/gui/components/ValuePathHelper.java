@@ -14,7 +14,11 @@ import org.apache.commons.lang.StringUtils;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Utility class to format and parse component paths
+ */
 public class ValuePathHelper {
+
     public static String format(String[] elements) {
         StringBuffer buffer = new StringBuffer();
 

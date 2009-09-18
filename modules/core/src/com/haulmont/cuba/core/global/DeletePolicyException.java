@@ -10,6 +10,11 @@
  */
 package com.haulmont.cuba.core.global;
 
+/**
+ * This exception is raised on attempt to soft delete an object,
+ * which has linked objects marked with {@link OnDelete} annotation 
+ * with {@link com.haulmont.cuba.core.global.DeletePolicy} DENY value
+ */
 public class DeletePolicyException extends RuntimeException
 {
     private static final long serialVersionUID = -1359432367630173077L;

@@ -16,6 +16,9 @@ import com.haulmont.cuba.gui.settings.Settings;
 import java.util.Map;
 import java.util.Collection;
 
+/**
+ * Root base class for screen controllers
+ */
 public class AbstractWindow extends AbstractFrame 
         implements Window, Component.HasXmlDescriptor, Window.Wrapper {
 

@@ -12,6 +12,9 @@ package com.haulmont.cuba.core;
 
 import org.apache.commons.lang.BooleanUtils;
 
+/**
+ * Common middleware utility methods
+ */
 public class Utils
 {
     public static boolean isUnitTestMode() {

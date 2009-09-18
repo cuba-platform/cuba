@@ -13,6 +13,10 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.Session;
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Entry point to the metadata functionality.<br>
+ * Use static methods.
+ */
 public abstract class MetadataProvider
 {
     public static final String IMPL_PROP = "cuba.MetadataProvider.impl";
@@ -42,14 +46,23 @@ public abstract class MetadataProvider
         return instance;
     }
 
+    /**
+     * Get current metadata session
+     */
     public static Session getSession() {
         return getInstance().__getSession();
     }
 
+    /**
+     * Get the view repository
+     */
     public static ViewRepository getViewRepository() {
         return getInstance().__getViewRepository();
     }
 
+    /**
+     * Get the location of non-persistent metadata descriptor
+     */
     public static String getMetadataXmlPath() {
         String xmlPath = System.getProperty(METADATA_XML);
         if (StringUtils.isBlank(xmlPath))

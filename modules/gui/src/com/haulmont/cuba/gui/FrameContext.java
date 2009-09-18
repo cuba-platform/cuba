@@ -82,9 +82,9 @@ public class FrameContext implements WindowContext {
     }
 
     protected <T> T getValue(Component component) {
-        if (component instanceof Component.Field) {
+        if (component instanceof Component.HasValue) {
             //noinspection RedundantTypeArguments
-            return ((Component.Field) component).<T>getValue();
+            return ((Component.HasValue) component).<T>getValue();
         } else if (component instanceof List) {
             com.haulmont.cuba.gui.components.List list = (com.haulmont.cuba.gui.components.List) component;
             //noinspection unchecked
@@ -96,8 +96,8 @@ public class FrameContext implements WindowContext {
 
     public void setValue(String property, Object value) {
         final Component component = frame.getComponent(property);
-        if (component instanceof Component.Field) {
-            ((Component.Field) component).setValue(value);
+        if (component instanceof Component.HasValue) {
+            ((Component.HasValue) component).setValue(value);
         } else {
             throw new UnsupportedOperationException();
         }

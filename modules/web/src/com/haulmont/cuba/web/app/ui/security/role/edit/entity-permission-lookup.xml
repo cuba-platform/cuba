@@ -24,7 +24,7 @@
             class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
             view="role.edit"
         >
-            <datasourceClass>com.haulmont.cuba.gui.data.CustomCollectionDatasource</datasourceClass>
+            <datasourceClass>com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource</datasourceClass>
             <query>
                 <![CDATA[
                 import com.haulmont.cuba.gui.AppConfig

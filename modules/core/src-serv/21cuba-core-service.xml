@@ -15,7 +15,7 @@
         <depends>jboss:service=TransactionManager</depends>
     </mbean>
 
-    <mbean code="com.haulmont.cuba.security.sys.UserSessions"
+    <mbean code="com.haulmont.cuba.security.app.UserSessions"
            name="haulmont.cuba:service=UserSessions">
         <depends>haulmont.cuba:service=PersistenceConfig</depends>
     </mbean>
@@ -60,7 +60,7 @@
     </mbean>
 
     <mbean code="org.jboss.varia.scheduler.Scheduler"
-           name="saneco:service=HeartbeatScheduler">
+           name="haulmont.cuba:service=HeartbeatScheduler">
         <attribute name="StartAtStartup">true</attribute>
         <attribute name="SchedulableClass">com.haulmont.cuba.core.app.Heartbeat$Starter</attribute>
         <attribute name="InitialStartDate">NOW</attribute>

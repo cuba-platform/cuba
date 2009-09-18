@@ -33,6 +33,11 @@ import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.FileUtils;
 
+/**
+ * Emailer MBean implementation.
+ * <p>
+ * Provides email functionality, allows to set some emailing parameters through JMX-console.
+ */
 public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI {
     private Log log = LogFactory.getLog(Emailer.class);
 

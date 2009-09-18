@@ -32,8 +32,8 @@ public class AssignActionLazyTask implements com.haulmont.cuba.gui.xml.layout.Co
             final List<String> subpath = Arrays.asList(elements).subList(0, elements.length - 1);
             final Component component = frame.getComponent(ValuePathHelper.format(subpath.toArray(new String[]{})));
             if (component != null) {
-                if (component instanceof Component.Actions) {
-                    final Action action = ((Component.Actions) component).getAction(id);
+                if (component instanceof Component.ActionsHolder) {
+                    final Action action = ((Component.ActionsHolder) component).getAction(id);
                     if (action != null) {
                         this.component.setAction(action);
                     } else {

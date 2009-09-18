@@ -11,7 +11,7 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.security.sys.UserSessionManager;
-import com.haulmont.cuba.security.sys.UserSessionsMBean;
+import com.haulmont.cuba.security.app.UserSessionsMBean;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.core.Locator;
@@ -21,6 +21,9 @@ import java.util.UUID;
 import java.util.Collection;
 import java.io.Serializable;
 
+/**
+ * Service facade to user sessions management
+ */
 @Stateless(name = UserSessionService.JNDI_NAME)
 public class UserSessionServiceBean implements UserSessionService
 {

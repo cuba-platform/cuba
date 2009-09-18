@@ -32,6 +32,14 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Main class of the web application. Each client connection has its own App.
+ * Use {@link #getInstance()} static method to obtain the reference to the current App instance
+ * throughout the application code.
+ * <p>
+ * Specific application should inherit from this class and set derived class name
+ * in <code>application</code> servlet parameter of <code>web.xml</code>
+ */
 public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
 {
     private Log log = LogFactory.getLog(App.class);
@@ -50,6 +58,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private LinkHandler linkHandler;
 
     static {
+        // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
         System.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
         System.setProperty(AppConfig.MENU_CONFIG_XML_PROP, "cuba/client/web/menu-config.xml");
         System.setProperty(AppConfig.WINDOW_CONFIG_XML_PROP, "cuba/client/web/screen-config.xml");
@@ -72,6 +81,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return msgs;
     }
 
+    /**
+     * Can be overridden in descendant to create an application-specific {@link WindowManager}
+     */
     protected WindowManager createWindowManager() {
         return new WindowManager(this);
     }
@@ -90,10 +102,16 @@ public class App extends Application implements ConnectionListener, ApplicationC
         deployViews();
     }
 
+    /**
+     * Current App instance. Can be invoked anywhere in application code.
+     */
     public static App getInstance() {
         return currentApp.get();
     }
 
+    /**
+     * Can be overridden in descendant to add application-specific exception handlers
+     */
     protected void initExceptionHandlers(boolean isConnected) {
         if (isConnected) {
             exceptionHandlers.addHandler(new UniqueConstraintViolationHandler());
@@ -105,14 +123,22 @@ public class App extends Application implements ConnectionListener, ApplicationC
         }
     }
 
+    /**
+     * Should be overridden in descendant to create an application-specific login window
+     */
     protected LoginWindow createLoginWindow() {
         return new LoginWindow(this, connection);
     }
 
+    /**
+     * Should be overridden in descendant to deploy views needed for main window
+     */
     protected void deployViews() {
-        //MetadataProvider.getViewRepository().deployViews("/com/haulmont/cuba/web/app/ui/security/user/user.views.xml");
     }
 
+    /**
+     * Should be overridden in descendant to create an application-specific main window
+     */
     protected AppWindow createAppWindow() {
         return new AppWindow(connection);
     }
@@ -121,6 +147,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return (AppWindow) getMainWindow();
     }
 
+    /**
+     * Get current connection object
+     */
     public Connection getConnection() {
         return connection;                       
     }

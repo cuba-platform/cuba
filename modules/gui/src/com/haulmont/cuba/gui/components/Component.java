@@ -17,7 +17,11 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.chile.core.model.MetaProperty;
 
+/**
+ * Root of the GenericUI components hierarchy
+ */
 public interface Component {
+
     enum Alignment {
         TOP_RIGHT,
         TOP_LEFT,
@@ -30,67 +34,110 @@ public interface Component {
         BOTTOM_CENTER
     }
 
-    public static final int UNITS_PIXELS = 0;
-    public static final int UNITS_PERCENTAGE = 8;
+    int UNITS_PIXELS = 0;
+    int UNITS_PERCENTAGE = 8;
 
+    /** Component ID as defined in <code>id</code> attribute */
     String getId();
+    /** Set component ID */
     void setId(String id);
 
     String getDebugId();
     void setDebugId(String id);
 
+    /** Is component in enabled state? */
     boolean isEnabled();
+    /** Set component enabled state */
     void setEnabled(boolean enabled);
 
+    /** Is component visible? */
     boolean isVisible();
+    /** Set component visibility */
     void setVisible(boolean visible);
 
+    /** Set focus to this component */
     void requestFocus();
 
+    /** Get component height in {@link #getHeightUnits()} */
     float getHeight();
+
+    /** Height units: {@link #UNITS_PIXELS}, {@link #UNITS_PERCENTAGE} */
     int getHeightUnits();
+
+    /** Set component height in {@link #getHeightUnits()} */
     void setHeight(String height);
 
+    /** Get component width in {@link #getWidthUnits()} */
     float getWidth();
+
+    /** Width units: {@link #UNITS_PIXELS}, {@link #UNITS_PERCENTAGE} */
     int getWidthUnits();
+
+    /** Set component width in {@link #getWidthUnits()} */
     void setWidth(String width);
 
     Alignment getAlignment();
     void setAlignment(Alignment alignment);
 
+    /** Current style name. Styles implementation is client-type-specific */
     String getStyleName();
+    /** Set style name. Styles implementation is client-type-specific */
     void setStyleName(String name);
 
+    /**
+     * Component which can contain other components
+     */
     interface Container extends Component {
         void add(Component component);
         void remove(Component component);
 
+        /** Get component directly owned by this container */
         <T extends Component> T getOwnComponent(String id);
+
+        /** Get component belonging to the whole components tree below this container */
         <T extends Component> T getComponent(String id);
 
+        /** Get all components directly owned by this container */
         Collection<Component> getOwnComponents();
+
+        /** Get all components belonging to the whole components tree below this container */
         Collection<Component> getComponents();
     }
 
-    interface Wrapper {
+    /**
+     * Component delegating work to some "wrapped" client-specific implementation
+     */
+    interface Wrapper extends Component {
         <T> T getComponent();
     }
 
-    interface HasLayout {
+    /**
+     * Component containing a layout
+     */
+    interface HasLayout extends Component {
         void expandLayout(boolean expandLayout);
     }
 
+    /**
+     * Component belonging to a frame
+     */
     interface BelongToFrame extends Component {
         <A extends IFrame> A getFrame();
         void setFrame(IFrame frame);
     }
 
+    /**
+     * Object having a caption
+     */
     interface HasCaption {
         String getCaption();
         void setCaption(String caption);
     }
 
-    interface Field extends Editable, BelongToFrame {
+    /**
+     * Object having a value
+     */
+    interface HasValue extends Editable, BelongToFrame {
         <T> T getValue();
         void setValue(Object value);
 
@@ -98,17 +145,26 @@ public interface Component {
         void removeListener(ValueListener listener);
     }
 
+    /**
+     * Object having a formatter
+     */
     interface HasFomatter {
         Formatter getFormatter();
         void setFormatter(Formatter formatter);
     }
 
+    /**
+     * Object having an XML descriptor attached
+     */
     interface HasXmlDescriptor {
         Element getXmlDescriptor();
         void setXmlDescriptor(Element element);
     }
 
-    interface Actions extends Component {
+    /**
+     * Component containing {@link Action}s
+     */
+    interface ActionsHolder extends Component {
         void addAction(Action action);
         void removeAction(Action action);
 
@@ -117,25 +173,29 @@ public interface Component {
         Action getAction(String id);
     }
 
+    /**
+     * Component supporting "editable" state
+     */
     interface Editable extends Component {
         boolean isEditable();
         void setEditable(boolean editable);
     }
 
+    /**
+     * Object supporting save/restore of user settings.
+     * See also {@link com.haulmont.cuba.security.app.UserSettingServiceBean}
+     */
     interface HasSettings {
         void applySettings(Element element);
         boolean saveSettings(Element element);
     }
 
-    interface Expandable {
+    /**
+     * Component supporting "expandable" state
+     */
+    interface Expandable extends Component {
         void setExpandable(boolean expandable);
         boolean isExpandable();
-    }
-
-    interface Toggle {
-        void toggle();
-        void setOn(boolean on);
-        boolean isOn();
     }
 
     interface Disposable {

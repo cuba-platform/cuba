@@ -16,8 +16,18 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
+/**
+ * Singleton providing "heartbeat" functionality.<br>
+ * Notifies registered listeners on each beat. Beat frequency is set through
+ * <code>haulmont.cuba:service=HeartbeatScheduler</code> scheduling MBean.
+ */
 public class Heartbeat {
 
+    /**
+     * Listener of the heartbeat.<br>
+     * Implementations of <code>beat()</code> method must return as soon as possible,
+     * do not use long operations (database, etc.)
+     */
     public interface Listener {
         void beat();
     }
@@ -38,6 +48,9 @@ public class Heartbeat {
         return instance;
     }
 
+    /**
+     * Register heartbeat listener
+     */
     public void addListener(Listener listener, int factor) {
         if (factor <= 0)
             throw new IllegalArgumentException("factor must be positive integer");
@@ -45,6 +58,9 @@ public class Heartbeat {
         listeners.put(listener, factor);
     }
 
+    /**
+     * Unregister heartbeat listener
+     */
     public void removeListener(Listener listener) {
         listeners.remove(listener);
     }

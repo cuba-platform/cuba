@@ -16,6 +16,9 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 
+/**
+ * Common WebUI components configuration parameters  
+ */
 @Prefix("cuba.UIComponentsConfig.")
 @Source(type = SourceType.DATABASE)
 public interface UIComponentsConfig extends Config

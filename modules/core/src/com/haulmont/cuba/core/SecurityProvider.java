@@ -21,6 +21,9 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Provides access to the current user session for middleware
+ */
 public abstract class SecurityProvider
 {
     public static final String IMPL_PROP = "cuba.SecurityProvider.impl";
@@ -52,19 +55,34 @@ public abstract class SecurityProvider
         return instance;
     }
 
+    /**
+     * Current user identifier
+     */
     public static UUID currentUserId() {
         return getInstance().__currentUserSession().getUser().getId();
     }
 
+    /**
+     * Current user session
+     */
     public static UserSession currentUserSession() {
         return getInstance().__currentUserSession();
     }
 
+    /**
+     * Checks if the current user belongs to role
+     * @param role role name
+     */
     public static boolean currentUserInRole(String role) {
         UserSession session = getInstance().__currentUserSession();
         return (Arrays.binarySearch(session.getRoles(), role) >= 0);
     }
 
+    /**
+     * Modifies the query depending on current user's security constraints
+     * @param query query to modify
+     * @param entityName name of entity which is quering
+     */
     public static void applyConstraints(Query query, String entityName) {
         getInstance().__applyConstraints(query, entityName);
     }

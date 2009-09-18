@@ -13,6 +13,9 @@ import com.haulmont.cuba.core.sys.EntityManagerImpl;
 
 import java.io.Serializable;
 
+/**
+ * Factory creating {@link com.haulmont.cuba.core.EntityManager}s
+ */
 public interface EntityManagerFactory extends Serializable
 {
     EntityManagerImpl createEntityManager();

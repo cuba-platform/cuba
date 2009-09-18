@@ -12,6 +12,9 @@ package com.haulmont.cuba.core.global;
 
 import java.util.Date;
 
+/**
+ * Global time provider. Must be used everywhere instead of <code>new Date()</code
+ */
 public abstract class TimeProvider
 {
 

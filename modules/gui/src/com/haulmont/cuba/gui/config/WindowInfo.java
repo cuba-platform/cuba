@@ -13,6 +13,9 @@ package com.haulmont.cuba.gui.config;
 import org.dom4j.Element;
 import com.haulmont.bali.util.ReflectionHelper;
 
+/**
+ * Screen information object
+ */
 public class WindowInfo
 {
     private String id;
@@ -24,14 +27,23 @@ public class WindowInfo
         this.descriptor = descriptor;
     }
 
+    /**
+     * Screen ID as set up in <code>screen-config.xml</code>
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Screen template path as set up in <code>screen-config.xml</code>
+     */
     public String getTemplate() {
         return descriptor.attributeValue("template");
     }
 
+    /**
+     * Screen class as set up in <code>screen-config.xml</code>
+     */
     public Class getScreenClass() {
         if (screenClass == null) {
             String className = descriptor.attributeValue("class");
@@ -42,6 +54,9 @@ public class WindowInfo
         return screenClass;
     }
 
+    /**
+     * The whole XML element of the screen as set up in <code>screen-config.xml</code>
+     */
     public Element getDescriptor() {
         return descriptor;
     }

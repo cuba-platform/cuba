@@ -17,25 +17,47 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
+/**
+ * Common server configuration parameters
+ */
 @Source(type = SourceType.SYSTEM)
 public interface ServerConfig extends Config {
 
+    /**
+     * Logs directory. Place app-specific log files here.
+     */
     @Property("jboss.server.log.dir")
     String getServerLogDir();
 
+    /**
+     * Temporary files directory. Place app-specific temp files under this directory.
+     */
     @Property("jboss.server.temp.dir")
     String getServerTempDir();
 
+    /**
+     * Data directory. Place persistent app-specific data files under this directory.
+     */
     @Property("jboss.server.data.dir")
     String getServerDataDir();
 
+    /**
+     * User session expiration timeout in seconds.
+     * Not the same as HTTP session timeout, but should have the same value.
+     */
     @Property("cuba.userSessionExpirationTimeoutSec")
     @DefaultInt(1800)
     int getUserSessionExpirationTimeoutSec();
+    /**
+     * User session expiration timeout in seconds.
+     * Not the same as HTTP session timeout, but should have the same value.
+     */
     void setUserSessionExpirationTimeoutSec(int timeout);
 
+    /**
+     * Used to support automatic testing
+     */
     @Property("cuba.testMode")
     @DefaultBoolean(false)
     boolean getTestMode();
-
 }

@@ -36,6 +36,13 @@ import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * PersistentConfig MBean implementation.
+ * <p>
+ * This MBean is intended for:
+ * <li>read on start and cache database metadata information, mainly to support soft delete functionality;
+ * <li>read on start <code>conf/system.properties</code> file and set appropriate Java system properties
+ */
 public class PersistenceConfig implements PersistenceConfigMBean, PersistenceConfigAPI
 {
     private Log log = LogFactory.getLog(PersistenceConfig.class);

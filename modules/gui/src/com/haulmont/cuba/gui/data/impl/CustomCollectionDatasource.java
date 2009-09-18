@@ -8,12 +8,14 @@
   * $Id$
   */
 
-package com.haulmont.cuba.gui.data;
+package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 
 import java.util.Collection;

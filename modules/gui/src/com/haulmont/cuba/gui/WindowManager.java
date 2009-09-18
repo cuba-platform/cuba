@@ -49,7 +49,23 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * GenericUI class intended for creating and opening application screens.
+ */
 public abstract class WindowManager {
+
+    /**
+     * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}
+     */
+    public enum OpenType {
+        /** In new tab for TABBED mode, replace current screen for SINGLE mode */
+        NEW_TAB,
+        /** On top of the current conversation stack */
+        THIS_TAB,
+        /** In modal dialog */
+        DIALOG
+    }
+
     private DataService defaultDataService;
     private UserSettingService settingService;
 
@@ -68,12 +84,6 @@ public abstract class WindowManager {
     }
 
     protected abstract DataService createDefaultDataService();
-
-    public enum OpenType {
-        NEW_TAB,
-        THIS_TAB,
-        DIALOG
-    }
 
     public abstract Collection<Window> getOpenWindows();
 

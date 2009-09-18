@@ -9,6 +9,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * Base class for lookup screen controllers
+ */
 public class AbstractLookup extends AbstractWindow implements Window.Lookup {
     public AbstractLookup(IFrame frame) {
         super(frame);

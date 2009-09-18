@@ -15,11 +15,17 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.io.IOUtils;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.security.sys.UserSessionsMBean;
+import com.haulmont.cuba.security.app.UserSessionsMBean;
 
 import java.io.InputStream;
 import java.io.IOException;
 
+/**
+ * CubaDeployer MBean implementation.
+ * <p>
+ * Intended to support other MBeans dependencies because it starts after all other platform MBeans.
+ * Also holds some information about the system.
+ */
 public class CubaDeployer implements CubaDeployerMBean
 {
     private Log log = LogFactory.getLog(CubaDeployer.class);

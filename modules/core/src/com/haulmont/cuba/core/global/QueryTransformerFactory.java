@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core.global;
 
+/**
+ * Factory to get {@link QueryParser} and {@link QueryTransformer} instances
+ */
 public class QueryTransformerFactory
 {
     public static QueryTransformer createTransformer(String query, String targetEntity) {

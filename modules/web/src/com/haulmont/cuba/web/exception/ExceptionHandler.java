@@ -13,6 +13,9 @@ package com.haulmont.cuba.web.exception;
 import com.vaadin.terminal.Terminal;
 import com.haulmont.cuba.web.App;
 
+/**
+ * Interface implemented by unhandled exception handler in WebUI
+ */
 public interface ExceptionHandler
 {
     boolean handle(Terminal.ErrorEvent event, App app);

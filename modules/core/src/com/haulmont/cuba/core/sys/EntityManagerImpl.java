@@ -70,11 +70,11 @@ public class EntityManagerImpl implements EntityManager
         return delegate;
     }
 
-    public boolean isDeleteDeferred() {
+    public boolean isSoftDeletion() {
         return deleteDeferred;
     }
 
-    public void setDeleteDeferred(boolean deleteDeferred) {
+    public void setSoftDeletion(boolean deleteDeferred) {
         if (deleteDeferred != this.deleteDeferred) {
             // clear SQL queries cache
             OpenJPAConfiguration conf = ((OpenJPAEntityManagerFactorySPI) delegate.getEntityManagerFactory()).getConfiguration();

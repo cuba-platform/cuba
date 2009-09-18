@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core.app;
 
+/**
+ * Management interface of the {@link com.haulmont.cuba.core.app.CubaDeployer} MBean.<br>
+ */
 public interface CubaDeployerMBean
 {
     String OBJECT_NAME = "haulmont.cuba:service=CubaDeployer";

@@ -10,9 +10,13 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface ToggleBoxLayout extends Component, Component.Container, Component.Toggle,
+public interface ToggleBoxLayout extends Component.Container,
         Component.HasSettings, Component.HasCaption, Component.Expandable
 {
+    void toggle();
+    void setOn(boolean on);
+    boolean isOn();
+
     Layout getOnLayout();
     Layout getOffLayout();
 }

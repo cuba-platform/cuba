@@ -94,7 +94,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
 
                     final Datasource ds = dsContext.get(source);
                     if (ds != null) {
-                        dsContext.regirterDependency(this, ds, property);
+                        dsContext.registerDependency(this, ds, property);
                     } else {
                         ((DsContextImplementation) dsContext).addLazyTask(new DsContextImplementation.LazyTask() {
                             public void execute(DsContext context) {
@@ -103,7 +103,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity, K>
 
                                 final Datasource ds = dsContext.get(source);
                                 if (ds != null) {
-                                    dsContext.regirterDependency(AbstractCollectionDatasource.this, ds, property);
+                                    dsContext.registerDependency(AbstractCollectionDatasource.this, ds, property);
                                 }
                             }
                         });

@@ -12,6 +12,10 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.config.Config;
 
+/**
+ * Entry point to configuration parameters functionality.<br>
+ * Use static methods. 
+ */
 public abstract class ConfigProvider
 {
     public static final String IMPL_PROP = "cuba.ConfigProvider.impl";
@@ -39,9 +43,14 @@ public abstract class ConfigProvider
         return instance;
     }
 
+    /**
+     * Get reference to a configuration interface implementation.
+     * @param configInterface   class of configuration interface
+     * @return  the interface implementation which can be used to get/set parameters
+     */
     public static <T extends Config> T getConfig(Class<T> configInterface) {
         return getInstance().__getConfig(configInterface);
     }
 
-    public abstract <T extends Config> T __getConfig(Class<T> configInterface);
+    protected abstract <T extends Config> T __getConfig(Class<T> configInterface);
 }
