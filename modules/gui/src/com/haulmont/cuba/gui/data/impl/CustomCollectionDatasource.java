@@ -13,7 +13,6 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.GroovyHelper;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
@@ -24,7 +23,7 @@ import java.util.Map;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-public class CustomCollectionDatasource<T extends Entity, K>
+public class CustomCollectionDatasource<T extends Entity<K>, K>
     extends
         CollectionDatasourceImpl<T, K>
 {

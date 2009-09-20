@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -20,15 +22,13 @@ import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.ArrayList;
+import javax.annotation.Nullable;
+import java.util.*;
 
-public class CollectionPropertyDatasourceImpl<T extends Entity, K>
+public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     extends
         PropertyDatasourceImpl<T>
     implements
@@ -108,14 +108,22 @@ public class CollectionPropertyDatasourceImpl<T extends Entity, K>
     }
 
     public K getItemId(T item) {
-        return (K) item;
+        if (item instanceof Entity)
+            return item.getId();
+        else
+            return (K) item;
     }
 
     public Collection<K> getItemIds() {
         if (State.NOT_INITIALIZED.equals(ds.getState())) {
             return Collections.emptyList();
         } else {
-            return (Collection<K>) __getCollection();
+            List<K> keys = Lists.transform(new ArrayList(__getCollection()), new Function<T, K>() {
+                public K apply(@Nullable T from) {
+                    return from.getId();
+                }
+            });
+            return keys;
         }
     }
 

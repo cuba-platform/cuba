@@ -9,7 +9,7 @@ import java.util.Collection;
  * @param <T> type of entity
  * @param <K> type of entity ID
  */
-public interface HierarchicalDatasource<T extends Entity, K> extends CollectionDatasource<T, K>{
+public interface HierarchicalDatasource<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
     /** Property of entity which forms the hierarchy */
     String getHierarchyPropertyName();

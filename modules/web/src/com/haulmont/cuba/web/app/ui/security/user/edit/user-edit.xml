@@ -14,8 +14,9 @@
         <datasource
                 id="user"
                 class="com.haulmont.cuba.security.entity.User"
-                view="user.edit"
-                />
+                view="user.edit">
+            <collectionDatasource id="roles" property="userRoles"/>
+        </datasource>
 
         <collectionDatasource
                 id="groups"
@@ -25,13 +26,13 @@
             <query>select g from sec$Group g</query>
         </collectionDatasource>
 
-        <collectionDatasource
-                id="roles"
-                class="com.haulmont.cuba.security.entity.UserRole"
-                view="user.edit"
-                >
-            <query>select r from sec$UserRole r where r.user.id=:ds$user</query>
-        </collectionDatasource>
+        <!--<collectionDatasource-->
+                <!--id="roles"-->
+                <!--class="com.haulmont.cuba.security.entity.UserRole"-->
+                <!--view="user.edit"-->
+                <!-->-->
+            <!--<query>select r from sec$UserRole r where r.user.id=:ds$user</query>-->
+        <!--</collectionDatasource>-->
     </dsContext>
 
     <layout>

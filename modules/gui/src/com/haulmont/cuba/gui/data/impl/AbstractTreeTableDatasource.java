@@ -1,7 +1,6 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.impl.EntityComparator;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
@@ -19,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
  * User: Nikolay Gorodnov
  * Date: 03.06.2009
  */
-public abstract class AbstractTreeTableDatasource<T extends Entity, K> 
+public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         extends AbstractTreeDatasource<T, K>
         implements TreeTableDatasource<T, K>
 {
@@ -66,7 +65,7 @@ public abstract class AbstractTreeTableDatasource<T extends Entity, K>
         data.clear();
         for (Node<T> node : tree.toList()) {
             final T entity = node.getData();
-            final K id = (K) entity.getId();
+            final K id = entity.getId();
 
             data.put(id, entity);
         }

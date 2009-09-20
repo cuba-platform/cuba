@@ -23,7 +23,7 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
-public abstract class AbstractCollectionDatasource<T extends Entity, K> 
+public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     extends
         DatasourceImpl<T>
     implements

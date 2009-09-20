@@ -8,6 +8,7 @@
         <property name="group">
             <property name="name"/>
         </property>
+        <property name="userRoles" view="user.edit"/>
     </view>
 
     <view entity="sec$UserRole" name="user.edit">

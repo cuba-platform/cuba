@@ -21,8 +21,9 @@ import com.haulmont.chile.core.model.MetaClass;
 
 import java.util.*;
 
-public class SessionsCollectionDataSouce extends CollectionDatasourceImpl<UserSessionEntity, UUID> {
-    public SessionsCollectionDataSouce(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
+public class UserSessionsDatasource extends CollectionDatasourceImpl<UserSessionEntity, UUID> {
+
+    public UserSessionsDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
         super(dsContext, dataservice, id, metaClass, viewName);
     }
 

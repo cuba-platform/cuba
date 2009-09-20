@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
  * @param <T> type of entity
  * @param <K> type of entity ID
  */
-public interface TreeTableDatasource <T extends Entity, K>
+public interface TreeTableDatasource <T extends Entity<K>, K>
         extends HierarchicalDatasource<T, K>
 {
     boolean isCaption(K itemId);

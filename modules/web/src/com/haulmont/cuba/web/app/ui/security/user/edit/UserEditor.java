@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 public class UserEditor extends AbstractEditor {
     private Datasource<User> userDs;
@@ -36,32 +37,7 @@ public class UserEditor extends AbstractEditor {
         final Table rolesTable = getComponent("roles");
         userDs = getDsContext().get("user");
 
-        rolesTable.addAction(new AbstractAction("include") {
-            public String getCaption() {
-                return "Include";
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                final CollectionDatasource ds = rolesTable.getDatasource();
-                openLookup("sec$Role.lookup", new Lookup.Handler() {
-                    public void handleLookup(Collection items) {
-                        for (Object item : items) {
-                            final MetaClass metaClass = ds.getMetaClass();
-
-                            UserRole userRole = ds.getDataService().newInstance(metaClass);
-                            userRole.setRole((Role) item);
-                            userRole.setUser((User) userDs.getItem());
-
-                            ds.addItem(userRole);
-                        }
-                    }
-                }, WindowManager.OpenType.THIS_TAB);
-            }
-        });
+        rolesTable.addAction(new IncludeAction(rolesTable));
 
         final TableActionsHelper rolesTableActions = new TableActionsHelper(this, rolesTable);
         rolesTableActions.createRemoveAction(false);
@@ -98,6 +74,40 @@ public class UserEditor extends AbstractEditor {
     public void commitAndClose() {
         if (_commit()) {
             super.commitAndClose();
+        }
+    }
+
+    private class IncludeAction extends AbstractAction {
+        private final Table rolesTable;
+
+        public IncludeAction(Table rolesTable) {
+            super("include");
+            this.rolesTable = rolesTable;
+        }
+
+        public String getCaption() {
+            return "Include";
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+        public void actionPerform(Component component) {
+            final CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
+            openLookup("sec$Role.lookup", new Lookup.Handler() {
+                public void handleLookup(Collection items) {
+                    for (Object item : items) {
+                        final MetaClass metaClass = ds.getMetaClass();
+
+                        UserRole userRole = ds.getDataService().newInstance(metaClass);
+                        userRole.setRole((Role) item);
+                        userRole.setUser(userDs.getItem());
+
+                        ds.addItem(userRole);
+                    }
+                }
+            }, WindowManager.OpenType.THIS_TAB);
         }
     }
 }

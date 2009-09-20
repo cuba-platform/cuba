@@ -12,10 +12,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.core.global.MessageProvider;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RoleEditor extends AbstractEditor {
     public RoleEditor(IFrame frame) {
@@ -100,31 +97,31 @@ public class RoleEditor extends AbstractEditor {
         return res;
     }
 
-    protected Collection<PermissionConfig.Target> getPermissions(MetaClass metaClass) {
-        final Set<PermissionConfig.Target> res = new HashSet<PermissionConfig.Target>();
-
-        final CollectionDatasource<Permission, Permission> ds = getDsContext().get("permissions");
-        final Collection<Permission> permissions = ds.getItemIds();
-
-        String prefix = "entity:" + metaClass.getName();
-
-        for (Permission permission : permissions) {
-            final String target = permission.getTarget();
-            if (target.startsWith(prefix)) {
-                String permissionName = target.substring(prefix.length() + 1);
-                res.add(new PermissionConfig.Target(target, permissionName, target));
-            }
-        }
-
-        return res;
-    }
+//    protected Collection<PermissionConfig.Target> getPermissions(MetaClass metaClass) {
+//        final Set<PermissionConfig.Target> res = new HashSet<PermissionConfig.Target>();
+//
+//        final CollectionDatasource<Permission, Permission> ds = getDsContext().get("permissions");
+//        final Collection<Permission> permissions = ds.getItemIds();
+//
+//        String prefix = "entity:" + metaClass.getName();
+//
+//        for (Permission permission : permissions) {
+//            final String target = permission.getTarget();
+//            if (target.startsWith(prefix)) {
+//                String permissionName = target.substring(prefix.length() + 1);
+//                res.add(new PermissionConfig.Target(target, permissionName, target));
+//            }
+//        }
+//
+//        return res;
+//    }
 
     protected void createPermissionItem(String dsName, PermissionConfig.Target target, PermissionType type, Integer value) {
-        final CollectionDatasource<Permission, Object> ds = getDsContext().get(dsName);
-        final Collection<Object> permissions = ds.getItemIds();
+        final CollectionDatasource<Permission, UUID> ds = getDsContext().get(dsName);
+        final Collection<UUID> permissionIds = ds.getItemIds();
 
         Permission permission = null;
-        for (Object id : permissions) {
+        for (UUID id : permissionIds) {
             Permission p = ds.getItem(id);
             if (ObjectUtils.equals(p.getTarget(), target.getValue())) {
                 permission = p;

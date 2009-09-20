@@ -9,7 +9,7 @@
 
     <dsContext>
         <collectionDatasource id="sessions" class="com.haulmont.cuba.security.entity.UserSessionEntity" view="session.browse">
-            <datasourceClass>com.haulmont.cuba.web.app.ui.security.session.browse.SessionsCollectionDataSouce</datasourceClass>
+            <datasourceClass>com.haulmont.cuba.web.app.ui.security.session.browse.UserSessionsDatasource</datasourceClass>
         </collectionDatasource>
     </dsContext>
 

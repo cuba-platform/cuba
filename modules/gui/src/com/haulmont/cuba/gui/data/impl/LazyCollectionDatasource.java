@@ -26,7 +26,7 @@ import org.apache.commons.collections.map.LinkedMap;
 
 import java.util.*;
 
-public class LazyCollectionDatasource<T extends Entity, K>
+public class LazyCollectionDatasource<T extends Entity<K>, K>
     extends
         AbstractCollectionDatasource<T, K>
     implements
@@ -134,7 +134,7 @@ public class LazyCollectionDatasource<T extends Entity, K>
     }
 
     public K getItemId(T item) {
-        return item == null ? null : (K) item.getId();
+        return item == null ? null : item.getId();
     }
 
     public Collection<K> getItemIds() {

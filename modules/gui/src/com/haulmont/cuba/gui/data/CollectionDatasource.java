@@ -21,7 +21,7 @@ import java.util.Map;
  * @param <T> type of entity
  * @param <K> type of entity ID
  */
-public interface CollectionDatasource<T extends Entity, K> extends Datasource<T> {
+public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource<T> {
 
     /** Mode of fetching data from database: {@link #ALL}, {@link #LAZY} */
     enum FetchMode {
@@ -93,7 +93,7 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
-    interface Ordered<T extends Entity, K> extends CollectionDatasource<T, K> {
+    interface Ordered<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
         K firstItemId();
         K lastItemId();
 
@@ -109,7 +109,7 @@ public interface CollectionDatasource<T extends Entity, K> extends Datasource<T>
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
-    interface Sortable<T extends Entity, K> extends Ordered<T, K>, CollectionDatasource<T, K> {
+    interface Sortable<T extends Entity<K>, K> extends Ordered<T, K> {
 
         /** Sort order */
         enum Order {

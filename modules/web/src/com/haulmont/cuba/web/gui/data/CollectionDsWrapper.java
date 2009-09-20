@@ -30,7 +30,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
 
-    protected CollectionDatasource<Entity, Object> datasource;
+    protected CollectionDatasource datasource;
 
     protected Collection<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();

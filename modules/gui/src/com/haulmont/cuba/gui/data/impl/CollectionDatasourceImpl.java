@@ -23,7 +23,7 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
-public class CollectionDatasourceImpl<T extends Entity, K>
+public class CollectionDatasourceImpl<T extends Entity<K>, K>
     extends
         AbstractCollectionDatasource<T, K>
     implements
@@ -87,7 +87,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
             if (prevIds != null && this.item != null && !prevIds.contains(this.item.getId())) {
                 setItem(null);
             } else if (this.item != null) {
-                setItem(getItem((K) this.item.getId()));
+                setItem(getItem(this.item.getId()));
             } else {
                 setItem(null);
             }
@@ -108,7 +108,7 @@ public class CollectionDatasourceImpl<T extends Entity, K>
     }
 
     public K getItemId(T item) {
-        return item == null ? null : (K) item.getId();
+        return item == null ? null : item.getId();
     }
 
     public synchronized Collection<K> getItemIds() {

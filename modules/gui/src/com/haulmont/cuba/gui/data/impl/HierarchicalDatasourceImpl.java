@@ -17,11 +17,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.*;
 
-public class HierarchicalDatasourceImpl<T extends Entity, K>
+public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
     extends
         CollectionDatasourceImpl<T, K>
     implements

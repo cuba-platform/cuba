@@ -134,7 +134,7 @@ abstract class ListActionsHelper<T extends List> {
 
                                 public void actionPerform(Component component) {
                                     @SuppressWarnings({"unchecked"})
-                                    final CollectionDatasource<Entity, Object> ds = ListActionsHelper.this.component.getDatasource();
+                                    final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
                                     for (Object item : selected) {
                                         ds.removeItem((Entity) item);
                                     }

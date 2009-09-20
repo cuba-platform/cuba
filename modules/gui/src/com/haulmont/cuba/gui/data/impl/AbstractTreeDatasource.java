@@ -14,7 +14,6 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
@@ -24,7 +23,7 @@ import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
-public abstract class AbstractTreeDatasource<T extends Entity, K>
+public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
     extends
         CollectionDatasourceImpl<T, K>
     implements
@@ -50,7 +49,7 @@ public abstract class AbstractTreeDatasource<T extends Entity, K>
         data.clear();
         for (Node<T> node : tree.toList()) {
             final T entity = node.getData();
-            final K id = (K) entity.getId();
+            final K id = entity.getId();
 
             data.put(id, entity);
 
@@ -88,7 +87,7 @@ public abstract class AbstractTreeDatasource<T extends Entity, K>
 
      public K getParent(K itemId) {
         final Node<T> node = nodes.get(itemId);
-        return node == null ? null : (K) (node.getParent() == null ? null : node.getParent().getData().getId());
+        return node == null ? null : node.getParent() == null ? null : node.getParent().getData().getId();
     }
 
     public Collection<K> getChildren(K itemId) {
@@ -100,7 +99,7 @@ public abstract class AbstractTreeDatasource<T extends Entity, K>
 
             final List<K> ids = new ArrayList<K>();
             for (Node<T> targetNode : children) {
-                ids.add((K) targetNode.getData().getId());
+                ids.add(targetNode.getData().getId());
             }
 
             return ids;
