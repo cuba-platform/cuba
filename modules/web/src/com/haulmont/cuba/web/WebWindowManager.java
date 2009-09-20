@@ -291,34 +291,25 @@ public class WebWindowManager extends WindowManager
         final WindowOpenMode openMode = windowOpenMode.get(window);
         if (openMode == null) throw new IllegalStateException();
 
-        boolean needRefresh = closeWindow(window, openMode);
+        closeWindow(window, openMode);
         windowOpenMode.remove(window);
-
-        // TODO (krivopustov) fix TabSheet repaint
-        if (needRefresh)
-            app.getMainWindow().open(new ExternalResource(app.getURL()));
     }
 
     public void closeAll() {
-        boolean needRefresh = false;
         List<Map.Entry<Window,WindowOpenMode>> entries = new ArrayList(windowOpenMode.entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
-            boolean res = closeWindow(entries.get(i).getKey(), entries.get(i).getValue());
-            needRefresh = needRefresh || res;
+            closeWindow(entries.get(i).getKey(), entries.get(i).getValue());
         }
         windowOpenMode.clear();
-        // TODO (krivopustov) fix TabSheet repaint
-        if (needRefresh)
-            app.getMainWindow().open(new ExternalResource(app.getURL()));
     }
 
-    private boolean closeWindow(Window window, WindowOpenMode openMode) {
+    private void closeWindow(Window window, WindowOpenMode openMode) {
         AppWindow appWindow = app.getAppWindow();
         switch (openMode.openType) {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
                 App.getInstance().getMainWindow().removeWindow(win);
-                return false;
+                break;
             }
             case NEW_TAB: {
                 final Layout layout = (Layout) openMode.getData();
@@ -335,8 +326,7 @@ public class WebWindowManager extends WindowManager
                     windowBreadCrumbs.clearListeners();
 
                 tabs.remove(layout);
-
-                return AppWindow.Mode.TABBED.equals(appWindow.getMode());
+                break;
             }
             case THIS_TAB: {
                 final VerticalLayout layout = (VerticalLayout) openMode.getData();
@@ -359,8 +349,7 @@ public class WebWindowManager extends WindowManager
                     tabSheet.setTabCaption(layout, currentWindow.getCaption());
                     tabSheet.requestRepaintAll();
                 }
-
-                return false;
+                break;
             }
             default: {
                 throw new UnsupportedOperationException();
