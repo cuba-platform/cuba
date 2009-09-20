@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 /**
  * Common web layer configuration parameters. Can be set up in <code>conf/system.properties</code> file.
@@ -46,8 +45,8 @@ public interface WebConfig extends Config
     String getAppWindowMode();
 
     /**
-     * If true, {@link com.haulmont.cuba.web.WindowManager} will try to create generic screens
-     * instead of undefined screens. See {@link WindowConfig#getWindowInfo(String)} 
+     * If true, {@link WebWindowManager} will try to create generic screens
+     * instead of undefined screens. See {@link WebWindowConfig#getWindowInfo(String)}
      */
     @DefaultBoolean(false)
     boolean getEnableGenericScreens();

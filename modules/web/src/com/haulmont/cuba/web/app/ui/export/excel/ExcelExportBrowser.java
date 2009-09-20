@@ -17,8 +17,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.web.gui.components.ComponentsHelper;
-import com.vaadin.ui.*;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.terminal.ThemeResource;
 
 import java.util.*;
@@ -71,10 +70,10 @@ public class ExcelExportBrowser extends AbstractWindow {
                 moveColumns(false);
             }
         });
-        final com.vaadin.ui.Component upButtonIT = ComponentsHelper.unwrap(upButton);
+        final com.vaadin.ui.Component upButtonIT = WebComponentsHelper.unwrap(upButton);
         upButtonIT.setIcon(new ThemeResource("icons/32/arrow-up.png"));
 
-        final com.vaadin.ui.Component downButtonIT = ComponentsHelper.unwrap(downButton);
+        final com.vaadin.ui.Component downButtonIT = WebComponentsHelper.unwrap(downButton);
         downButtonIT.setIcon(new ThemeResource("icons/32/arrow-down.png"));
     }
 

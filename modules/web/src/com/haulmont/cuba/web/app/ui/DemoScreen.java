@@ -12,8 +12,9 @@ package com.haulmont.cuba.web.app.ui;
 
 import com.vaadin.ui.*;
 import com.vaadin.terminal.Sizeable;
+import com.haulmont.cuba.web.gui.WebWindow;
 
-public class DemoScreen extends com.haulmont.cuba.web.gui.Window
+public class DemoScreen extends WebWindow
 {
     public void init() {
         component.getWindow().showNotification("Opening screen", com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);

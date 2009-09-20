@@ -10,7 +10,7 @@
 package com.haulmont.cuba.web.app.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.PagingTable;
-import com.haulmont.cuba.web.gui.Window;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
@@ -22,7 +22,7 @@ import com.vaadin.ui.ComponentContainer;
 
 import java.util.*;
 
-public class DemoTableScreen extends Window {
+public class DemoTableScreen extends WebWindow {
     public void init() {
         ((ComponentContainer) component).addComponent(new TableExample());
     }

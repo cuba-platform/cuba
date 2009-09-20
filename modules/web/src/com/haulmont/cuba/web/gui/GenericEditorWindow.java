@@ -34,7 +34,7 @@ import java.util.*;
 
 public class GenericEditorWindow
     extends
-        Window.Editor
+        WebWindow.Editor
 {
     private DataService dataservice;
 

@@ -15,7 +15,6 @@ import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
 
 import java.util.Map;
 
@@ -47,8 +46,8 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
         return layout;
     }
 
-    protected com.haulmont.cuba.web.gui.components.Table createTable() {
-        final com.haulmont.cuba.web.gui.components.Table table = new com.haulmont.cuba.web.gui.components.Table();
+    protected WebTable createTable() {
+        final WebTable table = new WebTable();
         table.setMultiSelect(true);
 
         final TableActionsHelper helper = new TableActionsHelper(this, table);

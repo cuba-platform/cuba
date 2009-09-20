@@ -45,7 +45,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private Log log = LogFactory.getLog(App.class);
 
     private Connection connection;
-    private WindowManager windowManager;
+    private WebWindowManager windowManager;
 
     private AppLog appLog;
 
@@ -62,7 +62,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         System.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
         System.setProperty(AppConfig.MENU_CONFIG_XML_PROP, "cuba/client/web/menu-config.xml");
         System.setProperty(AppConfig.WINDOW_CONFIG_XML_PROP, "cuba/client/web/screen-config.xml");
-        System.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, "com.haulmont.cuba.web.WindowConfig");
+        System.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, "com.haulmont.cuba.web.WebWindowConfig");
         System.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
         System.setProperty(AppConfig.MESSAGES_PACK_PROP, "com.haulmont.cuba.web");
     }
@@ -82,10 +82,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     /**
-     * Can be overridden in descendant to create an application-specific {@link WindowManager}
+     * Can be overridden in descendant to create an application-specific {@link WebWindowManager}
      */
-    protected WindowManager createWindowManager() {
-        return new WindowManager(this);
+    protected WebWindowManager createWindowManager() {
+        return new WebWindowManager(this);
     }
 
     public void init() {
@@ -154,7 +154,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return connection;                       
     }
 
-    public WindowManager getWindowManager() {
+    public WebWindowManager getWindowManager() {
         return windowManager;
     }
 

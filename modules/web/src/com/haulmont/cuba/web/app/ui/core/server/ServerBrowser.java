@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TableActionsHelper;
-import com.haulmont.cuba.web.gui.components.ComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public class ServerBrowser extends AbstractWindow
         TableActionsHelper helper = new TableActionsHelper(this, table);
         helper.createRefreshAction();
 
-        com.vaadin.ui.Table impl = (com.vaadin.ui.Table) ComponentsHelper.unwrap(table);
+        com.vaadin.ui.Table impl = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         impl.setPageLength(10);
     }
 }

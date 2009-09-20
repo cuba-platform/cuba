@@ -12,7 +12,7 @@ package com.haulmont.cuba.web.app.ui.security.user.browse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.web.gui.components.ComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.rpt.ReportHelper;
 import com.haulmont.cuba.web.rpt.ReportOutput;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
@@ -68,7 +68,7 @@ public class UserBrowser extends AbstractLookup {
     }
 
     public boolean close(String actionId) {
-        final com.vaadin.ui.Window window = ComponentsHelper.unwrap(this).getWindow();
+        final com.vaadin.ui.Window window = WebComponentsHelper.unwrap(this).getWindow();
         window.showNotification("Closing screen", com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
         return super.close(actionId);
     }

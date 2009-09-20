@@ -24,9 +24,9 @@ import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.components.TableActionsHelper;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.web.gui.components.ComponentsHelper;
-import com.haulmont.cuba.web.gui.components.Table;
-import com.haulmont.cuba.web.gui.components.Button;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebTable;
+import com.haulmont.cuba.web.gui.components.WebButton;
 import com.vaadin.ui.*;
 
 import java.util.Map;
@@ -35,9 +35,9 @@ import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
 
-public class GenericBrowserWindow extends Window
+public class GenericBrowserWindow extends WebWindow
 {
-    protected Table table;
+    protected WebTable table;
     protected Layout actionsToolbar;
 
     @Override
@@ -47,7 +47,7 @@ public class GenericBrowserWindow extends Window
         table = createTable();
         actionsToolbar = createActionsToolbar(table);
 
-        final Component component = ComponentsHelper.unwrap(table);
+        final Component component = WebComponentsHelper.unwrap(table);
         component.setSizeFull();
 
         layout.addComponent(actionsToolbar);
@@ -60,8 +60,8 @@ public class GenericBrowserWindow extends Window
         return layout;
     }
 
-    protected Table createTable() {
-        final Table table = new Table();
+    protected WebTable createTable() {
+        final WebTable table = new WebTable();
         table.setMultiSelect(true);
 
         final TableActionsHelper helper = new TableActionsHelper(this, table);
@@ -74,15 +74,15 @@ public class GenericBrowserWindow extends Window
         return table;
     }
 
-    protected Layout createActionsToolbar(Table table) {
+    protected Layout createActionsToolbar(WebTable table) {
         final HorizontalLayout layout = new HorizontalLayout();
 
         final Collection<Action> actions = table.getActions();
         for (Action action : actions) {
-            final Button button = new Button();
+            final WebButton button = new WebButton();
             button.setAction(action);
 
-            layout.addComponent(ComponentsHelper.unwrap(button));
+            layout.addComponent(WebComponentsHelper.unwrap(button));
         }
 
         return layout;

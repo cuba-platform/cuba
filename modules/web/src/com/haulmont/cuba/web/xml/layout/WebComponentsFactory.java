@@ -11,7 +11,7 @@ package com.haulmont.cuba.web.xml.layout;
 
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.web.gui.Window;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
 
 import java.util.Map;
@@ -22,35 +22,35 @@ public class WebComponentsFactory implements ComponentsFactory {
     private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<?extends Component>>();
 
     static {
-        classes.put("window", Window.class);
-        classes.put("window.editor", Window.Editor.class);
-        classes.put("window.lookup", Window.Lookup.class);
+        classes.put("window", WebWindow.class);
+        classes.put("window.editor", WebWindow.Editor.class);
+        classes.put("window.lookup", WebWindow.Lookup.class);
 
-        classes.put("hbox", HBoxLayout.class);
-        classes.put("vbox", VBoxLayout.class);
-        classes.put("grid", GridLayout.class);
-        classes.put("scrollbox", ScrollBoxLayout.class);
-        classes.put("togglebox", ToggleBoxLayout.class);
-        classes.put("htmlbox", HtmlBoxLayout.class);
+        classes.put("hbox", WebHBoxLayout.class);
+        classes.put("vbox", WebVBoxLayout.class);
+        classes.put("grid", WebGridLayout.class);
+        classes.put("scrollbox", WebScrollBoxLayout.class);
+        classes.put("togglebox", WebToggleBoxLayout.class);
+        classes.put("htmlbox", WebHtmlBoxLayout.class);
 
-        classes.put("button", Button.class);
-        classes.put("label", Label.class);
-        classes.put("checkBox", CheckBox.class);
-        classes.put("groupBox", GroupBox.class);
-        classes.put("textField", TextField.class);
-        classes.put("textArea", TextArea.class);
-        classes.put("iframe", IFrame.class);
-        classes.put("table", Table.class);
-        classes.put("treeTable", TreeTable.class);
-        classes.put("dateField", DateField.class);
-        classes.put("lookupField", LookupField.class);
-        classes.put("pickerField", PickerField.class);
-        classes.put("optionsGroup", OptionsGroup.class);
-        classes.put("upload", FileUploadField.class);
-        classes.put("split", SplitPanel.class);
-        classes.put("tree", Tree.class);
-        classes.put("tabsheet", Tabsheet.class);
-        classes.put("embedded", Embedded.class);
+        classes.put("button", WebButton.class);
+        classes.put("label", WebLabel.class);
+        classes.put("checkBox", WebCheckBox.class);
+        classes.put("groupBox", WebGroupBox.class);
+        classes.put("textField", WebTextField.class);
+        classes.put("textArea", WebTextArea.class);
+        classes.put("iframe", WebFrame.class);
+        classes.put("table", WebTable.class);
+        classes.put("treeTable", WebTreeTable.class);
+        classes.put("dateField", WebDateField.class);
+        classes.put("lookupField", WebLookupField.class);
+        classes.put("pickerField", WebPickerField.class);
+        classes.put("optionsGroup", WebOptionsGroup.class);
+        classes.put("upload", WebFileUploadField.class);
+        classes.put("split", WebSplitPanel.class);
+        classes.put("tree", WebTree.class);
+        classes.put("tabsheet", WebTabsheet.class);
+        classes.put("embedded", WebEmbedded.class);
     }
 
     public <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException {

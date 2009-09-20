@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.web.gui.Window;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-public class LazyLoadingTableScreen extends Window
+public class LazyLoadingTableScreen extends WebWindow
 {
     private Table table;
 

@@ -9,12 +9,12 @@
  */
 package com.haulmont.cuba.web.app.ui;
 
-import com.haulmont.cuba.web.gui.Window;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.vaadin.ui.ComponentContainer;
 
 import java.util.Map;
 
-public class TableDemoScreen  extends Window {
+public class TableDemoScreen  extends WebWindow {
     protected void init(Map<String, Object> params) {
         ((ComponentContainer) component).addComponent(new TableExample());
     }
