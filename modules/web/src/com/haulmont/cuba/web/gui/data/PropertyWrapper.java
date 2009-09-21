@@ -123,7 +123,10 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
             String nameKey = value.getClass().getSimpleName() + "." + value.toString();
             return MessageProvider.getMessage(value.getClass(), nameKey);
         } else {
-            return value.toString();
+            if (value instanceof Instance)
+                return ((Instance) value).getInstanceName();
+            else
+                return value.toString();
         }
     }
 

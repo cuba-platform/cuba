@@ -49,6 +49,10 @@ class CubaEnchancedEntityTemplate implements Instance {
         return MetadataProvider.getSession().getClass(getClass());
     }
 
+    public String getInstanceName() {
+        return InstanceUtils.getInstanceName(this);
+    }
+
     protected void propertyChanged(String s, Object obj, Object obj1)
     {
         if(__valueListeners != null)

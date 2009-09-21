@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.NamePattern;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
@@ -17,6 +19,7 @@ import javax.persistence.Column;
 
 @Entity(name = "core$Server")
 @Table(name = "SYS_SERVER")
+@NamePattern("%s:%s|name,address")
 public class Server extends StandardEntity
 {
     private static final long serialVersionUID = 1892335683693067357L;

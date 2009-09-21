@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Instance;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
@@ -101,7 +102,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
     @Override
     public String toString() {
         final Entity entity = getItem();
-        return entity == null ? "" : entity.toString();
+        return entity == null ? "" : ((Instance) entity).getInstanceName();
     }
 
     public Entity getItem() {

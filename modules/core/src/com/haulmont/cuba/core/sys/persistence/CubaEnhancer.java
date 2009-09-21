@@ -141,6 +141,8 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         createGetMetaclassMethod();
         createPropertyChangedMethod();
 
+        createGetInstanceNameMethod();
+
         createAddListenerMethod();
         createRemoveListenerMethod();
 
@@ -320,6 +322,20 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         code.invokestatic().setMethod(InstanceUtils.class, "setValueEx", Object.class, new Class[]{Instance.class, String.class, Object.class});
 
         code.vreturn();
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+    }
+
+    protected void createGetInstanceNameMethod() {
+        BCMethod method = _pc.declareMethod("getInstanceName", String.class, new Class[]{});
+        method.makePublic();
+
+        Code code = method.getCode(true);
+
+        code.aload().setThis();
+        code.invokestatic().setMethod(InstanceUtils.class, "getInstanceName", String.class, new Class[]{Instance.class});
+
+        code.areturn();
         code.calculateMaxStack();
         code.calculateMaxLocals();
     }
