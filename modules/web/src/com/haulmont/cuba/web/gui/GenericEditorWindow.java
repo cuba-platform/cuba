@@ -41,6 +41,8 @@ public class GenericEditorWindow
     protected Button commitButton;
     protected Button cancelButton;
 
+    private Form form;
+
     public GenericEditorWindow() {
         dataservice = new GenericDataService(false);
     }
@@ -49,7 +51,7 @@ public class GenericEditorWindow
     protected Component createLayout() {
         VerticalLayout layout = new VerticalLayout();
 
-        form = createForm();
+        form = new Form();
 
         HorizontalLayout actionsBar = new HorizontalLayout();
         actionsBar.setHeight(-1, Sizeable.UNITS_PIXELS);
@@ -77,11 +79,6 @@ public class GenericEditorWindow
         form.setImmediate(true);
 
         return layout;
-    }
-
-    @Override
-    protected Form createForm() {
-        return new Form();
     }
 
     public void setItem(Object item) {

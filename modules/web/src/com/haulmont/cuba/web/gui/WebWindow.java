@@ -487,7 +487,6 @@ public class WebWindow
     public static class Editor extends WebWindow implements Window.Editor {
 
         protected Object item;
-        protected Form form;
 
         public Object getItem() {
             return item;
@@ -532,15 +531,7 @@ public class WebWindow
         @Override
         protected com.vaadin.ui.Component createLayout() {
             VerticalLayout layout = new VerticalLayout();
-
-            form = createForm();
-            layout.addComponent(form);
-
-            form.setSizeFull();
-            layout.setExpandRatio(form, 1);
-
             layout.setSizeFull();
-
             return layout;
         }
 
@@ -575,16 +566,6 @@ public class WebWindow
             });
 
             return window;
-        }
-
-        protected Form createForm() {
-            //simple form layout using
-            return new Form();
-        }
-
-        @Override
-        protected ComponentContainer getContainer() {
-            return form.getLayout();
         }
 
         public void setItem(Object item) {
@@ -700,7 +681,6 @@ public class WebWindow
         public boolean commit(boolean validate) {
             if (validate && !__validate())
                 return false;
-            form.commit();
 
             final DsContext context = getDsContext();
             if (context != null) {
