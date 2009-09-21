@@ -9,8 +9,6 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -25,7 +23,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
@@ -118,12 +115,16 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (State.NOT_INITIALIZED.equals(ds.getState())) {
             return Collections.emptyList();
         } else {
-            List<K> keys = Lists.transform(new ArrayList(__getCollection()), new Function<T, K>() {
-                public K apply(@Nullable T from) {
-                    return from.getId();
+            Collection<T> items = __getCollection();
+            if (items == null)
+                return Collections.emptyList();
+            else {
+                List<K> ids = new ArrayList(items.size());
+                for (T item : items) {
+                    ids.add(item.getId());
                 }
-            });
-            return keys;
+                return ids;
+            }
         }
     }
 
