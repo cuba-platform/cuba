@@ -6,10 +6,5 @@
     </menu>
     <menu id="administration">
         <item id="sec$UserSessionEntity.browse"/>
-        <item id="tableTest"/>
-        <item id="core$Server.browse">
-            <param name="p1" value="v1"/>
-            <param name="p2" value="v2"/>
-        </item>
     </menu>
 </menu-config>

@@ -55,6 +55,11 @@
                                     <!--<checkBox id="showDescendants"/>-->
                                     <!--<label value="msg://showDescendants"/>-->
                                 <!--</hbox>-->
+                                <hbox align="MIDDLE_LEFT">
+                                    <button id="users.create" action="users.create"/>
+                                    <button id="users.edit" action="users.edit"/>
+                                    <button id="users.moveToGroup" action="users.moveToGroup"/>
+                                </hbox>
                                 <table id="users">
                                     <columns>
                                         <column id="name" caption="Name"/>
@@ -62,15 +67,15 @@
                                     </columns>
                                     <rows datasource="users"/>
                                 </table>
-                                <hbox align="MIDDLE_RIGHT">
-                                    <button id="users.create" action="users.create"/>
-                                    <button id="users.edit" action="users.edit"/>
-                                    <button id="users.moveToGroup" action="users.moveToGroup"/>
-                                </hbox>
                             </vbox>
                         </tab>
                         <tab id="constraints" caption="msg://tabsheet.constraints">
                             <vbox expand="constraints" spacing="true">
+                                <hbox align="MIDDLE_LEFT">
+                                    <button id="constraints.create" action="constraints.create"/>
+                                    <button id="constraints.edit" action="constraints.edit"/>
+                                    <button id="constraints.remove" action="constraints.remove"/>
+                                </hbox>
                                 <table id="constraints">
                                     <columns>
                                         <column id="entityName" caption="msg://entity"/>
@@ -78,11 +83,6 @@
                                     </columns>
                                     <rows datasource="constraints"/>
                                 </table>
-                                <hbox align="MIDDLE_RIGHT">
-                                    <button id="constraints.create" action="constraints.create"/>
-                                    <button id="constraints.edit" action="constraints.edit"/>
-                                    <button id="constraints.remove" action="constraints.remove"/>
-                                </hbox>
                             </vbox>
                         </tab>
                     </tabsheet>

@@ -41,7 +41,7 @@
                     </columns>
                     <rows datasource="users"/>
                 </table>
-                <hbox align="MIDDLE_RIGHT">
+                <hbox align="MIDDLE_LEFT">
                     <button action="users.create"/>
                     <button action="users.edit"/>
                     <button action="users.remove"/>

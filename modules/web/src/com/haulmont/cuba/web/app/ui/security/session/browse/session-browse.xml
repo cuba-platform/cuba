@@ -16,6 +16,10 @@
     <layout >
         <vbox expand="table-panel" spacing="true">
             <vbox id="table-panel" expand="sessions_table" spacing="true">
+                <hbox align="MIDDLE_LEFT">
+                    <button action="sessions_table.refresh" caption="msg://refresh"/>
+                    <button action="sessions_table.kill" caption="msg://kill"/>
+                </hbox>
                 <table id="sessions_table" editable="false">
                     <columns>
                         <column id="id" caption="msg://id"/>
@@ -26,10 +30,6 @@
                     </columns>
                     <rows datasource="sessions"/>
                 </table>
-                <hbox align="MIDDLE_RIGHT">
-                    <button action="sessions_table.refresh" caption="msg://refresh"/>
-                    <button action="sessions_table.kill" caption="msg://kill"/>
-                </hbox>
             </vbox>
         </vbox>
     </layout>

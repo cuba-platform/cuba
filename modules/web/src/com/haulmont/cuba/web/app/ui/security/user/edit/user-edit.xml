@@ -36,7 +36,7 @@
     </dsContext>
 
     <layout>
-        <vbox expand="roles" spacing="true">
+        <vbox expand="table-panel" spacing="true">
             <hbox stylename="edit-area" spacing="true" margin="true">
                 <grid spacing="true">
                     <columns>
@@ -89,17 +89,18 @@
                 </grid>
             </hbox>
 
-            <table id="roles">
+            <vbox id="table-panel" expand="roles" spacing="true">
+            <hbox align="MIDDLE_LEFT">
+                    <button action="roles.include"/>
+                    <button action="roles.remove"/>
+            </hbox>    
+            <table id="roles" editable="false">
                 <columns>
                     <column id="role" caption="Role" captionProperty="name" clickAction="open:sec$Role.edit"/>
                 </columns>
                 <rows datasource="roles"/>
             </table>
-
-            <hbox align="MIDDLE_RIGHT">
-                <button action="roles.include"/>
-                <button action="roles.remove"/>
-            </hbox>
+            </vbox>
 
             <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         </vbox>

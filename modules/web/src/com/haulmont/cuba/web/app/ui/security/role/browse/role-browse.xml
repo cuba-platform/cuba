@@ -23,7 +23,7 @@
                 </columns>
                 <rows datasource="roles"/>
             </table>
-            <hbox align="MIDDLE_RIGHT">
+            <hbox align="MIDDLE_LEFT">
                 <button action="roles.create"/>
                 <button action="roles.edit"/>
                 <button action="roles.refresh"/>

@@ -27,7 +27,7 @@
                 </hbox>
                 <hbox id="expand-box"/>
             </vbox>
-            <hbox align="MIDDLE_RIGHT" >
+            <hbox align="MIDDLE_LEFT" >
                 <button id="clear" caption="msg://com.haulmont.cuba.web/actions.Clear"/>
                 <button id="apply"/>
             </hbox>
