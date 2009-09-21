@@ -685,16 +685,16 @@ public class WebWindow
             final DsContext context = getDsContext();
             if (context != null) {
                 context.commit();
+                item = getDatasource().getItem();
             } else {
                 if (item instanceof Datasource) {
                     final Datasource ds = (Datasource) item;
                     ds.commit();
                 } else {
                     DataService service = getDataService();
-                    service.commit((Entity) item, null);
+                    item = service.commit((Entity) item, null);
                 }
             }
-            item = getDatasource().getItem();
 
             return true;
         }

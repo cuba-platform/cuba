@@ -60,8 +60,15 @@ public class GenericEditorWindow
 
         final String messagesPackage = AppConfig.getInstance().getMessagesPack();
 
-        commitButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"), this, "commit");
-        cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new CloseWindowAction(this));
+        commitButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"),
+                new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent event) {
+                        GenericEditorWindow.this.commitAndClose();
+                    }
+                });
+
+        cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"),
+                new CloseWindowAction(this));
 
         buttonsContainer.addComponent(commitButton);
         buttonsContainer.addComponent(cancelButton);
