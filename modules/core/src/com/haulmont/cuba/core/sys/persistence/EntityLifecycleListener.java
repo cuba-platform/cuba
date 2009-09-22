@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.DeleteDeferred;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
@@ -57,7 +57,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         } else {
             if (entity instanceof Updatable) {
                 __beforeUpdate((Updatable) event.getSource());
-                if ((entity instanceof DeleteDeferred) && justDeleted((DeleteDeferred) entity)) {
+                if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
                     getEntityLog().registerDelete(entity, true);
                     processDeletePolicy(entity);
                     EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_DELETE);
@@ -81,7 +81,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
                 ((BaseEntity) event.getSource()), EntityListenerType.BEFORE_DELETE);
     }
 
-    private boolean justDeleted(DeleteDeferred dd) {
+    private boolean justDeleted(SoftDelete dd) {
         if (!dd.isDeleted()) {
             return false;
         }

@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.app.DataCacheMBean;
-import com.haulmont.cuba.core.entity.DeleteDeferred;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.View;
@@ -102,9 +102,9 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public void remove(Entity entity) {
-        if (entity instanceof DeleteDeferred && deleteDeferred) {
-            ((DeleteDeferred) entity).setDeleteTs(TimeProvider.currentTimestamp());
-            ((DeleteDeferred) entity).setDeletedBy(SecurityProvider.currentUserSession().getUser().getLogin());
+        if (entity instanceof SoftDelete && deleteDeferred) {
+            ((SoftDelete) entity).setDeleteTs(TimeProvider.currentTimestamp());
+            ((SoftDelete) entity).setDeletedBy(SecurityProvider.currentUserSession().getUser().getLogin());
         }
         else {
             delegate.remove(entity);
@@ -113,7 +113,7 @@ public class EntityManagerImpl implements EntityManager
 
     public <T extends Entity> T find(Class<T> clazz, Object key) {
         T entity = delegate.find(clazz, key);
-        if (entity instanceof DeleteDeferred && ((DeleteDeferred) entity).isDeleted() && deleteDeferred)
+        if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted() && deleteDeferred)
             return null;
         else
             return entity;

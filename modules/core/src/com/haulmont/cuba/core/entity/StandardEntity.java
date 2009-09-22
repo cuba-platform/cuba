@@ -24,7 +24,7 @@ import java.util.Date;
 @MappedSuperclass
 public class StandardEntity
         extends BaseUuidEntity
-        implements Versioned, Updatable, DeleteDeferred
+        implements Versioned, Updatable, SoftDelete
 {
     @Version
     @Column(name = "VERSION")

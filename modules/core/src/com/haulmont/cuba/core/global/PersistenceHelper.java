@@ -10,9 +10,8 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.DeleteDeferred;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -75,11 +74,11 @@ public class PersistenceHelper {
 
     public static boolean isSoftDeleted(Class entityClass) {
         boolean softDelete = false;
-        if (DeleteDeferred.class.isAssignableFrom(entityClass)) {
+        if (SoftDelete.class.isAssignableFrom(entityClass)) {
             softDelete = true;
         } else {
             for (Class c : (List<Class>) ClassUtils.getAllSuperclasses(entityClass)) {
-                if (DeleteDeferred.class.isAssignableFrom(c)) {
+                if (SoftDelete.class.isAssignableFrom(c)) {
                     softDelete = true;
                     break;
                 }

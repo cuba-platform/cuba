@@ -191,7 +191,7 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
         }
     }
 
-    public boolean isDeleteDeferredFor(String table) {
+    public boolean isSoftDeleteFor(String table) {
         lock.readLock().lock();
         if (!metadataLoaded) {
             lock.readLock().unlock();

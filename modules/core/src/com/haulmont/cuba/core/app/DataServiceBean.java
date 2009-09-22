@@ -14,7 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.DeleteDeferred;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.core.sys.ViewHelper;
@@ -111,8 +111,8 @@ public class DataServiceBean implements DataService, DataServiceRemote
                 result = em.find(metaClass.getJavaClass(), context.getId());
 
                 if (em.isSoftDeletion()
-                        && result instanceof DeleteDeferred
-                        && ((DeleteDeferred) result).isDeleted()) {
+                        && result instanceof SoftDelete
+                        && ((SoftDelete) result).isDeleted()) {
                     result = null;
                 }
             } else {

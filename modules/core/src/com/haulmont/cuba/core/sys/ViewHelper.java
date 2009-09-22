@@ -14,7 +14,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.DeleteDeferred;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
@@ -84,7 +84,7 @@ public class ViewHelper
             fetchPlan.addField(declaringClass, "updateTs");
             fetchPlan.addField(declaringClass, "updatedBy");
         }
-        if (DeleteDeferred.class.isAssignableFrom(entityClass)) {
+        if (SoftDelete.class.isAssignableFrom(entityClass)) {
             declaringClass = metaClass.getProperty("deleteTs").getJavaField().getDeclaringClass();
             fetchPlan.addField(declaringClass, "deleteTs");
             fetchPlan.addField(declaringClass, "deletedBy");

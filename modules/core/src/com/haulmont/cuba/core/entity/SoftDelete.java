@@ -15,7 +15,7 @@ import java.util.Date;
 /**
  * Interface implemented by entities supporting soft delete
  */
-public interface DeleteDeferred extends Updatable
+public interface SoftDelete extends Updatable
 {
     Boolean isDeleted();
 

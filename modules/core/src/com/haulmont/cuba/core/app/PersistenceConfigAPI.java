@@ -16,5 +16,5 @@ package com.haulmont.cuba.core.app;
  */
 public interface PersistenceConfigAPI
 {
-    boolean isDeleteDeferredFor(String table);
+    boolean isSoftDeleteFor(String table);
 }

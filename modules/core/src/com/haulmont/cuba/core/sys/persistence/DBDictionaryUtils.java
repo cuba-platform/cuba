@@ -133,7 +133,7 @@ public class DBDictionaryUtils
                         }
                     }
                 }
-                if (add && getPersistenceConfigAPI().isDeleteDeferredFor(tableName)) {
+                if (add && getPersistenceConfigAPI().isSoftDeleteFor(tableName)) {
                     aliases.add(alias);
                 }
             }
@@ -163,7 +163,7 @@ public class DBDictionaryUtils
                         int dot = t.indexOf('.');
                         if (dot > 0)
                             t = t.substring(dot + 1);
-                        if (getPersistenceConfigAPI().isDeleteDeferredFor(t)) {
+                        if (getPersistenceConfigAPI().isSoftDeleteFor(t)) {
                             String alias = ((String) table).substring(p + 1);
                             if (sb.length() > 0)
                                 sb.append(" AND ");
