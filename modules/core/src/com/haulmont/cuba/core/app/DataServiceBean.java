@@ -167,7 +167,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
         return resultList;
     }
 
-    private String printQuery(Query query) {
+    private String printQuery(LoadContext.Query query) {
         if (query == null || query.getQueryString() == null)
             return null;
 

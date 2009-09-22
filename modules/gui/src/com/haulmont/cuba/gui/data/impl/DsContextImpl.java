@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.global.CommitContext;
 
 import java.util.*;
 
@@ -95,7 +95,7 @@ public class DsContextImpl implements DsContextImplementation {
         if (services.size() == 1 &&
                 ObjectUtils.equals(services.iterator().next(), dataservice))
         {
-            final DataServiceRemote.CommitContext<Entity> context = createCommitContext(dataservice, commitData);
+            final CommitContext<Entity> context = createCommitContext(dataservice, commitData);
 
             fireBeforeCommit(context);
 
@@ -111,22 +111,22 @@ public class DsContextImpl implements DsContextImplementation {
         }
     }
 
-    private void fireBeforeCommit(DataServiceRemote.CommitContext<Entity> context) {
+    private void fireBeforeCommit(CommitContext<Entity> context) {
         for (CommitListener commitListener : commitListeners) {
             commitListener.beforeCommit(context);
         }
     }
 
-    private void fireAfterCommit(DataServiceRemote.CommitContext<Entity> context, Map<Entity, Entity> result) {
+    private void fireAfterCommit(CommitContext<Entity> context, Map<Entity, Entity> result) {
         for (CommitListener commitListener : commitListeners) {
             commitListener.afterCommit(context, result);
         }
     }
 
-    protected DataServiceRemote.CommitContext<Entity> createCommitContext(DataService dataservice, Map<DataService, Collection<Datasource<Entity>>> commitData) {
+    protected CommitContext<Entity> createCommitContext(DataService dataservice, Map<DataService, Collection<Datasource<Entity>>> commitData) {
 
-        final DataServiceRemote.CommitContext<Entity> context =
-                new DataServiceRemote.CommitContext<Entity>();
+        final CommitContext<Entity> context =
+                new CommitContext<Entity>();
 
         for (Datasource<Entity> datasource : commitData.get(dataservice)) {
             final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;

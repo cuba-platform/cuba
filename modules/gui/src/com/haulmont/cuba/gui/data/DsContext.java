@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
 
 import java.util.Collection;
 import java.util.Map;
@@ -63,14 +64,14 @@ public interface DsContext {
         /**
          * Invoked before sending data to the middleware
          */
-        void beforeCommit(DataService.CommitContext<Entity> context);
+        void beforeCommit(CommitContext<Entity> context);
 
         /**
          * Invoked after succesfull commit by middleware
          * @param context initial context
          * @param result map from initial to resulting committed entity
          */
-        void afterCommit(DataService.CommitContext<Entity> context, Map<Entity, Entity> result);
+        void afterCommit(CommitContext<Entity> context, Map<Entity, Entity> result);
     }
 }
 

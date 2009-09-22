@@ -14,8 +14,8 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.AccessDeniedException;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.web.App;
@@ -136,7 +136,7 @@ public class LinkHandler {
         }
 
         DataService ds = ServiceLocator.getDataService();
-        DataServiceRemote.LoadContext ctx = new DataService.LoadContext(metaClass).setId(id);
+        LoadContext ctx = new LoadContext(metaClass).setId(id);
         if (viewName != null)
             ctx.setView(viewName);
         Entity entity;

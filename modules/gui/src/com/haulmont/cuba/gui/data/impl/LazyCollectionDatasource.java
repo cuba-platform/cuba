@@ -15,9 +15,9 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -116,8 +116,8 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             transformer.replaceWithCount();
             jpqlQuery = transformer.getResult();
 
-            final DataServiceRemote.LoadContext context =
-                    new DataServiceRemote.LoadContext(metaClass);
+            final LoadContext context =
+                    new LoadContext(metaClass);
 
             context.setQueryString(jpqlQuery).setParameters(parametersValues);
 
@@ -215,7 +215,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
         jpqlQuery = transformer.getResult();
 
-        DataServiceRemote.LoadContext ctx = new DataServiceRemote.LoadContext(Server.class);
+        LoadContext ctx = new LoadContext(Server.class);
         ctx.setQueryString(jpqlQuery);
         ctx.getQuery().setFirstResult(data.size());
         ctx.setView(view);

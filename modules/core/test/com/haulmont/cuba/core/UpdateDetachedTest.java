@@ -14,7 +14,8 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 
@@ -152,7 +153,7 @@ public class UpdateDetachedTest extends CubaTestCase
         Permission p;
         DataService ds = Locator.lookupLocal(DataService.JNDI_NAME);
 
-        DataService.LoadContext ctx = new DataServiceRemote.LoadContext(Permission.class);
+        LoadContext ctx = new LoadContext(Permission.class);
         ctx.setId(permissionId);
         ctx.setView(new View(Permission.class)
                 .addProperty("target")
@@ -165,7 +166,7 @@ public class UpdateDetachedTest extends CubaTestCase
 
         p.setTarget("newTarget");
 
-        DataServiceRemote.CommitContext commitCtx = new DataService.CommitContext(Collections.singleton(p));
+        CommitContext commitCtx = new CommitContext(Collections.singleton(p));
         Map<Entity,Entity> map = ds.commit(commitCtx);
 
         p = (Permission) map.get(p);

@@ -13,8 +13,9 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.apache.commons.collections.map.LinkedMap;
@@ -242,8 +243,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             commitInstances.addAll(itemToUpdate);
             deleteInstances.addAll(itemToDelete);
 
-            DataServiceRemote.CommitContext<Entity> context =
-                    new DataServiceRemote.CommitContext<Entity>(commitInstances, deleteInstances);
+            CommitContext<Entity> context =
+                    new CommitContext<Entity>(commitInstances, deleteInstances);
             for (Entity entity : commitInstances) {
                 context.getViews().put(entity, getView());
             }
@@ -279,8 +280,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
         data.clear();
 
-        final DataServiceRemote.LoadContext context =
-                new DataServiceRemote.LoadContext(metaClass);
+        final LoadContext context =
+                new LoadContext(metaClass);
 
         if (query != null && queryParameters != null) {
             final Map<String, Object> parameters = getQueryParameters(params);

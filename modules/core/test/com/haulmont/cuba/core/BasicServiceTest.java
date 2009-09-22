@@ -13,8 +13,9 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.DataServiceRemote;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.CommitContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,16 +32,16 @@ public class BasicServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
 
-        final DataServiceRemote.LoadContext loadContext = new DataServiceRemote.LoadContext(Server.class);
+        final LoadContext loadContext = new LoadContext(Server.class);
         loadContext.setId(id);
 
         server = bs.load(loadContext);
         assertEquals("localhost", server.getName());
 
         server.setName("krivopustov");
-        bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
     }
 
 //    public void testRemoteWithException() {
@@ -64,9 +65,9 @@ public class BasicServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
 
-        final DataServiceRemote.LoadContext loadContext = new DataServiceRemote.LoadContext(Server.class);
+        final LoadContext loadContext = new LoadContext(Server.class);
         loadContext.setId(id);
 
         server = bs.load(loadContext);
@@ -81,10 +82,10 @@ public class BasicServiceTest extends CubaTestCase
         server.setAddress("127.0.0.1");
         server.setRunning(true);
 
-        bs.commit(new DataServiceRemote.CommitContext<Entity>(Collections.<Entity>singleton(server)));
+        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
 
-        final DataServiceRemote.LoadContext loadContext =
-                new DataServiceRemote.LoadContext(Server.class);
+        final LoadContext loadContext =
+                new LoadContext(Server.class);
         loadContext.setQueryString("select s from " + PersistenceHelper.getEntityName(Server.class) + " s");
         
         List<Server> list = bs.loadList(loadContext);

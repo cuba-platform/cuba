@@ -15,10 +15,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.DataServiceRemote;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.QueryTransformer;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.gui.WebWindow;
@@ -99,7 +96,7 @@ public class LazyLoadingTableScreen extends WebWindow
         }
 
         private void loadMore(boolean all) {
-            DataService.LoadContext ctx = new DataServiceRemote.LoadContext(Server.class);
+            LoadContext ctx = new LoadContext(Server.class);
             ctx.setQueryString(getQueryStr(false));
             ctx.getQuery().setFirstResult(data.size());
             if (!all)
@@ -140,7 +137,7 @@ public class LazyLoadingTableScreen extends WebWindow
 
         public int getDataSize() {
             if (dataSize == null) {
-                DataService.LoadContext ctx = new DataServiceRemote.LoadContext(Server.class);
+                LoadContext ctx = new LoadContext(Server.class);
                 ctx.setQueryString(getQueryStr(true));
                 log.debug("loading data size");
                 List list = ds.loadList(ctx);
