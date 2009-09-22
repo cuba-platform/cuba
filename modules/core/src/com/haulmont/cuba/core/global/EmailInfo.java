@@ -16,9 +16,9 @@ import java.io.Serializable;
 
 /**
  * Contains information about email sending.<br>
- * Used by {@link com.haulmont.cuba.core.app.EmailerAPI#sendEmail(EmailDto)} method.
+ * Used by {@link com.haulmont.cuba.core.app.EmailerAPI#sendEmail(EmailInfo)} method.
  */
-public class EmailDto implements Serializable {
+public class EmailInfo implements Serializable {
     private String addresses;
     private String caption;
     private String templatePath;
@@ -27,7 +27,7 @@ public class EmailDto implements Serializable {
     private EmailAttachment[] attachment;
     private static final long serialVersionUID = -382773435130109083L;
 
-    public EmailDto(String addresses, String caption, String templatePath,Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
+    public EmailInfo(String addresses, String caption, String templatePath,Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
         this.addresses = addresses;
         this.caption = caption;
         this.templatePath = templatePath;

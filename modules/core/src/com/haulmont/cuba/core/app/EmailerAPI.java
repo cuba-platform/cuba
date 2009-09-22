@@ -12,7 +12,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
-import com.haulmont.cuba.core.global.EmailDto;
+import com.haulmont.cuba.core.global.EmailInfo;
 
 /**
  * API of {@link Emailer} MBean.<br>
@@ -33,8 +33,8 @@ public interface EmailerAPI
 
     /**
      * Sends email
-     * @param dto   object containing information about sending
+     * @param info   object containing information about sending
      * @throws EmailException   in case of any errors
      */
-    void sendEmail(EmailDto dto) throws EmailException;
+    void sendEmail(EmailInfo info) throws EmailException;
 }
