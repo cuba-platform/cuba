@@ -30,4 +30,6 @@ public interface UserSessionService
     Collection<UserSessionEntity> getUserSessionInfo();
 
     void killSession(UUID id);
+
+    void pingSession();
 }

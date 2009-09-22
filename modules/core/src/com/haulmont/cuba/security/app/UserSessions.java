@@ -33,7 +33,7 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
 
         private final UserSession session;
         private final long since;
-        private long lastUsedTs;
+        private volatile long lastUsedTs;
 
         private UserSessionInfo(UserSession session) {
             this.session = session;

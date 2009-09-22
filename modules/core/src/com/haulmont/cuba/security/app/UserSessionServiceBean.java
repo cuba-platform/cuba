@@ -15,6 +15,7 @@ import com.haulmont.cuba.security.app.UserSessionsMBean;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.SecurityProvider;
 
 import javax.ejb.Stateless;
 import java.util.UUID;
@@ -41,5 +42,9 @@ public class UserSessionServiceBean implements UserSessionService
     public void killSession(UUID id) {
         UserSessionsMBean mBean =  Locator.lookupMBean(UserSessionsMBean.class, UserSessionsMBean.OBJECT_NAME);
         mBean.getAPI().killSession(id);        
+    }
+
+    public void pingSession() {
+        SecurityProvider.currentUserSession();
     }
 }
