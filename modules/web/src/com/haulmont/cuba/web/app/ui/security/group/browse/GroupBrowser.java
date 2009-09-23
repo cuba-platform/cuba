@@ -16,10 +16,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 public class GroupBrowser extends AbstractWindow
 {
@@ -52,6 +49,10 @@ public class GroupBrowser extends AbstractWindow
                 final Map<String, Object> map = new HashMap<String, Object>();
                 map.put("group", tree.getSelected());
                 return map;
+            }
+
+            public Map<String, Object> getParameters() {
+                return Collections.emptyMap();
             }
         });
         usersActions.createEditAction();
@@ -92,6 +93,10 @@ public class GroupBrowser extends AbstractWindow
                 final Map<String, Object> map = new HashMap<String, Object>();
                 map.put("group", tree.getSelected());
                 return map;
+            }
+
+            public Map<String, Object> getParameters() {
+                return Collections.emptyMap();
             }
         });
         constraintsActions.createEditAction();

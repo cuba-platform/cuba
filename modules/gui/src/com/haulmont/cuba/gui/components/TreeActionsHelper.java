@@ -41,7 +41,7 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
                 for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
                     ((Instance) item).setValue(entry.getKey(), entry.getValue());
                 }
-                final Window window = frame.openEditor(windowID, item, openType);
+                final Window window = frame.openEditor(windowID, item, openType, valueProvider.getParameters());
                 window.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
                         if (window instanceof Window.Editor) {

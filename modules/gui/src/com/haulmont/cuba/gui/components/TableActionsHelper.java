@@ -59,7 +59,7 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                         ((Instance) item).setValue(entry.getKey(), value);
                     }
                 }
-                final Window window = frame.openEditor(windowID, item, openType);
+                final Window window = frame.openEditor(windowID, item, openType, valueProvider.getParameters());
                 window.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
                         if (window instanceof Window.Editor) {

@@ -24,12 +24,20 @@ abstract class ListActionsHelper<T extends List> {
             public Map<String, Object> getValues() {
                 return Collections.emptyMap();
             }
+
+            public Map<String, Object> getParameters() {
+                return Collections.emptyMap();
+            }
         }, WindowManager.OpenType.THIS_TAB);
     }
 
     public Action createCreateAction(final WindowManager.OpenType openType) {
         return createCreateAction(new ValueProvider() {
             public Map<String, Object> getValues() {
+                return Collections.emptyMap();
+            }
+
+            public Map<String, Object> getParameters() {
                 return Collections.emptyMap();
             }
         }, openType);
