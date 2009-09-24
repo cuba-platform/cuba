@@ -178,7 +178,7 @@ abstract class ListActionsHelper<T extends List> {
         return action;
     }
 
-    public Action createFilterApplyAction() {
+    public Action createFilterApplyAction(final String componentId) {
         final Action action = new AbstractAction("apply") {
             public String getCaption() {
                 final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -193,12 +193,12 @@ abstract class ListActionsHelper<T extends List> {
                 ListActionsHelper.this.component.getDatasource().refresh();
             }
         };
-        ((Button)ListActionsHelper.this.frame.getComponent("filter.apply")).setAction(action);
+        ((Button)ListActionsHelper.this.frame.getComponent(componentId)).setAction(action);
 
         return action;
     }
 
-    public Action createFilterClearAction(final String containerName) {
+    public Action createFilterClearAction(final String componentId, final String containerName) {
         final Action action = new AbstractAction("clear") {
             public String getCaption() {
                 final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -222,7 +222,7 @@ abstract class ListActionsHelper<T extends List> {
                 );
             }
         };
-        ((Button)ListActionsHelper.this.frame.getComponent("filter.clear")).setAction(action);
+        ((Button)ListActionsHelper.this.frame.getComponent(componentId)).setAction(action);
 
         return action;
     }
