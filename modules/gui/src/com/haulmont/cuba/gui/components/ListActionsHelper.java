@@ -2,6 +2,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -172,6 +174,55 @@ abstract class ListActionsHelper<T extends List> {
             }
         };
         ListActionsHelper.this.component.addAction(action);
+
+        return action;
+    }
+
+    public Action createFilterApplyAction() {
+        final Action action = new AbstractAction("apply") {
+            public String getCaption() {
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                return MessageProvider.getMessage(messagesPackage, "actions.Apply");
+            }
+
+            public boolean isEnabled() {
+                return true;
+            }
+
+            public void actionPerform(Component component) {
+                ListActionsHelper.this.component.getDatasource().refresh();
+            }
+        };
+        ((Button)ListActionsHelper.this.frame.getComponent("filter.apply")).setAction(action);
+
+        return action;
+    }
+
+    public Action createFilterClearAction(final String containerName) {
+        final Action action = new AbstractAction("clear") {
+            public String getCaption() {
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                return MessageProvider.getMessage(messagesPackage, "actions.Clear");
+            }
+
+            public boolean isEnabled() {
+                return true;
+            }
+
+            public void actionPerform(Component component) {
+                Component.Container container = ListActionsHelper.this.frame.getComponent(containerName);
+                ComponentsHelper.walkComponents(container,
+                        new ComponentVisitor() {
+                            public void visit(Component component, String name) {
+                                if (component instanceof Field) {
+                                    ((Field) component).setValue(null);
+                                }
+                            }
+                        }
+                );
+            }
+        };
+        ((Button)ListActionsHelper.this.frame.getComponent("filter.clear")).setAction(action);
 
         return action;
     }
