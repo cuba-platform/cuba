@@ -26,6 +26,7 @@ public class UserSession implements Serializable
 
     private UUID id;
     private User user;
+    private User substitutedUser;
     private String[] roles;
     private Locale locale;
 
@@ -56,6 +57,7 @@ public class UserSession implements Serializable
         this(user, roles, locale);
         this.id = src.id;
         this.user = src.user;
+        this.substitutedUser = user;
     }
 
     /**
@@ -66,10 +68,17 @@ public class UserSession implements Serializable
     }
 
     /**
-     * Corresponding user
+     * Logged-in user
      */
     public User getUser() {
         return user;
+    }
+
+    /**
+     * Substituted user. May be null.
+     */
+    public User getSubstitutedUser() {
+        return substitutedUser;
     }
 
     /**
@@ -182,6 +191,8 @@ public class UserSession implements Serializable
     }
 
     public String toString() {
-        return id + " [" + user.getLogin() + "]";
+        return id + " [" 
+                + user.getLogin() + (substitutedUser == null ? "" : " / " + substitutedUser.getLogin())
+                + "]";
     }
 }

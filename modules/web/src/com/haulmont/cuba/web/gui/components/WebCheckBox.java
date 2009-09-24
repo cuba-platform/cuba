@@ -45,4 +45,12 @@ public class WebCheckBox
             }
         };
     }
+
+    @Override
+    public void setValue(Object value) {
+        if (value == null)
+            super.setValue(Boolean.FALSE);
+        else
+            super.setValue(value);
+    }
 }

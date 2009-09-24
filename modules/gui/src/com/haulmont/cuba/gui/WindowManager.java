@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.app.*;
 import com.haulmont.cuba.core.app.TemplateHelper;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
@@ -284,7 +285,27 @@ public abstract class WindowManager {
         return caption;
     }
 
-    public <T extends Window> T openEditor(WindowInfo windowInfo, Object item, OpenType openType, Map<String, Object> params) {
+    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
+                                           Datasource parentDs)
+    {
+        //noinspection unchecked
+        return (T)openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+    }
+
+    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
+        //noinspection unchecked
+        return (T)openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
+    }
+
+    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
+        //noinspection unchecked
+        return (T)openEditor(windowInfo, item, openType, params, null);
+    }
+
+    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
+                                           OpenType openType, Map<String, Object> params,
+                                           Datasource parentDs)
+    {
         params = createParametersMap(windowInfo, params);
         params.put("param$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
@@ -304,6 +325,7 @@ public abstract class WindowManager {
                 throw new IllegalStateException("Invalid WindowInfo: " + windowInfo);
             }
         }
+        ((Window.Editor) window).setParentDs(parentDs);
         ((Window.Editor) window).setItem(item);
 
         String caption = loadCaption(window, params);
@@ -380,11 +402,6 @@ public abstract class WindowManager {
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public <T extends Window> T openEditor(WindowInfo windowInfo, Object item, OpenType openType) {
-        //noinspection unchecked
-        return (T)openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
-    }
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, OpenType openType) {
         //noinspection unchecked

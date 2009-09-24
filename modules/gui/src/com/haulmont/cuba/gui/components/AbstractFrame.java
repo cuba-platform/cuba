@@ -11,7 +11,9 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Collections;
 import java.util.Map;
@@ -148,31 +150,39 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return MessageProvider.getMessage(msgPack, key);
     }
 
-    public <T extends Window> T openWindow(String descriptor, WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.<T>openWindow(descriptor, openType, params);
+    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
+        return frame.<T>openWindow(windowAlias, openType, params);
     }
 
-    public <T extends Window> T openWindow(String screenId, WindowManager.OpenType openType) {
-        return frame.<T>openWindow(screenId, openType);
+    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
+        return frame.<T>openWindow(windowAlias, openType);
     }
 
-    public <T extends Window> T openEditor(String screenId, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.<T>openEditor(screenId, item, openType, params);
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        return frame.<T>openEditor(windowAlias, item, openType, params, parentDs);
     }
 
-    public <T extends Window> T openEditor(String descriptor, Object item, WindowManager.OpenType openType) {
-        return frame.<T>openEditor(descriptor, item, openType, Collections.<String, Object>emptyMap());
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
+        return frame.<T>openEditor(windowAlias, item, openType, params);
+    }
+
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
+        return frame.<T>openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+    }
+
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
+        return frame.<T>openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap());
     }
 
     public <T extends Window> T openLookup(
-            String descriptor, Window.Lookup.Handler handler,
+            String windowAlias, Window.Lookup.Handler handler,
                 WindowManager.OpenType openType, Map<String, Object> params)
     {
-        return frame.<T>openLookup(descriptor, handler, openType, params);
+        return frame.<T>openLookup(windowAlias, handler, openType, params);
     }
 
-    public <T extends Window> T openLookup(String descriptor, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        return frame.<T>openLookup(descriptor, handler, openType, Collections.<String, Object>emptyMap());
+    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return frame.<T>openLookup(windowAlias, handler, openType, Collections.<String, Object>emptyMap());
     }
 
     public void showMessageDialog(String title, String message, MessageType messageType) {

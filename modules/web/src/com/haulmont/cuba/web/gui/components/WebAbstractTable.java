@@ -653,7 +653,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
 
-        protected abstract Object getItem(Item item, Property property);
+        protected abstract Entity getItem(Item item, Property property);
     }
 
     protected class ReadOnlyAssociationGenerator extends LinkGenerator {
@@ -661,8 +661,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             super(column);
         }
 
-        protected Object getItem(Item item, Property property) {
-            return property.getValue();
+        protected Entity getItem(Item item, Property property) {
+            return (Entity) property.getValue();
         }
     }
 
@@ -671,7 +671,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             super(column);
         }
 
-        protected Object getItem(Item item, Property property) {
+        protected Entity getItem(Item item, Property property) {
             return ((ItemWrapper) item).getItem();
         }
     }

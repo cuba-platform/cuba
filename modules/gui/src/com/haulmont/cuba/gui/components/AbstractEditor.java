@@ -9,6 +9,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.Datasource;
+
 /**
  * Base class for editor screen controllers
  */
@@ -17,7 +20,7 @@ public class AbstractEditor extends AbstractWindow implements Window.Editor {
         super(frame);
     }
 
-    public Object getItem() {
+    public Entity getItem() {
         if (frame instanceof Window.Editor) {
             return ((Editor) frame).getItem();
         } else {
@@ -25,7 +28,15 @@ public class AbstractEditor extends AbstractWindow implements Window.Editor {
         }
     }
 
-    public void setItem(Object item) {
+    public void setParentDs(Datasource parentDs) {
+        if (frame instanceof Window.Editor) {
+            ((Editor) frame).setParentDs(parentDs);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void setItem(Entity item) {
         if (frame instanceof Window.Editor) {
             ((Editor) frame).setItem(item);
         } else {

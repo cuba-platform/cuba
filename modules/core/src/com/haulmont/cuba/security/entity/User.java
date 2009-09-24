@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
@@ -26,6 +27,7 @@ import java.util.Set;
 @Entity(name = "sec$User")
 @Table(name = "SEC_USER")
 @Listeners("com.haulmont.cuba.security.listener.UserEntityListener")
+@NamePattern("%s [%s]|name,login")
 public class User extends StandardEntity
 {
     private static final long serialVersionUID = 5007187642916030394L;
@@ -53,6 +55,14 @@ public class User extends StandardEntity
     @OneToMany(mappedBy = "user")
     @Aggregation
     private Set<UserRole> userRoles;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEFAULT_SUBSTITUTED_USER_ID")
+    private User defaultSubstitutedUser;
+
+    @OneToMany(mappedBy = "user")
+    @Aggregation
+    private Set<UserSubstitution> substitutions;
 
     public String getLogin() {
         return login;
@@ -112,5 +122,22 @@ public class User extends StandardEntity
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+
+    public Set<UserSubstitution> getSubstitutions() {
+        return substitutions;
+    }
+
+    public void setSubstitutions(Set<UserSubstitution> substitutions) {
+        this.substitutions = substitutions;
+    }
+
+    public User getDefaultSubstitutedUser() {
+        return defaultSubstitutedUser;
+    }
+
+    public void setDefaultSubstitutedUser(User defaultSubstitutedUser) {
+        this.defaultSubstitutedUser = defaultSubstitutedUser;
     }
 }

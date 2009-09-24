@@ -9,6 +9,7 @@
             <property name="name"/>
         </property>
         <property name="userRoles" view="user.edit"/>
+        <property name="substitutions" view="user.edit"/>
     </view>
 
     <view entity="sec$UserRole" name="user.edit">
@@ -25,5 +26,13 @@
 
     <view class="com.haulmont.cuba.security.entity.User" name="user.changepassw">
         <property name="password"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="user.edit">
+        <property name="substitutedUser">
+            <property name="login"/>
+            <property name="name"/>
+        </property>
+        <property name="endDate"/>
     </view>
 </views>

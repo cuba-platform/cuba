@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -67,6 +68,10 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
             log.error("Logout error", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public UserSession substituteUser(User substitutedUser) {
+        return getLoginWorker().substituteUser(substitutedUser);
     }
 
     public void ping() {

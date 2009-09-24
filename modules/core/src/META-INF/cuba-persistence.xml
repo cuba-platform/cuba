@@ -16,6 +16,7 @@
         <class>com.haulmont.cuba.security.entity.Permission</class>
         <class>com.haulmont.cuba.security.entity.Constraint</class>
         <class>com.haulmont.cuba.security.entity.UserSetting</class>
+        <class>com.haulmont.cuba.security.entity.UserSubstitution</class>
         <class>com.haulmont.cuba.security.entity.LoggedEntity</class>
         <class>com.haulmont.cuba.security.entity.LoggedAttribute</class>
         <class>com.haulmont.cuba.security.entity.EntityLogItem</class>

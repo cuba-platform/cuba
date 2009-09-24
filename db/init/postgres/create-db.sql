@@ -100,10 +100,13 @@ create table SEC_USER (
     NAME varchar(255),
     EMAIL varchar(100),
     GROUP_ID uuid,
+    DEFAULT_SUBSTITUTED_USER_ID uuid,
     primary key (ID)
 )^
 
 alter table SEC_USER add constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
+
+alter table SEC_USER add constraint SEC_USER_DEFAULT_SUBSTITUTED_USER foreign key (DEFAULT_SUBSTITUTED_USER_ID) references SEC_USER(ID)^
 
 create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN_LC) where DELETE_TS is null^
 
@@ -187,6 +190,27 @@ create table SEC_USER_SETTING (
 alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID)^
 
 alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_UNIQ unique (USER_ID, NAME, CLIENT_TYPE)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_USER_SUBSTITUTION (
+    ID uuid not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    USER_ID uuid,
+    SUBSTITUTED_USER_ID uuid,
+    END_DATE timestamp,
+    primary key (ID)
+)^
+
+alter table SEC_USER_SUBSTITUTION add constraint FK_SEC_USER_SUBSTITUTION_USER foreign key (USER_ID) references SEC_USER(ID)^
+
+alter table SEC_USER_SUBSTITUTION add constraint FK_SEC_USER_SUBSTITUTION_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER(ID)^
 
 ------------------------------------------------------------------------------------------------------------
 

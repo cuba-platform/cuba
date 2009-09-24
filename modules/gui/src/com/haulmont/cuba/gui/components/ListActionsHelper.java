@@ -72,7 +72,7 @@ abstract class ListActionsHelper<T extends List> {
                     final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
                     final String windowID = datasource.getMetaClass().getName() + ".edit";
 
-                    final Window window = frame.openEditor(windowID, datasource, openType);
+                    final Window window = frame.openEditor(windowID, datasource.getItem(), openType);
                     window.addListener(new Window.CloseListener() {
                         public void windowClosed(String actionId) {
                             if (window instanceof Window.Editor) {

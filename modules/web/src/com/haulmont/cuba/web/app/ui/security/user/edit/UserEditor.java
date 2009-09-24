@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.UserSubstitution;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -27,20 +28,29 @@ import java.util.Map;
 import java.util.UUID;
 
 public class UserEditor extends AbstractEditor {
+
     private Datasource<User> userDs;
+    private Table rolesTable;
+    private Table substTable;
 
     public UserEditor(Window frame) {
         super(frame);
     }                                                                                                  
 
     protected void init(Map<String, Object> params) {
-        final Table rolesTable = getComponent("roles");
         userDs = getDsContext().get("user");
 
-        rolesTable.addAction(new IncludeAction(rolesTable));
-
-        final TableActionsHelper rolesTableActions = new TableActionsHelper(this, rolesTable);
+        rolesTable = getComponent("roles");
+        rolesTable.addAction(new AddRoleAction());
+        TableActionsHelper rolesTableActions = new TableActionsHelper(this, rolesTable);
         rolesTableActions.createRemoveAction(false);
+
+        substTable = getComponent("subst");
+        substTable.addAction(new AddSubstitutedAction());
+        substTable.addAction(new EditSubstitutedAction());
+        TableActionsHelper substTableActions = new TableActionsHelper(this, substTable);
+        substTableActions.createRemoveAction(false);
+
     }
 
     private boolean _commit() {
@@ -77,20 +87,10 @@ public class UserEditor extends AbstractEditor {
         }
     }
 
-    private class IncludeAction extends AbstractAction {
-        private final Table rolesTable;
+    private class AddRoleAction extends AbstractAction {
 
-        public IncludeAction(Table rolesTable) {
-            super("include");
-            this.rolesTable = rolesTable;
-        }
-
-        public String getCaption() {
-            return "Include";
-        }
-
-        public boolean isEnabled() {
-            return true;
+        public AddRoleAction() {
+            super("add");
         }
 
         public void actionPerform(Component component) {
@@ -108,6 +108,35 @@ public class UserEditor extends AbstractEditor {
                     }
                 }
             }, WindowManager.OpenType.THIS_TAB);
+        }
+    }
+
+    private class AddSubstitutedAction extends AbstractAction {
+        public AddSubstitutedAction() {
+            super("add");
+        }
+
+        public void actionPerform(Component component) {
+            final CollectionDatasource<UserSubstitution, UUID> usDs = substTable.getDatasource();
+
+            final UserSubstitution substitution = new UserSubstitution();
+            substitution.setUser(userDs.getItem());
+
+            openEditor("sec$UserSubstitution.edit", substitution,
+                    WindowManager.OpenType.DIALOG, usDs);
+        }
+    }
+
+    private class EditSubstitutedAction extends AbstractAction {
+        public EditSubstitutedAction() {
+            super("edit");
+        }
+
+        public void actionPerform(Component component) {
+            final CollectionDatasource<UserSubstitution, UUID> usDs = substTable.getDatasource();
+
+            openEditor("sec$UserSubstitution.edit", usDs.getItem(),
+                    WindowManager.OpenType.DIALOG, usDs);
         }
     }
 }

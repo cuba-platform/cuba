@@ -141,7 +141,7 @@
                             <xs:group ref="layoutOrComponent"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
-                        <xs:attribute name="orientation" default="horizontal" type="xs:string"/>
+                        <xs:attribute name="orientation" default="horizontal" type="orientation"/>
                         <xs:attribute name="pos" type="xs:int"/>
                     </xs:complexType>
                 </xs:element>
@@ -183,13 +183,15 @@
                                             <xs:complexType>
                                                 <xs:group ref="layoutOrComponent"/>
                                                 <xs:attribute name="visible" type="xs:string" use="optional"/>
+                                                <xs:attribute name="align" type="align" use="optional"/>
+                                                <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
-                        <xs:attribute name="id" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
                         <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
                         <xs:attribute name="margin" type="xs:string" use="optional"/>
 
@@ -282,6 +284,7 @@
                         <xs:attribute name="property" type="xs:string" use="optional"/>
                         <xs:attribute name="value" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="align" type="align" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="checkBox">
@@ -549,4 +552,13 @@
         <xs:attribute name="width" type="xs:integer" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
     </xs:complexType>
+
+    <xs:simpleType name="orientation">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="horizontal"/>
+            <xs:enumeration value="vertical"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
 </xs:schema>

@@ -13,6 +13,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.ServiceLocator;
 
@@ -30,7 +31,8 @@ public class Connection
 {
     private Log log = LogFactory.getLog(Connection.class);
 
-    private Set<ConnectionListener> listeners = new HashSet<ConnectionListener>();
+    private Set<ConnectionListener> connListeners = new HashSet<ConnectionListener>();
+    private Set<UserSubstitutionListener> usListeners = new HashSet<UserSubstitutionListener>();
 
     private boolean connected;
     private UserSession session;
@@ -87,6 +89,14 @@ public class Connection
     }
 
     /**
+     * Substitute user. Current user session will get rights and constraints of substituted user.
+     */
+    public void substituteUser(User substitutedUser) {
+        session = getLoginService().substituteUser(substitutedUser);
+        fireSubstitutionListeners();
+    }
+
+    /**
      * Perform logout
      */
     public void logout() {
@@ -105,23 +115,31 @@ public class Connection
         }
     }
 
-    /**
-     * Register connection listener
-     */
     public void addListener(ConnectionListener listener) {
-        listeners.add(listener);
+        connListeners.add(listener);
     }
 
-    /**
-     * Unregister connection listener
-     */
     public void removeListener(ConnectionListener listener) {
-        listeners.remove(listener);
+        connListeners.remove(listener);
+    }
+
+    public void addListener(UserSubstitutionListener listener) {
+        usListeners.add(listener);
+    }
+
+    public void removeListener(UserSubstitutionListener listener) {
+        usListeners.remove(listener);
     }
 
     private void fireConnectionListeners() throws LoginException {
-        for (ConnectionListener listener : listeners) {
+        for (ConnectionListener listener : connListeners) {
             listener.connectionStateChanged(this);
+        }
+    }
+
+    private void fireSubstitutionListeners() {
+        for (UserSubstitutionListener listener : usListeners) {
+            listener.userSubstituted(this);
         }
     }
 }

@@ -12,7 +12,6 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -29,7 +28,6 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.App;
@@ -165,13 +163,25 @@ public class WebWindow
         return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType);
     }
 
-    public <T extends Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType, Map<String, Object> params) {
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
+        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params, parentDs);
+    }
+
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
     }
 
-    public <T extends Window> T openEditor(String windowAlias, Object item, WindowManager.OpenType openType) {
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
+        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, parentDs);
+    }
+
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType);
@@ -486,9 +496,9 @@ public class WebWindow
 
     public static class Editor extends WebWindow implements Window.Editor {
 
-        protected Object item;
+        protected Entity item;
 
-        public Object getItem() {
+        public Entity getItem() {
             return item;
         }
 
@@ -568,16 +578,33 @@ public class WebWindow
             return window;
         }
 
-        public void setItem(Object item) {
+        public void setItem(Entity item) {
             final Datasource ds = getDatasource();
-            if (ds == null) throw new IllegalStateException("Can't find main datasource");
 
-            Entity entity = getEntity(item, ds);
+            if (ds.getCommitMode().equals(Datasource.CommitMode.PARENT)) {
+                item = (Entity) InstanceUtils.copy((Instance) item);
+            } else {
+                if (!PersistenceHelper.isNew(item)) {
+                    final DataService dataservice = ds.getDataService();
+                    item = dataservice.reload(item, ds.getView());
+                }
+            }
 
             this.item = item;
             //noinspection unchecked
-            ds.setItem(entity);
+            ds.setItem(item);
             ((DatasourceImplementation) ds).setModified(false);
+        }
+
+        public void setParentDs(Datasource parentDs) {
+            Datasource ds = getDatasource();
+
+            if (parentDs == null) {
+                ((DatasourceImplementation) ds).setCommitMode(Datasource.CommitMode.DATASTORE);
+            } else {
+                ((DatasourceImplementation) ds).setCommitMode(Datasource.CommitMode.PARENT);
+                ((DatasourceImplementation) ds).setParent(parentDs);
+            }
         }
 
         protected Collection<com.vaadin.ui.Field> getFields() {
@@ -601,59 +628,20 @@ public class WebWindow
             }
         }
 
-        protected Entity getEntity(Object item, Datasource ds) {
-            Entity entity;
-            if (item instanceof Datasource) {
-                final Datasource itemDs = (Datasource) item;
-                entity = itemDs.getItem();
-
-                if (entity == null)
-                    return null;
-
-                if (itemDs instanceof PropertyDatasource) {
-                    MetaProperty.Type type = ((PropertyDatasource) itemDs).getProperty().getType();
-                    if (MetaProperty.Type.AGGREGATION.equals(type)) {
-                        ((DatasourceImplementation) ds).setCommitMode(Datasource.CommitMode.PARENT);
-                        ((DatasourceImplementation) ds).setParent(itemDs);
-                        entity = (Entity) InstanceUtils.copy((Instance) entity);
-                        return entity;
-                    }
-                }
-
-                if (!PersistenceHelper.isNew(entity)) {
-                    // TODO (abramov) refactor this trick
-                    if (Datasource.CommitMode.DATASTORE.equals(ds.getCommitMode())) {
-                        final DataService dataservice = ds.getDataService();
-                        entity = dataservice.reload(entity, ds.getView());
-                    }
-                }
-            } else {
-                if (!PersistenceHelper.isNew((Entity) item)) {
-                    final DataService dataservice = ds.getDataService();
-                    entity = dataservice.reload((Entity) item, ds.getView());
-                } else {
-                    entity = (Entity) item;
-                }
-            }
-            
-            return entity;
-        }
-
         protected Datasource getDatasource() {
-            final Element element = getXmlDescriptor();
-
-            final String datasourceName = element.attributeValue("datasource");
+            Datasource ds = null;
+            Element element = getXmlDescriptor();
+            String datasourceName = element.attributeValue("datasource");
             if (!StringUtils.isEmpty(datasourceName)) {
                 final DsContext context = getDsContext();
                 if (context != null) {
-                    final Datasource ds = context.get(datasourceName);
-                    return ds;
-                } else {
-                    return null;
+                    ds = context.get(datasourceName);
                 }
-            } else {
-                return null;
             }
+            if (ds == null)
+                throw new IllegalStateException("Can't find main datasource");
+            else
+                return ds;
         }
 
         protected MetaClass getMetaClass(Object item) {
@@ -701,7 +689,7 @@ public class WebWindow
 
         public void commitAndClose() {
             if (commit()) {
-                close("commit");
+                close(COMMIT_ACTION_ID);
             }
         }
 

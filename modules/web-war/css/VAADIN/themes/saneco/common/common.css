@@ -368,7 +368,6 @@ input.v-modified,
 .v-label-logo {
     background: #829fd6;
     font-weight:bold;
-    text-align:center;
 }
 .v-app .v-label-logo {
     color: #FFFFFF; !important

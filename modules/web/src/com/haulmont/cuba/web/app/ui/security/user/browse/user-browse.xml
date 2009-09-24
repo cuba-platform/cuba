@@ -33,14 +33,6 @@
         <vbox expand="table-panel" spacing="true">
             <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
             <vbox id="table-panel" expand="users" spacing="true">
-                <table id="users" editable="false">
-                    <columns>
-                        <column id="login" caption="msg://login" clickAction="open:sec$User.edit"/>
-                        <column id="name" caption="msg://name"/>
-                        <column id="email" caption="msg://email"/>
-                    </columns>
-                    <rows datasource="users"/>
-                </table>
                 <hbox align="MIDDLE_LEFT">
                     <button action="users.create"/>
                     <button action="users.edit"/>
@@ -49,6 +41,14 @@
                     <button action="users.print"/>
                     <button action="users.excel"/>
                 </hbox>
+                <table id="users" editable="false">
+                    <columns>
+                        <column id="login" caption="msg://login" clickAction="open:sec$User.edit"/>
+                        <column id="name" caption="msg://name"/>
+                        <column id="email" caption="msg://email"/>
+                    </columns>
+                    <rows datasource="users"/>
+                </table>
             </vbox>
         </vbox>
     </layout>

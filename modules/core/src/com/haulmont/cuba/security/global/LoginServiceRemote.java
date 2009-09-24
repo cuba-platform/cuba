@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.security.global;
 
+import com.haulmont.cuba.security.entity.User;
+
 import javax.ejb.Remote;
 import java.util.Locale;
 
@@ -32,6 +34,8 @@ public interface LoginServiceRemote
     UserSession login(String login, String password, Locale locale) throws LoginException;
 
     void logout();
+
+    UserSession substituteUser(User substitutedUser);
 
     void ping();
 }

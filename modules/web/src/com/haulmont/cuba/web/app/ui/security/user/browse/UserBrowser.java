@@ -11,11 +11,16 @@ package com.haulmont.cuba.web.app.ui.security.user.browse;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.ComponentVisitor;
+import com.haulmont.cuba.gui.MessageUtils;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.rpt.ReportHelper;
 import com.haulmont.cuba.web.rpt.ReportOutput;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 
 import java.util.Map;
 
@@ -25,17 +30,17 @@ public class UserBrowser extends AbstractLookup {
     }
 
     protected void init(Map<String, Object> params) {
-        final Button button  = getComponent("filter.apply");
         final Table table  = getComponent("users");
 
         final TableActionsHelper helper = new TableActionsHelper(this, table);
+
+        helper.createFilterApplyAction("filter.apply");
+        helper.createFilterClearAction("filter.clear", "group-box");
+
         helper.createCreateAction();
         helper.createEditAction();
         helper.createRemoveAction();
         helper.createExcelAction(new WebExportDisplay());
-
-        final Action refreshAction = helper.createRefreshAction();
-        button.setAction(refreshAction);
 
         table.addAction(
                 new AbstractAction("changePassw")
@@ -44,7 +49,7 @@ public class UserBrowser extends AbstractLookup {
                         if (!table.getSelected().isEmpty()) {
                             openEditor(
                                     "sec$User.changePassw",
-                                    table.getSelected().iterator().next(),
+                                    (Entity) table.getSelected().iterator().next(),
                                     WindowManager.OpenType.DIALOG
                             );
                         }
@@ -65,11 +70,5 @@ public class UserBrowser extends AbstractLookup {
         );
 
         getDsContext().get("users").refresh();
-    }
-
-    public boolean close(String actionId) {
-        final com.vaadin.ui.Window window = WebComponentsHelper.unwrap(this).getWindow();
-        window.showNotification("Closing screen", com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION);
-        return super.close(actionId);
     }
 }

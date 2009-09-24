@@ -10,27 +10,27 @@
     </dsContext>
 
     <layout>
-        <vbox id="filter-pane" spacing="true">
-            <vbox expand="expand-box" stylename="edit-area" margin="true" >
-                <hbox id="group-box" spacing="true">
-                    <label control="name" value="msg://name"/>
-                    <textField id="name"/>
+        <vbox expand="expand-box" stylename="edit-area" margin="true" >
+            <hbox id="group-box" spacing="true">
+                <label control="name" value="msg://name"/>
+                <textField id="name"/>
 
-                    <label control="login" value="msg://login"/>
-                    <textField id="login"/>
+                <label control="login" value="msg://login"/>
+                <textField id="login"/>
 
-                    <label control="email" value="msg://email"/>
-                    <textField id="email"/>
+                <label control="email" value="msg://email"/>
+                <textField id="email"/>
 
-                    <label control="group" value="msg://group"/>
-                    <lookupField id="group" optionsDatasource="groups" captionProperty="name" required="false" nullName="msg://any"/>
+                <label control="group" value="msg://group"/>
+                <lookupField id="group" optionsDatasource="groups" captionProperty="name" required="false"
+                             nullName="msg://any"/>
+
+                <hbox align="BOTTOM_CENTER">
+                    <button id="clear"/>
+                    <button id="apply"/>
                 </hbox>
-                <hbox id="expand-box"/>
-            </vbox>
-            <hbox align="MIDDLE_LEFT" >
-                <button id="clear" caption="msg://com.haulmont.cuba.web/actions.Clear"/>
-                <button id="apply"/>
             </hbox>
+            <hbox id="expand-box"/>
         </vbox>
     </layout>
 </window>

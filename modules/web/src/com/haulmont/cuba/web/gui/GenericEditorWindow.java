@@ -16,9 +16,11 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Item;
@@ -80,7 +82,7 @@ public class GenericEditorWindow
 
         form.setSizeFull();
         layout.setExpandRatio(form, 1);
-        layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
+        layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_LEFT);
 
         form.setFieldFactory(new FieldFactory());
         form.setImmediate(true);
@@ -88,7 +90,7 @@ public class GenericEditorWindow
         return layout;
     }
 
-    public void setItem(Object item) {
+    public void setItem(Entity item) {
         this.item = item;
 
         final MetaClass metaClass = getMetaClass(item);
@@ -106,8 +108,10 @@ public class GenericEditorWindow
                 field.setRequired(propertyPath.getMetaProperty().isMandatory());
             }
         }
+    }
 
-
+    @Override
+    public void setParentDs(Datasource parentDs) {
     }
 
     protected DataService getDataService() {

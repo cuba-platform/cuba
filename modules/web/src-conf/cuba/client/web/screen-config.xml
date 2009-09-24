@@ -23,6 +23,9 @@
     <screen id="sec$User.changePassw"
             template="/com/haulmont/cuba/web/app/ui/security/user/changepassw/user-changepassw.xml"/>
 
+    <screen id="sec$UserSubstitution.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/usersubst/edit/usersubst-edit.xml"/>
+
     <screen id="sec$Group.browse"
             template="/com/haulmont/cuba/web/app/ui/security/group/browse/group-browse.xml"/>
 

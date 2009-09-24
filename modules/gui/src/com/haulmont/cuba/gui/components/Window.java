@@ -10,6 +10,8 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.settings.Settings;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Collection;
 
@@ -17,6 +19,9 @@ import java.util.Collection;
  * Represents an independent window
  */
 public interface Window extends IFrame, Component.HasCaption, Component.ActionsHolder {
+
+    /** Standard actionId passed to {@link CloseListener}s after succesful commit */
+    String COMMIT_ACTION_ID = "commit";
 
     void addListener(CloseListener listener);
     void removeListener(CloseListener listener);
@@ -48,10 +53,16 @@ public interface Window extends IFrame, Component.HasCaption, Component.ActionsH
     interface Editor extends Window {
 
         /** Get edited entity  */
-        Object getItem();
+        Entity getItem();
+
+        /** 
+         * Set parent datasource to commit into this datasource instead of database.
+         * This method must be followed by {@link #setItem(com.haulmont.cuba.core.entity.Entity)}
+         */
+        void setParentDs(Datasource parentDs);
 
         /** Set edited entity. Invoked by the framework on opening the window. */
-        void setItem(Object item);
+        void setItem(Entity item);
 
         /** Check validity by invoking validators on all components which support them */
         boolean isValid();
@@ -65,7 +76,10 @@ public interface Window extends IFrame, Component.HasCaption, Component.ActionsH
         /** Commit changes with optional validating */
         boolean commit(boolean validate);
 
-        /** Validate, commit and close if commit was successful */
+        /**
+         * Validate, commit and close if commit was successful.
+         * Passes {@link #COMMIT_ACTION_ID} to associated {@link CloseListener}s
+         */
         void commitAndClose();
     }
 

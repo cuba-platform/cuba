@@ -11,6 +11,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Map;
 
@@ -24,28 +26,101 @@ public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLa
     DsContext getDsContext();
     void setDsContext(DsContext dsContext);
 
+    /** Get message pack associated with the frame */
     String getMessagesPack();
+
+    /** Set message pack for this frame */
     void setMessagesPack(String name);
 
+    /** Get message from message pack assigned by {@link #setMessagesPack(String)} or from XML descriptor */
     String getMessage(String key);
 
+    /**
+     * Open window specifying additional parameters
+     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param openType how to open the screen
+     * @param params parameters which are accessible inside screen controller
+     * @return created window
+     */
     <T extends Window> T openWindow(
             String windowAlias, WindowManager.OpenType openType, Map<String, Object> params);
 
+    /**
+     * Open window
+     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param openType how to open the screen
+     * @return created window
+     */
     <T extends Window> T openWindow(
             String windowAlias, WindowManager.OpenType openType);
 
+    /**
+     * Open editor specifying additional parameters
+     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param item entity to edit
+     * @param openType how to open the screen
+     * @param params parameters which are accessible inside screen controller
+     * @param parentDs if this parameter is not null, the editor will commit edited instance into this
+     * datasource instead of directly to database
+     * @return created window
+     */
     <T extends Window> T openEditor(
-            String windowAlias, Object item,
+            String windowAlias, Entity item,
+            WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs);
+
+    /**
+     * Open editor specifying additional parameters
+     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param item entity to edit
+     * @param openType how to open the screen
+     * @param params parameters which are accessible inside screen controller
+     * @return created window
+     */
+    <T extends Window> T openEditor(
+            String windowAlias, Entity item,
             WindowManager.OpenType openType, Map<String, Object> params);
 
+    /**
+     * Open editor
+     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param item entity to edit
+     * @param openType how to open the screen
+     * @param parentDs if this parameter is not null, the editor will commit edited instance into this
+     * datasource instead of directly to database
+     * @return created window
+     */
     <T extends Window> T openEditor(
-            String windowAlias, Object item, WindowManager.OpenType openType);
+            String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs);
 
+    /**
+     * Open editor
+     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param item entity to edit
+     * @param openType how to open the screen
+     * @return created window
+     */
+    <T extends Window> T openEditor(
+            String windowAlias, Entity item, WindowManager.OpenType openType);
+
+    /**
+     * Open lookup window specifying additional parameters
+     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param handler is invoked when selection confirmed and the lookup screen closes
+     * @param openType how to open the screen
+     * @param params parameters which are accessible inside screen controller
+     * @return created window
+     */
     <T extends Window> T openLookup(
             String windowAlias, Window.Lookup.Handler handler,
             WindowManager.OpenType openType, Map<String, Object> params);
 
+    /**
+     * Open lookup window
+     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param handler is invoked when selection confirmed and the lookup screen closes
+     * @param openType how to open the screen
+     * @return created window
+     */
     <T extends Window> T openLookup(
             String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType);
 

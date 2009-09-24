@@ -10,10 +10,7 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -75,6 +72,9 @@ public class LoginWorkerBean implements LoginWorker
     {
         User user = loadUser(login, password, locale);
         UserSession session = UserSessionManager.getInstance().createSession(user, locale);
+        if (user.getDefaultSubstitutedUser() != null) {
+            UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+        }
         log.info("Logged in: " + session);
         return session;
     }
@@ -82,6 +82,9 @@ public class LoginWorkerBean implements LoginWorker
     public UserSession loginActiveDirectory(String login, Locale locale) throws LoginException {
         User user = loadUser(login, null, locale);
         UserSession session = UserSessionManager.getInstance().createSession(user, locale);
+        if (user.getDefaultSubstitutedUser() != null) {
+            UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+        }
         log.info("Logged in: " + session);
         return session;
     }
@@ -93,6 +96,24 @@ public class LoginWorkerBean implements LoginWorker
             log.info("Logged out: " + session);
         } catch (NoUserSessionException e) {
             log.warn("NoUserSessionException thrown on logout");
+        }
+    }
+
+    public UserSession substituteUser(User substitutedUser) {
+        UserSession currentSession = SecurityProvider.currentUserSession();
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            User user = em.find(User.class, substitutedUser.getId());
+
+            UserSession session = UserSessionManager.getInstance().updateSession(currentSession, user);
+
+            tx.commit();
+
+            return session;
+        } finally {
+            tx.end();
         }
     }
 

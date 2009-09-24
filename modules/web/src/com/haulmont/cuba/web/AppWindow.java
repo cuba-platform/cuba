@@ -12,20 +12,34 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.UserSubstitution;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Window;
+import com.vaadin.data.Property;
 import org.dom4j.Element;
 
 import java.util.HashMap;
@@ -39,7 +53,7 @@ import java.util.Map;
  * Specific application should inherit from this class and create appropriate
  * instance in {@link com.haulmont.cuba.web.App#createAppWindow()} method
  */
-public class AppWindow extends Window {
+public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -237,16 +251,32 @@ public class AppWindow extends Window {
         HorizontalLayout titleLayout = new HorizontalLayout();
 
         titleLayout.setWidth(100, Sizeable.UNITS_PERCENTAGE);
-        titleLayout.setHeight(20, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
+        titleLayout.setHeight(20, Sizeable.UNITS_PIXELS);
 
         titleLayout.setMargin(false);
         titleLayout.setSpacing(false);
 
         Label logoLabel = new Label(MessageProvider.getMessage(getClass(), "logoLabel"));
         logoLabel.setStyleName("logo");//new style for logo
-        Label loggedInLabel = new Label(String.format(MessageProvider.getMessage(getClass(), "loggedInLabel"),
-                connection.getSession().getUser().getName()));
-        loggedInLabel.setStyleName("logo");
+
+        HorizontalLayout loginLayout = new HorizontalLayout();
+
+        Label userLabel = new Label(MessageProvider.getMessage(getClass(), "loggedInLabel"));
+        userLabel.setStyleName("logo");
+
+        loginLayout.addComponent(userLabel);
+
+        final NativeSelect substUserSelect = new NativeSelect();
+        substUserSelect.setNullSelectionAllowed(false);
+        substUserSelect.setImmediate(true);
+        substUserSelect.setStyleName("logo");
+
+        fillSubstitutedUsers(substUserSelect);
+        substUserSelect.select(App.getInstance().getConnection().getSession().getUser());
+        substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
+
+        loginLayout.addComponent(substUserSelect);
+
         Button logoutBtn = new Button(MessageProvider.getMessage(getClass(), "logoutBtn"),
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
@@ -269,14 +299,12 @@ public class AppWindow extends Window {
         );
         viewLogBtn.setStyleName("title");
 
-        logoLabel.setSizeFull();
-
         titleLayout.addComponent(logoLabel);
-        titleLayout.setExpandRatio(logoLabel, 2);
+        titleLayout.setExpandRatio(logoLabel, 1);
+        titleLayout.setComponentAlignment(logoLabel, Alignment.MIDDLE_LEFT);
 
-        titleLayout.addComponent(loggedInLabel);
-        titleLayout.setExpandRatio(loggedInLabel, 1);
-        
+        titleLayout.addComponent(loginLayout);
+
         titleLayout.addComponent(logoutBtn);
         titleLayout.addComponent(viewLogBtn);
 
@@ -338,7 +366,7 @@ public class AppWindow extends Window {
                     final MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
                     if (metaClass == null) throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
 
-                    Object newItem;
+                    Entity newItem;
                     try {
                         newItem = metaClass.createInstance();
                     } catch (Throwable e) {
@@ -360,5 +388,87 @@ public class AppWindow extends Window {
                 }
             }
         };
+    }
+
+    protected void fillSubstitutedUsers(AbstractSelect select) {
+        UserSession userSession = App.getInstance().getConnection().getSession();
+
+        select.addItem(userSession.getUser());
+        select.setItemCaption(userSession.getUser(), getSubstitutedUserCaption(userSession.getUser()));
+        
+        LoadContext ctx = new LoadContext(UserSubstitution.class);
+        LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
+                "where us.user.id = :userId and (us.endDate is null or us.endDate > :currentDate)");
+        query.addParameter("userId", userSession.getUser().getId());
+        query.addParameter("currentDate", TimeProvider.currentTimestamp());
+        ctx.setView("app");
+        List<UserSubstitution> usList = ServiceLocator.getDataService().loadList(ctx);
+        for (UserSubstitution substitution : usList) {
+            User substitutedUser = substitution.getSubstitutedUser();
+            select.addItem(substitutedUser);
+            select.setItemCaption(substitutedUser, getSubstitutedUserCaption(substitutedUser));
+        }
+    }
+
+    protected String getSubstitutedUserCaption(User user) {
+        return InstanceUtils.getInstanceName((Instance) user);
+    }
+
+    public void userSubstituted(Connection connection) {
+        menuBarLayout.replaceComponent(menuBar, createMenuBar());
+    }
+
+    private class ChangeSubstUserAction extends AbstractAction
+    {
+        private NativeSelect substUserSelect;
+
+        protected ChangeSubstUserAction(NativeSelect substUserSelect) {
+            super("changeSubstUserAction");
+            this.substUserSelect = substUserSelect;
+        }
+
+        public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+            App app = App.getInstance();
+            app.getWindowManager().closeAll();
+            app.getConnection().substituteUser((User) substUserSelect.getValue());
+        }
+    }
+
+    private class DoNotChangeSubstUserAction extends AbstractAction
+    {
+        private NativeSelect substUserSelect;
+
+        protected DoNotChangeSubstUserAction(NativeSelect substUserSelect) {
+            super("doNotChangeSubstUserAction");
+            this.substUserSelect = substUserSelect;
+        }
+
+        public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+            substUserSelect.select(App.getInstance().getConnection().getSession().getUser());
+        }
+    }
+
+    protected class SubstitutedUserChangeListener implements Property.ValueChangeListener {
+
+        private final NativeSelect substUserSelect;
+
+        public SubstitutedUserChangeListener(NativeSelect substUserSelect) {
+            this.substUserSelect = substUserSelect;
+        }
+
+        public void valueChange(Property.ValueChangeEvent event) {
+            User newUser = (User) event.getProperty().getValue();
+            UserSession userSession = App.getInstance().getConnection().getSession();
+            User oldUser = userSession.getSubstitutedUser() == null ? userSession.getUser() : userSession.getSubstitutedUser();
+            if (!oldUser.equals(newUser)) {
+                App.getInstance().getWindowManager().showOptionDialog(
+                        MessageProvider.getMessage(AppWindow.class, "substUserSelectDialog.title"),
+                        MessageProvider.formatMessage(AppWindow.class, "substUserSelectDialog.msg", newUser.toString()),
+                        IFrame.MessageType.WARNING,
+                        new Action[]{new ChangeSubstUserAction(substUserSelect), new DoNotChangeSubstUserAction(substUserSelect)}
+                );
+            }
+
+        }
     }
 }

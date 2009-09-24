@@ -12,6 +12,8 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
@@ -106,7 +108,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
      * Current App instance. Can be invoked anywhere in application code.
      */
     public static App getInstance() {
-        return currentApp.get();
+        App app = currentApp.get();
+        if (app == null)
+            throw new IllegalStateException("No App bound to the current thread. This may be the result of hot-deployment.");
+        return app;
     }
 
     /**
@@ -134,6 +139,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
      * Should be overridden in descendant to deploy views needed for main window
      */
     protected void deployViews() {
+        MetadataProvider.getViewRepository().deployViews("/com/haulmont/cuba/web/app.views.xml");
     }
 
     /**
@@ -165,9 +171,13 @@ public class App extends Application implements ConnectionListener, ApplicationC
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");
-            Window window = createAppWindow();
+            AppWindow window = createAppWindow();
             setMainWindow(window);
+
+            connection.addListener(window);
+
             initExceptionHandlers(true);
+
             if (linkHandler != null) {
                 linkHandler.handle();
                 linkHandler = null;
@@ -176,10 +186,17 @@ public class App extends Application implements ConnectionListener, ApplicationC
         else {
             log.debug("Closing all windows");
             getWindowManager().closeAll();
+
+            connection.removeListener(getAppWindow());
+
             Window window = createLoginWindow();
             setMainWindow(window);
+
             initExceptionHandlers(false);
         }
+    }
+
+    public void userSubstituted(Connection connection) {
     }
 
     public void terminalError(Terminal.ErrorEvent event) {

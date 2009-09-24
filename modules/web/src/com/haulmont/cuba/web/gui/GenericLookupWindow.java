@@ -41,7 +41,7 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
         okbar.addComponent(cancelButton);
         
         layout.addComponent(okbar);
-        layout.setComponentAlignment(okbar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
+        layout.setComponentAlignment(okbar, com.vaadin.ui.Alignment.BOTTOM_LEFT);
 
         return layout;
     }
