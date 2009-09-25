@@ -220,6 +220,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 InstanceUtils.copy((Instance) item, (Instance) t);
             }
         }
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
     public boolean containsItem(K itemId) {

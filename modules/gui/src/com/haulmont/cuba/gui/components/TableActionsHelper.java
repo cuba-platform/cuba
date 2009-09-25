@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
@@ -18,6 +19,8 @@ import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 
 import java.util.Collection;
@@ -45,7 +48,7 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                 final DataService dataservice = datasource.getDataService();
                 final String windowID = datasource.getMetaClass().getName() + ".edit";
 
-                final Entity item = dataservice.<Entity>newInstance(datasource.getMetaClass());
+                final Entity item = dataservice.newInstance(datasource.getMetaClass());
                 for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
                     final Object value = entry.getValue();
                     if (value instanceof Collection) {
@@ -59,19 +62,32 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                         ((Instance) item).setValue(entry.getKey(), value);
                     }
                 }
-                final Window window = frame.openEditor(windowID, item, openType, valueProvider.getParameters());
-                window.addListener(new Window.CloseListener() {
-                    public void windowClosed(String actionId) {
-                        if (window instanceof Window.Editor) {
-                            Object item = ((Window.Editor) window).getItem();
-                            if (item instanceof Entity) {
-                                boolean modified = datasource.isModified();
-                                datasource.addItem((Entity) item);
-                                ((DatasourceImplementation) datasource).setModified(modified);
+
+                Datasource parentDs = null;
+                if (datasource instanceof PropertyDatasource) {
+                    MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
+                    if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
+                        parentDs = datasource;
+                    }
+                }
+
+                final Window window = frame.openEditor(
+                        windowID, item, openType, valueProvider.getParameters(), parentDs);
+
+                if (parentDs == null) {
+                    window.addListener(new Window.CloseListener() {
+                        public void windowClosed(String actionId) {
+                            if (window instanceof Window.Editor) {
+                                Object item = ((Window.Editor) window).getItem();
+                                if (item instanceof Entity) {
+                                    boolean modified = datasource.isModified();
+                                    datasource.addItem((Entity) item);
+                                    ((DatasourceImplementation) datasource).setModified(modified);
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         };
         TableActionsHelper.this.component.addAction(action);

@@ -5,8 +5,11 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.chile.core.model.MetaProperty;
 
 import java.util.Set;
 import java.util.Map;
@@ -72,16 +75,27 @@ abstract class ListActionsHelper<T extends List> {
                     final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
                     final String windowID = datasource.getMetaClass().getName() + ".edit";
 
-                    final Window window = frame.openEditor(windowID, datasource.getItem(), openType);
-                    window.addListener(new Window.CloseListener() {
-                        public void windowClosed(String actionId) {
-                            if (window instanceof Window.Editor) {
-                                Object item = ((Window.Editor) window).getItem();
-                                if (item instanceof Entity)
-                                    datasource.updateItem((Entity) item);
-                            }
+                    Datasource parentDs = null;
+                    if (datasource instanceof PropertyDatasource) {
+                        MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
+                        if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
+                            parentDs = datasource;
                         }
-                    });
+                    }
+
+                    final Window window = frame.openEditor(windowID, datasource.getItem(), openType, parentDs);
+
+                    if (parentDs == null) {
+                        window.addListener(new Window.CloseListener() {
+                            public void windowClosed(String actionId) {
+                                if (window instanceof Window.Editor) {
+                                    Object item = ((Window.Editor) window).getItem();
+                                    if (item instanceof Entity)
+                                        datasource.updateItem((Entity) item);
+                                }
+                            }
+                        });
+                    }
                 }
             }
         };
