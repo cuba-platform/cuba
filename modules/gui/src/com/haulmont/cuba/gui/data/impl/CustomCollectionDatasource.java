@@ -11,6 +11,7 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -43,12 +44,18 @@ public class CustomCollectionDatasource<T extends Entity<K>, K>
     protected void loadData(Map<String, Object> params) {
         StopWatch sw = new Log4JStopWatch("CCDS " + id);
 
+        for (Object entity : data.values()) {
+            detachListener((Instance) entity);
+        }
+        data.clear();
+
         final Map<String, Object> parameters = getQueryParameters(params);
 
         Collection<T> entities = GroovyHelper.evaluate(getGroovyScript(query, parameters), parameters);
 
         for (T entity : entities) {
             data.put(entity.getId(), entity);
+            attachListener((Instance) entity);
         }
 
         sw.stop();

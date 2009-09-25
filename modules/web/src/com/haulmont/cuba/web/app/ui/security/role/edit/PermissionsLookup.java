@@ -12,13 +12,18 @@ package com.haulmont.cuba.web.app.ui.security.role.edit;
 
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class PermissionsLookup extends AbstractLookup {
+
+    protected OptionsGroup accessOptions;
+
     public PermissionsLookup(IFrame frame) {
         super(frame);
     }
@@ -34,5 +39,18 @@ public class PermissionsLookup extends AbstractLookup {
 
         entityPermissionsDs.refresh();
         entityPermissionsTree.expandTree();
+
+        accessOptions = getComponent("access");
+        fillAccessOptions();
+        accessOptions.setValue(accessOptions.getOptionsList().get(0));
+    }
+
+    protected void fillAccessOptions() {
+        accessOptions.setOptionsList(Arrays.asList(PermissionValue.values()));
+    }
+
+    public Integer getPermissionValue() {
+        PermissionValue option = accessOptions.getValue();
+        return option == null ? null : option.getValue();
     }
 }

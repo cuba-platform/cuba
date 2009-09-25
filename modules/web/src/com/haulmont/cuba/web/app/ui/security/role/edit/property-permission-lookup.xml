@@ -1,7 +1,7 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
     caption="Permission Lookup"
-    class="com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup"
+    class="com.haulmont.cuba.web.app.ui.security.role.edit.PropertyPermissionsLookup"
     lookupComponent="permissions"
 >
     <metadataContext>
@@ -36,19 +36,23 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="permissions-pane">
-        <split orientation="horizontal" pos="30">
-            <tree id="permissions-tree">
-                <treechildren datasource="entities" captionProperty="caption"/>
-            </tree>
-            <vbox>
-                <optionsGroup
-                    id="permissions"
-                    optionsDatasource="permissions"
-                    multiselect="true"
-                    captionProperty="caption"
-                />
-            </vbox>
-        </split>
+    <layout>
+        <vbox expand="split" spacing="true">
+            <split id="split" orientation="horizontal" pos="30">
+                <tree id="permissions-tree">
+                    <treechildren datasource="entities" captionProperty="caption"/>
+                </tree>
+                <vbox>
+                    <optionsGroup
+                        id="permissions"
+                        optionsDatasource="permissions"
+                        multiselect="true"
+                        captionProperty="caption"
+                    />
+                </vbox>
+            </split>
+
+            <optionsGroup id="access" multiselect="false" required="true"/>
+        </vbox>
     </layout>
 </window>

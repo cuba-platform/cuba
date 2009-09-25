@@ -20,9 +20,13 @@
         </hierarchicalDatasource>
     </dsContext>
 
-    <layout expand="permissions-pane">
-        <tree id="permissions-tree">
-            <treechildren datasource="permissions" captionProperty="caption"/>
-        </tree>
+    <layout>
+        <vbox expand="permissions-tree" spacing="true">
+            <tree id="permissions-tree">
+                <treechildren datasource="permissions" captionProperty="caption"/>
+            </tree>
+
+            <optionsGroup id="access" multiselect="false" required="true"/>
+        </vbox>
     </layout>
 </window>

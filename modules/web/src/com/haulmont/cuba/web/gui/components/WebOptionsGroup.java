@@ -210,8 +210,10 @@ public class WebOptionsGroup
             }
         } else {
             final Object value = getValue();
-            Element option = selectedOptionsElement.addElement("option");
-            option.addAttribute("id", value.toString());
+            if (value != null) {
+                Element option = selectedOptionsElement.addElement("option");
+                option.addAttribute("id", value.toString());
+            }
         }
         return true;
     }

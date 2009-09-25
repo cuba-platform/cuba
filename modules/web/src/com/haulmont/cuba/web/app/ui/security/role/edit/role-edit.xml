@@ -65,43 +65,10 @@
 
         <vbox id="permissions-pane" expand="roles" spacing="true">
             <tabsheet id="permissions-types">
-                <tab id="entity-permissions-tab" caption="msg://entity-permissions">
-                    <vbox expand="entity-permissions">
-                        <hbox>
-                            <button id="entity-permissions-allow" action="entity-permissions.grant" caption="msg://permissions.grant"/>
-                            <button id="entity-permissions-decline" action="entity-permissions.decline" caption="msg://permissions.decline"/>
-                            <button id="entity-permissions-remove" action="entity-permissions.remove" caption="msg://permissions.remove"/>
-                        </hbox>
-                        <table id="entity-permissions">
-                            <columns>
-                                <column id="target"/>
-                                <column id="value"/>
-                            </columns>
-                            <rows datasource="entity-permissions"/>
-                        </table>
-                    </vbox>
-                </tab>
-                <tab id="property-permissions-tab" caption="msg://property-permissions">
-                    <vbox expand="property-permissions">
-                        <hbox>
-                            <button id="property-permissions-allow" action="property-permissions.grant" caption="msg://permissions.grant"/>
-                            <button id="property-permissions-decline" action="property-permissions.decline" caption="msg://permissions.decline"/>
-                            <button id="property-permissions-remove" action="property-permissions.remove" caption="msg://permissions.remove"/>
-                        </hbox>
-                        <table id="property-permissions">
-                            <columns>
-                                <column id="target"/>
-                                <column id="value"/>
-                            </columns>
-                            <rows datasource="property-permissions"/>
-                        </table>
-                    </vbox>
-                </tab>
                 <tab id="screen-permissions-tab" caption="msg://screen-permissions">
                     <vbox expand="screen-permissions">
                         <hbox>
-                            <button id="screen-permissions-allow" action="screen-permissions.grant" caption="msg://permissions.grant"/>
-                            <button id="screen-permissions-decline" action="screen-permissions.decline" caption="msg://permissions.decline"/>
+                            <button id="screen-permissions-grant" action="screen-permissions.grant" caption="msg://permissions.grant"/>
                             <button id="screen-permissions-remove" action="screen-permissions.remove" caption="msg://permissions.remove"/>
                         </hbox>
                         <table id="screen-permissions">
@@ -113,11 +80,40 @@
                         </table>
                     </vbox>
                 </tab>
-                <tab id="specific-permissions-tab" caption="msg://specific-permissions">
+                <tab id="entity-permissions-tab" caption="msg://entity-permissions" lazy="true">
+                    <vbox expand="entity-permissions">
+                        <hbox>
+                            <button id="entity-permissions-grant" action="entity-permissions.grant" caption="msg://permissions.grant"/>
+                            <button id="entity-permissions-remove" action="entity-permissions.remove" caption="msg://permissions.remove"/>
+                        </hbox>
+                        <table id="entity-permissions">
+                            <columns>
+                                <column id="target"/>
+                                <column id="value"/>
+                            </columns>
+                            <rows datasource="entity-permissions"/>
+                        </table>
+                    </vbox>
+                </tab>
+                <tab id="property-permissions-tab" caption="msg://property-permissions" lazy="true">
+                    <vbox expand="property-permissions">
+                        <hbox>
+                            <button id="property-permissions-grant" action="property-permissions.grant" caption="msg://permissions.grant"/>
+                            <button id="property-permissions-remove" action="property-permissions.remove" caption="msg://permissions.remove"/>
+                        </hbox>
+                        <table id="property-permissions">
+                            <columns>
+                                <column id="target"/>
+                                <column id="value"/>
+                            </columns>
+                            <rows datasource="property-permissions"/>
+                        </table>
+                    </vbox>
+                </tab>
+                <tab id="specific-permissions-tab" caption="msg://specific-permissions" lazy="true">
                     <vbox expand="specific-permissions">
                         <hbox>
-                            <button id="specific-permissions-allow" action="specific-permissions.grant" caption="msg://permissions.grant"/>
-                            <button id="specific-permissions-decline" action="specific-permissions.decline" caption="msg://permissions.decline"/>
+                            <button id="specific-permissions-grant" action="specific-permissions.grant" caption="msg://permissions.grant"/>
                             <button id="specific-permissions-remove" action="specific-permissions.remove" caption="msg://permissions.remove"/>
                         </hbox>
                         <table id="specific-permissions">

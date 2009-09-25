@@ -29,6 +29,8 @@ public class WebTabsheet
 {
     private boolean componentTabChangeListenerInitialized;
 
+    private ComponentLoader.Context context;
+
     public WebTabsheet() {
         component = new TabSheetEx(this);
     }
@@ -135,6 +137,7 @@ public class WebTabsheet
         lazyTabs.add(tabComponent);
 
         this.component.addListener(new LazyTabChangeListener(tabContent, descriptor, loader));
+        context = loader.getContext();
 
         return tab;
     }
@@ -173,7 +176,12 @@ public class WebTabsheet
         if (!componentTabChangeListenerInitialized) {
             component.addListener(new TabSheet.SelectedTabChangeListener() {
                 public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
+                    // Fire GUI listener
                     fireTabChanged();
+                    // Execute outstanding lazy tasks after GUI listener.
+                    // We suppose that context.executeLazyTasks() executes a task once and then remove it from task list.
+                    if (context != null)
+                        context.executeLazyTasks();
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -241,9 +249,6 @@ public class WebTabsheet
                                     if (component instanceof HasSettings) {
                                         Element e = window.getSettings().get(name);
                                         ((HasSettings) component).applySettings(e);
-                                    }
-                                    if (component instanceof BelongToFrame) {
-                                        ((BelongToFrame) component).setFrame(getFrame());
                                     }
                                 }
                             }
