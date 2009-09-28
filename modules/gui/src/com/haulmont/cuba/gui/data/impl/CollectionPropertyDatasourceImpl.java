@@ -180,6 +180,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public void addItem(T item) throws UnsupportedOperationException {
         checkState();
+
+        if (__getCollection() == null) {
+            initCollection();
+        }
+
         __getCollection().add(item);
         attachListener((Instance) item);
 
@@ -196,6 +201,21 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+    }
+
+    private void initCollection() {
+        Instance item = (Instance) ds.getItem();
+        if (item == null)
+            throw new IllegalStateException("Item is null");
+
+        Class<?> type = metaProperty.getJavaField().getType();
+        if (List.class.isAssignableFrom(type)) {
+            item.setValue(metaProperty.getName(), new ArrayList());
+        } else if (Set.class.isAssignableFrom(type)) {
+            item.setValue(metaProperty.getName(), new HashSet());
+        } else {
+            throw new UnsupportedOperationException("Type " + type + " not supported, should implement List or Set");
+        }
     }
 
     public void removeItem(T item) throws UnsupportedOperationException {
@@ -224,6 +244,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     public boolean containsItem(K itemId) {
+        Collection<T> coll = __getCollection();
+        if (coll == null)
+            return false;
+        
         if (itemId instanceof Entity)
             return __getCollection().contains(itemId);
         else {
