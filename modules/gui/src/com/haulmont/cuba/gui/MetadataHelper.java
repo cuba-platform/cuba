@@ -20,9 +20,12 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import javax.persistence.ManyToMany;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Metadata utility methods for use on GenericUI layer
@@ -46,8 +49,6 @@ public class MetadataHelper {
     }
 
     public static boolean isCascade(MetaProperty metaProperty) {
-        boolean cascadeProperty = false;
-
         final Field field = metaProperty.getJavaField();
         if (field != null) {
             OneToMany oneToMany = field.getAnnotation(OneToMany.class);
@@ -56,11 +57,15 @@ public class MetadataHelper {
                 if (cascadeTypes.contains(CascadeType.ALL) ||
                         cascadeTypes.contains(CascadeType.MERGE))
                 {
-                    cascadeProperty = true;
+                    return true;
                 }
             }
+            ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
+            if (manyToMany != null && StringUtils.isBlank(manyToMany.mappedBy())) {
+                return true;
+            }
         }
-        return cascadeProperty;
+        return false;
     }
 
     public static boolean isSystem(MetaProperty metaProperty) {
