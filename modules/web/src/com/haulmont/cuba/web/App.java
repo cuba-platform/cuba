@@ -151,15 +151,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
      * Should be overridden in descendant to create an application-specific main window
      */
     protected AppWindow createAppWindow() {
-        AppWindow appWindow = new AppWindow(connection);
-        appWindow.addListener(new Paintable.RepaintRequestListener() {
-            public void repaintRequested(Paintable.RepaintRequestEvent event) {
-                for (final Timer timer : timers) {
-                    timer.requestRepaint();
-                }
-            }
-        });
-        return appWindow;
+        return new AppWindow(connection);
     }
 
     public AppWindow getAppWindow() {
