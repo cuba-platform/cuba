@@ -81,6 +81,10 @@ public class WebComponentsHelper {
         return  (com.vaadin.ui.Component) comp;
     }
 
+    public static com.haulmont.cuba.web.toolkit.Timer unwrap(com.haulmont.cuba.gui.components.Timer timer) {
+        return (com.haulmont.cuba.web.toolkit.Timer) timer;
+    }
+
     public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
             com.haulmont.cuba.gui.components.Component.Container container)
     {

@@ -11,7 +11,9 @@ package com.haulmont.cuba.web.xml.layout;
 
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.gui.components.*;
 
 import java.util.Map;
@@ -59,5 +61,9 @@ public class WebComponentsFactory implements ComponentsFactory {
             throw new IllegalStateException(String.format("Can't find component class for '%s'", name));
         }
         return (T) componentClass.newInstance();
+    }
+
+    public <T extends Timer> T createTimer() throws InstantiationException {
+        return (T) new WebTimer();
     }
 }

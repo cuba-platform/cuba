@@ -22,17 +22,18 @@ import com.haulmont.cuba.web.exception.*;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
+import com.haulmont.cuba.web.toolkit.Timer;
+import com.haulmont.cuba.web.gui.WebTimer;
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.Terminal;
+import com.vaadin.terminal.Paintable;
 import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Main class of the web application. Each client connection has its own App.
@@ -58,6 +59,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private boolean principalIsWrong;
 
     private LinkHandler linkHandler;
+
+    protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
+    protected Set<Timer> timers = new HashSet<Timer>();
 
     static {
         // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
@@ -147,7 +151,15 @@ public class App extends Application implements ConnectionListener, ApplicationC
      * Should be overridden in descendant to create an application-specific main window
      */
     protected AppWindow createAppWindow() {
-        return new AppWindow(connection);
+        AppWindow appWindow = new AppWindow(connection);
+        appWindow.addListener(new Paintable.RepaintRequestListener() {
+            public void repaintRequested(Paintable.RepaintRequestEvent event) {
+                for (final Timer timer : timers) {
+                    timer.requestRepaint();
+                }
+            }
+        });
+        return appWindow;
     }
 
     public AppWindow getAppWindow() {
@@ -172,6 +184,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");
+
+            stopTimers();
+
             AppWindow window = createAppWindow();
             setMainWindow(window);
 
@@ -187,6 +202,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
         else {
             log.debug("Closing all windows");
             getWindowManager().closeAll();
+
+            stopTimers();
 
             connection.removeListener(getAppWindow());
 
@@ -269,4 +286,53 @@ public class App extends Application implements ConnectionListener, ApplicationC
         }
     }
 
+    public void addTimer(final Timer timer) {
+        addTimer(timer, null);
+    }
+
+    public void addTimer(final Timer timer, com.haulmont.cuba.gui.components.Window owner) {
+        if (timers.add(timer)) {
+            timer.addListener(new Timer.Listener() {
+                public void onTimer(Timer timer) {
+                }
+
+                public void onStopTimer(Timer timer) {
+                    timers.remove(timer);
+                    if (timer instanceof WebTimer) {
+                        idTimers.remove(((WebTimer) timer).getId());
+                    }
+                }
+            });
+            if (timer instanceof WebTimer) {
+                final WebTimer webTimer = (WebTimer) timer;
+                if (owner != null) {
+                    owner.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
+                        public void windowClosed(String actionId) {
+                            timer.stopTimer();
+                        }
+                    });
+                }
+                if (webTimer.getId() != null) {
+                    idTimers.put(webTimer.getId(), webTimer);
+                }
+            }
+        }
+    }
+
+    private void stopTimers() {
+        Set<Timer> timers = new HashSet<Timer>(this.timers);
+        for (final Timer timer : timers) {
+            if (!timer.isStopped()) {
+                timer.stopTimer();
+            }
+        }
+    }
+
+    public Timer getTimer(String id) {
+        return idTimers.get(id);
+    }
+
+    public Set<Timer> getApplicationTimers() {
+        return Collections.unmodifiableSet(timers);
+    }
 }

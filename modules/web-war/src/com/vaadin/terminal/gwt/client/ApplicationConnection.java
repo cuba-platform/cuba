@@ -4,31 +4,14 @@
 
 package com.vaadin.terminal.gwt.client;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.impl.HTTPRequestImpl;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -38,8 +21,10 @@ import com.vaadin.terminal.gwt.client.RenderInformation.Size;
 import com.vaadin.terminal.gwt.client.ui.Field;
 import com.vaadin.terminal.gwt.client.ui.VContextMenu;
 import com.vaadin.terminal.gwt.client.ui.VNotification;
-import com.vaadin.terminal.gwt.client.ui.VView;
 import com.vaadin.terminal.gwt.client.ui.VNotification.HideEvent;
+import com.vaadin.terminal.gwt.client.ui.VView;
+
+import java.util.*;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -114,6 +99,10 @@ public class ApplicationConnection {
     private Set<Paintable> zeroWidthComponents = null;
 
     private Set<Paintable> zeroHeightComponents = null;
+
+
+    private Map<String, ApplicationTimer> applicationTimers = new HashMap<String, ApplicationTimer>();
+    private List<ApplicationTimer> timersToRun = new LinkedList<ApplicationTimer>();
 
     public ApplicationConnection(WidgetSet widgetSet,
             ApplicationConfiguration cnf) {
@@ -744,6 +733,8 @@ public class ApplicationConnection {
 
         Util.componentSizeUpdated(sizeUpdatedWidgets);
 
+        handleTimers(json);
+
         if (meta != null) {
             if (meta.containsKey("appError")) {
                 ValueMap error = meta.getValueMap("appError");
@@ -788,6 +779,40 @@ public class ApplicationConnection {
         console.log("Referenced paintables: " + idToPaintableDetail.size());
 
         endRequest();
+    }
+
+    private void handleTimers(ValueMap json) {
+        final JsArray<ValueMap> timers = json.getJSValueMapArray("timers");
+        if (timers.length() > 0) {
+            for (int i = 0; i < timers.length(); i++) {
+                final UIDL timerUidl = timers.get(i).cast();
+                ApplicationTimer timer;
+                if ((timer = applicationTimers.get(timerUidl.getId())) != null) {
+                    timer.cancel();
+                    if (timerUidl.getBooleanAttribute("stopped")) {
+                        applicationTimers.remove(timerUidl.getId());
+                    } else {
+                        timer.setRepeat(timerUidl.getBooleanAttribute("repeat"));
+                        timer.setDelay(timerUidl.getIntAttribute("delay"));
+
+                        timersToRun.add(timer);
+                    }
+                } else if (!timerUidl.getBooleanAttribute("stopped")) {
+                    timer = new ApplicationTimer(timerUidl.getId(), timerUidl.getBooleanAttribute("repeat"),
+                            timerUidl.getIntAttribute("delay"));
+                    applicationTimers.put(timerUidl.getId(), timer);
+
+                    timersToRun.add(timer);
+                }
+            }
+
+            if (!timersToRun.isEmpty()) {
+                for (final ApplicationTimer timer : timersToRun) {
+                    timer.startTimer();
+                }
+                timersToRun.clear();
+            }
+        }
     }
 
     private UIDL getUidl(JSONArray changes, int i) {
@@ -1332,7 +1357,7 @@ public class ApplicationConnection {
     /**
      * Converts relative sizes into pixel sizes.
      * 
-     * @param child
+     * @param cd component details
      * @return true if the child has a relative size
      */
     private boolean handleComponentRelativeSize(ComponentDetail cd) {
@@ -1702,7 +1727,7 @@ public class ApplicationConnection {
      * window-name used in the server, but might be different from the
      * window-object target-name on client.
      * 
-     * @param stringAttribute
+     * @param newName
      *            New name for the window.
      */
     public void setWindowName(String newName) {
@@ -1752,5 +1777,46 @@ public class ApplicationConnection {
 
     public static boolean isTestingMode() {
         return false;
+    }
+
+    class ApplicationTimer extends Timer {
+
+        private String id;
+        private boolean repeat;
+        private int delay;
+
+        ApplicationTimer(String id, boolean repeat, int delay) {
+            this.id = id;
+            this.repeat = repeat;
+            this.delay = delay;
+        }
+
+        void startTimer() {
+            if (repeat) {
+                scheduleRepeating(delay);
+            } else {
+                schedule(delay);
+            }
+        }
+
+        public void run() {
+            updateVariable(id, "timer", "", true);
+        }
+
+        public boolean isRepeat() {
+            return repeat;
+        }
+
+        public void setRepeat(boolean repeat) {
+            this.repeat = repeat;
+        }
+
+        public int getDelay() {
+            return delay;
+        }
+
+        public void setDelay(int delay) {
+            this.delay = delay;
+        }
     }
 }

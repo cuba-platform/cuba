@@ -10,11 +10,18 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+
+import java.lang.reflect.Method;
+import java.util.List;
 
 public class WindowLoader extends FrameLoader implements ComponentLoader {
 
@@ -33,6 +40,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         final Element layoutElement = element.element("layout");
         loadExpandLayout(window, layoutElement);
         loadSubComponentsAndExpand(window, layoutElement);
+
+        loadTimers(factory, window, element);
 
         return window;
     }
@@ -61,5 +70,69 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         protected Window createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {
             return factory.createComponent("window.lookup");
         }
+    }
+
+    private void loadTimers(ComponentsFactory factory, Window component, Element element) throws InstantiationException {
+        Element timersElement = element.element("timers");
+        if (timersElement != null) {
+            final List timers = timersElement.elements("timer");
+            for (final Object o : timers) {
+                loadTimer(factory, component, (Element) o);
+            }
+        }
+    }
+
+    private void loadTimer(ComponentsFactory factory, final Window component, Element element) throws InstantiationException {
+        try {
+            final Timer timer = factory.createTimer();
+            timer.setXmlDescriptor(element);
+            timer.setId(element.attributeValue("id"));
+            String delay = element.attributeValue("delay");
+            if (StringUtils.isEmpty(delay)) {
+                throw new InstantiationException("Timer delay cannot be empty");
+            }
+            timer.setDelay(Integer.parseInt(delay));
+            timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
+
+            if (!BooleanUtils.toBoolean(element.attributeValue("global"))) {
+                addAssignTimerFrameTask(timer);
+
+                final String onTimer = element.attributeValue("onTimer");
+                if (!StringUtils.isEmpty(onTimer)) {
+                    timer.addTimerListener(new Timer.TimerListener() {
+                        public void onTimer(Timer timer) {
+                            if (onTimer.startsWith("invoke:")) {
+                                String methodName = onTimer.substring("invoke:".length()).trim();
+                                Window window = timer.getFrame();
+                                try {
+                                    Method method = window.getClass().getMethod(methodName, Timer.class);
+                                    method.invoke(window, timer);
+                                } catch (Throwable e) {
+                                    throw new RuntimeException("Unable to invoke onTimer", e);
+                                }
+                            } else {
+                                throw new UnsupportedOperationException("Unsupported onTimer format: " + onTimer);
+                            }
+                        }
+
+                        public void onStopTimer(Timer timer) {
+                            //do nothing
+                        }
+                    });
+                }
+            }
+
+            component.addTimer(timer);
+        } catch (NumberFormatException e) {
+            throw new InstantiationException("Timer delay must be numeric");
+        }
+    }
+
+    private void addAssignTimerFrameTask(final Timer timer) {
+        context.addLazyTask(new LazyTask() {
+            public void execute(Context context, IFrame frame) {
+                timer.setFrame((Window) frame);
+            }
+        });
     }
 }

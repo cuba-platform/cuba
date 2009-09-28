@@ -10,7 +10,9 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Timer;
 
 public interface ComponentsFactory {
     <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException;
+    <T extends Timer> T createTimer() throws InstantiationException;
 }

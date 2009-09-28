@@ -16,9 +16,6 @@ import com.haulmont.cuba.gui.settings.Settings;
 import java.util.Map;
 import java.util.Collection;
 
-/**
- * Root base class for screen controllers
- */
 public class AbstractWindow extends AbstractFrame 
         implements Window, Component.HasXmlDescriptor, Window.Wrapper {
 
@@ -141,6 +138,22 @@ public class AbstractWindow extends AbstractFrame
     public Settings getSettings() {
         if (frame instanceof Window) {
             return ((Window) frame).getSettings();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void addTimer(Timer timer) {
+        if (frame instanceof Window) {
+            ((Window) frame).addTimer(timer);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public Timer getTimer(String id) {
+        if (frame instanceof Window) {
+            return ((Window) frame).getTimer(id);
         } else {
             throw new UnsupportedOperationException();
         }

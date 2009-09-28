@@ -48,6 +48,18 @@ public interface Window extends IFrame, Component.HasCaption, Component.ActionsH
     boolean close(String actionId, boolean force);
 
     /**
+     * Assign a {@link Timer} component to this window.
+     * @param timer Timer component
+     */
+    void addTimer(Timer timer);
+
+    /**
+     * Returns a {@link Timer} assigned to this window by it's own ID
+     * @param id Timer ID
+     */
+    Timer getTimer(String id);
+
+    /**
      * Window intended for editing an entity instance
      */
     interface Editor extends Window {

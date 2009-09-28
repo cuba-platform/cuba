@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataService;
@@ -247,6 +248,14 @@ public class WebWindow
                     }
                 }
         );
+    }
+
+    public void addTimer(Timer timer) {
+        App.getInstance().addTimer((WebTimer) timer, this);
+    }
+
+    public Timer getTimer(String id) {
+        return (Timer) App.getInstance().getTimer(id);
     }
 
     public Settings getSettings() {
