@@ -1,4 +1,4 @@
-<views>
+<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
     <view entity="sec$Group" name="group.lookup">
         <property name="name"/>
     </view>
@@ -15,7 +15,9 @@
     </view>
 
     <view entity="sec$Constraint" name="group.browse">
+        <property name="group" view="group.lookup"/> 
         <property name="entityName"/>
+        <property name="joinClause"/>
         <property name="whereClause"/>
     </view>
 </views>

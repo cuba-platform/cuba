@@ -16,10 +16,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.ComponentVisitor;
-import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
@@ -31,11 +28,12 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.gui.components.WebAbstractTable;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
-import com.haulmont.cuba.web.gui.components.WebAbstractTable;
 import com.vaadin.data.Validator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
@@ -521,6 +519,12 @@ public class WebWindow
                     return MessageProvider.getMessage(messagesPackage, "actions.Ok");
                 }
 
+                @Override
+                public boolean isEnabled() {
+                    return UserSessionClient.getUserSession().isEntityOpPermitted(
+                            getMetaClass(), EntityOp.UPDATE);
+                }
+
                 public void actionPerform(Component component) {
                     if (action != null) {
                         action.actionPerform(component);
@@ -534,7 +538,10 @@ public class WebWindow
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                    return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
+                    boolean commitPermitted = UserSessionClient.getUserSession().isEntityOpPermitted(
+                            getMetaClass(), EntityOp.UPDATE);
+                    return MessageProvider.getMessage(messagesPackage,
+                            commitPermitted ? "actions.Cancel" : "actions.Close");
                 }
 
                 public void actionPerform(Component component) {
@@ -635,6 +642,10 @@ public class WebWindow
                     throw new ValidationException(e.getMessage());
                 }
             }
+        }
+
+        protected MetaClass getMetaClass() {
+            return getDatasource().getMetaClass();
         }
 
         protected Datasource getDatasource() {

@@ -12,13 +12,11 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.Action;
@@ -29,6 +27,9 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -254,7 +255,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     public void setDatasource(CollectionDatasource datasource) {
-
+        UserSession userSession = UserSessionClient.getUserSession();
+        if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
+            component.setVisible(false);
+            return;
+        }
+        
         final Collection<MetaPropertyPath> columns;
         if (this.columns.isEmpty()) {
             columns = null;
@@ -291,7 +297,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             if (column != null) {
                 if (editableColumns != null && column.isEditable()) {
-                    editableColumns.add((MetaPropertyPath) column.getId());
+                    MetaProperty colMetaProperty = propertyPath.getMetaProperty();
+                    MetaClass colMetaClass = colMetaProperty.getDomain();
+                    if (userSession.isEntityAttrPermitted(colMetaClass, colMetaProperty.getName(), EntityAttrAccess.MODIFY)) {
+                        editableColumns.add((MetaPropertyPath) column.getId());
+                    }
                 }
 
                 if (column.isCollapsed() && component.isColumnCollapsingAllowed()) {
@@ -304,7 +314,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
         }
 
-        if (editableColumns != null) {
+        if (editableColumns != null && !editableColumns.isEmpty()) {
             setEditableColumns(editableColumns);
         }
 
@@ -312,7 +322,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         List<MetaPropertyPath> columnsOrder = new ArrayList<MetaPropertyPath>();
         for (Table.Column column : this.columnsOrder) {
-            columnsOrder.add((MetaPropertyPath) column.getId());
+            MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
+            MetaClass colMetaClass = colMetaProperty.getDomain();
+            if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
+                    && userSession.isEntityAttrPermitted(
+                            colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW))
+            {
+                columnsOrder.add((MetaPropertyPath) column.getId());
+            }
         }
 
         setVisibleColumns(columnsOrder);

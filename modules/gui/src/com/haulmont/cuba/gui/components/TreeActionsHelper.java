@@ -7,6 +7,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.security.entity.EntityOp;
 
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
             }
 
             public boolean isEnabled() {
-                return true;
+                return userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE);
             }
 
             public void actionPerform(Component component) {

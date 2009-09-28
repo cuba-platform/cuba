@@ -1,7 +1,8 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    messagesPack="com.haulmont.cuba.web.app.ui.security.group.browse"
+    messagesPack="com.haulmont.cuba.web.app.ui.security.group"
     class="com.haulmont.cuba.web.app.ui.security.group.browse.GroupBrowser"
+    caption="msg://browser.caption"
 >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
@@ -79,6 +80,7 @@
                                 <table id="constraints">
                                     <columns>
                                         <column id="entityName" caption="msg://entity"/>
+                                        <column id="joinClause" caption="msg://join"/>
                                         <column id="whereClause" caption="msg://where"/>
                                     </columns>
                                     <rows datasource="constraints"/>

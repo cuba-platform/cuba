@@ -28,6 +28,8 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadDatasource(component, element);
+
         loadVisible(component, element);
 
         loadStyleName(component, element);
@@ -39,8 +41,6 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
         }
 
         loadWidth(component, element, "-1px");
-
-        loadDatasource(component, element);
 
         component.setFormatter(loadFormatter(element));
 

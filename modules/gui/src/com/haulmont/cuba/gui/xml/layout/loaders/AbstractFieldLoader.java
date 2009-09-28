@@ -36,14 +36,15 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadDatasource(component, element);
+
         loadVisible(component, element);
+        loadEditable(component, element);
 
         loadStyleName(component, element);
 
         loadCaption(component, element);
-        loadEditable(component, element);
 
-        loadDatasource(component, element);
         loadValidators(component, element);
         loadRequired(component, element);
 

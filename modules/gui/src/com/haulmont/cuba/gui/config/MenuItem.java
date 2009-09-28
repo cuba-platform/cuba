@@ -82,8 +82,7 @@ public class MenuItem
         if (StringUtils.isEmpty(id)) {
              return true;
         } else {
-            PermissionConfig permissionConfig = AppConfig.getInstance().getPermissionConfig();
-            return session.isPermitted(PermissionType.SCREEN, permissionConfig.getScreenPermissionTarget(id));
+            return session.isScreenPermitted(AppConfig.getInstance().getClientType(), id);
         }
     }
 }

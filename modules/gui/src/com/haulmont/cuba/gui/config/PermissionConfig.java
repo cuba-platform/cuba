@@ -26,6 +26,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.security.global.UserSession;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -105,10 +106,6 @@ public class PermissionConfig {
     private Tree<Target> entities;
     private Tree<Target> specific;
 
-    public String getScreenPermissionTarget(String screenId) {
-        return clientType.getId() + ":" + screenId;
-    }
-
     public PermissionConfig() {
         this.repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
         this.clientType = AppConfig.getInstance().getClientType();
@@ -146,7 +143,8 @@ public class PermissionConfig {
                 walkMenu(item, n);
             }
         } else {
-            Node<Target> n = new Node<Target>(new Target("item:" + id, caption, getScreenPermissionTarget(id)));
+            Node<Target> n = new Node<Target>(
+                    new Target("item:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
             node.addChild(n);
         }
     }

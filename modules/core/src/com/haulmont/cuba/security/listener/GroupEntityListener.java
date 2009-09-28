@@ -26,8 +26,7 @@ import java.util.List;
 
 public class GroupEntityListener implements 
             BeforeInsertEntityListener<Group>,
-            BeforeUpdateEntityListener<Group>,
-            BeforeDeleteEntityListener<Group>
+            BeforeUpdateEntityListener<Group>
 {
     public void onBeforeInsert(Group entity) {
         createNewHierarchy(entity, entity.getParent());
@@ -90,18 +89,6 @@ public class GroupEntityListener implements
             }
             em.remove(hierarchy);
             createNewHierarchy(dependentGroup, dependentGroup.getParent());
-        }
-    }
-
-    public void onBeforeDelete(Group entity) {
-        if (Utils.isUnitTestMode())
-            return;
-        EntityManager em = PersistenceProvider.getEntityManager();
-        Query q = em.createQuery("select count(p) from sec$Profile p where p.group = ?1");
-        q.setParameter(1, entity);
-        Long count = (Long) q.getSingleResult();
-        if (count > 0) {
-            throw new IllegalStateException("Unable to delete group " + entity + ". Delete profiles first.");
         }
     }
 }

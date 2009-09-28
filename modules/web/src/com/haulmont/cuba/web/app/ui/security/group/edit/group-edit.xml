@@ -1,0 +1,36 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.components.BasicEditor"
+        messagesPack="com.haulmont.cuba.web.app.ui.security.group"
+        caption="msg://editor.caption"
+        datasource="group"
+        >
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <datasource id="group" class="com.haulmont.cuba.security.entity.Group" view="group.browse"/>
+    </dsContext>
+
+    <layout expand="spring">
+        <hbox stylename="edit-area" spacing="true" margin="true" expand="grid">
+            <grid id="grid" spacing="true" stylename="edit-area">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <vbox align="MIDDLE_RIGHT">
+                            <label value="msg://group.name"/>
+                        </vbox>
+                        <textField id="name" datasource="group" property="name"
+                                   width="300px"/>
+                    </row>
+                </rows>
+            </grid>
+        </hbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <hbox id="spring"/>
+    </layout>
+</window>

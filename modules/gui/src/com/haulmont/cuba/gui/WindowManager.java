@@ -126,9 +126,9 @@ public abstract class WindowManager {
     }
 
     private void checkPermission(WindowInfo windowInfo) {
-        boolean permitted = UserSessionClient.getUserSession().isPermitted(
-                PermissionType.SCREEN,
-                AppConfig.getInstance().getPermissionConfig().getScreenPermissionTarget(windowInfo.getId())
+        boolean permitted = UserSessionClient.getUserSession().isScreenPermitted(
+                AppConfig.getInstance().getClientType(),
+                windowInfo.getId()
         );
         if (!permitted)
             throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());

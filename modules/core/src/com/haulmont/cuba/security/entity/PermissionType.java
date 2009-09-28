@@ -22,10 +22,10 @@ public enum PermissionType implements EnumClass<Integer>
     /** Permission to screen */
     SCREEN(10),
 
-    /** Permission to entity operation (view, create, update, delete) */
+    /** Permission to entity operation (see {@link EntityOp}) */
     ENTITY_OP(20),
 
-    /** Permission to entity attribute (none, view, modify) */
+    /** Permission to entity attribute (see {@link EntityAttrAccess}) */
     ENTITY_ATTR(30),
 
     /** Application-specific permission */

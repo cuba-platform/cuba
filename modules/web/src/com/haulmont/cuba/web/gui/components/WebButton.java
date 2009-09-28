@@ -52,5 +52,7 @@ public class WebButton
         if (!StringUtils.isEmpty(caption)) {
             component.setCaption(caption);
         }
+
+        component.setEnabled(action.isEnabled());
     }
 }

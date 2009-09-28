@@ -39,6 +39,7 @@ public class GroupBrowser extends AbstractWindow
         final TreeActionsHelper helper = new TreeActionsHelper(this, tree);
         helper.createCreateAction(WindowManager.OpenType.DIALOG);
         helper.createEditAction(WindowManager.OpenType.DIALOG);
+        helper.createRemoveAction();
 
         final Table users = getComponent("users");
         Table constraints = getComponent("constraints");
@@ -81,7 +82,7 @@ public class GroupBrowser extends AbstractWindow
                                 ds.refresh();
                             }
                         }
-                    }, WindowManager.OpenType.THIS_TAB);
+                    }, WindowManager.OpenType.DIALOG);
                 }
             }
         });

@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.security.entity.EntityOp;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
             }
 
             public boolean isEnabled() {
-                return true;
+                return userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE);
             }
 
             public void actionPerform(Component component) {

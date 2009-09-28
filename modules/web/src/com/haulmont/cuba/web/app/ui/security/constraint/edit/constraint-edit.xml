@@ -1,0 +1,57 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.components.BasicEditor"
+        datasource="constraint"
+        messagesPack="com.haulmont.cuba.web.app.ui.security.constraint"
+        >
+
+    <metadataContext>
+        <view class="com.haulmont.cuba.security.entity.Constraint" name="edit">
+            <property name="entityName"/>
+            <property name="joinClause"/>
+            <property name="whereClause"/>
+        </view>
+    </metadataContext>
+
+    <dsContext>
+        <datasource id="constraint" class="com.haulmont.cuba.security.entity.Constraint" view="edit"/>
+    </dsContext>
+
+    <layout>
+        <vbox expand="spring">
+            <hbox stylename="edit-area" spacing="true" margin="true" expand="grid">
+                <grid id="grid" spacing="true" stylename="edit-area">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <vbox align="MIDDLE_RIGHT">
+                                <label value="msg://entityName"/>
+                            </vbox>
+                            <textField id="entityName" datasource="constraint" property="entityName"
+                                       width="500px"/>
+                        </row>
+                        <row>
+                            <vbox align="MIDDLE_RIGHT">
+                                <label value="msg://joinClause"/>
+                            </vbox>
+                            <textField id="joinClause" datasource="constraint" property="joinClause"
+                                       width="500px" rows="3"/>
+                        </row>
+                        <row>
+                            <vbox align="MIDDLE_RIGHT">
+                                <label value="msg://whereClause"/>
+                            </vbox>
+                            <textField id="whereClause" datasource="constraint" property="whereClause"
+                                       width="500px" rows="3"/>
+                        </row>
+                    </rows>
+                </grid>
+            </hbox>
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+            <hbox id="spring"/>
+        </vbox>
+    </layout>
+
+</window>

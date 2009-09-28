@@ -1,8 +1,9 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    messagesPack="com.haulmont.cuba.web.app.ui.security.group.browse"
+    messagesPack="com.haulmont.cuba.web.app.ui.security.group"
     class="com.haulmont.cuba.web.app.ui.security.group.lookup.GroupLookup"
     lookupComponent="groups"
+    caption="msg://browser.caption"
 >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>

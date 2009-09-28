@@ -1,15 +1,15 @@
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.ComponentVisitor;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaClass;
 
 import java.util.Set;
 import java.util.Map;
@@ -18,10 +18,14 @@ import java.util.Collections;
 abstract class ListActionsHelper<T extends List> {
     protected IFrame frame;
     protected T component;
+    protected UserSession userSession;
+    protected MetaClass metaClass;
 
     ListActionsHelper(IFrame frame, T component) {
         this.frame = frame;
         this.component = component;
+        userSession = UserSessionClient.getUserSession();
+        metaClass = component.getDatasource().getMetaClass();
     }
 
     public Action createCreateAction() {
@@ -62,7 +66,10 @@ abstract class ListActionsHelper<T extends List> {
         final AbstractAction action = new AbstractAction("edit") {
             public String getCaption() {
                 final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Edit");
+                if (userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
+                    return MessageProvider.getMessage(messagesPackage, "actions.Edit");
+                else
+                    return MessageProvider.getMessage(messagesPackage, "actions.View");
             }
 
             public boolean isEnabled() {
@@ -136,7 +143,7 @@ abstract class ListActionsHelper<T extends List> {
             }
 
             public boolean isEnabled() {
-                return true;
+                return userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE);
             }
 
             public void actionPerform(Component component) {

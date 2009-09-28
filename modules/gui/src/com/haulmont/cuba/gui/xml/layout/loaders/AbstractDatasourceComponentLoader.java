@@ -27,7 +27,7 @@ public abstract class AbstractDatasourceComponentLoader extends ComponentLoader 
     protected void loadDatasource(DatasourceComponent component, Element element) {
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
-            final Datasource ds = context.getDSContext().get(datasource);
+            final Datasource ds = context.getDsContext().get(datasource);
 
             final String property = element.attributeValue("property");
             if (StringUtils.isEmpty(property))

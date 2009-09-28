@@ -11,7 +11,9 @@
 package com.haulmont.cuba.security.global;
 
 import com.haulmont.cuba.core.global.UuidProvider;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.chile.core.model.MetaClass;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +36,22 @@ public class UserSession implements Serializable
     private Map<String, List<String[]>> constraints;
 
     private final Map<String, Serializable> attributes;
+
+    public static String getScreenPermissionTarget(ClientType clientType, String windowAlias) {
+        return clientType.getId() + ":" + windowAlias;
+    }
+
+    public static String getEntityOpPermissionTarget(MetaClass metaClass, EntityOp operation) {
+        return metaClass.getName() + ":" + operation.getId();
+    }
+
+    public static String getEntityAttrPermissionTarget(MetaClass metaClass, String attribute) {
+        return metaClass.getName() + ":" + attribute;
+    }
+
+    public static String getSpecificPermissionTarget(String name) {
+        return name;
+    }
 
     public UserSession(User user, String[] roles, Locale locale) {
         this.id = UuidProvider.createUuid();
@@ -107,6 +125,31 @@ public class UserSession implements Serializable
      */
     public Integer getPermissionValue(PermissionType type, String target) {
         return permissions[type.ordinal()].get(target);
+    }
+
+    /** Check user permission for the screen */
+    public boolean isScreenPermitted(ClientType clientType, String windowAlias) {
+        return isPermitted(PermissionType.SCREEN,
+                getScreenPermissionTarget(clientType, windowAlias));
+    }
+
+    /** Check user permission for the entity operation */
+    public boolean isEntityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+        return isPermitted(PermissionType.ENTITY_OP,
+                getEntityOpPermissionTarget(metaClass, entityOp));
+    }
+
+    /** Check user permission for the entity attribute */
+    public boolean isEntityAttrPermitted(MetaClass metaClass, String property, EntityAttrAccess access) {
+        return isPermitted(PermissionType.ENTITY_ATTR,
+                getEntityAttrPermissionTarget(metaClass, property),
+                access.getId());
+    }
+
+    /** Check specific user permission */
+    public boolean isSpecificPermitted(String name) {
+        return isPermitted(PermissionType.SCREEN,
+                getSpecificPermissionTarget(name));
     }
 
     /**

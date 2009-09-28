@@ -33,6 +33,7 @@ public abstract class SecurityProvider
     public static final String CONSTRAINT_PARAM_SESSION_ATTR = "session$";
     public static final String CONSTRAINT_PARAM_USER_LOGIN = "userLogin";
     public static final String CONSTRAINT_PARAM_USER_ID = "userId";
+    public static final String CONSTRAINT_PARAM_USER_GROUP_ID = "userGroupId";
 
     private static SecurityProvider instance;
 
@@ -113,13 +114,20 @@ public abstract class SecurityProvider
 
     protected void setQueryParam(Query query, String paramName) {
         if (paramName.startsWith(CONSTRAINT_PARAM_SESSION_ATTR)) {
+            UserSession userSession = __currentUserSession();
+
             String attrName = paramName.substring(CONSTRAINT_PARAM_SESSION_ATTR.length());
             if (CONSTRAINT_PARAM_USER_LOGIN.equals(attrName)) {
-                query.setParameter(paramName, __currentUserSession().getUser().getLogin());
+                query.setParameter(paramName, userSession.getUser().getLogin());
             } else if (CONSTRAINT_PARAM_USER_ID.equals(attrName)) {
-                query.setParameter(paramName, __currentUserSession().getUser().getId());
+                query.setParameter(paramName, userSession.getUser().getId());
+            } else if (CONSTRAINT_PARAM_USER_GROUP_ID.equals(attrName)) {
+                Object groupId = userSession.getSubstitutedUser() == null ?
+                        userSession.getUser().getGroup().getId() :
+                        userSession.getSubstitutedUser().getGroup().getId();
+                query.setParameter(paramName, groupId);
             } else {
-                Serializable value = __currentUserSession().getAttribute(attrName);
+                Serializable value = userSession.getAttribute(attrName);
                 query.setParameter(paramName, value);
             }
         }

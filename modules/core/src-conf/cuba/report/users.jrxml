@@ -18,9 +18,6 @@
 	<field name="email" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="ad_user" class="java.lang.String">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
 	<background>
 		<band/>
 	</background>
@@ -81,13 +78,6 @@
 				</textElement>
 				<text><![CDATA[email]]></text>
 			</staticText>
-			<staticText>
-				<reportElement mode="Opaque" x="460" y="0" width="92" height="18" forecolor="#FFFFFF" backcolor="#999999"/>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<text><![CDATA[ad_user]]></text>
-			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -126,13 +116,6 @@
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{email}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="460" y="0" width="92" height="20"/>
-				<textElement>
-					<font size="12"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{ad_user}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

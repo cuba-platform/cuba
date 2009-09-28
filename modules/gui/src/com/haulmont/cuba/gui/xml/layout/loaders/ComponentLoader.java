@@ -9,11 +9,19 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.MessageUtils;
+import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.DatasourceComponent;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaClass;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -74,6 +82,19 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadEditable(Component component, Element element) {
         if (component instanceof Component.Editable) {
+            if (component instanceof DatasourceComponent
+                    && ((DatasourceComponent) component).getDatasource() != null)
+            {
+                MetaClass metaClass = ((DatasourceComponent) component).getDatasource().getMetaClass();
+                MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
+
+                UserSession userSession = UserSessionClient.getUserSession();
+                if (!userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY)) {
+                    ((Component.Editable) component).setEditable(false);
+                    return;
+                }
+            }
+
             final String editable = element.attributeValue("editable");
             if (!StringUtils.isEmpty(editable)) {
                 ((Component.Editable) component).setEditable(BooleanUtils.toBoolean(editable));
@@ -91,6 +112,20 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected void loadVisible(Component component, Element element) {
+        if (component instanceof DatasourceComponent 
+                && ((DatasourceComponent) component).getDatasource() != null)
+        {
+            MetaClass metaClass = ((DatasourceComponent) component).getDatasource().getMetaClass();
+            MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
+
+            UserSession userSession = UserSessionClient.getUserSession();
+            if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ)
+                    || !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW)) {
+                component.setVisible(false);
+                return;
+            }
+        }
+
         String visible = element.attributeValue("visible");
         if (visible == null) {
             final Element e = element.element("visible");

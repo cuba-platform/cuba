@@ -19,6 +19,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 
 import javax.ejb.*;
 import javax.interceptor.Interceptors;
@@ -94,7 +96,11 @@ public class DataServiceBean implements DataService, DataServiceRemote
             log.debug("load: metaClass=" + context.getMetaClass() + ", id=" + context.getId() + ", view=" + context.getView());
 
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
-        checkPermission(metaClass, "view");
+
+        if (!SecurityProvider.currentUserSession().isEntityOpPermitted(metaClass, EntityOp.READ)) {
+            log.debug("reading of " + metaClass + " not permitted, returning null");
+            return null;
+        }
 
         Object result;
 
@@ -141,7 +147,11 @@ public class DataServiceBean implements DataService, DataServiceRemote
                     + ", query=" + printQuery(context.getQuery()));
 
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
-        checkPermission(metaClass, "read");
+
+        if (!SecurityProvider.currentUserSession().isEntityOpPermitted(metaClass, EntityOp.READ)) {
+            log.debug("reading of " + metaClass + " not permitted, returning empty list");
+            return Collections.emptyList();
+        }
 
         List resultList;
 
@@ -216,8 +226,8 @@ public class DataServiceBean implements DataService, DataServiceRemote
         return query;
     }
 
-    protected void checkPermission(MetaClass metaClass, String operation) {
-        String target = metaClass.getName() + ":" + operation;
+    protected void checkPermission(MetaClass metaClass, EntityOp operation) {
+        String target = UserSession.getEntityOpPermissionTarget(metaClass, operation);
         if (!SecurityProvider.currentUserSession().isPermitted(PermissionType.ENTITY_OP, target))
             throw new AccessDeniedException(PermissionType.ENTITY_OP, target);
     }
@@ -232,22 +242,23 @@ public class DataServiceBean implements DataService, DataServiceRemote
             if (metaClass == null) continue;
 
             if (PersistenceHelper.isNew(entity)) {
-                checkPermission(checkedUpdateRights, metaClass, "update");
+                checkPermission(checkedUpdateRights, metaClass, EntityOp.UPDATE);
             } else {
-                checkPermission(checkedCreateRights, metaClass, "create");
+                checkPermission(checkedCreateRights, metaClass, EntityOp.CREATE);
             }
         }
 
         for (Entity entity : context.getRemoveInstances()) {
             MetaClass metaClass = entity instanceof Instance ? ((Instance) entity).getMetaClass() : null;
             if (metaClass == null) continue;
-            checkPermission(checkedDeleteRights, metaClass, "delete");
+            checkPermission(checkedDeleteRights, metaClass, EntityOp.DELETE);
 
         }
     }
 
-    protected void checkPermission(Set<MetaClass> cache, MetaClass metaClass, String operation) {
-        if (cache.contains(metaClass)) return;
+    protected void checkPermission(Set<MetaClass> cache, MetaClass metaClass, EntityOp operation) {
+        if (cache.contains(metaClass))
+            return;
         checkPermission(metaClass, operation);
         cache.add(metaClass);
     }

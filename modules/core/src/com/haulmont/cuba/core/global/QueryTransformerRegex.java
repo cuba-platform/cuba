@@ -94,8 +94,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         if (!StringUtils.isBlank(join)) {
             buffer.insert(insertPos, " ");
             insertPos++;
-            buffer.insert(insertPos, join);
-            insertPos += join.length();
+            int joinLen = insertReplacingAlias(buffer, insertPos, join, alias);
+            insertPos += joinLen;
 
             Matcher paramMatcher = PARAM_PATTERN.matcher(join);
             while (paramMatcher.find()) {
@@ -139,15 +139,29 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         addWhere(query.substring(startPos, endPos));
     }
 
-    private void addReplacingAlias(StringBuilder sb, String where, String alias) {
-        Matcher matcher = ALIAS_PATTERN.matcher(where);
+    private void addReplacingAlias(StringBuilder sb, String clause, String alias) {
+        Matcher matcher = ALIAS_PATTERN.matcher(clause);
         int pos = 0;
         while (matcher.find()) {
-            sb.append(where.substring(pos, matcher.start(2)));
+            sb.append(clause.substring(pos, matcher.start(2)));
             pos = matcher.end(2);
             sb.append(alias);
         }
-        sb.append(where.substring(pos));
+        sb.append(clause.substring(pos));
+    }
+
+    private int insertReplacingAlias(StringBuffer sb, int insertPos, String clause, String alias) {
+        Matcher matcher = ALIAS_PATTERN.matcher(clause);
+        int pos = 0;
+        while (matcher.find()) {
+            sb.insert(insertPos, clause.substring(pos, matcher.start(2)));
+            insertPos += clause.substring(pos, matcher.start(2)).length();
+            pos = matcher.end(2);
+            sb.insert(insertPos, alias);
+            insertPos += alias.length();
+        }
+        sb.insert(insertPos, clause.substring(pos));
+        return alias.length() + clause.substring(pos).length();
     }
 
     public void replaceWithCount() {

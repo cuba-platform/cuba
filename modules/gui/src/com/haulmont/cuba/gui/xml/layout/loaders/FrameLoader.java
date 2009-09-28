@@ -41,7 +41,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         if (dsContextElement != null) {
             final DsContextLoader contextLoader =
-                    new DsContextLoader(new DatasourceFactoryImpl(), context.getDSContext().getDataService());
+                    new DsContextLoader(new DatasourceFactoryImpl(), context.getDsContext().getDataService());
             dsContext = contextLoader.loadDatasources(dsContextElement);
             
             final ComponentLoaderContext context = new ComponentLoaderContext(dsContext, params);

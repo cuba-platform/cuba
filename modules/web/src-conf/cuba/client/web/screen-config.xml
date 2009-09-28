@@ -9,14 +9,6 @@
     <screen id="sec$User.browse"
             template="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.xml"/>
 
-    <!--<screen id="sec$User.browse" class="com.haulmont.cuba.web.gui.GenericBrowserWindow">-->
-        <!--<params>-->
-            <!--<param name="metaClass" value="sec$User"/>-->
-            <!--<param name="view" value="user.edit"/>-->
-            <!--<param name="editable" value="true"/>-->
-        <!--</params>-->
-    <!--</screen>-->
-
     <screen id="sec$User.edit"
             template="/com/haulmont/cuba/web/app/ui/security/user/edit/user-edit.xml"/>
 
@@ -25,6 +17,9 @@
 
     <screen id="sec$UserSubstitution.edit"
             template="/com/haulmont/cuba/web/app/ui/security/usersubst/edit/usersubst-edit.xml"/>
+
+    <screen id="sec$Group.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/group/edit/group-edit.xml"/>
 
     <screen id="sec$Group.browse"
             template="/com/haulmont/cuba/web/app/ui/security/group/browse/group-browse.xml"/>
@@ -51,5 +46,8 @@
 
     <screen id="sec$UserSessionEntity.browse"
             template="/com/haulmont/cuba/web/app/ui/security/session/browse/session-browse.xml"/>
+
+    <screen id="sec$Constraint.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/constraint/constraint-edit.xml"/>
 
 </screen-config>

@@ -66,7 +66,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final String datasource = rowsElement.attributeValue("datasource");
 
         if (!StringUtils.isBlank(datasource)) {
-            final CollectionDatasource ds = context.getDSContext().get(datasource);
+            final CollectionDatasource ds = context.getDsContext().get(datasource);
             List<Table.Column> availableColumns = new ArrayList<Table.Column>();
 
             if (columnsElement != null) {

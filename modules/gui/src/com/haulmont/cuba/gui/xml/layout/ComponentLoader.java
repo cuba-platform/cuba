@@ -24,7 +24,7 @@ public interface ComponentLoader {
 
     public interface Context {
         Map<String, Object> getParameters();
-        DsContext getDSContext();
+        DsContext getDsContext();
         Binding getBinding();
 
         void addLazyTask(LazyTask task);

@@ -29,7 +29,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         return Collections.unmodifiableMap(parameters);
     }
 
-    public DsContext getDSContext() {
+    public DsContext getDsContext() {
         return dsContext;
     }
 
