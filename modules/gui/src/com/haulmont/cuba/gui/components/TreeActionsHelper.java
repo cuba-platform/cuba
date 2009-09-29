@@ -45,7 +45,7 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
                 final Window window = frame.openEditor(windowID, item, openType, valueProvider.getParameters());
                 window.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
-                        if (window instanceof Window.Editor) {
+                        if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                             Object item = ((Window.Editor) window).getItem();
                             if (item instanceof Entity)
                                 datasource.addItem((Entity) item);

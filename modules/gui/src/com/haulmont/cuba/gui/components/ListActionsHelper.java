@@ -95,7 +95,7 @@ abstract class ListActionsHelper<T extends List> {
                     if (parentDs == null) {
                         window.addListener(new Window.CloseListener() {
                             public void windowClosed(String actionId) {
-                                if (window instanceof Window.Editor) {
+                                if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                                     Object item = ((Window.Editor) window).getItem();
                                     if (item instanceof Entity)
                                         datasource.updateItem((Entity) item);
