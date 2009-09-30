@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -58,7 +59,12 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
 
     public Object getValue() {
         final Instance instance = getInstance();
-        return instance == null ? null : InstanceUtils.getValueEx(instance, propertyPath.getPath());
+        Object value = instance == null ? null : InstanceUtils.getValueEx(instance, propertyPath.getPath());
+        if (value == null && propertyPath.getRange().isDatatype()
+                && propertyPath.getRange().asDatatype().equals(Datatypes.getInstance().get(Boolean.class))) {
+            value = Boolean.FALSE;
+        }
+        return value;
     }
 
     protected Instance getInstance() {
