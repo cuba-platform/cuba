@@ -68,6 +68,74 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         }
     }
 
+    public void addWhereAsIs(String where) {
+        boolean entityFound = false;
+        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        while (entityMatcher.find()) {
+            if (targetEntity.equals(entityMatcher.group(1))) {
+                entityFound = true;
+                break;
+            }
+        }
+        if (!entityFound)
+            error("No target entity " + targetEntity + " specified");
+
+        int insertPos = buffer.length();
+        Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
+        if (lastClauseMatcher.find(entityMatcher.end()))
+            insertPos = lastClauseMatcher.start() - 1;
+
+        StringBuilder sb = new StringBuilder();
+        Matcher whereMatcher = WHERE_PATTERN.matcher(buffer);
+        if (whereMatcher.find(entityMatcher.end()))
+            sb.append(" and ");
+        else
+            sb.append(" where ");
+
+        sb.append(where);
+
+        buffer.insert(insertPos, sb);
+
+        Matcher paramMatcher = PARAM_PATTERN.matcher(where);
+        while (paramMatcher.find()) {
+            addedParams.add(paramMatcher.group(1));
+        }
+    }
+
+    public void addJoinAsIs(String join) {
+        boolean entityFound = false;
+        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        while (entityMatcher.find()) {
+            if (targetEntity.equals(entityMatcher.group(1))) {
+                entityFound = true;
+                break;
+            }
+        }
+        if (!entityFound)
+            error("No target entity " + targetEntity + " specified");
+
+        int insertPos = buffer.length();
+
+        Matcher whereMatcher = WHERE_PATTERN.matcher(buffer);
+        if (whereMatcher.find(entityMatcher.end())) {
+            insertPos = whereMatcher.start() - 1;
+        } else {
+            Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
+            if (lastClauseMatcher.find(entityMatcher.end()))
+                insertPos = lastClauseMatcher.start() - 1;
+        }
+
+        buffer.insert(insertPos, " ");
+        insertPos++;
+
+        buffer.insert(insertPos, join);
+
+        Matcher paramMatcher = PARAM_PATTERN.matcher(join);
+        while (paramMatcher.find()) {
+            addedParams.add(paramMatcher.group(1));
+        }
+    }
+
     public void addJoinAndWhere(String join, String where) {
         String alias = null;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);

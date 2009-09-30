@@ -1,0 +1,3 @@
+<filter>
+    <c><![CDATA[d.processState <> 'Version']]></c>
+</filter>

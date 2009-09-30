@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.filter.QueryFilter;
 
 import java.util.Collection;
 import java.util.Map;
@@ -67,6 +68,9 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     /** Query string which is used to load data. Implementation-dependent (JPQL, Groovy, etc.). */
     String getQuery();
 
+    /** Query filter associated with {@link #getQuery()} */
+    QueryFilter getQueryFilter();
+
     /**
      * Set query string which is used to load data. Implementation-dependent (JPQL, Groovy, etc.).
      * <br>The query may use the following parameters, distiguished by prefix:
@@ -80,6 +84,21 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
      * </ul>
      */
     void setQuery(String query);
+
+    /**
+     * Set query string and associated filter which is used to load data. 
+     * Query is implementation-dependent (JPQL, Groovy, etc.).
+     * <br>The query may use the following parameters, distiguished by prefix:
+     * <ul>
+     * <li><code>ds$</code> - current item in the specified datasource
+     * <li><code>component$</code> - value of the specified UI component
+     * <li><code>param$</code> - value of parameter passed to the window when opening it
+     * <li><code>session$</code> - <code>userId</code> represents current user ID,
+     * any other string represents a user session attribute with this name
+     * <li><code>custom$</code> - value of parameter passed to the {@link #refresh(java.util.Map)} method
+     * </ul>
+     */
+    void setQuery(String query, QueryFilter filter);
 
     /**
      * Refresh datasource passing specified parameters to the query.

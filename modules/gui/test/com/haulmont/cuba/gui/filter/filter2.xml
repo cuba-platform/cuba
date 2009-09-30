@@ -1,0 +1,3 @@
+<filter>
+    <c>d.processState = :custom$filter_state</c>
+</filter>

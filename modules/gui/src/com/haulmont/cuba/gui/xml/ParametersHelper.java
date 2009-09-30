@@ -9,6 +9,9 @@
  */
 package com.haulmont.cuba.gui.xml;
 
+import com.haulmont.cuba.gui.filter.QueryFilter;
+
+import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.*;
@@ -16,7 +19,18 @@ import java.util.*;
 public class ParametersHelper {
     private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile(":([\\w\\.\\$]+)");
 
-    public static ParameterInfo[] parseQuery(String query) {
+    public static Set<String> extractNames(String text) {
+        Set<String> set = new HashSet<String>();
+        
+        Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(text);
+        while (matcher.find()) {
+            set.add(matcher.group(1));
+        }
+
+        return set;
+    }
+
+    public static ParameterInfo[] parseQuery(String query, @Nullable QueryFilter filter) {
         Set<ParameterInfo> infos = new HashSet<ParameterInfo>();
 
         Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(query);
@@ -24,6 +38,13 @@ public class ParametersHelper {
             final String parameterInfo = matcher.group();
             final ParameterInfo info = parse(parameterInfo);
             infos.add(info);
+        }
+
+        if (filter != null) {
+            for (String s : filter.getParameters()) {
+                ParameterInfo info = parse(":" + s);
+                infos.add(info);
+            }
         }
 
         return infos.toArray(new ParameterInfo[infos.size()]);

@@ -293,7 +293,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 }
             }
 
-            String queryString = getJPQLQuery(this.query, getTemplateParams(params));
+            String queryString = getJPQLQuery(getTemplateParams(params));
             context.setQueryString(queryString).setParameters(parameters);
         } else {
             context.setQueryString("select e from " + metaClass.getName() + " e");

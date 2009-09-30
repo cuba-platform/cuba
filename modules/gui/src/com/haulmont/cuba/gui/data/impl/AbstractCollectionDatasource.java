@@ -16,6 +16,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Versioned;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.security.global.UserSession;
@@ -30,6 +31,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         CollectionDatasource<T, K>
 {
     protected String query;
+    private QueryFilter filter;
     protected ParametersHelper.ParameterInfo[] queryParameters;
     protected boolean softDeletion;
 
@@ -69,12 +71,23 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return query;
     }
 
+    public QueryFilter getQueryFilter() {
+        return filter;
+    }
+
     public synchronized void setQuery(String query) {
+        setQuery(query, null);
+    }
+
+    public void setQuery(String query, QueryFilter filter) {
+        this.filter = filter;
+
         if (!ObjectUtils.equals(this.query, query)) {
             this.query = query;
             invalidate();
 
-            queryParameters = ParametersHelper.parseQuery(query);
+            queryParameters = ParametersHelper.parseQuery(query, filter);
+
             for (ParametersHelper.ParameterInfo info : queryParameters) {
                 final ParametersHelper.ParameterInfo.Type type = info.getType();
                 if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(type)) {
@@ -110,7 +123,6 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     }
                 }
             }
-
         }
     }
 
@@ -178,7 +190,12 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return map;
     }
 
-    protected String getJPQLQuery(String query, Map<String, Object> parameterValues) {
+    protected String getJPQLQuery(Map<String, Object> parameterValues) {
+        String query;
+        if (filter == null)
+            query = this.query;
+        else
+            query = filter.processQuery(this.query, parameterValues);
 
         for (ParametersHelper.ParameterInfo info : queryParameters) {
             final String paramName = info.getName();

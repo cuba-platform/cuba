@@ -1,0 +1,9 @@
+<filter>
+    <or>
+        <and>
+            <c>d.processState = :custom$filter_state</c>
+            <c>d.barCode like :custom$filter_barCode</c>
+        </and>
+        <c><![CDATA[d.processState <> :custom$filter_notSigned]]></c>
+    </or>
+</filter>

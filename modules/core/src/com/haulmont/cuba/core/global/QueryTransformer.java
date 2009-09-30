@@ -20,7 +20,13 @@ public interface QueryTransformer
     /** Adds 'where' clause replacing entity alias */
     void addWhere(String where);
 
-    /** Adds 'join' and 'where' clauses. Does not replace entity aliases */
+    /** Adds 'where' clause */
+    void addWhereAsIs(String where);
+
+    /** Adds 'join' clause */
+    void addJoinAsIs(String join);
+
+    /** Adds 'join' and 'where' clauses. Replaces alias in 'join' but doesn't replace it in 'where'*/
     void addJoinAndWhere(String join, String where);
 
     /** Adds 'where' clause from the query provided. Replaces entity alias */

@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.filter.QueryFilter;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -263,9 +264,17 @@ public class DsContextLoader {
             datasource = factory.createCollectionDatasource(context, dataservice, id, metaClass, viewName, mode, softDeletion);
         }
 
-        final String query = element.elementText("query");
-        if (!StringUtils.isBlank(query)) {
-            datasource.setQuery(query);
+        Element queryElem = element.element("query");
+        if (queryElem != null) {
+            Element filterElem = queryElem.element("filter");
+
+            String query = queryElem.getText();
+            if (!StringUtils.isBlank(query)) {
+                if (filterElem != null)
+                    datasource.setQuery(query, new QueryFilter(filterElem, metaClass.getName()));
+                else
+                    datasource.setQuery(query);
+            }
         }
 
         loadDatasources(element, datasource);

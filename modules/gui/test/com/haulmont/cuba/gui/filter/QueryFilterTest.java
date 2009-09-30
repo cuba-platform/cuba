@@ -1,0 +1,131 @@
+/*
+ * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Konstantin Krivopustov
+ * Created: 29.09.2009 15:43:44
+ *
+ * $Id$
+ */
+package com.haulmont.cuba.gui.filter;
+
+import com.haulmont.bali.util.Dom4j;
+import junit.framework.TestCase;
+import org.dom4j.Document;
+
+import java.io.InputStream;
+import java.util.Map;
+import java.util.HashMap;
+
+public class QueryFilterTest extends TestCase {
+
+    private QueryFilter createFilter(String name) {
+        InputStream stream = QueryFilterTest.class.getResourceAsStream("/com/haulmont/cuba/gui/filter/" + name);
+        Document doc = Dom4j.readDocument(stream);
+        return new QueryFilter(doc.getRootElement(), "saneco$GenDoc");
+    }
+
+    public void test1() {
+        QueryFilter filter = createFilter("filter1.xml");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("p1", "v1");
+        String s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState <> 'Version'", s);
+    }
+
+    public void test2() {
+        QueryFilter filter = createFilter("filter2.xml");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("p1", "v1");
+        String s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d", s);
+
+        params.put("custom$filter_state", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
+    }
+
+    public void test3() {
+        QueryFilter filter = createFilter("filter3.xml");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("p1", "v1");
+        String s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d", s);
+
+        params.put("custom$filter_state", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
+
+        params.put("custom$filter_barCode", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
+    }
+
+    public void test4() {
+        QueryFilter filter = createFilter("filter4.xml");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("p1", "v1");
+        String s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d", s);
+
+        params.put("custom$filter_state", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
+
+        params.put("custom$filter_barCode", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
+
+        params.put("custom$filter_notSigned", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned)", s);
+    }
+
+    public void test5() {
+        QueryFilter filter = createFilter("filter5.xml");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("p1", "v1");
+        String s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d", s);
+
+        params.put("custom$filter_state", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
+
+        params.put("custom$filter_barCode", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
+
+        params.put("custom$filter_notSigned", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d where 1=1", params);
+        assertEquals("select distinct d from saneco$GenDoc d where 1=1 and ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned)", s);
+    }
+
+    public void test6() {
+        QueryFilter filter = createFilter("filter6.xml");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("p1", "v1");
+        String s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d", s);
+
+        params.put("custom$filter_state", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d , docflow$DocumentRole dr where d.processState = :custom$filter_state", s);
+
+        params.put("custom$filter_barCode", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d", params);
+        assertEquals("select distinct d from saneco$GenDoc d , docflow$DocumentRole dr where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
+
+        params.put("custom$filter_notSigned", "v1");
+        s = filter.processQuery("select distinct d from saneco$GenDoc d where 1=1", params);
+        assertEquals("select distinct d from saneco$GenDoc d , docflow$DocumentRole dr where 1=1 and ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned)", s);
+    }
+
+}

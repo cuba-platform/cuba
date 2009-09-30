@@ -1,0 +1,6 @@
+<filter>
+    <and>
+        <c>d.processState = :custom$filter_state</c>
+        <c>d.barCode like :custom$filter_barCode</c>
+    </and>
+</filter>

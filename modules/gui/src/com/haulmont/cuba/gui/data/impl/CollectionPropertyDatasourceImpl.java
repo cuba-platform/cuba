@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -264,7 +265,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         return null;
     }
 
+    public QueryFilter getQueryFilter() {
+        return null;
+    }
+
     public void setQuery(String query) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setQuery(String query, QueryFilter filter) {
         throw new UnsupportedOperationException();
     }
 

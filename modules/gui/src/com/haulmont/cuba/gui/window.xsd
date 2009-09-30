@@ -32,7 +32,13 @@
                                         <xs:sequence>
                                             <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
                                             <xs:element name="dataserviceClass" minOccurs="0" maxOccurs="1"/>
-                                            <xs:element name="query" minOccurs="0" maxOccurs="1"/>
+                                            <xs:element name="query" minOccurs="0" maxOccurs="1">
+                                                <xs:complexType mixed="true">
+                                                    <xs:sequence>
+                                                        <xs:element name="filter" type="filterType" minOccurs="0" maxOccurs="1"/>
+                                                    </xs:sequence>
+                                                </xs:complexType>
+                                            </xs:element>
                                             <xs:group ref="nestedDatasources" minOccurs="0"/>
                                         </xs:sequence>
                                         <xs:attribute name="id" type="xs:string" use="required"/>
@@ -577,5 +583,22 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:complexType name="filterType">
+        <xs:sequence>
+            <xs:element name="c" type="filterClauseType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="and" type="filterLogicalType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
 
+    <xs:complexType name="filterClauseType" mixed="true">
+        <xs:attribute name="join" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="filterLogicalType">
+        <xs:sequence>
+            <xs:element name="c" type="filterClauseType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="and" type="filterLogicalType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="or" type="filterLogicalType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>
