@@ -10,15 +10,19 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.core.app.TemplateHelper;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Map;
 
 public class LayoutLoader {
     protected ComponentLoader.Context context;
@@ -50,6 +54,30 @@ public class LayoutLoader {
             Document doc;
             try {
                 doc = reader.read(stream);
+            } catch (DocumentException e) {
+                throw new RuntimeException(e);
+            }
+
+            Element element = doc.getRootElement();
+
+            return loadComponent(element, parent);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Component loadComponent(URL uri, Component parent, Map<String, Object> params) {
+        if (params == null || params.isEmpty()) {
+            return loadComponent(uri, parent);
+        }
+        try {
+            final InputStream stream = uri.openStream();
+            String template = IOUtils.toString(stream);
+            template = TemplateHelper.processTemplate(template, params);
+            SAXReader reader = new SAXReader();
+            Document doc;
+            try {
+                doc = reader.read(new StringReader(template));
             } catch (DocumentException e) {
                 throw new RuntimeException(e);
             }

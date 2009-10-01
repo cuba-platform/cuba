@@ -30,7 +30,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
-        final IFrame component = (IFrame) loader.loadComponent(getClass().getResource(src), parent);
+        final IFrame component = (IFrame) loader.loadComponent(getClass().getResource(src), parent, context.getParameters());
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(messagesPack);
         }
