@@ -9,9 +9,13 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.gui.FrameContext;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.WrappedFrame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
@@ -20,11 +24,14 @@ import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.dom4j.Element;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
+import org.dom4j.Document;
 
-import java.util.Collections;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
@@ -32,8 +39,14 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        final IFrame component = factory.createComponent("iframe");
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException
+    {
+        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
+
+        IFrame component = factory.createComponent("iframe");
+
+        MetadataHelper.deployViews(element);
 
         final Element dsContextElement = element.element("dsContext");
         final DsContext dsContext;
@@ -42,14 +55,14 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         if (dsContextElement != null) {
             final DsContextLoader contextLoader =
                     new DsContextLoader(new DatasourceFactoryImpl(), context.getDsContext().getDataService());
-            dsContext = contextLoader.loadDatasources(dsContextElement);
-            
-            final ComponentLoaderContext context = new ComponentLoaderContext(dsContext, params);
-            setContext(context);
+
+            dsContext = contextLoader.loadDatasources(dsContextElement, parentContext.getDsContext());
+
+            setContext(new ComponentLoaderContext(dsContext, params));
         } else {
             dsContext = null;
         }
-        
+
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
@@ -72,12 +85,62 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             }
 
             dsContext.setWindowContext(new FrameContext(component, params));
-
-            ((ComponentLoaderContext) context).setFrame(component);
-            context.executeLazyTasks();
         }
+        component = wrapByCustomClass(component, element, params, parentContext);
+
+        ((ComponentLoaderContext) context).setFrame(component);
 
         return component;
+    }
+
+    protected IFrame wrapByCustomClass(IFrame frame, Element element, Map<String, Object> params,
+                                       ComponentLoaderContext parentContext)
+    {
+        IFrame res = frame;
+        final String screenClass = element.attributeValue("class");
+        if (!StringUtils.isBlank(screenClass)) {
+            try {
+                final Class<Window> aClass = ReflectionHelper.getClass(screenClass);
+                res = ((WrappedFrame) frame).wrapBy(aClass);
+
+                parentContext.addLazyTask(new FrameLoaderLazyTask(res, params, true));
+                return res;
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            parentContext.addLazyTask(new FrameLoaderLazyTask(res, params, false));
+            return res;
+        }
+    }
+
+    protected <T> T invokeMethod(IFrame frame, String name, Object...params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        List<Class> paramClasses = new ArrayList<Class>();
+        for (Object param : params) {
+            if (param == null) throw new IllegalStateException("Null parameter");
+
+            final Class aClass = param.getClass();
+            if (List.class.isAssignableFrom(aClass)) {
+                paramClasses.add(List.class);
+            } else if (Set.class.isAssignableFrom(aClass)) {
+                paramClasses.add(Set.class);
+            } else if (Map.class.isAssignableFrom(aClass)) {
+                paramClasses.add(Map.class);
+            } else {
+                paramClasses.add(aClass);
+            }
+        }
+
+        final Class<? extends IFrame> aClass = frame.getClass();
+        Method method;
+        try {
+            method = aClass.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[paramClasses.size()]));
+        } catch (NoSuchMethodException e) {
+            method = aClass.getMethod(name, paramClasses.toArray(new Class<?>[paramClasses.size()]));
+        }
+        method.setAccessible(true);
+        //noinspection unchecked
+        return (T) method.invoke(frame, params);
     }
 
     protected void loadExpandLayout(Component.HasLayout component, Element element) {
@@ -97,6 +160,33 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         } else {
             frame.setMessagesPack(msgPack);
             setMessagesPack(this.messagesPack);
+        }
+    }
+
+    private class FrameLoaderLazyTask implements LazyTask {
+
+        private IFrame frame;
+        private Map<String, Object> params;
+        private boolean wrapped;
+
+        public FrameLoaderLazyTask(IFrame frame, Map<String, Object> params, boolean wrapped) {
+            this.frame = frame;
+            this.params = params;
+            this.wrapped = wrapped;
+        }
+
+        public void execute(Context context, IFrame frame) {
+            this.frame.setFrame(frame);
+
+            if (wrapped) {
+                try {
+                    ReflectionHelper.invokeMethod(this.frame, "init", params);
+                } catch (NoSuchMethodException e) {
+                    // do nothing
+                } 
+
+                FrameLoader.this.context.executeLazyTasks();
+            }
         }
     }
 }

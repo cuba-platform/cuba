@@ -40,16 +40,12 @@ public class AbstractWindow extends AbstractFrame
     }
 
     public DsContext getDsContext() {
-        if (frame instanceof Window) {
-            return ((Window) frame).getDsContext();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return frame.getDsContext();
     }
 
     public void setDsContext(DsContext dsContext) {
         if (frame instanceof Window) {
-            ((Window) frame).setDsContext(dsContext);
+            frame.setDsContext(dsContext);
         } else {
             throw new UnsupportedOperationException();
         }

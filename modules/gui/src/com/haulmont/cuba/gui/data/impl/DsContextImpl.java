@@ -22,6 +22,9 @@ public class DsContextImpl implements DsContextImplementation {
     private WindowContext windowContext;
     private DataService dataservice;
 
+    private DsContext parent;
+    private List<DsContext> children = new ArrayList<DsContext>();
+
     private Map<String, Datasource> datasourceMap =
             new HashMap<String, Datasource>();
 
@@ -79,6 +82,13 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     public void commit() {
+        for (DsContext childDsContext : children) {
+            for (Datasource datasource : childDsContext.getAll()) {
+                if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())) {
+                    datasource.commit();
+                }
+            }
+        }
         for (Datasource datasource : datasourceMap.values()) {
             if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())) {
                 datasource.commit();
@@ -148,7 +158,13 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     protected Map<DataService, Collection<Datasource<Entity>>> collectCommitData() {
-        final Collection<Datasource> datasources = datasourceMap.values();
+        Collection<Datasource> datasources = new ArrayList<Datasource>();
+
+        for (DsContext childDsContext : children) {
+            datasources.addAll(childDsContext.getAll());
+        }
+        datasources.addAll(datasourceMap.values());
+
         final Map<DataService,Collection<Datasource<Entity>>> commitDatasources =
                 new HashMap<DataService,Collection<Datasource<Entity>>>();
 
@@ -214,7 +230,11 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     public <T extends Datasource> T get(String id) {
-        return (T) datasourceMap.get(id);
+        Datasource ds = datasourceMap.get(id);
+        if (ds == null && parent != null) {
+            ds = parent.get(id);
+        }
+        return (T) ds;
     }
 
     public Collection<Datasource> getAll() {
@@ -253,5 +273,20 @@ public class DsContextImpl implements DsContextImplementation {
         } else {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public DsContext getParent() {
+        return parent;
+    }
+
+    public void setParent(DsContext parent) {
+        this.parent = parent;
+        if (!parent.getChildren().contains(this)) {
+            parent.getChildren().add(this);
+        }
+    }
+
+    public List<DsContext> getChildren() {
+        return children;
     }
 }

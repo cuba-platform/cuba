@@ -136,6 +136,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             switch (info.getType()) {
                 case DATASOURCE: {
                     final Datasource datasource = dsContext.get(elements[0]);
+                    if (datasource == null)
+                        throw new IllegalStateException("Datasource '" + elements[0] + "' not found in dsContext");
                     if (State.VALID.equals(datasource.getState())) {
                         final Entity item = datasource.getItem();
                         if (elements.length > 1) {

@@ -12,8 +12,11 @@ package com.haulmont.cuba.gui.data;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Datasources context. Provides access to datasources
@@ -54,6 +57,12 @@ public interface DsContext {
 
     void addListener(CommitListener listener);
     void removeListener(CommitListener listener);
+
+    @Nullable
+    DsContext getParent();
+    
+    @Nonnull
+    List<DsContext> getChildren();
 
     /**
      * This listener allows to intercept commit events.

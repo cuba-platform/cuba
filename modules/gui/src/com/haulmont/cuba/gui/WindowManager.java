@@ -10,13 +10,12 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.app.*;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.TemplateHelper;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AccessDeniedException;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
@@ -33,22 +32,12 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * GenericUI class intended for creating and opening application screens.
@@ -91,10 +80,12 @@ public abstract class WindowManager {
     protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
         checkPermission(windowInfo);
 
-        Document document = parseDescriptor(windowInfo.getTemplate(), params, true);
+        String templatePath = windowInfo.getTemplate();
+        Document document = LayoutLoader.parseDescriptor(getClass().getResourceAsStream(templatePath), params);
 
         final Element element = document.getRootElement();
-        deployViews(document);
+
+        MetadataHelper.deployViews(element);
 
         final DsContext dsContext = loadDsContext(element);
         final ComponentLoaderContext componentLoaderContext = new ComponentLoaderContext(dsContext, params);
@@ -132,24 +123,6 @@ public abstract class WindowManager {
         );
         if (!permitted)
             throw new AccessDeniedException(PermissionType.SCREEN, windowInfo.getId());
-    }
-
-    protected void deployViews(Document document) {
-        final Element metadataContextElement = document.getRootElement().element("metadataContext");
-        if (metadataContextElement != null) {
-            @SuppressWarnings({"unchecked"})
-            List<Element> fileElements = metadataContextElement.elements("deployViews");
-            for (Element fileElement : fileElements) {
-                final String resource = fileElement.attributeValue("name");
-                MetadataProvider.getViewRepository().deployViews(getClass().getResourceAsStream(resource));
-            }
-
-            @SuppressWarnings({"unchecked"})
-            List<Element> viewElements = metadataContextElement.elements("view");
-            for (Element viewElement : viewElements) {
-                MetadataProvider.getViewRepository().deployView(metadataContextElement, viewElement);
-            }
-        }
     }
 
     protected void initDatasources(final Window window, DsContext dsContext, Map<String, Object> params) {
@@ -198,7 +171,7 @@ public abstract class WindowManager {
         }
 
         final DsContextLoader dsContextLoader = new DsContextLoader(new DatasourceFactoryImpl(), dataService);
-        final DsContext dsContext = dsContextLoader.loadDatasources(element.element("dsContext"));
+        final DsContext dsContext = dsContextLoader.loadDatasources(element.element("dsContext"), null);
 
         return dsContext;
     }
@@ -218,18 +191,21 @@ public abstract class WindowManager {
     }
 
     protected Window createWindow(WindowInfo windowInfo, Map params) {
+        final Window window;
         try {
-            final Window window = (Window) windowInfo.getScreenClass().newInstance();
-            window.setId(windowInfo.getId());
-            try {
-                invokeMethod(window, "init", params);
-            } catch (NoSuchMethodException e) {
-                // Do nothing
-            }
-            return window;
-        } catch (Throwable e) {
+            window = (Window) windowInfo.getScreenClass().newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+        window.setId(windowInfo.getId());
+        try {
+            ReflectionHelper.invokeMethod(window, "init", params);
+        } catch (NoSuchMethodException e) {
+            // Do nothing
+        }
+        return window;
     }
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params)
@@ -424,127 +400,18 @@ public abstract class WindowManager {
         Window res = window;
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
+            final Class<Window> aClass = ReflectionHelper.getClass(screenClass);
+            res = ((WrappedWindow) window).wrapBy(aClass);
+
             try {
-                final Class<Window> aClass = ReflectionHelper.getClass(screenClass);
-                res = ((WindowImplementation) window).wrap(aClass);
-
-                try {
-                    invokeMethod(res, "init", params);
-                } catch (NoSuchMethodException e) {
-                    // do nothing
-                }
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
+                ReflectionHelper.invokeMethod(res, "init", params);
+            } catch (NoSuchMethodException e) {
+                // do nothing
             }
-
             return res;
         } else {
             return res;
         }
-    }
-
-    private Map<String, Document> descriptorsCache = new HashMap<String, Document>();
-
-    protected boolean isDescriptorCacheEnabled() {
-        return false;
-    }
-
-    private static final Pattern DS_CONTEXT_PATTERN = Pattern.compile("<dsContext>(\\p{ASCII}+)</dsContext>");
-
-    protected Document parseDescriptor(String resourcePath, Map<String, Object> params, boolean isTemplate) {
-        Document document;
-        if (isTemplate) {
-            final InputStream stream = getClass().getResourceAsStream(resourcePath);
-            try {
-                String template = IOUtils.toString(stream);
-                Matcher matcher = DS_CONTEXT_PATTERN.matcher(template);
-                if (matcher.find()) {
-                    final String dsContext = matcher.group(1);
-
-                    template = DS_CONTEXT_PATTERN.matcher(template).replaceFirst("");
-                    template = TemplateHelper.processTemplate(template, params);
-
-                    document = loadDocument(template);
-                    final Document dsContextDocument = loadDocument("<dsContext>" + dsContext + "</dsContext>");
-                    document.getRootElement().add(dsContextDocument.getRootElement());
-                } else {
-                    template = com.haulmont.cuba.core.app.TemplateHelper.processTemplate(template, params);
-                    document = loadDocument(template);
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        } else {
-            document = descriptorsCache.get(resourcePath);
-            if (document == null || !isDescriptorCacheEnabled()) {
-                final InputStream stream = getClass().getResourceAsStream(resourcePath);
-
-                SAXReader reader = new SAXReader();
-                try {
-                    document = reader.read(stream);
-                } catch (DocumentException e) {
-                    throw new RuntimeException(e);
-                }
-
-                descriptorsCache.put(resourcePath, document);
-            }
-        }
-
-        return document;
-    }
-
-    protected Document loadDocument(String template) {
-        Document document;
-        SAXReader reader = new SAXReader();
-        try {
-            document = reader.read(new StringReader(template));
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
-        return document;
-    }
-
-    protected <T> T invokeMethod(Window window, String name) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        final Class<? extends Window> aClass = window.getClass();
-        Method method;
-        try {
-            method = aClass.getDeclaredMethod(name);
-        } catch (NoSuchMethodException e) {
-            method = aClass.getMethod(name);
-        }
-        method.setAccessible(true);
-
-        //noinspection unchecked
-        return (T) method.invoke(window);
-    }
-
-    protected <T> T invokeMethod(Window window, String name, Object...params) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        List<Class> paramClasses = new ArrayList<Class>();
-        for (Object param : params) {
-            if (param == null) throw new IllegalStateException("Null parameter");
-
-            final Class aClass = param.getClass();
-            if (List.class.isAssignableFrom(aClass)) {
-                paramClasses.add(List.class);
-            } else if (Set.class.isAssignableFrom(aClass)) {
-                paramClasses.add(Set.class);
-            } else if (Map.class.isAssignableFrom(aClass)) {
-                paramClasses.add(Map.class);
-            } else {
-                paramClasses.add(aClass);
-            }
-        }
-
-        final Class<? extends Window> aClass = window.getClass();
-        Method method;
-        try {
-            method = aClass.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[paramClasses.size()]));
-        } catch (NoSuchMethodException e) {
-            method = aClass.getMethod(name, paramClasses.toArray(new Class<?>[paramClasses.size()]));
-        }
-        method.setAccessible(true);
-        //noinspection unchecked
-        return (T) method.invoke(window, params);
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

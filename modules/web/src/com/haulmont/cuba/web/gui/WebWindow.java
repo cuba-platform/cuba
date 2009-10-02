@@ -54,7 +54,7 @@ public class WebWindow
         Window,
         Component.Wrapper,
         Component.HasXmlDescriptor,
-        WindowImplementation
+        WrappedWindow
 {
     private String id;
     private String debugId;
@@ -71,8 +71,6 @@ public class WebWindow
     private String caption;
 
     private List<CloseListener> listeners = new ArrayList<CloseListener>();
-
-    protected com.haulmont.cuba.gui.components.Window windowWrapper;
 
     private Settings settings;
 
@@ -483,7 +481,7 @@ public class WebWindow
         }
     }
 
-    public Window wrap(Class<Window> aClass) {
+    public Window wrapBy(Class<Window> aClass) {
         try {
             Constructor<?> constructor;
             try {
@@ -493,8 +491,6 @@ public class WebWindow
             }
 
             Window wrapper = (Window) constructor.newInstance(this);
-            this.windowWrapper = wrapper;
-
             return wrapper;
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -562,8 +558,8 @@ public class WebWindow
         }
 
         @Override
-        public Window wrap(Class<Window> aClass) {
-            final Window.Editor window = (Window.Editor) super.wrap(aClass);
+        public Window wrapBy(Class<Window> aClass) {
+            final Window.Editor window = (Window.Editor) super.wrapBy(aClass);
 
             final Action commitAction = getAction("Window.commit");
             ((ActionWrapper) commitAction).setAction(new ActionWrapper("Window.commit") {

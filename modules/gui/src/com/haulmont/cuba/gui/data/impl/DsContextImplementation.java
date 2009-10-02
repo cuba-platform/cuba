@@ -14,6 +14,9 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 
 public interface DsContextImplementation extends DsContext{
+
+    void setParent(DsContext parentDsContext);
+
     void register(Datasource datasource);
     void registerListener(ParametersHelper.ParameterInfo item, Datasource datasource);
 

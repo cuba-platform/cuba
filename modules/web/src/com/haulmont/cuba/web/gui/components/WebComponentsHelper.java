@@ -111,8 +111,7 @@ public class WebComponentsHelper {
 
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
-            final com.haulmont.cuba.gui.components.Component component =
-                    comp.<com.haulmont.cuba.gui.components.Component>getOwnComponent(id);
+            final com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(id);
 
             if (component == null) {
                 return (T)getComponentByIterate(container, id);

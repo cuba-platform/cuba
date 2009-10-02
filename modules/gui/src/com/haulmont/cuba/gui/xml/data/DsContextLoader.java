@@ -35,7 +35,7 @@ public class DsContextLoader {
         this.dataservice = dataservice;
     }
 
-    public DsContext loadDatasources(Element element) {
+    public DsContext loadDatasources(Element element, DsContext parent) {
         String contextClass = element.attributeValue("class");
         if (StringUtils.isEmpty(contextClass)) {
             final Element contextClassElement = element.element("class");
@@ -50,6 +50,9 @@ public class DsContextLoader {
             }
         } else {
             context = createDsContext(contextClass, null);
+        }
+        if (parent != null) {
+            context.setParent(parent);
         }
 
         //noinspection unchecked

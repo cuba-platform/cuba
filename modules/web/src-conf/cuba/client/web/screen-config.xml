@@ -48,6 +48,6 @@
             template="/com/haulmont/cuba/web/app/ui/security/session/browse/session-browse.xml"/>
 
     <screen id="sec$Constraint.edit"
-            template="/com/haulmont/cuba/web/app/ui/security/constraint/constraint-edit.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/security/constraint/edit/constraint-edit.xml"/>
 
 </screen-config>

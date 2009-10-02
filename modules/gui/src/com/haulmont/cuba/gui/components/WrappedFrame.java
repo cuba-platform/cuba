@@ -10,6 +10,7 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface WindowImplementation {
-    Window wrap(Class<Window> aClass);
+public interface WrappedFrame {
+
+    IFrame wrapBy(Class<? extends IFrame> aClass);
 }

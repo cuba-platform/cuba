@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 /**
  * Metadata utility methods for use on GenericUI layer
@@ -170,5 +171,23 @@ public class MetadataHelper {
 
     public static boolean isTransient(Object object, String property) {
         return isAnnotationPresent(object, property, Transient.class);
+    }
+
+    public static void deployViews(Element rootFrameElement) {
+        final Element metadataContextElement = rootFrameElement.element("metadataContext");
+        if (metadataContextElement != null) {
+            @SuppressWarnings({"unchecked"})
+            List<Element> fileElements = metadataContextElement.elements("deployViews");
+            for (Element fileElement : fileElements) {
+                final String resource = fileElement.attributeValue("name");
+                MetadataProvider.getViewRepository().deployViews(MetadataHelper.class.getResourceAsStream(resource));
+            }
+
+            @SuppressWarnings({"unchecked"})
+            List<Element> viewElements = metadataContextElement.elements("view");
+            for (Element viewElement : viewElements) {
+                MetadataProvider.getViewRepository().deployView(metadataContextElement, viewElement);
+            }
+        }
     }
 }

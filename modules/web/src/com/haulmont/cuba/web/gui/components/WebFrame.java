@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.WrappedFrame;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -27,18 +28,40 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 import java.util.*;
+import java.lang.reflect.Constructor;
 
-public class WebFrame extends WebAbstractPanel implements IFrame, Layout.AlignmentHandler {
+import org.dom4j.Element;
 
+public class WebFrame extends WebAbstractPanel
+        implements
+            IFrame,
+            WrappedFrame,
+            com.haulmont.cuba.gui.components.Component.HasXmlDescriptor,
+            Layout.AlignmentHandler
+{
     private String messagePack;
     private DsContext dsContext;
-    private com.haulmont.cuba.gui.components.IFrame frame;
+    private IFrame frame;
+    private Element element;
 
     protected Collection<com.haulmont.cuba.gui.components.Component> ownComponents = new HashSet<com.haulmont.cuba.gui.components.Component>();
     protected Map<String, com.haulmont.cuba.gui.components.Component> componentByIds = new HashMap<String, com.haulmont.cuba.gui.components.Component>();
 
+    boolean inGetComponent;
+
     public WebFrame() {
         setLayout(new VerticalLayout());
+    }
+
+    public IFrame wrapBy(Class<? extends IFrame> aClass) {
+        try {
+            Constructor<?> constructor = aClass.getConstructor(IFrame.class);
+
+            Window wrapper = (Window) constructor.newInstance(this);
+            return wrapper;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void add(com.haulmont.cuba.gui.components.Component component) {
@@ -70,7 +93,18 @@ public class WebFrame extends WebAbstractPanel implements IFrame, Layout.Alignme
     }
 
     public <T extends com.haulmont.cuba.gui.components.Component> T getComponent(String id) {
-        return WebComponentsHelper.<T>getComponent(this, id);
+        if (inGetComponent)
+            return null;
+        inGetComponent = true;
+        try {
+            T result = WebComponentsHelper.<T>getComponent(this, id);
+            if (result == null && frame != null) {
+                result = frame.<T>getComponent(id);
+            }
+            return result;
+        } finally {
+            inGetComponent = false;
+        }
     }
 
     public Collection<com.haulmont.cuba.gui.components.Component> getOwnComponents() {
@@ -197,5 +231,13 @@ public class WebFrame extends WebAbstractPanel implements IFrame, Layout.Alignme
             getLayout().setWidth("100%");
             getLayout().setHeight("-1px");
         }
+    }
+
+    public Element getXmlDescriptor() {
+        return element;
+    }
+
+    public void setXmlDescriptor(Element element) {
+        this.element = element;
     }
 }

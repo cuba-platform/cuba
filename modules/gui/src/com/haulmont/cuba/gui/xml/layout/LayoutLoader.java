@@ -19,10 +19,13 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class LayoutLoader {
     protected ComponentLoader.Context context;
@@ -36,6 +39,46 @@ public class LayoutLoader {
         this.context = context;
         this.factory = factory;
         this.config = config;
+    }
+
+    private static final Pattern DS_CONTEXT_PATTERN = Pattern.compile("<dsContext>(\\p{ASCII}+)</dsContext>");
+
+    public static Document parseDescriptor(InputStream stream, Map<String, Object> params) {
+        if (stream == null)
+            throw new IllegalArgumentException("Input stream is null");
+        
+        Document document;
+        try {
+            String template = IOUtils.toString(stream);
+            Matcher matcher = DS_CONTEXT_PATTERN.matcher(template);
+            if (matcher.find()) {
+                final String dsContext = matcher.group(1);
+
+                template = DS_CONTEXT_PATTERN.matcher(template).replaceFirst("");
+                template = TemplateHelper.processTemplate(template, params);
+
+                document = loadDocument(template);
+                final Document dsContextDocument = loadDocument("<dsContext>" + dsContext + "</dsContext>");
+                document.getRootElement().add(dsContextDocument.getRootElement());
+            } else {
+                template = com.haulmont.cuba.core.app.TemplateHelper.processTemplate(template, params);
+                document = loadDocument(template);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+        return document;
+    }
+
+    private static Document loadDocument(String template) {
+        Document document;
+        SAXReader reader = new SAXReader();
+        try {
+            document = reader.read(new StringReader(template));
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
+        return document;
     }
 
     public String getMessagesPack() {
@@ -71,17 +114,7 @@ public class LayoutLoader {
             return loadComponent(uri, parent);
         }
         try {
-            final InputStream stream = uri.openStream();
-            String template = IOUtils.toString(stream);
-            template = TemplateHelper.processTemplate(template, params);
-            SAXReader reader = new SAXReader();
-            Document doc;
-            try {
-                doc = reader.read(new StringReader(template));
-            } catch (DocumentException e) {
-                throw new RuntimeException(e);
-            }
-
+            Document doc = parseDescriptor(uri.openStream(), params);
             Element element = doc.getRootElement();
 
             return loadComponent(element, parent);

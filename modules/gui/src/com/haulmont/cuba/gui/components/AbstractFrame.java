@@ -222,6 +222,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     public void setFrame(IFrame frame) {
+        this.frame.setFrame(frame);
     }
 
     public String getStyleName() {
