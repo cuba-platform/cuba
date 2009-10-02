@@ -249,26 +249,7 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createAddAction(final Window.Lookup.Handler handler, final WindowManager.OpenType openType) {
-        final AbstractAction action = new AbstractAction("add") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Add");
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                    final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
-                    final String windowID = datasource.getMetaClass().getName() + ".browse";
-
-                    frame.openLookup(windowID, handler, openType);
-                }
-        };
-        ListActionsHelper.this.component.addAction(action);
-
-        return action;
+        return createAddAction(handler, openType, Collections.<String, Object>emptyMap());
     }
 
     public Action createAddAction(final Window.Lookup.Handler handler) {
@@ -276,6 +257,10 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createAddAction(final Window.Lookup.Handler handler, final Map<String, Object> params) {
+        return createAddAction(handler, WindowManager.OpenType.THIS_TAB, params);
+    }
+
+    public Action createAddAction(final Window.Lookup.Handler handler, final WindowManager.OpenType openType, final Map<String, Object> params) {
         final AbstractAction action = new AbstractAction("add") {
             public String getCaption() {
                 final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -290,7 +275,7 @@ abstract class ListActionsHelper<T extends List> {
                 final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
                 final String windowID = datasource.getMetaClass().getName() + ".browse";
 
-                frame.openLookup(windowID, handler, WindowManager.OpenType.THIS_TAB, params);
+                frame.openLookup(windowID, handler, openType, params);
             }
         };
         ListActionsHelper.this.component.addAction(action);
