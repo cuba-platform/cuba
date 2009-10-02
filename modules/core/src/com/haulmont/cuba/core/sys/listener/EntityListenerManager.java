@@ -160,7 +160,7 @@ public class EntityListenerManager
             try {
                 Class aClass = Thread.currentThread().getContextClassLoader().loadClass(className);
                 log.trace("listener class found: " + aClass);
-                Class[] interfaces = aClass.getInterfaces();
+                List<Class> interfaces = ClassUtils.getAllInterfaces(aClass);
                 for (Class intf : interfaces) {
                     if (intf.equals(type.getListenerInterface())) {
                         log.trace("listener implements " + type.getListenerInterface());
@@ -179,7 +179,7 @@ public class EntityListenerManager
     }
 
     private List<String> getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
-        List<String> listeners = new ArrayList<String>();
+         List<String> listeners = new ArrayList<String>();
 
         List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
         for (Class superclass : superclasses) {
