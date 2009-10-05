@@ -38,6 +38,7 @@ import org.dom4j.Element;
 
 import java.util.*;
 import java.util.List;
+import java.io.InputStream;
 
 /**
  * GenericUI class intended for creating and opening application screens.
@@ -81,7 +82,11 @@ public abstract class WindowManager {
         checkPermission(windowInfo);
 
         String templatePath = windowInfo.getTemplate();
-        Document document = LayoutLoader.parseDescriptor(getClass().getResourceAsStream(templatePath), params);
+        InputStream stream = getClass().getResourceAsStream(templatePath);
+        if (stream == null) {
+            throw new RuntimeException("Bad template path: " + templatePath);
+        }
+        Document document = LayoutLoader.parseDescriptor(stream, params);
 
         final Element element = document.getRootElement();
 

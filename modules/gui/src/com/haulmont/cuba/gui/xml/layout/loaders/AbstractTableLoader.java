@@ -67,6 +67,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         if (!StringUtils.isBlank(datasource)) {
             final CollectionDatasource ds = context.getDsContext().get(datasource);
+            if (ds == null) {
+                throw new IllegalStateException("Cannot find data source by name: " + datasource);
+            }
             List<Table.Column> availableColumns = new ArrayList<Table.Column>();
 
             if (columnsElement != null) {

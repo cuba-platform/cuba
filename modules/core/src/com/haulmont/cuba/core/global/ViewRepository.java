@@ -173,6 +173,10 @@ public class ViewRepository
             }
 
             Range range = metaProperty.getRange();
+
+            if (range == null) {
+                throw new RuntimeException("cannot find range for meta property: " + metaProperty);
+            }
             // try to import anonimus veiws
             if (range.isClass() && refView == null) {
                 final List<Element> propertyElements = propElem.elements("property");

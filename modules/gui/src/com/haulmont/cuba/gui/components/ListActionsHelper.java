@@ -22,6 +22,9 @@ abstract class ListActionsHelper<T extends List> {
     protected MetaClass metaClass;
 
     ListActionsHelper(IFrame frame, T component) {
+        if (component == null) {
+            throw new IllegalStateException("Component cannot be null");
+        }
         this.frame = frame;
         this.component = component;
         userSession = UserSessionClient.getUserSession();

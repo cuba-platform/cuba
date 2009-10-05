@@ -37,7 +37,7 @@ public class WebFileUploadField
         UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
         final Integer maxUploadSizeMb = config.getMaxUploadSizeMb();
 
-        component = new Upload(MessageProvider.getMessage(WebWindow.class, "msg://Upload"), new Upload.Receiver() {
+        component = new Upload(MessageProvider.getMessage(App.getInstance().getClass(), "Upload"), new Upload.Receiver() {
             public OutputStream receiveUpload(String filename, String MIMEType) {
                 fileName = filename;
                 outputStream = new ByteArrayOutputStream();
