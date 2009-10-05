@@ -163,11 +163,12 @@ public class DsContextLoader {
         } else
             datasource = factory.createDatasource(context, dataservice, id, metaClass, viewName);
 
-        String item = element.attributeValue("item");
-        if (!StringUtils.isBlank(item)) {
-            final ParametersHelper.ParameterInfo info = ParametersHelper.parse(item);
-            context.registerListener(info, datasource);
-        }
+        // TODO implement ContextListeners
+//        String item = element.attributeValue("item");
+//        if (!StringUtils.isBlank(item)) {
+//            final ParametersHelper.ParameterInfo info = ParametersHelper.parse(item);
+//            context.registerListener(info, datasource);
+//        }
 
         loadDatasources(element, datasource);
 

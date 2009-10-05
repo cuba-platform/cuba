@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.gui.filter;
 
+import com.haulmont.cuba.gui.xml.ParameterInfo;
+
 import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public abstract class Condition implements Cloneable {
 
     public abstract String getContent();
 
-    public abstract Set<String> getParameters();
+    public abstract Set<ParameterInfo> getParameters();
 
     public abstract Set<String> getJoins();
 }

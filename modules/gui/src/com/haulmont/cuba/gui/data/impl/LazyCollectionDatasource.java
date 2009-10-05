@@ -21,7 +21,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.commons.collections.map.LinkedMap;
 
 import java.util.*;
@@ -103,8 +103,8 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     public int getSize() {
         if (size == null) {
             parametersValues = getQueryParameters(params);
-            for (ParametersHelper.ParameterInfo info : queryParameters) {
-                if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
+            for (ParameterInfo info : queryParameters) {
+                if (ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
                     final Object value = parametersValues.get(info.getFlatName());
                     if (value == null) return 0;
                 }

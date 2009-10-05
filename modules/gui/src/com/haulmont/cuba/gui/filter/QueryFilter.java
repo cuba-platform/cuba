@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.filter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -53,7 +54,7 @@ public class QueryFilter {
         }
     }
 
-    public Collection<String> getParameters() {
+    public Collection<ParameterInfo> getParameters() {
         return root.getParameters();
     }
 
@@ -104,13 +105,13 @@ public class QueryFilter {
     }
 
     private boolean isActual(Condition condition, Set<String> params) {
-        Set<String> declaredParams = condition.getParameters();
+        Set<ParameterInfo> declaredParams = condition.getParameters();
 
         if (declaredParams.isEmpty())
             return true;
 
-        for (String param : declaredParams) {
-            if (params.contains(param))
+        for (ParameterInfo paramInfo : declaredParams) {
+            if (params.contains(paramInfo.getName()))
                 return true;
         }
 

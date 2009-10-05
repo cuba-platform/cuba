@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.gui.filter;
 
+import com.haulmont.cuba.gui.xml.ParameterInfo;
+
 import java.util.*;
 
 public class LogicalCondition extends Condition {
@@ -60,8 +62,8 @@ public class LogicalCondition extends Condition {
     }
 
     @Override
-    public Set<String> getParameters() {
-        Set<String> set = new HashSet<String>();
+    public Set<ParameterInfo> getParameters() {
+        Set<ParameterInfo> set = new HashSet<ParameterInfo>();
         for (Condition condition : conditions) {
             set.addAll(condition.getParameters());
         }

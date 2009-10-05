@@ -16,18 +16,34 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ParametersHelper {
-    private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile(":([\\w\\.\\$]+)");
+
+    private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile(":(\\(\\?i\\))?([\\w\\.\\$]+)");
+    public static final String CASE_INSENSITIVE_MARKER = "(?i)";
 
     public static Set<String> extractNames(String text) {
         Set<String> set = new HashSet<String>();
         
         Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(text);
         while (matcher.find()) {
-            set.add(matcher.group(1));
+            set.add(matcher.group(2));
         }
 
         return set;
+    }
+
+    public static Set<ParameterInfo> parseQuery(String query) {
+        Set<ParameterInfo> infos = new HashSet<ParameterInfo>();
+
+        Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(query);
+        while (matcher.find()) {
+            final ParameterInfo info = parse(matcher);
+            infos.add(info);
+        }
+
+        return infos;
     }
 
     public static ParameterInfo[] parseQuery(String query, @Nullable QueryFilter filter) {
@@ -35,107 +51,56 @@ public class ParametersHelper {
 
         Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(query);
         while (matcher.find()) {
-            final String parameterInfo = matcher.group();
-            final ParameterInfo info = parse(parameterInfo);
+            final ParameterInfo info = parse(matcher);
             infos.add(info);
         }
 
         if (filter != null) {
-            for (String s : filter.getParameters()) {
-                ParameterInfo info = parse(":" + s);
-                infos.add(info);
-            }
+            infos.addAll(filter.getParameters());
         }
 
         return infos.toArray(new ParameterInfo[infos.size()]);
     }
 
-    public static class ParameterInfo {
-        public enum Type {
-            DATASOURCE("ds"),
-            COMPONENT("component"),
-            PARAM("param"),
-            SESSION("session"),
-            CUSTOM("custom");
+    private static ParameterInfo parse(Matcher matcher) {
+        boolean caseInsensitive = !StringUtils.isBlank(matcher.group(1));
+        final String param = matcher.group(2);
 
-            private String prefix;
+        final String[] strings = param.split("\\$");
+        if (strings.length != 2) {
+            throw new IllegalStateException(String.format("Illegal parameter info '%s'", matcher.group()));
+        }
+        final String source = strings[0];
+        final String name = strings[1];
 
-            Type(String prefix) {
-                this.prefix = prefix;
-            }
-
-            public String getPrefix() {
-                return prefix;
+        for (ParameterInfo.Type type : ParameterInfo.Type.values()) {
+            if (type.getPrefix().equals(source)) {
+                return new ParameterInfo(name, type, caseInsensitive);
             }
         }
-
-        private Type type;
-        private String path;
-
-        ParameterInfo(String name, Type type) {
-            this.path = name;
-            this.type = type;
-        }
-
-        public Type getType() {
-            return type;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public String getName() {
-            return (type.getPrefix() + "$" + path);
-        }
-
-        public String getFlatName() {
-            return (type.getPrefix() + "." + path).replaceAll("\\.", "_");
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ParameterInfo that = (ParameterInfo) o;
-
-            return path.equals(that.path) && type == that.type;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = type.hashCode();
-            result = 31 * result + path.hashCode();
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return type + " : " + path;
-        }
+        throw new IllegalStateException(String.format("Illegal parameter info '%s'", matcher.group()));
     }
 
-    public static ParameterInfo parse(String parameterInfo) {
-        if (parameterInfo.startsWith(":")) {
-            final String param = parameterInfo.substring(1);
-
-            final String[] strings = param.split("\\$");
-            if (strings.length != 2) {
-                throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
-            }
-            final String source = strings[0];
-            final String name = strings[1];
-
-            for (ParameterInfo.Type type : ParameterInfo.Type.values()) {
-                if (type.prefix.equals(source)) {
-                    return new ParameterInfo(name, type);
-                }
-            }
-
-            throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
-        } else {
-            throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
-        }
-    }
+//    public static ParameterInfo parse(String parameterInfo) {
+//        if (parameterInfo.startsWith(":")) {
+//            final String param = parameterInfo.substring(1);
+//
+//            final String[] strings = param.split("\\$");
+//            if (strings.length != 2) {
+//                throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
+//            }
+//            final String source = strings[0];
+//            final String name = strings[1];
+//
+//            for (ParameterInfo.Type type : ParameterInfo.Type.values()) {
+//                if (type.prefix.equals(source)) {
+//                    return new ParameterInfo(name, type);
+//                }
+//            }
+//
+//            throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
+//        } else {
+//            throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
+//        }
+//    }
 }

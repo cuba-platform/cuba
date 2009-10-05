@@ -17,7 +17,7 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.commons.collections.map.LinkedMap;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
@@ -285,8 +285,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         if (query != null && queryParameters != null) {
             final Map<String, Object> parameters = getQueryParameters(params);
-            for (ParametersHelper.ParameterInfo info : queryParameters) {
-                if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
+            for (ParameterInfo info : queryParameters) {
+                if (ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
                     final Object value = parameters.get(info.getFlatName());
                     if (value == null)
                         return;

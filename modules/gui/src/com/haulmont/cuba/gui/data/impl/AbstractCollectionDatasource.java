@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -32,7 +33,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 {
     protected String query;
     private QueryFilter filter;
-    protected ParametersHelper.ParameterInfo[] queryParameters;
+    protected ParameterInfo[] queryParameters;
     protected boolean softDeletion;
 
     public AbstractCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
@@ -88,9 +89,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
             queryParameters = ParametersHelper.parseQuery(query, filter);
 
-            for (ParametersHelper.ParameterInfo info : queryParameters) {
-                final ParametersHelper.ParameterInfo.Type type = info.getType();
-                if (ParametersHelper.ParameterInfo.Type.DATASOURCE.equals(type)) {
+            for (ParameterInfo info : queryParameters) {
+                final ParameterInfo.Type type = info.getType();
+                if (ParameterInfo.Type.DATASOURCE.equals(type)) {
                     final String path = info.getPath();
 
                     final String[] strings = path.split("\\.");
@@ -128,7 +129,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     protected Map<String, Object> getQueryParameters(Map<String, Object> params) {
         final Map<String, Object> map = new HashMap<String, Object>();
-        for (ParametersHelper.ParameterInfo info : queryParameters) {
+        for (ParameterInfo info : queryParameters) {
             String name = info.getFlatName();
 
             final String path = info.getPath();
@@ -156,31 +157,44 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     break;
                 }
                 case PARAM: {
-                    final Object value =
+                    Object value =
                             dsContext.getWindowContext() == null ?
                                     null : dsContext.getWindowContext().getParameterValue(path);
+                    if (value instanceof String && info.isCaseInsensitive()) {
+                        value = makeCaseInsensitive((String) value);
+                    }
                     map.put(name, value);
                     break;
                 }
                 case COMPONENT: {
-                    final Object value =
+                    Object value =
                             dsContext.getWindowContext() == null ?
                                     null : dsContext.getWindowContext().getValue(path);
+                    if (value instanceof String && info.isCaseInsensitive()) {
+                        value = makeCaseInsensitive((String) value);
+                    }
                     map.put(name, value);
                     break;
                 }
                 case SESSION: {
-                    final Object value;
+                    Object value;
                     if ("userId".equals(name)) 
                         value = UserSessionClient.getUserSession().getUser().getId();
                     else
                         value = UserSessionClient.getUserSession().getAttribute(path);
 
+                    if (value instanceof String && info.isCaseInsensitive()) {
+                        value = makeCaseInsensitive((String) value);
+                    }
                     map.put(name, value);
                     break;
                 }
                 case CUSTOM: {
-                    map.put(name, params.get(info.getPath()));
+                    Object value = params.get(info.getPath());
+                    if (value instanceof String && info.isCaseInsensitive()) {
+                        value = makeCaseInsensitive((String) value);
+                    }
+                    map.put(name, value);
                     break;
                 }
                 default: {
@@ -192,6 +206,17 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return map;
     }
 
+    private String makeCaseInsensitive(String value) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ParametersHelper.CASE_INSENSITIVE_MARKER);
+        if (!value.startsWith("%"))
+            sb.append("%");
+        sb.append(value);
+        if (!value.endsWith("%"))
+            sb.append("%");
+        return sb.toString();
+    }
+
     protected String getJPQLQuery(Map<String, Object> parameterValues) {
         String query;
         if (filter == null)
@@ -199,7 +224,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         else
             query = filter.processQuery(this.query, parameterValues);
 
-        for (ParametersHelper.ParameterInfo info : queryParameters) {
+        for (ParameterInfo info : queryParameters) {
             final String paramName = info.getName();
             final String jpaParamName = info.getFlatName();
 
@@ -210,6 +235,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 parameterValues.put(jpaParamName, value);
             }
         }
+        query = query.replace(":" + ParametersHelper.CASE_INSENSITIVE_MARKER, ":");
 
         query = com.haulmont.cuba.core.app.TemplateHelper.processTemplate(query, parameterValues);
 
@@ -228,21 +254,21 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
         Map<String, Object> templateParams = new HashMap<String, Object>();
 
-        String compPerfix = ParametersHelper.ParameterInfo.Type.COMPONENT.getPrefix() + "$";
-        for (ParametersHelper.ParameterInfo info : queryParameters) {
-            if (ParametersHelper.ParameterInfo.Type.COMPONENT.equals(info.getType())) {
+        String compPerfix = ParameterInfo.Type.COMPONENT.getPrefix() + "$";
+        for (ParameterInfo info : queryParameters) {
+            if (ParameterInfo.Type.COMPONENT.equals(info.getType())) {
                 Object value = dsContext.getWindowContext() == null ?
                         null : dsContext.getWindowContext().getValue(info.getPath());
                 templateParams.put(compPerfix + info.getPath(), value);
             }
         }
 
-        String customPerfix = ParametersHelper.ParameterInfo.Type.CUSTOM.getPrefix() + "$";
+        String customPerfix = ParameterInfo.Type.CUSTOM.getPrefix() + "$";
         for (Map.Entry<String, Object> entry : customParams.entrySet()) {
             templateParams.put(customPerfix + entry.getKey(), entry.getValue());
         }
 
-        String paramPrefix = ParametersHelper.ParameterInfo.Type.PARAM.getPrefix() + "$";
+        String paramPrefix = ParameterInfo.Type.PARAM.getPrefix() + "$";
         WindowContext windowContext = dsContext.getWindowContext();
         if (windowContext != null) {
             for (String name : windowContext.getParameterNames()) {
@@ -251,7 +277,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
 
         UserSession userSession = UserSessionClient.getUserSession();
-        String sessionPrefix = ParametersHelper.ParameterInfo.Type.SESSION.getPrefix() + "$";
+        String sessionPrefix = ParameterInfo.Type.SESSION.getPrefix() + "$";
         templateParams.put(sessionPrefix + "userId", userSession.getUser().getId());
         for (String name : userSession.getAttributeNames()) {
             templateParams.put(sessionPrefix + name, userSession.getAttribute(name));

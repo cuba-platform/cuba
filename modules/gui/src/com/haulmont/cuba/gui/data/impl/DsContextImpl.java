@@ -10,7 +10,7 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 
@@ -28,8 +28,9 @@ public class DsContextImpl implements DsContextImplementation {
     private Map<String, Datasource> datasourceMap =
             new HashMap<String, Datasource>();
 
-    private Map<String, Collection<Datasource>> contextListeners =
-            new HashMap<String, Collection<Datasource>>();
+    // TODO implement ContextListeners
+//    private Map<String, Collection<Datasource>> contextListeners =
+//            new HashMap<String, Collection<Datasource>>();
 
     protected List<LazyTask> lazyTasks = new ArrayList<LazyTask>();
 
@@ -55,30 +56,31 @@ public class DsContextImpl implements DsContextImplementation {
 
     public void setWindowContext(WindowContext windowContext) {
         this.windowContext = windowContext;
-        for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
-            final String property = entry.getKey();
-            final Object value = windowContext.getValue(property);
-
-            if (value != null) {
-                final Collection<Datasource> datasources = entry.getValue();
-                for (Datasource datasource : datasources) {
-                    datasource.setItem((Entity) value);
-                }
-            }
-        }
-
-        windowContext.addValueListener(new ValueListener() {
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
-                    if (entry.getKey().equals(property)) {
-                        final Collection<Datasource> datasources = entry.getValue();
-                        for (Datasource datasource : datasources) {
-                            datasource.setItem((Entity) value);
-                        }
-                    }
-                }
-            }
-        });
+        // TODO implement ContextListeners
+//        for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
+//            final String property = entry.getKey();
+//            final Object value = windowContext.getValue(property);
+//
+//            if (value != null) {
+//                final Collection<Datasource> datasources = entry.getValue();
+//                for (Datasource datasource : datasources) {
+//                    datasource.setItem((Entity) value);
+//                }
+//            }
+//        }
+//
+//        windowContext.addValueListener(new ValueListener() {
+//            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+//                for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
+//                    if (entry.getKey().equals(property)) {
+//                        final Collection<Datasource> datasources = entry.getValue();
+//                        for (Datasource datasource : datasources) {
+//                            datasource.setItem((Entity) value);
+//                        }
+//                    }
+//                }
+//            }
+//        });
     }
 
     public void commit() {
@@ -262,17 +264,18 @@ public class DsContextImpl implements DsContextImplementation {
         datasourceMap.put(datasource.getId(), datasource);
     }
 
-    public void registerListener(ParametersHelper.ParameterInfo item, Datasource datasource) {
-        if (ParametersHelper.ParameterInfo.Type.PARAM.equals(item.getType())) {
-            Collection<Datasource> collection = contextListeners.get(item.getPath());
-            if (collection == null) {
-                collection = new ArrayList<Datasource>();
-                contextListeners.put(item.getPath(), collection);
-            }
-            collection.add(datasource);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+    public void registerListener(ParameterInfo item, Datasource datasource) {
+        // TODO implement ContextListeners
+//        if (ParametersHelper.ParameterInfo.Type.PARAM.equals(item.getType())) {
+//            Collection<Datasource> collection = contextListeners.get(item.getPath());
+//            if (collection == null) {
+//                collection = new ArrayList<Datasource>();
+//                contextListeners.put(item.getPath(), collection);
+//            }
+//            collection.add(datasource);
+//        } else {
+//            throw new UnsupportedOperationException();
+//        }
     }
 
     public DsContext getParent() {

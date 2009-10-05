@@ -11,6 +11,7 @@
 package com.haulmont.cuba.gui.filter;
 
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.xml.ParameterInfo;
 
 import java.util.*;
 
@@ -18,14 +19,14 @@ public class Clause extends Condition {
 
     private String content;
 
-    private Set<String> parameters;
+    private Set<ParameterInfo> parameters;
 
     private String join;
 
     public Clause(String content, String join) {
         this.content = content;
         this.join = join;
-        parameters = ParametersHelper.extractNames(content);
+        parameters = ParametersHelper.parseQuery(content);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class Clause extends Condition {
     }
 
     @Override
-    public Set<String> getParameters() {
+    public Set<ParameterInfo> getParameters() {
         return parameters;
     }
 

@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -369,14 +369,14 @@ public abstract class WindowManager {
                     final String name = paramElement.attributeValue("name");
                     final String value = paramElement.attributeValue("value");
 
-                    map.put(ParametersHelper.ParameterInfo.Type.PARAM.getPrefix() + "$" + name, value);
+                    map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + name, value);
                 }
             }
         }
 
 
         for (Map.Entry<String, Object> entry : params.entrySet()) {
-            map.put(ParametersHelper.ParameterInfo.Type.PARAM.getPrefix() + "$" + entry.getKey(), entry.getValue());
+            map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + entry.getKey(), entry.getValue());
         }
 
         return map;

@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.gui.xml.ParameterInfo;
 
 import java.util.Collection;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class CustomCollectionDatasource<T extends Entity<K>, K>
     }
 
     private String getGroovyScript(String query, Map<String, Object> parameterValues) {
-        for (ParametersHelper.ParameterInfo info : queryParameters) {
+        for (ParameterInfo info : queryParameters) {
             final String paramName = info.getName().replaceAll("\\$", "\\\\\\$");
             query = query.replaceAll(":" + paramName, info.getFlatName());
         }

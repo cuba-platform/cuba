@@ -20,7 +20,7 @@
                 ]]>
                 <filter>
                     <and>
-                        <c>u.name like :component$filter.name</c>
+                        <c>u.name like :(?i)component$filter.name</c>
                         <c>u.login like :component$filter.login</c>
                         <c>u.email = :component$filter.email</c>
                         <c join="left join u.group.hierarchyList h">
