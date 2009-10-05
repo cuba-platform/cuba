@@ -57,8 +57,8 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
 
     public void executeLazyTasks() {
         for (ComponentLoader.LazyTask task : new ArrayList<ComponentLoader.LazyTask>(lazyTasks)) {
-            task.execute(this, frame);
             lazyTasks.remove(task);
+            task.execute(this, frame);
         }
     }
 }
