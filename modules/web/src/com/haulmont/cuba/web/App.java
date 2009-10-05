@@ -28,6 +28,7 @@ import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.Paintable;
+import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -210,9 +211,12 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public void terminalError(Terminal.ErrorEvent event) {
-//        super.terminalError(event);
-        exceptionHandlers.handle(event);
-        getAppLog().log(event);
+        if (event instanceof AbstractApplicationServlet.RequestError) {
+            log.error("RequestError:", event.getThrowable());
+        } else {
+            exceptionHandlers.handle(event);
+            getAppLog().log(event);
+        }
     }
 
     public void transactionStart(Application application, Object transactionData) {
