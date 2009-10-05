@@ -782,35 +782,37 @@ public class ApplicationConnection {
     }
 
     private void handleTimers(ValueMap json) {
-        final JsArray<ValueMap> timers = json.getJSValueMapArray("timers");
-        if (timers.length() > 0) {
-            for (int i = 0; i < timers.length(); i++) {
-                final UIDL timerUidl = timers.get(i).cast();
-                ApplicationTimer timer;
-                if ((timer = applicationTimers.get(timerUidl.getId())) != null) {
-                    timer.cancel();
-                    if (timerUidl.getBooleanAttribute("stopped")) {
-                        applicationTimers.remove(timerUidl.getId());
-                    } else {
-                        timer.setRepeat(timerUidl.getBooleanAttribute("repeat"));
-                        timer.setDelay(timerUidl.getIntAttribute("delay"));
+        if (json.containsKey("timers")) {
+            final JsArray<ValueMap> timers = json.getJSValueMapArray("timers");
+            if (timers.length() > 0) {
+                for (int i = 0; i < timers.length(); i++) {
+                    final UIDL timerUidl = timers.get(i).cast();
+                    ApplicationTimer timer;
+                    if ((timer = applicationTimers.get(timerUidl.getId())) != null) {
+                        timer.cancel();
+                        if (timerUidl.getBooleanAttribute("stopped")) {
+                            applicationTimers.remove(timerUidl.getId());
+                        } else {
+                            timer.setRepeat(timerUidl.getBooleanAttribute("repeat"));
+                            timer.setDelay(timerUidl.getIntAttribute("delay"));
+
+                            timersToRun.add(timer);
+                        }
+                    } else if (!timerUidl.getBooleanAttribute("stopped")) {
+                        timer = new ApplicationTimer(timerUidl.getId(), timerUidl.getBooleanAttribute("repeat"),
+                                timerUidl.getIntAttribute("delay"));
+                        applicationTimers.put(timerUidl.getId(), timer);
 
                         timersToRun.add(timer);
                     }
-                } else if (!timerUidl.getBooleanAttribute("stopped")) {
-                    timer = new ApplicationTimer(timerUidl.getId(), timerUidl.getBooleanAttribute("repeat"),
-                            timerUidl.getIntAttribute("delay"));
-                    applicationTimers.put(timerUidl.getId(), timer);
-
-                    timersToRun.add(timer);
                 }
-            }
 
-            if (!timersToRun.isEmpty()) {
-                for (final ApplicationTimer timer : timersToRun) {
-                    timer.startTimer();
+                if (!timersToRun.isEmpty()) {
+                    for (final ApplicationTimer timer : timersToRun) {
+                        timer.startTimer();
+                    }
+                    timersToRun.clear();
                 }
-                timersToRun.clear();
             }
         }
     }

@@ -94,7 +94,7 @@
         </java>
     </target>
 
-    <target name="run-in-hoted-mode">
+    <target name="run-in-hosted-mode">
         <java failonerror="true" fork="true" classname="com.google.gwt.dev.HostedMode">
             <classpath>
                 <pathelement path="${java.src.dir}"/>
