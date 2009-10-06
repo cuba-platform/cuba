@@ -9,13 +9,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.data.ValueListener;
 import org.dom4j.Element;
 
 import java.util.Collection;
-
-import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.chile.core.model.MetaProperty;
 
 /**
  * Root of the GenericUI components hierarchy
@@ -201,5 +198,21 @@ public interface Component {
     interface Disposable {
         void dispose();
         boolean isDisposed();
+    }
+
+    /**
+     * Component supporting an action
+     */
+    interface ActionOwner {
+        Action getAction();
+        void setAction(Action action);
+    }
+
+    /**
+     * Component having an icon
+     */
+    interface HasIcon {
+        String getIcon();
+        void setIcon(String icon);
     }
 }

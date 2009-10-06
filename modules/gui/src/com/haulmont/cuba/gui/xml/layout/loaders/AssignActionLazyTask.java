@@ -16,10 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AssignActionLazyTask implements com.haulmont.cuba.gui.xml.layout.ComponentLoader.LazyTask {
-    protected Button component;
+    protected Component.ActionOwner component;
     protected String actionName;
 
-    public AssignActionLazyTask(Button component, String actionName) {
+    public AssignActionLazyTask(Component.ActionOwner component, String actionName) {
         this.component = component;
         this.actionName = actionName;
     }

@@ -11,23 +11,21 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.exception.*;
+import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.Timer;
-import com.haulmont.cuba.web.gui.WebTimer;
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.Terminal;
-import com.vaadin.terminal.Paintable;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
@@ -44,6 +42,7 @@ import java.util.*;
  * Specific application should inherit from this class and set derived class name
  * in <code>application</code> servlet parameter of <code>web.xml</code>
  */
+@SuppressWarnings("serial")
 public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
 {
     private Log log = LogFactory.getLog(App.class);

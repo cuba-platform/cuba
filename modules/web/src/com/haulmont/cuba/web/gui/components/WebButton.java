@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Button;
+import com.vaadin.terminal.ThemeResource;
 import org.apache.commons.lang.StringUtils;
 
 public class WebButton
@@ -21,6 +22,7 @@ public class WebButton
         Button, Component.Wrapper
 {
     private Action action;
+    private String icon;
 
     public WebButton() {
         component = new com.vaadin.ui.Button();
@@ -54,5 +56,18 @@ public class WebButton
         }
 
         component.setEnabled(action.isEnabled());
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+        if (!StringUtils.isEmpty(icon)) {
+            component.setIcon(new ThemeResource(icon));
+        } else {
+            component.setIcon(null);
+        }
     }
 }

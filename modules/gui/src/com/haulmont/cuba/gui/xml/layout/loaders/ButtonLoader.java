@@ -31,6 +31,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
 
         loadCaption(component, element);
         loadAction(component, element);
+        loadIcon(component, element);
 
         loadExpandable(component, element);
 
@@ -38,12 +39,4 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
 
         return component;
     }
-
-    protected void loadAction(Button component, Element element) {
-        final String actionName = element.attributeValue("action");
-        if (!StringUtils.isEmpty(actionName)) {
-            context.addLazyTask(new AssignActionLazyTask(component, actionName));
-        }
-    }
-
 }

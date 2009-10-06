@@ -223,14 +223,26 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (isBoolean(expression)) {
             value = Boolean.valueOf(expression);
         } else {
-            @SuppressWarnings({"unchecked"})
-            Boolean res = GroovyHelper.evaluate(expression, context.getBinding());
-            value = res;
+            value = GroovyHelper.evaluate(expression, context.getBinding());
         }
         return value;
     }
 
     protected static boolean isBoolean(String s) {
         return "true".equals(s) || "false".equals(s);
+    }
+
+    protected void loadAction(Component.ActionOwner component, Element element) {
+        final String actionName = element.attributeValue("action");
+        if (!StringUtils.isEmpty(actionName)) {
+            context.addLazyTask(new AssignActionLazyTask(component, actionName));
+        }
+    }
+
+    protected void loadIcon(Component.HasIcon component, Element element) {
+        final String icon = element.attributeValue("icon");
+        if (!StringUtils.isEmpty(icon)) {
+            component.setIcon(loadResourceString(icon));
+        }
     }
 }

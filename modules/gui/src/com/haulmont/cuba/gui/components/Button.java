@@ -11,8 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 public interface Button
     extends
-        Component, Component.HasCaption, Component.BelongToFrame, Component.Expandable
+        Component, Component.HasCaption, Component.BelongToFrame, Component.Expandable,
+        Component.ActionOwner, Component.HasIcon
 {
-    Action getAction();
-    void setAction(Action action);
 }
