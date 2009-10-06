@@ -1,16 +1,16 @@
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
     <dsContext>
         <collectionDatasource
-            id="groups"
-            class="com.haulmont.cuba.security.entity.Group"
-            view="group.lookup"
-        >
+                id="groups"
+                class="com.haulmont.cuba.security.entity.Group"
+                view="group.lookup"
+                >
             <query>select g from sec$Group g</query>
         </collectionDatasource>
     </dsContext>
 
     <layout>
-        <vbox expand="expand-box" stylename="edit-area" margin="true" >
+        <vbox expand="expand-box" stylename="edit-area" margin="true">
             <hbox id="group-box" spacing="true">
                 <label control="name" value="msg://name"/>
                 <textField id="name"/>
@@ -24,11 +24,10 @@
                 <label control="group" value="msg://group"/>
                 <lookupField id="group" optionsDatasource="groups" captionProperty="name" required="false"
                              nullName="msg://any"/>
-
-                <hbox align="BOTTOM_CENTER">
-                    <button id="clear"/>
-                    <button id="apply"/>
-                </hbox>
+            </hbox>
+            <hbox align="MIDDLE_LEFT" spacing="true">
+                <button id="apply"/>
+                <button id="clear"/>
             </hbox>
             <hbox id="expand-box"/>
         </vbox>

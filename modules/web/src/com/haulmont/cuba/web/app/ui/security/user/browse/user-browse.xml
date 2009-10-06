@@ -37,7 +37,7 @@
         <vbox expand="table-panel" spacing="true">
             <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
             <vbox id="table-panel" expand="users" spacing="true">
-                <hbox align="MIDDLE_LEFT">
+                <hbox align="MIDDLE_LEFT" spacing="true">
                     <button action="users.create"/>
                     <button action="users.edit"/>
                     <button action="users.remove"/>

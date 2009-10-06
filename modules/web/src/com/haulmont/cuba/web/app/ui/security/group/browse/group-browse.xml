@@ -56,7 +56,7 @@
                                     <!--<checkBox id="showDescendants"/>-->
                                     <!--<label value="msg://showDescendants"/>-->
                                 <!--</hbox>-->
-                                <hbox align="MIDDLE_LEFT">
+                                <hbox align="MIDDLE_LEFT" spacing="true">
                                     <button id="users.create" action="users.create"/>
                                     <button id="users.edit" action="users.edit"/>
                                     <button id="users.moveToGroup" action="users.moveToGroup"/>
@@ -72,7 +72,7 @@
                         </tab>
                         <tab id="constraints" caption="msg://tabsheet.constraints">
                             <vbox expand="constraints" spacing="true">
-                                <hbox align="MIDDLE_LEFT">
+                                <hbox align="MIDDLE_LEFT" spacing="true">
                                     <button id="constraints.create" action="constraints.create"/>
                                     <button id="constraints.edit" action="constraints.edit"/>
                                     <button id="constraints.remove" action="constraints.remove"/>
