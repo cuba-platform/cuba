@@ -60,12 +60,12 @@ public class PropertyDatasourceImpl<T extends Entity>
             }
 
             private void reattachListeners(Entity prevItem, Entity item) {
-                Entity prevValue = getItem((Instance) prevItem);
-                Entity newValue = getItem((Instance) item);
+//                Entity prevValue = getItem((Instance) prevItem);
+//                Entity newValue = getItem((Instance) item);
 
-                if (!ObjectUtils.equals(prevValue, newValue)) {
-                    detachListener((Instance) prevValue);
-                    attachListener((Instance) newValue);
+                if (!ObjectUtils.equals(prevItem, item)) {
+                    detachListener((Instance) prevItem);
+                    attachListener((Instance) item);
                 }
             }
         });
