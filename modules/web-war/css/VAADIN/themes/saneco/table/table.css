@@ -302,3 +302,39 @@
     float: right;
     line-height: 18px;
 }
+
+/* action buttons panel*/
+.v-table-buttons {
+    margin-bottom: 1px;
+}
+/*
+.v-table-buttons .popupContent {
+    height: 20px;
+    overflow-y: hidden;
+    background-color: lightgray;
+}
+*/
+.v-table-buttons-container {
+    /*float: left;*/
+    height: 20px;
+    float: right;
+}
+/*
+.v-table-buttons-mover {
+    float: left;
+    height: 20px;
+    width: 10px;
+    background-color: darkgray;
+    cursor: move;
+}
+*/
+.v-table-button-wrap {
+    float: left;
+    margin: 1px 2px;
+}
+.v-table-button {
+    height: 16px;
+    width: 16px;
+    border: 0;
+    cursor: pointer;
+}    

@@ -289,6 +289,7 @@
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
                     </xs:complexType>
                 </xs:element>
 
@@ -482,6 +483,7 @@
                                     <xs:attribute name="headerMode" type="headerMode" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
+                            <xs:element name="actionButtons" minOccurs="0" maxOccurs="1" type="actionButtonsType"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="required"/>
                         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
@@ -512,12 +514,19 @@
                                     <xs:attribute name="headerMode" type="headerMode" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
+                            <xs:element name="actionButtons" minOccurs="0" maxOccurs="1" type="actionButtonsType"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="required"/>
                         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="margin" type="xs:string" use="optional"/>
+                        <xs:attribute name="visible" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
                         <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
+
                     </xs:complexType>
                 </xs:element>
             </xs:choice>
@@ -574,6 +583,20 @@
         <xs:attribute name="visible" type="xs:boolean" use="optional"/>
         <xs:attribute name="width" type="xs:integer" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="actionButtonsType">
+        <xs:sequence>
+            <xs:element name="actionButton" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="id" type="xs:string" use="optional"/>
+                    <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+                    <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
+                    <xs:attribute name="action" type="xs:string" use="optional"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="class" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:simpleType name="orientation">

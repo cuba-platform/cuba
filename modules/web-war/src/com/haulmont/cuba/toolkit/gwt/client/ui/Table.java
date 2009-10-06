@@ -10,17 +10,12 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.*;
-import com.vaadin.terminal.gwt.client.ui.Action;
-import com.vaadin.terminal.gwt.client.ui.ActionOwner;
-import com.vaadin.terminal.gwt.client.ui.TreeAction;
+import com.vaadin.terminal.gwt.client.ui.*;
 
 import java.util.*;
 
@@ -98,6 +93,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected boolean nullSelectionDisallowed = false;
 
     protected boolean storeColWidth = false;
+
+    protected ActionButtonsPanel actionButtonsPanel = null;
+//    protected boolean needSetPanelPosition = false;
 
     protected Table() {
         tHead = createHead();
@@ -202,6 +200,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 updateActionMap(c);
             } else if (c.getTag().equals("visiblecolumns")) {
                 tHead.updateCellsFromUIDL(c);
+            } else if (c.getTag().equals("actionButtons")) {
+                updateActionButtons(c);
             }
         }
 
@@ -239,6 +239,20 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         .getStringAttribute("icon")));
             }
         }
+    }
+
+    protected void updateActionButtons(UIDL uidl) {
+        if (actionButtonsPanel == null) {
+            actionButtonsPanel = new ActionButtonsPanel();
+//            needSetPanelPosition = true;
+            insert(actionButtonsPanel, 0);
+        }
+        actionButtonsPanel.updateFromUIDL(uidl);
+/*
+        if (!actionButtonsPanel.isShowing()) {
+            actionButtonsPanel.show();
+        }
+*/
     }
 
     public String getActionCaption(String actionKey) {
@@ -391,6 +405,16 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
     }
 
+/*
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        if (actionButtonsPanel != null) {
+            actionButtonsPanel.hide();
+        }
+    }
+
+*/
     /**
      * Run only once when component is attached and received its initial
      * content. This function : * Syncs headers and bodys "natural widths and
@@ -545,6 +569,12 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         isNewBody = false;
 
         initializedAndAttached = true;
+/*
+
+        if (actionButtonsPanel != null && needSetPanelPosition) {
+            actionButtonsPanel.setPanelPosition();
+        }
+*/
     }
 
     public class HeaderCell extends Widget {
@@ -1993,5 +2023,193 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             client.unregisterChildPaintables((HasWidgets) aLazyUnregistryBag);
         }
         lazyUnregistryBag.clear();
+    }
+
+    class ActionButtonsPanel extends SimplePanel/*VOverlay*/ {
+
+        private Map<Element, String> buttonKeys = new HashMap<Element, String>();
+
+        private Element buttonsContainer = DOM.createDiv();
+//        private Element mover = DOM.createDiv();
+
+/*
+        private Element draggingCurtain;
+        private boolean dragging = false;
+        private int startX, startY, origX, origY;
+*/
+
+        public ActionButtonsPanel() {
+//            super(false, false, false);
+
+            setStyleName(CLASSNAME + "-buttons");
+            DOM.setElementProperty(buttonsContainer, "className", CLASSNAME + "-buttons-container");
+//            DOM.setElementProperty(mover, "className", CLASSNAME + "-buttons-mover");
+
+            DOM.appendChild(getContainerElement(), buttonsContainer);
+//            DOM.appendChild(getContainerElement(), mover);
+                
+            DOM.sinkEvents(buttonsContainer, Event.ONCLICK);
+//            DOM.sinkEvents(mover, Event.MOUSEEVENTS);
+        }
+
+        public void updateFromUIDL(UIDL uidl) {
+            buttonKeys.clear();
+            Tools.removeChildren(buttonsContainer);
+
+            for (Iterator it = uidl.getChildIterator(); it.hasNext();) {
+                final UIDL buttonUIDL = (UIDL) it.next();
+                Element buttonElement;
+                if (buttonUIDL.hasAttribute("icon")) {
+                    Icon iconButton = new Icon(client);
+                    iconButton.setUri(buttonUIDL.getStringAttribute("icon"));
+                    buttonElement = iconButton.getElement();
+                } else {
+                    buttonElement = DOM.createDiv();
+                }
+                if (buttonUIDL.hasAttribute("caption")) {
+                    buttonElement.setTitle(buttonUIDL.getStringAttribute("caption"));
+                }
+                DOM.setElementProperty(buttonElement, "className", CLASSNAME + "-button");
+                final Element wrap = DOM.createDiv();
+                DOM.setElementProperty(wrap, "className", CLASSNAME + "-button-wrap");
+                DOM.appendChild(wrap, buttonElement);
+                DOM.appendChild(buttonsContainer, wrap);
+
+                buttonKeys.put(buttonElement, buttonUIDL.getStringAttribute("key"));
+            }
+        }
+
+        private void setPanelPosition() {
+//            DOM.getTable.this.
+//            needSetPanelPosition = false;
+        }
+
+        @Override
+        public void onBrowserEvent(Event event) {
+            if (event != null) {
+                final Element targetElement = DOM.eventGetTarget(event);
+/*
+                if (dragging || DOM.isOrHasChild(mover, targetElement)) {
+                    onDragEvent(event);
+                    event.stopPropagation();
+                } else {
+*/
+                    onClickEvent(event);
+//                }
+            }
+        }
+
+/*
+        private void onDragEvent(Event event) {
+            switch (DOM.eventGetType(event)) {
+            case Event.ONMOUSEDOWN:
+                showDraggingCurtain(true);
+                dragging = true;
+                startX = DOM.eventGetScreenX(event);
+                startY = DOM.eventGetScreenY(event);
+                origX = DOM.getAbsoluteLeft(getElement());
+                origY = DOM.getAbsoluteTop(getElement());
+                DOM.setCapture(getElement());
+                DOM.eventPreventDefault(event);
+                break;
+            case Event.ONMOUSEUP:
+                dragging = false;
+                showDraggingCurtain(false);
+                DOM.releaseCapture(getElement());
+                break;
+            case Event.ONLOSECAPTURE:
+                showDraggingCurtain(false);
+                dragging = false;
+                break;
+            case Event.ONMOUSEMOVE:
+                if (dragging) {
+                    final int x = DOM.eventGetScreenX(event) - startX + origX;
+                    final int y = DOM.eventGetScreenY(event) - startY + origY;
+                    setPopupPosition(x, y);
+                    DOM.eventPreventDefault(event);
+                }
+                break;
+            default:
+                break;
+            }
+        }
+*/
+
+        private void onClickEvent(Event event) {
+            switch (DOM.eventGetType(event)) {
+                case Event.ONCLICK:
+                    final Element targetElement = DOM.eventGetTarget(event);
+                    if (buttonKeys.get(targetElement) != null) {
+                        client.updateVariable(paintableId, "actionButton", buttonKeys.get(targetElement),
+                                true);
+                    }
+                    break;
+            }
+        }
+
+/*
+        */
+/*
+         * Shows (or hides) an empty div on top of all other content; used when
+         * resizing or moving, so that iframes (etc) do not steal event.
+         */
+/*
+        private void showDraggingCurtain(boolean show) {
+            if (show && draggingCurtain == null) {
+
+                setFF2CaretFixEnabled(false); // makes FF2 slow
+
+                draggingCurtain = DOM.createDiv();
+                DOM.setStyleAttribute(draggingCurtain, "position", "absolute");
+                DOM.setStyleAttribute(draggingCurtain, "top", "0px");
+                DOM.setStyleAttribute(draggingCurtain, "left", "0px");
+                DOM.setStyleAttribute(draggingCurtain, "width", "100%");
+                DOM.setStyleAttribute(draggingCurtain, "height", "100%");
+                DOM.setStyleAttribute(draggingCurtain, "zIndex", ""
+                        + VOverlay.Z_INDEX);
+
+                DOM.appendChild(RootPanel.getBodyElement(), draggingCurtain);
+            } else if (!show && draggingCurtain != null) {
+
+                setFF2CaretFixEnabled(true); // makes FF2 slow
+
+                DOM.removeChild(RootPanel.getBodyElement(), draggingCurtain);
+                draggingCurtain = null;
+            }
+        }
+
+        */
+/**
+         * Fix "missing cursor" browser bug workaround for FF2 in Windows and Linux.
+         *
+         * Calling this method has no effect on other browsers than the ones based
+         * on Gecko 1.8
+         *
+         * @param enable
+         */
+/*
+        private void setFF2CaretFixEnabled(boolean enable) {
+            if (BrowserInfo.get().isFF2()) {
+                if (enable) {
+                    DeferredCommand.addCommand(new Command() {
+                        public void execute() {
+                            DOM.setStyleAttribute(getElement(), "overflow", "auto");
+                        }
+                    });
+                } else {
+                    DOM.setStyleAttribute(getElement(), "overflow", "");
+                }
+            }
+        }
+
+        @Override
+        public boolean onEventPreview(Event event) {
+            if (dragging) {
+                onDragEvent(event);
+                return false;
+            }
+            return true;
+        }
+*/
     }
 }

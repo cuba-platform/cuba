@@ -38,6 +38,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -70,6 +72,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators =
             new LinkedHashSet<com.haulmont.cuba.gui.components.Field.Validator>();
+
+    protected Table.ActionButtonsProvider actionButtonsProvider;
 
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
@@ -566,6 +570,49 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 return pagingProvider.pageLengths();
             }
         });
+    }
+
+    public Table.ActionButtonsProvider getActionButtonsProvider() {
+        return actionButtonsProvider;
+    }
+
+    public void setActionButtonsProvider(Table.ActionButtonsProvider buttonsProvider) {
+        if (actionButtonsProvider != null) {
+            for (com.haulmont.cuba.web.toolkit.ui.Table.ActionButton button : component.getActionButtons()) {
+                component.removeActionButton(button);
+            }
+        }
+        actionButtonsProvider = buttonsProvider;
+        for (final Table.ActionButton button : buttonsProvider.getButtons()) {
+            component.addActionButton(new ActionButtonWrapper(button));
+        }
+    }
+
+    protected class ActionButtonWrapper implements com.haulmont.cuba.web.toolkit.ui.Table.ActionButton {
+
+        protected final Table.ActionButton button;
+        protected Resource iconResource = null;
+
+        public ActionButtonWrapper(Table.ActionButton button) {
+            this.button = button;
+        }
+
+        public String getCaption() {
+            return button.getCaption();
+        }
+
+        public Resource getIcon() {
+            if (iconResource == null && button.getIcon() != null) {
+                iconResource = new ThemeResource(button.getIcon());
+            }
+            return iconResource;
+        }
+
+        public void actionPerform(com.haulmont.cuba.web.toolkit.ui.Table source) {
+            if (button.getAction() != null) {
+                button.getAction().actionPerform(WebAbstractTable.this);
+            }
+        }
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {

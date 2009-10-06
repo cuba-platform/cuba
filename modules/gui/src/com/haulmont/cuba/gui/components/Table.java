@@ -168,4 +168,60 @@ public interface Table
     }
 
     void setPagingProvider(PagingProvider pagingProvider);
+
+    interface ActionButtonsProvider {
+        List<ActionButton> getButtons();
+        ActionButton getButton(String id);
+    }
+
+    ActionButtonsProvider getActionButtonsProvider();
+    void setActionButtonsProvider(ActionButtonsProvider buttonsPanel);
+
+    public class ActionButton implements HasXmlDescriptor, HasCaption, HasIcon, ActionOwner {
+        protected String id;
+        protected String caption;
+        protected String icon;
+        protected Action action;
+        protected Element element;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getIcon() {
+            return icon;
+        }
+
+        public void setIcon(String icon) {
+            this.icon = icon;
+        }
+
+        public Action getAction() {
+            return action;
+        }
+
+        public void setAction(Action action) {
+            this.action = action;
+        }
+
+        public Element getXmlDescriptor() {
+            return element;
+        }
+
+        public void setXmlDescriptor(Element element) {
+            this.element = element;
+        }
+
+        public String getCaption() {
+            return caption;
+        }
+
+        public void setCaption(String caption) {
+            this.caption = caption;
+        }
+    }
 }

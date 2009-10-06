@@ -9,25 +9,23 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.lang.reflect.Constructor;
+import java.util.*;
 
 public abstract class AbstractTableLoader<T extends Table> extends ComponentLoader {
     protected ComponentsFactory factory;
@@ -103,9 +101,10 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
 
-        final String s = element.attributeValue("pagingMode");
-        if (!StringUtils.isEmpty(s)) {
-            final Table.PagingMode pagingMode = Table.PagingMode.valueOf(s);
+        //paging
+        final String pagingAttribute = element.attributeValue("pagingMode");
+        if (!StringUtils.isEmpty(pagingAttribute)) {
+            final Table.PagingMode pagingMode = Table.PagingMode.valueOf(pagingAttribute);
             component.setPagingMode(pagingMode);
 
             if (pagingMode == Table.PagingMode.PAGE) {
@@ -114,6 +113,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                     loadPaging(component, pagingElement);
                 }
             }
+        }
+
+        //action buttons
+        final Element actionButtonsElement = element.element("actionButtons");
+        if (actionButtonsElement != null) {
+            loadActionButtons(component, actionButtonsElement);
         }
 
         addAssignWindowTask(component);
@@ -166,6 +171,58 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                 return null;
             }
         });
+    }
+
+    private void loadActionButtons(T component, Element element) throws InstantiationException {
+        final String className = element.attributeValue("class");
+        if (className != null) {
+            final Class<Table.ActionButtonsProvider> clazz = ReflectionHelper.getClass(className);
+
+            try {
+                final Constructor<Table.ActionButtonsProvider> constructor = clazz.getConstructor(Element.class);
+                try {
+                    final Table.ActionButtonsProvider instance = constructor.newInstance(element);
+                    component.setActionButtonsProvider(instance);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    final Table.ActionButtonsProvider instance = clazz.newInstance();
+                    component.setActionButtonsProvider(instance);
+                } catch (Throwable e1) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            final List<Element> actionButtonElements = element.elements("actionButton");
+            if (!actionButtonElements.isEmpty()) {
+                final TableActionButtonsProvider actionButtonsProvider = new TableActionButtonsProvider();
+                for (final Element actionButtonElement : actionButtonElements) {
+                    actionButtonsProvider.addActionButton(loadActionButton(component, actionButtonElement));
+                }
+                component.setActionButtonsProvider(actionButtonsProvider);
+            } else {
+                throw new InstantiationException(
+                        "<actionButtons> element must contains \"class\" attribute or at least one <actionButton> element");
+            }
+        }
+    }
+
+    private Table.ActionButton loadActionButton(T component, Element element) {
+        final Table.ActionButton actionButton = new Table.ActionButton();
+        actionButton.setXmlDescriptor(element);
+
+        final String id = element.attributeValue("id");
+        if (!StringUtils.isEmpty(id)) {
+            actionButton.setId(id);
+        }
+
+        loadCaption(actionButton, element);
+        loadIcon(actionButton, element);
+        loadAction(actionButton, element);
+
+        return actionButton;
     }
 
     private void loadRequired(T component, Table.Column column) {
@@ -312,6 +369,27 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final String sortable = element.attributeValue("sortable");
         if (!StringUtils.isEmpty(sortable) && isBoolean(sortable)) {
             component.setSortable(Boolean.valueOf(sortable));
+        }
+    }
+
+    class TableActionButtonsProvider implements Table.ActionButtonsProvider {
+
+        private List<Table.ActionButton> actionButtons = new LinkedList<Table.ActionButton>();
+        private Map<String, Table.ActionButton> idActionButton = new HashMap<String, Table.ActionButton>();
+
+        public void addActionButton(Table.ActionButton actionButton) {
+            actionButtons.add(actionButton);
+            if (actionButton.getId() != null) {
+                idActionButton.put(actionButton.getId(), actionButton);
+            }
+        }
+
+        public List<Table.ActionButton> getButtons() {
+            return Collections.unmodifiableList(actionButtons);
+        }
+
+        public Table.ActionButton getButton(String id) {
+            return idActionButton.get(id);
         }
     }
 }

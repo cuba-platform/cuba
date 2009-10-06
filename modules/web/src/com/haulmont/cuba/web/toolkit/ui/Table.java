@@ -17,10 +17,12 @@ import com.vaadin.ui.Field;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.KeyMapper;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.vaadin.event.Action;
 
 import java.util.*;
+import java.io.Serializable;
 
 public class Table
         extends com.vaadin.ui.Table
@@ -33,7 +35,10 @@ public class Table
     protected int currentPage = 1;
     protected int pagesCount = -1;
 
-    protected PagingProvider pagingProvider;
+    protected PagingProvider pagingProvider = null;
+
+    protected List<ActionButton> actionButtons = null;
+    protected KeyMapper idActionButtons = null;
 
     public enum PagingMode {
         PAGE,
@@ -98,6 +103,14 @@ public class Table
         if (variables.containsKey("pagelength")) {
             setPageLength(((Integer) variables.get("pagelength")).intValue());
             clientNeedsContentRefresh = true;
+        }
+
+        if (variables.containsKey("actionButton")) {
+            final String key = (String) variables.get("actionButton");
+            ActionButton actionButton = (ActionButton) idActionButtons.get(key);
+            if (actionButton != null) {
+                actionButton.actionPerform(this);
+            }
         }
 
         return clientNeedsContentRefresh;
@@ -263,7 +276,6 @@ public class Table
             target.addAttribute("curpage", currentPage);
             paintPaging(target);
         }
-
         target.addAttribute("pagingMode", pagingMode.name());
 
         // Visible column order
@@ -276,6 +288,8 @@ public class Table
             }
         }
         target.addAttribute("vcolorder", visibleColOrder.toArray());
+
+        paintActionButtons(target);
 
         // Rows
         final Set actionSet = new LinkedHashSet();
@@ -761,6 +775,26 @@ public class Table
         }
     }
 
+    protected void paintActionButtons(PaintTarget target) throws PaintException {
+        if (actionButtons != null) {
+            if (idActionButtons == null) {
+                idActionButtons = new KeyMapper();
+            }
+
+            target.startTag("actionButtons");
+
+            for (final ActionButton actionButton : actionButtons) {
+                target.startTag("actionButton");
+                target.addAttribute("key", idActionButtons.key(actionButton));
+                target.addAttribute("caption", actionButton.getCaption());
+                target.addAttribute("icon", actionButton.getIcon());
+                target.endTag("actionButton");
+            }
+
+            target.endTag("actionButtons");
+        }
+    }
+
     public boolean isStoreColWidth() {
         return storeColWidth;
     }
@@ -791,7 +825,33 @@ public class Table
         requestRepaint();
     }
 
-    public interface PagingProvider {
+    public void addActionButton(ActionButton actionButton) {
+        if (actionButtons == null) {
+            actionButtons = new LinkedList<ActionButton>();
+            idActionButtons = new KeyMapper();
+        }
+        actionButtons.add(actionButton);
+        requestRepaint();
+    }
+
+    public void removeActionButton(ActionButton actionButton) {
+        if (actionButtons != null) {
+            actionButtons.remove(actionButton);
+            if (actionButtons.isEmpty()) {
+                actionButtons = null;
+            }
+            requestRepaint();
+        }
+    }
+
+    public List<ActionButton> getActionButtons() {
+        if (actionButtons != null) {
+            return Collections.unmodifiableList(actionButtons);
+        }
+        return Collections.emptyList();
+    }
+
+    public interface PagingProvider extends Serializable {
         String firstCaption();
         String prevCaption();
         String nextCaption();
@@ -800,5 +860,11 @@ public class Table
         String pageLengthSelectorCaption();
         boolean showPageLengthSelector();
         int[] pageLengths();
+    }
+
+    public interface ActionButton extends Serializable {
+        String getCaption();
+        Resource getIcon();
+        void actionPerform(Table source);
     }
 }
