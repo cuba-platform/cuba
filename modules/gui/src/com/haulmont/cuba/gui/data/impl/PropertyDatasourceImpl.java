@@ -42,8 +42,10 @@ public class PropertyDatasourceImpl<T extends Entity>
         ds.addListener(new DatasourceListener<Entity>() {
 
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                reattachListeners(prevItem, item);
-                forceItemChanged(prevItem);
+                Entity prevValue = getItem((Instance) prevItem);
+                Entity newValue = getItem((Instance) item);
+                reattachListeners(prevValue, newValue);
+                forceItemChanged(prevValue);
             }
 
             public void stateChanged(Datasource ds, State prevState, State state) {
