@@ -31,6 +31,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.StoreCache;
 
 import java.util.*;
+import java.sql.Connection;
 
 public class EntityManagerImpl implements EntityManager
 {
@@ -184,6 +185,10 @@ public class EntityManagerImpl implements EntityManager
 
     public Collection getManagedObjects() {
         return delegate.getManagedObjects();
+    }
+
+    public Connection getConnection() {
+        return (Connection) delegate.getConnection();
     }
 
     public void detachAll() {

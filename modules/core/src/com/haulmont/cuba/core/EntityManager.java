@@ -12,6 +12,8 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
+import java.sql.Connection;
+
 /**
 * Interface used to interact with the persistence context.
 */
@@ -143,4 +145,9 @@ public interface EntityManager
      * Set SoftDeletion mode for this EntityManager
      */
     void setSoftDeletion(boolean softDeletion);
+
+    /**
+     * @return java.sql.Connection
+     */
+    Connection getConnection();
 }
