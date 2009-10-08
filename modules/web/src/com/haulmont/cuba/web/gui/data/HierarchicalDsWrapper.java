@@ -39,15 +39,15 @@ public class HierarchicalDsWrapper
     }
 
     public Collection getChildren(Object itemId) {
-        return ((HierarchicalDatasource<Entity, Object>) datasource).getChildren(itemId);
+        return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).getChildren(itemId);
     }
 
     public Object getParent(Object itemId) {
-        return ((HierarchicalDatasource<Entity, Object>) datasource).getParent(itemId);
+        return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).getParent(itemId);
     }
 
     public Collection rootItemIds() {
-        return ((HierarchicalDatasource<Entity, Object>) datasource).getRootItemIds();
+        return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).getRootItemIds();
     }
 
     public boolean setParent(Object itemId, Object newParentId) throws UnsupportedOperationException {
@@ -60,18 +60,20 @@ public class HierarchicalDsWrapper
     }
 
     public boolean areChildrenAllowed(Object itemId) {
-        return true;
+        //return true;
+        return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).canHaveChildren(itemId);
     }
 
     public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed) throws UnsupportedOperationException {
-        return true;
+        //return true;
+        return false; // due to vaadin javadoc, return false if method is not implemented
     }
 
     public boolean isRoot(Object itemId) {
-        return ((HierarchicalDatasource<Entity, Object>) datasource).isRoot(itemId);
+        return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).isRoot(itemId);
     }
 
     public boolean hasChildren(Object itemId) {
-        return ((HierarchicalDatasource<Entity, Object>) datasource).hasChildren(itemId);
+        return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).hasChildren(itemId);
     }
 }

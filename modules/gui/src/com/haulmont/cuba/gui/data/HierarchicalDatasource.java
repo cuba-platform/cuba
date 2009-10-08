@@ -31,4 +31,7 @@ public interface HierarchicalDatasource<T extends Entity<K>, K> extends Collecti
 
     /** True if item with ID specified has children */
     boolean hasChildren(K itemId);
+
+    /** True if item with ID specified can ever have children */
+    boolean canHaveChildren(K itemId);
 }

@@ -122,4 +122,9 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         final Node<T> node = nodes.get(itemId);
         return node != null && !node.getChildren().isEmpty();
     }
+
+    /** True if item with ID specified can ever have children */
+    public boolean canHaveChildren(K itemId) {
+        return true;
+    }
 }
