@@ -61,7 +61,7 @@ public class HierarchicalDsWrapper
 
     public boolean areChildrenAllowed(Object itemId) {
         //return true;
-        return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).canHaveChildren(itemId);
+        return ((HierarchicalDatasource<Entity<Object>, Object>) datasource).canHasChildren(itemId);
     }
 
     public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed) throws UnsupportedOperationException {

@@ -123,8 +123,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         return node != null && !node.getChildren().isEmpty();
     }
 
-    /** True if item with ID specified can ever have children */
-    public boolean canHaveChildren(K itemId) {
+    public boolean canHasChildren(K itemId) {
         return true;
     }
 }

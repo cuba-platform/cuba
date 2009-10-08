@@ -123,4 +123,8 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
 
         return false;
     }
+
+    public boolean canHasChildren(K itemId) {
+        return true;
+    }
 }
