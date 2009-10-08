@@ -1,128 +1,157 @@
+/*
+ * Default button (more customizable)
+ * -------------------------------------- */
 .v-button {
+	display: inline-block;
+	zoom: 1;
+	text-align: center;
+	text-decoration: none;
+	border: 2px outset #ddd;
+	background: #eee;
 	cursor: pointer;
-	font-size: 13px;
 	white-space: nowrap;
 	margin: 0;
-    padding: 3px 8px;
-    font-weight: bold;
-}
-.v-checkbox input {
-	vertical-align: middle;
-}
-.v-button img, .v-checkbox img {
-	display:inline;
-	vertical-align: middle;
-	margin-right: 3px;
-}
-.v-button span, .v-checkbox label {
-	vertical-align: middle;
+	padding: .2em 1em;
+	color: inherit;
+	font: inherit;
+	line-height: normal;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ie-user-select: none;
+	user-select: none;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+	}
+
+.v-ie6 .v-button {
+	display: inline;
 }
 
-.v-button-link,.v-button-title{
+.v-ie7 .v-button {
+   display: inline;
+}
+
+.v-button-wrap,
+.v-button-caption {
+	vertical-align: middle;
+	white-space: nowrap;
+	font: inherit;
+	color: inherit;
+	line-height: normal;
+	}
+
+.v-button .v-icon,
+.v-nativebutton .v-icon {
+	vertical-align: middle;
+	margin-right: 3px;
+	border: none;
+	}
+
+.v-button .v-errorindicator,
+.v-nativebutton .v-errorindicator {
+	display: inline-block;
+	zoom: 1;
+	vertical-align: middle;
+	float: none;
+}
+
+/* Link style (we really should deprecate this) */
+.v-button-link,
+.v-nativebutton-link {
 	border: none;
 	text-align: left;
-	background: none;
+	background: transparent;
+	padding: 0;
+	color: inherit;
+	}
+
+/* Inset Safari focus outline a bit */
+.v-sa .v-button-link:focus{
+	outline-offset: -3px;
+	}
+
+.v-button-link .v-button-caption,
+.v-nativebutton-link .v-nativebutton-caption {
+	text-decoration: underline;
+	color: inherit;
+	text-align: left;
+	}
+
+
+/*
+ * NativeButton styles (html button element)
+ * -------------------------------------- */
+.v-nativebutton {
+	text-align: center;
+	cursor: pointer;
+	white-space: nowrap;
+	margin: 0;
+	color: inherit;
+	font: inherit;
+	line-height: normal;
+	}
+.v-nativebutton .v-nativebutton-caption {
+	vertical-align: middle;
+	white-space: nowrap;
+	font: inherit;
+	color: inherit;
+	}
+
+.v-nativebutton .v-icon {
+	vertical-align: middle;
+	margin-right: 3px;
+	}
+
+.v-nativebutton .v-errorindicator {
+	display: inline-block;
+	zoom: 1;
+	float: none;
+}
+/* Fixes streched buttons in IE6 and IE7*/
+.v-ie6 .v-nativebutton {
+	width: 1px;
+}
+.v-ie .v-nativebutton {
+	overflow: visible;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.v-ie .v-nativebutton-link {
 	padding: 0;
 }
 
-.v-button-link,
-.v-button-link:focus,
-.v-button-title{
-    outline: 0;
-}
+/*
+ * Checkbox styles
+ * -------------------------------------- */
 
-.v-button-link span,
-.v-button-title span {
-	text-decoration: underline;
-}
-
-.v-checkbox {
+.v-checkbox,
+.v-checkbox label,
+.v-checkbox input,
+.v-checkbox .v-icon {
+	vertical-align: middle;
 	white-space: nowrap;
 }
-
+.v-checkbox .v-icon {
+	margin: 0 2px;
+}
 .v-checkbox .v-errorindicator {
 	float: none;
-	display:inline;
-	padding-left: 10px;
-	background-position:left;
+	display: inline;
+	display: inline-block;
+	zoom: 1;
 }
 
 
-/* fixes streched buttons in IE6 */
-* html .v-button {
-	width: 1px;
-	overflow: visible;
-    padding: 2px 10px;
+/* Disabled by default
+.v-checkbox-error {
+	background: #ffe0e0;
 }
-
-/* fixes streched buttons in IE7 */
-*+html .v-button {
-	overflow: visible;
-    padding: 2px 10px;
+*/
+/* Disabled by default
+.v-checkbox-required {
+	background: #ffe0e0;
 }
-
-/* Error indicator on checkbox fix for IE6 */
-* html .v-checkbox * { display: block; float: left;}
-* html .v-checkbox .v-errorindicator {background-position:right;display: block; float: left; padding-left: 0px; padding-right:4px;}
-
-/* Error indicator on checkbox fix for IE7 */
-*+ html .v-checkbox * { display: block; float: left;}
-*+ html .v-checkbox .v-errorindicator {background-position:right;display: block; float: left; padding-left: 0px;;padding-right:7px;}
-
-/* Error indicator on button fix for IE7 */
-*+ html button .v-errorindicator { display:inline; padding-right:5px; }
-
-/* Error indicator on button fix for IE6 */
-* html button .v-errorindicator { display:inline; padding-right:5px;}
-
-
-
-.v-button .v-link,
-.v-button a,
-.v-button-link .v-link,
-.v-button-link a,
-.v-button-link span,
-.v-button-title .v-link,
-.v-button-title a,
-.v-button-title span
-{
-    padding-top: 1px;
-    text-decoration: none;
-    text-align:center;
-}
-
-.v-button .v-link a:hover,
-.v-button-link .v-link a:hover,
-.v-button-link a:hover,
-.v-button-link .v-link span:hover,
-.v-button-title .v-link a:hover,
-.v-button-title a:hover,
-.v-button-title .v-link span:hover
-{
-    padding-top: 1px;
-    text-decoration: underline;
-    text-align:center;
-}
-
-.v-app .v-button-link span,
-.v-app .v-button-title span,
-{
-    color: #0033cc;
-    text-decoration: underline;
-    padding: 8px 8px; 
-}
-
-.v-app .v-button-link span:hover,
-.v-app .v-button-title span:hover
-{
-    text-decoration: underline;
-}
-
-.v-app .v-horizontallayout .v-button-title span{
-    color: #FFFFFF;
-    font-weight: bold;
-}
-.v-app .v-horizontallayout .v-button-title{
-    background-color: #829fd6;
-    height:20px;
-}
+*/

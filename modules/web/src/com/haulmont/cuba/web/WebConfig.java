@@ -50,4 +50,7 @@ public interface WebConfig extends Config
      */
     @DefaultBoolean(false)
     boolean getEnableGenericScreens();
+
+    @DefaultBoolean(true)
+    boolean getUseNativeButtons();
 }

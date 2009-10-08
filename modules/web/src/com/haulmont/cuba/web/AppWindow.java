@@ -277,7 +277,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         loginLayout.addComponent(substUserSelect);
 
-        Button logoutBtn = new Button(MessageProvider.getMessage(getClass(), "logoutBtn"),
+        Button logoutBtn = new NativeButton(MessageProvider.getMessage(getClass(), "logoutBtn"),
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
                         connection.logout();
@@ -288,7 +288,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         );
         logoutBtn.setStyleName("title");
 
-        Button viewLogBtn = new Button(MessageProvider.getMessage(getClass(), "viewLogBtn"),
+        Button viewLogBtn = new NativeButton(MessageProvider.getMessage(getClass(), "viewLogBtn"),
                 new Button.ClickListener()
                 {
                     public void buttonClick(Button.ClickEvent event) {

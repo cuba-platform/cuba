@@ -79,7 +79,7 @@ public class LoginWindow extends Window
         initFields();
         loginField.focus();
 
-        okButton = new Button(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc),
+        okButton = new NativeButton(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc),
                 new SubmitListener());
         layout.addComponent(okButton);
 
