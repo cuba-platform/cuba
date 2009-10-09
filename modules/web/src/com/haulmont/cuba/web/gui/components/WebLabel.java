@@ -20,6 +20,7 @@ import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Instance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,8 +79,10 @@ public class WebLabel
                 return new PropertyWrapper(item, propertyPath) {
                     @Override
                     public String toString() {
-                        final Object value = getValue();
                         if (formatter != null) {
+                            Object value = getValue();
+                            if (value instanceof Instance)
+                                value = ((Instance) value).getInstanceName();
                             return formatter.format(value);
                         } else {
                             return super.toString();
