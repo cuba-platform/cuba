@@ -209,7 +209,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (item == null)
             throw new IllegalStateException("Item is null");
 
-        Class<?> type = metaProperty.getJavaField().getType();
+        Class<?> type = metaProperty.getJavaType();
         if (List.class.isAssignableFrom(type)) {
             item.setValue(metaProperty.getName(), new ArrayList());
         } else if (Set.class.isAssignableFrom(type)) {

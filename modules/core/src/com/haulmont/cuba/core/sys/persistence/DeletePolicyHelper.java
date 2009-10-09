@@ -66,7 +66,7 @@ public class DeletePolicyHelper
     private void processOnDeleteInverse(List<MetaProperty> properties) {
         for (MetaProperty property : properties) {
             MetaClass metaClass = property.getDomain();
-            OnDeleteInverse annotation = property.getJavaField().getAnnotation(OnDeleteInverse.class);
+            OnDeleteInverse annotation = property.getAnnotatedElement().getAnnotation(OnDeleteInverse.class);
             DeletePolicy deletePolicy = annotation.value();
             switch (deletePolicy) {
                 case DENY:
@@ -86,7 +86,7 @@ public class DeletePolicyHelper
     private void processOnDelete(List<MetaProperty> properties) {
         for (MetaProperty property : properties) {
             MetaClass metaClass = property.getRange().asClass();
-            OnDelete annotation = property.getJavaField().getAnnotation(OnDelete.class);
+            OnDelete annotation = property.getAnnotatedElement().getAnnotation(OnDelete.class);
             DeletePolicy deletePolicy = annotation.value();
             switch (deletePolicy) {
                 case DENY:

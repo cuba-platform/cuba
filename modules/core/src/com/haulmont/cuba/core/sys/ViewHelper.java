@@ -63,9 +63,9 @@ public class ViewHelper
                 throw new RuntimeException("View '" + view + "' definition error: property '"
                         + property.getName() + "' not found in entity '" + metaClass + "'");
 
-            Field field = metaProperty.getJavaField();
-            if (field != null) {
-                fetchPlan.addField(field.getDeclaringClass(), property.getName());
+            Class declaringClass = metaProperty.getDeclaringClass();
+            if (declaringClass != null) {
+                fetchPlan.addField(declaringClass, property.getName());
                 if (property.getView() != null) {
                     processView(property.getView(), fetchPlan);
                 }
@@ -79,19 +79,25 @@ public class ViewHelper
 
         Class<?> declaringClass;
         if (BaseEntity.class.isAssignableFrom(entityClass)) {
-            declaringClass = metaClass.getProperty("createTs").getJavaField().getDeclaringClass();
-            fetchPlan.addField(declaringClass, "createTs");
-            fetchPlan.addField(declaringClass, "createdBy");
+            declaringClass = metaClass.getProperty("createTs").getDeclaringClass();
+            if (declaringClass != null) {
+                fetchPlan.addField(declaringClass, "createTs");
+                fetchPlan.addField(declaringClass, "createdBy");
+            }
         }
         if (Updatable.class.isAssignableFrom(entityClass)) {
-            declaringClass = metaClass.getProperty("updateTs").getJavaField().getDeclaringClass();
-            fetchPlan.addField(declaringClass, "updateTs");
-            fetchPlan.addField(declaringClass, "updatedBy");
+            declaringClass = metaClass.getProperty("updateTs").getDeclaringClass();
+            if (declaringClass != null) {
+                fetchPlan.addField(declaringClass, "updateTs");
+                fetchPlan.addField(declaringClass, "updatedBy");
+            }
         }
         if (SoftDelete.class.isAssignableFrom(entityClass)) {
-            declaringClass = metaClass.getProperty("deleteTs").getJavaField().getDeclaringClass();
-            fetchPlan.addField(declaringClass, "deleteTs");
-            fetchPlan.addField(declaringClass, "deletedBy");
+            declaringClass = metaClass.getProperty("deleteTs").getDeclaringClass();
+            if (declaringClass != null) {
+                fetchPlan.addField(declaringClass, "deleteTs");
+                fetchPlan.addField(declaringClass, "deletedBy");
+            }
         }
     }
 

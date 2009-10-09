@@ -33,6 +33,7 @@ import org.dom4j.io.SAXReader;
 import java.io.InputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 import java.net.URL;
 import java.net.URISyntaxException;
@@ -153,9 +154,9 @@ public class MetadataProviderImpl extends MetadataProvider
         if (metaProperty.getRange() == null || !metaProperty.getRange().isClass())
             return;
 
-        Field field = metaProperty.getJavaField();
+        AnnotatedElement annotatedElement = metaProperty.getAnnotatedElement();
         
-        OnDelete onDelete = field.getAnnotation(OnDelete.class);
+        OnDelete onDelete = annotatedElement.getAnnotation(OnDelete.class);
         if (onDelete != null) {
             Map<String, Object> metaAnnotations = metaClass.getAnnotations();
 
@@ -164,7 +165,7 @@ public class MetadataProviderImpl extends MetadataProvider
             metaAnnotations.put(OnDelete.class.getName(), properties);
         }
 
-        OnDeleteInverse onDeleteInverse = field.getAnnotation(OnDeleteInverse.class);
+        OnDeleteInverse onDeleteInverse = annotatedElement.getAnnotation(OnDeleteInverse.class);
         if (onDeleteInverse != null) {
             Map<String, Object> metaAnnotations = metaProperty.getRange().asClass().getAnnotations();
 

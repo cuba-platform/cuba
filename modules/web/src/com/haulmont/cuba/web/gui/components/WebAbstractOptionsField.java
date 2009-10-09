@@ -56,7 +56,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         setRequired(metaProperty.isMandatory());
 
         if (metaProperty.getRange().isEnum()) {
-            final Enumeration enumiration = metaProperty.getRange().asEnumiration();
+            final Enumeration enumiration = metaProperty.getRange().asEnumeration();
             final Class<Enum> javaClass = enumiration.getJavaClass();
 
             optionsList = Arrays.asList(javaClass.getEnumConstants());

@@ -818,7 +818,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
 
                     lookupField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
-                    lookupField.setOptionsList(range.asEnumiration().getValues());
+                    lookupField.setOptionsList(range.asEnumeration().getValues());
 
                     field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
                 } else {

@@ -299,6 +299,14 @@
 
                 <xs:element name="label">
                     <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="formatter" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="class" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+
                         <xs:attribute name="id" type="xs:string" use="optional"/>
 
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
@@ -313,12 +321,6 @@
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="align" type="align" use="optional"/>
                     </xs:complexType>
-                    <xs:element name="formatter">
-                        <xs:complexType>
-                            <xs:attribute name="class" type="xs:string" use="required"/>
-                            <xs:attribute name="format" type="xs:string" use="optional"/>
-                        </xs:complexType>
-                    </xs:element>
                 </xs:element>
                 <xs:element name="checkBox">
                     <xs:complexType>

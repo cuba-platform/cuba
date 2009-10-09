@@ -319,7 +319,7 @@ public class LazyLoadingTableScreen extends WebWindow
         private EntityComparator(MetaProperty property, boolean asc) {
             this.property = property;
             this.asc = asc;
-            Class<?> javaClass = property.getJavaField().getType();
+            Class<?> javaClass = property.getJavaType();
             if (!Comparable.class.isAssignableFrom(javaClass))
                 throw new UnsupportedOperationException(javaClass + " is not comparable");
         }

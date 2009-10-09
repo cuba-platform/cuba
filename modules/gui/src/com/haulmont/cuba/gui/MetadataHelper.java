@@ -43,28 +43,25 @@ public class MetadataHelper {
         } else if (range.isClass()) {
             return range.asClass().getJavaClass();
         } else if (range.isEnum()) {
-            return range.asEnumiration().getJavaClass();
+            return range.asEnumeration().getJavaClass();
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
     public static boolean isCascade(MetaProperty metaProperty) {
-        final Field field = metaProperty.getJavaField();
-        if (field != null) {
-            OneToMany oneToMany = field.getAnnotation(OneToMany.class);
-            if (oneToMany != null) {
-                final Collection<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
-                if (cascadeTypes.contains(CascadeType.ALL) ||
-                        cascadeTypes.contains(CascadeType.MERGE))
-                {
-                    return true;
-                }
-            }
-            ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
-            if (manyToMany != null && StringUtils.isBlank(manyToMany.mappedBy())) {
+        OneToMany oneToMany = metaProperty.getAnnotatedElement().getAnnotation(OneToMany.class);
+        if (oneToMany != null) {
+            final Collection<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
+            if (cascadeTypes.contains(CascadeType.ALL) ||
+                    cascadeTypes.contains(CascadeType.MERGE))
+            {
                 return true;
             }
+        }
+        ManyToMany manyToMany = metaProperty.getAnnotatedElement().getAnnotation(ManyToMany.class);
+        if (manyToMany != null && StringUtils.isBlank(manyToMany.mappedBy())) {
+            return true;
         }
         return false;
     }
