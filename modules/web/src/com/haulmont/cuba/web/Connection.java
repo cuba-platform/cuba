@@ -16,6 +16,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
+import com.vaadin.terminal.gwt.server.WebBrowser;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -74,6 +76,12 @@ public class Connection
         connected = true;
         ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
+
+        if (log.isDebugEnabled()) {
+            WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
+            log.debug(String.format("Logged in: user=%s, ip=%s, browser=%s",
+                    login, browser.getAddress(), browser.getBrowserApplication()));
+        }
     }
 
     /**
@@ -86,6 +94,12 @@ public class Connection
         connected = true;
         ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
+
+        if (log.isDebugEnabled()) {
+            WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
+            log.debug(String.format("Logged in: user=%s, ip=%s, browser=%s",
+                    login, browser.getAddress(), browser.getBrowserApplication()));
+        }
     }
 
     /**
