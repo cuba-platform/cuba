@@ -28,21 +28,23 @@ import java.lang.annotation.Annotation;
  */
 public class PersistenceHelper {
 
-    public static boolean isNew(Entity entity) {
+    public static boolean isNew(Object entity) {
         if (entity instanceof PersistenceCapable)
             return ((PersistenceCapable) entity).pcIsDetached() == null;
+        else if (entity instanceof Entity)
+            return ((Entity) entity).getId() != null;
         else
-            return entity.getId() != null;
+            return true;
     }
 
-    public static boolean isDetached(Entity entity) {
+    public static boolean isDetached(Object entity) {
         if (entity instanceof PersistenceCapable)
             return BooleanUtils.isTrue(((PersistenceCapable) entity).pcIsDetached());
         else
             return true;
     }
 
-    public static boolean isLoaded(Entity entity, String property) {
+    public static boolean isLoaded(Object entity, String property) {
         if (entity instanceof PersistenceCapable) {
             final PersistenceCapable persistenceCapable = (PersistenceCapable) entity;
             final OpenJPAStateManager stateManager = (OpenJPAStateManager) persistenceCapable.pcGetStateManager();

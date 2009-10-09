@@ -16,9 +16,13 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.EntityManager;
 import org.apache.openjpa.persistence.FetchPlan;
 
 import java.lang.reflect.Field;
@@ -92,6 +96,8 @@ public class ViewHelper
     }
 
     public static void fetchInstance(Instance instance, View view) {
+        if (PersistenceHelper.isDetached(instance))
+            throw new IllegalArgumentException("Can not fetch detached entity. Merge first.");
         __fetchInstance(instance, view, new HashSet<Instance>());
     }
 
@@ -110,6 +116,11 @@ public class ViewHelper
                             __fetchInstance((Instance) item, propertyView, visited);
                     }
                 } else if (value instanceof Instance) {
+                    if (PersistenceHelper.isDetached(value)) {
+                        EntityManager em = PersistenceProvider.getEntityManager();
+                        value = em.merge((Entity) value);
+                        instance.setValue(property.getName(), value);
+                    }
                     __fetchInstance((Instance) value, propertyView, visited);
                 }
             }
