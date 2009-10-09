@@ -53,4 +53,7 @@ public interface WebConfig extends Config
 
     @DefaultBoolean(true)
     boolean getUseNativeButtons();
+
+    @DefaultBoolean(false)
+    boolean getUseChromeFramePlugin();
 }
