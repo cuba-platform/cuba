@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
-public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
     public GroupBoxLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
@@ -38,6 +38,9 @@ public class GroupBoxLoader  extends ContainerLoader implements com.haulmont.cub
         loadSubComponentsAndExpand(component, element, "caption", "visible");
 
         loadStyleName(component, element);
+
+        loadHeight(component, element);
+        loadWidth(component, element);
 
         return component;
     }

@@ -35,7 +35,8 @@
                                             <xs:element name="query" minOccurs="0" maxOccurs="1">
                                                 <xs:complexType mixed="true">
                                                     <xs:sequence>
-                                                        <xs:element name="filter" type="filterType" minOccurs="0" maxOccurs="1"/>
+                                                        <xs:element name="filter" type="filterType" minOccurs="0"
+                                                                    maxOccurs="1"/>
                                                     </xs:sequence>
                                                 </xs:complexType>
                                             </xs:element>
@@ -236,6 +237,8 @@
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
@@ -310,6 +313,12 @@
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="align" type="align" use="optional"/>
                     </xs:complexType>
+                    <xs:element name="formatter">
+                        <xs:complexType>
+                            <xs:attribute name="class" type="xs:string" use="required"/>
+                            <xs:attribute name="format" type="xs:string" use="optional"/>
+                        </xs:complexType>
+                    </xs:element>
                 </xs:element>
                 <xs:element name="checkBox">
                     <xs:complexType>
