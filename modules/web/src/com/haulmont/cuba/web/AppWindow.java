@@ -420,9 +420,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private class ChangeSubstUserAction extends AbstractAction
     {
-        private NativeSelect substUserSelect;
+        private AbstractSelect substUserSelect;
 
-        protected ChangeSubstUserAction(NativeSelect substUserSelect) {
+        protected ChangeSubstUserAction(AbstractSelect substUserSelect) {
             super("changeSubstUserAction");
             this.substUserSelect = substUserSelect;
         }
@@ -436,9 +436,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private class DoNotChangeSubstUserAction extends AbstractAction
     {
-        private NativeSelect substUserSelect;
+        private AbstractSelect substUserSelect;
 
-        protected DoNotChangeSubstUserAction(NativeSelect substUserSelect) {
+        protected DoNotChangeSubstUserAction(AbstractSelect substUserSelect) {
             super("doNotChangeSubstUserAction");
             this.substUserSelect = substUserSelect;
         }
@@ -450,9 +450,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected class SubstitutedUserChangeListener implements Property.ValueChangeListener {
 
-        private final NativeSelect substUserSelect;
+        private final AbstractSelect substUserSelect;
 
-        public SubstitutedUserChangeListener(NativeSelect substUserSelect) {
+        public SubstitutedUserChangeListener(AbstractSelect substUserSelect) {
             this.substUserSelect = substUserSelect;
         }
 
