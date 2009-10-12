@@ -19,6 +19,8 @@ import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
+import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,12 +57,12 @@ public class LoginWindow extends Window
         loginField = new TextField();
         passwdField = new TextField();
 
-        initUI();
+        initUI(app);
 
         addActionHandler(this);
     }
 
-    protected void initUI() {
+    protected void initUI(App app) {
         FormLayout layout = new FormLayout();
         layout.setSpacing(true);
         layout.setMargin(true);
@@ -83,7 +85,17 @@ public class LoginWindow extends Window
                 new SubmitListener());
         layout.addComponent(okButton);
 
-        setLayout(layout);
+        Layout userHintLayout = createUserHint(app);
+        if (userHintLayout != null) {
+            final VerticalLayout wrapLayout = new VerticalLayout();
+            wrapLayout.setSpacing(true);
+            wrapLayout.addComponent(layout);
+            wrapLayout.addComponent(userHintLayout);
+            setContent(wrapLayout);
+        } else {
+            setContent(layout);
+        }
+
         setTheme("saneco");
     }
 
@@ -155,6 +167,25 @@ public class LoginWindow extends Window
         } catch (LoginException e) {
             showNotification(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    protected Layout createUserHint(App app) {
+        boolean enableChromeFrame = ConfigProvider.getConfig(WebConfig.class).getUseChromeFramePlugin();
+        WebApplicationContext context = (WebApplicationContext) app.getContext();
+        WebBrowser browser = context.getBrowser();
+
+        if (enableChromeFrame && browser.getBrowserApplication() != null)
+        {
+            final Browser browserInfo = Browser.getBrowserInfo(browser.getBrowserApplication());
+            if (browserInfo.isIE() && ! browserInfo.isChromeFrame()) {
+                final Layout layout = new VerticalLayout();
+                layout.setStyleName("loginUserHint");
+                layout.addComponent(new Label(MessageProvider.getMessage(getMessagesPack(), "chromeframe.hint", loc),
+                        Label.CONTENT_XHTML));
+                return layout;
+            }
+        }
+        return null;
     }
 
     protected String getMessagesPack() {
