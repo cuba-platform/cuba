@@ -11,35 +11,33 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserSubstitution;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.vaadin.data.Property;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Window;
-import com.vaadin.data.Property;
 import org.dom4j.Element;
 
 import java.util.HashMap;
@@ -289,8 +287,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         logoutBtn.setStyleName("title");
 
         Button viewLogBtn = new NativeButton(MessageProvider.getMessage(getClass(), "viewLogBtn"),
-                new Button.ClickListener()
-                {
+                new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
                         LogWindow logWindow = new LogWindow();
                         addWindow(logWindow);
@@ -318,26 +315,24 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         if (item.isPermitted(session)) {
             MenuBar.MenuItem menuItem = menuBar.addItem(item.getCaption(), null);
 
-            if (!item.getChildren().isEmpty()) {
-                for (final MenuItem childItem : item.getChildren()) {
-                    createMenuItem(menuItem, childItem);
-                }
-            }
+            createSubMenu(menuItem, item, session);
             if (!menuItem.hasChildren()) {
                 menuBar.removeItem(menuItem);
             }
         }
     }
 
-    private void createMenuItem(MenuBar.MenuItem menuItem, MenuItem item) {
-        if (!item.isPermitted(connection.getSession()))
-            return;
-
-        menuItem.addItem(item.getCaption(), createMenuBarCommand(item));
-
-        if (!item.getChildren().isEmpty()) {
-            for (final MenuItem childItem : item.getChildren()) {
-                createMenuItem(menuItem, childItem);
+    private void createSubMenu(MenuBar.MenuItem vItem, MenuItem item, UserSession session) {
+        if (item.isPermitted(session) && !item.getChildren().isEmpty()) {
+            for (MenuItem child : item.getChildren()) {
+                if (child.getChildren().isEmpty()) {
+                    if (child.isPermitted(session)) {
+                        vItem.addItem(child.getCaption(), createMenuBarCommand(child));
+                    }
+                } else {
+                    MenuBar.MenuItem menuItem = vItem.addItem(child.getCaption(), null);
+                    createSubMenu(menuItem, child, session);
+                }
             }
         }
     }
@@ -395,7 +390,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         select.addItem(userSession.getUser());
         select.setItemCaption(userSession.getUser(), getSubstitutedUserCaption(userSession.getUser()));
-        
+
         LoadContext ctx = new LoadContext(UserSubstitution.class);
         LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
                 "where us.user.id = :userId and (us.endDate is null or us.endDate > :currentDate)");
@@ -418,8 +413,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
     }
 
-    private class ChangeSubstUserAction extends AbstractAction
-    {
+    private class ChangeSubstUserAction extends AbstractAction {
         private AbstractSelect substUserSelect;
 
         protected ChangeSubstUserAction(AbstractSelect substUserSelect) {
