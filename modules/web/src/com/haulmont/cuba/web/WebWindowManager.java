@@ -23,7 +23,6 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.text.StrBuilder;
@@ -277,10 +276,6 @@ public class WebWindowManager extends WindowManager
 
     protected com.vaadin.ui.Window createDialogWindow(Window window) {
         return new com.vaadin.ui.Window(window.getCaption());
-    }
-
-    protected Locale getLocale() {
-        return App.getInstance().getLocale();
     }
 
     public void close(Window window) {

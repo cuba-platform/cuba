@@ -21,6 +21,7 @@ import com.vaadin.terminal.gwt.server.WebBrowser;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,10 +70,14 @@ public class Connection
      * Perform login
      * @param login login name
      * @param password encrypted password
+     * @param locale
      * @throws LoginException
      */
-    public void login(String login, String password) throws LoginException {
-        session = getLoginService().login(login, password, App.getInstance().getLocale());
+    public void login(String login, String password, Locale locale) throws LoginException {
+        if (locale == null)
+            throw new IllegalArgumentException("Locale is null");
+
+        session = getLoginService().login(login, password, locale);
         connected = true;
         ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();

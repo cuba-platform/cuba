@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Login window.
@@ -42,13 +43,16 @@ public class LoginWindow extends Window
 
     protected TextField loginField;
     protected TextField passwdField;
+    protected NativeSelect localesSelect;
     protected Locale loc;
+    protected Map<String, Locale> locales;
 
     protected Button okButton;
 
     public LoginWindow(App app, Connection connection) {
         super();
         loc = app.getLocale();
+        locales = ConfigProvider.getConfig(WebConfig.class).getAvailableLocales();
 
         setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.caption", loc));
         this.connection = connection;
@@ -56,6 +60,7 @@ public class LoginWindow extends Window
 
         loginField = new TextField();
         passwdField = new TextField();
+        localesSelect = new NativeSelect();
 
         initUI(app);
 
@@ -77,6 +82,10 @@ public class LoginWindow extends Window
         passwdField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
         passwdField.setSecret(true);
         layout.addComponent(passwdField);
+
+        localesSelect.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
+        localesSelect.setNullSelectionAllowed(false);
+        layout.addComponent(localesSelect);
 
         initFields();
         loginField.focus();
@@ -100,6 +109,16 @@ public class LoginWindow extends Window
     }
 
     protected void initFields() {
+        String selected = null;
+        for (Map.Entry<String, Locale> entry : locales.entrySet()) {
+            localesSelect.addItem(entry.getKey());
+            if (entry.getValue().getLanguage().equals(loc.getLanguage()))
+                selected = entry.getKey();
+        }
+        if (selected == null)
+            selected = locales.keySet().iterator().next();
+        localesSelect.setValue(selected);
+
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             loginField.setValue(null);
             passwdField.setValue("");
@@ -161,7 +180,10 @@ public class LoginWindow extends Window
             }
             else {
                 String passwd = DigestUtils.md5Hex((String) passwdField.getValue());
-                connection.login(login, passwd);
+                String lang = (String) localesSelect.getValue();
+                Locale locale = locales.get(lang);
+                App.getInstance().setLocale(locale);
+                connection.login(login, passwd, locale);
             }
             open(new ExternalResource(App.getInstance().getURL()));
         } catch (LoginException e) {

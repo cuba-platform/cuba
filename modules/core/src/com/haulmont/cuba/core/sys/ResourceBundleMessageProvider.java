@@ -68,7 +68,18 @@ public class ResourceBundleMessageProvider extends MessageProvider
         String s = pack;
         while (s != null) {
             try {
-                bundle = ResourceBundle.getBundle(s + "." + BUNDLE_NAME, locale);
+                bundle = ResourceBundle.getBundle(
+                        s + "." + BUNDLE_NAME,
+                        locale,
+                        new ResourceBundle.Control() {
+                            @Override
+                            public Locale getFallbackLocale(String baseName, Locale locale) {
+                                Locale fallbackLocale = locale.equals(Locale.ROOT) ?
+                                        null : Locale.ROOT;
+                                return fallbackLocale;
+                            }
+                        }
+                );
                 msg = bundle.getString(key);
                 break;
             } catch (MissingResourceException e) {

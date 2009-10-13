@@ -398,7 +398,10 @@ public abstract class WindowManager {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    protected abstract Locale getLocale();
+    protected Locale getLocale() {
+        return UserSessionClient.getUserSession().getLocale();
+    }
+
     protected abstract ComponentsFactory createComponentFactory();
 
     protected Window wrapByCustomClass(Window window, Element element, Map<String, Object> params) {

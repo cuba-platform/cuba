@@ -14,8 +14,13 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Prefix;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.web.sys.AvailableLocalesFactory;
+
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Common web layer configuration parameters. Can be set up in <code>conf/system.properties</code> file.
@@ -56,4 +61,9 @@ public interface WebConfig extends Config
 
     @DefaultBoolean(false)
     boolean getUseChromeFramePlugin();
+
+    /** Used to show alternative locales on user login */
+    @Factory(factory = AvailableLocalesFactory.class)
+    @Default("English|en;Russian|ru")
+    Map<String, Locale> getAvailableLocales();
 }

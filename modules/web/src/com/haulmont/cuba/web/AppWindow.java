@@ -164,7 +164,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      * Can be overridden in descendant to create an app-specific caption
      */
     protected String getAppCaption() {
-        return MessageProvider.getMessage(getClass(), "application.caption", Locale.getDefault());
+        return MessageProvider.getMessage(getClass(), "application.caption");
     }
 
     /**
