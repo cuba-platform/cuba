@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.web.sys.AvailableLocalesFactory;
 
@@ -66,4 +67,7 @@ public interface WebConfig extends Config
     @Factory(factory = AvailableLocalesFactory.class)
     @Default("English|en;Russian|ru")
     Map<String, Locale> getAvailableLocales();
+
+    @DefaultInt(5)
+    int getLogLongRequestsThresholdSec();
 }

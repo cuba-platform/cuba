@@ -13,6 +13,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
@@ -62,6 +63,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
     protected Set<Timer> timers = new HashSet<Timer>();
+
+    protected Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
     static {
         // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
@@ -254,6 +257,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
             if (userSession != null) {
                 ServerSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
             }
+
+            requestStartTimes.put(transactionData, System.currentTimeMillis());
         }
 
         if (requestURI.endsWith("/open") && !requestURI.contains("/UIDL/")) {
@@ -272,6 +277,16 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public void transactionEnd(Application application, Object transactionData) {
+        Long start = requestStartTimes.remove(transactionData);
+        if (start != null) {
+            long t = System.currentTimeMillis() - start;
+            WebConfig config = ConfigProvider.getConfig(WebConfig.class);
+            if (t > (config.getLogLongRequestsThresholdSec() * 1000)) {
+                log.warn(String.format("Too long request processing [%d ms]: ip=%s, url=%s",
+                        t, ((HttpServletRequest)transactionData).getRemoteAddr(), ((HttpServletRequest)transactionData).getRequestURI()));
+            }
+        }
+
         if (application == App.this) {
             currentApp.set(null);
             currentApp.remove();
