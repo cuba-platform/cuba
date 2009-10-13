@@ -17,9 +17,8 @@ import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * GenericUI singleton class holding common information about application configuration
@@ -50,7 +49,7 @@ public class AppConfig
     protected MenuConfig menuConfig;
     protected ClientType clientType;
     protected String messagesPackage;
-    protected PermissionConfig permissionsConfig;
+    protected Map<Locale, PermissionConfig> permissionsConfigMap = new ConcurrentHashMap<Locale, PermissionConfig>();
 
     protected Set<String> groovyImports = new HashSet<String>();
     protected Set<String> unmodifiableGroovyImports = Collections.unmodifiableSet(groovyImports);
@@ -82,13 +81,17 @@ public class AppConfig
      * Implementation class is set up through system property
      * by specific client implementation.
      */
-    public PermissionConfig getPermissionConfig() {
-        if (permissionsConfig == null) {
-            permissionsConfig = createInstance(PERMISSION_CONFIG_IMPL_PROP, PERMISSION_CONFIG_DEFAULT_IMPL);
-            permissionsConfig.compile();
-        }
+    public PermissionConfig getPermissionConfig(Locale locale) {
+        if (locale == null)
+            throw new IllegalArgumentException("Locale is null");
         
-        return permissionsConfig;
+        PermissionConfig permissionConfig = permissionsConfigMap.get(locale);
+        if (permissionConfig == null) {
+            permissionConfig = createInstance(PERMISSION_CONFIG_IMPL_PROP, PERMISSION_CONFIG_DEFAULT_IMPL);
+            permissionConfig.compile(locale);
+            permissionsConfigMap.put(locale, permissionConfig);
+        }
+        return permissionConfig;
     }
 
     /**
@@ -103,7 +106,7 @@ public class AppConfig
 
             menuConfig = createInstance(MENU_CONFIG_IMPL_PROP, MENU_CONFIG_DEFAULT_IMPL);
             final String path = System.getProperty(MENU_CONFIG_XML_PROP);
-            menuConfig.loadConfig(getMessagesPack(), repository.getResAsString(path));
+            menuConfig.loadConfig(repository.getResAsString(path));
         }
         return menuConfig;
     }

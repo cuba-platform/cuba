@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 
 import java.util.List;
+import java.util.Locale;
 
 public class PermissionConfigTest extends CubaTestCase
 {
@@ -33,9 +34,8 @@ public class PermissionConfigTest extends CubaTestCase
     }
 
     public void test() {
-        ResourceRepositoryService rr = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
         PermissionConfig permissionConfig = new PermissionConfig();
-        permissionConfig.compile();
+        permissionConfig.compile(Locale.getDefault());
 
         Tree<PermissionConfig.Target> screens = permissionConfig.getScreens();
         assertNotNull(screens);

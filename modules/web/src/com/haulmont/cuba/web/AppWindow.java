@@ -42,7 +42,6 @@ import org.dom4j.Element;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -92,11 +91,15 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     /** Layout containing application screens */
     protected VerticalLayout mainLayout;
 
+    protected String messagePack;
+
     public AppWindow(Connection connection) {
         super();
 
         this.connection = connection;
         setCaption(getAppCaption());
+
+        messagePack = AppConfig.getInstance().getMessagesPack();
 
         mode = UserSettingHelper.loadAppWindowMode();
 
@@ -313,7 +316,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         final UserSession session = connection.getSession();
         if (item.isPermitted(session)) {
-            MenuBar.MenuItem menuItem = menuBar.addItem(item.getCaption(), null);
+            MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), null);
 
             createSubMenu(menuItem, item, session);
             if (!menuItem.hasChildren()) {
@@ -327,10 +330,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             for (MenuItem child : item.getChildren()) {
                 if (child.getChildren().isEmpty()) {
                     if (child.isPermitted(session)) {
-                        vItem.addItem(child.getCaption(), createMenuBarCommand(child));
+                        vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
                     }
                 } else {
-                    MenuBar.MenuItem menuItem = vItem.addItem(child.getCaption(), null);
+                    MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
                     createSubMenu(menuItem, child, session);
                 }
             }
@@ -340,7 +343,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
         return new MenuBar.Command() {
             public void menuSelected(MenuBar.MenuItem selectedItem) {
-                String caption = item.getCaption();
+                String caption = MenuConfig.getMenuItemCaption(item.getId());
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 Element descriptor = item.getDescriptor();

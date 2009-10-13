@@ -37,7 +37,7 @@ import java.util.*;
 
 /**
  * GenericUI class holding information about all permission targets.
- * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getPermissionConfig()}
+ * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getPermissionConfig(java.util.Locale)}
  */
 public class PermissionConfig {
 
@@ -110,10 +110,10 @@ public class PermissionConfig {
         this.repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
         this.clientType = AppConfig.getInstance().getClientType();
         this.messagePack = AppConfig.getInstance().getMessagesPack();
-        this.locale = Locale.getDefault();
     }
 
-    public void compile() {
+    public void compile(Locale locale) {
+        this.locale = locale;
         compileScreens();
         compileEntities();
         compileSpecific();
@@ -135,7 +135,7 @@ public class PermissionConfig {
 
     private void walkMenu(MenuItem info, Node<Target> node) {
         String id = info.getId();
-        String caption = getMessage("menu-config." + id);
+        String caption = MenuConfig.getMenuItemCaption(id);
         if (info.getChildren() != null && !info.getChildren().isEmpty()) {
             Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
             node.addChild(n);

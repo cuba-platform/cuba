@@ -10,10 +10,6 @@
  */
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +19,13 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.MissingResourceException;
+
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.MessageProvider;
 
 /**
  * GenericUI class holding information about main menu structure.
@@ -34,7 +36,19 @@ public class MenuConfig
     private Log log = LogFactory.getLog(MenuConfig.class);
     
     private List<MenuItem> rootItems = new ArrayList<MenuItem>();
-    private String msgPack;
+
+    /**
+     * Localized menu item caption
+     * @param id screen ID as defined in <code>screen-config.xml</code>
+     */
+    public static String getMenuItemCaption(String id) {
+        String messagePack = System.getProperty(AppConfig.MESSAGES_PACK_PROP);
+        try {
+            return MessageProvider.getMessage(messagePack, "menu-config." + id);
+        } catch (MissingResourceException e) {
+            return id;
+        }
+    }
 
     /**
      * Main menu root items
@@ -43,10 +57,8 @@ public class MenuConfig
         return Collections.unmodifiableList(rootItems);
     }
 
-    public void loadConfig(String msgPack, String xml) {
+    public void loadConfig(String xml) {
         rootItems.clear();
-
-        this.msgPack = msgPack;
 
         SAXReader reader = new SAXReader();
         Document doc;
@@ -72,7 +84,7 @@ public class MenuConfig
                     log.warn(String.format("Invalid menu-config: 'id' attribute not defined"));
                 }
 
-                menuItem = new MenuItem(parentItem, id, getCaption("menu-config." + id, id));
+                menuItem = new MenuItem(parentItem, id);
                 menuItem.setDescriptor(element);
 
                 loadMenuItems(element, menuItem);
@@ -84,8 +96,7 @@ public class MenuConfig
             } else if ("item".equals(element.getName())) {
                 String id = element.attributeValue("id");
                 if (!StringUtils.isBlank(id)) {
-                    String menuCaption = getCaption("menu-config." + id, id);
-                    menuItem = new MenuItem(parentItem, id, menuCaption);
+                    menuItem = new MenuItem(parentItem, id);
                     menuItem.setDescriptor(element);
                 }
             } else {
@@ -98,14 +109,6 @@ public class MenuConfig
             else {
                 rootItems.add(menuItem);
             }
-        }
-    }
-
-    private String getCaption(String key, String def) {
-        try {
-            return MessageProvider.getMessage(msgPack, key);
-        } catch (MissingResourceException e) {
-            return def;
         }
     }
 }

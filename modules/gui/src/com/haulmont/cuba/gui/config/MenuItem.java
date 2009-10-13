@@ -30,14 +30,11 @@ public class MenuItem
     private List<MenuItem> children = new ArrayList<MenuItem>();
 
     private String id;
-    private String caption;
-
     private Element descriptor;
 
-    public MenuItem(MenuItem parent, String id, String caption) {
+    public MenuItem(MenuItem parent, String id) {
         this.parent = parent;
         this.id = id;
-        this.caption = caption;
     }
 
     /** Parent item. Null if this is root item. */
@@ -55,18 +52,6 @@ public class MenuItem
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Localized menu item caption.
-     * Defined in message pack which in turn defined by {@link com.haulmont.cuba.gui.AppConfig#getMessagesPack()} method. 
-     */
-    public String getCaption() {
-        return caption;
-    }
-
-    public String toString() {
-        return caption;
     }
 
     public Element getDescriptor() {

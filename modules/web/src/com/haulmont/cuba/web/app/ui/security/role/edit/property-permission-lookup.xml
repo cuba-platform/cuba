@@ -28,8 +28,9 @@
             <query>
                 <![CDATA[
                 import com.haulmont.cuba.gui.AppConfig
+                import com.haulmont.cuba.gui.UserSessionClient
 
-                config = AppConfig.getInstance().getPermissionConfig()
+                config = AppConfig.getInstance().getPermissionConfig(UserSessionClient.getUserSession().getLocale())
                 return config.getEntityAttributes(:ds$entities);
                 ]]>
             </query>

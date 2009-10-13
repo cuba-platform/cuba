@@ -23,11 +23,13 @@ import com.vaadin.ui.Window;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.MissingResourceException;
 
 public class Navigator extends Window
 {
     private Tree tree;
     private Window parentWindow;
+    protected String messagePack;
 
     public Navigator(Window parentWindow) {
         super(MessageProvider.getMessage(Navigator.class, "navigator.caption"));
@@ -35,6 +37,7 @@ public class Navigator extends Window
             throw new IllegalArgumentException("parentWindow must not be null");
         }
         this.parentWindow = parentWindow;
+        messagePack = AppConfig.getInstance().getMessagesPack();
         initUI();
     }
 
@@ -52,7 +55,7 @@ public class Navigator extends Window
         tree.addListener(new ItemClickEvent.ItemClickListener() {
             public void itemClick(ItemClickEvent event) {
                 MenuItem menuItem = (MenuItem) event.getItemId();
-                String caption = menuItem.getCaption();
+                String caption = MenuConfig.getMenuItemCaption(menuItem.getId());
                 final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
                 WindowInfo windowInfo = windowConfig.getWindowInfo(menuItem.getId());
                 App.getInstance().getWindowManager().openWindow(
