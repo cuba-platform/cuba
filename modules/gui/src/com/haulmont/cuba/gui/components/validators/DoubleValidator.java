@@ -21,9 +21,11 @@ import java.text.ParseException;
 public class DoubleValidator implements Field.Validator{
 
     protected String message;
+    protected String messagesPack;
 
-    public DoubleValidator(Element element) {
+    public DoubleValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
+        this.messagesPack = messagesPack;
     }
 
     public DoubleValidator(String message) {
@@ -47,7 +49,7 @@ public class DoubleValidator implements Field.Validator{
             result = false;
         }
         if (!result) {
-            String msg = message != null ? MessageUtils.loadString(message) : "Invalid value '%s'";
+            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }
     }

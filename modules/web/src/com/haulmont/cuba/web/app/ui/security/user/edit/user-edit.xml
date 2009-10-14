@@ -74,7 +74,7 @@
                             <textField id="email" datasource="user" property="email" width="300px">
                                 <validator
                                         class="com.haulmont.cuba.gui.components.validators.EmailValidator"
-                                        message="msg://com.haulmont.cuba.web.app.ui.security.user.edit/email.alert"/>
+                                        message="msg://email.alert"/>
                             </textField>
                         </row>
                         <row>

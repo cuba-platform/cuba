@@ -12,9 +12,11 @@ package com.haulmont.cuba.gui.components.validators;
 import org.dom4j.Element;
 
 public class EmailValidator extends PatternValidator {
-    public EmailValidator(Element element) {
+
+    public EmailValidator(Element element, String messagesPack) {
         super(".+@.+\\.[a-z]+");
         message = element.attributeValue("message");
+        this.messagesPack = messagesPack;
     }
 
     public EmailValidator() {

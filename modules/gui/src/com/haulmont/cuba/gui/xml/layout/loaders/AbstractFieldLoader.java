@@ -16,14 +16,17 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 import org.dom4j.Element;
 
-import java.lang.reflect.Constructor;
 import java.util.List;
 
 public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
+
+    private Log log = LogFactory.getLog(AbstractFieldLoader.class);
 
     public AbstractFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context);
@@ -76,22 +79,31 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
             final String className = validatorElement.attributeValue("class");
             final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
 
-            try {
-                final Constructor<Field.Validator> constructor = aClass.getConstructor(Element.class);
+            Field.Validator validator = null;
+
+            if (!StringUtils.isBlank(getMessagesPack()))
                 try {
-                    final Field.Validator validator = constructor.newInstance(validatorElement);
-                    component.addValidator(validator);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
+                    validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
+                } catch (NoSuchMethodException e) {
+                    //
                 }
-            } catch (NoSuchMethodException e) {
+            if (validator == null) {
                 try {
-                    final Field.Validator validator = aClass.newInstance();
-                    component.addValidator(validator);
-                } catch (Exception e1) {
-                    throw new RuntimeException(e1);
+                    validator = ReflectionHelper.newInstance(aClass, validatorElement);
+                } catch (NoSuchMethodException e) {
+                    try {
+                        validator = ReflectionHelper.newInstance(aClass);
+                    } catch (NoSuchMethodException e1) {
+                        //
+                    }
                 }
             }
+            if (validator == null) {
+                log.warn("Validator class " + aClass + " has no supported constructors");
+                return;
+            }
+
+            component.addValidator(validator);
         }
     }
 

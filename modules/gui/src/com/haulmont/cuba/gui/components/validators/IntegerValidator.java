@@ -19,11 +19,13 @@ import org.apache.commons.lang.ObjectUtils;
 public class IntegerValidator implements Field.Validator {
 
     protected String message;
+    protected String messagesPack;
     protected String onlyPositive;
 
-    public IntegerValidator(Element element) {
+    public IntegerValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
         onlyPositive = element.attributeValue("onlyPositive");
+        this.messagesPack = messagesPack;
     }
 
     private boolean checkIntegerOnPositive(Integer value) {
@@ -49,7 +51,7 @@ public class IntegerValidator implements Field.Validator {
             result = false;
         }
         if (!result) {
-            String msg = message != null ? MessageUtils.loadString(message) : "Invalid value '%s'";
+            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }
     }

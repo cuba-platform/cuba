@@ -17,12 +17,15 @@ import org.dom4j.Element;
 import java.util.regex.Pattern;
 
 public class PatternValidator implements Field.Validator {
+
     protected Pattern pattern;
     protected String message;
+    protected String messagesPack;
 
-    public PatternValidator(Element element) {
+    public PatternValidator(Element element, String messagesPack) {
         this(element.attributeValue("pattern"));
         message = element.attributeValue("message");
+        this.messagesPack = messagesPack;
     }
 
     public PatternValidator(String pattern) {
@@ -31,7 +34,7 @@ public class PatternValidator implements Field.Validator {
 
     public void validate(Object value) throws ValidationException {
         if (!(value != null && pattern.matcher(((String) value)).matches())) {
-            String msg = message != null ? MessageUtils.loadString(message) : "Invalid value '%s'";
+            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));
         }
     }
