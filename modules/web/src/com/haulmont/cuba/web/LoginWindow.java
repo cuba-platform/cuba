@@ -43,7 +43,7 @@ public class LoginWindow extends Window
 
     protected TextField loginField;
     protected TextField passwdField;
-    protected NativeSelect localesSelect;
+    protected AbstractSelect localesSelect;
     protected Locale loc;
     protected Map<String, Locale> locales;
 

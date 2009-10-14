@@ -414,6 +414,7 @@ public class WebWindowManager extends WindowManager
         actionsBar.setHeight(-1, Sizeable.UNITS_PIXELS);
 
         HorizontalLayout buttonsContainer = new HorizontalLayout();
+        buttonsContainer.setSpacing(true);
 
         for (final Action action : actions) {
             buttonsContainer.addComponent(new Button(action.getCaption(), new Button.ClickListener() {
