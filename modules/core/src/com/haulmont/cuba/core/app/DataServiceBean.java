@@ -189,7 +189,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
     }
 
     protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, LoadContext context) {
-        if (StringUtils.isBlank(context.getQuery().getQueryString()))
+        if (context.getQuery() == null || StringUtils.isBlank(context.getQuery().getQueryString()))
             throw new IllegalArgumentException("QueryString is empty");
 
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());

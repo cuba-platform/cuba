@@ -24,8 +24,18 @@ public class ServiceInterceptor
     private Object aroundInvoke(InvocationContext ctx) throws Exception {
         Log log = LogFactory.getLog(ctx.getTarget().getClass());
 
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (int i = 2; i < stackTrace.length; i++) {
+            StackTraceElement element = stackTrace[i];
+            if (element.getClassName().equals(ServiceInterceptor.class.getName())) {
+                log.error("Service invoked from another service");
+                break;
+            }
+        }
+
         UserSession userSession = SecurityProvider.currentUserSession();
-        log.trace("Invoking method " + ctx.getMethod().getName() + ", session: " + userSession);
+        if (log.isTraceEnabled())
+            log.trace("Invoking: method=" + ctx.getMethod().getName() + ", session=" + userSession);
 
         try {
             Object res = ctx.proceed();
