@@ -19,27 +19,15 @@ import java.util.List;
 
 public class EntityLogViewer extends AbstractWindow {
 
-    private final String ENTITY_UUID = "param$entityUUID";
-
     public EntityLogViewer(IFrame frame) {
         super(frame);
     }
 
     @Override
     protected void init(Map<String, Object> params) {
-        checkParams(params);
         super.init(params);
 
         final CollectionDatasource datasource = getDsContext().get("events");
         datasource.refresh();
-    }
-
-
-
-    protected void checkParams(Map<String, Object> params) {
-        final Object o = params.get(ENTITY_UUID);
-        if (o == null) {
-            throw new RuntimeException("param Entity UUID is null");
-        }
     }
 }
