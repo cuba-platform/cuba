@@ -166,6 +166,7 @@
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
                         <xs:attribute name="orientation" default="horizontal" type="orientation"/>
+                        <xs:attribute name="expandable" type="xs:boolean"/>
                         <xs:attribute name="pos" type="xs:int"/>
                     </xs:complexType>
                 </xs:element>

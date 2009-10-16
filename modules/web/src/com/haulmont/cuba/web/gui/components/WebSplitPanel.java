@@ -27,6 +27,8 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
 
     private Alignment alignment = Alignment.TOP_LEFT;
 
+    private boolean expandable = true;
+
     public void add(Component component) {
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.unwrap(component);
 
@@ -84,6 +86,14 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this, WebComponentsHelper.convertAlignment(alignment));
         }
+    }
+
+    public boolean isExpandable() {
+        return expandable;
+    }
+
+    public void setExpandable(boolean expandable) {
+        this.expandable = expandable;
     }
 
     public void applySettings(Element element) {
