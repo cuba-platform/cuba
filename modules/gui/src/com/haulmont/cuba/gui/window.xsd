@@ -194,7 +194,7 @@
                                     <xs:sequence>
                                         <xs:element name="column" minOccurs="1" maxOccurs="unbounded">
                                             <xs:complexType>
-                                                <xs:attribute name="flex" type="xs:int" use="optional"/>
+                                                <xs:attribute name="flex" type="xs:float" use="optional"/>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
