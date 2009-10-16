@@ -46,6 +46,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         logoLayout.setSpacing(true);
 
         linksLayout = new HorizontalLayout();
+        linksLayout.setStyleName("breadcrumbs");
         closeBtn = new Button(MessageProvider.getMessage(getClass(), "closeBtn"), new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 final Window window = getCurrentWindow();
