@@ -36,6 +36,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
 import com.vaadin.data.Validator;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
@@ -842,6 +843,7 @@ public class WebWindow
 
             final String messagesPackage = AppConfig.getInstance().getMessagesPack();
             final Button selectButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Select"));
+            selectButton.setIcon(new ThemeResource("icons/ok.png"));
             selectButton.addListener(new SelectAction(this));
             selectButton.setStyleName("Window-actionButton");
 
@@ -851,6 +853,7 @@ public class WebWindow
                 }
             });
             cancelButton.setStyleName("Window-actionButton");
+            cancelButton.setIcon(new ThemeResource("icons/cancel.png"));
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);

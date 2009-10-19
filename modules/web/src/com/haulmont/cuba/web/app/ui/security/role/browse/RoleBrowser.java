@@ -31,7 +31,6 @@ public class RoleBrowser extends AbstractLookup
         helper.createCreateAction();
         helper.createEditAction();
         helper.createRemoveAction();
-        helper.createRefreshAction();
         helper.createExcelAction(new WebExportDisplay());
 
         table.refresh();

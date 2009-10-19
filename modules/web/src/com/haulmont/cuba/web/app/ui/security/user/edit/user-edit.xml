@@ -36,8 +36,8 @@
 
     <layout>
         <vbox expand="split" spacing="true">
-            <hbox stylename="edit-area" spacing="true" margin="true">
-                <grid spacing="true">
+            <hbox stylename="edit-area" spacing="true" margin="true" width="100%">
+                <grid spacing="true" expandable="false">
                     <columns>
                         <column flex="1"/>
                         <column flex="1"/>
@@ -89,11 +89,11 @@
             </hbox>
 
             <split id="split" orientation="horizontal" pos="50">
-                <vbox id="roles-panel" expand="roles" spacing="true">
+                <vbox id="roles-panel" expand="roles" spacing="true" margin="false;true;false;true">
                     <label value="msg://roles"/>
-                    <hbox align="MIDDLE_LEFT">
-                        <button action="roles.add"/>
-                        <button action="roles.remove"/>
+                    <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                        <button action="roles.add" icon="icons/add.png"/>
+                        <button action="roles.remove" icon="icons/remove.png"/>
                     </hbox>
                     <table id="roles" editable="false">
                         <columns>
@@ -103,12 +103,12 @@
                     </table>
                 </vbox>
 
-                <vbox id="subst-panel" expand="subst" spacing="true">
+                <vbox id="subst-panel" expand="subst" spacing="true" margin="false;true;false;true">
                     <label value="msg://substUsers"/>
-                    <hbox align="MIDDLE_LEFT">
-                        <button action="subst.add"/>
-                        <button action="subst.edit"/>
-                        <button action="subst.remove"/>
+                    <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                        <button action="subst.add" icon="icons/add.png"/>
+                        <button action="subst.edit" icon="icons/edit.png"/>
+                        <button action="subst.remove" icon="icons/remove.png"/>
                     </hbox>
                     <table id="subst" editable="false">
                         <columns>

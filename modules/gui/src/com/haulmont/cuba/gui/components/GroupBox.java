@@ -11,5 +11,5 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface GroupBox extends Layout, Component.HasCaption, Component.Expandable {
+public interface GroupBox extends Layout, Component.HasCaption, Component.Expandable, Component.HasLayout {
 }

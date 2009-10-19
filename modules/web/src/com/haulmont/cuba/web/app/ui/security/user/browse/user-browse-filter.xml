@@ -25,9 +25,9 @@
                 <lookupField id="group" optionsDatasource="groups" captionProperty="name" required="false"
                              nullName="msg://any"/>
             </hbox>
-            <hbox align="MIDDLE_LEFT" spacing="true">
-                <button id="apply"/>
-                <button id="clear"/>
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true;false;false;false">
+                <button id="apply" icon="icons/search.png"/>
+                <button id="clear" icon="icons/clear.png"/>
             </hbox>
             <hbox id="expand-box"/>
         </vbox>

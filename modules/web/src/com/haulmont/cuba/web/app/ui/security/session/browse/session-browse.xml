@@ -15,8 +15,8 @@
 
     <layout >
         <vbox expand="table-panel" spacing="true">
-            <vbox id="table-panel" expand="sessions_table" spacing="true">
-                <hbox align="MIDDLE_LEFT">
+            <vbox id="table-panel" expand="sessions_table" margin="true">
+                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                     <button action="sessions_table.refresh" caption="msg://refresh"/>
                     <button action="sessions_table.kill" caption="msg://kill"/>
                 </hbox>

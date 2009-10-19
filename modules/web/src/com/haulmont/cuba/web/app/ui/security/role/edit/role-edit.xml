@@ -66,10 +66,10 @@
         <vbox id="permissions-pane" expand="roles" spacing="true">
             <tabsheet id="permissions-types">
                 <tab id="screen-permissions-tab" caption="msg://screen-permissions">
-                    <vbox expand="screen-permissions">
-                        <hbox>
-                            <button id="screen-permissions-grant" action="screen-permissions.grant" caption="msg://permissions.grant"/>
-                            <button id="screen-permissions-remove" action="screen-permissions.remove" caption="msg://permissions.remove"/>
+                    <vbox expand="screen-permissions" margin="true">
+                        <hbox margin="true" spacing="true">
+                            <button id="screen-permissions-grant" action="screen-permissions.grant" caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <button id="screen-permissions-remove" action="screen-permissions.remove" caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
                         <table id="screen-permissions">
                             <columns>
@@ -81,10 +81,10 @@
                     </vbox>
                 </tab>
                 <tab id="entity-permissions-tab" caption="msg://entity-permissions" lazy="true">
-                    <vbox expand="entity-permissions">
-                        <hbox>
-                            <button id="entity-permissions-grant" action="entity-permissions.grant" caption="msg://permissions.grant"/>
-                            <button id="entity-permissions-remove" action="entity-permissions.remove" caption="msg://permissions.remove"/>
+                    <vbox expand="entity-permissions" margin="true">
+                        <hbox margin="true" spacing="true">
+                            <button id="entity-permissions-grant" action="entity-permissions.grant" caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <button id="entity-permissions-remove" action="entity-permissions.remove" caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
                         <table id="entity-permissions">
                             <columns>
@@ -96,10 +96,10 @@
                     </vbox>
                 </tab>
                 <tab id="property-permissions-tab" caption="msg://property-permissions" lazy="true">
-                    <vbox expand="property-permissions">
-                        <hbox>
-                            <button id="property-permissions-grant" action="property-permissions.grant" caption="msg://permissions.grant"/>
-                            <button id="property-permissions-remove" action="property-permissions.remove" caption="msg://permissions.remove"/>
+                    <vbox expand="property-permissions" margin="true">
+                        <hbox margin="true" spacing="true">
+                            <button id="property-permissions-grant" action="property-permissions.grant" caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <button id="property-permissions-remove" action="property-permissions.remove" caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
                         <table id="property-permissions">
                             <columns>
@@ -111,10 +111,10 @@
                     </vbox>
                 </tab>
                 <tab id="specific-permissions-tab" caption="msg://specific-permissions" lazy="true">
-                    <vbox expand="specific-permissions">
-                        <hbox>
-                            <button id="specific-permissions-grant" action="specific-permissions.grant" caption="msg://permissions.grant"/>
-                            <button id="specific-permissions-remove" action="specific-permissions.remove" caption="msg://permissions.remove"/>
+                    <vbox expand="specific-permissions" margin="true">
+                        <hbox margin="true" spacing="true">
+                            <button id="specific-permissions-grant" action="specific-permissions.grant" caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <button id="specific-permissions-remove" action="specific-permissions.remove" caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
                         <table id="specific-permissions">
                             <columns>

@@ -95,7 +95,7 @@ public class UserEditor extends AbstractEditor {
 
         public void actionPerform(Component component) {
             final CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
-            openLookup("sec$Role.lookup", new Lookup.Handler() {
+            openLookup("sec$Role.browse", new Lookup.Handler() {
                 public void handleLookup(Collection items) {
                     for (Object item : items) {
                         final MetaClass metaClass = ds.getMetaClass();

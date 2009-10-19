@@ -1,7 +1,7 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
     class="com.haulmont.cuba.web.app.ui.security.role.browse.RoleBrowser"
-    lookupComponent="users"
+    lookupComponent="roles"
 >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/role/role.views.xml"/>
@@ -17,11 +17,10 @@
 
     <layout>
         <vbox id="table-panel" expand="roles" spacing="true">
-            <hbox align="MIDDLE_LEFT" spacing="true">
-                <button action="roles.create"/>
-                <button action="roles.edit"/>
-                <button action="roles.refresh"/>
-                <button action="roles.excel"/>
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <button action="roles.create" icon="icons/create.png"/>
+                <button action="roles.edit" icon="icons/edit.png"/>
+                <button action="roles.excel" icon="icons/excel.png"/>
             </hbox>
             <table id="roles" editable="false">
                 <columns>

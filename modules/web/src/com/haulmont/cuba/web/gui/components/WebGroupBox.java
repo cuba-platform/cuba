@@ -24,4 +24,13 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
         final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.unwrap(component);
         expandedComponent.setSizeFull();
     }
+
+    public void expandLayout(boolean expandLayout) {
+        if (expandLayout) {
+            getLayout().setSizeFull();
+        } else {
+            getLayout().setWidth("100%");
+            getLayout().setHeight("-1px");
+        }
+    }
 }

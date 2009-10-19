@@ -29,40 +29,31 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox spacing="true">
-            <hbox stylename="edit-area" spacing="true" margin="true">
-                <grid spacing="true">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://user"/>
-                            </vbox>
-                            <textField id="user" datasource="subst" property="user"
-                                       required="true" editable="false"/>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://substUser"/>
-                            </vbox>
-                            <lookupField id="substUser" datasource="subst" property="substitutedUser"
-                                         required="true" optionsDatasource="users"/>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://endDate"/>
-                            </vbox>
-                            <dateField id="endDate" datasource="subst" property="endDate" dateFormat="dd/MM/yyyy"/>
-                        </row>
-                    </rows>
-                </grid>
-            </hbox>
-
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    <layout expand="windowActions">
+        <vbox stylename="edit-area" margin="true">
+            <grid spacing="true" expandable="false">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://user"/>
+                        <textField id="user" datasource="subst" property="user"
+                                   required="true" editable="false"/>
+                    </row>
+                    <row>
+                        <label value="msg://substUser"/>
+                        <lookupField id="substUser" datasource="subst" property="substitutedUser"
+                                     required="true" optionsDatasource="users"/>
+                    </row>
+                    <row>
+                        <label value="msg://endDate"/>
+                        <dateField id="endDate" datasource="subst" property="endDate" dateFormat="dd/MM/yyyy"/>
+                    </row>
+                </rows>
+            </grid>
         </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>
