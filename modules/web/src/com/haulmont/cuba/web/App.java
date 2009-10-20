@@ -53,7 +53,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     private AppLog appLog;
 
-    private ExceptionHandlers exceptionHandlers;
+    protected ExceptionHandlers exceptionHandlers;
 
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
 
