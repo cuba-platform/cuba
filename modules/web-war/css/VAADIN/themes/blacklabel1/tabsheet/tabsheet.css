@@ -1,0 +1,451 @@
+.v-tabsheet,
+.v-tabsheet-content,
+.v-tabsheet-deco {
+	outline: none; /* Prevent selection outline which might break layouts or cause scrollbars */
+	text-align: left; /* Force default alignment */
+}
+
+/*
+.v-tabsheet-tabsheetpanel
+{
+    margin: 5px;
+}*/
+
+.v-tabsheet-tabs {
+	empty-cells: hide;
+	border-collapse: collapse;
+	margin:0;
+    margin-top: 0;
+	padding:0;
+	border:0;
+	height: 29px;
+	width: 100%;
+	overflow:hidden;
+}
+
+.v-tabsheet-tabs td {
+	margin:0;
+	padding:0;
+	vertical-align: bottom;
+}
+
+
+
+.v-tabsheet-spacertd {
+	width: 100%;
+}
+.v-tabsheet-spacertd div {
+	height: 29px;
+	border: 1px solid #b6bbbc;
+	background: transparent url(img/tab-bg.gif);
+}
+
+
+.v-tabsheet-hidetabs .v-tabsheet-tabcontainer {
+	display: none;
+}
+
+.v-tabsheet-scroller {
+	white-space: nowrap;
+	text-align: right;
+	margin-top: -29px;
+}
+
+.v-tabsheet-scrollerPrev,
+.v-tabsheet-scrollerNext {
+	border: none;
+	width: 12px;
+	height: 29px;
+	opacity: 0.9999;
+	margin-top: -1px;
+}
+.v-tabsheet-scrollerPrev-disabled,
+.v-tabsheet-scrollerNext-disabled {
+	border: none;
+	width: 12px;
+	height: 29px;
+	margin-top: -1px;
+	opacity: 0.9999;
+    color:#131415;
+}
+
+.v-tabsheet-scrollerNext,
+.v-tabsheet-scrollerNext:hover,
+.v-tabsheet-scrollerNext-disabled {
+	background: transparent url(img/next-a.png) no-repeat;
+}
+.v-tabsheet-scrollerPrev,
+.v-tabsheet-scrollerPrev:hover,
+.v-tabsheet-scrollerPrev-disabled {
+	background: transparent url(img/prev-a.png) no-repeat;
+}
+.v-tabsheet-scrollerPrev:hover,
+.v-tabsheet-scrollerNext:hover {
+	/*background-position: -24px 0px;*/
+}
+.v-tabsheet-scrollerPrev-disabled,
+.v-tabsheet-scrollerNext-disabled {
+	background-position: -12px 0px;
+}
+.v-tabsheet-scrollerPrev-disabled:hover,
+.v-tabsheet-scrollerNext-disabled:hover {
+	background-position: -12px 0px;
+
+}
+
+.v-tabsheet-tabs .v-caption {
+	white-space: nowrap;
+}
+
+/* for IE (does not inherit) */
+.v-tabsheet-tabs .v-caption span {
+	white-space: nowrap;
+}
+
+.v-tabsheet-content .v-verticallayout-margin
+{
+    /*margin-left: 8px;*/
+}
+
+.v-verticallayout-tabsheet-tabsheetpanel .v-verticallayout-margin-left
+{
+    /*padding-left: 8px;*/
+}
+
+.v-tabsheet-content .v-tabsheet-tabsheetpanel
+{      background: #36393b;
+
+    /*padding: 8px;*/
+}
+
+.v-tabsheet-tabitem {
+	border: none;
+	border-right: none;
+	height: 33px;
+	padding: 0;
+	margin-top: 0px;
+	line-height: 18px;
+	background: #54585c /*url(img/tab-bg.gif)*/;
+	cursor: pointer;
+}
+
+.v-tabsheet-tabitem .v-caption {
+	height: 18px;
+	padding: 5px 15px 5px 15px;
+}
+
+.v-tabsheet-tabitem .v-caption .v-captiontext{
+    font-weight: bold;
+    color: #cccccc;
+}
+
+.v-tabsheet-tabitem-selected .v-caption .v-captiontext{
+}
+
+.v-tabsheet-tabitem-selected {
+    border-bottom: none;
+	background: transparent url(img/left.gif) no-repeat left center;
+    height: 33px;
+	cursor: default;
+    padding: 5px 10px 2px 5px;
+}
+
+
+.v-tabsheet-tabitem-selected-r {
+height: 33px;
+background: transparent url(img/right.gif) no-repeat right top;
+padding: 5px 10px 0 5px;
+display: block;
+}
+
+
+.v-tabsheet-tabitem .v-disabled {
+/*    font-weight: bold;*/
+    color: #fff;
+    background: #ccc url(img/tab-bg.gif);
+}
+
+/*
+.v-tabsheet-tabitem:hover {
+	color: #4b5257;
+}
+
+.v-tabsheet-tabitem-selected:hover {
+	color: #ee5311;
+}
+*/
+
+.v-tabsheet-tabitem-selected .v-caption {
+	background: none; /*transparent url(img/tab-bg.gif) repeat-x right top;*/
+	margin: 0 -1px 0 9px;
+/*	height: 14px;*/
+	padding: 3px 12px 5px 10px;
+	overflow: visible;
+}
+
+
+
+.v-tabsheet-content {
+	border: 1px solid #babfc0;
+	background-color: #36393b;
+	border-bottom: 1px solid #dee2e3;
+	border-top: none;
+	position: relative;
+}
+
+.v-tabsheet-hidetabs .v-tabsheet-content {
+	border-top: 1px solid #b5babb;
+}
+
+.v-tabsheet-deco {
+	height: 1px;
+	background: none; /*transparent url(img/tab-sep.gif) repeat-x right top;*/
+	margin-left: 0px;
+}
+
+.v-tabsheet-deco:before {
+	display: block;
+	content: "";
+	width: 9px;
+	height: 9px;
+	margin-left: -9px;
+	background: none; /*transparent url(img/tab-sep-a.gif) no-repeat;*/
+}
+
+
+/* Progress indication */
+
+.v-tabsheet-loading .v-tabsheet-tabitem-selected .v-captiontext {
+	background: transparent url(../common/img/ajax-loader.gif) no-repeat top right;
+	margin-left: -5px;
+	padding-left: 5px;
+	margin-right: -20px;
+	padding-right: 20px;
+	margin-top: -2px;
+	padding-top: 2px;
+}
+
+
+/* IE specific styles */
+
+* html .v-tabsheet-tabs {
+	height: 29px;
+}
+*+html .v-tabsheet-tabs {
+	height: 29px;
+}
+
+* html .v-tabsheet-tabitem-selected {
+	border: 1px solid #babfc0;
+	border-bottom: none;
+	background: #fff;
+	margin-top: 0;
+	height: 24px;
+	padding: 2px 18px 6px 19px;
+	cursor: default;
+	color: #ee5311;
+}
+*+html .v-tabsheet-tabitem-selected {
+	border: 1px solid #babfc0;
+	border-bottom: none;
+	background: #fff;
+	margin-top: 0;
+	height: 24px;
+	padding: 2px 18px 6px 19px;
+	cursor: default;
+	color: #ee5311;
+}
+
+* html .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent;
+	padding: 0;
+	margin: 0;
+}
+*+html .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent;
+	padding: 0;
+	margin: 0;
+}
+
+* html .v-tabsheet-content {
+	border-bottom: none;
+}
+*+html .v-tabsheet-content {
+	border-bottom: none;
+}
+
+* html .v-tabsheet-deco {
+	height: 1px;
+	background: #babfc0;
+	overflow: hidden;
+	margin: 0;
+}
+*+html .v-tabsheet-deco {
+	height: 1px;
+	background: #babfc0;
+	overflow: hidden;
+	margin: 0;
+	width: 100%;
+}
+
+
+
+/* Inline style */
+
+.v-tabsheet-light .v-tabsheet-tabcontainer {
+	height: 29px;
+}
+
+.v-tabsheet-tabs-light {
+	height: 29px;
+	width: 100%;
+	overflow:hidden;
+	background: transparent url(img/inline-tab-bg.png) repeat-x;
+}
+
+.v-tabsheet-light .v-tabsheet-spacertd div {
+	height: 29px;
+	border: none;
+	border-bottom: 1px solid #b6bbbc;
+	background: transparent;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem {
+	border: none;
+	/*border-bottom: 1px solid #b6bbbc;*/
+	height: 29px;
+	padding: 0;
+	margin-top: 0;
+	line-height: normal;
+	background: transparent;
+	cursor: pointer;
+	text-shadow: #fff 0 1px 0;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitemcell-first .v-caption {
+	margin-left: 6px;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem .v-caption {
+	height: 24px;
+	padding: 8px 9px 0 9px;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	/*margin: 0;*/
+	/*padding: 0;*/
+	height: 29px;
+	cursor: default;
+	color: #ee5311;
+	text-shadow: none;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem:hover {
+	color: #4b5257;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem-selected:hover {
+	color: #ee5311;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	margin: 0;
+	height: 29px;
+	padding: 9px 11px 0 11px;
+	overflow: visible;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitemcell-first .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -3px 0;
+	padding-left: 15px;
+}
+
+.v-tabsheet-light .v-tabsheet-content {
+	border: none;
+	background: transparent;
+}
+
+.v-tabsheet-light .v-tabsheet-hidetabs .v-tabsheet-content {
+	border: none;
+}
+
+.v-tabsheet-deco-light {
+	height: 0;
+	overflow: hidden;
+}
+
+.v-tabsheet-deco-light:before {
+	display: none;
+}
+
+
+/* Scroller */
+
+.v-tabsheet-light .v-tabsheet-scrollerPrev,
+.v-tabsheet-light .v-tabsheet-scrollerNext {
+	margin-top: 2px;
+	height: 29px;
+}
+.v-tabsheet-light .v-tabsheet-scrollerPrev-disabled,
+.v-tabsheet-light .v-tabsheet-scrollerNext-disabled {
+	margin-top: 2px;
+	height: 29px;
+    background: #eee url(img/tab-bg-disabled.gif) no-repeat right top;
+}
+
+.v-tabsheet-light .v-tabsheet-disabled {
+	margin-top: 2px;
+	height: 29px;
+    background: #eee url(img/tab-bg-disabled.gif) no-repeat right top;
+}
+
+
+/* Progress indication */
+
+.v-tabsheet-loading .v-tabsheet-tabs-light .v-tabsheet-tabitem-selected .v-captiontext {
+	margin-left: -3px;
+	padding-left: 3px;
+}
+
+
+
+/* IE specific styles */
+
+* html .v-tabsheet-tabs-light {
+	height: 29px;
+}
+*+html .v-tabsheet-tabs-light {
+	height: 29px;
+}
+
+* html .v-tabsheet-light .v-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	padding: 0;
+	height: 29px;
+}
+*+html .v-tabsheet-light .v-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	padding: 0;
+	height: 29px;
+}
+
+* html .v-tabsheet-light .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	padding: 9px 11px 0 11px;
+}
+*+html .v-tabsheet-light .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	padding: 9px 11px 0 11px;
+}
+
+* html .v-tabsheet-deco-light {
+	height: 0;
+}
+*+html .v-tabsheet-deco-light {
+	height: 0;
+}
