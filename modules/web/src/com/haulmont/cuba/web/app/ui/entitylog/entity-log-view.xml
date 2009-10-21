@@ -42,9 +42,12 @@
                 <table id="events" editable="false">
                     <columns>
                         <column id="eventTs" caption="msg://eventTs">
-                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="dd.MM.yyyy HH:mm"/>
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="dd/MM/yyyy HH:mm"/>
                         </column>
                         <column id="createdBy" caption="msg://createdBy"/>
+                        <column id="entity" caption="msg://entity">
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.ClassNameFormatter"/>
+                        </column>
                     </columns>
                     <rows datasource="events"/>
                 </table>

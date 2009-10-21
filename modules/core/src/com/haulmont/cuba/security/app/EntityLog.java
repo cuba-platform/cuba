@@ -261,8 +261,11 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
     private String stringify(Object value) {
         if (value == null)
             return "";
-        else
+        else if (value instanceof Instance) {
+            return ((Instance) value).getInstanceName();
+        } else {
             return value.toString();
+        }
 
 //        String s;
 //        Datatype datatype = Datatypes.getInstance().get(value.getClass());

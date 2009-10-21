@@ -38,10 +38,6 @@ public class EntityLogAttr extends BaseUuidEntity
     @Column(name = "VALUE", length = VALUE_LEN)
     private String value;
 
-    @MetaProperty
-    @Transient
-    private String displayName;
-
     public EntityLogItem getLogItem() {
         return logItem;
     }
@@ -66,14 +62,11 @@ public class EntityLogAttr extends BaseUuidEntity
         this.value = value;
     }
 
+    @MetaProperty
     public String getDisplayName() {
         final String entityName = getLogItem().getEntity();
         final String message = MessageProvider.getMessage(entityName.substring(0, entityName.lastIndexOf(".")),
                 entityName.substring(entityName.lastIndexOf(".") + 1, entityName.length()) + "." + getName());
         return message == null || message.contains(getClass().getSimpleName()) ? getName() : message;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
     }
 }
