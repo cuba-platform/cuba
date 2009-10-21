@@ -16,17 +16,13 @@ import com.haulmont.cuba.core.global.DeletePolicyException;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Window;
 
-public class DeletePolicyHandler extends AbstractExceptionHandler {
+public class DeletePolicyHandler extends AbstractExceptionHandler<DeletePolicyException> {
     public DeletePolicyHandler() {
         super(DeletePolicyException.class);
     }
 
-    protected void doHandle(App app) {
+    protected void doHandle(DeletePolicyException t, App app) {
         String msg = MessageProvider.getMessage(getClass(), "deletePolicy.message");
         app.getMainWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
-    }
-
-    public void handle(AccessDeniedException e, App app) {
-        doHandle(app);
     }
 }

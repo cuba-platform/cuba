@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 
 import java.util.Locale;
 
-public class NoUserSessionHandler extends AbstractExceptionHandler {
+public class NoUserSessionHandler extends AbstractExceptionHandler<NoUserSessionException> {
 
     private Log log = LogFactory.getLog(NoUserSessionHandler.class);
     private Locale locale;
@@ -33,7 +33,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         locale = App.getInstance().getConnection().getSession().getLocale();
     }
 
-    protected void doHandle(App app) {
+    protected void doHandle(NoUserSessionException t, App app) {
         try {
             App.getInstance().getWindowManager().showOptionDialog(
                 MessageProvider.getMessage(getClass(), "dialogs.Information", locale),
@@ -41,8 +41,8 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
                     IFrame.MessageType.CONFIRMATION,
                     new Action[] {new LoginAction()}
             );
-        } catch (Throwable t) {
-            log.error(t);
+        } catch (Throwable th) {
+            log.error(th);
         }
     }
 

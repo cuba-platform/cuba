@@ -12,8 +12,17 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.validators.IntegerValidator;
+import com.haulmont.cuba.gui.components.validators.DoubleValidator;
+import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -75,35 +84,58 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
         @SuppressWarnings({"unchecked"})
         final List<Element> validatorElements = element.elements("validator");
 
-        for (Element validatorElement : validatorElements) {
-            final String className = validatorElement.attributeValue("class");
-            final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
+        if (!validatorElements.isEmpty()) {
+            for (Element validatorElement : validatorElements) {
+                final String className = validatorElement.attributeValue("class");
+                final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
 
-            Field.Validator validator = null;
+                Field.Validator validator = null;
 
-            if (!StringUtils.isBlank(getMessagesPack()))
-                try {
-                    validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
-                } catch (NoSuchMethodException e) {
-                    //
-                }
-            if (validator == null) {
-                try {
-                    validator = ReflectionHelper.newInstance(aClass, validatorElement);
-                } catch (NoSuchMethodException e) {
+                if (!StringUtils.isBlank(getMessagesPack()))
                     try {
-                        validator = ReflectionHelper.newInstance(aClass);
-                    } catch (NoSuchMethodException e1) {
+                        validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
+                    } catch (NoSuchMethodException e) {
                         //
                     }
+                if (validator == null) {
+                    try {
+                        validator = ReflectionHelper.newInstance(aClass, validatorElement);
+                    } catch (NoSuchMethodException e) {
+                        try {
+                            validator = ReflectionHelper.newInstance(aClass);
+                        } catch (NoSuchMethodException e1) {
+                            //
+                        }
+                    }
                 }
-            }
-            if (validator == null) {
-                log.warn("Validator class " + aClass + " has no supported constructors");
-                return;
+                if (validator == null) {
+                    log.warn("Validator class " + aClass + " has no supported constructors");
+                    return;
+                }
+
+                component.addValidator(validator);
             }
 
-            component.addValidator(validator);
+        } else if (component.getDatasource() != null) {
+            MetaProperty property = component.getMetaProperty();
+            if (property.getRange().isDatatype()) {
+                Datatype<Object> dt = property.getRange().asDatatype();
+                Datatypes datatypes = Datatypes.getInstance();
+
+                Field.Validator validator = null;
+                if (dt.equals(datatypes.get(IntegerDatatype.NAME)) || dt.equals(datatypes.get(LongDatatype.NAME))) {
+                    validator = new IntegerValidator(
+                            MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidNumber"));
+                } else if (dt.equals(datatypes.get(DoubleDatatype.NAME)) || dt.equals(datatypes.get(BigDecimalDatatype.NAME))) {
+                    validator = new DoubleValidator(
+                            MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidNumber"));
+                } else if (dt.equals(datatypes.get(DateDatatype.NAME))) {
+                    validator = new DateValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidDate"));
+                }
+
+                if (validator != null)
+                    component.addValidator(validator);
+            }
         }
     }
 

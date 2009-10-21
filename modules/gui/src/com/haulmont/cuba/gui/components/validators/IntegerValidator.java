@@ -28,6 +28,10 @@ public class IntegerValidator implements Field.Validator {
         this.messagesPack = messagesPack;
     }
 
+    public IntegerValidator(String message) {
+        this.message = message;
+    }
+
     private boolean checkIntegerOnPositive(Integer value) {
         if (ObjectUtils.equals("true", onlyPositive)) {
             return value.intValue() >= 0;

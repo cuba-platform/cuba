@@ -15,18 +15,18 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.vaadin.ui.Window;
 
-public class NoSuchScreenHandler extends AbstractExceptionHandler {
+public class NoSuchScreenHandler extends AbstractExceptionHandler<NoSuchScreenException> {
 
     public NoSuchScreenHandler() {
         super(NoSuchScreenException.class);
     }
 
-    protected void doHandle(App app) {
+    protected void doHandle(NoSuchScreenException t, App app) {
         String msg = MessageProvider.getMessage(getClass(), "noSuchScreen.message");
         app.getMainWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
     public void handle(NoSuchScreenException e, App app) {
-        doHandle(app);
+        doHandle(e, app);
     }
 }

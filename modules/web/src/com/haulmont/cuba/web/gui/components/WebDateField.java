@@ -9,8 +9,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
+import com.vaadin.terminal.UserError;
+
+import java.util.Date;
 
 public class WebDateField
     extends
@@ -21,7 +26,13 @@ public class WebDateField
     private Resolution resolution = Resolution.MIN;
 
     public WebDateField() {
-        component = new com.vaadin.ui.DateField();
+        component = new com.vaadin.ui.DateField() {
+            @Override
+            protected Date handleUnparsableDateString(String dateString) throws ConversionException {
+                setComponentError(new UserError(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidDate")));
+                return null;
+            }
+        };
         attachListener(component);
         component.setImmediate(true);
         __setResolution(Resolution.MIN);

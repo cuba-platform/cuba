@@ -15,18 +15,18 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Window;
 
-public class AccessDeniedHandler extends AbstractExceptionHandler {
+public class AccessDeniedHandler extends AbstractExceptionHandler<AccessDeniedException> {
     
     public AccessDeniedHandler() {
         super(AccessDeniedException.class);
     }
 
-    protected void doHandle(App app) {
+    protected void doHandle(AccessDeniedException t, App app) {
         String msg = MessageProvider.getMessage(getClass(), "accessDenied.message");
         app.getMainWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
     public void handle(AccessDeniedException e, App app) {
-        doHandle(app);
+        doHandle(e, app);
     }
 }

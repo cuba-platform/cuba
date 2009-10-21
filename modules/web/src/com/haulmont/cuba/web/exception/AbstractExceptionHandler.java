@@ -17,14 +17,14 @@ import com.haulmont.cuba.web.App;
  * Base class for exception handler bound to specific exception type.
  * <p>
  * If you need to handle a specific exception, create a descendant of this class,
- * pass handling exception class into constructor, implement {@link #doHandle(com.haulmont.cuba.web.App)} method
+ * pass handling exception class into constructor, implement {@link #doHandle(Throwable,com.haulmont.cuba.web.App)} method
  * and register the new handler in {@link App#initExceptionHandlers(boolean)}.
  */
-public abstract class AbstractExceptionHandler implements ExceptionHandler {
+public abstract class AbstractExceptionHandler<T extends Throwable> implements ExceptionHandler {
 
-    private final Class<? extends Throwable> tClass;
+    private final Class<T> tClass;
 
-    public AbstractExceptionHandler(Class<? extends Throwable> tClass) {
+    public AbstractExceptionHandler(Class<T> tClass) {
         this.tClass = tClass;
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractExceptionHandler implements ExceptionHandler {
         Throwable t = event.getThrowable();
         while (t != null) {
             if (tClass.isAssignableFrom(t.getClass())) {
-                doHandle(app);
+                doHandle((T) t, app);
                 return true;
             }
             t = t.getCause();
@@ -40,5 +40,5 @@ public abstract class AbstractExceptionHandler implements ExceptionHandler {
         return false;
     }
 
-    protected abstract void doHandle(App app);
+    protected abstract void doHandle(T t, App app);
 }
