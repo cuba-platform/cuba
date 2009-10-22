@@ -36,6 +36,8 @@ public class WebWindowManager extends WindowManager
 {
     protected App app;
 
+    protected List<WindowCloseListener> listeners = new ArrayList<WindowCloseListener>();
+
     protected Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
 
     protected Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
@@ -87,6 +89,20 @@ public class WebWindowManager extends WindowManager
         }
     }
 
+    public void addWindowCloseListener(WindowCloseListener listener) {
+        if (!listeners.contains(listener)) listeners.add(listener);
+    }
+
+    public void removeWindowCloseListener(WindowCloseListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void fireListeners(Window window, boolean anyOpenWindowExist) {
+        for (WindowCloseListener wcl : listeners) {
+            wcl.onWindowClose(window,  anyOpenWindowExist);
+        }
+    }
+
     public void showWindow(final Window window, final String caption, OpenType type) {
         AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
@@ -98,23 +114,23 @@ public class WebWindowManager extends WindowManager
                 if (mainLayout.getComponentIterator().hasNext()) {
                     Layout oldLayout = (Layout) mainLayout.getComponentIterator().next();
                     WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
-                    if (oldBreadCrumbs == null)
-                        throw new IllegalStateException("BreadCrumbs not found");
-                    Window oldWindow = oldBreadCrumbs.getCurrentWindow();
-                    WebWindow webWindow;
-                    if (oldWindow instanceof Window.Wrapper) {
-                        webWindow = ((Window.Wrapper) oldWindow).getWrappedWindow();
-                    } else {
-                        webWindow = (WebWindow) oldWindow;
-                    }
-
-                    webWindow.closeAndRun("mainMenu", new Runnable() {
-                        public void run() {
-                            showWindow(window, caption, OpenType.NEW_TAB);
+                    if (oldBreadCrumbs != null) {
+                        Window oldWindow = oldBreadCrumbs.getCurrentWindow();
+                        WebWindow webWindow;
+                        if (oldWindow instanceof Window.Wrapper) {
+                            webWindow = ((Window.Wrapper) oldWindow).getWrappedWindow();
+                        } else {
+                            webWindow = (WebWindow) oldWindow;
                         }
-                    });
 
-                    return;
+                        webWindow.closeAndRun("mainMenu", new Runnable() {
+                            public void run() {
+                                showWindow(window, caption, OpenType.NEW_TAB);
+                            }
+                        });
+
+                        return;
+                    }
                 }
             }
 
@@ -304,6 +320,7 @@ public class WebWindowManager extends WindowManager
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
                 App.getInstance().getMainWindow().removeWindow(win);
+                fireListeners(window, tabs.size() != 0);
                 break;
             }
             case NEW_TAB: {
@@ -321,6 +338,7 @@ public class WebWindowManager extends WindowManager
                     windowBreadCrumbs.clearListeners();
 
                 tabs.remove(layout);
+                fireListeners(window, tabs.size() != 0);
                 break;
             }
             case THIS_TAB: {
@@ -344,6 +362,7 @@ public class WebWindowManager extends WindowManager
                     tabSheet.setTabCaption(layout, currentWindow.getCaption());
                     tabSheet.requestRepaintAll();
                 }
+                fireListeners(window, tabs.size() != 0);
                 break;
             }
             default: {
@@ -490,5 +509,9 @@ public class WebWindowManager extends WindowManager
                 component.setDebugId(debugId + "." + count);
             }
         });
+    }
+
+    public interface WindowCloseListener {
+        void onWindowClose(Window window, boolean anyOpenWindowExist);
     }
 }
