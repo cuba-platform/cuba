@@ -66,6 +66,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         KeyDownHandler, KeyUpHandler, ClickHandler, FocusHandler, BlurHandler,
         Focusable {
 
+    protected boolean fixedTextBoxWidth = false;
+
     public class FilterSelectSuggestion implements Suggestion, Command {
 
         private final String key;
@@ -711,6 +713,10 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             pageLength = uidl.getIntAttribute("pagelength");
         }
 
+        if (uidl.hasAttribute("fixedTextBoxWidth")) {
+            fixedTextBoxWidth = true;
+        }
+
         if (uidl.hasAttribute(ATTR_INPUTPROMPT)) {
             // input prompt changed from server
             inputPrompt = uidl.getStringAttribute(ATTR_INPUTPROMPT);
@@ -1072,8 +1078,10 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
             int w = tbWidth + openerWidth + iconWidth;
             if (suggestionPopupMinWidth > w) {
-                setTextboxWidth(suggestionPopupMinWidth);
-                w = suggestionPopupMinWidth;
+                if (!fixedTextBoxWidth) {
+                    setTextboxWidth(suggestionPopupMinWidth);
+                    w = suggestionPopupMinWidth;
+                }
             } else {
                 /*
                  * Firefox3 has its own way of doing rendering so we need to

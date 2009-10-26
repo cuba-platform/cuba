@@ -32,30 +32,6 @@ public class WidgetSet extends DefaultWidgetSet {
             }
         } else if ("scrollablepanel".equals(tag)) {
             return IScrollablePanel.class;
-        } else if ("select".equals(tag)) {
-            if (uidl.hasAttribute("type")) {
-                final String type = uidl.getStringAttribute("type");
-                if (type.equals("twincol")) {
-                    return com.vaadin.terminal.gwt.client.ui.VTwinColSelect.class;
-                }
-                if (type.equals("optiongroup")) {
-                    return com.vaadin.terminal.gwt.client.ui.VOptionGroup.class;
-                }
-                if (type.equals("native")) {
-                    return com.vaadin.terminal.gwt.client.ui.VNativeSelect.class;
-                }
-                if (type.equals("list")) {
-                    return com.vaadin.terminal.gwt.client.ui.VListSelect.class;
-                }
-            } else {
-                if (uidl.hasAttribute("selectmode")
-                        && uidl.getStringAttribute("selectmode")
-                                .equals("multi")) {
-                    return com.vaadin.terminal.gwt.client.ui.VListSelect.class;
-                } else {
-                    return IFilterSelect.class;
-                }
-            }
         } else if ("horizontalBox".equals(tag) || "verticalBox".equals(tag)) {
             return IBox.class;
         } else if ("togglepanel".equals(tag)) {
@@ -73,8 +49,6 @@ public class WidgetSet extends DefaultWidgetSet {
             return new IPageTreeTable();
         } else if (IScrollablePanel.class.equals(classType)) {
             return new IScrollablePanel();
-        } else if (IFilterSelect.class.equals(classType)) {
-            return new IFilterSelect();
         } else if (IBox.class.equals(classType)) {
             return new IBox();
         } else if (ITogglePanel.class.equals(classType)) {
