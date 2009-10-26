@@ -42,6 +42,8 @@ public class CubaApplicationServlet extends ApplicationServlet {
         if (ConfigProvider.getConfig(WebConfig.class).getUseChromeFramePlugin()
                 && Browser.getBrowserInfo(request).isChromeFrame()) {
             page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"chrome=1\" />\n");
+        } else {
+            page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\" />\n");
         }
         page.write("<style type=\"text/css\">"
                 + "html, body {height:100%;}</style>");
