@@ -59,7 +59,8 @@
 
 /* Link style (we really should deprecate this) */
 .v-button-link,
-.v-nativebutton-link {
+.v-nativebutton-link,
+.v-button-shortcut {
 	border: none;
 	text-align: left;
 	background: transparent;
@@ -68,8 +69,8 @@
 	}
 
 /* Inset Safari focus outline a bit */
-.v-sa .v-button-link:focus{
-	outline-offset: -3px;
+.v-sa .v-button:focus{
+	outline: 0;
 	}
 
 .v-button-link .v-button-caption,
@@ -78,6 +79,23 @@
 	color: inherit;
 	text-align: left;
 	}
+
+.v-button-shortcut .v-button-wrap {
+    overflow: hidden;
+}
+
+.v-button-shortcut .v-button-caption {
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
+    display: block;
+    white-space: normal;
+}
+
+.v-button-shortcut .v-icon {
+    position: relative;
+    margin-right: 0;
+}
 
 
 /*
