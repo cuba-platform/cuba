@@ -211,7 +211,7 @@ public class VCustomLayout extends ComplexPanel implements Paintable,
         String template = "";
         if (newTemplate != null) {
             // Get the HTML-template from client
-            template = client.getResource("layouts/" + newTemplate + ".html");
+            template = client.getResource(newTemplate);
             if (template == null) {
                 template = "<em>Layout file layouts/"
                         + newTemplate
