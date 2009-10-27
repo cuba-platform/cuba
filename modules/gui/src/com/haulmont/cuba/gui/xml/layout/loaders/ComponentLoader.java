@@ -10,14 +10,12 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GroovyHelper;
-import com.haulmont.cuba.gui.MessageUtils;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.chile.core.model.MetaProperty;

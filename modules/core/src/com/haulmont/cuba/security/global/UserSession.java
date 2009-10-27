@@ -148,7 +148,7 @@ public class UserSession implements Serializable
 
     /** Check specific user permission */
     public boolean isSpecificPermitted(String name) {
-        return isPermitted(PermissionType.SCREEN,
+        return isPermitted(PermissionType.SPECIFIC,
                 getSpecificPermissionTarget(name));
     }
 

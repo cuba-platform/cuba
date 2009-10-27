@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.NamePattern;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Set;
 @Entity(name = "sec$Group")
 @Table(name = "SEC_GROUP")
 @Listeners({"com.haulmont.cuba.security.listener.GroupEntityListener"})
+@NamePattern("%s|name")
 public class Group extends StandardEntity
 {
     private static final long serialVersionUID = -4581386806900761785L;

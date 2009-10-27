@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
-import com.haulmont.cuba.gui.MessageUtils;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;

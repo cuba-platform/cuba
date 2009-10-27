@@ -79,15 +79,15 @@ public class EnumerationContainer implements com.vaadin.data.Container {
     }
 
     private static class EnumerationItem implements Item {
-        private Object item;
+        private Enum item;
         private String name;
 
         public EnumerationItem(Object itemId) {
-            this.item = itemId;
-            String nameKey = item.getClass().getSimpleName() + "." + item.toString();
+            this.item = (Enum) itemId;
 
-            name = MessageProvider.getMessage(item.getClass(), nameKey);
-            if (StringUtils.isEmpty(name)) name = item.toString();
+            name = MessageProvider.getMessage(item);
+            if (StringUtils.isEmpty(name))
+                name = item.toString();
         }
 
         public Property getItemProperty(Object id) {

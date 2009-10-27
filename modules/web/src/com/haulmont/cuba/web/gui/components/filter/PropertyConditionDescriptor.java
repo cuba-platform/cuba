@@ -1,0 +1,67 @@
+/*
+ * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Konstantin Krivopustov
+ * Created: 15.10.2009 17:09:09
+ *
+ * $Id$
+ */
+package com.haulmont.cuba.web.gui.components.filter;
+
+import org.dom4j.Element;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.core.global.MessageUtils;
+
+public class PropertyConditionDescriptor extends ConditionDescriptor {
+
+
+    public PropertyConditionDescriptor(String name,
+                                       String caption,
+                                       String messagesPack,
+                                       String filterComponentName,
+                                       CollectionDatasource datasource)
+    {
+        super(name, filterComponentName, datasource);
+        this.caption = caption;
+
+        if (!isBlank(caption)) {
+            this.locCaption = MessageUtils.loadString(messagesPack, caption);
+        } else {
+            this.caption = MessageUtils.getMessageRef(metaClass, name);
+            this.locCaption = MessageUtils.getPropertyCaption(metaClass, name);
+        }
+    }
+
+    public PropertyConditionDescriptor(Element element,
+                                       String messagesPack,
+                                       String filterComponentName,
+                                       CollectionDatasource datasource)
+    {
+        this(element.attributeValue("name"),
+                element.attributeValue("caption"),
+                messagesPack,
+                filterComponentName,
+                datasource);
+    }
+
+    @Override
+    public Condition createCondition() {
+        return new PropertyCondition(this, entityAlias);
+    }
+
+    public Class getJavaClass() {
+        MetaProperty metaProperty = metaClass.getPropertyEx(name).getMetaProperty();
+        Class paramClass;
+        if (metaProperty != null)
+            paramClass = metaProperty.getJavaType();
+        else
+            throw new IllegalStateException("Unable to find property '" + name + "' in entity " + metaClass);
+        return paramClass;
+    }
+
+
+}

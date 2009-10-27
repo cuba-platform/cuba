@@ -42,9 +42,14 @@ public class ResourceBundleMessageProvider extends MessageProvider
     }
 
     protected String __getMessage(Enum caller, Locale locale) {
+        String className = caller.getClass().getName();
+        int i = className.lastIndexOf('.');
+        if (i > -1)
+            className = className.substring(i + 1);
+
         return __getMessage(
                 getPackName(caller.getClass()),
-                caller.getClass().getName() + "." + caller.name(),
+                className + "." + caller.name(),
                 locale
         );
     }

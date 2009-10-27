@@ -88,17 +88,16 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     /**
      * Set query string and associated filter which is used to load data. 
      * Query is implementation-dependent (JPQL, Groovy, etc.).
-     * <br>The query may use the following parameters, distiguished by prefix:
-     * <ul>
-     * <li><code>ds$</code> - current item in the specified datasource
-     * <li><code>component$</code> - value of the specified UI component
-     * <li><code>param$</code> - value of parameter passed to the window when opening it
-     * <li><code>session$</code> - <code>userId</code> represents current user ID,
-     * any other string represents a user session attribute with this name
-     * <li><code>custom$</code> - value of parameter passed to the {@link #refresh(java.util.Map)} method
-     * </ul>
+     * <br>See {@link #setQuery(String)} for the list of supported query parameters.
      */
     void setQuery(String query, QueryFilter filter);
+
+    /**
+     * Set query filter which is used to load data. Query remains the same.
+     * Query is implementation-dependent (JPQL, Groovy, etc.).
+     * <br>See {@link #setQuery(String)} for the list of supported query parameters.
+     */
+    void setQueryFilter(QueryFilter filter);
 
     /**
      * Refresh datasource passing specified parameters to the query.

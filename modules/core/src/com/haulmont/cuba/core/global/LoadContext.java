@@ -33,8 +33,8 @@ public class LoadContext implements Serializable {
         this.softDeletion = true;
     }
 
-    public LoadContext(Class metaClass) {
-        this.metaClass = MetadataProvider.getSession().getClass(metaClass).getName();
+    public LoadContext(Class javaClass) {
+        this.metaClass = MetadataProvider.getSession().getClass(javaClass).getName();
         this.softDeletion = true;
     }
 

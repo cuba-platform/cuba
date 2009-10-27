@@ -12,7 +12,9 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.Table;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.Resource;
@@ -24,6 +26,9 @@ import java.io.File;
 import java.util.*;
 
 public class WebComponentsHelper {
+
+    private static Boolean useNativeButtons;
+
     public static Resource getResource(String resURL) {
         if (StringUtils.isEmpty(resURL)) return null;
 
@@ -217,6 +222,17 @@ public class WebComponentsHelper {
             case SCROLLING: return Table.PagingMode.SCROLLING;
             case PAGE: return Table.PagingMode.PAGE;
             default: throw new IllegalArgumentException();
+        }
+    }
+
+    public static Button createButton() {
+        if (useNativeButtons == null)
+            useNativeButtons = ConfigProvider.getConfig(WebConfig.class).getUseNativeButtons();
+
+        if (useNativeButtons) {
+            return new NativeButton();
+        } else {
+            return new Button();
         }
     }
 }

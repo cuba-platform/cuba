@@ -90,7 +90,7 @@ public abstract class MessageProvider
     /**
      * See {@link MessageProvider#getMessage(java.lang.String, java.lang.String, java.util.Locale)}, where<br>
      * pack - enum class name<br>
-     * key - enum class name plus dot plus enum value<br>
+     * key - enum class name (after last dot), plus dot, plus enum value<br>
      * locale - current user locale<br>
      */
     public static String getMessage(Enum caller) {
@@ -100,7 +100,7 @@ public abstract class MessageProvider
     /**
      * See {@link MessageProvider#getMessage(java.lang.String, java.lang.String, java.util.Locale)}, where<br>
      * pack - enum class name<br>
-     * key - enum class name plus dot plus enum value<br>
+     * key - enum class name (after last dot), plus dot, plus enum value<br>
      */
     public static String getMessage(Enum caller, Locale locale) {
         return getInstance().__getMessage(caller, locale);

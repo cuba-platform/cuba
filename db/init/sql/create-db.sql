@@ -278,6 +278,26 @@ alter table SEC_ENTITY_LOG_ATTR add constraint FK_SEC_ENTITY_LOG_ATTR_ITEM forei
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SEC_FILTER (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    COMPONENT varchar(200),
+    NAME varchar(255),
+    XML varchar(7000),
+    USER_ID varchar(36),
+    primary key (ID)
+);
+
+alter table SEC_FILTER add constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID);
+
+------------------------------------------------------------------------------------------------------------
+
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null);
 

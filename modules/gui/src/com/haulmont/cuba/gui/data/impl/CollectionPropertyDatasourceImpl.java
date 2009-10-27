@@ -277,6 +277,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         throw new UnsupportedOperationException();
     }
 
+    public void setQueryFilter(QueryFilter filter) {
+        throw new UnsupportedOperationException();
+    }
+
     public void refresh(Map<String, Object> parameters) {
         throw new UnsupportedOperationException();
     }

@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.sys.ViewHelper;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.bali.util.StringHelper;
 
 import javax.ejb.*;
 import javax.interceptor.Interceptors;
@@ -181,11 +182,13 @@ public class DataServiceBean implements DataService, DataServiceRemote
         if (query == null || query.getQueryString() == null)
             return null;
 
-        String str = query.getQueryString().trim();
-        String res = StringUtils.substring(str, 0, 50).replaceAll("[\\n\\r]", " ");
-        if (str.length() > 50)
-            res = res + "...";
-        return res;
+        String str = StringHelper.removeExtraSpaces(query.getQueryString());
+
+        if (ConfigProvider.getConfig(LogConfig.class).getCutLoadListQueries()) {
+            str = StringUtils.abbreviate(str.replaceAll("[\\n\\r]", " "), 50);
+        }
+        
+        return str;
     }
 
     protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, LoadContext context) {

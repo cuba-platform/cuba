@@ -12,6 +12,9 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
@@ -32,6 +35,10 @@ public class DateFieldLoader extends AbstractFieldLoader {
         final String dateFormat = element.attributeValue("dateFormat");
         if (!StringUtils.isEmpty(dateFormat)) {
             component.setDateFormat(dateFormat);
+        } else {
+            DateDatatype dateDatatype = Datatypes.getInstance().get(DateDatatype.NAME);
+            if (dateDatatype.getFormatPattern() != null)
+                component.setDateFormat(dateDatatype.getFormatPattern());
         }
 
         return component;

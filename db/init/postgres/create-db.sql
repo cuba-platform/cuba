@@ -275,6 +275,25 @@ create index IDX_SEC_ENTITY_LOG_ATTR_ITEM on SEC_ENTITY_LOG_ATTR (ITEM_ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SEC_FILTER (
+    ID uuid not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    COMPONENT varchar(200),
+    NAME varchar(255),
+    XML varchar(7000),
+    USER_ID uuid,
+    primary key (ID)
+)^
+
+alter table SEC_FILTER add constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID)^
+
+------------------------------------------------------------------------------------------------------------
 create or replace function newid()
 returns uuid
 as '$libdir/uuid-ossp', 'uuid_generate_v1'

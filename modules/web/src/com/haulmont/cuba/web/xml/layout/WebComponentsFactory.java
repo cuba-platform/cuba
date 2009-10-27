@@ -53,6 +53,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put("tree", WebTree.class);
         classes.put("tabsheet", WebTabsheet.class);
         classes.put("embedded", WebEmbedded.class);
+        classes.put("filter", WebFilter.class);
     }
 
     public <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException {

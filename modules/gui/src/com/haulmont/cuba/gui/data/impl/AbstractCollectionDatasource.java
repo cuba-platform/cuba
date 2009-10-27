@@ -80,48 +80,51 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         setQuery(query, null);
     }
 
+    public void setQueryFilter(QueryFilter filter) {
+        setQuery(getQuery(), filter);
+    }
+
     public void setQuery(String query, QueryFilter filter) {
+        if (ObjectUtils.equals(this.query, query) && ObjectUtils.equals(this.filter, filter))
+            return;
+
+        this.query = query;
         this.filter = filter;
 
-        if (!ObjectUtils.equals(this.query, query)) {
-            this.query = query;
-            invalidate();
+        queryParameters = ParametersHelper.parseQuery(query, filter);
 
-            queryParameters = ParametersHelper.parseQuery(query, filter);
+        for (ParameterInfo info : queryParameters) {
+            final ParameterInfo.Type type = info.getType();
+            if (ParameterInfo.Type.DATASOURCE.equals(type)) {
+                final String path = info.getPath();
 
-            for (ParameterInfo info : queryParameters) {
-                final ParameterInfo.Type type = info.getType();
-                if (ParameterInfo.Type.DATASOURCE.equals(type)) {
-                    final String path = info.getPath();
+                final String[] strings = path.split("\\.");
+                String source = strings[0];
 
-                    final String[] strings = path.split("\\.");
-                    String source = strings[0];
+                final String property;
+                if (strings.length > 1) {
+                    final List<String> list = Arrays.asList(strings);
+                    final List<String> valuePath = list.subList(1, list.size());
+                    property = InstanceUtils.formatValuePath(valuePath.toArray(new String[valuePath.size()]));
+                } else {
+                    property = null;
+                }
 
-                    final String property;
-                    if (strings.length > 1) {
-                        final List<String> list = Arrays.asList(strings);
-                        final List<String> valuePath = list.subList(1, list.size());
-                        property = InstanceUtils.formatValuePath(valuePath.toArray(new String[valuePath.size()]));
-                    } else {
-                        property = null;
-                    }
+                final Datasource ds = dsContext.get(source);
+                if (ds != null) {
+                    dsContext.registerDependency(this, ds, property);
+                } else {
+                    ((DsContextImplementation) dsContext).addLazyTask(new DsContextImplementation.LazyTask() {
+                        public void execute(DsContext context) {
+                            final String[] strings = path.split("\\.");
+                            String source = strings[0];
 
-                    final Datasource ds = dsContext.get(source);
-                    if (ds != null) {
-                        dsContext.registerDependency(this, ds, property);
-                    } else {
-                        ((DsContextImplementation) dsContext).addLazyTask(new DsContextImplementation.LazyTask() {
-                            public void execute(DsContext context) {
-                                final String[] strings = path.split("\\.");
-                                String source = strings[0];
-
-                                final Datasource ds = dsContext.get(source);
-                                if (ds != null) {
-                                    dsContext.registerDependency(AbstractCollectionDatasource.this, ds, property);
-                                }
+                            final Datasource ds = dsContext.get(source);
+                            if (ds != null) {
+                                dsContext.registerDependency(AbstractCollectionDatasource.this, ds, property);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             }
         }

@@ -2,8 +2,13 @@
 
     <specific>
 
-        <category id="sampleCategory">
-            <permission id="samplePermission"/>
+        <category id="cuba">
+            <category id="cuba.gui">
+                <category id="cuba.gui.filter">
+                    <permission id="cuba.gui.filter.global"/>
+                    <permission id="cuba.gui.filter.customConditions"/>
+                </category>
+            </category>
         </category>
         
     </specific>

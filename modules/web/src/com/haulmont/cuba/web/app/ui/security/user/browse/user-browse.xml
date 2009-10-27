@@ -3,6 +3,7 @@
         class="com.haulmont.cuba.web.app.ui.security.user.browse.UserBrowser"
         lookupComponent="users"
         caption="msg://caption"
+        messagesPack="com.haulmont.cuba.web.app.ui.security.user.browse"
         >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
@@ -35,7 +36,20 @@
 
     <layout >
         <vbox expand="table-panel" spacing="true">
-            <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
+            <tabsheet id="filterTabsheet">
+                <tab id="simpleFilterTab" caption="msg://simpleFilterTab">
+                    <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>
+                </tab>
+                <tab id="genericFilterTab" caption="msg://genericFilterTab">
+                    <filter id="genericFilter" datasource="users">
+                        <properties include=".*" exclude="(password)|(loginLowerCase)"/>
+                        <custom name="customByGroup" caption="msg://genericFilter.customByGroup"
+                                join="left join u.group.hierarchyList h" paramClass="com.haulmont.cuba.security.entity.Group">
+                            (h.parent.id = ? or h.group.id = ?) or (u.group.id = ? and h.parent is null)
+                        </custom>
+                    </filter>
+                </tab>
+            </tabsheet>
             <vbox id="table-panel" expand="users" spacing="true">
                 <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                     <button action="users.create" icon="icons/create.png"/>

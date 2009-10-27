@@ -14,6 +14,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
+import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -34,11 +35,30 @@ public class QueryFilter {
         parse(rootElem, root.getConditions());
     }
 
+    public QueryFilter(QueryFilter src1, QueryFilter src2) {
+        if (src1 == null || src2 == null)
+            throw new IllegalArgumentException("Source query filter is null");
+
+        if (!src1.targetEntity.equals(src2.targetEntity))
+            throw new IllegalArgumentException("Target entities do not match");
+
+        targetEntity = src1.targetEntity;
+
+        root = new LogicalCondition(LogicalOp.AND);
+        root.getConditions().add(src1.root);
+        root.getConditions().add(src2.root);
+    }
+
     private Condition createCondition(Element element) {
         Condition condition;
 
         if ("c".equals(element.getName())) {
             condition = new Clause(element.getText(), element.attributeValue("join"));
+            // support unary conditions without parameters in text (e.g. "is null")
+            for (Element paramElem : Dom4j.elements(element, "param")) {
+                Set<ParameterInfo> params = ParametersHelper.parseQuery(":" + paramElem.attributeValue("name"));
+                condition.getParameters().addAll(params);
+            }
         } else {
             condition = new LogicalCondition(LogicalOp.fromString(element.getName()));
         }
@@ -48,6 +68,9 @@ public class QueryFilter {
 
     private void parse(Element parentElem, List<Condition> conditions) {
         for (Element element : Dom4j.elements(parentElem)) {
+            if ("param".equals(element.getName())) 
+                continue;
+
             Condition condition = createCondition(element);
             conditions.add(condition);
             parse(element, condition.getConditions());

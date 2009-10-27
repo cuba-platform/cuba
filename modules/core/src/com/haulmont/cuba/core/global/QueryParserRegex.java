@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.core.global;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Set;
 import java.util.HashSet;
 import java.util.regex.Pattern;
@@ -35,7 +37,7 @@ public class QueryParserRegex implements QueryParser {
     public static final String ALIAS_PATTERN_REGEX = "(^|\\s|\\()(\\w+)\\.";
     public static final Pattern ALIAS_PATTERN = Pattern.compile(ALIAS_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
-    public static final String PARAM_PATTERN_REGEX = ":([a-zA-Z_0-9$]+)";
+    public static final String PARAM_PATTERN_REGEX = ":([a-zA-Z_0-9$\\.]+)";
     public static final Pattern PARAM_PATTERN = Pattern.compile(PARAM_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
     protected String source;
@@ -53,5 +55,20 @@ public class QueryParserRegex implements QueryParser {
         }
 
         return result;
+    }
+
+    public String getEntityAlias(String targetEntity) {
+        String alias = null;
+        Matcher entityMatcher = ENTITY_PATTERN.matcher(source);
+        while (entityMatcher.find()) {
+            if (targetEntity.equals(entityMatcher.group(1))) {
+                alias = entityMatcher.group(3);
+                break;
+            }
+        }
+        if (StringUtils.isBlank(alias))
+            throw new RuntimeException("No alias for target entity " + targetEntity + " found [" + source + "]");
+
+        return alias;
     }
 }

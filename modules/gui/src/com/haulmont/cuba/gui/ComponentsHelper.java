@@ -54,7 +54,7 @@ public abstract class ComponentsHelper {
         while (frame != null) {
             if (frame instanceof Window)
                 return (Window) frame;
-            frame = component.getFrame();
+            frame = frame.getFrame();
         }
         return null;
     }

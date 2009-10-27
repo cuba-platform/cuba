@@ -1,0 +1,88 @@
+/*
+ * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Konstantin Krivopustov
+ * Created: 15.10.2009 18:19:44
+ *
+ * $Id$
+ */
+package com.haulmont.cuba.web.gui.components.filter;
+
+import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.core.global.MessageUtils;
+import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.ObjectUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
+
+import java.util.Set;
+
+public class CustomCondition extends Condition {
+
+    private String join;
+
+    public CustomCondition(Element element, String messagesPack, String filterComponentName) {
+        super(element, filterComponentName);
+
+        if (isBlank(caption))
+            locCaption = element.attributeValue("locCaption");
+        else
+            locCaption = MessageUtils.loadString(messagesPack, caption);
+
+        entityAlias = element.attributeValue("entityAlias");
+        text = element.getText();
+        join = element.attributeValue("join");
+    }
+
+    public CustomCondition(ConditionDescriptor descriptor, String where, String join, String entityAlias) {
+        super(descriptor);
+        this.entityAlias = entityAlias;
+
+        this.join = join;
+        this.text = where;
+        if (param != null)
+            text = text.replace("?", ":" + param.getName());
+    }
+
+
+    @Override
+    public void toXml(Element element) {
+        super.toXml(element);
+
+        element.addAttribute("type", ConditionType.CUSTOM.name());
+
+        if (isBlank(caption)) {
+            element.addAttribute("locCaption", locCaption);
+        }
+
+        element.addAttribute("entityAlias", entityAlias);
+
+        if (!isBlank(join)) {
+            element.addAttribute("join", StringEscapeUtils.escapeXml(join));
+        }
+    }
+
+    @Override
+    public OperationEditor createOperationEditor() {
+        return new CustomOperationEditor(this);
+    }
+
+    public String getJoin() {
+        return join;
+    }
+
+    public void setJoin(String join) {
+        this.join = join;
+    }
+
+    public String getWhere() {
+        return text;
+    }
+
+    public void setWhere(String where) {
+        this.text = where;
+    }
+}
