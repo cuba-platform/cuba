@@ -73,8 +73,10 @@ public class WebButton
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
             component.setIcon(new ThemeResource(icon));
+            component.addStyleName("icon");
         } else {
             component.setIcon(null);
+            component.removeStyleName("icon");
         }
     }
 }
