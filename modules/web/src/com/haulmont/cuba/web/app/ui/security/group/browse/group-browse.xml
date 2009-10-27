@@ -39,7 +39,12 @@
     <layout>
         <vbox>
             <split id="split" orientation="horizontal" pos="30">
-                <vbox>
+                <vbox expand="groups">
+                    <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                        <button action="groups.create" icon="icons/create.png"/>
+                        <button action="groups.edit" icon="icons/edit.png"/>
+                        <button action="groups.remove" icon="icons/remove.png"/>
+                    </hbox>
                     <tree id="groups">
                         <treechildren datasource="groups" captionProperty="name" hierarchyProperty="parent"/>
                     </tree>
