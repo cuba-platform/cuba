@@ -133,9 +133,12 @@ public class WebFilter
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {
+                                        deleteFilterEntity();
                                         select.removeItem(select.getValue());
                                         if (!select.getItemIds().isEmpty()) {
                                             select.select(select.getItemIds().iterator().next());
+                                        } else {
+                                            select.select(null);
                                         }
                                     }
                                 },
@@ -302,6 +305,14 @@ public class WebFilter
         DataService ds = ServiceLocator.getDataService();
         CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
         ds.commit(ctx);
+    }
+
+    private void deleteFilterEntity() {
+        DataService ds = ServiceLocator.getDataService();
+        CommitContext ctx = new CommitContext();
+        ctx.setRemoveInstances(Collections.singletonList(filterEntity));
+        ds.commit(ctx);
+        filterEntity = null;
     }
 
     private void createEditLayout() {
