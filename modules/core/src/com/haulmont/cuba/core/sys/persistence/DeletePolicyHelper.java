@@ -176,14 +176,30 @@ public class DeletePolicyHelper
 
     private boolean referenceExists(MetaProperty property) {
         MetaClass metaClass = property.getDomain();
-        String qstr = String.format("select e.id from %s e where e.%s.id = ?1",
-                metaClass.getName(), property.getName());
-        EntityManager em = PersistenceProvider.getEntityManager();
-        Query query = em.createQuery(qstr);
-        query.setParameter(1, entity.getId());
-        query.setMaxResults(1);
-        List list = query.getResultList();
-        return !list.isEmpty();
+        List<MetaClass> classes = new ArrayList<MetaClass>();
+        if (isPersistent(metaClass))
+            classes.add(metaClass);
+        for (MetaClass descendant : metaClass.getDescendants()) {
+            if (isPersistent(descendant))
+                classes.add(descendant);
+        }
+
+        for (MetaClass persistentMetaClass : classes) {
+            String qstr = String.format("select e.id from %s e where e.%s.id = ?1",
+                    persistentMetaClass.getName(), property.getName());
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery(qstr);
+            query.setParameter(1, entity.getId());
+            query.setMaxResults(1);
+            List list = query.getResultList();
+            if (!list.isEmpty())
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isPersistent(MetaClass metaClass) {
+        return metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Entity.class);
     }
 
     private void cascade(MetaProperty property) {
