@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -24,13 +25,15 @@ import com.haulmont.cuba.core.global.DeletePolicyException;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 
-import java.util.List;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 public class DeletePolicyHelper
 {
+    private Log log = LogFactory.getLog(DeletePolicyHelper.class);
+
     private BaseEntity entity;
     private MetaClass metaClass;
 
@@ -84,6 +87,8 @@ public class DeletePolicyHelper
     }
 
     private void processOnDelete(List<MetaProperty> properties) {
+        EntityManager em = PersistenceProvider.getEntityManager();
+
         for (MetaProperty property : properties) {
             MetaClass metaClass = property.getRange().asClass();
             OnDelete annotation = property.getAnnotatedElement().getAnnotation(OnDelete.class);
@@ -91,8 +96,7 @@ public class DeletePolicyHelper
             switch (deletePolicy) {
                 case DENY:
                     if (property.getRange().getCardinality().isMany()) {
-                        Collection value = ((Instance) entity).getValue(property.getName());
-                        if (!value.isEmpty())
+                        if (!isCollectionEmpty(property))
                             throw new DeletePolicyException(metaClass.getName());
                     }
                     else {
@@ -103,10 +107,9 @@ public class DeletePolicyHelper
                     break;
                 case CASCADE:
                     if (property.getRange().getCardinality().isMany()) {
-                        Collection<BaseEntity> value = ((Instance) entity).getValue(property.getName());
-                        if (!value.isEmpty()) {
-                            EntityManager em = PersistenceProvider.getEntityManager();
-                            for (BaseEntity e : value) {
+                        Collection<Entity> value = getCollection(property);
+                        if (value != null && !value.isEmpty()) {
+                            for (Entity e : value) {
                                 em.remove(e);
                             }
                         }
@@ -114,7 +117,6 @@ public class DeletePolicyHelper
                     else {
                         BaseEntity value = ((Instance) entity).getValue(property.getName());
                         if (value != null) {
-                            EntityManager em = PersistenceProvider.getEntityManager();
                             em.remove(value);
                         }
                     }
@@ -129,6 +131,47 @@ public class DeletePolicyHelper
                     break;
             }
         }
+    }
+
+    private boolean isCollectionEmpty(MetaProperty property) {
+        MetaProperty inverseProperty = property.getInverse();
+        if (inverseProperty == null) {
+            log.warn("Inverse property not found for property " + property);
+            Collection<Entity> value = ((Instance) entity).getValue(property.getName());
+            return value == null || value.isEmpty();
+        }
+
+        String invPropName = inverseProperty.getName();
+        MetaClass invClass = inverseProperty.getDomain();
+        String qlStr = "select e.id from " + invClass.getName() + " e where e." + invPropName + ".id = ?1";
+
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query query = em.createQuery(qlStr);
+        query.setParameter(1, entity.getId());
+        query.setMaxResults(1);
+        List<Entity> list = query.getResultList();
+
+        return list.isEmpty();
+    }
+
+    private Collection<Entity> getCollection(MetaProperty property) {
+        MetaProperty inverseProperty = property.getInverse();
+        if (inverseProperty == null) {
+            log.warn("Inverse property not found for property " + property);
+            Collection<Entity> value = ((Instance) entity).getValue(property.getName());
+            return value == null ? Collections.EMPTY_LIST : value;
+        }
+
+        String invPropName = inverseProperty.getName();
+        MetaClass invClass = inverseProperty.getDomain();
+        String qlStr = "select e from " + invClass.getName() + " e where e." + invPropName + ".id = ?1";
+
+        EntityManager em = PersistenceProvider.getEntityManager();
+        Query query = em.createQuery(qlStr);
+        query.setParameter(1, entity.getId());
+        List<Entity> list = query.getResultList();
+
+        return list;
     }
 
     private boolean referenceExists(MetaProperty property) {
