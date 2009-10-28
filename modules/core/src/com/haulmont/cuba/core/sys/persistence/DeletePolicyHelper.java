@@ -176,13 +176,14 @@ public class DeletePolicyHelper
 
     private boolean referenceExists(MetaProperty property) {
         MetaClass metaClass = property.getDomain();
-        String qstr = String.format("select count(e) from %s e where e.%s.id = ?1",
+        String qstr = String.format("select e.id from %s e where e.%s.id = ?1",
                 metaClass.getName(), property.getName());
         EntityManager em = PersistenceProvider.getEntityManager();
         Query query = em.createQuery(qstr);
         query.setParameter(1, entity.getId());
-        Number count = (Number) query.getSingleResult();
-        return count.longValue() > 0;
+        query.setMaxResults(1);
+        List list = query.getResultList();
+        return !list.isEmpty();
     }
 
     private void cascade(MetaProperty property) {
