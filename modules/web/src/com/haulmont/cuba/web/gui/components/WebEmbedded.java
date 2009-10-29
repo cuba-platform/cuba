@@ -122,7 +122,7 @@ public class WebEmbedded
         return type;
     }
 
-    private void provideType() {
+    protected void provideType() {
         switch (type) {
             case OBJECT:
                 component.setType(com.vaadin.ui.Embedded.TYPE_OBJECT);

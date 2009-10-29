@@ -46,6 +46,10 @@
 
         <mkdir dir="${build.dir}"/>
 
+        <copy todir="${prod.out.dir}/${module.name}">
+            <fileset dir="${java.src.dir}" includes="**/*"/>
+        </copy>
+
         <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/web-toolkit.jar">
             <include name="**/*"/>
         </jar>

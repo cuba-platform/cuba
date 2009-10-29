@@ -264,10 +264,15 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createAddAction(final Window.Lookup.Handler handler, final WindowManager.OpenType openType, final Map<String, Object> params) {
+        return createAddAction(handler, openType, params, null);
+    }
+
+    public Action createAddAction(final Window.Lookup.Handler handler, final WindowManager.OpenType openType,
+                                  final Map<String, Object> params, final String captionKey) {
         final AbstractAction action = new AbstractAction("add") {
             public String getCaption() {
                 final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Add");
+                return MessageProvider.getMessage(messagesPackage, captionKey == null ? "actions.Add" : captionKey);
             }
 
             public boolean isEnabled() {

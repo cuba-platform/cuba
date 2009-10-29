@@ -138,7 +138,7 @@ public class ViewRepository
 
             if (refViewName != null) {
                 Range range = metaProperty.getRange();
-                if (!range.isClass())
+                if (range == null || !range.isClass())
                     throw new IllegalStateException(
                             String.format("View %s/%s definition error: property %s is not an entity", metaClass.getName(), viewName, propertyName)
                     );

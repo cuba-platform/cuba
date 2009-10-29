@@ -37,7 +37,7 @@
     <layout>
         <vbox expand="split" spacing="true">
             <hbox stylename="edit-area" spacing="true" margin="true" width="100%">
-                <grid spacing="true" expandable="false">
+                <grid spacing="true" expandable="false" stylename="fields-area">
                     <columns>
                         <column flex="1"/>
                         <column flex="1"/>
@@ -90,7 +90,7 @@
 
             <split id="split" orientation="horizontal" pos="50">
                 <vbox id="roles-panel" expand="roles" spacing="true" margin="false;true;false;true">
-                    <label value="msg://roles"/>
+                    <label value="msg://roles" stylename="biglabel"/>
                     <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                         <button action="roles.add" icon="icons/add.png"/>
                         <button action="roles.remove" icon="icons/remove.png"/>
@@ -104,7 +104,7 @@
                 </vbox>
 
                 <vbox id="subst-panel" expand="subst" spacing="true" margin="false;true;false;true">
-                    <label value="msg://substUsers"/>
+                    <label value="msg://substUsers" stylename="biglabel"/>
                     <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                         <button action="subst.add" icon="icons/add.png"/>
                         <button action="subst.edit" icon="icons/edit.png"/>

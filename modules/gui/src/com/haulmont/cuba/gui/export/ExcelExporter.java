@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -238,7 +239,16 @@ public class ExcelExporter {
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(message, stdFont);
             }
-        } else {
+        } else if (val instanceof Entity){
+            Entity entityVal = (Entity) val;
+            String instanceName = ((Instance) entityVal).getInstanceName();
+            String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
+            cell.setCellValue(new HSSFRichTextString(str));
+            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+                sizers[sizersIndex].notifyCellValue(str, stdFont);
+            }
+        }
+        else {
             String str = sizersIndex == 0 ? createSpaceString(level) + val.toString() : val.toString();
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
