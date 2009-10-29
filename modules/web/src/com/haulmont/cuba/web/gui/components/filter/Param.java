@@ -32,6 +32,8 @@ import com.vaadin.terminal.UserError;
 import java.text.ParseException;
 import java.util.UUID;
 import java.util.Date;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -171,7 +173,8 @@ public class Param {
                 field = createUnaryField();
                 break;
             case ENUM:
-                // TODO
+                field = createEnumLookup();
+                break;
             default:
                 throw new UnsupportedOperationException("Unsupported param type: " + type);
         }
@@ -197,7 +200,7 @@ public class Param {
     private AbstractField createDatatypeField(Datatype datatype) {
         if (datatype == null)
             throw new IllegalStateException("Unable to find Datatype for " + javaClass);
-        
+
         final AbstractField field;
 
         if (String.class.equals(javaClass)) {
@@ -329,6 +332,23 @@ public class Param {
         WebLookupField lookup = new WebLookupField();
         lookup.setOptionsDatasource(ds);
         ds.initialized();
+
+        lookup.addListener(new ValueListener() {
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                setValue(value);
+            }
+        });
+
+        lookup.setValue(value);
+
+        return lookup.getComponent();
+    }
+
+    private AbstractField createEnumLookup() {
+        List<Object> list = Arrays.asList(javaClass.getEnumConstants());
+
+        WebLookupField lookup = new WebLookupField();
+        lookup.setOptionsList(list);
 
         lookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {

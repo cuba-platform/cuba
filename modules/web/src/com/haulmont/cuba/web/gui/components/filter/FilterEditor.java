@@ -46,7 +46,7 @@ public class FilterEditor {
     private String filterComponentName;
     private AbstractSelect addSelect;
 
-    private static final String EDITOR_WIDTH = "480px";
+    private static final String EDITOR_WIDTH = "500px";
     private static List<String> defaultExcludedProps = Arrays.asList("version");
     private CheckBox globalCb;
 
@@ -187,7 +187,7 @@ public class FilterEditor {
         table.setColumnWidth(nameCol, 160);
 
         table.addContainerProperty(opCol, OperationEditor.class, null);
-        table.setColumnWidth(opCol, 80);
+        table.setColumnWidth(opCol, 100);
 
         table.addContainerProperty(paramCol, ParamEditor.class, null);
         table.setColumnWidth(paramCol, 160);

@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.data.Property;
+import com.haulmont.cuba.core.global.MessageProvider;
 import org.apache.commons.lang.ObjectUtils;
 
 public class PropertyOperationEditor extends OperationEditor {
@@ -26,7 +27,7 @@ public class PropertyOperationEditor extends OperationEditor {
 
         for (PropertyCondition.Op op : PropertyCondition.Op.availableOps(condition.getJavaClass())) {
             select.addItem(op);
-            select.setItemCaption(op, op.getText());
+            select.setItemCaption(op, MessageProvider.getMessage(op));
         }
         select.select(((PropertyCondition) condition).getOperator());
 

@@ -69,6 +69,7 @@ public class PropertyCondition extends Condition {
 
             else if (Boolean.class.equals(javaClass)
                     || UUID.class.equals(javaClass)
+                    || Enum.class.isAssignableFrom(javaClass)
                     || Entity.class.isAssignableFrom(javaClass))
                 return EnumSet.of(EQUAL, NOT_EQUAL, EMPTY, NOT_EMPTY);
 
@@ -167,7 +168,7 @@ public class PropertyCondition extends Condition {
 
     @Override
     public String getOperationCaption() {
-        return operator.getText();
+        return MessageProvider.getMessage(operator);
     }
 
     public void addListener(Listener listener) {

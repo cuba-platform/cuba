@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.CommitContext;
@@ -492,6 +493,8 @@ public class WebFilter
                 if (PropertyCondition.Op.CONTAINS.equals(op) || op.equals(PropertyCondition.Op.DOES_NOT_CONTAIN)) {
                     value = ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + value + "%";
                 }
+            } else if (value instanceof EnumClass) {
+                value = ((EnumClass) value).getId();
             }
             return (T) value;
         }

@@ -18,13 +18,24 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 
 public class CustomConditionEditDlg extends Window {
+
+    public enum ParamType {
+        STRING,
+        DATE,
+        NUMBER,
+        BOOLEAN,
+        UUID,
+        ENUM,
+        ENTITY,
+        UNARY
+    }
 
     private CustomCondition condition;
     private Label entityLab;
@@ -34,20 +45,13 @@ public class CustomConditionEditDlg extends Window {
     private TextField joinText;
     private AbstractSelect typeSelect;
 
-    public enum ParamType {
-        STRING,
-        DATE,
-        NUMBER,
-        BOOLEAN,
-        UUID,
-        ENTITY,
-        UNARY
-    }
-
     private static final String FIELD_WIDTH = "250px";
     private String messagesPack;
 
-    public CustomConditionEditDlg(CustomCondition condition) {
+    private static volatile Collection<MetaClass> metaClasses;
+    private static volatile Collection<Class> enums;
+
+    public CustomConditionEditDlg(final CustomCondition condition) {
         super(condition.getLocCaption());
         setWidth("400px");
 
@@ -60,7 +64,8 @@ public class CustomConditionEditDlg extends Window {
 
         setContent(layout);
 
-        Label eaLab = new Label("Main entity alias: <b>" + condition.getEntityAlias() + "</b>. Use <b>?</b> for parameter.");
+        Label eaLab = new Label(MessageProvider.formatMessage(getClass(),
+                "CustomConditionEditDlg.hintLabel", condition.getEntityAlias()));
         eaLab.setContentMode(Label.CONTENT_XHTML);
         layout.addComponent(eaLab);
 
@@ -74,7 +79,7 @@ public class CustomConditionEditDlg extends Window {
         if (StringUtils.isBlank(condition.getCaption())) {
             grid.setRows(5);
 
-            Label nameLab = new Label("Name");
+            Label nameLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.nameLabel"));
             grid.addComponent(nameLab, 0, i);
             grid.setComponentAlignment(nameLab, Alignment.MIDDLE_RIGHT);
 
@@ -88,7 +93,7 @@ public class CustomConditionEditDlg extends Window {
             grid.setRows(4);
         }
 
-        Label joinLab = new Label("Join");
+        Label joinLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.joinLabel"));
         grid.addComponent(joinLab, 0, i);
         grid.setComponentAlignment(joinLab, Alignment.MIDDLE_RIGHT);
 
@@ -98,7 +103,7 @@ public class CustomConditionEditDlg extends Window {
         joinText.setValue(condition.getJoin());
         grid.addComponent(joinText, 1, i++);
 
-        Label whereLab = new Label("Where");
+        Label whereLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.whereLabel"));
         grid.addComponent(whereLab, 0, i);
         grid.setComponentAlignment(whereLab, Alignment.MIDDLE_RIGHT);
 
@@ -110,7 +115,7 @@ public class CustomConditionEditDlg extends Window {
         whereText.setValue(where);
         grid.addComponent(whereText, 1, i++);
 
-        Label typeLab = new Label("Parameter Type");
+        Label typeLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.paramTypeLabel"));
         grid.addComponent(typeLab, 0, i);
         grid.setComponentAlignment(typeLab, Alignment.MIDDLE_RIGHT);
 
@@ -120,15 +125,17 @@ public class CustomConditionEditDlg extends Window {
         fillTypeSelect(typeSelect, condition.getParam());
         typeSelect.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
-                boolean entity = ParamType.ENTITY.equals(typeSelect.getValue());
+                boolean entity = ParamType.ENTITY.equals(typeSelect.getValue())
+                        || ParamType.ENUM.equals(typeSelect.getValue());
                 entityLab.setEnabled(entity);
                 entitySelect.setEnabled(entity);
+                fillEntitySelect(entitySelect, condition.getParam());
             }
         });
         grid.addComponent(typeSelect, 1, i++);
         grid.setComponentAlignment(typeSelect, Alignment.MIDDLE_LEFT);
 
-        entityLab = new Label("Entity");
+        entityLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.entityLabel"));
         entityLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
         grid.addComponent(entityLab, 0, i);
         grid.setComponentAlignment(entityLab, Alignment.MIDDLE_RIGHT);
@@ -136,7 +143,7 @@ public class CustomConditionEditDlg extends Window {
         entitySelect = new Select();
         entitySelect.setImmediate(true);
         entitySelect.setSizeFull();
-        entitySelect.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
+        entitySelect.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()) || ParamType.ENUM.equals(typeSelect.getValue()));
         fillEntitySelect(entitySelect, condition.getParam());
         grid.addComponent(entitySelect, 1, i++);
         grid.setComponentAlignment(entitySelect, Alignment.MIDDLE_RIGHT);
@@ -218,6 +225,9 @@ public class CustomConditionEditDlg extends Window {
             case ENTITY:
                 MetaClass entity = (MetaClass) entitySelect.getValue();
                 return entity.getJavaClass();
+            case ENUM:
+                Class enumClass = (Class) entitySelect.getValue();
+                return enumClass;
             case UNARY:
                 return null;
         }
@@ -233,18 +243,63 @@ public class CustomConditionEditDlg extends Window {
         return res;
     }
 
-    private void fillEntitySelect(AbstractSelect select, Param param) {
-        Session session = MetadataProvider.getSession();
-        for (MetaModel model : session.getModels()) {
-            for (MetaClass metaClass : model.getClasses()) {
-                select.addItem(metaClass);
+    private Collection<MetaClass> getMetaClasses() {
+        if (metaClasses == null) {
+            synchronized (CustomConditionEditDlg.class) {
+                metaClasses = new ArrayList<MetaClass>();
+                Session session = MetadataProvider.getSession();
+                for (MetaModel model : session.getModels()) {
+                    for (MetaClass metaClass : model.getClasses()) {
+                        metaClasses.add(metaClass);
+                    }
+                }
             }
         }
+        return metaClasses;
+    }
 
-        if (param != null && Param.Type.ENTITY.equals(param.getType())) {
-            Class javaClass = param.getJavaClass();
-            MetaClass metaClass = session.getClass(javaClass);
-            select.setValue(metaClass);
+    private Collection<Class> getEnums() {
+        if (enums == null) {
+            synchronized (CustomConditionEditDlg.class) {
+                enums = new HashSet<Class>();
+                for (MetaClass metaClass : getMetaClasses()) {
+                    for (MetaProperty metaProperty : metaClass.getProperties()) {
+                        if (metaProperty.getRange() != null && metaProperty.getRange().isEnum()) {
+                            Class c = metaProperty.getRange().asEnumeration().getJavaClass();
+                            enums.add(c);
+                        }
+                    }
+                }
+            }
+        }
+        return enums;
+    }
+
+    private void fillEntitySelect(AbstractSelect select, Param param) {
+        if (!select.isEnabled())
+            return;
+
+        select.removeAllItems();
+
+        if (ParamType.ENTITY.equals(typeSelect.getValue())) {
+            for (MetaClass metaClass : getMetaClasses()) {
+                select.addItem(metaClass);
+            }
+            if (param != null && Param.Type.ENTITY.equals(param.getType())) {
+                Class javaClass = param.getJavaClass();
+                MetaClass metaClass = MetadataProvider.getSession().getClass(javaClass);
+                select.setValue(metaClass);
+            }
+
+        } else if (ParamType.ENUM.equals(typeSelect.getValue())) {
+            for (Class enumClass : getEnums()) {
+                select.addItem(enumClass);
+                select.setItemCaption(enumClass, enumClass.getName());
+            }
+            if (param != null && Param.Type.ENUM.equals(param.getType())) {
+                Class javaClass = param.getJavaClass();
+                select.setValue(javaClass);
+            }
         }
     }
 
@@ -259,6 +314,9 @@ public class CustomConditionEditDlg extends Window {
             switch (param.getType()) {
                 case ENTITY:
                     select.setValue(ParamType.ENTITY);
+                    break;
+                case ENUM:
+                    select.setValue(ParamType.ENUM);
                     break;
                 case DATATYPE:
                     if (String.class.equals(param.getJavaClass()))
@@ -275,8 +333,6 @@ public class CustomConditionEditDlg extends Window {
                 case UNARY:
                     select.setValue(ParamType.UNARY);
                     break;
-                case ENUM:
-                    // TODO
                 default:
                     throw new UnsupportedOperationException("Unsupported param type: " + param.getType());
             }
