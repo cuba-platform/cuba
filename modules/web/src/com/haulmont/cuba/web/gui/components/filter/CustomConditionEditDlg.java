@@ -183,7 +183,7 @@ public class CustomConditionEditDlg extends Window {
             return false;
         }
 
-        if (condition instanceof NewCustomCondition) {
+        if (nameText != null) {
             condition.setLocCaption((String) nameText.getValue());
         }
 
