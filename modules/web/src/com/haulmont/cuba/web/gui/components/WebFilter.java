@@ -43,6 +43,8 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 import java.util.*;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WebFilter
         extends WebAbstractComponent<VerticalLayout> implements Filter
@@ -474,6 +476,8 @@ public class WebFilter
         return false;
     }
 
+    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
+
     private static class ParamWrapper implements HasValue {
 
         private final Condition condition;
@@ -487,16 +491,29 @@ public class WebFilter
             if (value instanceof String
                     && !StringUtils.isEmpty((String) value)
                     && !((String) value).contains("%")
-                    && condition instanceof PropertyCondition)
+                    && !((String) value).startsWith(ParametersHelper.CASE_INSENSITIVE_MARKER))
             {
-                PropertyCondition.Op op = ((PropertyCondition) condition).getOperator();
-                if (PropertyCondition.Op.CONTAINS.equals(op) || op.equals(PropertyCondition.Op.DOES_NOT_CONTAIN)) {
-                    value = ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + value + "%";
+                // try to wrap value for case-insensitive "like" search
+                if (condition instanceof PropertyCondition) {
+                    PropertyCondition.Op op = ((PropertyCondition) condition).getOperator();
+                    if (PropertyCondition.Op.CONTAINS.equals(op) || op.equals(PropertyCondition.Op.DOES_NOT_CONTAIN)) {
+                        value = wrapValueForLike(value);
+                    }
+                } else if (condition instanceof CustomCondition) {
+                    String where = ((CustomCondition) condition).getWhere();
+                    Matcher matcher = LIKE_PATTERN.matcher(where);
+                    if (matcher.find()) {
+                        value = wrapValueForLike(value);
+                    }
                 }
             } else if (value instanceof EnumClass) {
                 value = ((EnumClass) value).getId();
             }
             return (T) value;
+        }
+
+        private String wrapValueForLike(Object value) {
+            return ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + value + "%";
         }
 
         public void setValue(Object value) {

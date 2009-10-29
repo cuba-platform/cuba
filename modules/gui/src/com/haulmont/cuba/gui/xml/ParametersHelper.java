@@ -20,7 +20,8 @@ import org.apache.commons.lang.StringUtils;
 
 public class ParametersHelper {
 
-    private static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile(":(\\(\\?i\\))?([\\w\\.\\$]+)");
+    public static final String QUERY_PARAMETERS_RE = ":(\\(\\?i\\))?([\\w\\.\\$]+)";
+    public static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile(QUERY_PARAMETERS_RE);
     public static final String CASE_INSENSITIVE_MARKER = "(?i)";
 
     public static Set<String> extractNames(String text) {
