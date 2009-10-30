@@ -263,6 +263,8 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             return "";
         else if (value instanceof Instance) {
             return ((Instance) value).getInstanceName();
+        } else if (value instanceof Date) {
+            return Datatypes.getInstance().get(Date.class).format((Date) value);
         } else {
             return value.toString();
         }

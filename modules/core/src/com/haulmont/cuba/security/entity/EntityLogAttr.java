@@ -12,9 +12,16 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.datatypes.Datatypes;
 
 import javax.persistence.*;
+import java.util.Date;
+import java.text.ParseException;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Record containing changed entity attribute
@@ -22,8 +29,7 @@ import javax.persistence.*;
  */
 @Entity(name = "sec$EntityLogAttr")
 @Table(name = "SEC_ENTITY_LOG_ATTR")
-public class EntityLogAttr extends BaseUuidEntity
-{
+public class EntityLogAttr extends BaseUuidEntity {
     private static final long serialVersionUID = 4258700403293876630L;
 
     public static final int VALUE_LEN = 1500;
@@ -60,6 +66,33 @@ public class EntityLogAttr extends BaseUuidEntity
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @MetaProperty
+    public String getDisplayValue() {
+        if (StringUtils.isEmpty(getValue())) {
+            return getValue();
+        }
+        final String entityName = getLogItem().getEntity();
+        try {
+            Class<?> aClass = Class.forName(entityName);
+            MetaClass metaClass = MetadataProvider.getSession().getClass(aClass);
+            com.haulmont.chile.core.model.MetaProperty property = metaClass.getProperty(getName());
+            if (property != null) {
+                if (property.getRange().isDatatype()) {
+                    return getValue();
+                } else if (property.getRange().isEnum()) {
+                    String nameKey = property.getRange().asEnumeration().getJavaClass().getSimpleName() + "." + getValue();
+                    return MessageProvider.getMessage(entityName.substring(0, entityName.lastIndexOf(".")), nameKey);
+                } else {
+                    return getValue();
+                }
+            } else {
+                return getValue();
+            }
+        } catch (ClassNotFoundException e) {
+            return getValue();
+        }
     }
 
     @MetaProperty

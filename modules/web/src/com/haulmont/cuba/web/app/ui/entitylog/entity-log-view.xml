@@ -56,7 +56,7 @@
                 <table id="values" editable="false">
                     <columns>
                         <column id="displayName" caption="msg://name"/>
-                        <column id="value" caption="msg://value"/>
+                        <column id="displayValue" caption="msg://value"/>
                     </columns>
                     <rows datasource="values"/>
                 </table>
