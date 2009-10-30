@@ -64,7 +64,7 @@
                                 <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                                     <button id="users.create" action="users.create" icon="icons/create.png"/>
                                     <button id="users.edit" action="users.edit" icon="icons/edit.png"/>
-                                    <button id="users.moveToGroup" action="users.moveToGroup"/>
+                                    <button id="users.moveToGroup" action="users.moveToGroup" icon="icons/move.png"/>
                                 </hbox>
                                 <table id="users">
                                     <columns>

@@ -19,7 +19,7 @@
 
     <layout>
         <vbox>
-            <grid spacing="true" width="100%">
+            <grid spacing="true" width="100%" stylename="dataarea">
                 <columns>
                     <column flex="1"/>
                     <column flex="1"/>

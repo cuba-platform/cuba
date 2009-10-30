@@ -55,7 +55,7 @@
                     <button action="users.create" icon="icons/create.png"/>
                     <button action="users.edit" icon="icons/edit.png"/>
                     <button action="users.remove" icon="icons/remove.png"/>
-                    <button action="users.changePassw"/>
+                    <button action="users.changePassw" icon="icons/change-pass.png"/>
                     <button action="users.print" icon="icons/print.png"/>
                     <button action="users.excel" icon="icons/excel.png"/>
                 </hbox>
