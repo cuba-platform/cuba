@@ -424,6 +424,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             this.substUserSelect = substUserSelect;
         }
 
+        @Override
+        public String getIcon() {
+            return "icons/ok.png";
+        }
+
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
             App app = App.getInstance();
             app.getWindowManager().closeAll();
@@ -438,6 +443,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         protected DoNotChangeSubstUserAction(AbstractSelect substUserSelect) {
             super("doNotChangeSubstUserAction");
             this.substUserSelect = substUserSelect;
+        }
+
+        @Override
+        public String getIcon() {
+            return "icons/cancel.png";
         }
 
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
