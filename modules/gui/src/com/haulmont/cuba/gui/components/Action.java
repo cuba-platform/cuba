@@ -16,6 +16,9 @@ public interface Action {
     String getId();
     String getCaption();
 
+    String getIcon();
+    void setIcon(String icon);
+
     boolean isEnabled();
     void actionPerform(Component component);
 }

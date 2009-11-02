@@ -24,6 +24,7 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
@@ -436,12 +437,16 @@ public class WebWindowManager extends WindowManager
         buttonsContainer.setSpacing(true);
 
         for (final Action action : actions) {
-            buttonsContainer.addComponent(new Button(action.getCaption(), new Button.ClickListener() {
+            Button button = new Button(action.getCaption(), new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
                     app.getMainWindow().removeWindow(window);
                 }
-            }));
+            });
+            if (action.getIcon() != null) {
+                button.setIcon(new ThemeResource(action.getIcon()));
+            }
+            buttonsContainer.addComponent(button);
         }
 
         actionsBar.addComponent(buttonsContainer);

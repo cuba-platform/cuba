@@ -418,10 +418,20 @@ public class WebWindow
                                     forceClose = true;
                                     close(actionId);
                                 }
+
+                                @Override
+                                public String getIcon() {
+                                    return "icons/ok.png";
+                                }
                             },
                             new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.No")) {
                                 public void actionPerform(Component component) {
                                     doAfterClose = null;
+                                }
+
+                                @Override
+                                public String getIcon() {
+                                    return "icons/cancel.png";
                                 }
                             }
                     }

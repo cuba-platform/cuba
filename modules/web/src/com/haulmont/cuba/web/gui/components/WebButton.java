@@ -63,6 +63,10 @@ public class WebButton
         }
 
         component.setEnabled(action.isEnabled());
+        
+        if (action.getIcon() != null) {
+            setIcon(action.getIcon());
+        }
     }
 
     public String getIcon() {

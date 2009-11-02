@@ -18,6 +18,8 @@ public abstract class AbstractAction implements Action {
 
     private String id;
 
+    private String icon;
+
     protected AbstractAction(String id) {
         this.id = id;
     }
@@ -32,5 +34,13 @@ public abstract class AbstractAction implements Action {
 
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
