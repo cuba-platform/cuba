@@ -146,7 +146,7 @@ abstract class ListActionsHelper<T extends List> {
             }
 
             public boolean isEnabled() {
-                return userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE);
+                return userSession.isEntityOpPermitted(metaClass, EntityOp.DELETE);
             }
 
             public void actionPerform(Component component) {
@@ -164,6 +164,11 @@ abstract class ListActionsHelper<T extends List> {
 
                                 public boolean isEnabled() {
                                     return true;
+                                }
+
+                                @Override
+                                public String getIcon() {
+                                    return "icons/ok.png";
                                 }
 
                                 public void actionPerform(Component component) {
@@ -189,6 +194,11 @@ abstract class ListActionsHelper<T extends List> {
 
                                 public boolean isEnabled() {
                                     return true;
+                                }
+
+                                @Override
+                                public String getIcon() {
+                                    return "icons/cancel.png";
                                 }
 
                                 public void actionPerform(Component component) {
