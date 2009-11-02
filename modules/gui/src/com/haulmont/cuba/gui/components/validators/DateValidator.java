@@ -39,7 +39,7 @@ public class DateValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Datatype<DateDatatype> datatype = Datatypes.getInstance().get(DateDatatype.class);
+                Datatype<DateDatatype> datatype = Datatypes.getInstance().get(DateDatatype.NAME);
                 datatype.parse((String) value);
                 result = true;
             } catch (ParseException e) {

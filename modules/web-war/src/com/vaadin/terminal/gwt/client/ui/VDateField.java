@@ -71,6 +71,8 @@ public class VDateField extends FlowPanel implements Paintable, Field {
     // e.g when paging a calendar, before actually selecting
     protected Date showingDate = new Date();
 
+    protected String dateString = null;
+
     protected DateTimeService dts;
 
     public VDateField() {
@@ -160,6 +162,8 @@ public class VDateField extends FlowPanel implements Paintable, Field {
             date = null;
             showingDate = new Date();
         }
+
+        dateString = uidl.getStringVariable("dateString");
 
     }
 

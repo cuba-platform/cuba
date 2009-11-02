@@ -10,33 +10,30 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
-import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.web.gui.components.WebLookupField;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.MetaClass;
-import com.vaadin.ui.*;
+import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.UserError;
+import com.vaadin.ui.*;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
-import java.util.UUID;
-import java.util.Date;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.BooleanUtils;
+import java.util.UUID;
 
 public class Param {
 
@@ -234,13 +231,7 @@ public class Param {
     }
 
     private AbstractField createDateField(Datatype datatype) {
-        final AbstractField field = new DateField() {
-            @Override
-            protected Date handleUnparsableDateString(String dateString) throws ConversionException {
-                setComponentError(new UserError(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidDate")));
-                return null;
-            }
-        };
+        final AbstractField field = new com.haulmont.cuba.web.toolkit.ui.DateField();
         field.setImmediate(true);
         ((DateField) field).setResolution(DateField.RESOLUTION_MIN);
 
