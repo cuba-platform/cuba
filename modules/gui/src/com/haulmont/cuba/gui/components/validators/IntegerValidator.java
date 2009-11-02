@@ -10,11 +10,14 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.core.global.MessageUtils;
-import org.dom4j.Element;
 import org.apache.commons.lang.ObjectUtils;
+import org.dom4j.Element;
+
+import java.text.ParseException;
 
 public class IntegerValidator implements Field.Validator {
 
@@ -44,9 +47,9 @@ public class IntegerValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Integer i = Integer.valueOf((String) value);
+                Integer i = Datatypes.getInstance().get(Integer.class).parse((String) value);
                 result = checkIntegerOnPositive(i);
-            } catch (NumberFormatException e) {
+            } catch (ParseException e) {
                 result = false;
             }
         } else if (value instanceof Integer) {

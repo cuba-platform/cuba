@@ -10,15 +10,15 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
 
-import java.text.NumberFormat;
 import java.text.ParseException;
 
-public class DoubleValidator implements Field.Validator{
+public class DoubleValidator implements Field.Validator {
 
     protected String message;
     protected String messagesPack;
@@ -36,10 +36,8 @@ public class DoubleValidator implements Field.Validator{
         boolean result;
         if (value instanceof String) {
             try {
-                NumberFormat.getInstance().parse((String) value);
+                Datatypes.getInstance().get(Double.class).parse((String) value);
                 result = true;
-            } catch (NumberFormatException e) {
-                result = false;
             } catch (ParseException e) {
                 result = false;
             }
