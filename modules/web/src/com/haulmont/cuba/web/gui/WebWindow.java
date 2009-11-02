@@ -519,7 +519,7 @@ public class WebWindow
         public Editor() {
             super();
 
-            addAction(new ActionWrapper("Window.commit") {
+            addAction(new ActionWrapper("windowCommit") {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -541,7 +541,7 @@ public class WebWindow
                 }
             });
 
-            addAction(new ActionWrapper("Window.close") {
+            addAction(new ActionWrapper("windowClose") {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -572,8 +572,8 @@ public class WebWindow
         public Window wrapBy(Class<Window> aClass) {
             final Window.Editor window = (Window.Editor) super.wrapBy(aClass);
 
-            final Action commitAction = getAction("Window.commit");
-            ((ActionWrapper) commitAction).setAction(new ActionWrapper("Window.commit") {
+            final Action commitAction = getAction("windowCommit");
+            ((ActionWrapper) commitAction).setAction(new ActionWrapper("windowCommit") {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -585,8 +585,8 @@ public class WebWindow
                 }
             });
             
-            final Action closeAction = getAction("Window.close");
-            ((ActionWrapper) closeAction).setAction(new ActionWrapper("Window.close") {
+            final Action closeAction = getAction("windowClose");
+            ((ActionWrapper) closeAction).setAction(new ActionWrapper("windowClose") {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();

@@ -20,6 +20,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>file_download_servlet</servlet-name>
+        <servlet-class>com.haulmont.cuba.web.sys.FileDownloadServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>jr_image_servlet</servlet-name>
         <servlet-class>net.sf.jasperreports.j2ee.servlets.ImageServlet</servlet-class>
     </servlet>
@@ -27,6 +32,11 @@
     <servlet-mapping>
         <servlet-name>cuba_servlet</servlet-name>
         <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>file_download_servlet</servlet-name>
+        <url-pattern>/download/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

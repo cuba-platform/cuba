@@ -6,6 +6,12 @@
     <screen id="core$Server.browse"
             template="/com/haulmont/cuba/web/app/ui/core/server/server-browse.xml"/>
 
+    <screen id="core$FileDescriptor.browse"
+            template="/com/haulmont/cuba/web/app/ui/core/file/file-browse.xml"/>
+
+    <screen id="core$FileDescriptor.edit"
+            template="/com/haulmont/cuba/web/app/ui/core/file/file-edit.xml"/>
+
     <screen id="sec$User.browse"
             template="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse.xml"/>
 

@@ -8,6 +8,7 @@
         <class>com.haulmont.cuba.core.entity.StandardEntity</class>
         <class>com.haulmont.cuba.core.entity.Server</class>
         <class>com.haulmont.cuba.core.entity.Config</class>
+        <class>com.haulmont.cuba.core.entity.FileDescriptor</class>
         <class>com.haulmont.cuba.security.entity.User</class>
         <class>com.haulmont.cuba.security.entity.Role</class>
         <class>com.haulmont.cuba.security.entity.UserRole</class>

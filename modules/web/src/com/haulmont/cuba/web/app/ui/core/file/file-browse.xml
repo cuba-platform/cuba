@@ -1,0 +1,38 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.core.file.FileBrowser">
+
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/core/file/file.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse">
+            <query>
+                select f from core$FileDescriptor f order by f.createDate
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox margin="true" expand="filesPanel" spacing="true">
+            <hbox spacing="true">
+                <button action="files.refresh"/>
+                <button action="files.create"/>
+                <button action="files.edit"/>
+                <button action="files.remove"/>
+            </hbox>
+            <vbox id="filesPanel" expand="files">
+                <table id="files" editable="false">
+                    <columns>
+                        <column id="name" caption="msg://name"/>
+                        <column id="extension" caption="msg://extension"/>
+                        <column id="size" caption="msg://size"/>
+                        <column id="createDate" caption="msg://createDate"/>
+                    </columns>
+                    <rows datasource="filesDs"/>
+                </table>
+            </vbox>
+        </vbox>
+    </layout>
+</window>

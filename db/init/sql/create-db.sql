@@ -38,6 +38,24 @@ alter table SYS_CONFIG add constraint SYS_CONFIG_UNIQ_NAME unique (NAME);
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SYS_FILE (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    NAME varchar(500),
+    EXT varchar(20),
+    SIZE integer,
+    CREATE_DATE timestamp,
+    primary key (ID)
+);
+
+------------------------------------------------------------------------------------------------------------
+
 create table SEC_ROLE (
     ID varchar(36),
     CREATE_TS timestamp,

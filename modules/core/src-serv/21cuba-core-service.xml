@@ -46,6 +46,11 @@
         <depends>haulmont.cuba:service=UserSessions</depends>
     </mbean>
 
+    <mbean code="com.haulmont.cuba.core.app.FileStorage"
+           name="haulmont.cuba:service=FileStorage">
+        <depends>haulmont.cuba:service=UserSessions</depends>
+    </mbean>
+
     <mbean code="com.haulmont.cuba.core.app.CubaDeployer"
            name="haulmont.cuba:service=CubaDeployer">
         <depends>haulmont.cuba:service=PersistenceConfig</depends>
@@ -57,6 +62,7 @@
         <depends>haulmont.cuba:service=Emailer</depends>
         <depends>haulmont.cuba:service=UniqueNumbers</depends>
         <depends>haulmont.cuba:service=ReportEngine</depends>
+        <depends>haulmont.cuba:service=FileStorage</depends>
     </mbean>
 
     <mbean code="org.jboss.varia.scheduler.Scheduler"

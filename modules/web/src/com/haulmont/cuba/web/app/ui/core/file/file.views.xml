@@ -1,0 +1,10 @@
+<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
+
+    <view class="com.haulmont.cuba.core.entity.FileDescriptor" name="browse">
+        <property name="name"/>
+        <property name="extension"/>
+        <property name="size"/>
+        <property name="createDate"/>
+    </view>
+    
+</views>
