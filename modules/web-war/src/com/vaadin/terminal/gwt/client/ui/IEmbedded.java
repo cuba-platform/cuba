@@ -33,6 +33,7 @@ import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
 
+@Deprecated
 public class IEmbedded extends HTML implements Paintable {
     private static String CLASSNAME = "v-embedded";
 

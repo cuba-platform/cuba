@@ -10,16 +10,17 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Console;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.Console;
+import com.vaadin.terminal.gwt.client.UIDL;
 
-import java.util.Vector;
 import java.util.Iterator;
+import java.util.Vector;
 
 public class IPageTable extends Table implements Pager.PageChangeListener, ScrollListener {
 
@@ -28,7 +29,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
     private static Console log = ApplicationConnection.getConsole();
 
     public IPageTable() {
-        bodyContainer.addScrollListener(this);
+        bodyContainer.addScrollListener(this);  //todo gorodnov: fix a ScrollListeners using
     }
 
     protected ITableBody createBody() {
@@ -57,16 +58,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
         purgeUnregistryBag();
     }
 
-    protected void updateBody(UIDL uidl) {
-        UIDL rowData = null;
-        for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
-            final UIDL c = (UIDL) it.next();
-            if (c.getTag().equals("rows")) {
-                rowData = c;
-                break;
-            }
-        }
-
+    protected void updateBody(UIDL rowData) {
         if (!recalcWidths && initializedAndAttached) {
             ((IPageTableBody) tBody).renderRows(rowData);
         } else {
@@ -93,6 +85,9 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
     protected void setContainerHeight() {
         if (height != null && !"".equals(height)) {
             int contentH = getOffsetHeight() - tHead.getOffsetHeight();
+            if (actionButtonsPanel != null) {
+                contentH -= actionButtonsPanel.getOffsetHeight();
+            }
             if (pager != null) {
                 contentH -= pager.getOffsetHeight();
             }
@@ -145,8 +140,8 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
 
         public void clear() {
             final  Vector v = new Vector(renderedRows);
-            for (final Iterator it = v.iterator(); it.hasNext();) {
-                final Widget w = (Widget) it.next();
+            for (final Object o : v) {
+                final Widget w = (Widget) o;
                 remove(w);
             }
         }
@@ -178,7 +173,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
         }
 
         protected ITableRow createRow(UIDL uidl) {
-            final ITableRow row = new ITableRow(uidl, aligns);
+            final ITableRow row = createRowInstance(uidl);
             final int cells = DOM.getChildCount(row.getElement());
             for (int i = 0; i < cells; i++) {
                 final Element cell = DOM.getChild(row.getElement(), i);
@@ -193,6 +188,13 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
 
         protected ITableRow createRowInstance(UIDL uidl) {
             return new ITableRow(uidl, aligns);
+/*
+            if (uidl.getTag().equals("atr")) {
+                return new ITableAggregationRow(uidl, aligns);
+            } else {
+                return new ITableRow(uidl, aligns);
+            }
+*/
         }
 
         protected void addRow(ITableRow row) {
@@ -218,6 +220,31 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             row.addStyleName(CLASSNAME + style);
         }
 
+        // Aggregation row
+        protected class ITableAggregationRow extends ITableRow {
+            public ITableAggregationRow(UIDL uidl, char[] aligns) {
+                super();
+                setElement(DOM.createElement("tr"));
+                tHead.getColumnAlignments();
+                int col = 0;
+                // row header
+                if (showRowHeaders) {
+                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
+                            true);
+                    col++;
+                }
+                addCells(uidl, col);
+            }
+
+            @Override
+            public boolean isSelected() {
+                return false;
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
+            }
+        }
     }
 
     public void onFirstPage() {

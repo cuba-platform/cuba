@@ -20,12 +20,14 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Aggregation;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -133,6 +135,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     public void setSortable(boolean sortable) {
         this.sortable = sortable;
+    }
+
+    public boolean isAggregatable() {
+        return component.isAggregatable();
+    }
+
+    public void setAggregatable(boolean aggregatable) {
+        component.setAggregatable(aggregatable);
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
@@ -314,6 +324,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     } catch (IllegalAccessException e) {
                         // do nothing
                     }
+                }
+
+                if (column.getAggregation() != null && isAggregatable()) {
+                    component.addContainerPropertyAggregation(column.getId(),
+                            WebComponentsHelper.convertAggregationType(column.getAggregation().getType()));
                 }
             }
         }
@@ -574,6 +589,22 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     public Table.ActionButtonsProvider getActionButtonsProvider() {
         return actionButtonsProvider;
+    }
+
+    protected Map<Object, String> __aggregate(AggregationContainer container, Collection itemIds) {
+        final List<Aggregation> aggregationInfos =
+                new LinkedList<Aggregation>();
+        for (final Object o : container.getAggregationPropertyIds()) {
+            final MetaPropertyPath propertyId = (MetaPropertyPath) o;
+            final Table.Column column = columns.get(propertyId);
+            if (column.getAggregation() != null) {
+                aggregationInfos.add(column.getAggregation());
+            }
+        }
+        return ((CollectionDatasource.Aggregatable) datasource).aggregate(
+                aggregationInfos.toArray(new Aggregation[aggregationInfos.size()]),
+                itemIds
+        );
     }
 
     public void setActionButtonsProvider(Table.ActionButtonsProvider buttonsProvider) {

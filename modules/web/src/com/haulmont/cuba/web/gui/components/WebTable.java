@@ -21,10 +21,10 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.terminal.Resource;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 public class WebTable
     extends
@@ -70,7 +70,11 @@ public class WebTable
             new TableDsWrapper(datasource, columns);
     }
 
-    protected class TableDsWrapper extends CollectionDsWrapper {
+    protected class TableDsWrapper extends CollectionDsWrapper
+            implements AggregationContainer {
+
+        private List<Object> aggregationProperties = null;
+
         public TableDsWrapper(CollectionDatasource datasource) {
             super(datasource);
         }
@@ -103,9 +107,46 @@ public class WebTable
             };
         }
 
+        public Collection getAggregationPropertyIds() {
+            if (aggregationProperties != null) {
+                return Collections.unmodifiableList(aggregationProperties);
+            }
+            return Collections.emptyList();
+        }
+
+        public Type getContainerPropertyAggregation(Object propertyId) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void addContainerPropertyAggregation(Object propertyId, Type type) {
+            if (aggregationProperties == null) {
+                aggregationProperties = new LinkedList<Object>();
+            } else if (aggregationProperties.contains(propertyId)) {
+                throw new IllegalStateException("Such aggregation property is already exists");
+            }
+            aggregationProperties.add(propertyId);
+        }
+
+        public void removeContainerPropertyAggregation(Object propertyId) {
+            if (aggregationProperties != null) {
+                aggregationProperties.remove(propertyId);
+                if (aggregationProperties.isEmpty()) {
+                    aggregationProperties = null;
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        public Map<Object, String> aggregate(Collection itemIds) {
+            return __aggregate(this, itemIds);
+        }
     }
 
-    protected class SortableTableDsWrapper extends SortableCollectionDsWrapper {
+    protected class SortableTableDsWrapper extends SortableCollectionDsWrapper
+            implements AggregationContainer {
+
+        private List<Object> aggregationProperties = null;
+
         public SortableTableDsWrapper(CollectionDatasource datasource) {
             super(datasource, true);
         }
@@ -136,6 +177,40 @@ public class WebTable
                     return new TablePropertyWrapper(item, propertyPath);
                 }
             };
+        }
+
+        public Collection getAggregationPropertyIds() {
+            if (aggregationProperties != null) {
+                return Collections.unmodifiableList(aggregationProperties);
+            }
+            return Collections.emptyList();
+        }
+
+        public Type getContainerPropertyAggregation(Object propertyId) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void addContainerPropertyAggregation(Object propertyId, Type type) {
+            if (aggregationProperties == null) {
+                aggregationProperties = new LinkedList<Object>();
+            } else if (aggregationProperties.contains(propertyId)) {
+                throw new IllegalStateException("Such aggregation property is already exists");
+            }
+            aggregationProperties.add(propertyId);
+        }
+
+        public void removeContainerPropertyAggregation(Object propertyId) {
+            if (aggregationProperties != null) {
+                aggregationProperties.remove(propertyId);
+                if (aggregationProperties.isEmpty()) {
+                    aggregationProperties = null;
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        public Map<Object, String> aggregate(Collection itemIds) {
+            return __aggregate(this, itemIds);
         }
     }
 }

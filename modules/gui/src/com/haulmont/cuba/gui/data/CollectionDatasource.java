@@ -11,6 +11,8 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.filter.QueryFilter;
+import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Aggregation;
 
 import java.util.Collection;
 import java.util.Map;
@@ -159,5 +161,18 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
         /** Perform sort */
         void sort(SortInfo[] sortInfos);
+    }
+
+    /**
+     * CollectionDatasource whitch supports an aggregation of data
+     * @param <T> type of entity
+     * @param <K> type of entity ID
+     */
+    interface Aggregatable<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
+
+        /**
+         * Perform aggregation
+         */
+        Map<Object, String> aggregate(Aggregation[] aggregationInfos, Collection<K> itemIds);
     }
 }

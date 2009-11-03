@@ -1,5 +1,6 @@
 package com.haulmont.cuba.web.toolkit.data.util;
 
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -13,7 +14,7 @@ import java.util.*;
  */
 public class TreeTableContainerWrapper
         extends ContainerHierarchicalWrapper
-        implements TreeTableContainer, Container.Ordered, Container.Sortable
+        implements TreeTableContainer, AggregationContainer, Container.Ordered, Container.Sortable
 {
     protected Set<Object> expanded = null; // Contains expanded items ids
 
@@ -404,5 +405,47 @@ public class TreeTableContainerWrapper
             return ((Sortable) container).getSortableContainerPropertyIds();
         else
             throw new IllegalStateException("Wrapped container is not Sortable: " + container.getClass());
+    }
+
+    public Collection getAggregationPropertyIds() {
+        if (container instanceof AggregationContainer) {
+            return ((AggregationContainer) container).getAggregationPropertyIds();
+        }
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: "
+                + container.getClass());
+    }
+
+    public Type getContainerPropertyAggregation(Object propertyId) {
+        if (container instanceof AggregationContainer) {
+            return ((AggregationContainer) container).getContainerPropertyAggregation(propertyId);
+        }
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: "
+                + container.getClass());
+    }
+
+    public void addContainerPropertyAggregation(Object propertyId, Type type) {
+        if (container instanceof AggregationContainer) {
+            ((AggregationContainer) container).addContainerPropertyAggregation(propertyId, type);
+        } else {
+            throw new IllegalStateException("Wrapped container is not AggregationContainer: "
+                    + container.getClass());
+        }
+    }
+
+    public void removeContainerPropertyAggregation(Object propertyId) {
+        if (container instanceof AggregationContainer) {
+            ((AggregationContainer) container).removeContainerPropertyAggregation(propertyId);
+        } else {
+            throw new IllegalStateException("Wrapped container is not AggregationContainer: "
+                    + container.getClass());
+        }
+    }
+
+    public Map<Object, String> aggregate(Collection itemIds) {
+        if (container instanceof AggregationContainer) {
+            return ((AggregationContainer) container).aggregate(itemIds);
+        }
+        throw new IllegalStateException("Wrapped container is not AggregationContainer: "
+                + container.getClass());
     }
 }

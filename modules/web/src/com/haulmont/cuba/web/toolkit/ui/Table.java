@@ -10,22 +10,23 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.data.Property;
+import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.data.Container;
+import com.vaadin.data.Property;
+import com.vaadin.event.Action;
+import com.vaadin.terminal.KeyMapper;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.KeyMapper;
-import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
-import com.vaadin.event.Action;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.*;
 
 public class Table
-        extends com.vaadin.ui.Table
+        extends com.vaadin.ui.Table implements AggregationContainer
 {
     protected LinkedList<Object> editableColumns = null;
     protected boolean storeColWidth = false;
@@ -39,6 +40,8 @@ public class Table
 
     protected List<ActionButton> actionButtons = null;
     protected KeyMapper idActionButtons = null;
+
+    protected boolean aggregatable = false;
 
     public enum PagingMode {
         PAGE,
@@ -169,6 +172,9 @@ public class Table
         if (editableColumns != null) {
             editableColumns.remove(propertyId);
         }
+        if (isAggregatable() && items instanceof AggregationContainer) {
+            removeContainerPropertyAggregation(propertyId);
+        }
         return super.removeContainerProperty(propertyId);
     }
 
@@ -290,6 +296,11 @@ public class Table
         target.addAttribute("vcolorder", visibleColOrder.toArray());
 
         paintActionButtons(target);
+
+        if (items instanceof AggregationContainer && isAggregatable()
+                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {
+            paintAggregationRow(target, ((AggregationContainer) items).aggregate(items.getItemIds()));
+        }
 
         // Rows
         final Set actionSet = new LinkedHashSet();
@@ -535,6 +546,24 @@ public class Table
             }
         }
         target.endTag("visiblecolumns");
+    }
+
+    protected void paintAggregationRow(PaintTarget target, Map<Object, String> aggregationValues) throws PaintException {
+        target.startTag("arow");
+        for (final Object columnId : visibleColumns) {
+            if (columnId == null || isColumnCollapsed(columnId)) {
+                continue;
+            }
+            if (cellStyleGenerator != null) {
+                String cellStyle = cellStyleGenerator.getStyle(null, columnId);
+                if (cellStyle != null && !cellStyle.equals("")) {
+                    target.addAttribute("style-"
+                            + columnIdMap.key(columnId), cellStyle + "-ag");
+                }
+            }
+            target.addText(aggregationValues.get(columnId));
+        }
+        target.endTag("arow");
     }
 
     @Override
@@ -786,12 +815,68 @@ public class Table
             for (final ActionButton actionButton : actionButtons) {
                 target.startTag("actionButton");
                 target.addAttribute("key", idActionButtons.key(actionButton));
-                target.addAttribute("caption", actionButton.getCaption());
-                target.addAttribute("icon", actionButton.getIcon());
+                if (actionButton.getCaption() != null) {
+                    target.addAttribute("caption", actionButton.getCaption());
+                }
+                if (actionButton.getIcon() != null) {
+                    target.addAttribute("icon", actionButton.getIcon());
+                }
                 target.endTag("actionButton");
             }
 
             target.endTag("actionButtons");
+        }
+    }
+
+    public Map<Object, String> aggregate(Collection itemIds) {
+        if (items instanceof AggregationContainer && isAggregatable()) {
+            return ((AggregationContainer) items).aggregate(itemIds);
+        }
+        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+    }
+
+    public Map<Object, String> aggregate() {
+        return aggregate(getItemIds());
+    }
+
+    public Collection getAggregationPropertyIds() {
+        if (items instanceof AggregationContainer) {
+            return ((AggregationContainer) items).getAggregationPropertyIds();
+        }
+        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+    }
+
+    public Type getContainerPropertyAggregation(Object propertyId) {
+        if (items instanceof AggregationContainer) {
+            return ((AggregationContainer) items).getContainerPropertyAggregation(propertyId);
+        }
+        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+    }
+
+    public void addContainerPropertyAggregation(Object propertyId, Type type) {
+        if (items instanceof AggregationContainer) {
+            ((AggregationContainer) items).addContainerPropertyAggregation(propertyId, type);
+        } else {
+            throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+        }
+    }
+
+    public void removeContainerPropertyAggregation(Object propertyId) {
+        if (items instanceof AggregationContainer) {
+            ((AggregationContainer) items).removeContainerPropertyAggregation(propertyId);
+        } else {
+            throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+        }
+    }
+
+    public boolean isAggregatable() {
+        return aggregatable;
+    }
+
+    public void setAggregatable(boolean aggregatable) {
+        if (this.aggregatable != aggregatable) {
+            this.aggregatable = aggregatable;
+            requestRepaint();
         }
     }
 

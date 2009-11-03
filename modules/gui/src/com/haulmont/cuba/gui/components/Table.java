@@ -37,6 +37,9 @@ public interface Table
     void setSortable(boolean sortable);
     boolean isSortable();
 
+    void setAggregatable(boolean aggregatable);
+    boolean isAggregatable();
+
     public class Column implements HasXmlDescriptor, HasCaption, HasFomatter {
         protected Object id;
         protected String caption;
@@ -44,6 +47,7 @@ public interface Table
         protected Formatter formatter;
         protected Integer width;
         protected boolean collapsed;
+        protected Aggregation aggregation;
 
         protected Class type;
         private Element element;
@@ -102,6 +106,14 @@ public interface Table
 
         public void setCollapsed(boolean collapsed) {
             this.collapsed = collapsed;
+        }
+
+        public Aggregation getAggregation() {
+            return aggregation;
+        }
+
+        public void setAggregation(Aggregation aggregation) {
+            this.aggregation = aggregation;
         }
 
         @Override

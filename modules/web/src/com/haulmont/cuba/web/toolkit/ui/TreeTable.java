@@ -1,6 +1,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -424,6 +425,13 @@ public class TreeTable
             }
         }
         target.addAttribute("vcolorder", visibleColOrder.toArray());
+
+        paintActionButtons(target);
+
+        if (items instanceof AggregationContainer && isAggregatable()
+                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {
+            paintAggregationRow(target, ((AggregationContainer) items).aggregate(items.getItemIds()));
+        }
 
         // Rows
         final Set<Action> actions = new LinkedHashSet<Action>();

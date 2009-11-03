@@ -25,13 +25,11 @@ import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.data.Item;
 import com.vaadin.terminal.Resource;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WebTreeTable
     extends
@@ -119,9 +117,11 @@ public class WebTreeTable
 
     protected class TreeTableDsWrapper
             extends HierarchicalDsWrapper
-            implements TreeTableContainer, com.vaadin.data.Container.Sortable
+            implements TreeTableContainer, com.vaadin.data.Container.Sortable, AggregationContainer
     {
         protected boolean treeTableDatasource;
+
+        private List<Object> aggregationProperties = null;
 
         public TreeTableDsWrapper(HierarchicalDatasource datasource) {
             super(datasource);
@@ -229,6 +229,39 @@ public class WebTreeTable
 
         public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
+        }
+
+        public Collection getAggregationPropertyIds() {
+            if (aggregationProperties != null) {
+                return Collections.unmodifiableList(aggregationProperties);
+            }
+            return Collections.emptyList();
+        }
+
+        public Type getContainerPropertyAggregation(Object propertyId) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void addContainerPropertyAggregation(Object propertyId, Type type) {
+            if (aggregationProperties == null) {
+                aggregationProperties = new LinkedList<Object>();
+            } else if (aggregationProperties.contains(propertyId)) {
+                throw new IllegalStateException("Such aggregation property is already exists");
+            }
+            aggregationProperties.add(propertyId);
+        }
+
+        public void removeContainerPropertyAggregation(Object propertyId) {
+            if (aggregationProperties != null) {
+                aggregationProperties.remove(propertyId);
+                if (aggregationProperties.isEmpty()) {
+                    aggregationProperties = null;
+                }
+            }
+        }
+
+        public Map<Object, String> aggregate(Collection itemIds) {
+            return __aggregate(this, itemIds);
         }
     }
 }

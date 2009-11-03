@@ -10,13 +10,13 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.RenderSpace;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.UIDL;
 
 public class IPageTreeTable extends IPageTable {
 
@@ -57,6 +57,10 @@ public class IPageTreeTable extends IPageTable {
         protected IPageTreeTableRow createRowInstance(UIDL uidl) {
             if (isCaptionRow(uidl)) {
                 return new IPageTreeTableCaptionRow(uidl, aligns);
+/*
+            } else if (uidl.getTag().equals("atr")) {
+                return new IPageTreeTableAggregationRow(uidl, aligns);
+*/
             } else {
                 return new IPageTreeTableRow(uidl, aligns);
             }
@@ -123,6 +127,10 @@ public class IPageTreeTable extends IPageTable {
             private int level;
 
             protected Element groupCell = null;
+
+            protected IPageTreeTableRow() {
+                super();
+            }
 
             public IPageTreeTableRow(UIDL uidl, char[] aligns) {
                 super(uidl.getIntAttribute("key"));
@@ -201,7 +209,7 @@ public class IPageTreeTable extends IPageTable {
                     }
                 }
 
-                setCellContent(contentDiv, text, textIsHTML);
+                setCellText(contentDiv, text, textIsHTML);
                 setCellAlignment(contentDiv, align);
 
                 DOM.appendChild(td, container);
@@ -258,7 +266,7 @@ public class IPageTreeTable extends IPageTable {
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                setCellContent(contentDiv, w, col);
+                setCellWidget(contentDiv, w, col);
             }
 
             @Override
@@ -385,6 +393,30 @@ public class IPageTreeTable extends IPageTable {
 
             @Override
             protected void moveCol(int oldIndex, int newIndex) {
+            }
+        }
+
+        protected class IPageTreeTableAggregationRow extends IPageTreeTableRow {
+            public IPageTreeTableAggregationRow(UIDL uidl, char[] aligns) {
+                setElement(DOM.createElement("tr"));
+                tHead.getColumnAlignments();
+                int col = 0;
+                // row header
+                if (showRowHeaders) {
+                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
+                            true);
+                    col++;
+                }
+                addCells(uidl, col);
+            }
+
+            @Override
+            public boolean isSelected() {
+                return false;
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
             }
         }
     }

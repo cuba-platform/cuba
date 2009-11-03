@@ -479,69 +479,8 @@
                         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="table">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded"
-                                                    type="columnType"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="rows" minOccurs="1">
-                                <xs:complexType>
-                                    <xs:attribute name="datasource" type="xs:string" use="required"/>
-                                    <xs:attribute name="headerMode" type="headerMode" use="optional"/>
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="actionButtons" minOccurs="0" maxOccurs="1" type="actionButtonsType"/>
-                        </xs:sequence>
-                        <xs:attribute name="id" type="xs:string" use="required"/>
-                        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="margin" type="xs:string" use="optional"/>
-                        <xs:attribute name="visible" type="xs:string" use="optional"/>
-                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
-                        <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="width" type="xs:string" use="optional"/>
-                        <xs:attribute name="height" type="xs:string" use="optional"/>
-                        <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name="treeTable">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded"
-                                                    type="columnType"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="rows" minOccurs="1">
-                                <xs:complexType>
-                                    <xs:attribute name="datasource" type="xs:string" use="required"/>
-                                    <xs:attribute name="headerMode" type="headerMode" use="optional"/>
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="actionButtons" minOccurs="0" maxOccurs="1" type="actionButtonsType"/>
-                        </xs:sequence>
-                        <xs:attribute name="id" type="xs:string" use="required"/>
-                        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="margin" type="xs:string" use="optional"/>
-                        <xs:attribute name="visible" type="xs:string" use="optional"/>
-                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
-                        <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="width" type="xs:string" use="optional"/>
-                        <xs:attribute name="height" type="xs:string" use="optional"/>
-                        <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
-                    </xs:complexType>
-                </xs:element>
-
+                <xs:element name="table" type="tableType"/>
+                <xs:element name="treeTable" type="tableType"/>
                 <xs:element name="filter">
                     <xs:complexType>
                         <xs:sequence>
@@ -572,7 +511,6 @@
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
-
             </xs:choice>
         </xs:sequence>
     </xs:group>
@@ -610,13 +548,16 @@
 
     <xs:complexType name="columnType">
         <xs:sequence>
-            <xs:element name="formatter" minOccurs="0" maxOccurs="1">
+            <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
+            <xs:element name="editable" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="aggregation" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
-                    <xs:attribute name="class" type="xs:string" use="required"/>
-                    <xs:attribute name="format" type="xs:string" use="optional"/>
+                    <xs:sequence>
+                        <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
+                    </xs:sequence>
+                    <xs:attribute name="type" type="aggregation" use="required"/>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="editable" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="caption" type="xs:string" use="optional"
@@ -627,6 +568,42 @@
         <xs:attribute name="visible" type="xs:boolean" use="optional"/>
         <xs:attribute name="width" type="xs:integer" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="tableType">
+        <xs:sequence>
+            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded"
+                                    type="columnType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rows" minOccurs="1">
+                <xs:complexType>
+                    <xs:attribute name="datasource" type="xs:string" use="required"/>
+                    <xs:attribute name="headerMode" type="headerMode" use="optional"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="actionButtons" minOccurs="0" maxOccurs="1" type="actionButtonsType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
+        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="margin" type="xs:string" use="optional"/>
+        <xs:attribute name="visible" type="xs:string" use="optional"/>
+        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+        <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="width" type="xs:string" use="optional"/>
+        <xs:attribute name="height" type="xs:string" use="optional"/>
+        <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
+        <xs:attribute name="aggregatable" type="xs:boolean" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="formatterType">
+        <xs:attribute name="class" type="xs:string" use="required"/>
+        <xs:attribute name="format" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="actionButtonsType">
@@ -647,6 +624,16 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="horizontal"/>
             <xs:enumeration value="vertical"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="aggregation">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SUM"/>
+            <xs:enumeration value="COUNT"/>
+            <xs:enumeration value="AVG"/>
+            <xs:enumeration value="MIN"/>
+            <xs:enumeration value="MAX"/>
         </xs:restriction>
     </xs:simpleType>
 

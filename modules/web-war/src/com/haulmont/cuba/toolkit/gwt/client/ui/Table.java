@@ -22,6 +22,13 @@ import java.util.*;
 public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table {
     public static final String CLASSNAME = "v-table";
 
+    /**
+     * Amount of padding inside one table cell (this is reduced from the
+     * "cellContent" element's width). You may override this in your own
+     * widgetset.
+     */
+    public static final int CELL_CONTENT_PADDING = 8;
+
     public static final char ALIGN_CENTER = 'c';
     public static final char ALIGN_LEFT = 'b';
     public static final char ALIGN_RIGHT = 'e';
@@ -96,6 +103,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected ActionButtonsPanel actionButtonsPanel = null;
 //    protected boolean needSetPanelPosition = false;
+
+    protected AggregationRow aggregationRow = null;
 
     protected Table() {
         tHead = createHead();
@@ -207,7 +216,17 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         updateHeader(uidl.getStringArrayAttribute("vcolorder"));
 
-        updateBody(uidl);
+        for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
+            final UIDL c = (UIDL) it.next();
+            if (c.getTag().equals("rows")) {
+                if (tBody != null) {
+                    tBody.aligns = tHead.getColumnAlignments();
+                }
+                updateBody(c);
+            } else if (c.getTag().equals("arow")) {
+                updateAggregationRow(c);
+            }
+        }
     }
 
     protected abstract void updateBody(UIDL uidl);
@@ -255,6 +274,14 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 */
     }
 
+    protected void updateAggregationRow(UIDL uidl) {
+        if (aggregationRow == null) {
+            aggregationRow = new AggregationRow();
+            insert(aggregationRow, getWidgetIndex(bodyContainer));
+        }
+        aggregationRow.updateFromUIDL(uidl);
+    }
+
     public String getActionCaption(String actionKey) {
         return (String) actionMap.get(actionKey + "_c");
     }
@@ -293,9 +320,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     }
 
-    //todo updateBody()
-
-
     /**
      * Gives correct column index for given column key ("cid" in UIDL).
      *
@@ -333,6 +357,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         final HeaderCell cell = tHead.getHeaderCell(colIndex);
         cell.setWidth(w);
         tBody.setColWidth(colIndex, w);
+        if (aggregationRow != null && aggregationRow.initialized) {
+            aggregationRow.setColWidth(colIndex, w);
+        }
     }
 
     protected int getColWidth(String colKey) {
@@ -1328,13 +1355,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         public static final int DEFAULT_ROW_HEIGHT = 24;
 
-        /**
-         * Amount of padding inside one table cell (this is reduced from the
-         * "cellContent" element's width). You may override this in your own
-         * widgetset.
-         */
-        public static final int CELL_CONTENT_PADDING = 8;
-
         private int rowHeight = -1;
 
         protected final List renderedRows = new Vector();
@@ -1350,6 +1370,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         public ITableBody() {
             setElement(container);
+            aligns = tHead.getColumnAlignments();
         }
 
         public abstract int getAvailableWidth();
@@ -1463,11 +1484,43 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             protected Map widgetColumns = null;
 
+            protected ITableRow() {
+                rowKey = 0;
+            }
+
             protected ITableRow(int rowKey) {
                 this.rowKey = rowKey;
                 setElement(DOM.createElement("tr"));
                 DOM.sinkEvents(getElement(), Event.ONCLICK | Event.ONDBLCLICK
                         | Event.ONCONTEXTMENU);
+            }
+
+            public ITableRow(UIDL uidl, char[] aligns) {
+                this(uidl.getIntAttribute("key"));
+
+                String rowStyle = uidl.getStringAttribute("rowstyle");
+                if (rowStyle != null) {
+                    addStyleName(CLASSNAME + "-row-" + rowStyle);
+                }
+
+                int col = 0;
+
+                // row header
+                if (showRowHeaders) {
+                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
+                            true);
+                    col++;
+                }
+
+                if (uidl.hasAttribute("al")) {
+                    actionKeys = uidl.getStringArrayAttribute("al");
+                }
+
+                addCells(uidl, col);
+
+                if (uidl.hasAttribute("selected") && !isSelected()) {
+                    toggleSelection();
+                }
             }
 
             private void paintComponent(Paintable p, UIDL uidl) {
@@ -1494,35 +1547,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             public String getKey() {
                 return String.valueOf(rowKey);
-            }
-
-            public ITableRow(UIDL uidl, char[] aligns) {
-                this(uidl.getIntAttribute("key"));
-
-                String rowStyle = uidl.getStringAttribute("rowstyle");
-                if (rowStyle != null) {
-                    addStyleName(CLASSNAME + "-row-" + rowStyle);
-                }
-
-                tHead.getColumnAlignments();
-                int col = 0;
-
-                // row header
-                if (showRowHeaders) {
-                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
-                            true);
-                    col++;
-                }
-
-                if (uidl.hasAttribute("al")) {
-                    actionKeys = uidl.getStringArrayAttribute("al");
-                }
-
-                addCells(uidl, col);
-
-                if (uidl.hasAttribute("selected") && !isSelected()) {
-                    toggleSelection();
-                }
             }
 
             protected void addCells(UIDL uidl, int col) {
@@ -1573,7 +1597,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.setElementProperty(td, "className", classNameTd);
                 DOM.setElementProperty(container, "className", className);
 
-                setCellContent(container, text, textIsHTML);
+                setCellText(container, text, textIsHTML);
                 setCellAlignment(container, align);
 
                 DOM.appendChild(td, container);
@@ -1608,7 +1632,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                setCellContent(container, w, col);
+                setCellWidget(container, w, col);
             }
 
             protected void moveCol(int oldIndex, int newIndex) {
@@ -1618,20 +1642,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.insertChild(getElement(), td, newIndex);
             }
 
-            protected void setCellContent(Element container, String text,
-                                          boolean textIsHTML) {
-                if (textIsHTML) {
-                    Tools.setInnerHTML(container, text);
-                } else {
-                    Tools.setInnerText(container, text);
-                }
-            }
-
             public int getHeight() {
                 return DOM.getChild(getElement(), 0).getOffsetHeight();
             }
 
-            protected void setCellContent(Element container, Widget w, int colIndex) {
+            protected void setCellWidget(Element container, Widget w, int colIndex) {
                 // ensure widget not attached to another element (possible tBody
                 // change)
                 w.removeFromParent();
@@ -1642,20 +1657,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     widgetColumns = new HashMap();
                 }
                 widgetColumns.put(w, colIndex);
-            }
-
-            protected void setCellAlignment(Element container, char align) {
-                if (align != ALIGN_LEFT) {
-                    switch (align) {
-                    case ALIGN_CENTER:
-                        DOM.setStyleAttribute(container, "textAlign", "center");
-                        break;
-                    case ALIGN_RIGHT:
-                    default:
-                        DOM.setStyleAttribute(container, "textAlign", "right");
-                        break;
-                    }
-                }
             }
 
             public Iterator iterator() {
@@ -1959,6 +1960,12 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected void setContainerHeight() {
         if (height != null && !"".equals(height)) {
             int contentH = getOffsetHeight() - tHead.getOffsetHeight();
+            if (actionButtonsPanel != null) {
+                contentH -= actionButtonsPanel.getOffsetHeight();
+            }
+            if (aggregationRow != null) {
+                contentH -= aggregationRow.getOffsetHeight();
+            }
             contentH -= getContentAreaBorderHeight();
             if (contentH < 0) {
                 contentH = 0;
@@ -2025,36 +2032,26 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         lazyUnregistryBag.clear();
     }
 
-    class ActionButtonsPanel extends SimplePanel/*VOverlay*/ {
+    class ActionButtonsPanel extends SimplePanel {
 
         private Map<Element, String> buttonKeys = new HashMap<Element, String>();
 
         private Element buttonsContainer = DOM.createDiv();
-//        private Element mover = DOM.createDiv();
-
-/*
-        private Element draggingCurtain;
-        private boolean dragging = false;
-        private int startX, startY, origX, origY;
-*/
 
         public ActionButtonsPanel() {
-//            super(false, false, false);
-
             setStyleName(CLASSNAME + "-buttons");
             DOM.setElementProperty(buttonsContainer, "className", CLASSNAME + "-buttons-container");
-//            DOM.setElementProperty(mover, "className", CLASSNAME + "-buttons-mover");
 
             DOM.appendChild(getContainerElement(), buttonsContainer);
-//            DOM.appendChild(getContainerElement(), mover);
-                
+
             DOM.sinkEvents(buttonsContainer, Event.ONCLICK);
-//            DOM.sinkEvents(mover, Event.MOUSEEVENTS);
         }
 
         public void updateFromUIDL(UIDL uidl) {
-            buttonKeys.clear();
-            Tools.removeChildren(buttonsContainer);
+            if (!buttonKeys.isEmpty()) {
+                buttonKeys.clear();
+                Tools.removeChildren(buttonsContainer);
+            }
 
             for (Iterator it = uidl.getChildIterator(); it.hasNext();) {
                 final UIDL buttonUIDL = (UIDL) it.next();
@@ -2079,137 +2076,145 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
         }
 
-        private void setPanelPosition() {
-//            DOM.getTable.this.
-//            needSetPanelPosition = false;
-        }
-
         @Override
         public void onBrowserEvent(Event event) {
             if (event != null) {
-                final Element targetElement = DOM.eventGetTarget(event);
-/*
-                if (dragging || DOM.isOrHasChild(mover, targetElement)) {
-                    onDragEvent(event);
-                    event.stopPropagation();
-                } else {
-*/
-                    onClickEvent(event);
-//                }
-            }
-        }
-
-/*
-        private void onDragEvent(Event event) {
-            switch (DOM.eventGetType(event)) {
-            case Event.ONMOUSEDOWN:
-                showDraggingCurtain(true);
-                dragging = true;
-                startX = DOM.eventGetScreenX(event);
-                startY = DOM.eventGetScreenY(event);
-                origX = DOM.getAbsoluteLeft(getElement());
-                origY = DOM.getAbsoluteTop(getElement());
-                DOM.setCapture(getElement());
-                DOM.eventPreventDefault(event);
-                break;
-            case Event.ONMOUSEUP:
-                dragging = false;
-                showDraggingCurtain(false);
-                DOM.releaseCapture(getElement());
-                break;
-            case Event.ONLOSECAPTURE:
-                showDraggingCurtain(false);
-                dragging = false;
-                break;
-            case Event.ONMOUSEMOVE:
-                if (dragging) {
-                    final int x = DOM.eventGetScreenX(event) - startX + origX;
-                    final int y = DOM.eventGetScreenY(event) - startY + origY;
-                    setPopupPosition(x, y);
-                    DOM.eventPreventDefault(event);
-                }
-                break;
-            default:
-                break;
-            }
-        }
-*/
-
-        private void onClickEvent(Event event) {
-            switch (DOM.eventGetType(event)) {
-                case Event.ONCLICK:
-                    final Element targetElement = DOM.eventGetTarget(event);
-                    if (buttonKeys.get(targetElement) != null) {
-                        client.updateVariable(paintableId, "actionButton", buttonKeys.get(targetElement),
-                                true);
-                    }
-                    break;
-            }
-        }
-
-/*
-        */
-/*
-         * Shows (or hides) an empty div on top of all other content; used when
-         * resizing or moving, so that iframes (etc) do not steal event.
-         */
-/*
-        private void showDraggingCurtain(boolean show) {
-            if (show && draggingCurtain == null) {
-
-                setFF2CaretFixEnabled(false); // makes FF2 slow
-
-                draggingCurtain = DOM.createDiv();
-                DOM.setStyleAttribute(draggingCurtain, "position", "absolute");
-                DOM.setStyleAttribute(draggingCurtain, "top", "0px");
-                DOM.setStyleAttribute(draggingCurtain, "left", "0px");
-                DOM.setStyleAttribute(draggingCurtain, "width", "100%");
-                DOM.setStyleAttribute(draggingCurtain, "height", "100%");
-                DOM.setStyleAttribute(draggingCurtain, "zIndex", ""
-                        + VOverlay.Z_INDEX);
-
-                DOM.appendChild(RootPanel.getBodyElement(), draggingCurtain);
-            } else if (!show && draggingCurtain != null) {
-
-                setFF2CaretFixEnabled(true); // makes FF2 slow
-
-                DOM.removeChild(RootPanel.getBodyElement(), draggingCurtain);
-                draggingCurtain = null;
-            }
-        }
-
-        */
-/**
-         * Fix "missing cursor" browser bug workaround for FF2 in Windows and Linux.
-         *
-         * Calling this method has no effect on other browsers than the ones based
-         * on Gecko 1.8
-         *
-         * @param enable
-         */
-/*
-        private void setFF2CaretFixEnabled(boolean enable) {
-            if (BrowserInfo.get().isFF2()) {
-                if (enable) {
-                    DeferredCommand.addCommand(new Command() {
-                        public void execute() {
-                            DOM.setStyleAttribute(getElement(), "overflow", "auto");
+                switch (DOM.eventGetType(event)) {
+                    case Event.ONCLICK:
+                        final Element targetElement = DOM.eventGetTarget(event);
+                        if (buttonKeys.get(targetElement) != null) {
+                            client.updateVariable(paintableId, "actionButton", buttonKeys.get(targetElement),
+                                    true);
                         }
-                    });
-                } else {
-                    DOM.setStyleAttribute(getElement(), "overflow", "");
+                        break;
                 }
             }
         }
-
-        @Override
-        public boolean onEventPreview(Event event) {
-            if (dragging) {
-                onDragEvent(event);
-                return false;
-            }
-            return true;
-        }
-*/
     }
+
+    protected class AggregationRow extends SimplePanel {
+
+        private boolean initialized = false;
+
+        private char[] aligns;
+        private Element tr;
+
+        public AggregationRow() {
+            setStyleName(CLASSNAME + "-arow");
+        }
+
+        public void updateFromUIDL(UIDL uidl) {
+            if (getContainerElement().hasChildNodes()) {
+                Tools.removeChildren(getContainerElement());
+            }
+
+            aligns = tHead.getColumnAlignments();
+
+            if (uidl.getChildCount() > 0) {
+                final Element table = DOM.createTable();
+                final Element tBody = DOM.createTBody();
+                tr = DOM.createTR();
+
+                DOM.setElementProperty(tr, "className", CLASSNAME + "-arow-row");
+
+                int col = 0;
+                for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
+                    final String cell = (String) it.next();
+                    String columnId = visibleColOrder[col];
+                    String style = "";
+                    if (uidl.hasAttribute("style-" + columnId)) {
+                        style = uidl.getStringAttribute("style-" + columnId);
+                    }
+                    addCell(cell, style, aligns[col]);
+
+                    final String colKey = getColKeyByIndex(col);
+                    int colWidth;
+                    if ((colWidth = getColWidth(colKey)) > -1) {
+                        setColWidth(col, colWidth);
+                    }
+
+                    col++;
+                }
+
+                DOM.appendChild(tBody, tr);
+                DOM.appendChild(table, tBody);
+                DOM.appendChild(getContainerElement(), table);
+            }
+
+            initialized = getContainerElement().hasChildNodes();
+        }
+
+        public void clearRow() {
+            if (initialized) {
+                tr = null;
+                Tools.removeChildren(getContainerElement());
+            }
+            initialized = false;
+        }
+
+        public void moveCol(int oldIndex, int newIndex) {
+            if (initialized && tr != null) {
+                final Element td = DOM.getChild(tr, oldIndex);
+                DOM.removeChild(tr, td);
+
+                DOM.insertChild(tr, td, newIndex);
+            }
+        }
+
+        public void setColWidth(int colIndex, int w) {
+            if (initialized && tr != null) {
+                final Element cell = DOM.getChild(tr, colIndex);
+                DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
+                        (w - CELL_CONTENT_PADDING) + "px");
+                DOM.setStyleAttribute(cell, "width", w + "px");
+            }
+        }
+
+        private void addCell(String text, String style, char align) {
+            final Element td = DOM.createTD();
+            final Element container = DOM.createDiv();
+            String classNameTd = CLASSNAME + "-arow-cell";
+            String className = CLASSNAME + "-arow-cell-content";
+            if (style != null && !style.equals("")) {
+                classNameTd += " " + CLASSNAME + "-arow-cell-" + style;
+                className += " " + CLASSNAME + "-arow-cell-content-" + style;
+            }
+            DOM.setElementProperty(td, "className", classNameTd);
+            DOM.setElementProperty(container, "className", className);
+
+            setCellText(container, text, false);
+            setCellAlignment(container, align);
+
+            DOM.appendChild(td, container);
+            DOM.appendChild(tr, td);
+        }
+    }
+
+    public static void setCellText(Element container, String text,
+                                  boolean textIsHTML) {
+        if (textIsHTML) {
+            Tools.setInnerHTML(container, text);
+        } else {
+            if (text == null || "".equals(text)) {
+                text = " ";
+            }
+            Tools.setInnerText(container, text);
+        }
+    }
+
+    protected static void setCellAlignment(Element container, char align) {
+        if (align != ALIGN_LEFT) {
+            switch (align) {
+            case ALIGN_CENTER:
+                DOM.setStyleAttribute(container, "textAlign", "center");
+                break;
+            case ALIGN_RIGHT:
+            default:
+                DOM.setStyleAttribute(container, "textAlign", "right");
+                break;
+            }
+        }
+    }
+
+
 }

@@ -22,21 +22,17 @@
 }
 
 .v-table-header table,
-.v-table-table {
+.v-table-table,
+.v-table-arow table {
 	border-collapse: collapse;
 	margin: 0;
 	padding: 0;
 	border: 0;
 }
 
-/*
-.v-table-table {
-    border-bottom: 2px solid #829fd6;
-}
-*/
-
 .v-table-header td,
-.v-table-table td {
+.v-table-table td,
+.v-table-arow td {
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -106,7 +102,8 @@
 }
 .v-table-row .v-table-cell,
 .v-table-row-odd .v-table-cell,
-.v-table-caption-row .v-table-cell {
+.v-table-caption-row .v-table-cell,
+.v-table-arow .v-table-arow-cell {
 	padding: 0;
     border-bottom:1px solid #DCE3EB;
 }
@@ -124,10 +121,26 @@
     line-height: 15px;
 }
 
-.v-table-cell-content {
+.v-table-cell-content,
+.v-table-arow-cell-content {
     padding: 3px 0 3px 3px;
 	margin-right: 5px;
 	line-height: 15px;
+}
+
+.v-table-arow {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.v-table-arow-row {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background-color: lightgoldenrodyellow;
+    border-bottom:1px solid #DCE3EB;
+    cursor: default;
 }
 
 .v-table-row.v-selected,
@@ -306,6 +319,7 @@
 /* action buttons panel*/
 .v-table-buttons {
     margin-bottom: 1px;
+    height: 20px;
 }
 /*
 .v-table-buttons .popupContent {

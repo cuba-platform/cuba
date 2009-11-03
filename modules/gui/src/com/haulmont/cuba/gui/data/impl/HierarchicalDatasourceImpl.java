@@ -52,73 +52,90 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
     }
 
     public Collection<K> getChildren(K itemId) {
-        final Entity item = getItem(itemId);
-        if (item == null)
-            return Collections.emptyList();
+        if (hierarchyPropertyName != null) {
+            final Entity item = getItem(itemId);
+            if (item == null)
+                return Collections.emptyList();
 
-        List<Entity<K>> entities = new ArrayList<Entity<K>>();
+            List<Entity<K>> entities = new ArrayList<Entity<K>>();
 
-        Collection<K> ids = getItemIds();
-        for (K id : ids) {
-            Entity<K> currentItem = getItem(id);
-            Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
-            if (parentItem != null && parentItem.equals(item))
-                entities.add(currentItem);
+            Collection<K> ids = getItemIds();
+            for (K id : ids) {
+                Entity<K> currentItem = getItem(id);
+                Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
+                if (parentItem != null && parentItem.equals(item))
+                    entities.add(currentItem);
+            }
+
+            if (sortInfos != null && sortInfos.length > 0) {
+                MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+                Order order = sortInfos[0].getOrder();
+                Collections.sort(entities, new EntityComparator(propertyPath, Order.ASC.equals(order)));
+            }
+
+            List<K> res = new ArrayList<K>();
+            for (Entity<K> entity : entities) {
+                res.add(entity.getId());
+            }
+
+            return res;
         }
-
-        if (sortInfos != null && sortInfos.length > 0) {
-            MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-            Order order = sortInfos[0].getOrder();
-            Collections.sort(entities, new EntityComparator(propertyPath, Order.ASC.equals(order)));
-        }
-
-        List<K> res = new ArrayList<K>();
-        for (Entity<K> entity : entities) {
-            res.add(entity.getId());
-        }
-
-        return res;
+        return Collections.emptyList();
     }
 
     public K getParent(K itemId) {
-        Instance item = (Instance) getItem(itemId);
-        if (item == null)
-            return null;
-        else {
-            Entity<K> value = item.getValue(hierarchyPropertyName);
-            return value == null ? null : value.getId();
+        if (hierarchyPropertyName != null) {
+            Instance item = (Instance) getItem(itemId);
+            if (item == null)
+                return null;
+            else {
+                Entity<K> value = item.getValue(hierarchyPropertyName);
+                return value == null ? null : value.getId();
+            }
         }
+        return null;
     }
 
     public Collection<K> getRootItemIds() {
-        Set<K> result = new HashSet<K>();
         Collection<K> ids = getItemIds();
 
-        for (K id : ids) {
-            Entity<K> item = getItem(id);
-            Object value = ((Instance) item).getValue(hierarchyPropertyName);
-            if (value == null || !containsItem(getItemId((T) value))) result.add(item.getId());
+        if (hierarchyPropertyName != null) {
+            Set<K> result = new HashSet<K>();
+            for (K id : ids) {
+                Entity<K> item = getItem(id);
+                Object value = ((Instance) item).getValue(hierarchyPropertyName);
+                if (value == null || !containsItem(getItemId((T) value))) result.add(item.getId());
+            }
+            return result;
+        } else {
+            return new HashSet<K>(ids);
         }
-
-        return result;
     }
 
     public boolean isRoot(K itemId) {
         Instance item = (Instance) getItem(itemId);
-        Object value = item.getValue(hierarchyPropertyName);
-        return (value == null || !containsItem(getItemId((T) value)));
+        if (item == null) return false;
+
+        if (hierarchyPropertyName != null) {
+            Object value = item.getValue(hierarchyPropertyName);
+            return (value == null || !containsItem(getItemId((T) value)));
+        } else {
+            return true;
+        }
     }
 
     public boolean hasChildren(K itemId) {
         final Entity item = getItem(itemId);
         if (item == null) return false;
 
-        Collection<K> ids = getItemIds();
-        for (K id : ids) {
-            Entity currentItem = getItem(id);
-            Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
-            if (parentItem != null && parentItem.equals(item))
-                return true;
+        if (hierarchyPropertyName != null) {
+            Collection<K> ids = getItemIds();
+            for (K id : ids) {
+                Entity currentItem = getItem(id);
+                Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
+                if (parentItem != null && parentItem.equals(item))
+                    return true;
+            }
         }
 
         return false;

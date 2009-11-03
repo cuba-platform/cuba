@@ -52,6 +52,10 @@ public class IScrollTreeTable
         protected IScrollTreeTableRow createRowInstance(UIDL uidl) {
             if (isCaptionRow(uidl)) {
                 return new IScrollTreeTableCaptionRow(uidl, aligns);
+/*
+            } else if (uidl.getTag().equals("arow")) {
+                return new IScrollTreeTableAggregationRow(uidl, aligns);
+*/
             } else {
                 return new IScrollTreeTableRow(uidl, aligns);
             }
@@ -176,7 +180,7 @@ public class IScrollTreeTable
             }
 
             @Override
-            protected void moveCol(int oldIndex, int newIndex) {
+            public void moveCol(int oldIndex, int newIndex) {
             }
         }
 
@@ -185,6 +189,10 @@ public class IScrollTreeTable
             private int level;
 
             protected Element groupCell = null;
+
+            protected IScrollTreeTableRow() {
+                super();
+            }
 
             public IScrollTreeTableRow(UIDL uidl, char[] aligns) {
                 super(uidl.getIntAttribute("key"));
@@ -263,7 +271,7 @@ public class IScrollTreeTable
                     }
                 }
 
-                setCellContent(contentDiv, text, textIsHTML);
+                setCellText(contentDiv, text, textIsHTML);
                 setCellAlignment(contentDiv, align);
 
                 DOM.appendChild(td, container);
@@ -320,7 +328,7 @@ public class IScrollTreeTable
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                setCellContent(contentDiv, w, col);
+                setCellWidget(contentDiv, w, col);
             }
 
             public boolean isExpanded() {
@@ -410,6 +418,30 @@ public class IScrollTreeTable
                 } else {
                     super.handleRowClick(event);
                 }
+            }
+        }
+
+        public class IScrollTreeTableAggregationRow extends IScrollTreeTableRow {
+            public IScrollTreeTableAggregationRow(UIDL uidl, char[] aligns) {
+                setElement(DOM.createElement("tr"));
+                tHead.getColumnAlignments();
+                int col = 0;
+                // row header
+                if (showRowHeaders) {
+                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
+                            true);
+                    col++;
+                }
+                addCells(uidl, col);
+            }
+
+            @Override
+            public boolean isSelected() {
+                return false;
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
             }
         }
     }

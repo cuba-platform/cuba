@@ -11,9 +11,11 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.Aggregation;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.Table;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.FileResource;
@@ -221,10 +223,23 @@ public class WebComponentsHelper {
         switch (pagingMode) {
             case SCROLLING: return Table.PagingMode.SCROLLING;
             case PAGE: return Table.PagingMode.PAGE;
-            default: throw new IllegalArgumentException();
+            default: throw new IllegalArgumentException("Unknow paging mode: " + pagingMode);
         }
     }
 
+    public static AggregationContainer.Type convertAggregationType(
+            Aggregation.Type function
+    ) {
+        switch (function) {
+            case COUNT: return AggregationContainer.Type.COUNT;
+            case AVG: return AggregationContainer.Type.AVG;
+            case MAX: return AggregationContainer.Type.MAX;
+            case MIN: return AggregationContainer.Type.MIN;
+            case SUM: return AggregationContainer.Type.SUM;
+            default: throw new IllegalArgumentException("Unknown function: " + function);
+        }
+    }
+    
     public static Button createButton() {
         if (useNativeButtons == null)
             useNativeButtons = ConfigProvider.getConfig(WebConfig.class).getUseNativeButtons();

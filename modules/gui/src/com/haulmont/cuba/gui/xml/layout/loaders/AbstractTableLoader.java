@@ -12,10 +12,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -26,6 +24,7 @@ import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.List;
 
 public abstract class AbstractTableLoader<T extends Table> extends ComponentLoader {
     protected ComponentsFactory factory;
@@ -52,6 +51,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadWidth(component, element);
 
         loadExpandable(component, element);
+        loadAggregatable(component, element);
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
@@ -124,6 +124,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         addAssignWindowTask(component);
 
         return component;
+    }
+
+    private void loadAggregatable(Table component, Element element) {
+        String aggregatable = element.attributeValue("aggregatable");
+        if (!StringUtils.isEmpty(aggregatable)) {
+            component.setAggregatable(BooleanUtils.toBoolean(aggregatable));
+        }
     }
 
     private void loadPaging(Table component, final Element element) {
@@ -312,7 +319,20 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         column.setFormatter(loadFormatter(element));
 
+        loadAggregation(column, element);
+
         return column;
+    }
+
+    private void loadAggregation(Table.Column column, Element columnElement) {
+        Element aggregationElement = columnElement.element("aggregation");
+        if (aggregationElement != null) {
+            final Aggregation aggregation = new Aggregation();
+            aggregation.setPropertyPath(column.getId());
+            aggregation.setType(Aggregation.Type.valueOf(aggregationElement.attributeValue("type")));
+            aggregation.setFormatter(loadFormatter(aggregationElement));
+            column.setAggregation(aggregation);
+        }
     }
 
     protected Formatter loadFormatter(Element element) {

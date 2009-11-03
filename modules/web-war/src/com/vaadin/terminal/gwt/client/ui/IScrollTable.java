@@ -66,6 +66,9 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
     protected int lastRequestedFirstvisible = 0; // to detect "serverside scroll"
     protected int firstvisible = 0;
 
+    protected int rows; //received rows count
+    protected int firstrow; //an index of the first row whitch will be rendered
+
     public IScrollTable() {
         super();
         bodyContainer.addScrollListener(this);
@@ -76,6 +79,9 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
 
         // we may have pending cache row fetch, cancel it. See #2136
         rowRequestHandler.cancel();
+
+        firstrow = uidl.getIntAttribute("firstrow");
+        rows = uidl.getIntAttribute("rows");
 
         firstvisible = uidl.hasVariable("firstvisible") ? uidl
                 .getIntVariable("firstvisible") : 0;
@@ -92,10 +98,6 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         purgeUnregistryBag();
     }
 
-    protected int firstRow(UIDL uidl) {
-        return uidl.getIntAttribute("firstrow");
-    }
-
     protected IScrollTableBody createBody() {
         return new IScrollTableBody();
     }
@@ -108,20 +110,9 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         return false;
     }
 
-    protected void updateBody(UIDL uidl) {
-        UIDL rowData = null;
-        for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
-            final UIDL c = (UIDL) it.next();
-            if (c.getTag().equals("rows")) {
-                rowData = c;
-                break;
-            }
-        }
-
+    protected void updateBody(UIDL rowData) {
         if (!recalcWidths && initializedAndAttached) {
-            updateBody(rowData,
-                    uidl.getIntAttribute("firstrow"),
-                    uidl.getIntAttribute("rows"));
+            updateBody(rowData, firstrow, rows);
         } else {
             if (tBody != null) {
                 tBody.removeFromParent();
@@ -129,8 +120,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
             }
             tBody = createBody();
             ((IScrollTableBody) tBody).renderInitialRows(rowData,
-                    uidl.getIntAttribute("firstrow"),
-                    uidl.getIntAttribute("rows"));
+                    firstrow, rows);
             bodyContainer.add(tBody);
             initialContentReceived = true;
             if (isAttached()) {
@@ -636,7 +626,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         }
 
         protected IScrollTableRow createRow(UIDL uidl) {
-            final IScrollTableRow row = new IScrollTableRow(uidl, aligns);
+            final IScrollTableRow row = createRowInstance(uidl);
             final int cells = DOM.getChildCount(row.getElement());
             for (int i = 0; i < cells; i++) {
                 final Element cell = DOM.getChild(row.getElement(), i);
@@ -650,7 +640,11 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         }
 
         protected IScrollTableRow createRowInstance(UIDL uidl) {
-            return new IScrollTableRow(uidl, aligns);
+            if (uidl.getTag().equals("atr")) {
+                return new IScrollTableAggregationRow(uidl, aligns);
+            } else {
+                return new IScrollTableRow(uidl, aligns);
+            }
         }
 
         protected IScrollTableRow[] createRowsArray(int rows) {
@@ -751,12 +745,40 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
 
         public class IScrollTableRow extends ITableRow {
 
+            protected IScrollTableRow() {
+                super();
+            }
+
             public IScrollTableRow(int rowKey) {
                 super(rowKey);
             }
 
             public IScrollTableRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
+            }
+        }
+
+        public class IScrollTableAggregationRow extends IScrollTableRow {
+            public IScrollTableAggregationRow(UIDL uidl, char[] aligns) {
+                setElement(DOM.createElement("tr"));
+                tHead.getColumnAlignments();
+                int col = 0;
+                // row header
+                if (showRowHeaders) {
+                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
+                            true);
+                    col++;
+                }
+                addCells(uidl, col);
+            }
+
+            @Override
+            public boolean isSelected() {
+                return false;
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
             }
         }
     }
