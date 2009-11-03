@@ -10,6 +10,7 @@
 
 	<target name="delegate">
 		<property name="target" value="noop" />
+        <ant dir="modules/deploymarker" target="${target}" inheritAll="false"/>
 		<ant dir="modules/core" target="${target}" inheritAll="false"/>
         <ant dir="modules/gui" target="${target}" inheritAll="false"/>
         <ant dir="modules/web-war" target="${target}" inheritAll="false"/>
@@ -53,6 +54,7 @@
         <ext:install-jboss-lib name="jbosssx" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="servlet-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="scheduler-plugin" version="${jboss.version}" toDir="${lib.server.dir}"/>
+        <ext:install-jboss-lib name="jboss-ejb3-ext-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-j2se" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <!-- jasper -->

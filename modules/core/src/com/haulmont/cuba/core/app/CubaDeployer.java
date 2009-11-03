@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.security.app.UserSessionsMBean;
+import com.haulmont.cuba.deploymarker.DeployMarkerMBean;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -34,6 +35,9 @@ public class CubaDeployer implements CubaDeployerMBean
     private String releaseTimestamp = "?";
 
     public void start() {
+        // dummy code to fix classloading problem under Embedded JBoss 
+        String s = DeployMarkerMBean.OBJECT_NAME;
+        
         log.debug("start");
 
         ServerConfig config = ConfigProvider.getConfig(ServerConfig.class);

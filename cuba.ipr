@@ -367,6 +367,7 @@
       <module fileurl="file://$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" filepath="$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/client/client.iml" filepath="$PROJECT_DIR$/modules/client/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/deploymarker/deploymarker.iml" filepath="$PROJECT_DIR$/modules/deploymarker/deploymarker.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/gui/gui.iml" filepath="$PROJECT_DIR$/modules/gui/gui.iml" />
       <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web/web.iml" filepath="$PROJECT_DIR$/modules/web/web.iml" />
@@ -460,6 +461,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jcifs-1.3.10.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jespa-1.0.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3-ext-api.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

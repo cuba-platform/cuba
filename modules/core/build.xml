@@ -26,6 +26,7 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/deploymarker"/>
     </path>
 
     <path id="test-compile-cp">
