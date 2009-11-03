@@ -102,6 +102,18 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void setQueryFilter(QueryFilter filter);
 
     /**
+     * Max number of rows. 0 in case of no limits.<br>
+     * Implementations may or may not take this parameter into account.
+     */
+    int getMaxResults();
+
+    /**
+     * Set max number of rows. 0 in case of no limits.<br>
+     * Implementations may or may not take this parameter into account.
+     */
+    void setMaxResults(int maxResults);
+
+    /**
      * Refresh datasource passing specified parameters to the query.
      * These parameters may be referenced in the query text by "custom$" prefix.
      */
@@ -164,7 +176,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     }
 
     /**
-     * CollectionDatasource whitch supports an aggregation of data
+     * CollectionDatasource which supports an aggregation of data
      * @param <T> type of entity
      * @param <K> type of entity ID
      */

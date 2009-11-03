@@ -287,8 +287,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
         data.clear();
 
-        final LoadContext context =
-                new LoadContext(metaClass);
+        final LoadContext context = new LoadContext(metaClass);
+
+        LoadContext.Query q;
 
         if (query != null && queryParameters != null) {
             final Map<String, Object> parameters = getQueryParameters(params);
@@ -301,9 +302,14 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             }
 
             String queryString = getJPQLQuery(getTemplateParams(params));
-            context.setQueryString(queryString).setParameters(parameters);
+            q = context.setQueryString(queryString);
+            q.setParameters(parameters);
         } else {
-            context.setQueryString("select e from " + metaClass.getName() + " e");
+            q = context.setQueryString("select e from " + metaClass.getName() + " e");
+        }
+
+        if (maxResults > 0) {
+            q.setMaxResults(maxResults);
         }
 
         context.setView(view);

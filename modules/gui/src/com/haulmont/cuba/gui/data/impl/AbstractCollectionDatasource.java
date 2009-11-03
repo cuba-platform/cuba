@@ -33,6 +33,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 {
     protected String query;
     private QueryFilter filter;
+    protected int maxResults;
     protected ParameterInfo[] queryParameters;
     protected boolean softDeletion;
 
@@ -82,6 +83,14 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     public void setQueryFilter(QueryFilter filter) {
         setQuery(getQuery(), filter);
+    }
+
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
     }
 
     public void setQuery(String query, QueryFilter filter) {
