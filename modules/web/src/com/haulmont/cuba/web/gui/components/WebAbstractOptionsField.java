@@ -23,9 +23,7 @@ import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSelect>
     extends
@@ -34,6 +32,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         com.haulmont.cuba.gui.components.Field, Component.Wrapper
 {
     protected List optionsList;
+    protected Map<String, Object> optionsMap;
     protected CollectionDatasource optionsDatasource;
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
@@ -62,6 +61,22 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             optionsList = Arrays.asList(javaClass.getEnumConstants());
             component.setContainerDataSource(new EnumerationContainer(optionsList));
             setCaptionMode(CaptionMode.ITEM);
+        }
+    }
+
+    public void setOptionsMap(Map<String, Object> options) {
+        if (metaProperty == null) {
+            List opts = new ArrayList();
+            for (String key : options.keySet()) {
+                Object itemId = options.get(key);
+                component.setItemCaption(itemId, key);
+                opts.add(itemId);
+            }
+            component.setContainerDataSource(new ObjectContainer(opts));
+            component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
+            this.optionsMap = options;
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -130,6 +145,10 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     public List getOptionsList() {
         return optionsList;
+    }
+
+    public Map<String, Object> getOptionsMap() {
+        return optionsMap;
     }
 
     public CollectionDatasource getOptionsDatasource() {

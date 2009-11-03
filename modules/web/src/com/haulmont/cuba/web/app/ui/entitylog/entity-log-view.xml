@@ -15,10 +15,16 @@
                 view="entityLog.view"
                 >
             <query><![CDATA[select el from sec$EntityLog el
-                 where
-                    <#if param$entityUUID?has_content>el.entityId = :param$entityUUID<#else>1=1</#if>
                 order by el.eventTs desc
                 ]]>
+                <filter>
+                    <and>
+                        <c>el.entityId = :param$entityUUID</c>
+                        <c>el.createTs >= :component$filter.createdFrom</c>
+                        <c>el.createTs &lt;= :component$filter.createdTo</c>
+                        <c>el.entity = :component$filter.object</c>
+                    </and>
+                </filter>
             </query>
         </collectionDatasource>
 
@@ -36,8 +42,12 @@
 
     </dsContext>
 
-    <layout>
-        <split orientation="horizontal" pos="30">
+    <layout expand="split">
+        <vbox margin="false;false;true;false">
+            <iframe id="filter" src="/com/haulmont/cuba/web/app/ui/entitylog/entity-log-view-filter.xml"/>
+        </vbox>
+
+        <split id="split" orientation="horizontal" pos="30">
             <vbox>
                 <table id="events" editable="false">
                     <columns>

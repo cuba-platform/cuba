@@ -140,7 +140,7 @@ public class ObjectContainer implements com.vaadin.data.Container {
 
         @Override
         public String toString() {
-            return name == null ? super.toString() : name;
+            return name == null ? item.toString() : name;
         }
     }
 }
