@@ -91,7 +91,7 @@ public class MenuConfig
 
                 if (menuItem.getChildren().isEmpty()) {
                     // do not add empty branches
-                    menuItem = null;
+                    //menuItem = null;
                 }
             } else if ("item".equals(element.getName())) {
                 String id = element.attributeValue("id");

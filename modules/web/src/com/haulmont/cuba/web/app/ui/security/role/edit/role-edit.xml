@@ -53,7 +53,7 @@
     </dsContext>
 
     <layout expand="permissions-pane">
-        <hbox spacing="true">
+        <hbox spacing="true" stylename="dataarea">
             <label value="msg://name"/>
             <textField id="name" datasource="role" property="name"/>
 

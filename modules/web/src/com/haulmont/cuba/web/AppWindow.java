@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -316,12 +317,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         final UserSession session = connection.getSession();
         if (item.isPermitted(session)) {
-            MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), null);
+            MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
 
             createSubMenu(menuItem, item, session);
-            if (!menuItem.hasChildren()) {
-                menuBar.removeItem(menuItem);
-            }
+//            if (!menuItem.hasChildren()) {
+//                menuBar.removeItem(menuItem);
+//            }
         }
     }
 
@@ -341,6 +342,16 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
+        final WindowInfo windowInfo;
+        if (item.getId().endsWith(".create") || item.getId().endsWith(".edit")
+                || item.getId().endsWith(".view") || item.getId().endsWith(".browse")) {
+            final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+            windowInfo = windowConfig.getWindowInfo(item.getId());
+        }
+        else {
+            return null;
+        }
+
         return new MenuBar.Command() {
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 String caption = MenuConfig.getMenuItemCaption(item.getId());
@@ -351,9 +362,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     params.put(element.attributeValue("name"), element.attributeValue("value"));
                 }
                 params.put("caption", caption);
-
-                final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-                WindowInfo windowInfo = windowConfig.getWindowInfo(item.getId());
 
                 final String id = windowInfo.getId();
                 if (id.endsWith(".create") || id.endsWith(".edit")) {
