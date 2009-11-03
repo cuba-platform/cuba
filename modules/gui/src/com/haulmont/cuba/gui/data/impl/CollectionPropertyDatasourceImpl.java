@@ -282,6 +282,13 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         throw new UnsupportedOperationException();
     }
 
+    public int getMaxResults() {
+        return 0;
+    }
+
+    public void setMaxResults(int maxResults) {
+    }
+
     public void refresh(Map<String, Object> parameters) {
         throw new UnsupportedOperationException();
     }
