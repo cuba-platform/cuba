@@ -221,7 +221,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
 
         modified = true;
-        setItem(null);
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
