@@ -26,6 +26,7 @@ public class WebButton
 {
     private Action action;
     private String icon;
+    public static final String ICON_STYLE = "icon";
 
     public WebButton() {
         if (ConfigProvider.getConfig(WebConfig.class).getUseNativeButtons()) {
@@ -77,10 +78,10 @@ public class WebButton
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
             component.setIcon(new ThemeResource(icon));
-            component.addStyleName("icon");
+            component.addStyleName(ICON_STYLE);
         } else {
             component.setIcon(null);
-            component.removeStyleName("icon");
+            component.removeStyleName(ICON_STYLE);
         }
     }
 }

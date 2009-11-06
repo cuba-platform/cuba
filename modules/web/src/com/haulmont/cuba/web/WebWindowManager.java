@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
@@ -445,6 +446,7 @@ public class WebWindowManager extends WindowManager
             });
             if (action.getIcon() != null) {
                 button.setIcon(new ThemeResource(action.getIcon()));
+                button.addStyleName(WebButton.ICON_STYLE);
             }
             buttonsContainer.addComponent(button);
         }
