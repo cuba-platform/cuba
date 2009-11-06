@@ -294,10 +294,13 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void commited(Map<Entity, Entity> map) {
-        for (T item : __getCollection()) {
-            attachListener((Instance) item);
+        Collection<T> tCollection = __getCollection();
+        if (tCollection != null) {
+            for (T item : tCollection) {
+                attachListener((Instance) item);
+            }
         }
-        
+
         if (map.containsKey(item)) {
             item = (T) map.get(item);
         }
