@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,23 +41,32 @@ public class WebEmbedded
 
     public void setSource(URL src) {
         component.setSource(new ExternalResource(src));
+        setType(Type.BROWSER);
     }
 
     public void setSource(String src) {
-        File file = new File(src);
-        if (!file.isAbsolute()) {
-            UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
-            String root = config.getResourcesRoot();
-            if (root != null) {
-                if (!root.endsWith(File.separator)) {
-                    root += File.separator;
-                }
-                file = new File(root + file.getName());
+        if (src.startsWith("http") || src.startsWith("https")) {
+            try {
+                setSource(new URL(src));
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
             }
-        }
+        } else {
+            File file = new File(src);
+            if (!file.isAbsolute()) {
+                UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
+                String root = config.getResourcesRoot();
+                if (root != null) {
+                    if (!root.endsWith(File.separator)) {
+                        root += File.separator;
+                    }
+                    file = new File(root + file.getName());
+                }
+            }
 
-        resource = new FileResource(file, App.getInstance());
-        component.setSource(resource);
+            resource = new FileResource(file, App.getInstance());
+            component.setSource(resource);
+        }
     }
 
     public void setSource(String fileName, final InputStream src) {

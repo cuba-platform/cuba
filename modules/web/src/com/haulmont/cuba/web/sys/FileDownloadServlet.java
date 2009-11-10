@@ -125,11 +125,7 @@ public class FileDownloadServlet extends HttpServlet {
     }
 
     protected String getContentType(FileDescriptor fd) {
-        String type = FileTypesHelper.getMIMEType("." + fd.getExtension().toLowerCase());
-        if ("application/pdf".equals(type))
-            return type;
-        else
-            return FileTypesHelper.DEFAULT_MIME_TYPE;
+        return FileTypesHelper.getMIMEType("." + fd.getExtension().toLowerCase());
     }
 
     private void error(HttpServletResponse response) throws IOException {
