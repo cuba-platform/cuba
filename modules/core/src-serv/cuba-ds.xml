@@ -51,6 +51,11 @@
       <!-- HSQL DB benefits from prepared statement caching -->
       <prepared-statement-cache-size>32</prepared-statement-cache-size>
 
+       <!-- corresponding type-mapping in conf/standardjbosscmp-jdbc.xml -->
+       <metadata>
+         <type-mapping>Hypersonic SQL</type-mapping>
+       </metadata>
+
    </local-tx-datasource>
 
 </datasources>
