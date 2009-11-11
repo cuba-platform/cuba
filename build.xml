@@ -27,7 +27,6 @@
 	<target name="install-lib">
 		<!-- jboss -->
 		<ext:install-jboss version="${jboss.version}" toDir="${jboss.dir}"/>
-        <ext:install-jboss-embedded version="${jboss-embedded.version}" toDir="${jboss-embedded.dir}"/>
         <!-- common libs -->
         <ext:install-lib name="commons-codec" version="${commons-codec.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="commons-io" version="${commons-io.version}" toDir="${lib.common.dir}"/>
@@ -86,12 +85,6 @@
     <target name="undeploy">
         <antcall target="delegate" inheritAll="false">
             <param name="target" value="undeploy-module"/>
-        </antcall>
-    </target>
-
-    <target name="deploy4test">
-        <antcall target="delegate" inheritAll="false">
-            <param name="target" value="deploy4test-module"/>
         </antcall>
     </target>
 

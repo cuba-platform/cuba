@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j Configuration                                                  -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!-- $Id$ -->
+
+<!--
+   | For more configuration information and examples see the Jakarta Log4j
+   | owebsite: http://jakarta.apache.org/log4j
+ -->
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+    <!-- ============================== -->
+    <!-- Append messages to the console -->
+    <!-- ============================== -->
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out"/>
+        <param name="Threshold" value="DEBUG"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ================ -->
+    <!-- Limit categories -->
+    <!-- ================ -->
+
+    <!-- Begin Cuba categories -->
+
+    <category name="com.haulmont.cuba">
+        <priority value="DEBUG"/>
+    </category>
+
+    <!-- End Cuba categories -->
+
+    <category name="openjpa">
+        <priority value="DEBUG"/>
+    </category>
+
+    <category name="freemarker">
+        <priority value="INFO"/>
+    </category>
+
+    <!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
+    <category name="org.apache">
+        <priority value="INFO"/>
+    </category>
+
+    <!-- Limit JSF logging to DEBUG.  FINER and FINEST will not be logged -->
+    <category name="javax.enterprise.resource.webcontainer.jsf">
+        <priority value="INFO"/>
+    </category>
+
+    <!-- Limit the jacorb category to WARN as its INFO is verbose -->
+    <category name="jacorb">
+        <priority value="WARN"/>
+    </category>
+
+    <!-- Set the logging level of the JSF implementation -->
+    <category name="javax.enterprise.resource.webcontainer.jsf">
+        <priority value="INFO"/>
+    </category>
+
+    <!-- Limit the org.jgroups category to WARN as its INFO is verbose -->
+    <category name="org.jgroups">
+        <priority value="WARN"/>
+    </category>
+
+    <!-- Limit the org.quartz category to INFO as its DEBUG is verbose -->
+    <category name="org.quartz">
+        <priority value="INFO"/>
+    </category>
+
+    <!-- Limit JBoss categories -->
+    <category name="org.jboss">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="com.arjuna">
+        <priority value="ERROR"/>
+    </category>
+
+    <!-- Limit the JSR77 categories -->
+    <category name="org.jboss.management">
+        <priority value="INFO"/>
+    </category>
+
+    <!-- Limit the org.jboss.serial (jboss-serialization) to INFO as its DEBUG is verbose -->
+    <category name="org.jboss.serial">
+        <priority value="INFO"/>
+    </category>
+
+    <!-- Decrease the priority threshold for the org.jboss.varia category
+    <category name="org.jboss.varia">
+      <priority value="DEBUG"/>
+    </category>
+    -->
+
+    <!-- Enable JBossWS message tracing
+    <category name="org.jboss.ws.core.MessageTrace">
+      <priority value="TRACE"/>
+    </category>
+    -->
+
+    <!-- ======================= -->
+    <!-- Setup the Root category -->
+    <!-- ======================= -->
+
+    <root>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</log4j:configuration>

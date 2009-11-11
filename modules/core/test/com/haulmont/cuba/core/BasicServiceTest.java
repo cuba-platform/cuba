@@ -44,18 +44,6 @@ public class BasicServiceTest extends CubaTestCase
         bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
     }
 
-//    public void testRemoteWithException() {
-//        DataServiceRemote bs = Locator.lookupRemote(DataService.JNDI_NAME);
-//
-//        Object id = "some key";
-//        try {
-//            bs.get(new BasicInvocationContext().setEntityClass(Server.class).setId(id));
-//            fail();
-//        } catch (Exception e) {
-//            System.out.println("Done");
-//        }
-//    }
-
     public void testLoad() {
         DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
 

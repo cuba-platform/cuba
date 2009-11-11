@@ -22,11 +22,30 @@ import javax.naming.Context;
  */
 public abstract class Locator
 {
-    private static Locator instance;
+    public static final String IMPL_PROP = "cuba.Locator.impl";
+    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.LocatorImpl";
 
-    private static Locator getInstance() {
+    private volatile static Locator instance;
+
+    public static Locator getInstance() {
         if (instance == null) {
-            instance = new LocatorImpl();
+            synchronized (Locator.class) {
+                if (instance == null) {
+                    String implClassName = System.getProperty(IMPL_PROP);
+                    if (implClassName == null)
+                        implClassName = DEFAULT_IMPL;
+                    try {
+                        Class implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
+                        instance = (Locator) implClass.newInstance();
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    } catch (InstantiationException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
         }
         return instance;
     }

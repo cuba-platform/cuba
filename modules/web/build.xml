@@ -28,7 +28,6 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="test-lib-fs"/>
-        <fileset refid="jboss-embedded-lib-fs"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/core"/>
         <pathelement location="${prod.out.dir}/gui"/>
@@ -53,12 +52,6 @@
 
     <target name="deploy-module" depends="base-mod.deploy-module">
         <copy todir="${jboss.dir}/server/default/conf">
-            <fileset dir="${build.dir}/conf" includes="**/*"/>
-        </copy>
-    </target>
-
-    <target name="deploy4test-module" depends="base-mod.deploy4test-module">
-        <copy todir="${jboss-embedded.dir}/bootstrap/conf">
             <fileset dir="${build.dir}/conf" includes="**/*"/>
         </copy>
     </target>

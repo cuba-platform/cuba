@@ -17,7 +17,12 @@ import org.apache.commons.lang.BooleanUtils;
  */
 public class Utils
 {
+    private static volatile Boolean unitTestMode;
+
     public static boolean isUnitTestMode() {
-        return BooleanUtils.toBoolean(System.getProperty("cuba.UnitTestMode"));
+        if (unitTestMode == null) {
+            unitTestMode = BooleanUtils.toBoolean(System.getProperty("cuba.unitTestMode"));
+        }
+        return unitTestMode;
     }
 }

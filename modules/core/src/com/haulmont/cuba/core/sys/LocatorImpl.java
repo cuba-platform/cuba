@@ -26,11 +26,7 @@ public class LocatorImpl extends Locator
 {
     private Context jndiContext;
 
-    private MBeanServer localServer;
-
-    public LocatorImpl() {
-        localServer = MBeanServerLocator.locateJBoss();
-    }
+    private volatile MBeanServer localServer;
 
     protected Context __getJndiContextImpl() {
         if (jndiContext == null) {
@@ -62,6 +58,9 @@ public class LocatorImpl extends Locator
     }
 
     protected <T> T __lookupMBean(Class<T> mbeanClass, String name) {
+        if (localServer == null) {
+            localServer = MBeanServerLocator.locateJBoss();
+        }
         try {
             return (T) MBeanProxyExt.create(mbeanClass, name, localServer);
         } catch (MalformedObjectNameException e) {

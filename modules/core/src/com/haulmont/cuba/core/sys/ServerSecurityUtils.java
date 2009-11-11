@@ -16,12 +16,15 @@ import org.jboss.security.SimplePrincipal;
 import java.security.Principal;
 import java.util.UUID;
 
+import com.haulmont.cuba.core.Utils;
+
 public class ServerSecurityUtils
 {
     private static final String DELIMITER = " : ";
 
     static {
-        SecurityAssociation.setServer();
+        if (!Utils.isUnitTestMode())
+            SecurityAssociation.setServer();
     }
 
     public static void setSecurityAssociation(String userName, UUID sessionId) {
@@ -35,6 +38,9 @@ public class ServerSecurityUtils
     }
 
     public static UUID getSessionId() {
+        if (Utils.isUnitTestMode())
+            return null;
+
         Principal principal = SecurityAssociation.getPrincipal();
         if (principal == null)
             return null;

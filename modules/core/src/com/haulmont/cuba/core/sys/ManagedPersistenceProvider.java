@@ -12,6 +12,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.EntityManagerFactory;
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Utils;
 import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -88,6 +89,9 @@ public class ManagedPersistenceProvider extends PersistenceProvider
             if (name.startsWith("cuba.openjpa.")) {
                 params.put(name.substring(5), entry.getValue());
             }
+        }
+        if (Utils.isUnitTestMode()) {
+            params.put("openjpa.ManagedRuntime", "com.haulmont.cuba.testsupport.TestManagedRuntime");
         }
         return params;
     }
@@ -166,13 +170,17 @@ public class ManagedPersistenceProvider extends PersistenceProvider
         return (TransactionManager) jndiContext.lookup(TM_JNDI_NAME);
     }
 
-    private class TxSync implements Synchronization
+    public class TxSync implements Synchronization
     {
         private Transaction tx;
         private EntityManager em;
 
         public TxSync(Transaction tx) {
             this.tx = tx;
+        }
+
+        public EntityManager getEntityManager() {
+            return em;
         }
 
         public void setEntityManager(EntityManager em) {

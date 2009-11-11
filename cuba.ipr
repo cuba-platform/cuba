@@ -462,6 +462,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jespa-1.0.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3-ext-api.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/hsqldb-1.8.0.9.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -493,6 +494,11 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/jsr305-ri.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-vfs-1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/reflections-0.9.4-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/slf4j-api.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/slf4j-jboss-logging.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/jboss-logging-spi.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/javassist.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/log4j.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -509,17 +515,10 @@
     <library name="test">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../lib/test/junit-4.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../jboss-embedded/lib/hibernate-all.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../jboss-embedded/lib/jboss-embedded-all.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../jboss-embedded/lib/jboss-embedded.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../jboss-embedded/lib/thirdparty-all.jar!/" />
-        <root url="file://$PROJECT_DIR$/../jboss-embedded/bootstrap" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/test/src/junit-4.5-src.zip!/" />
-        <root url="NullVirtualFilePointer" />
-        <root url="NullVirtualFilePointer" />
       </SOURCES>
     </library>
     <library name="client">
