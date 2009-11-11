@@ -50,7 +50,7 @@ public class TestTransactionManager implements TransactionManager {
         if (current != null)
             return current.getStatus();
         else
-            return Status.STATUS_UNKNOWN;
+            return Status.STATUS_NO_TRANSACTION;
     }
 
     public Transaction getTransaction() throws SystemException {

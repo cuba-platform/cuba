@@ -14,6 +14,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.testsupport.TestLocator;
 import com.haulmont.cuba.testsupport.TestTransactionManager;
 import com.haulmont.cuba.testsupport.TestDataSource;
+import com.haulmont.cuba.testsupport.TestUserTransaction;
 import junit.framework.TestCase;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
@@ -74,6 +75,8 @@ public abstract class CubaTestCase extends TestCase
         initTxManager();
         initDataSources();
 
+        beforeInitEjb();
+
         Reflections reflections = new Reflections(
                 new AbstractConfiguration() {
                     {
@@ -87,8 +90,12 @@ public abstract class CubaTestCase extends TestCase
         initMBeans(reflections);
     }
 
+    protected void beforeInitEjb() throws Exception {
+    }
+
     private void initTxManager() throws NamingException {
         Locator.getJndiContext().bind("java:/TransactionManager", new TestTransactionManager());
+        Locator.getJndiContext().bind("UserTransaction", new TestUserTransaction());
     }
 
     private void initDataSources() throws Exception {
