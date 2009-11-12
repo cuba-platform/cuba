@@ -10,6 +10,10 @@
     margin-left: 5px;
 }
 
+.v-menubar table td {
+    white-space: nowrap;
+}
+
 .v-menubar .menuitem {
     cursor: pointer;
     padding-left: 10px;
