@@ -29,6 +29,10 @@
         </java>
     </target>
 
+    <target name="remove-db">
+        <delete dir="${project.dir}/data"/>
+    </target>
+
     <target name="create-db">
         <echo message="Cuba create-db: sql.dir=${sql.dir}"/>
 

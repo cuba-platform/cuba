@@ -9,11 +9,11 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.sys.LocatorImpl;
 import com.haulmont.cuba.core.app.ResourceRepositoryMBean;
 import com.haulmont.cuba.core.app.ResourceRepositoryAPI;
 
 import javax.naming.Context;
+import java.lang.reflect.Field;
 
 /**
  * Locator helps to find EJBs, MBeans and some widely used services.<br>
@@ -73,6 +73,25 @@ public abstract class Locator
     */
     public static <T> T lookupMBean(Class<T> mbeanClass, String name) {
         return (T) getInstance().__lookupMBean(mbeanClass, name);
+    }
+
+    /**
+     * Lookups MBean by interface. Object name should be declared in OBJECT_NAME constant of the interface.
+     *
+     * @param mbeanClass management interface class
+    */
+    public static <T> T lookupMBean(Class<T> mbeanClass) {
+        String objectName;
+        try {
+            Field field = mbeanClass.getDeclaredField("OBJECT_NAME");
+            objectName = (String) field.get(null);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("No OBJECT_NAME field found in " + mbeanClass);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        return (T) getInstance().__lookupMBean(mbeanClass, objectName);
     }
 
     /**
