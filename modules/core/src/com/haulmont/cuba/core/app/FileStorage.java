@@ -177,7 +177,6 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
 
         String storagePath = getStoragePath();
         File storageFolder = new File(storagePath);
-        //??? Уточнить насчёт выбрасываемых исключений
         if (!storageFolder.exists())
             return ExceptionUtils.getStackTrace(
                     new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, storageFolder.getAbsolutePath()));
