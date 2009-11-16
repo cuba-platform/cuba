@@ -66,6 +66,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     protected Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
+    private Window loginWindow;
+    private Window appWindow;
+
     static {
         // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
         System.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
@@ -105,8 +108,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
         ApplicationContext appContext = getContext();
         appContext.addTransactionListener(this);
 
-        LoginWindow window = createLoginWindow();
-        setMainWindow(window);
+        if (loginWindow == null) {
+            loginWindow = createLoginWindow();
+        }
+        setMainWindow(loginWindow);
 
         deployViews();
     }
@@ -158,7 +163,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public AppWindow getAppWindow() {
-        return (AppWindow) getMainWindow();
+        return (AppWindow) appWindow;
     }
 
     /**
@@ -182,10 +187,12 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
             stopTimers();
 
-            AppWindow window = createAppWindow();
-            setMainWindow(window);
+            if (appWindow == null) {
+                appWindow = createAppWindow();
+            }
+            setMainWindow(appWindow);
 
-            connection.addListener(window);
+            connection.addListener(getAppWindow());
 
             initExceptionHandlers(true);
 
@@ -202,8 +209,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
             connection.removeListener(getAppWindow());
 
-            Window window = createLoginWindow();
-            setMainWindow(window);
+            if (loginWindow == null) {
+                loginWindow = createLoginWindow();
+            }
+            setMainWindow(loginWindow);
 
             initExceptionHandlers(false);
         }

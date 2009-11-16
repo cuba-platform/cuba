@@ -62,6 +62,7 @@ public class VMenuBar extends Widget implements Paintable,
         visibleChildMenu = null;
 
         Element table = DOM.createTable();
+        //gorodnov changed in #941
         DOM.setElementAttribute(table, "cellspacing", "0");
         DOM.setElementAttribute(table, "cellpadding", "0");
         Element tbody = DOM.createTBody();
@@ -443,6 +444,10 @@ public class VMenuBar extends Widget implements Paintable,
      */
     public void showChildMenu(CustomMenuItem item) {
         popup = new VOverlay(true, false, true);
+
+        //sets Id for popup if Ids in DOM are available
+        client.setElementId(popup.getElement(), uidlId + "-popup");
+
         popup.setWidget(item.getSubMenu());
         popup.addCloseHandler(this);
 

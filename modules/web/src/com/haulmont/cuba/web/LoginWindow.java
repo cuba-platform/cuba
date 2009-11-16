@@ -12,6 +12,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.Application;
@@ -63,6 +64,15 @@ public class LoginWindow extends Window
         localesSelect = new NativeSelect();
 
         initUI(app);
+
+        if (ConfigProvider.getConfig(ServerConfig.class).getTestMode()) {
+            loginField.setDebugId("loginField");
+            passwdField.setDebugId("pwdField");
+            localesSelect.setDebugId("localesField");
+            if (okButton != null) {
+                okButton.setDebugId("loginSubmitButton");
+            }
+        }
 
         addActionHandler(this);
     }
@@ -168,7 +178,9 @@ public class LoginWindow extends Window
     }
 
     public void handleAction(Action action, Object sender, Object target) {
-        login();
+        if (sender == this) {
+            login();
+        }
     }
 
     protected void login() {

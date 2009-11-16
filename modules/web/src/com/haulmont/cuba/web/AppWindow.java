@@ -15,10 +15,8 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -236,6 +234,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected MenuBar createMenuBar() {
         menuBar = new MenuBar();
+        if (ConfigProvider.getConfig(ServerConfig.class).getTestMode()) {
+            menuBar.setDebugId("appMenubar");
+        }
 
         final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
         List<MenuItem> rootItems = menuConfig.getRootItems();
