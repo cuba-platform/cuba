@@ -17,4 +17,8 @@ public interface FileStorageMBean {
     FileStorageAPI getAPI();
 
     String getStoragePath();
+
+    String findInvalidDescriptors();
+
+    String findInvalidFiles();
 }

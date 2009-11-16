@@ -11,21 +11,24 @@
 package com.haulmont.cuba.core.app;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.View;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
+import java.net.URLEncoder;
 
 public class FileStorage implements FileStorageMBean, FileStorageAPI {
 
@@ -140,6 +143,86 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         dir.mkdirs();
         return dir;
     }
+
+    public String findInvalidDescriptors() {
+        StringBuilder sb = new StringBuilder();
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery("select fd from core$FileDescriptor fd");
+            List<FileDescriptor> fileDescriptors = query.getResultList();
+            for (FileDescriptor fileDescriptor : fileDescriptors) {
+                File dir = getStorageDir(fileDescriptor.getCreateDate());
+                File file = new File(dir, fileDescriptor.getFileName());
+                if (!file.exists()) {
+                    sb.append(fileDescriptor.getId())
+                            .append(", ")
+                            .append(fileDescriptor.getName())
+                            .append(", ")
+                            .append(fileDescriptor.getCreateDate())
+                            .append("\n");
+                }
+            }
+            tx.commit();
+        } catch (Exception e) {
+            return ExceptionUtils.getStackTrace(e);
+        } finally {
+            tx.end();
+        }
+        return sb.toString();
+    }
+
+    public String findInvalidFiles() {
+        StringBuilder sb = new StringBuilder();
+
+        String storagePath = getStoragePath();
+        File storageFolder = new File(storagePath);
+        //??? Уточнить насчёт выбрасываемых исключений
+        if (!storageFolder.exists())
+            return ExceptionUtils.getStackTrace(
+                    new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, storageFolder.getAbsolutePath()));
+
+        Collection<File> systemFiles = FileUtils.listFiles(storageFolder, null, true);
+        Collection<File> filesInRootFolder = FileUtils.listFiles(storageFolder, null, false);
+        //remove files of root storage folder (e.g. storage.log) from files collection
+        systemFiles.removeAll(filesInRootFolder);
+
+        List<FileDescriptor> fileDescriptors = new ArrayList<FileDescriptor>();
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Query query = em.createQuery("select fd from core$FileDescriptor fd");
+            fileDescriptors = query.getResultList();
+            tx.commit();
+        } catch (Exception e) {
+            return ExceptionUtils.getStackTrace(e);
+        } finally {
+            tx.end();
+        }
+
+        Set<String> descriptorsFileNames = new HashSet<String>();
+        for (FileDescriptor fileDescriptor : fileDescriptors) {
+            descriptorsFileNames.add(fileDescriptor.getFileName());
+        }
+
+        for (File file : systemFiles) {
+            if (!descriptorsFileNames.contains(file.getName()))
+                //Encode file path if it contains non-ASCII characters
+                if (!file.getPath().matches("\\p{ASCII}+")) {
+                    try {
+                        String encodedFilePath = URLEncoder.encode(file.getPath(), "utf-8");
+                        sb.append(encodedFilePath).append("\n");
+                    } catch (UnsupportedEncodingException e) {
+                        return ExceptionUtils.getStackTrace(e);
+                    }
+                } else {
+                    sb.append(file.getPath()).append("\n");
+                }
+        }
+
+        return sb.toString();
+    }
+
 
 //    public void updateFileExt(FileDescriptor fileDescr) throws FileStorageException {
 //        checkNotNull(fileDescr, "No file descriptor");
