@@ -66,9 +66,6 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     protected Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
-    private Window loginWindow;
-    private Window appWindow;
-
     static {
         // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
         System.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
@@ -108,10 +105,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
         ApplicationContext appContext = getContext();
         appContext.addTransactionListener(this);
 
-        if (loginWindow == null) {
-            loginWindow = createLoginWindow();
-        }
-        setMainWindow(loginWindow);
+        LoginWindow window = createLoginWindow();
+        setMainWindow(window);
 
         deployViews();
     }
@@ -163,7 +158,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public AppWindow getAppWindow() {
-        return (AppWindow) appWindow;
+        return (AppWindow) getMainWindow();
     }
 
     /**
@@ -187,12 +182,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
             stopTimers();
 
-            if (appWindow == null) {
-                appWindow = createAppWindow();
-            }
-            setMainWindow(appWindow);
+            AppWindow window = createAppWindow();
+            setMainWindow(window);
 
-            connection.addListener(getAppWindow());
+            connection.addListener(window);
 
             initExceptionHandlers(true);
 
@@ -209,10 +202,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
             connection.removeListener(getAppWindow());
 
-            if (loginWindow == null) {
-                loginWindow = createLoginWindow();
-            }
-            setMainWindow(loginWindow);
+            Window window = createLoginWindow();
+            setMainWindow(window);
 
             initExceptionHandlers(false);
         }

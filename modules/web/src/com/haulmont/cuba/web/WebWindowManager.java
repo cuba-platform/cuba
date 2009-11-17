@@ -505,17 +505,23 @@ public class WebWindowManager extends WindowManager
     protected void initDebugIds(final Window window) {
         com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
             public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
-                final String debugId = window.getId() + "." + name;
-                Integer count = debugIds.get(debugId);
-                if (count == null) {
-                    count = 0;
-                }
-
-                debugIds.put(debugId, ++count);
-                
-                component.setDebugId(debugId + "." + count);
+                final String id = window.getId() + "." + name;
+                component.setDebugId(generateDebugId(id));
             }
         });
+    }
+
+    public void setDebugId(Component component, String id) {
+        component.setDebugId(generateDebugId(id));
+    }
+
+    private String generateDebugId(String id) {
+        Integer count = debugIds.get(id);
+        if (count == null) {
+            count = 0;
+        }
+        debugIds.put(id, ++count);
+        return id + "." + count;
     }
 
     public interface WindowCloseListener {

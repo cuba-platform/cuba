@@ -66,11 +66,12 @@ public class LoginWindow extends Window
         initUI(app);
 
         if (ConfigProvider.getConfig(ServerConfig.class).getTestMode()) {
-            loginField.setDebugId("loginField");
-            passwdField.setDebugId("pwdField");
-            localesSelect.setDebugId("localesField");
+            WebWindowManager windowManager = app.getWindowManager();
+            windowManager.setDebugId(loginField, "loginField");
+            windowManager.setDebugId(passwdField, "pwdField");
+            windowManager.setDebugId(localesSelect, "localesField");
             if (okButton != null) {
-                okButton.setDebugId("loginSubmitButton");
+                windowManager.setDebugId(okButton, "loginSubmitButton");
             }
         }
 

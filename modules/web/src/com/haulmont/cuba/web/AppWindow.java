@@ -14,13 +14,12 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -104,7 +103,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         rootLayout = createLayout();
         initLayout();
-        setLayout(rootLayout);
+        setContent(rootLayout);
         setTheme("saneco");
         postInitLayout();
     }
@@ -235,7 +234,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     protected MenuBar createMenuBar() {
         menuBar = new MenuBar();
         if (ConfigProvider.getConfig(ServerConfig.class).getTestMode()) {
-            menuBar.setDebugId("appMenubar");
+            App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
 
         final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
