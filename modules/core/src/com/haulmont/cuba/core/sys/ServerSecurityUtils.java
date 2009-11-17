@@ -39,7 +39,7 @@ public class ServerSecurityUtils
 
     public static UUID getSessionId() {
         if (Utils.isUnitTestMode())
-            return null;
+            return UUID.fromString("60885987-1b61-4247-94c7-dff348347f93");
 
         Principal principal = SecurityAssociation.getPrincipal();
         if (principal == null)
