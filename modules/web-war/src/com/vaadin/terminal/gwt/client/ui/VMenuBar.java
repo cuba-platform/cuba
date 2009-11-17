@@ -48,6 +48,8 @@ public class VMenuBar extends Widget implements Paintable,
     protected VMenuBar parentMenu;
     protected CustomMenuItem selected;
 
+    private String debugId;
+
     public VMenuBar() {
         // Create an empty horizontal menubar
         this(false);
@@ -140,7 +142,7 @@ public class VMenuBar extends Widget implements Paintable,
 
         while (itr.hasNext()) {
             UIDL item = (UIDL) itr.next();
-            CustomMenuItem currentItem = null;
+            CustomMenuItem currentItem;
 
             String itemText = item.getStringAttribute("text");
             final int itemId = item.getIntAttribute("id");
@@ -151,18 +153,16 @@ public class VMenuBar extends Widget implements Paintable,
             StringBuffer itemHTML = new StringBuffer();
 
             if (item.hasAttribute("icon")) {
-                itemHTML.append("<img src=\""
-                        + client.translateVaadinUri(item
-                                .getStringAttribute("icon"))
-                        + "\" align=\"left\" />");
+                itemHTML.append("<img src=\"").append(client.translateVaadinUri(item
+                        .getStringAttribute("icon"))).append("\" align=\"left\" />");
             }
 
             itemHTML.append(itemText);
 
             if (currentMenu != this && item.getChildCount() > 0
                     && submenuIcon != null) {
-                itemHTML.append("<img src=\"" + submenuIcon
-                        + "\" align=\"right\" />");
+                itemHTML.append("<img src=\"").append(submenuIcon)
+                        .append("\" align=\"right\" />");
             }
 
             Command cmd = null;
@@ -184,6 +184,7 @@ public class VMenuBar extends Widget implements Paintable,
                 iteratorStack.push(itr);
                 itr = item.getChildIterator();
                 currentMenu = new VMenuBar(true);
+                currentMenu.client = client;
                 currentItem.setSubMenu(currentMenu);
             }
 
@@ -211,6 +212,7 @@ public class VMenuBar extends Widget implements Paintable,
             if (topLevelWidth > getOffsetWidth()) {
                 ArrayList<CustomMenuItem> toBeCollapsed = new ArrayList<CustomMenuItem>();
                 VMenuBar collapsed = new VMenuBar(true);
+                collapsed.client = client;
                 for (int j = i - 2; j < getItems().size(); j++) {
                     toBeCollapsed.add(getItems().get(j));
                 }
@@ -446,7 +448,7 @@ public class VMenuBar extends Widget implements Paintable,
         popup = new VOverlay(true, false, true);
 
         //sets Id for popup if Ids in DOM are available
-        client.setElementId(popup.getElement(), uidlId + "-popup");
+        client.setElementId(popup.getElement(), getDebugId());
 
         popup.setWidget(item.getSubMenu());
         popup.addCloseHandler(this);
@@ -466,6 +468,17 @@ public class VMenuBar extends Widget implements Paintable,
         item.getSubMenu().setParentMenu(this);
 
         popup.show();
+    }
+
+    private String getDebugId() {
+        if (debugId == null) {
+            if (subMenu) {
+                debugId = getParentMenu().getDebugId() + "-subMenu";
+            } else {
+                debugId = uidlId + "-subMenu";
+            }
+        }
+        return debugId;
     }
 
     /**

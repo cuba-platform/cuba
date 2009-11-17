@@ -449,7 +449,6 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/serp-1.13.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-javaee.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jbosssx.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-vfs.jar!/" />
@@ -499,6 +498,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/jboss-logging-spi.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/javassist.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/log4j.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
