@@ -35,7 +35,12 @@ public abstract class ComponentsHelper {
             String path
     ) {
         for (com.haulmont.cuba.gui.components.Component component : container.getOwnComponents()) {
-            visitor.visit(component, path + component.getId());
+            String id = component.getId();
+            if (id == null && component instanceof Component.ActionOwner
+                    && ((Component.ActionOwner) component).getAction() != null) {
+                id = ((Component.ActionOwner) component).getAction().getId();
+            }
+            visitor.visit(component, path + id);
 
             if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
                 String p = component instanceof IFrame ?
