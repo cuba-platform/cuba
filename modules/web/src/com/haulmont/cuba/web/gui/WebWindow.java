@@ -856,6 +856,7 @@ public class WebWindow
             selectButton.setIcon(new ThemeResource("icons/ok.png"));
             selectButton.addListener(new SelectAction(this));
             selectButton.setStyleName("Window-actionButton");
+            selectButton.setDebugId("selectButton");
 
             final Button cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
@@ -864,6 +865,7 @@ public class WebWindow
             });
             cancelButton.setStyleName("Window-actionButton");
             cancelButton.setIcon(new ThemeResource("icons/cancel.png"));
+            cancelButton.setDebugId("cancelButton");
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);
