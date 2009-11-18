@@ -48,6 +48,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 {
     private Log log = LogFactory.getLog(App.class);
 
+    public static final String THEME_NAME = "blacklabel";
+
     private Connection connection;
     private WebWindowManager windowManager;
 
@@ -141,7 +143,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
      * Should be overridden in descendant to create an application-specific login window
      */
     protected LoginWindow createLoginWindow() {
-        return new LoginWindow(this, connection);
+        LoginWindow window = new LoginWindow(this, connection);
+        window.setTheme(THEME_NAME);
+        return window;
     }
 
     /**
@@ -155,7 +159,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
      * Should be overridden in descendant to create an application-specific main window
      */
     protected AppWindow createAppWindow() {
-        return new AppWindow(connection);
+        AppWindow appWindow = new AppWindow(connection);
+        appWindow.setTheme(THEME_NAME);
+        return appWindow;
     }
 
     public AppWindow getAppWindow() {
