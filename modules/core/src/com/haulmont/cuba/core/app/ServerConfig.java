@@ -14,14 +14,22 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.sys.ServerConfigDirFactory;
 
 /**
  * Common server configuration parameters
  */
 @Source(type = SourceType.SYSTEM)
 public interface ServerConfig extends Config {
+
+    /**
+     * Config directory. Root of all not deployable application configuration and logic.
+     */
+    @Factory(factory = ServerConfigDirFactory.class)
+    String getServerConfDir();
 
     /**
      * Logs directory. Place app-specific log files here.

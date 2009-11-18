@@ -15,6 +15,9 @@ import java.util.UUID;
 public class UuidTypeFactory extends TypeFactory
 {
     public Object build(String string) {
+        if (string == null)
+            return null;
+
         return UUID.fromString(string);
     }
 }

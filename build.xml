@@ -36,6 +36,7 @@
         <ext:install-lib name="groovy" version="${groovy.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="asm" version="${asm.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.common.dir}"/>
+        <ext:install-jboss-lib name="antlr" version="${jboss.version}" toDir="${lib.common.dir}"/>
 		<!-- server libs -->
         <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="vaadin" version="${vaadin.version}" toDir="${lib.server.dir}"/>

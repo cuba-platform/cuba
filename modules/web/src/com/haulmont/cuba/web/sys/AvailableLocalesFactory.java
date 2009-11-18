@@ -19,6 +19,9 @@ import java.util.LinkedHashMap;
 public class AvailableLocalesFactory extends TypeFactory {
 
     public Object build(String string) {
+        if (string == null)
+            return null;
+
         String[] items = string.split(";");
         Map<String, Locale> map = new LinkedHashMap<String, Locale>(items.length);
         for (String item : items) {

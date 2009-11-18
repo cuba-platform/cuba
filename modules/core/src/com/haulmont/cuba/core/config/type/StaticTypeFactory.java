@@ -47,6 +47,9 @@ public class StaticTypeFactory extends TypeFactory
 
     /* Inherited. */
     public Object build(String string) {
+        if (string == null)
+            return null;
+
         try {
             try {
                 return method.invoke(null, string);

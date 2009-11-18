@@ -47,6 +47,9 @@ public class ConstructorTypeFactory extends TypeFactory
 
     /* Inherited. */
     public Object build(String string) {
+        if (string == null)
+            return null;
+
         try {
             try {
                 return constructor.newInstance(string);

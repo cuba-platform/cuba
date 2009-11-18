@@ -55,7 +55,7 @@ public class ConfigGetter extends ConfigAccessorMethod
         // not needed for defaulted method, but no harm.
         defaultValue = ConfigUtil.getDefaultValue(configInterface, method);
         sourceType = ConfigUtil.getSourceType(configInterface, method);
-        if (!String.class.equals(method.getReturnType()))
+//        if (!String.class.equals(method.getReturnType()))
             factory = TypeFactory.getInstance(configInterface, method);
     }
 
@@ -84,7 +84,7 @@ public class ConfigGetter extends ConfigAccessorMethod
             }
             str = getProperty(configuration, defValue);
         }
-        if (str == null || factory == null)
+        if (factory == null)
             return str;
         else
             return factory.build(str);
