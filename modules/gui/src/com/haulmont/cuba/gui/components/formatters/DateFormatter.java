@@ -10,8 +10,10 @@
  */
 package com.haulmont.cuba.gui.components.formatters;
 
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Formatter;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.text.DateFormat;
@@ -30,10 +32,14 @@ public class DateFormatter implements Formatter<Date> {
         if (value == null) {
             return null;
         }
-        final String format = element.attributeValue("format");
-        if (format == null) {
+        String format = element.attributeValue("format");
+        if (StringUtils.isEmpty(format)) {
             return value.toString();
         } else {
+            if (format.startsWith("msg://")) {
+                format = MessageProvider.getMessage(
+                        AppConfig.getInstance().getMessagesPack(), format.substring(6, format.length()));
+            }
             DateFormat df = new SimpleDateFormat(format);
             return df.format(value);
         }

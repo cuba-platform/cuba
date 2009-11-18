@@ -12,6 +12,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
@@ -32,8 +34,12 @@ public class DateFieldLoader extends AbstractFieldLoader {
             component.setResolution(DateField.Resolution.valueOf(resolution));
         }
 
-        final String dateFormat = element.attributeValue("dateFormat");
+        String dateFormat = element.attributeValue("dateFormat");
         if (!StringUtils.isEmpty(dateFormat)) {
+               if (dateFormat.startsWith("msg://")) {
+                dateFormat = MessageProvider.getMessage(
+                        AppConfig.getInstance().getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+            }
             component.setDateFormat(dateFormat);
         } else {
             DateDatatype dateDatatype = Datatypes.getInstance().get(DateDatatype.NAME);
