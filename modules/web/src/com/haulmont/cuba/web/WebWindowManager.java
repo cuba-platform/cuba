@@ -448,6 +448,7 @@ public class WebWindowManager extends WindowManager
                 button.setIcon(new ThemeResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
+            button.setDebugId(action.getId());
             buttonsContainer.addComponent(button);
         }
 
