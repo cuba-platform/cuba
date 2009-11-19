@@ -24,6 +24,9 @@ import java.util.Map;
  */
 public class View implements Serializable
 {
+    public static final String LOCAL = "_local";
+    public static final String MINIMAL = "_minimal";
+
     private static final long serialVersionUID = 4313784222934349594L;
 
     private Class<? extends BaseEntity> entityClass;
@@ -44,6 +47,13 @@ public class View implements Serializable
 
     public View(Class<? extends BaseEntity> entityClass, String name) {
         this(entityClass, name, true);
+    }
+
+    public View(View src, String name) {
+        this.entityClass = src.entityClass;
+        this.name = name;
+        this.includeSystemProperties = src.includeSystemProperties;
+        this.properties.putAll(src.properties);
     }
 
     public View(Class<? extends BaseEntity> entityClass, String name, boolean includeSystemProperties) {
@@ -94,7 +104,7 @@ public class View implements Serializable
     }
 
     public String toString() {
-        return "View{" + entityClass.getName() + " : " + name + "}";
+        return entityClass.getName() + "/" + name;
     }
 
     public ViewProperty getProperty(String name) {

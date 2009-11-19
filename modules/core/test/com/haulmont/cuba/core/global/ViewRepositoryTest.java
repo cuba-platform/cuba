@@ -41,7 +41,31 @@ public class ViewRepositoryTest extends CubaTestCase
         View roleView = userRolesView.getProperty("role").getView();
         assertNotNull(roleView);
         assertNotNull(roleView.getProperty("name"));
-
     }
 
+    public void testDefaultViews() {
+        View localView = repository.getView(User.class, View.LOCAL);
+        assertNotNull(localView);
+        assertNotNull(localView.getProperty("name"));
+        assertNotNull(localView.getProperty("login"));
+        assertNotNull(localView.getProperty("email"));
+        assertNull(localView.getProperty("userRoles"));
+
+        View minView = repository.getView(User.class, View.MINIMAL);
+        assertNotNull(minView);
+        assertNotNull(minView.getProperty("name"));
+        assertNotNull(minView.getProperty("login"));
+        assertNull(minView.getProperty("email"));
+        assertNull(minView.getProperty("userRoles"));
+    }
+
+    public void testInheritance() {
+        View view = repository.getView(User.class, "testInheritance");
+        assertNotNull(view);
+        assertNotNull(view.getProperty("name"));
+        assertNotNull(view.getProperty("login"));
+        assertNotNull(view.getProperty("userRoles"));
+        assertNull(view.getProperty("substitutions"));
+        assertNull(view.getProperty("defaultSubstitutedUser"));
+    }
 }

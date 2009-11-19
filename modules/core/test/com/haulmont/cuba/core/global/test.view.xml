@@ -1,4 +1,4 @@
-<views>
+<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
 
     <view entity="sec$User" name="test">
         <property name="name"/>
@@ -12,6 +12,10 @@
 
     <view entity="sec$Role" name="test">
         <property name="name"/>
+    </view>
+
+    <view class="com.haulmont.cuba.security.entity.User" name="testInheritance" extends="_local">
+        <property name="userRoles" view="test"/>
     </view>
 
 </views>

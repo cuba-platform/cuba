@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +56,34 @@ public class ViewRepository
         return view;
     }
 
+    private View deployDefaultView(MetaClass metaClass, String name) {
+        View view = new View(metaClass.getJavaClass(), name, false);
+        if (View.LOCAL.equals(name)) {
+            for (MetaProperty property : metaClass.getProperties()) {
+                if (!property.getRange().isClass()) {
+                    view.addProperty(property.getName());
+                }
+            }
+        } else if (View.MINIMAL.equals(name)) {
+            NamePattern annotation = (NamePattern) metaClass.getJavaClass().getAnnotation(NamePattern.class);
+            if (annotation != null) {
+                String pattern = annotation.value();
+                int pos = pattern.indexOf("|");
+                if (pos >= 0) {
+                    String fieldsStr = StringUtils.substring(pattern, pos + 1);
+                    String[] fields = fieldsStr.split("[,;]");
+                    for (String field : fields) {
+                        view.addProperty(field);
+                    }
+                }
+            }
+        } else
+            throw new UnsupportedOperationException("Unsupported default view: " + name);
+
+        storeView(metaClass, view);
+        return view;
+    }
+
     public void deployViews(String resourceUrl) {
         deployViews(getClass().getResourceAsStream(resourceUrl));
     }
@@ -76,12 +105,14 @@ public class ViewRepository
             deployView(rootElem, viewElem);
         }
     }
+
     private View findView(MetaClass metaClass, String name) {
         Map<String, View> views = storage.get(metaClass);
-        if (views == null)
-            return null;
-        else
-            return views.get(name);
+        View view = (views == null ? null : views.get(name));
+        if (view == null && (name.equals(View.LOCAL) || name.equals(View.MINIMAL))) {
+            view = deployDefaultView(metaClass, name);
+        }
+        return view;
     }
 
     public View deployView(Element rootElem, Element viewElem) {
@@ -109,9 +140,19 @@ public class ViewRepository
         }
 
         View v = findView(metaClass, viewName);
-        if (v != null) return v;
+        if (v != null)
+            return v;
 
-        View view = new View(metaClass.getJavaClass(), viewName);
+        View view;
+        String ancestor = viewElem.attributeValue("extends");
+        if (ancestor != null) {
+            View ancestorView = findView(metaClass, ancestor);
+            if (ancestorView == null)
+                throw new IllegalStateException("No ancestor view found: " + ancestor);
+            view = new View(ancestorView, viewName);
+        } else {
+            view = new View(metaClass.getJavaClass(), viewName);
+        }
         loadView(rootElem, viewElem, view);
         storeView(metaClass, view);
 
