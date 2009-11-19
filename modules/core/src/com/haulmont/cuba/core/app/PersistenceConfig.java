@@ -45,7 +45,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class PersistenceConfig implements PersistenceConfigMBean, PersistenceConfigAPI
 {
-    private Log log = LogFactory.getLog(PersistenceConfig.class);
+    private static Log log = LogFactory.getLog(PersistenceConfig.class);
     private String datasourceName;
     private Element persistenceUnitElement;
     private boolean metadataLoaded;
@@ -53,9 +53,11 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public void create() {
-        loadSystemProperties();
+    static {
+        __loadSystemProperties();
+    }
 
+    public void create() {
         String path = PersistenceProvider.getPersistenceXmlPath();
         InputStream stream = getClass().getResourceAsStream("/" + path);
         if (stream == null)
@@ -89,23 +91,20 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
         return this;
     }
 
-    public String loadSystemProperties() {
+    private static void __loadSystemProperties() {
         String confUrl = System.getProperty("jboss.server.config.url");
-        try {
-            StringBuilder sb = new StringBuilder();
-
-            String fileName = URI.create(confUrl).getPath() + "system.properties";
-            File file = new File(fileName);
-            if (file.exists()) {
+        String fileName = URI.create(confUrl).getPath() + "system.properties";
+        File file = new File(fileName);
+        if (file.exists()) {
+            Properties props;
+            try {
                 InputStream is = new FileInputStream(fileName);
-                Properties props;
                 try {
                     props = new Properties();
                     props.load(is);
                 } finally {
                     is.close();
                 }
-
                 for (Map.Entry<Object, Object> entry : props.entrySet()) {
                     if ("".equals(entry.getValue())) {
                         System.getProperties().remove(entry.getKey());
@@ -114,6 +113,21 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
                         System.getProperties().put(entry.getKey(), entry.getValue());
                     }
                 }
+            } catch (IOException e) {
+                log.error("Unable to load system properties", e);
+            }
+        }
+    }
+
+    public String loadSystemProperties() {
+        String confUrl = System.getProperty("jboss.server.config.url");
+        try {
+            StringBuilder sb = new StringBuilder();
+            __loadSystemProperties();
+            String fileName = URI.create(confUrl).getPath() + "system.properties";
+            File file = new File(fileName);
+            if (file.exists()) {
+                __loadSystemProperties();
                 sb.append("Properties from ").append(fileName).append(" loaded succesfully\n\n");
             }
             else {
@@ -130,7 +144,7 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
                 sb.append(StringEscapeUtils.escapeHtml(s)).append("\n");
             }
             return sb.toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         }
     }
