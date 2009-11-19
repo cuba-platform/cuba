@@ -53,15 +53,16 @@
     </dsContext>
 
     <layout expand="permissions-pane">
-        <hbox spacing="true" stylename="dataarea">
-            <label value="msg://name"/>
-            <textField id="name" datasource="role" property="name"/>
+        <vbox stylename="edit-area" margin="true">
+            <hbox spacing="true" align="MIDDLE_LEFT" expand="superRole">
+                <label value="msg://name"/>
+                <textField id="name" datasource="role" property="name"/>
 
-            <label value="msg://superRole"/>
-            <checkBox id="superRole" datasource="role" property="superRole"/>
-        </hbox>
+                <label value="msg://superRole"/>
+                <checkBox id="superRole" datasource="role" property="superRole"/>
+            </hbox>
+        </vbox>
 
-        <hbox margin="true"/>
 
         <vbox id="permissions-pane" expand="roles" spacing="true">
             <tabsheet id="permissions-types">

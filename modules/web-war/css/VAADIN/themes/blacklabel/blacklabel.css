@@ -1,0 +1,16 @@
+.v-verticallayout-edit-area,
+.v-horizontallayout-edit-area,
+.v-gridlayout-edit-area {
+    background-color: #eeeeee;
+    color: black;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #808080;
+}
+
+.v-label .h2 {
+    font-family: tahoma, sans-serif;
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+}
