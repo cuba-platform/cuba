@@ -111,6 +111,11 @@ public abstract class Locator
         return getInstance().__getTransaction();
     }
 
+    /** True if a JTA transaction is now active */
+    public static boolean isInTransaction() {
+        return getInstance().__isInTransaction();
+    }
+
     /** Returns reference to ResourceRepositoryAPI */
     public static ResourceRepositoryAPI getResourceRepository() {
         ResourceRepositoryMBean mbean = getInstance().__lookupMBean(ResourceRepositoryMBean.class, ResourceRepositoryMBean.OBJECT_NAME);
@@ -128,4 +133,6 @@ public abstract class Locator
     protected abstract Transaction __createTransaction();
 
     protected abstract Transaction __getTransaction();
+
+    protected abstract boolean __isInTransaction();
 }

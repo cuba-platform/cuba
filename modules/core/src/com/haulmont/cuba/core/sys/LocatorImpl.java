@@ -16,6 +16,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
+import javax.transaction.SystemException;
+import javax.transaction.Status;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 
@@ -74,6 +76,16 @@ public class LocatorImpl extends Locator
 
     protected Transaction __getTransaction() {
         return new JtaTransaction(getTransactionManager(), true);
+    }
+
+    protected boolean __isInTransaction() {
+        TransactionManager tm = getTransactionManager();
+        try {
+            javax.transaction.Transaction tx = tm.getTransaction();
+            return tx != null && tx.getStatus() == Status.STATUS_ACTIVE;
+        } catch (SystemException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private TransactionManager getTransactionManager() {
