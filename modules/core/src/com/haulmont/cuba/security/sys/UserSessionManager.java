@@ -15,14 +15,12 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.app.UserSessionsMBean;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.*;
 
 import java.util.*;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class UserSessionManager
 {
@@ -123,5 +121,31 @@ public class UserSessionManager
 
     public UserSession findSession(UUID sessionId) {
         return sessions.get(sessionId);
+    }
+
+    public Integer getPermissionValue(User user, PermissionType permissionType, String target) {
+        Integer result;
+        List<String> roleNames = new ArrayList<String>();
+        List<Role> roles = new ArrayList<Role>();
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            user = em.find(User.class, user.getId());
+            for (UserRole userRole : user.getUserRoles()) {
+                if (userRole.getRole() != null) {
+                    roleNames.add(userRole.getRole().getName());
+                    roles.add(userRole.getRole());
+                }
+            }
+            UserSession session = new UserSession(
+                    user, roleNames.toArray(new String[roleNames.size()]), SecurityProvider.currentUserSession().getLocale());
+            compilePermissions(session, roles);
+            result = session.getPermissionValue(permissionType, target);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        return result; 
     }
 }

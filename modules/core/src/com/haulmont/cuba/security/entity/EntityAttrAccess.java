@@ -24,4 +24,13 @@ public enum EntityAttrAccess {
     public int getId() {
         return id;
     }
+
+    public static EntityAttrAccess fromId(int id) {
+        switch (id) {
+            case 0: return DENY;
+            case 1: return VIEW;
+            case 2: return MODIFY;
+            default: return null;
+        }
+    }
 }

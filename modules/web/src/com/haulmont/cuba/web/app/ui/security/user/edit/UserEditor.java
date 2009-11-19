@@ -11,21 +11,24 @@ package com.haulmont.cuba.web.app.ui.security.user.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.security.entity.UserSubstitution;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class UserEditor extends AbstractEditor {
 
@@ -51,6 +54,69 @@ public class UserEditor extends AbstractEditor {
         TableActionsHelper substTableActions = new TableActionsHelper(this, substTable);
         substTableActions.createRemoveAction(false);
 
+        setPermissionsShowAction(rolesTable, "show-screens", "sec$Target.screenPermissions.lookup", PermissionType.SCREEN);
+        setPermissionsShowAction(rolesTable, "show-entities", "sec$Target.entityPermissions.lookup", PermissionType.ENTITY_OP);
+        setPermissionsShowAction(rolesTable, "show-properties", "sec$Target.propertyPermissions.lookup", PermissionType.ENTITY_ATTR);
+        setPermissionsShowAction(rolesTable, "show-specific", "sec$Target.specificPermissions.lookup", PermissionType.SPECIFIC);
+
+        initPermissionsLookupField();
+    }
+
+    private void initPermissionsLookupField() {
+        final LookupField permissionsLookupField = getComponent("permissionsLookupField");
+
+        java.util.Map<String, Object> optionsMap = new HashMap<String, Object>();
+
+        optionsMap.put(MessageProvider.getMessage(UserEditor.class, "screens"), "show-screens");
+        optionsMap.put(MessageProvider.getMessage(UserEditor.class, "entities"), "show-entities");
+        optionsMap.put(MessageProvider.getMessage(UserEditor.class, "properties"), "show-properties");
+        optionsMap.put(MessageProvider.getMessage(UserEditor.class, "specific"), "show-specific");
+
+        permissionsLookupField.setOptionsMap(optionsMap);
+
+        permissionsLookupField.addListener(new ValueListener() {
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                if (value == null) return;
+                rolesTable.getAction((String)value).actionPerform(rolesTable);
+                permissionsLookupField.setValue(null);
+            }
+        });
+    }
+
+
+    private void setPermissionsShowAction(ActionsHolder actionsHolder, String actionName, final String lookupAlias, final PermissionType permissionType) {
+        actionsHolder.addAction(new AbstractAction(actionName) {
+            public void actionPerform(Component component) {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("showAccessOptions", false);
+                final PermissionsLookup permissionsLookup = openLookup(lookupAlias, null, WindowManager.OpenType.THIS_TAB, params);
+                permissionsLookup.setLookupHandler(new Lookup.Handler() {
+                    public void handleLookup(Collection items) {
+                        StringBuilder sb = new StringBuilder();
+                        UserSessionService uss = ServiceLocator.lookup(UserSessionService.JNDI_NAME);
+                        for (Object item : items) {
+                            if (item == null) continue;
+                            PermissionConfig.Target target = (PermissionConfig.Target)item;
+                            Integer permissionValue =  uss.getPermissionValue(userDs.getItem(), permissionType, target.getValue());
+                            String permissionStringValue = "";
+                            if (permissionType == PermissionType.ENTITY_ATTR) {
+                                if (permissionValue == null) permissionValue = 2;
+                                permissionStringValue = EntityAttrAccess.fromId(permissionValue).toString();
+                            } else {
+                                if (permissionValue == null) permissionValue = 1;
+                                permissionStringValue = (permissionValue == 1) ? "ALLOW" : "DENY";
+                            }
+                            sb.append("Permission on " + target.getValue() + " is ")
+                                    .append(permissionStringValue).append("<br/>");
+                        }
+                        if (sb.length() == 0) {
+                            showNotification("Please, ensure you've selected target attributes", NotificationType.WARNING);
+                        } else
+                            showNotification(sb.toString(), NotificationType.HUMANIZED);
+                    }
+                });
+            }
+        });
     }
 
     private boolean _commit() {

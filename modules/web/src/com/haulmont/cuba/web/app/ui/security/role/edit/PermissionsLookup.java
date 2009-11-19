@@ -20,6 +20,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
+
 public class PermissionsLookup extends AbstractLookup {
 
     protected OptionsGroup accessOptions;
@@ -40,9 +42,12 @@ public class PermissionsLookup extends AbstractLookup {
         entityPermissionsDs.refresh();
         entityPermissionsTree.expandTree();
 
-        accessOptions = getComponent("access");
-        fillAccessOptions();
-        accessOptions.setValue(accessOptions.getOptionsList().get(0));
+        Boolean showAccessOptions = (Boolean)params.get("param$showAccessOptions");
+        if (!BooleanUtils.isFalse(showAccessOptions)) {
+            accessOptions = getComponent("access");
+            fillAccessOptions();
+            accessOptions.setValue(accessOptions.getOptionsList().get(0));
+        }
     }
 
     protected void fillAccessOptions() {

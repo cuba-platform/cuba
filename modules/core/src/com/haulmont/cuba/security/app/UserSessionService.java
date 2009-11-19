@@ -11,6 +11,8 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.security.entity.UserSessionEntity;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.PermissionType;
 
 import javax.ejb.Local;
 import java.util.UUID;
@@ -32,4 +34,7 @@ public interface UserSessionService
     void killSession(UUID id);
 
     void pingSession();
+
+    Integer getPermissionValue(User user, PermissionType permissionType, String target);
+
 }

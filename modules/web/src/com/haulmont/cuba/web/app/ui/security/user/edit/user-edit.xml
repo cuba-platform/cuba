@@ -86,6 +86,10 @@
                         </row>
                     </rows>
                 </grid>
+                <hbox align="TOP_RIGHT" spacing="true">
+                    <label value="msg://permissions"/>
+                    <lookupField id="permissionsLookupField"/>
+                </hbox>
             </hbox>
 
             <split id="split" orientation="horizontal" pos="50">
