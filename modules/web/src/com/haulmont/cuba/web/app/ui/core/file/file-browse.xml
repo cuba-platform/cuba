@@ -15,24 +15,23 @@
     </dsContext>
 
     <layout>
-        <vbox margin="true" expand="filesPanel" spacing="true">
-            <hbox spacing="true">
-                <button action="files.refresh"/>
-                <button action="files.create"/>
-                <button action="files.edit"/>
-                <button action="files.remove"/>
+        <vbox margin="true" expand="files" spacing="true">
+            <hbox spacing="true" margin="true">
+                <button action="files.refresh" icon="icons/refresh.png"/>
+                <button action="files.create" icon="icons/create.png"/>
+                <button action="files.edit" icon="icons/edit.png"/>
+                <button action="files.remove" icon="icons/remove.png"/>
+                <button action="files.excel" icon="icons/excel.png"/>
             </hbox>
-            <vbox id="filesPanel" expand="files">
-                <table id="files" editable="false">
-                    <columns>
-                        <column id="name" caption="msg://name"/>
-                        <column id="extension" caption="msg://extension"/>
-                        <column id="size" caption="msg://size"/>
-                        <column id="createDate" caption="msg://createDate"/>
-                    </columns>
-                    <rows datasource="filesDs"/>
-                </table>
-            </vbox>
+            <table id="files" editable="false">
+                <columns>
+                    <column id="name" caption="msg://name"/>
+                    <column id="extension" caption="msg://extension"/>
+                    <column id="size" caption="msg://size"/>
+                    <column id="createDate" caption="msg://createDate"/>
+                </columns>
+                <rows datasource="filesDs"/>
+            </table>
         </vbox>
     </layout>
 </window>

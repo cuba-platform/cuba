@@ -12,44 +12,35 @@
         <datasource id="fileDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse"/>
     </dsContext>
 
-    <layout>
-        <vbox margin="true" spacing="true" expand="spring">
+    <layout expand="windowActions">
+        <vbox margin="true" spacing="true" stylename="edit-area">
             <upload id="uploadField"/>
-            <grid spacing="true" margin="true" stylename="edit-area">
+            <grid spacing="true" expandable="false">
                 <columns>
                     <column flex="1"/>
                     <column flex="1"/>
                 </columns>
                 <rows>
                     <row>
-                        <vbox align="MIDDLE_RIGHT">
-                            <label value="msg://name"/>
-                        </vbox>
+                        <label value="msg://name"/>
                         <textField id="name" datasource="fileDs" property="name"
                                    width="200px"/>
                     </row>
                     <row>
-                        <vbox align="MIDDLE_RIGHT">
-                            <label value="msg://extension"/>
-                        </vbox>
+                        <label value="msg://extension"/>
                         <label id="extension" datasource="fileDs" property="extension"/>
                     </row>
                     <row>
-                        <vbox align="MIDDLE_RIGHT">
-                            <label value="msg://size"/>
-                        </vbox>
+                        <label value="msg://size"/>
                         <label id="size" datasource="fileDs" property="size"/>
                     </row>
                     <row>
-                        <vbox align="MIDDLE_RIGHT">
-                            <label value="msg://createDate"/>
-                        </vbox>
+                        <label value="msg://createDate"/>
                         <label id="createDate" datasource="fileDs" property="createDate"/>
                     </row>
                 </rows>
             </grid>
-            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-            <vbox id="spring"/>
         </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

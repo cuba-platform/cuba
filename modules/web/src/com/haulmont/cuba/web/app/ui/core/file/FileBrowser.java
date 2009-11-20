@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.components.TableActionsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.rpt.WebExportDisplay;
 import com.haulmont.cuba.gui.components.Table;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -41,6 +42,7 @@ public class FileBrowser extends AbstractWindow {
         helper.createCreateAction();
         helper.createEditAction();
         helper.createRemoveAction();
+        helper.createExcelAction(new WebExportDisplay());
 
         ds = filesTable.getDatasource();
         MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx("name");
