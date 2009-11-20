@@ -6,14 +6,14 @@
  * Author: Nikolay Gorodnov
  * Created: 05.11.2009 19:09:00
  *
- * $Id$
+ * $Id: FileDisplay.java 1057 2009-11-20 13:54:45Z gorodnov $
  */
 package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.itmill.toolkit.ui.Window;
+import com.vaadin.ui.Window;
+import com.vaadin.terminal.ExternalResource;
 
 import java.net.URL;
 

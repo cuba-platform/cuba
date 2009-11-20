@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.app.FileStorageMBean;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.FileTypesHelper;
-import com.itmill.toolkit.terminal.DownloadStream;
+import com.vaadin.terminal.DownloadStream;
 
 import java.io.*;
 import java.net.URL;

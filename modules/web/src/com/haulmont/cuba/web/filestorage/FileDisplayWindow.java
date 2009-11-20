@@ -6,23 +6,19 @@
  * Author: Nikolay Gorodnov
  * Created: 05.11.2009 18:48:33
  *
- * $Id$
+ * $Id: FileDisplayWindow.java 1057 2009-11-20 13:54:45Z gorodnov $
  */
 package com.haulmont.cuba.web.filestorage;
 
-import com.itmill.toolkit.terminal.ExternalResource;
-import com.itmill.toolkit.terminal.DownloadStream;
-import com.itmill.toolkit.ui.Embedded;
-import com.itmill.toolkit.ui.VerticalLayout;
-import com.itmill.toolkit.ui.Window;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.VerticalLayout;
 
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.MalformedURLException;
-import java.io.IOException;
+import java.net.URL;
 
 public class FileDisplayWindow extends FileWindow {
 
