@@ -6,31 +6,6 @@
         <vbox id="main" margin="true" height="100%" stylename="frame-details" spacing="true" expand="files">
             <label value="msg://uploadedFiles" stylename="h2"/>
             <upload id="uploadField"/>
-            <grid spacing="true" expandable="false">
-                <columns>
-                    <column flex="1"/>
-                    <column flex="1"/>
-                </columns>
-                <rows>
-                    <row>
-                        <label value="msg://name"/>
-                        <textField id="name" property="name"
-                                   width="200px"/>
-                    </row>
-                    <row>
-                        <label value="msg://extension"/>
-                        <label id="extension" property="extension"/>
-                    </row>
-                    <row>
-                        <label value="msg://size"/>
-                        <label id="size" property="size"/>
-                    </row>
-                    <row>
-                        <label value="msg://createDate"/>
-                        <label id="createDate" property="createDate"/>
-                    </row>
-                </rows>
-            </grid>
             <table id="files" editable="false">
                 <columns>
                     <column id="name" caption="msg://name"/>

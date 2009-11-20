@@ -36,7 +36,10 @@
                     </row>
                     <row>
                         <label value="msg://createDate"/>
-                        <label id="createDate" datasource="fileDs" property="createDate"/>
+                        <label id="createDate" datasource="fileDs" property="createDate">
+                            <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                                       format="msg://dateTime"/>
+                        </label>
                     </row>
                 </rows>
             </grid>

@@ -17,31 +17,27 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
-import java.util.Date;
 import java.util.Map;
 
 public class FileFrameController extends AbstractWindow {
 
     private CollectionDatasource ds;
 
-    private TextField nameText;
-
-    private com.haulmont.cuba.gui.components.Label extLabel;
-
-    private com.haulmont.cuba.gui.components.Label sizeLab;
-
-    private com.haulmont.cuba.gui.components.Label createDateLab;
-
     private FileUploadField uploadField;
 
     private FileDescriptor fd;
+
+    private Table filesTable;
 
     public FileFrameController(IFrame frame) {
         super(frame);
@@ -52,13 +48,38 @@ public class FileFrameController extends AbstractWindow {
         super.init(params);
 
         uploadField = getComponent("uploadField");
-        nameText = getComponent("name");
-        extLabel = getComponent("extension");
-        sizeLab = getComponent("size");
-        createDateLab = getComponent("createDate");
-        Table filesTable = getComponent("files");
+        filesTable = getComponent("files");
+        ds = getDsContext().get("filesDs");
+        uploadField.addListener(new FileUploadField.Listener() {
+            public void uploadStarted(Event event) {
+                uploadField.setEnabled(false);
+            }
 
-        ds = filesTable.getDatasource();
+            public void uploadFinished(Event event) {
+                uploadField.setEnabled(true);
+            }
+
+            public void uploadSucceeded(Event event) {
+                fd = new FileDescriptor();
+                fd.setName(uploadField.getFileName());
+                fd.setExtension(FileDownloadHelper.getFileExt(uploadField.getFileName()));
+                fd.setSize(uploadField.getBytes().length);
+                fd.setCreateDate(TimeProvider.currentTimestamp());
+                saveFile();
+                ds.addItem(fd);
+                showNotification(MessageProvider.getMessage(getClass(), "uploadSuccess"), NotificationType.HUMANIZED);
+            }
+
+            public void uploadFailed(Event event) {
+                showNotification(MessageProvider.getMessage(getClass(), "uploadUnsuccess"), NotificationType.HUMANIZED);
+            }
+
+            public void updateProgress(long readBytes, long contentLength) {
+            }
+        });
+    }
+
+    public void initGeneratedColumn() {
         MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx("name");
         final com.vaadin.ui.Table table = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(filesTable);
 
@@ -71,41 +92,6 @@ public class FileFrameController extends AbstractWindow {
                 label.setContentMode(Label.CONTENT_XHTML);
 
                 return label;
-            }
-        });
-
-        uploadField.addListener(new FileUploadField.Listener() {
-            public void uploadStarted(Event event) {
-                uploadField.setEnabled(false);
-            }
-
-            public void uploadFinished(Event event) {
-                uploadField.setEnabled(true);
-            }
-
-            public void uploadSucceeded(Event event) {
-                nameText.setValue(uploadField.getFileName());
-                String value = FileDownloadHelper.getFileExt(uploadField.getFileName());
-                extLabel.setValue(value);
-                sizeLab.setValue(uploadField.getBytes().length);
-                Date date = TimeProvider.currentTimestamp();
-                createDateLab.setValue(date);
-
-                fd = new FileDescriptor();
-                fd.setName(uploadField.getFileName());
-                fd.setExtension(value);
-                fd.setSize(uploadField.getBytes().length);
-                fd.setCreateDate(date);
-                saveFile();
-                ds.addItem(fd);
-                showNotification(MessageProvider.getMessage(getClass(), "uploadSuccess"), NotificationType.HUMANIZED);
-            }
-
-            public void uploadFailed(Event event) {
-                showNotification(MessageProvider.getMessage(getClass(), "uploadUnsuccess"), NotificationType.HUMANIZED);
-            }
-
-            public void updateProgress(long readBytes, long contentLength) {
             }
         });
     }
