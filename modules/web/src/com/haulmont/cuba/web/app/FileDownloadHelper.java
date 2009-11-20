@@ -25,6 +25,7 @@ public class FileDownloadHelper {
     }
 
     public static String makeLink(FileDescriptor fd, boolean newWindow, boolean attachment) {
+        //TODO MT this code is not correct. replace later
         StringBuilder sb = new StringBuilder();
         sb.append("<a href=\"");
         sb.append(makeUrl(fd, attachment));
