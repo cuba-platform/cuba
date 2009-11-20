@@ -11,8 +11,9 @@
 package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.web.App;
-import com.vaadin.ui.Window;
-import com.vaadin.terminal.ExternalResource;
+import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.itmill.toolkit.terminal.ExternalResource;
+import com.itmill.toolkit.ui.Window;
 
 import java.net.URL;
 
@@ -27,18 +28,34 @@ public class FileDisplay {
         this.newWindow = newWindow;
     }
 
-    public void show(String windowName, URL url) {
+    public void show(String windowName, FileDescriptor fd, boolean attachment) {
         App app = App.getInstance();
         cleanOpenedWindows(app);
-        FileDisplayWindow window = createWindow(windowName, url);
+        FileWindow window = attachment ? createDownloadWindow(windowName, fd)
+                : createDisplayWindow(windowName, fd);
         show(app, window);
     }
 
-    protected FileDisplayWindow createWindow(String windowName, URL url) {
+    public void show(String windowName, URL url) {
+        App app = App.getInstance();
+        cleanOpenedWindows(app);
+        FileWindow window = createDisplayWindow(windowName, url);
+        show(app, window);
+    }
+
+    protected FileWindow createDisplayWindow(String windowName, FileDescriptor fd) {
+        return new FileDisplayWindow(windowName, fd);
+    }
+
+    protected FileWindow createDisplayWindow(String windowName, URL url) {
         return new FileDisplayWindow(windowName, url);
     }
 
-    private void show(final App application, final FileDisplayWindow window) {
+    protected FileWindow createDownloadWindow(String windowName, FileDescriptor fd) {
+        return new FileDownloadWindow(windowName, fd);
+    }
+
+    private void show(final App application, final FileWindow window) {
         // this listener is useless, it doesn't work for closing of browser window
         window.addListener(new Window.CloseListener() {
             public void windowClose(Window.CloseEvent e) {
@@ -64,10 +81,10 @@ public class FileDisplay {
     }
 
     private void cleanOpenedWindows(App application) {
-        FileDisplayWindow window = null;
+        FileWindow window = null;
         for (Object obj : application.getWindows()) {
-            if (obj instanceof FileDisplayWindow) {
-                window = (FileDisplayWindow) obj;
+            if (obj instanceof FileWindow) {
+                window = (FileWindow) obj;
             }
         }
         if (window != null) {

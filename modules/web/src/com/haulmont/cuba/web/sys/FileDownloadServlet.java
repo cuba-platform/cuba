@@ -100,13 +100,9 @@ public class FileDownloadServlet extends HttpServlet {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
-
         response.setHeader("Content-Type", getContentType(fd));
-
-        String contentDisposition = "filename=" + fileName;
-        if (attach)
-            contentDisposition = "attachment; " + fileName;
-        response.setHeader("Content-Disposition", contentDisposition);
+        response.setHeader("Content-Disposition", (attach ? "attachment" : "inline") 
+                + "; filename=" + fileName);
 
         byte[] data;
         FileStorageMBean mbean = Locator.lookupMBean(FileStorageMBean.class, FileStorageMBean.OBJECT_NAME);
