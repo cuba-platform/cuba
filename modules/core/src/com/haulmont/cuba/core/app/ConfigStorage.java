@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.entity.Config;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -114,6 +115,10 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     public void clearCache() {
         cache.clear();
+    }
+
+    public void clearMessagesCache() {
+        MessageProvider.clearCache();
     }
 
     public String loadSystemProperties() {

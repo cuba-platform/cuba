@@ -11,8 +11,8 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.Application;
@@ -65,7 +65,7 @@ public class LoginWindow extends Window
 
         initUI(app);
 
-        if (ConfigProvider.getConfig(ServerConfig.class).getTestMode()) {
+        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
             WebWindowManager windowManager = app.getWindowManager();
             windowManager.setDebugId(loginField, "loginField");
             windowManager.setDebugId(passwdField, "pwdField");

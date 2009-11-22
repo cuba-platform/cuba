@@ -10,12 +10,9 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.TemplateHelper;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
@@ -36,14 +33,20 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import java.io.InputStream;
 import java.util.*;
 import java.util.List;
-import java.io.InputStream;
 
 /**
  * GenericUI class intended for creating and opening application screens.
  */
 public abstract class WindowManager {
+
+    private boolean groovyClassLoaderEnabled;
+
+    public WindowManager() {
+        groovyClassLoaderEnabled = ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled();
+    }
 
     /**
      * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}
@@ -82,10 +85,18 @@ public abstract class WindowManager {
         checkPermission(windowInfo);
 
         String templatePath = windowInfo.getTemplate();
-        InputStream stream = getClass().getResourceAsStream(templatePath);
-        if (stream == null) {
-            throw new RuntimeException("Bad template path: " + templatePath);
+
+        InputStream stream = null;
+        if (groovyClassLoaderEnabled) {
+            stream = ScriptingProvider.getResourceAsStream(templatePath);
         }
+        if (stream == null) {
+            stream = getClass().getResourceAsStream(templatePath);
+            if (stream == null) {
+                throw new RuntimeException("Bad template path: " + templatePath);
+            }
+        }
+        
         Document document = LayoutLoader.parseDescriptor(stream, params);
 
         final Element element = document.getRootElement();
@@ -106,7 +117,7 @@ public abstract class WindowManager {
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executeLazyTasks();
 
-        if (ConfigProvider.getConfig(ServerConfig.class).getTestMode()) {
+        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
             initDebugIds(window);
         }
 
@@ -147,7 +158,8 @@ public abstract class WindowManager {
         layoutLoader.setLocale(getLocale());
         if (!StringUtils.isEmpty(descriptorPath)) {
             String path = descriptorPath.replaceAll("/", ".");
-            path = path.substring(1, path.lastIndexOf("."));
+            int start = path.startsWith(".") ? 1 : 0;
+            path = path.substring(start, path.lastIndexOf("."));
 
             layoutLoader.setMessagesPack(path);
         }
@@ -408,7 +420,12 @@ public abstract class WindowManager {
         Window res = window;
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
-            final Class<Window> aClass = ReflectionHelper.getClass(screenClass);
+            Class<Window> aClass = null;
+            if (groovyClassLoaderEnabled) {
+                aClass = ScriptingProvider.loadGroovyClass(screenClass);
+            }
+            if (aClass == null)
+                aClass = ReflectionHelper.getClass(screenClass);
             res = ((WrappedWindow) window).wrapBy(aClass);
 
             try {

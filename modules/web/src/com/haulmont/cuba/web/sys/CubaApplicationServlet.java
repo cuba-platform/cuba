@@ -10,15 +10,15 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.web.Browser;
+import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.terminal.gwt.server.ApplicationServlet;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.Browser;
 
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
@@ -27,7 +27,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     @Override
     protected boolean isTestingMode() {
-        return ConfigProvider.getConfig(ServerConfig.class).getTestMode();
+        return ConfigProvider.getConfig(GlobalConfig.class).getTestMode();
     }
 
     @Override

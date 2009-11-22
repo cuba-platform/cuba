@@ -44,6 +44,10 @@ public abstract class MessageProvider
         return instance;
     }
 
+    public static void clearCache() {
+        getInstance().__clearCache();
+    }
+
     /**
      * See {@link MessageProvider#getMessage(java.lang.String, java.lang.String, java.util.Locale)}, where<br>
      * pack - caller name<br>
@@ -151,6 +155,8 @@ public abstract class MessageProvider
             return key;
         }
     }
+
+    protected abstract void __clearCache();
 
     protected abstract String __getMessage(Class caller, String key);
 

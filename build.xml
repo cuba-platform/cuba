@@ -83,6 +83,12 @@
         </antcall>
     </target>
 	
+    <target name="deploy-conf">
+        <antcall target="delegate" inheritAll="false">
+            <param name="target" value="deploy-conf-module"/>
+        </antcall>
+    </target>
+
     <target name="undeploy">
         <antcall target="delegate" inheritAll="false">
             <param name="target" value="undeploy-module"/>

@@ -14,6 +14,9 @@ import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
+
+import java.io.InputStream;
 
 public abstract class ScriptingProvider {
 
@@ -42,15 +45,17 @@ public abstract class ScriptingProvider {
         return instance;
     }
 
-    public static GroovyScriptEngine getGroovyScriptEngine() {
-        return getInstance().__getGroovyScriptEngine();
-    }
-
     public static void runGroovyScript(String name, Binding binding) {
         getInstance().__runGroovyScript(name, binding);
     }
 
-    protected abstract GroovyScriptEngine __getGroovyScriptEngine();
+    public static Class loadGroovyClass(String name) {
+        return getInstance().__loadGroovyClass(name);
+    }
+
+    public static InputStream getResourceAsStream(String name) {
+        return getInstance().__getResourceAsStream(name);
+    }
 
     protected void __runGroovyScript(String name, Binding binding) {
         try {
@@ -61,4 +66,20 @@ public abstract class ScriptingProvider {
             throw new RuntimeException(e);
         }
     }
+
+    private Class __loadGroovyClass(String name) {
+        try {
+            return __getGroovyClassLoader().loadClass(name, true, false);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    private InputStream __getResourceAsStream(String name) {
+        return __getGroovyClassLoader().getResourceAsStream(name);
+    }
+
+    protected abstract GroovyScriptEngine __getGroovyScriptEngine();
+
+    protected abstract GroovyClassLoader __getGroovyClassLoader();
 }

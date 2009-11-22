@@ -16,15 +16,20 @@ import com.haulmont.cuba.core.global.ScriptingProvider;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceConnector;
 import groovy.util.ResourceException;
+import groovy.lang.GroovyClassLoader;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.codehaus.groovy.control.CompilerConfiguration;
+
 public class ScriptingProviderImpl extends ScriptingProvider {
 
     private GroovyScriptEngine gse;
+
+    private GroovyClassLoader gcl;
 
     public ScriptingProviderImpl() {
         final String rootPath = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir() + "/";
@@ -42,9 +47,18 @@ public class ScriptingProviderImpl extends ScriptingProvider {
                 }
             }
         });
+
+        CompilerConfiguration cc = new CompilerConfiguration();
+        cc.setClasspath(rootPath);
+        cc.setRecompileGroovySource(true);
+        gcl = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), cc);
     }
 
     protected GroovyScriptEngine __getGroovyScriptEngine() {
         return gse;
+    }
+
+    protected GroovyClassLoader __getGroovyClassLoader() {
+        return gcl;
     }
 }

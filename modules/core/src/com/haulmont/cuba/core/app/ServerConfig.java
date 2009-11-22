@@ -56,16 +56,10 @@ public interface ServerConfig extends Config {
     @Property("cuba.userSessionExpirationTimeoutSec")
     @DefaultInt(1800)
     int getUserSessionExpirationTimeoutSec();
+
     /**
      * User session expiration timeout in seconds.
      * Not the same as HTTP session timeout, but should have the same value.
      */
     void setUserSessionExpirationTimeoutSec(int timeout);
-
-    /**
-     * Used to support automatic testing
-     */
-    @Property("cuba.testMode")
-    @DefaultBoolean(false)
-    boolean getTestMode();
 }

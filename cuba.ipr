@@ -69,6 +69,15 @@
   <component name="CodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS">
       <value>
+        <ADDITIONAL_INDENT_OPTIONS fileType="">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="java">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
@@ -146,7 +155,9 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+    <file url="file://$PROJECT_DIR$/modules/web/src-conf" charset="UTF-8" />
+  </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
@@ -357,7 +368,7 @@
   </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
-    <option name="state" value="svn://dc/platform/cuba/trunk/cuba.ipr" />
+    <option name="state" value="http://195.128.135.166:8585/svn/platform/cuba/trunk/cuba.ipr" />
   </component>
   <component name="ProjectModuleManager">
     <modules>
@@ -478,7 +489,6 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-io-1.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/freemarker-2.3.15.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/perf4j-0.9.10.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/iText-2.1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/jasperreports-3.5.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/poi-3.2-FINAL-20081019.jar!/" />
@@ -497,6 +507,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/log4j.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/antlr.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.5.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -508,6 +519,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/openjpa-1.2.1-patch1-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/google-collect-1.0-rc2-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/reflections-0.9.4-patch1-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/groovy-1.6.5-src.zip!/" />
       </SOURCES>
     </library>
     <library name="test">

@@ -14,7 +14,6 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
@@ -233,7 +232,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected MenuBar createMenuBar() {
         menuBar = new MenuBar();
-        if (ConfigProvider.getConfig(ServerConfig.class).getTestMode()) {
+        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
             App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
 

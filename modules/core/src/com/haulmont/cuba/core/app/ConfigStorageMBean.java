@@ -38,5 +38,7 @@ public interface ConfigStorageMBean
 
     void clearCache();
 
+    void clearMessagesCache();
+
     String loadSystemProperties();
 }
