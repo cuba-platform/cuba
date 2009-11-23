@@ -9,6 +9,9 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -16,6 +19,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
+
+import java.io.InputStream;
 
 public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
@@ -30,7 +35,18 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
-        final IFrame component = (IFrame) loader.loadComponent(getClass().getResource(src), parent, context.getParameters());
+        InputStream stream = null;
+        if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled()) {
+            stream = ScriptingProvider.getResourceAsStream(src);
+        }
+        if (stream == null) {
+            stream = getClass().getResourceAsStream(src);
+            if (stream == null) {
+                throw new RuntimeException("Bad template path: " + src);
+            }
+        }
+
+        final IFrame component = (IFrame) loader.loadComponent(stream, parent, context.getParameters());
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(messagesPack);
         }

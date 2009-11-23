@@ -89,10 +89,8 @@ public class LayoutLoader {
         this.messagesPack = messagesPack;
     }
 
-    public Component loadComponent(URL uri, Component parent) {
+    public Component loadComponent(InputStream stream, Component parent) {
         try {
-            final InputStream stream = uri.openStream();
-
             SAXReader reader = new SAXReader();
             Document doc;
             try {
@@ -109,12 +107,12 @@ public class LayoutLoader {
         }
     }
 
-    public Component loadComponent(URL uri, Component parent, Map<String, Object> params) {
+    public Component loadComponent(InputStream stream, Component parent, Map<String, Object> params) {
         if (params == null || params.isEmpty()) {
-            return loadComponent(uri, parent);
+            return loadComponent(stream, parent);
         }
         try {
-            Document doc = parseDescriptor(uri.openStream(), params);
+            Document doc = parseDescriptor(stream, params);
             Element element = doc.getRootElement();
 
             return loadComponent(element, parent);

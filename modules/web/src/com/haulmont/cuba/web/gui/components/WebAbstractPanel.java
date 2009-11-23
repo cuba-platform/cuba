@@ -36,7 +36,7 @@ public class WebAbstractPanel extends Panel
             setLayout(((Layout) comp));
             this.component = component;
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Only layout component is supported inside groupBox");
         }
     }
 
