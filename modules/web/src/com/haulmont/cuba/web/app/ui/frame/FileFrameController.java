@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.web.app.ui.frame;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
@@ -23,9 +22,6 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 
 import java.util.Map;
 
@@ -80,20 +76,7 @@ public class FileFrameController extends AbstractWindow {
     }
 
     public void initGeneratedColumn() {
-        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx("name");
-        final com.vaadin.ui.Table table = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(filesTable);
-
-        table.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
-            public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-                final FileDescriptor fd = (FileDescriptor) ds.getItem(itemId);
-
-                String link = FileDownloadHelper.makeLink(fd, true, false);
-                Label label = new Label(link);
-                label.setContentMode(Label.CONTENT_XHTML);
-
-                return label;
-            }
-        });
+        FileDownloadHelper.initGeneratedColumn(filesTable);
     }
 
     private void saveFile() {

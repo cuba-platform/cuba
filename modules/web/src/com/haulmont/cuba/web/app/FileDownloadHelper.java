@@ -10,8 +10,17 @@
  */
 package com.haulmont.cuba.web.app;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.filestorage.FileDisplay;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
 
 public class FileDownloadHelper {
@@ -25,7 +34,6 @@ public class FileDownloadHelper {
     }
 
     public static String makeLink(FileDescriptor fd, boolean newWindow, boolean attachment) {
-        //TODO MT this code is not correct. replace later
         StringBuilder sb = new StringBuilder();
         sb.append("<a href=\"");
         sb.append(makeUrl(fd, attachment));
@@ -46,5 +54,34 @@ public class FileDownloadHelper {
         if (attachment)
             sb.append("&a=true");
         return sb.toString();
+    }
+
+    public static void initGeneratedColumn(Table table) {
+        final CollectionDatasource ds = table.getDatasource();
+        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx("name");
+        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+
+        vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
+            public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                final FileDescriptor fd = (FileDescriptor) ds.getItem(itemId);
+                if (fd == null) {
+                    return new Label();
+                }
+                Component component;
+                if (PersistenceHelper.isNew(fd)) {
+                    component = new Label(fd.getName());
+                } else {
+                    component = new Button(fd.getName(), new Button.ClickListener() {
+
+                        public void buttonClick(Button.ClickEvent event) {
+                            FileDisplay fileDisplay = new FileDisplay(true);
+                            fileDisplay.show(fd.getName(), fd, false);
+                        }
+                    });
+                }
+                component.setStyleName("link");
+                return component;
+            }
+        });
     }
 }
