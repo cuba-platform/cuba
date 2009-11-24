@@ -65,8 +65,8 @@ public class WindowConfig
      */
     public WindowInfo getWindowInfo(String id) {
         WindowInfo windowInfo = screens.get(id);
-        if (windowInfo == null)
-            throw new NoSuchScreenException("Screen '" + id + "' is not defined");
+//        if (windowInfo == null)
+//            throw new NoSuchScreenException("Screen '" + id + "' is not defined");
         return windowInfo;
     }
 

@@ -43,7 +43,7 @@ import java.util.Map;
 
 /**
  * Main application window.
- * <p>
+ * <p/>
  * Specific application should inherit from this class and create appropriate
  * instance in {@link com.haulmont.cuba.web.App#createAppWindow()} method
  */
@@ -73,19 +73,29 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected Mode mode;
 
-    /** Very root layout of the window. Contains all other layouts */
+    /**
+     * Very root layout of the window. Contains all other layouts
+     */
     protected VerticalLayout rootLayout;
 
-    /** Title layout. Topmost by default */
+    /**
+     * Title layout. Topmost by default
+     */
     protected Layout titleLayout;
 
-    /** Layout containing the menu bar. Next to title layout by default */
+    /**
+     * Layout containing the menu bar. Next to title layout by default
+     */
     protected HorizontalLayout menuBarLayout;
 
-    /** Empty layout, below menu bar layout by default*/
+    /**
+     * Empty layout, below menu bar layout by default
+     */
     protected HorizontalLayout emptyLayout;
 
-    /** Layout containing application screens */
+    /**
+     * Layout containing application screens
+     */
     protected VerticalLayout mainLayout;
 
     protected String messagePack;
@@ -167,6 +177,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * Enclosed Tabsheet
+     *
      * @return the tabsheet in TABBED mode, null in SINGLE mode
      */
     public TabSheet getTabSheet() {
@@ -177,27 +188,37 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return menuBar;
     }
 
-    /** See {@link #rootLayout} */
+    /**
+     * See {@link #rootLayout}
+     */
     public VerticalLayout getRootLayout() {
         return rootLayout;
     }
 
-    /** See {@link #titleLayout} */
+    /**
+     * See {@link #titleLayout}
+     */
     public Layout getTitleLayout() {
         return titleLayout;
     }
 
-    /** See {@link #menuBarLayout} */
+    /**
+     * See {@link #menuBarLayout}
+     */
     public HorizontalLayout getMenuBarLayout() {
         return menuBarLayout;
     }
 
-    /** See {@link #emptyLayout} */
+    /**
+     * See {@link #emptyLayout}
+     */
     public HorizontalLayout getEmptyLayout() {
         return emptyLayout;
     }
 
-    /** See {@link #mainLayout} */
+    /**
+     * See {@link #mainLayout}
+     */
     public VerticalLayout getMainLayout() {
         return mainLayout;
     }
@@ -342,12 +363,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
         final WindowInfo windowInfo;
-        if (item.getId().endsWith(".create") || item.getId().endsWith(".edit")
-                || item.getId().endsWith(".view") || item.getId().endsWith(".browse")) {
-            final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-            windowInfo = windowConfig.getWindowInfo(item.getId());
-        }
-        else {
+        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+        windowInfo = windowConfig.getWindowInfo(item.getId());
+        if (windowInfo == null) {
             return null;
         }
 
@@ -369,7 +387,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
                     final String metaClassName = strings[0];
                     final MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
-                    if (metaClass == null) throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
+                    if (metaClass == null)
+                        throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
 
                     Entity newItem;
                     try {
@@ -443,8 +462,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
     }
 
-    private class DoNotChangeSubstUserAction extends AbstractAction
-    {
+    private class DoNotChangeSubstUserAction extends AbstractAction {
         private AbstractSelect substUserSelect;
 
         protected DoNotChangeSubstUserAction(AbstractSelect substUserSelect) {
