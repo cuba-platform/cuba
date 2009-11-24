@@ -324,8 +324,7 @@ public class ApplicationConnection {
             boolean success = false;
             final RequestBuilder rb = new RequestBuilder(RequestBuilder.POST,
                     uri);
-            // TODO enable timeout
-            // rb.setTimeoutMillis(timeoutMillis);
+//            rb.setTimeoutMillis(5000000); //set a default timeout equal 5 mins
             rb.setHeader("Content-Type", "text/plain;charset=utf-8");
             try {
                 rb.sendRequest(rd, new RequestCallback() {
@@ -622,15 +621,61 @@ public class ApplicationConnection {
         }
 
         if (json.containsKey("resources")) {
-            ValueMap resources = json.getValueMap("resources");
-            JsArrayString keyArray = resources.getKeyArray();
-            int l = keyArray.length();
-            for (int i = 0; i < l; i++) {
-                String key = keyArray.get(i);
-                resourcesMap.put(key, resources.getAsString(key));
+            final ValueMap resources = json.getValueMap("resources");
+            if (resources.getKeyArray().length() > 0) {
+                handleJSONMessageEx(resources, start, jsonText, json, 0);
+            } else {
+                handleJSONMessage(start, jsonText, json);
             }
+        } else {
+            handleJSONMessage(start, jsonText, json);
         }
 
+    }
+
+    private void handleJSONMessageEx(final ValueMap resources, final Date start, final String jsonText,
+                                     final ValueMap json, final int resourceKeyIndex) {
+        final JsArrayString keyArray = resources.getKeyArray();
+        final String key = keyArray.get(resourceKeyIndex);
+
+        final String templateName = resources.getAsString(key);
+
+        final String templateUri = getThemeUri() + "/layouts/" + templateName + ".html";
+
+        final RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, templateUri);
+        rb.setHeader("Content-Type", "text/plain;charset=utf-8");
+        try {
+            rb.sendRequest(null, new RequestCallback() {
+                public void onResponseReceived(Request request, Response response) {
+                    if (response.getStatusCode() == Response.SC_OK) {
+                        resourcesMap.put(templateName, response.getText());
+
+                        if (resourceKeyIndex < keyArray.length() - 1) {
+                            handleJSONMessageEx(resources, start, jsonText, json,
+                                    resourceKeyIndex + 1);
+                        } else {
+                            handleJSONMessage(start, jsonText, json);
+                        }
+
+                    } else {
+                        console.error("Resource loading error. Status code: "
+                                + response.getStatusCode());
+                    }
+                }
+
+                public void onError(Request request, Throwable exception) {
+                    console.error("Resource loading error");
+                    if (exception != null) {
+                        ClientExceptionHandler.displayError(exception);
+                    }
+                }
+            });
+        } catch (RequestException e) {
+            ClientExceptionHandler.displayError(e);
+        }
+    }
+
+    private void handleJSONMessage(Date start, String jsonText, ValueMap json) {
         if (json.containsKey("locales")) {
             // Store locale data
             JsArray<ValueMap> valueMapArray = json
