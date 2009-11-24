@@ -17,6 +17,7 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 
 import java.io.InputStream;
+import java.io.File;
 
 public abstract class ScriptingProvider {
 
@@ -25,6 +26,8 @@ public abstract class ScriptingProvider {
     private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.ScriptingProviderImpl";
 
     private static ScriptingProvider instance;
+
+    protected static String groovyClassPath = "";
 
     private static ScriptingProvider getInstance() {
         if (instance == null) {
@@ -45,6 +48,10 @@ public abstract class ScriptingProvider {
         return instance;
     }
 
+    public static void addGroovyClassPath(String path) {
+        groovyClassPath = groovyClassPath + File.pathSeparator + path;
+    }
+
     public static void runGroovyScript(String name, Binding binding) {
         getInstance().__runGroovyScript(name, binding);
     }
@@ -55,6 +62,10 @@ public abstract class ScriptingProvider {
 
     public static InputStream getResourceAsStream(String name) {
         return getInstance().__getResourceAsStream(name);
+    }
+
+    public static ClassLoader getGroovyClassLoader() {
+        return getInstance().__getGroovyClassLoader();
     }
 
     protected void __runGroovyScript(String name, Binding binding) {

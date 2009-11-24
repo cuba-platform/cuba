@@ -27,24 +27,28 @@ public interface ServerConfig extends Config {
 
     /**
      * Config directory. Root of all not deployable application configuration and logic.
+     * Does not end with "/"
      */
     @Factory(factory = ServerConfigDirFactory.class)
     String getServerConfDir();
 
     /**
      * Logs directory. Place app-specific log files here.
+     * Does not end with "/"
      */
     @Property("jboss.server.log.dir")
     String getServerLogDir();
 
     /**
      * Temporary files directory. Place app-specific temp files under this directory.
+     * Does not end with "/"
      */
     @Property("jboss.server.temp.dir")
     String getServerTempDir();
 
     /**
      * Data directory. Place persistent app-specific data files under this directory.
+     * Does not end with "/"
      */
     @Property("jboss.server.data.dir")
     String getServerDataDir();

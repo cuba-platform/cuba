@@ -49,7 +49,7 @@ public class ScriptingProviderImpl extends ScriptingProvider {
         });
 
         CompilerConfiguration cc = new CompilerConfiguration();
-        cc.setClasspath(rootPath);
+        cc.setClasspath(groovyClassPath);
         cc.setRecompileGroovySource(true);
         gcl = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), cc);
     }

@@ -45,6 +45,10 @@ public class TestLocator extends LocatorImpl {
 
     private Map<String, MBeanInfo> mbeans = new HashMap<String, MBeanInfo>();
 
+    protected Context __getJndiContextImpl() {
+        return TestContext.getInstance();
+    }
+
     protected <T> T __lookupMBean(Class<T> mbeanClass, String name) {
         MBeanInfo mbeanInfo = mbeans.get(name);
         if (mbeanInfo != null)
