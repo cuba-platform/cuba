@@ -13,9 +13,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
+import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
 import com.haulmont.bali.util.Dom4j;
 import com.vaadin.data.Property;
-import com.vaadin.ui.OptionGroup;
 
 import java.util.*;
 
