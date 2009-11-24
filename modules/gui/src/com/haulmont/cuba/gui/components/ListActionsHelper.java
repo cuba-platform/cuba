@@ -66,49 +66,7 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createEditAction(final WindowManager.OpenType openType) {
-        final AbstractAction action = new AbstractAction("edit") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                if (userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
-                    return MessageProvider.getMessage(messagesPackage, "actions.Edit");
-                else
-                    return MessageProvider.getMessage(messagesPackage, "actions.View");
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                final Set selected = ListActionsHelper.this.component.getSelected();
-                if (selected.size() == 1) {
-                    final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
-                    final String windowID = datasource.getMetaClass().getName() + ".edit";
-
-                    Datasource parentDs = null;
-                    if (datasource instanceof PropertyDatasource) {
-                        MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
-                        if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
-                            parentDs = datasource;
-                        }
-                    }
-
-                    final Window window = frame.openEditor(windowID, datasource.getItem(), openType, parentDs);
-
-                    if (parentDs == null) {
-                        window.addListener(new Window.CloseListener() {
-                            public void windowClosed(String actionId) {
-                                if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                                    Object item = ((Window.Editor) window).getItem();
-                                    if (item instanceof Entity)
-                                        datasource.updateItem((Entity) item);
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        };
+        final AbstractAction action = new EditAction("edit", openType);
         ListActionsHelper.this.component.addAction(action);
 
         return action;
@@ -299,5 +257,56 @@ abstract class ListActionsHelper<T extends List> {
         ListActionsHelper.this.component.addAction(action);
 
         return action;
+    }
+
+    protected class EditAction extends AbstractAction {
+        private final WindowManager.OpenType openType;
+
+        public EditAction(String id, WindowManager.OpenType openType) {
+            super(id);
+            this.openType = openType;
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            if (userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
+                return MessageProvider.getMessage(messagesPackage, "actions.Edit");
+            else
+                return MessageProvider.getMessage(messagesPackage, "actions.View");
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+        public void actionPerform(Component component) {
+            final Set selected = ListActionsHelper.this.component.getSelected();
+            if (selected.size() == 1) {
+                final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
+                final String windowID = datasource.getMetaClass().getName() + ".edit";
+
+                Datasource parentDs = null;
+                if (datasource instanceof PropertyDatasource) {
+                    MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
+                    if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
+                        parentDs = datasource;
+                    }
+                }
+
+                final Window window = frame.openEditor(windowID, datasource.getItem(), openType, parentDs);
+
+                if (parentDs == null) {
+                    window.addListener(new Window.CloseListener() {
+                        public void windowClosed(String actionId) {
+                            if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
+                                Object item = ((Window.Editor) window).getItem();
+                                if (item instanceof Entity)
+                                    datasource.updateItem((Entity) item);
+                            }
+                        }
+                    });
+                }
+            }
+        }
     }
 }
