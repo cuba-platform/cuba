@@ -33,6 +33,8 @@ import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
 import com.vaadin.terminal.gwt.client.VTooltip;
 
+import java.util.Iterator;
+
 /**
  * This class represents a basic text input field with one row.
  *
@@ -67,6 +69,8 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
     private String inputPrompt = null;
     private boolean prompting = false;
 
+    protected ShortcutActionHandler shortcutHandler;
+
     public VTextField() {
         this(DOM.createInputText());
     }
@@ -88,6 +92,11 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
     @Override
     public void onBrowserEvent(Event event) {
         super.onBrowserEvent(event);
+        final int type = DOM.eventGetType(event);
+        if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+            shortcutHandler.handleKeyboardEvent(event);
+            return;
+        }
         if (client != null) {
             client.handleTooltipEvent(event, this);
         }
@@ -130,6 +139,16 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
             removeStyleDependentName(CLASSNAME_PROMPT);
         }
         valueBeforeEdit = uidl.getStringVariable("text");
+
+        for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
+            final UIDL data = (UIDL) it.next();
+            if (data.getTag().equals("actions")) {
+                if (shortcutHandler == null) {
+                    shortcutHandler = new ShortcutActionHandler(id, client);
+                }
+                shortcutHandler.updateActionMap(data);
+            }
+        }
     }
 
     private void setMaxLength(int newMaxLength) {

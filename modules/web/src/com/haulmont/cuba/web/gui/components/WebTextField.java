@@ -15,12 +15,12 @@ import com.haulmont.cuba.gui.data.Datasource;
 
 public class WebTextField
     extends
-        WebAbstractField<com.vaadin.ui.TextField>
+        WebAbstractField<com.haulmont.cuba.web.toolkit.ui.TextField>
     implements
         TextField, Component.Wrapper {
 
     public WebTextField() {
-        this.component = new com.vaadin.ui.TextField();
+        this.component = new com.haulmont.cuba.web.toolkit.ui.TextField();
         attachListener(component);
         component.setImmediate(true);
         component.setNullRepresentation("");
