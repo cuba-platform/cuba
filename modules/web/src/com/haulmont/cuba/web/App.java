@@ -10,10 +10,7 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
@@ -31,9 +28,13 @@ import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Main class of the web application. Each client connection has its own App.
@@ -67,6 +68,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
     protected Set<Timer> timers = new HashSet<Timer>();
 
     protected Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
+
+    private static volatile boolean viewsDeployed;
 
     static {
         // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
@@ -110,7 +113,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
         LoginWindow window = createLoginWindow();
         setMainWindow(window);
 
-        deployViews();
+        if (!viewsDeployed) {
+            deployViews();
+            viewsDeployed = true;
+        }
     }
 
     /**
@@ -220,6 +226,22 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public void terminalError(Terminal.ErrorEvent event) {
+        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+            String fileName = System.getProperty("cuba.testModeExceptionLog");
+            if (!StringUtils.isBlank(fileName)) {
+                try {
+                    FileOutputStream stream = new FileOutputStream(fileName);
+                    try {
+                        stream.write(ExceptionUtils.getStackTrace(event.getThrowable()).getBytes());
+                    } finally {
+                        stream.close();
+                    }
+                } catch (Exception e) {
+                    log.debug(e);
+                }
+            }
+        }
+
         if (event instanceof AbstractApplicationServlet.RequestError) {
             log.error("RequestError:", event.getThrowable());
         } else {

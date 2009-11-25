@@ -43,6 +43,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
         final MetaClass metaClass = datasource.getMetaClass();
         this.metaProperty = metaClass.getProperty(property);
+        if (metaProperty == null)
+            throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
 
         setMultiSelect(metaProperty.getRange().getCardinality().isMany());
 
