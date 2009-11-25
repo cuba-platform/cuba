@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -364,8 +365,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
         final WindowInfo windowInfo;
         final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        windowInfo = windowConfig.getWindowInfo(item.getId());
-        if (windowInfo == null) {
+        try {
+            windowInfo = windowConfig.getWindowInfo(item.getId());
+        } catch (NoSuchScreenException e) {
             return null;
         }
 
