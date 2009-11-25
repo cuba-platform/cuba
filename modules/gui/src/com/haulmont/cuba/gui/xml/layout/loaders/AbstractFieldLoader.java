@@ -52,6 +52,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
 
         loadVisible(component, element);
         loadEditable(component, element);
+        loadEnable(component, element);
 
         loadStyleName(component, element);
 
