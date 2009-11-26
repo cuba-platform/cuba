@@ -577,6 +577,7 @@
 
     <xs:complexType name="tableType">
         <xs:sequence>
+            <xs:element name="actionButtons" minOccurs="0" maxOccurs="1" type="actionButtonsType"/>
             <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:sequence>
@@ -591,7 +592,6 @@
                     <xs:attribute name="headerMode" type="headerMode" use="optional"/>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="actionButtons" minOccurs="0" maxOccurs="1" type="actionButtonsType"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
