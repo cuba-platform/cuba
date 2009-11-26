@@ -10,18 +10,17 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.data.Property;
 import com.haulmont.cuba.core.global.MessageProvider;
-import org.apache.commons.lang.ObjectUtils;
+import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Select;
 
 public class PropertyOperationEditor extends OperationEditor {
 
     public PropertyOperationEditor(Condition condition) {
         super(condition);
 
-        final AbstractSelect select = new NativeSelect();
+        final AbstractSelect select = new Select();
         select.setImmediate(true);
         select.setNullSelectionAllowed(false);
 

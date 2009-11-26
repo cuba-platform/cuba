@@ -119,7 +119,7 @@ public class CustomConditionEditDlg extends Window {
         grid.addComponent(typeLab, 0, i);
         grid.setComponentAlignment(typeLab, Alignment.MIDDLE_RIGHT);
 
-        typeSelect = new NativeSelect();
+        typeSelect = new Select();
         typeSelect.setImmediate(true);
         typeSelect.setNullSelectionAllowed(false);
         fillTypeSelect(typeSelect, condition.getParam());
@@ -154,7 +154,7 @@ public class CustomConditionEditDlg extends Window {
         btnLayout.setSpacing(true);
         btnLayout.setMargin(true, false, false, false);
 
-        Button btnOk = WebComponentsHelper.createButton();
+        Button btnOk = WebComponentsHelper.createButton("icons/ok.png");
         btnOk.setCaption(MessageProvider.getMessage(messagesPack, "actions.Ok"));
         btnOk.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
@@ -164,7 +164,7 @@ public class CustomConditionEditDlg extends Window {
         });
         btnLayout.addComponent(btnOk);
 
-        Button btnCancel = WebComponentsHelper.createButton();
+        Button btnCancel = WebComponentsHelper.createButton("icons/cancel.png");
         btnCancel.setCaption(MessageProvider.getMessage(messagesPack, "actions.Cancel"));
         btnCancel.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {

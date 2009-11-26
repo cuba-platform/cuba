@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.security.entity.User;
@@ -75,7 +76,7 @@ public class WebFilter
         HorizontalLayout topLayout = new HorizontalLayout();
         topLayout.setSpacing(true);
 
-        select = new NativeSelect();
+        select = new Select();
         select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setImmediate(true);
@@ -95,8 +96,8 @@ public class WebFilter
         });
         topLayout.addComponent(select);
 
-        applyBtn = WebComponentsHelper.createButton();
-        applyBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "applyBtn"));
+        applyBtn = WebComponentsHelper.createButton("icons/search.png");
+        applyBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Apply"));
         applyBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 apply();
@@ -104,8 +105,8 @@ public class WebFilter
         });
         topLayout.addComponent(applyBtn);
 
-        createBtn = WebComponentsHelper.createButton();
-        createBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "createBtn"));
+        createBtn = WebComponentsHelper.createButton("icons/create.png");
+        createBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Create"));
         createBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 createFilterEntity();
@@ -115,8 +116,8 @@ public class WebFilter
         });
         topLayout.addComponent(createBtn);
 
-        editBtn = WebComponentsHelper.createButton();
-        editBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "editBtn"));
+        editBtn = WebComponentsHelper.createButton("icons/edit.png");
+        editBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Edit"));
         editBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 switchToEdit();
@@ -124,8 +125,8 @@ public class WebFilter
         });
         topLayout.addComponent(editBtn);
 
-        deleteBtn = WebComponentsHelper.createButton();
-        deleteBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "deleteBtn"));
+        deleteBtn = WebComponentsHelper.createButton("icons/remove.png");
+        deleteBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Remove"));
         deleteBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 getFrame().showOptionDialog(

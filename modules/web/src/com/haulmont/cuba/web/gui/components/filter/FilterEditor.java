@@ -17,6 +17,7 @@ import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -76,8 +77,8 @@ public class FilterEditor {
         HorizontalLayout controlLayout = new HorizontalLayout();
         controlLayout.setSpacing(true);
 
-        Button saveBtn = WebComponentsHelper.createButton();
-        saveBtn.setCaption(getMessage("FilterEditor.saveBtn"));
+        Button saveBtn = WebComponentsHelper.createButton("icons/ok.png");
+        saveBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Ok"));
         saveBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 if (commit())
@@ -86,8 +87,8 @@ public class FilterEditor {
         });
         controlLayout.addComponent(saveBtn);
 
-        Button cancelBtn = WebComponentsHelper.createButton();
-        cancelBtn.setCaption(getMessage("FilterEditor.cancelBtn"));
+        Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
+        cancelBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel"));
         cancelBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 webFilter.editorCancelled();
@@ -141,7 +142,7 @@ public class FilterEditor {
         Label label = new Label(getMessage("FilterEditor.addCondition"));
         layout.addComponent(label);
 
-        addSelect = new NativeSelect();
+        addSelect = new Select();
         addSelect.setImmediate(true);
         addSelect.setNullSelectionAllowed(true);
         addSelect.setWidth("100px");
@@ -241,8 +242,8 @@ public class FilterEditor {
     }
 
     private Button createDeleteConditionBtn(final Condition condition) {
-        Button delBtn = WebComponentsHelper.createButton();
-        delBtn.setCaption("Delete");
+        Button delBtn = WebComponentsHelper.createButton("icons/remove.png");
+        delBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Remove"));
         delBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 deleteCondition(condition);

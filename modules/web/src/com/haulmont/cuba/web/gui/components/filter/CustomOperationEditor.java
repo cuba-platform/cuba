@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.AppConfig;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
 
@@ -22,8 +23,8 @@ public class CustomOperationEditor extends OperationEditor {
     public CustomOperationEditor(final Condition condition) {
         super(condition);
 
-        Button btn = WebComponentsHelper.createButton();
-        btn.setCaption(MessageProvider.getMessage(getClass(), "CustomOperationEditor.button"));
+        Button btn = WebComponentsHelper.createButton("icons/edit.png");
+        btn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Edit"));
 
         btn.setEnabled(UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions"));
 

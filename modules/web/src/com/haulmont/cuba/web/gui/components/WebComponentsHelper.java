@@ -241,13 +241,22 @@ public class WebComponentsHelper {
     }
     
     public static Button createButton() {
+        return createButton(null);
+    }
+    
+    public static Button createButton(String icon) {
         if (useNativeButtons == null)
             useNativeButtons = ConfigProvider.getConfig(WebConfig.class).getUseNativeButtons();
 
+        Button button;
         if (useNativeButtons) {
-            return new NativeButton();
+            button = new NativeButton();
         } else {
-            return new Button();
+            button = new Button();
         }
+        if (icon != null) {
+            button.setIcon(new ThemeResource(icon));
+        }
+        return button;
     }
 }
