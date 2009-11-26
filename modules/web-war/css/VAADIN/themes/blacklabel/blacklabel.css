@@ -1,3 +1,60 @@
+/**
+ *  Breadcrumbs styles
+ */
+.v-horizontallayout-breadcrumbs .v-label {
+    font-family: tahoma, sans-serif;
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+}
+
+.v-horizontallayout-headline-container {
+    background-color: #131416;
+    margin-bottom: 5px;
+}
+
+.v-horizontallayout-breadcrumbs .v-button-link .v-button-caption {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Breadcrumbs close button */
+
+.v-button-closetab-button {
+    background: transparent none;
+}
+
+.v-button-closetab-button .v-button-wrap {
+    background: transparent none;
+    padding: 0;
+}
+
+/* Logout & View-log buttons */
+.v-button-white-border {
+    background: transparent url(button/img/btn-wb-left.png) no-repeat left center;
+    height: 26px;
+    padding: 0 0 0 4px;
+}
+
+.v-button-white-border .v-button-wrap {
+    height: 23px;
+    padding-top: 2px;
+    background: transparent url(button/img/btn-wb-right.png) no-repeat right top;
+}
+
+.v-button-white-border .v-button-caption {
+    /* looks not very pretty
+    text-decoration: underline;
+    */
+}
+
+
+/*
+ * Here go
+ *  Custom Control styles
+ */
+
 .v-verticallayout-edit-area,
 .v-horizontallayout-edit-area,
 .v-gridlayout-edit-area {
@@ -8,7 +65,8 @@
     border: 1px solid #808080;
 }
 
-.v-label .h2 {
+.v-tabsheet-content .v-label-h2,
+.v-label-h2 {
     font-family: tahoma, sans-serif;
     font-size: 14px;
     color: white;

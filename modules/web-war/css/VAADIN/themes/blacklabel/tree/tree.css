@@ -1,25 +1,30 @@
 .v-tree {
-	text-align: left /* Force default alignment */
+	text-align: left;
+    background: #374049 url(img/tree-bg.png) repeat-x top left;
+    padding: 5px;
 }
 
 .v-tree-node {
-	background: transparent url(img/collapsed.png) no-repeat 2px 1px;
+	background: transparent url(img/item-collapsed.png) no-repeat 2px 1px;
 }
 .v-tree-node-expanded {
-	background: transparent url(img/expanded.png) no-repeat 2px 1px;
+	background: transparent url(img/item-expanded.png) no-repeat 2px 1px;
 }
 .v-tree-node-leaf {
 	background-image: none;
 }
 .v-tree-node-caption {
-	margin-left: 16px;
+	margin-left: 20px;
 }
 
 .v-tree-node span {
 	padding: 0 2px;
 	cursor: pointer;
 	white-space: nowrap;
+    font-size: 9pt;
+    color: white;
 }
+
 .v-tree-node-selected span {
 	background: #5daee8;
 	color: #fff;
@@ -32,7 +37,7 @@
 
 
 /* ie6compatnode is hidden from non ie6 browsers, for ie6 
- * uses weird hack to sink all events properly 
+ * uses weird hack to sink all events properly
  */
 .v-tree-node-ie6compatnode {
 	display: none;

@@ -131,7 +131,7 @@
 }
 
 .v-table-cell-content {
-    padding: 3px 0 3px 3px;
+    padding: 5px 0 5px 3px;
 	margin-right: 5px;
 	line-height: 15px;
 }
@@ -163,7 +163,7 @@
 /* Fix textfield size to correspond label size inside table */
 .v-table-cell-content .v-textfield,
 .v-table-cell-content .v-button {
-	margin: -2px 0 -2px -3px;
+	margin: 0px 0 -2px -3px;
 }
 .v-table-cell-content .v-textfield,
 .v-table-cell-content .v-datefield {

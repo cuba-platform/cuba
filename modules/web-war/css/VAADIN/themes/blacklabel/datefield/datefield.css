@@ -7,23 +7,23 @@
 }
 
 .v-datefield-button {
-	font-size:13px;
+	font-size: 13px;
 	width: 22px;
 	height: 22px;
 	padding: 0;
 	overflow: hidden;
 	border: none;
-	background: transparent url(img/open-button.png) no-repeat right 0;
+	background: transparent url(img/open-button1.png) no-repeat right 0;
 	vertical-align: top;
 	cursor: pointer;
 }
 
 .v-datefield-popup {
 	font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
-	color: #464f52;
+	color: white;
 	font-size: 12px;
-	background: #f6f7f7;
-	border: 1px solid #b6bbbc;
+    background: url(img/calendar-popup-bg.png) top left repeat-x;
+	border: 1px solid #83888c;
 	padding: 6px;
 }
 
@@ -72,7 +72,7 @@
 .v-datefield-calendarpanel-month {
 	font-weight: bold;
 	text-align: center;
-	text-shadow: #ffffff 2px 2px 0;
+	/*text-shadow: #ffffff 2px 2px 0; ugly */
 	white-space: nowrap;
 }
 
@@ -80,8 +80,8 @@
 .v-datefield-calendarpanel .v-button-prevyear,
 .v-datefield-calendarpanel .v-button-nextyear {
 	display: block;
-	width: 16px;
-	height: 16px;
+	width: 15px;
+	height: 15px;
 	border: none;
 	padding: 0;
 	background: transparent url(img/prevyear.png) no-repeat;
@@ -91,6 +91,7 @@
 .v-datefield-calendarpanel .v-button-nextyear {
 	background: transparent url(img/nextyear.png) no-repeat;
 }
+.v-datefield-calendarpanel .v-button-prevyear:hover,
 .v-datefield-calendarpanel .v-button-nextyear:hover {
 	background-position: left bottom;
 }
@@ -99,8 +100,8 @@
 .v-datefield-calendarpanel .v-button-prevmonth,
 .v-datefield-calendarpanel .v-button-nextmonth {
 	display: block;
-	width: 11px;
-	height: 16px;
+	width: 15px;
+	height: 15px;
 	border: none;
 	padding: 0;
 	background: transparent url(img/prevmonth.png) no-repeat;
@@ -116,7 +117,7 @@
 }
 
 .v-datefield-calendarpanel strong {
-	color: #ee5311;
+	color: #cd3331;
 	display: block;
 	width: 20px;
 }
@@ -130,7 +131,7 @@
 }
 
 .v-datefield-calendarpanel-day-today {
-	border: 1px solid #429ce9;
+	border: 1px solid #cd3331;
 	width: 12px;
 	height: 14px
 }

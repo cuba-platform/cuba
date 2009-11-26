@@ -4,9 +4,7 @@ body {
 }
 
 .v-app-loading {
-	background-image: url(img/loading-indicator.gif);
-	background-repeat: no-repeat;
-	background-position: 50%;
+    background: url(img/black-load-indicator.gif) no-repeat 50%;
 }
 
 .v-view {
@@ -234,17 +232,17 @@ input.v-modified,
 .v-loading-indicator,
 .v-loading-indicator-delay,
 .v-loading-indicator-wait {
-	width: 31px;
-	height: 31px;
-	background: transparent url(img/loading-indicator.gif);
+	width: 45px;
+	height: 45px;
+	background: transparent url(img/black-load-indicator.gif);
 }
 
 .v-loading-indicator-delay {
-	background: transparent url(img/loading-indicator-delay.gif);
+	background: transparent url(img/black-load-indicator.gif);
 }
 
 .v-loading-indicator-wait {
-	background: transparent url(img/loading-indicator-wait.gif);
+	background: transparent url(img/black-load-indicator.gif);
 }
 .v-loading-indicator,
 .v-loading-indicator-delay,
@@ -285,9 +283,12 @@ input.v-modified,
 	background: #f99 !important;
 }
 
-/* Fix for liferay. #2384 */
 .v-app input[type="text"],
-.v-app input[type="password"],
+.v-app input[type="password"] {
+    padding: 4px 2px 0 4px;
+}
+
+/* Fix for liferay. #2384 */
 .v-app input[type="reset"],
 .v-app select,
 .v-app textarea {
@@ -336,20 +337,17 @@ input.v-modified,
 	font-size: 8pt;
 }
 
-
 /* Fix for liferay. #2384 */
-.v-app input[type="text"],
-.v-app input[type="password"],
 .v-app input[type="reset"],
 .v-app select,
 .v-app textarea {
 	padding: 2px;
 }
 
-.v-app input[type="text"],
-.v-app input[type="password"],
-.v-app input[type="reset"],
-.v-app .v-textfield
+/*.v-app input[type="text"],*/
+/*.v-app input[type="password"],*/
+.v-app input[type="reset"]/*,
+.v-app .v-textfield*/
 {
     height: 16px;
 }
@@ -368,7 +366,7 @@ input.v-modified,
 }
 
 .v-label-logo {
-    background: #cccccc url(../common/img/lable-logo.gif)repeat-x;
+    background: #cccccc url(img/label-logo.gif) repeat-x;
     font-weight:bold;
 }
 .v-app .v-label-logo {

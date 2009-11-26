@@ -1,7 +1,7 @@
 .v-window {
 	color: #464f52;
 	line-height: 18px;
-	background: #36393b;
+	background: transparent;
 }
 
 .v-window-wrap {
@@ -11,8 +11,9 @@
 
 .v-window-outerheader {
 	margin-left: 0;
-	padding: 0;
-    background: url(img/win-header-right.gif)no-repeat right top;
+	padding: 0 0 0 5px;
+    background: url(img/win-header-left.gif) no-repeat left top;
+    border-bottom: 1px solid #373b3e;
     cursor: move;
 /*
     border: 0 solid #131415;
@@ -21,15 +22,16 @@
 }
 
 .v-window-header {
-	font-size: 11pt;
-    padding: 6px 5px 5px 5px;
+	font-size: 14px;
+    padding: 6px 5px 5px 7px;
 	font-weight: bold;
 	letter-spacing: 0;
-    background: url(img/win-header-left.gif) no-repeat left top;
+    background: url(img/win-header-right-wide.png) no-repeat right top;
 	color: #ffffff;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
+    font-family: "Trebuchet MS", tahoma, arial, sans-serif;
 }
 
 * html .v-window-header {
@@ -45,7 +47,7 @@
     padding: 8px;
     font-size: 10pt;
 	border: 1px solid #131415;
-    margin: 2px;
+    /*margin: 2px;*/
 	/*border-bottom: none;*/
 }
 
@@ -74,7 +76,7 @@
 	height: 10px;
 	margin-top: -20px;
 	cursor: se-resize;
-	background: transparent url(img/resize.png);
+	background: transparent url(img/resize-black.png);
 	overflow: hidden;
 }
 
@@ -85,8 +87,8 @@
 
 .v-window-closebox {
 	position: absolute;
-	top: 9px;
-	right: 9px;
+	top: 5px;
+	right: 8px;
 	width: 21px;
 	height: 21px;
 	background: transparent url(img/close.gif);
@@ -94,11 +96,6 @@
 	overflow: hidden;
     /*border: 1px solid #fff;*/
 }
-/*
-.v-window-closebox:hover {
-	background-position: 0 -12px;
-}
-*/
 
 .v-window-modalitycurtain {
 	top: 0;

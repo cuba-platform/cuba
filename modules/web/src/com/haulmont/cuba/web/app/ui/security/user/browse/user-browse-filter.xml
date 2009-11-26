@@ -10,8 +10,8 @@
     </dsContext>
 
     <layout>
-        <vbox expand="expand-box" stylename="edit-area" margin="true">
-            <hbox id="group-box" spacing="true" stylename="fields-area">
+        <vbox expand="expand-box" margin="true">
+            <hbox id="group-box" spacing="true" stylename="edit-area">
                 <label control="name" value="msg://name"/>
                 <textField id="name"/>
 

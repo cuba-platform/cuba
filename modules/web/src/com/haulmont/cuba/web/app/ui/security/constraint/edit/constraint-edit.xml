@@ -17,8 +17,8 @@
     </dsContext>
 
     <layout expand="windowActions">
-        <vbox margin="true"  stylename="edit-area">
-            <grid id="grid" spacing="true" expandable="false" stylename="fields-area">
+        <vbox margin="true">
+            <grid id="grid" spacing="true" expandable="false" stylename="edit-area">
                 <columns>
                     <column flex="1"/>
                     <column flex="1"/>

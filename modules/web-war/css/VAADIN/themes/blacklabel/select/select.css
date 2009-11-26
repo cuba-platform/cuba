@@ -84,7 +84,7 @@
     border: none;
     height: 20px;
     margin: 0;
-    padding: 5px 0 0 2px;
+    padding: 3px 0 0 0px;
     font-size: 8pt;
 }
 
@@ -102,8 +102,8 @@
 }
 
 .v-filterselect-button {
-    width: 21px;
-    height: 23px;
+    width: 23px;
+    height: 21px;
     cursor: pointer;
     border: none;
     padding: 0;
@@ -130,14 +130,17 @@
 }
 
 .v-filterselect-suggestpopup {
-
-    border: 1px solid #b6bbbc;
+    border: 1px solid #83888c;
     font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
-    color: #464f52;
+    color: white;
     font-size: 12px;
     line-height: 18px;
     margin-top: -1px;
-    background: url(img/select-fon.gif) repeat-x;
+    background: #383b3e url(../tabsheet/img/tab-bg.gif) repeat-x;
+}
+
+.v-filterselect-suggestmenu {
+    /*background: #383b3e url(../tabsheet/img/tab-bg.gif) repeat-x; */
 }
 
 .v-filterselect-suggestmenu table {
@@ -170,14 +173,30 @@
 .v-filterselect-nextpage-off,
 .v-filterselect-prevpage-off,
 .v-filterselect-prevpage {
-    height: 11px;
+    height: 12px;
     width: 100%;
-    background: transparent url(img/button-bg.png) no-repeat 50% 0;
+    background: transparent no-repeat 50% 0;
     text-align: center;
     margin: 2px 0 0 0;
     overflow: hidden;
 }
 
+.v-filterselect-nextpage {
+    background-image: url(img/sel-popup-down-on.png);
+}
+
+.v-filterselect-nextpage-off {
+    background-image: url(img/sel-popup-down-off.png);
+}
+
+.v-filterselect-prevpage-off {
+    background-image: url(img/sel-popup-up-off.png);
+}
+
+.v-filterselect-prevpage {
+    background-image: url(img/sel-popup-up-on.png);
+}
+/*
 .v-filterselect-prevpage,
 .v-filterselect-prevpage-off {
     background-position: 50% -1px;
@@ -191,6 +210,7 @@
 .v-filterselect-nextpage:hover {
     background-position: 50% -12px;
 }
+*/
 
 .v-filterselect-nextpage span,
 .v-filterselect-nextpage-off span,
@@ -199,7 +219,7 @@
     display: block;
     height: 12px;
     width: 100%;
-    background: transparent url(img/arrow-up.png) no-repeat 50% 40%;
+    /*background: transparent url(img/arrow-up.png) no-repeat 50% 40%;*/
     text-indent: -90000px;
     cursor: pointer;
     overflow: hidden;
@@ -207,14 +227,14 @@
 
 .v-filterselect-nextpage span,
     .v-filterselect-nextpage-off span {
-    background: transparent url(img/arrow-down.png) no-repeat 50% 60%;
+    /*background: transparent url(img/arrow-down.png) no-repeat 50% 60%;*/
 }
 
 .v-filterselect-nextpage-off,
 .v-filterselect-prevpage-off {
     color: #666;
-    opacity: 0.5;
-    filter: Alpha( opacity = 50 );
+    /*opacity: 0.5;
+    filter: Alpha( opacity = 50 );*/
 }
 
 .v-filterselect-nextpage-off span,

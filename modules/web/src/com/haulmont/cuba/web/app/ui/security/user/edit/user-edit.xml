@@ -36,8 +36,8 @@
 
     <layout>
         <vbox expand="split" spacing="true">
-            <hbox stylename="edit-area" spacing="true" margin="true" width="100%">
-                <grid spacing="true" expandable="false" stylename="fields-area">
+            <hbox spacing="true" margin="true" width="100%">
+                <grid spacing="true" expandable="false" stylename="edit-area">
                     <columns>
                         <column flex="1"/>
                         <column flex="1"/>
@@ -86,7 +86,7 @@
                         </row>
                     </rows>
                 </grid>
-                <hbox align="TOP_RIGHT" spacing="true">
+                <hbox align="TOP_RIGHT" spacing="true" stylename="edit-area">
                     <label value="msg://permissions"/>
                     <lookupField id="permissionsLookupField"/>
                 </hbox>
