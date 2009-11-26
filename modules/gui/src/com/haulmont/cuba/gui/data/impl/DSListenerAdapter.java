@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.entity.Entity;
 
-public class DatasourceAdapter<T extends Entity> implements DatasourceListener<T> {
+public class DSListenerAdapter<T extends Entity> implements DatasourceListener<T> {
 
     public void itemChanged(Datasource<T> ds, T prevItem, T item) {
     }

@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.core.entity.Entity;
 
-public class CollectionDatasourceAdapter<T extends Entity> extends DatasourceAdapter<T> implements CollectionDatasourceListener<T> {
+public class CollectionDSListenerAdapter<T extends Entity> extends DSListenerAdapter<T> implements CollectionDatasourceListener<T> {
 
     public void collectionChanged(CollectionDatasource ds, Operation operation) {
     }
