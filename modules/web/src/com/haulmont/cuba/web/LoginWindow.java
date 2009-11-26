@@ -20,6 +20,7 @@ import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
@@ -76,47 +77,92 @@ public class LoginWindow extends Window
         }
 
         addActionHandler(this);
+
+        setPositionX(100);
     }
 
     protected void initUI(App app) {
-        FormLayout layout = new FormLayout();
-        layout.setSpacing(true);
-        layout.setMargin(true);
+        final String WIDTH = "125px";
+
+        final int formWidth = 267;
+        final int formHeight = 222;
+        final int totalHeight = formHeight;
+
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setStyleName("mainLayout");
+
+        VerticalLayout centerLayout = new VerticalLayout();
+        centerLayout.setWidth(formWidth + "px");
+        centerLayout.setHeight(totalHeight + "px");
+        centerLayout.setStyleName("centerLayout");
+
+        Form form = new Form(new FormLayout());
+        form.setStyleName("loginForm");
+        centerLayout.addComponent(form);
+        FormLayout formLayout = (FormLayout) form.getLayout();
+        formLayout.setSpacing(true);
 
         Label label = new Label(MessageProvider.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc));
-        layout.addComponent(label);
+        label.setWidth("-1px");
+        label.setStyleName("login-caption");
+
+        VerticalLayout wrap = new VerticalLayout();
+        wrap.setStyleName("loginBottom");
+        wrap.setMargin(false);
+        wrap.setWidth(formWidth + "px");
+        wrap.setHeight(formHeight + "px");
+        wrap.addComponent(label);
+        wrap.setComponentAlignment(label, Alignment.BOTTOM_CENTER);
+        wrap.addComponent(form);
+        centerLayout.addComponent(wrap);
 
         loginField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginField", loc));
-        layout.addComponent(loginField);
-        loginField.focus();
+        form.addField("loginField", loginField);
+        loginField.setWidth(WIDTH);
+        loginField.setStyleName("login-field");
+        formLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
         passwdField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
         passwdField.setSecret(true);
-        layout.addComponent(passwdField);
+        passwdField.setWidth(WIDTH);
+        passwdField.setStyleName("password-field");
+        form.addField("passwordField", passwdField);
+        formLayout.setComponentAlignment(passwdField, Alignment.MIDDLE_CENTER);
 
         localesSelect.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
+        localesSelect.setWidth(WIDTH);
         localesSelect.setNullSelectionAllowed(false);
-        layout.addComponent(localesSelect);
+        formLayout.addComponent(localesSelect);
+        formLayout.setComponentAlignment(localesSelect, Alignment.MIDDLE_CENTER);
+
+        Button okButton = new Button(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc),
+                new SubmitListener());
+        okButton.setStyleName("submit-login-btn");
+        okButton.setIcon(new ThemeResource("images/tick.png"));
+        form.addField("button", okButton);
+        formLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);
+
+        mainLayout.addComponent(centerLayout);
+        mainLayout.setSizeFull();
+        mainLayout.setComponentAlignment(centerLayout, Alignment.MIDDLE_CENTER);
+        setContent(mainLayout);
 
         initFields();
         loginField.focus();
 
-        okButton = new NativeButton(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc),
-                new SubmitListener());
-        layout.addComponent(okButton);
-
         Layout userHintLayout = createUserHint(app);
         if (userHintLayout != null) {
-            final VerticalLayout wrapLayout = new VerticalLayout();
+            VerticalLayout wrapLayout = new VerticalLayout();
             wrapLayout.setSpacing(true);
-            wrapLayout.addComponent(layout);
+            wrapLayout.addComponent(mainLayout);
             wrapLayout.addComponent(userHintLayout);
             setContent(wrapLayout);
-        } else {
-            setContent(layout);
+        }
+        else {
+            setContent(mainLayout);
         }
 
-        setTheme("saneco");
+        setTheme("blacklabel");
     }
 
     protected void initFields() {

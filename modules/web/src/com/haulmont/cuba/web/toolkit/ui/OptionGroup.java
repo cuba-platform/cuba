@@ -49,7 +49,6 @@ public class OptionGroup extends com.vaadin.ui.OptionGroup {
         }
     }
 
-    @Override
     protected int paintOption(PaintTarget target, String[] selectedKeys,
                               int keyIndex, Object id, String key, String caption, Resource icon
     ) throws PaintException {

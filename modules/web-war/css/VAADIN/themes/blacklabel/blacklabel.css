@@ -81,6 +81,50 @@
     */
 }
 
+/*
+ * Login page styles
+ */
+.v-verticallayout-centerLayout {
+    margin-bottom: 0;
+}
+
+.v-verticallayout-loginBottom {
+    background: url('images/login-form-bg-key.png') no-repeat top center;
+    padding-top: 5px;
+}
+
+.v-verticallayout-loginBottom .v-textfield-password-field {
+    border: #a0a1a3 ridge 1px;
+}
+
+.v-verticallayout-loginBottom .v-textfield-login-field {
+    border: #a0a1a3 ridge 1px;
+}
+
+.v-verticallayout-loginBottom .v-caption {
+    color: white;
+    font-family: arial, sans-serif;
+}
+
+.v-verticallayout-loginBottom .v-label-login-caption {
+    color: white;
+    font-weight: bold;
+    font-family: arial, sans-serif;
+    font-size: 9pt;
+}
+
+.v-verticallayout-mainLayout {
+    background-color: #242426;
+}
+
+.v-form-loginForm {
+    padding-left: 30px;
+    font-weight: normal;
+}
+
+.v-form-loginForm .v-form-description {
+    height: 0;
+}
 
 /*
  * Here go
