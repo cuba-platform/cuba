@@ -1,3 +1,35 @@
+/*
+ * Menu bar
+ */
+
+.v-horizontallayout-menubar {
+    border-bottom: 1px solid #83888c;
+    background: url('images/menu-bg.png') repeat-x top left;
+}
+
+/*
+ * Title bar
+ */
+
+.v-horizontallayout-titlebar {
+    background: url('images/title-bg.png') repeat-x top left;
+    border-bottom: 1px solid #83888c;
+}
+
+.v-horizontallayout-titlebar .v-label-appname {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Tahoma, Verdana, Arial, sans-serif;
+}
+
+.v-horizontallayout-titlebar .v-label-select-label {
+    color: white;
+    font-size: 12px;
+    font-weight: normal;
+    font-family: Arial, sans-serif;
+}
+
 /**
  *  Breadcrumbs styles
  */

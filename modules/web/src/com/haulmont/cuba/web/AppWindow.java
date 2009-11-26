@@ -35,6 +35,7 @@ import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.dom4j.Element;
 
@@ -241,8 +242,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected HorizontalLayout createMenuBarLayout() {
         HorizontalLayout layout = new HorizontalLayout();
-        layout.setMargin(false);
-        layout.setSpacing(false);
+        layout.setStyleName("menubar");
+        layout.setWidth(100, Sizeable.UNITS_PERCENTAGE);
+        layout.setHeight(28, Sizeable.UNITS_PIXELS);
+        layout.setMargin(false, false, false, false);
+        layout.setSpacing(true);
         menuBar = createMenuBar();
         layout.addComponent(menuBar);
 
@@ -267,41 +271,57 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return menuBar;
     }
 
+    /*
+     * Can be overriding by client application to change title caption
+     */
+    protected String getLogoLabelCaption() {
+        return MessageProvider.getMessage(getClass(), "logoLabel");
+    }
+
     /**
      * Can be overridden in descendant to create an app-specific title layout
      */
     protected Layout createTitleLayout() {
         HorizontalLayout titleLayout = new HorizontalLayout();
+        titleLayout.setStyleName("titlebar");
 
         titleLayout.setWidth(100, Sizeable.UNITS_PERCENTAGE);
-        titleLayout.setHeight(20, Sizeable.UNITS_PIXELS);
+        titleLayout.setHeight(41, Sizeable.UNITS_PIXELS);
 
-        titleLayout.setMargin(false);
-        titleLayout.setSpacing(false);
+        titleLayout.setMargin(false, true, false, true);
+        titleLayout.setSpacing(true);
 
-        Label logoLabel = new Label(MessageProvider.getMessage(getClass(), "logoLabel"));
-        logoLabel.setStyleName("logo");//new style for logo
+        Label logoLabel = new Label(getLogoLabelCaption());
+        logoLabel.setStyleName("appname");
+
+        titleLayout.addComponent(logoLabel);
+        titleLayout.setExpandRatio(logoLabel, 1);
+        titleLayout.setComponentAlignment(logoLabel, Alignment.MIDDLE_LEFT);
 
         HorizontalLayout loginLayout = new HorizontalLayout();
-
+        loginLayout.setMargin(false, true, false, false);
+        loginLayout.setSpacing(true);
         Label userLabel = new Label(MessageProvider.getMessage(getClass(), "loggedInLabel"));
-        userLabel.setStyleName("logo");
+        userLabel.setStyleName("select-label");
 
         loginLayout.addComponent(userLabel);
 
         final NativeSelect substUserSelect = new NativeSelect();
         substUserSelect.setNullSelectionAllowed(false);
         substUserSelect.setImmediate(true);
-        substUserSelect.setStyleName("logo");
+        substUserSelect.setStyleName("select-label");
 
         fillSubstitutedUsers(substUserSelect);
         substUserSelect.select(App.getInstance().getConnection().getSession().getUser());
         substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
 
         loginLayout.addComponent(substUserSelect);
+        
 
-        Button logoutBtn = new NativeButton(MessageProvider.getMessage(getClass(), "logoutBtn"),
+        Button logoutBtn = new Button(MessageProvider.getMessage(getClass(), "logoutBtn"),
                 new Button.ClickListener() {
+                    private static final long serialVersionUID = 4885156177472913997L;
+
                     public void buttonClick(Button.ClickEvent event) {
                         connection.logout();
                         String url = ActiveDirectoryHelper.useActiveDirectory() ? "login" : "";
@@ -309,26 +329,30 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     }
                 }
         );
-        logoutBtn.setStyleName("title");
+        logoutBtn.setStyleName("white-border");
+        logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
 
-        Button viewLogBtn = new NativeButton(MessageProvider.getMessage(getClass(), "viewLogBtn"),
+        Button viewLogBtn = new Button(MessageProvider.getMessage(getClass(), "viewLogBtn"),
                 new Button.ClickListener() {
+                    private static final long serialVersionUID = -2017737447316558248L;
+
                     public void buttonClick(Button.ClickEvent event) {
                         LogWindow logWindow = new LogWindow();
                         addWindow(logWindow);
                     }
                 }
         );
-        viewLogBtn.setStyleName("title");
-
-        titleLayout.addComponent(logoLabel);
-        titleLayout.setExpandRatio(logoLabel, 1);
-        titleLayout.setComponentAlignment(logoLabel, Alignment.MIDDLE_LEFT);
+        viewLogBtn.setStyleName("white-border");
+        viewLogBtn.setIcon(new ThemeResource("images/show-log.gif"));
 
         titleLayout.addComponent(loginLayout);
+        titleLayout.setComponentAlignment(loginLayout, Alignment.MIDDLE_RIGHT);
 
         titleLayout.addComponent(logoutBtn);
+        titleLayout.setComponentAlignment(logoutBtn, Alignment.MIDDLE_RIGHT);
+
         titleLayout.addComponent(viewLogBtn);
+        titleLayout.setComponentAlignment(viewLogBtn, Alignment.MIDDLE_RIGHT);
 
         return titleLayout;
     }

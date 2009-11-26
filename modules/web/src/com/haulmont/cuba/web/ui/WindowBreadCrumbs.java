@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.ui;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Window;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -40,6 +41,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         setMargin(true);
         setWidth(100, Sizeable.UNITS_PERCENTAGE);
         setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
+        setStyleName("headline-container");
 
         logoLayout = new HorizontalLayout();
         logoLayout.setMargin(true);
@@ -47,14 +49,14 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
         linksLayout = new HorizontalLayout();
         linksLayout.setStyleName("breadcrumbs");
-        closeBtn = new Button(MessageProvider.getMessage(getClass(), "closeBtn"), new Button.ClickListener() {
+        closeBtn = new Button("", new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 final Window window = getCurrentWindow();
                 window.close("close");
             }
         });
-
-        closeBtn.setStyleName(Button.STYLE_LINK);
+        closeBtn.setIcon(new ThemeResource("images/close.gif"));
+        closeBtn.setStyleName("closetab-button");
 
         HorizontalLayout enclosingLayout = new HorizontalLayout();
         enclosingLayout.addComponent(linksLayout);
