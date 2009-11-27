@@ -223,8 +223,23 @@ public class DsContextLoader {
                     String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
         }
 
-        final CollectionDatasource datasource =
-                factory.createCollectionDatasource(id, ds, property);
+        final Element datasourceClassElement = element.element("datasourceClass");
+        CollectionDatasource datasource;
+        if (datasourceClassElement != null) {
+            final String datasourceClass = datasourceClassElement.getText();
+            if (StringUtils.isEmpty(datasourceClass))
+                throw new IllegalStateException("Datasource class is not specified");
+            try {
+                final Class<CollectionDatasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Constructor<CollectionDatasource> constructor =
+                        aClass.getConstructor(String.class, Datasource.class, String.class);
+                datasource = constructor.newInstance(id, ds, property);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            datasource = factory.createCollectionDatasource(id, ds, property);
+        }
 
         loadDatasources(element, datasource);
 
