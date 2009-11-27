@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.app;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
@@ -81,6 +82,38 @@ public class FileDownloadHelper {
                 }
                 component.setStyleName("link");
                 return component;
+            }
+        });
+    }
+
+    public static void initGeneratedColumn(Table table, final String fileProperty) {
+        final CollectionDatasource ds = table.getDatasource();
+        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx(fileProperty + ".name");
+        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+
+        vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
+            public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                Instance enclosingEntity = (Instance) ds.getItem(itemId);
+                if (enclosingEntity != null) {
+                    final FileDescriptor fd = enclosingEntity.getValue(fileProperty);
+                    if (fd != null) {
+                        Component component;
+                        if (PersistenceHelper.isNew(fd)) {
+                            component = new Label(fd.getName());
+                        } else {
+                            component = new Button(fd.getName(),
+                                    new Button.ClickListener() {
+                                        public void buttonClick(Button.ClickEvent event) {
+                                            FileDisplay fileDisplay = new FileDisplay(true);
+                                            fileDisplay.show(fd.getName(), fd, false);
+                                        }
+                                    });
+                        }
+                        component.setStyleName("link");
+                        return component;
+                    }
+                }
+                return new Label();
             }
         });
     }

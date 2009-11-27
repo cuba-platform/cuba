@@ -25,6 +25,9 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.Document;
@@ -100,7 +103,12 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
-                final Class<Window> aClass = ReflectionHelper.getClass(screenClass);
+                Class<Window> aClass = null;
+                if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled()) {
+                    aClass = ScriptingProvider.loadGroovyClass(screenClass);
+                }
+                if (aClass == null)
+                    aClass = ReflectionHelper.getClass(screenClass);
                 res = ((WrappedFrame) frame).wrapBy(aClass);
 
                 parentContext.addLazyTask(new FrameLoaderLazyTask(res, params, true));

@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.AppConfig;
 import com.vaadin.ui.Upload;
 
 import java.io.ByteArrayOutputStream;
@@ -37,7 +38,8 @@ public class WebFileUploadField
         UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
         final Integer maxUploadSizeMb = config.getMaxUploadSizeMb();
 
-        component = new Upload(MessageProvider.getMessage(App.getInstance().getClass(), "Upload"), new Upload.Receiver() {
+        String caption = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "Upload");
+        component = new Upload(caption, new Upload.Receiver() {
             public OutputStream receiveUpload(String filename, String MIMEType) {
                 fileName = filename;
                 outputStream = new ByteArrayOutputStream();
@@ -89,7 +91,7 @@ public class WebFileUploadField
                 }
             }
         });
-        component.setButtonCaption(MessageProvider.getMessage(App.getInstance().getClass(),
+        component.setButtonCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
                 "upload.submit"));
     }
 

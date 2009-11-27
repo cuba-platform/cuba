@@ -97,12 +97,21 @@ public class ResourceBundleMessageProvider extends MessageProvider
             }
             if (file.exists()) {
                 try {
-                    InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
-                    Properties properties = new Properties();
-                    properties.load(reader);
-                    // load all found strings into cache
-                    for (String k : properties.stringPropertyNames()) {
-                        strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
+                    FileInputStream stream = new FileInputStream(file);
+                    try {
+                        InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+                        Properties properties = new Properties();
+                        properties.load(reader);
+                        // load all found strings into cache
+                        for (String k : properties.stringPropertyNames()) {
+                            strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
+                        }
+                    } finally {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            //
+                        }
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
