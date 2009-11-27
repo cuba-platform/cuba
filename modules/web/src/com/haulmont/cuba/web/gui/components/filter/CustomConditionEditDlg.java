@@ -284,6 +284,8 @@ public class CustomConditionEditDlg extends Window {
         if (ParamType.ENTITY.equals(typeSelect.getValue())) {
             for (MetaClass metaClass : getMetaClasses()) {
                 select.addItem(metaClass);
+                select.setItemCaption(metaClass,
+                        MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName()));
             }
             if (param != null && Param.Type.ENTITY.equals(param.getType())) {
                 Class javaClass = param.getJavaClass();
@@ -294,7 +296,7 @@ public class CustomConditionEditDlg extends Window {
         } else if (ParamType.ENUM.equals(typeSelect.getValue())) {
             for (Class enumClass : getEnums()) {
                 select.addItem(enumClass);
-                select.setItemCaption(enumClass, enumClass.getName());
+                select.setItemCaption(enumClass, MessageProvider.getMessage(enumClass, enumClass.getSimpleName()));
             }
             if (param != null && Param.Type.ENUM.equals(param.getType())) {
                 Class javaClass = param.getJavaClass();
