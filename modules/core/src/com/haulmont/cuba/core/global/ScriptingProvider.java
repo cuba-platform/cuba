@@ -68,6 +68,10 @@ public abstract class ScriptingProvider {
         return getInstance().__getGroovyClassLoader();
     }
 
+    public static void clearCache() {
+        getInstance().__getGroovyClassLoader().clearCache();
+    }
+
     protected void __runGroovyScript(String name, Binding binding) {
         try {
             __getGroovyScriptEngine().run(name, binding);

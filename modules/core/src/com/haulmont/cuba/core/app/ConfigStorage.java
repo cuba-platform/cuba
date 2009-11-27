@@ -117,10 +117,6 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         cache.clear();
     }
 
-    public void clearMessagesCache() {
-        MessageProvider.clearCache();
-    }
-
     public String loadSystemProperties() {
         PersistenceConfigMBean mbean = Locator.lookupMBean(PersistenceConfigMBean.class, PersistenceConfigMBean.OBJECT_NAME);
         return mbean.loadSystemProperties();

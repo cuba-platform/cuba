@@ -57,7 +57,7 @@ public class WebFrame extends WebAbstractPanel
         try {
             Constructor<?> constructor = aClass.getConstructor(IFrame.class);
 
-            Window wrapper = (Window) constructor.newInstance(this);
+            IFrame wrapper = (IFrame) constructor.newInstance(this);
             return wrapper;
         } catch (Throwable e) {
             throw new RuntimeException(e);

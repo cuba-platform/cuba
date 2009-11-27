@@ -218,7 +218,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     public <A extends IFrame> A getFrame() {
-        return (A) this;
+        return (A) this.frame.getFrame();
     }
 
     public void setFrame(IFrame frame) {
