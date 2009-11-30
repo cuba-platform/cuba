@@ -110,6 +110,20 @@ public class WebLookupField
     }
 
     @Override
+    protected void attachListener(FilterSelect component) {
+        component.addListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent event) {
+                final Object value = getValue();
+                fireValueChanged(prevValue, value);
+                prevValue = value;
+                if (optionsDatasource != null) {
+                    optionsDatasource.setItem((Entity) value);
+                }
+            }
+        });
+    }
+
+    @Override
     public void setValue(Object value) {
         super.setValue(getKeyFromValue(value));
     }
