@@ -57,10 +57,18 @@ public abstract class SecurityProvider
     }
 
     /**
-     * Current user identifier
+     * Current (logged in) user identifier
      */
     public static UUID currentUserId() {
         return getInstance().__currentUserSession().getUser().getId();
+    }
+
+    /**
+     * Returns substituted user ID if there is one, otherwise returns logged in user ID
+     */
+    public static UUID currentOrSubstitutedUserId() {
+        UserSession us = getInstance().__currentUserSession();
+        return us.getSubstitutedUser() != null ? us.getSubstitutedUser().getId() : us.getUser().getId();
     }
 
     /**
