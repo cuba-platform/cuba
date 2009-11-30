@@ -1,4 +1,6 @@
-package com.haulmont.cuba.gui.components;/*
+package com.haulmont.cuba.gui.components;
+
+/*
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.

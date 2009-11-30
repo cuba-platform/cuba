@@ -16,8 +16,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -180,7 +179,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         });
     }
 
-    private void loadActionButtons(T component, Element element) throws InstantiationException {
+    private void loadActionButtons(final T component, Element element) throws InstantiationException {
         final String className = element.attributeValue("class");
         if (className != null) {
             final Class<Table.ActionButtonsProvider> clazz = ReflectionHelper.getClass(className);
@@ -208,7 +207,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                 for (final Element actionButtonElement : actionButtonElements) {
                     actionButtonsProvider.addActionButton(loadActionButton(component, actionButtonElement));
                 }
-                component.setActionButtonsProvider(actionButtonsProvider);
+                context.addLazyTask(new LazyTask() {
+                    public void execute(Context context, IFrame frame) {
+                        component.setActionButtonsProvider(actionButtonsProvider);
+                    }
+                });
             } else {
                 throw new InstantiationException(
                         "<actionButtons> element must contains \"class\" attribute or at least one <actionButton> element");

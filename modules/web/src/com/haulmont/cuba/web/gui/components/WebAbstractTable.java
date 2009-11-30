@@ -620,6 +620,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected void buildActionButtons() {
         final HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setSpacing(true);
+        buttonsLayout.setMargin(true, true, false, true);
         for (final Table.ActionButton actionButton : actionButtonsProvider.getButtons()) {
             buttonsLayout.addComponent(createButton(actionButton));
         }
