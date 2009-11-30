@@ -10,8 +10,8 @@ package com.haulmont.cuba.gui.components;/*
  */
 
 public class AbstractActionAdapter extends AbstractAction {
-    public AbstractActionAdapter(String id) {
-        super(id);
+    public AbstractActionAdapter() {
+        super("");
     }
 
     public void actionPerform(Component component) {
