@@ -108,7 +108,7 @@ outline-offset: -3px;
     text-decoration: underline;
     color: inherit;
     text-align: left;
-    padding-left: 10px;
+    margin-left: 10px;
 }
 
 .v-button-link .v-button-wrap {

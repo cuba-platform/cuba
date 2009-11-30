@@ -131,8 +131,7 @@
 }
 
 .v-table-cell-content {
-    padding: 5px 0 5px 3px;
-	margin-right: 5px;
+    padding: 4px 0 5px 5px;
 	line-height: 15px;
 }
 
@@ -163,8 +162,25 @@
 /* Fix textfield size to correspond label size inside table */
 .v-table-cell-content .v-textfield,
 .v-table-cell-content .v-button {
-	margin: 0px 0 -2px -3px;
+	margin: 0;
 }
+
+.v-table-cell-content .v-button-link {
+    margin: 0;
+    height: auto;
+}
+
+.v-table-cell-content .v-button-wrap {
+    padding: 0;
+    height: auto;
+}
+
+.v-table-cell-content .v-button-caption {
+    font-size: 8pt;
+    margin: 0;
+    padding: 0;
+}
+
 .v-table-cell-content .v-textfield,
 .v-table-cell-content .v-datefield {
 	width: 97%; /* approximate */
@@ -307,40 +323,4 @@
 .v-pager .v-pager-editor {
     float: right;
     line-height: 18px;
-}
-
-/* action buttons panel*/
-.v-table-buttons {
-    margin-bottom: 1px;
-}
-/*
-.v-table-buttons .popupContent {
-    height: 20px;
-    overflow-y: hidden;
-    background-color: lightgray;
-}
-*/
-.v-table-buttons-container {
-    /*float: left;*/
-    height: 20px;
-    float: right;
-}
-/*
-.v-table-buttons-mover {
-    float: left;
-    height: 20px;
-    width: 10px;
-    background-color: darkgray;
-    cursor: move;
-}
-*/
-.v-table-button-wrap {
-    float: left;
-    margin: 1px 2px;
-}
-.v-table-button {
-    height: 16px;
-    width: 16px;
-    border: 0;
-    cursor: pointer;
-}    
+}   
