@@ -42,6 +42,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Layout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -77,6 +78,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             new LinkedHashSet<com.haulmont.cuba.gui.components.Field.Validator>();
 
     protected VerticalLayout componentComposition;
+    protected Layout actionButtonsLayout;
 
     protected Table.ActionButtonsProvider actionButtonsProvider;
 
@@ -229,6 +231,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 }
             }
         });
+
+        componentComposition = new CompositionLayout(component);
+        componentComposition.setSpacing(true);
+        componentComposition.setExpandRatio(component, 1);
     }
 
     protected Collection<MetaPropertyPath> createColumns(com.vaadin.data.Container ds) {
@@ -606,25 +612,23 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     public void setActionButtonsProvider(Table.ActionButtonsProvider buttonsProvider) {
         if (actionButtonsProvider != null) {
-            componentComposition = null; //Reset component composition. getComposition() will return Table component
+            componentComposition.removeComponent(actionButtonsLayout);
         }
         actionButtonsProvider = buttonsProvider;
         if (buttonsProvider != null) {
-            componentComposition = new CompositionLayout(component);
-            componentComposition.setSpacing(true);
-            componentComposition.setExpandRatio(component, 1);
-            buildActionButtons();
+            actionButtonsLayout = createActionButtonsLayout();
+            componentComposition.addComponentAsFirst(actionButtonsLayout);
         }
     }
 
-    protected void buildActionButtons() {
+    protected Layout createActionButtonsLayout() {
         final HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setSpacing(true);
         buttonsLayout.setMargin(true, true, false, true);
         for (final Table.ActionButton actionButton : actionButtonsProvider.getButtons()) {
             buttonsLayout.addComponent(createButton(actionButton));
         }
-        componentComposition.addComponentAsFirst(buttonsLayout);
+        return buttonsLayout;
     }
 
     protected Component createButton(Table.ActionButton actionButton) {
@@ -651,7 +655,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         @Override
         public String getCaption() {
-            return actionButton.getCaption();
+            String caption = actionButton.getCaption();
+            if (StringUtils.isEmpty(caption) && actionButton.getAction() != null) {
+                caption = actionButton.getAction().getCaption();
+            }
+            return caption;
         }
 
         @Override
