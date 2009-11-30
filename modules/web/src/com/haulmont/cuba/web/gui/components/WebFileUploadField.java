@@ -95,10 +95,12 @@ public class WebFileUploadField
                 "upload.submit"));
     }
 
+/*
     public <T> T getComponent() {
         return (T) component;
     }
 
+*/
     public String getFilePath() {
         return fileName;
     }

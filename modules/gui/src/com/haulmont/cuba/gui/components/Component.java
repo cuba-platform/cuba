@@ -106,6 +106,7 @@ public interface Component {
      */
     interface Wrapper extends Component {
         <T> T getComponent();
+        Object getComposition();
     }
 
     /**

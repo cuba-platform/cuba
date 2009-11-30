@@ -426,7 +426,7 @@ public class TreeTable
         }
         target.addAttribute("vcolorder", visibleColOrder.toArray());
 
-        paintActionButtons(target);
+//        paintActionButtons(target);
 
         if (items instanceof AggregationContainer && isAggregatable()
                 && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {

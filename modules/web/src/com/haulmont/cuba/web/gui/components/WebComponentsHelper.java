@@ -92,6 +92,15 @@ public class WebComponentsHelper {
         return (com.haulmont.cuba.web.toolkit.Timer) timer;
     }
 
+    public static Component getComposition(com.haulmont.cuba.gui.components.Component component) {
+        Object comp = component;
+        while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
+            comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComposition();
+        }
+
+        return  (com.vaadin.ui.Component) comp;
+    }
+
     public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
             com.haulmont.cuba.gui.components.Component.Container container)
     {

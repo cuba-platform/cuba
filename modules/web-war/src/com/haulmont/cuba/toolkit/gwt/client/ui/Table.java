@@ -101,7 +101,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected boolean storeColWidth = false;
 
-    protected ActionButtonsPanel actionButtonsPanel = null;
+//    protected ActionButtonsPanel actionButtonsPanel = null;
 //    protected boolean needSetPanelPosition = false;
 
     protected AggregationRow aggregationRow = null;
@@ -209,8 +209,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 updateActionMap(c);
             } else if (c.getTag().equals("visiblecolumns")) {
                 tHead.updateCellsFromUIDL(c);
-            } else if (c.getTag().equals("actionButtons")) {
-                updateActionButtons(c);
+//            } else if (c.getTag().equals("actionButtons")) {
+//                updateActionButtons(c);
             }
         }
 
@@ -260,19 +260,19 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
     }
 
-    protected void updateActionButtons(UIDL uidl) {
-        if (actionButtonsPanel == null) {
-            actionButtonsPanel = new ActionButtonsPanel();
-//            needSetPanelPosition = true;
-            insert(actionButtonsPanel, 0);
-        }
-        actionButtonsPanel.updateFromUIDL(uidl);
-/*
-        if (!actionButtonsPanel.isShowing()) {
-            actionButtonsPanel.show();
-        }
-*/
-    }
+//    protected void updateActionButtons(UIDL uidl) {
+//        if (actionButtonsPanel == null) {
+//            actionButtonsPanel = new ActionButtonsPanel();
+////            needSetPanelPosition = true;
+//            insert(actionButtonsPanel, 0);
+//        }
+//        actionButtonsPanel.updateFromUIDL(uidl);
+///*
+//        if (!actionButtonsPanel.isShowing()) {
+//            actionButtonsPanel.show();
+//        }
+//*/
+//    }
 
     protected void updateAggregationRow(UIDL uidl) {
         if (aggregationRow == null) {
@@ -1960,9 +1960,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected void setContainerHeight() {
         if (height != null && !"".equals(height)) {
             int contentH = getOffsetHeight() - tHead.getOffsetHeight();
-            if (actionButtonsPanel != null) {
-                contentH -= actionButtonsPanel.getOffsetHeight();
-            }
+//            if (actionButtonsPanel != null) {
+//                contentH -= actionButtonsPanel.getOffsetHeight();
+//            }
             if (aggregationRow != null) {
                 contentH -= aggregationRow.getOffsetHeight();
             }

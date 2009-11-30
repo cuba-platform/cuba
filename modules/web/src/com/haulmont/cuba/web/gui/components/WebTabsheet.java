@@ -92,11 +92,11 @@ public class WebTabsheet
         }
 
         public String getCaption() {
-            return WebTabsheet.this.component.getTabCaption(WebComponentsHelper.unwrap(component));
+            return WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).getCaption();
         }
 
         public void setCaption(String caption) {
-            WebTabsheet.this.component.setTabCaption(WebComponentsHelper.unwrap(component), caption);
+            WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setCaption(caption);
         }
 
         public Component getComponent() {
@@ -237,7 +237,7 @@ public class WebTabsheet
                 }
 
                 tabContent.add(comp);
-                com.vaadin.ui.Component impl = WebComponentsHelper.unwrap(comp);
+                com.vaadin.ui.Component impl = WebComponentsHelper.getComposition(comp);
                 impl.setSizeFull();
 
                 final Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabsheet.this);

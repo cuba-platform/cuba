@@ -203,7 +203,7 @@ public class WebWindowManager extends WindowManager
             }
         }
 
-        final Component component = WebComponentsHelper.unwrap(window);
+        final Component component = WebComponentsHelper.getComposition(window);
         component.setSizeFull();
         layout.addComponent(component);
         layout.setExpandRatio(component, 1);
@@ -237,9 +237,9 @@ public class WebWindowManager extends WindowManager
             throw new IllegalStateException("BreadCrumbs not found");
 
         final Window currentWindow = breadCrumbs.getCurrentWindow();
-        layout.removeComponent(WebComponentsHelper.unwrap(currentWindow));
+        layout.removeComponent(WebComponentsHelper.getComposition(currentWindow));
 
-        final Component component = WebComponentsHelper.unwrap(window);
+        final Component component = WebComponentsHelper.getComposition(window);
         component.setSizeFull();
         layout.addComponent(component);
         layout.setExpandRatio(component, 1);
@@ -263,7 +263,7 @@ public class WebWindowManager extends WindowManager
         final com.vaadin.ui.Window win = createDialogWindow(window);
         win.setName(window.getId());
 
-        Layout layout = (Layout) WebComponentsHelper.unwrap(window);
+        Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
         // surrond window layout with outer layout to prevent double painting
         VerticalLayout outerLayout = new VerticalLayout();
@@ -327,7 +327,7 @@ public class WebWindowManager extends WindowManager
             }
             case NEW_TAB: {
                 final Layout layout = (Layout) openMode.getData();
-                layout.removeComponent(WebComponentsHelper.unwrap(window));
+                layout.removeComponent(WebComponentsHelper.getComposition(window));
 
                 if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
                     appWindow.getTabSheet().removeComponent(layout);
@@ -352,10 +352,10 @@ public class WebWindowManager extends WindowManager
                 breadCrumbs.removeWindow();
                 Window currentWindow = breadCrumbs.getCurrentWindow();
 
-                final Component component = WebComponentsHelper.unwrap(currentWindow);
+                final Component component = WebComponentsHelper.getComposition(currentWindow);
                 component.setSizeFull();
 
-                layout.removeComponent(WebComponentsHelper.unwrap(window));
+                layout.removeComponent(WebComponentsHelper.getComposition(window));
                 layout.addComponent(component);
                 layout.setExpandRatio(component, 1);
 

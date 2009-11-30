@@ -27,7 +27,7 @@ public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayou
     private boolean expandable = true;
 
     public void add(Component component) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
 
         addComponent(itmillComponent);
         setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
@@ -42,7 +42,7 @@ public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayou
     }
 
     public void add(Component component, int col, int row, int col2, int row2) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
 
         addComponent(itmillComponent, col, row, col2, row2);
         setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
@@ -54,7 +54,7 @@ public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayou
     }
 
     public void remove(Component component) {
-        removeComponent(WebComponentsHelper.unwrap(component));
+        removeComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }

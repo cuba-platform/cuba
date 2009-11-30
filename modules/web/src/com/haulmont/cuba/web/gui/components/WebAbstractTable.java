@@ -15,33 +15,33 @@ import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Aggregation;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.ui.TableSupport;
+import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -49,6 +49,7 @@ import org.dom4j.Element;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.List;
 
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T>
@@ -74,6 +75,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators =
             new LinkedHashSet<com.haulmont.cuba.gui.components.Field.Validator>();
+
+    protected VerticalLayout componentComposition;
 
     protected Table.ActionButtonsProvider actionButtonsProvider;
 
@@ -143,6 +146,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     public void setAggregatable(boolean aggregatable) {
         component.setAggregatable(aggregatable);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Component getComposition() {
+        return componentComposition != null
+                ? componentComposition : component;
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
@@ -398,19 +408,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
         tableValidators.add(validator);
-//        component.addValidator(new Validator() {
-//            public void validate(Object value) throws InvalidValueException {
-//                try {
-//                    validator.validate(value);
-//                } catch (ValidationException e) {
-//                    throw new InvalidValueException(e.getMessage());
-//                }
-//            }
-//
-//            public boolean isValid(Object value) {
-//                return validator.isValid(value);
-//            }
-//        });
     }
 
     public void validate() throws ValidationException {
@@ -587,10 +584,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         });
     }
 
-    public Table.ActionButtonsProvider getActionButtonsProvider() {
-        return actionButtonsProvider;
-    }
-
     protected Map<Object, String> __aggregate(AggregationContainer container, Collection itemIds) {
         final List<Aggregation> aggregationInfos =
                 new LinkedList<Aggregation>();
@@ -607,41 +600,67 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         );
     }
 
+    public Table.ActionButtonsProvider getActionButtonsProvider() {
+        return actionButtonsProvider;
+    }
+
     public void setActionButtonsProvider(Table.ActionButtonsProvider buttonsProvider) {
         if (actionButtonsProvider != null) {
-            for (com.haulmont.cuba.web.toolkit.ui.Table.ActionButton button : component.getActionButtons()) {
-                component.removeActionButton(button);
-            }
+            componentComposition = null; //Reset component composition. getComposition() will return Table component
         }
         actionButtonsProvider = buttonsProvider;
-        for (final Table.ActionButton button : buttonsProvider.getButtons()) {
-            component.addActionButton(new ActionButtonWrapper(button));
+        if (buttonsProvider != null) {
+            componentComposition = new CompositionLayout(component);
+            componentComposition.setSpacing(true);
+            componentComposition.setExpandRatio(component, 1);
+            buildActionButtons();
         }
     }
 
-    protected class ActionButtonWrapper implements com.haulmont.cuba.web.toolkit.ui.Table.ActionButton {
+    protected void buildActionButtons() {
+        final HorizontalLayout buttonsLayout = new HorizontalLayout();
+        buttonsLayout.setSpacing(true);
+        for (final Table.ActionButton actionButton : actionButtonsProvider.getButtons()) {
+            buttonsLayout.addComponent(createButton(actionButton));
+        }
+        componentComposition.addComponentAsFirst(buttonsLayout);
+    }
 
-        protected final Table.ActionButton button;
-        protected Resource iconResource = null;
+    protected Component createButton(Table.ActionButton actionButton) {
+        final WebButton webButton = new WebButton();
+        webButton.setId(actionButton.getId());
+        webButton.setAction(new ActionButtonAction(actionButton));
+        return WebComponentsHelper.getComposition(webButton);
+    }
 
-        public ActionButtonWrapper(Table.ActionButton button) {
-            this.button = button;
+    private class ActionButtonAction extends com.haulmont.cuba.gui.components.AbstractAction  {
+
+        private Table.ActionButton actionButton;
+
+        public ActionButtonAction(Table.ActionButton actionButton) {
+            super(null);
+            this.actionButton = actionButton;
         }
 
+        @Override
+        public String getId() {
+            return actionButton.getAction() != null
+                    ? actionButton.getAction().getId() : actionButton.getId();
+        }
+
+        @Override
         public String getCaption() {
-            return button.getCaption();
+            return actionButton.getCaption();
         }
 
-        public Resource getIcon() {
-            if (iconResource == null && button.getIcon() != null) {
-                iconResource = new ThemeResource(button.getIcon());
-            }
-            return iconResource;
+        @Override
+        public String getIcon() {
+            return actionButton.getIcon();
         }
 
-        public void actionPerform(com.haulmont.cuba.web.toolkit.ui.Table source) {
-            if (button.getAction() != null) {
-                button.getAction().actionPerform(WebAbstractTable.this);
+        public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+            if (actionButton.getAction() != null) {
+                actionButton.getAction().actionPerform(component);
             }
         }
     }

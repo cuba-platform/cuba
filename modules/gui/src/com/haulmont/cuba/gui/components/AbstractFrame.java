@@ -123,6 +123,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return (T) frame;
     }
 
+    public Object getComposition() {
+        return frame;
+    }
+
     public void expand(Component component, String height, String width) {
         frame.expand(component, height, width);
     }

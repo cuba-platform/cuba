@@ -50,7 +50,7 @@ public class WebFrame extends WebAbstractPanel
     boolean inGetComponent;
 
     public WebFrame() {
-        setLayout(new VerticalLayout());
+        setContent(new VerticalLayout());
     }
 
     public IFrame wrapBy(Class<? extends IFrame> aClass) {
@@ -65,9 +65,9 @@ public class WebFrame extends WebAbstractPanel
     }
 
     public void add(com.haulmont.cuba.gui.components.Component component) {
-        final VerticalLayout layout = (VerticalLayout) getLayout();
+        final VerticalLayout layout = (VerticalLayout) getContent();
 
-        final com.vaadin.ui.Component comp = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component comp = WebComponentsHelper.getComposition(component);
         layout.addComponent(comp);
         layout.setComponentAlignment(comp, WebComponentsHelper.convertAlignment(component.getAlignment()));
 
@@ -78,9 +78,9 @@ public class WebFrame extends WebAbstractPanel
     }
 
     public void remove(com.haulmont.cuba.gui.components.Component component) {
-        final VerticalLayout layout = (VerticalLayout) getLayout();
+        final VerticalLayout layout = (VerticalLayout) getContent();
 
-        layout.removeComponent(WebComponentsHelper.unwrap(component));
+        layout.removeComponent(WebComponentsHelper.getComposition(component));
 
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
@@ -210,26 +210,26 @@ public class WebFrame extends WebAbstractPanel
     }
 
     public void setComponentAlignment(Component childComponent, int horizontalAlignment, int verticalAlignment) {
-        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
+        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getContent();
         layout.setComponentAlignment(childComponent, horizontalAlignment, verticalAlignment);
     }
 
     public void setComponentAlignment(Component childComponent, com.vaadin.ui.Alignment alignment) {
-        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
+        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getContent();
         layout.setComponentAlignment(childComponent, alignment);
     }
 
     public com.vaadin.ui.Alignment getComponentAlignment(Component childComponent) {
-        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getLayout();
+        final AbstractOrderedLayout layout = (AbstractOrderedLayout) getContent();
         return layout.getComponentAlignment(childComponent);
     }
 
     public void expandLayout(boolean expandLayout) {
         if (expandLayout) {
-            getLayout().setSizeFull();
+            getContent().setSizeFull();
         } else {
-            getLayout().setWidth("100%");
-            getLayout().setHeight("-1px");
+            getContent().setWidth("100%");
+            getContent().setHeight("-1px");
         }
     }
 

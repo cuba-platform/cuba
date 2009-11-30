@@ -47,7 +47,7 @@ public class GenericBrowserWindow extends WebWindow
         table = createTable();
         actionsToolbar = createActionsToolbar(table);
 
-        final Component component = WebComponentsHelper.unwrap(table);
+        final Component component = WebComponentsHelper.getComposition(table);
         component.setSizeFull();
 
         layout.addComponent(actionsToolbar);
@@ -82,7 +82,7 @@ public class GenericBrowserWindow extends WebWindow
             final WebButton button = new WebButton();
             button.setAction(action);
 
-            layout.addComponent(WebComponentsHelper.unwrap(button));
+            layout.addComponent(WebComponentsHelper.getComposition(button));
         }
 
         return layout;

@@ -85,9 +85,9 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
     protected void setContainerHeight() {
         if (height != null && !"".equals(height)) {
             int contentH = getOffsetHeight() - tHead.getOffsetHeight();
-            if (actionButtonsPanel != null) {
-                contentH -= actionButtonsPanel.getOffsetHeight();
-            }
+//            if (actionButtonsPanel != null) {
+//                contentH -= actionButtonsPanel.getOffsetHeight();
+//            }
             if (pager != null) {
                 contentH -= pager.getOffsetHeight();
             }

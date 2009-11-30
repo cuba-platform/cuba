@@ -30,7 +30,7 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     private boolean expandable = true;
 
     public void add(Component component) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
 
         addComponent(itmillComponent);
 
@@ -41,7 +41,7 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     }
 
     public void remove(Component component) {
-        removeComponent(WebComponentsHelper.unwrap(component));
+        removeComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }

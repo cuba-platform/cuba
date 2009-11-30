@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.ComponentContainer;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
@@ -25,9 +26,9 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     private Alignment alignment = Alignment.TOP_LEFT;
 
     public void add(Component component) {
-        final com.vaadin.ui.Component comp = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component comp = WebComponentsHelper.getComposition(component);
         if (comp instanceof Layout) {
-            setLayout(((Layout) comp));
+            setContent(((Layout) comp));
             this.component = component;
         } else {
             throw new UnsupportedOperationException();
@@ -35,8 +36,8 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     }
 
     public void remove(Component component) {
-        if (getLayout() == WebComponentsHelper.unwrap(component)) {
-            setLayout(null);
+        if (getContent() == WebComponentsHelper.getComposition(component)) {
+            setContent(null);
             this.component = null;
         }
     }
@@ -63,7 +64,7 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     }
 
     public <T extends Component> T getComponent(String id) {
-        final Layout layout = getLayout();
+        final ComponentContainer layout = getContent();
         if (layout instanceof Container) {
             final com.haulmont.cuba.gui.components.Component component = ((Container) layout).getOwnComponent(id);
 

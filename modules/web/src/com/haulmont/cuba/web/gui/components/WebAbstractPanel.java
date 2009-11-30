@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.ComponentContainer;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
@@ -33,7 +34,7 @@ public class WebAbstractPanel extends Panel
     public void add(Component component) {
         final com.vaadin.ui.Component comp = WebComponentsHelper.unwrap(component);
         if (comp instanceof Layout) {
-            setLayout(((Layout) comp));
+            setContent(((Layout) comp));
             this.component = component;
         } else {
             throw new UnsupportedOperationException("Only layout component is supported inside groupBox");
@@ -41,8 +42,8 @@ public class WebAbstractPanel extends Panel
     }
 
     public void remove(Component component) {
-        if (getLayout() == WebComponentsHelper.unwrap(component)) {
-            setLayout(null);
+        if (getContent() == WebComponentsHelper.unwrap(component)) {
+            setContent(null);
             this.component = null;
         }
     }
@@ -69,7 +70,7 @@ public class WebAbstractPanel extends Panel
     }
 
     public <T extends Component> T getComponent(String id) {
-        final Layout layout = getLayout();
+        final ComponentContainer layout = getContent();
         if (layout instanceof Container) {
             final com.haulmont.cuba.gui.components.Component component = ((Container) layout).getOwnComponent(id);
 

@@ -270,7 +270,7 @@ public class WebWindow
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void add(Component component) {
-        getContainer().addComponent(WebComponentsHelper.unwrap(component));
+        getContainer().addComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
         }
@@ -278,7 +278,7 @@ public class WebWindow
     }
 
     public void remove(Component component) {
-        getContainer().removeComponent(WebComponentsHelper.unwrap(component));
+        getContainer().removeComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
@@ -381,7 +381,7 @@ public class WebWindow
     public void setAlignment(Alignment alignment) {}
 
     public void expand(Component component, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
         if (getContainer() instanceof AbstractOrderedLayout) {
             WebComponentsHelper.expand((AbstractOrderedLayout) getContainer(), expandedComponent, height, width);
         } else {
@@ -392,6 +392,10 @@ public class WebWindow
     public <T> T getComponent() {
         //noinspection unchecked
         return (T) component;
+    }
+
+    public com.vaadin.ui.Component getComposition() {
+        return component;
     }
 
     public void closeAndRun(String actionId, Runnable runnable) {

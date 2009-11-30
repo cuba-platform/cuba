@@ -37,7 +37,7 @@ public class WebHtmlBoxLayout extends CustomLayout implements HtmlBoxLayout {
     }
 
     public void add(Component component) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
 
         if (component.getId() != null) {
             addComponent(itmillComponent, component.getId());
@@ -54,7 +54,7 @@ public class WebHtmlBoxLayout extends CustomLayout implements HtmlBoxLayout {
             removeComponent(component.getId());
             componentByIds.remove(component.getId());
         } else {
-            removeComponent(WebComponentsHelper.unwrap(component));
+            removeComponent(WebComponentsHelper.getComposition(component));
         }
         ownComponents.remove(component);
     }

@@ -60,19 +60,19 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     }
 
     public boolean isEnabled() {
-        return component.isEnabled();
+        return getComposition().isEnabled();
     }
 
     public void setEnabled(boolean enabled) {
-        component.setEnabled(enabled);
+        getComposition().setEnabled(enabled);
     }
 
     public boolean isVisible() {
-        return component.isVisible();
+        return getComposition().isVisible();
     }
 
     public void setVisible(boolean visible) {
-        component.setVisible(visible);
+        getComposition().setVisible(visible);
     }
 
     public void requestFocus() {
@@ -127,6 +127,10 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     public <T> T getComponent() {
         return (T) component;
+    }
+
+    public com.vaadin.ui.Component getComposition() {
+        return component;
     }
 
     public Element getXmlDescriptor() {

@@ -130,12 +130,12 @@ public class WebToggleBoxLayout
         protected Map<String, Component> componentByIds = new HashMap<String, Component>();
 
         public void expand(Component component, String height, String width) {
-            final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.unwrap(component);
+            final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
             WebComponentsHelper.expand(this, expandedComponent, height, width);
         }
 
         public void add(Component component) {
-            addComponent(WebComponentsHelper.unwrap(component));
+            addComponent(WebComponentsHelper.getComposition(component));
             if (component.getId() != null) {
                 componentByIds.put(component.getId(), component);
             }
@@ -143,7 +143,7 @@ public class WebToggleBoxLayout
         }
 
         public void remove(Component component) {
-            removeComponent(WebComponentsHelper.unwrap(component));
+            removeComponent(WebComponentsHelper.getComposition(component));
             if (component.getId() != null) {
                 componentByIds.remove(component.getId());
             }

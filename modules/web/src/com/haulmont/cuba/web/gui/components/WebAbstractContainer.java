@@ -28,7 +28,7 @@ class WebAbstractContainer extends AbstractOrderedLayout
     private boolean expandable = true;
 
     public void add(Component component) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
 
         addComponent(itmillComponent);
         setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
@@ -40,7 +40,7 @@ class WebAbstractContainer extends AbstractOrderedLayout
     }
 
     public void remove(Component component) {
-        removeComponent(WebComponentsHelper.unwrap(component));
+        removeComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }

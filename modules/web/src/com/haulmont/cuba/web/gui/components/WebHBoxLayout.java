@@ -19,7 +19,7 @@ public class WebHBoxLayout extends WebAbstractContainer implements BoxLayout {
     }
 
     public void expand(Component component, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
         WebComponentsHelper.expand(this, expandedComponent, height, width);
     }
 }

@@ -38,8 +38,8 @@ public class Table
 
     protected PagingProvider pagingProvider = null;
 
-    protected List<ActionButton> actionButtons = null;
-    protected KeyMapper idActionButtons = null;
+//    protected List<ActionButton> actionButtons = null;
+//    protected KeyMapper idActionButtons = null;
 
     protected boolean aggregatable = false;
 
@@ -108,6 +108,7 @@ public class Table
             clientNeedsContentRefresh = true;
         }
 
+/*
         if (variables.containsKey("actionButton")) {
             final String key = (String) variables.get("actionButton");
             ActionButton actionButton = (ActionButton) idActionButtons.get(key);
@@ -115,6 +116,7 @@ public class Table
                 actionButton.actionPerform(this);
             }
         }
+*/
 
         return clientNeedsContentRefresh;
     }
@@ -295,7 +297,7 @@ public class Table
         }
         target.addAttribute("vcolorder", visibleColOrder.toArray());
 
-        paintActionButtons(target);
+//        paintActionButtons(target);
 
         if (items instanceof AggregationContainer && isAggregatable()
                 && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {
@@ -804,6 +806,7 @@ public class Table
         }
     }
 
+/*
     protected void paintActionButtons(PaintTarget target) throws PaintException {
         if (actionButtons != null) {
             if (idActionButtons == null) {
@@ -827,6 +830,7 @@ public class Table
             target.endTag("actionButtons");
         }
     }
+*/
 
     public Map<Object, String> aggregate(Collection itemIds) {
         if (items instanceof AggregationContainer && isAggregatable()) {
@@ -910,6 +914,7 @@ public class Table
         requestRepaint();
     }
 
+/*
     public void addActionButton(ActionButton actionButton) {
         if (actionButtons == null) {
             actionButtons = new LinkedList<ActionButton>();
@@ -935,6 +940,7 @@ public class Table
         }
         return Collections.emptyList();
     }
+*/
 
     public interface PagingProvider extends Serializable {
         String firstCaption();
@@ -947,9 +953,11 @@ public class Table
         int[] pageLengths();
     }
 
+/*
     public interface ActionButton extends Serializable {
         String getCaption();
         Resource getIcon();
         void actionPerform(Table source);
     }
+*/
 }

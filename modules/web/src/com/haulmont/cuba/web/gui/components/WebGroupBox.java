@@ -16,21 +16,20 @@ import com.vaadin.ui.VerticalLayout;
 public class WebGroupBox extends WebAbstractPanel implements GroupBox {
 
     public WebGroupBox() {
-        setLayout(new VerticalLayout());
-//        setStyleName(Panel.STYLE_EMPHASIZE);
+        setContent(new VerticalLayout());
     }
 
     public void expand(Component component, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
         expandedComponent.setSizeFull();
     }
 
     public void expandLayout(boolean expandLayout) {
         if (expandLayout) {
-            getLayout().setSizeFull();
+            getContent().setSizeFull();
         } else {
-            getLayout().setWidth("100%");
-            getLayout().setHeight("-1px");
+            getContent().setWidth("100%");
+            getContent().setHeight("-1px");
         }
     }
 }
