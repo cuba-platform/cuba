@@ -207,11 +207,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                 for (final Element actionButtonElement : actionButtonElements) {
                     actionButtonsProvider.addActionButton(loadActionButton(component, actionButtonElement));
                 }
-                context.addLazyTask(new LazyTask() {
-                    public void execute(Context context, IFrame frame) {
-                        component.setActionButtonsProvider(actionButtonsProvider);
-                    }
-                });
+                component.setActionButtonsProvider(actionButtonsProvider);
             } else {
                 throw new InstantiationException(
                         "<actionButtons> element must contains \"class\" attribute or at least one <actionButton> element");
