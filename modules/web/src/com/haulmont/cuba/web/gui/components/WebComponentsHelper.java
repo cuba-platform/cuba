@@ -9,14 +9,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.components.Aggregation;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
-import com.haulmont.cuba.gui.components.Aggregation;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.toolkit.ui.Table;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.web.toolkit.ui.Table;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.Resource;
@@ -254,18 +252,8 @@ public class WebComponentsHelper {
     }
     
     public static Button createButton(String icon) {
-        if (useNativeButtons == null)
-            useNativeButtons = ConfigProvider.getConfig(WebConfig.class).getUseNativeButtons();
-
-        Button button;
-        if (useNativeButtons) {
-            button = new NativeButton();
-        } else {
-            button = new Button();
-        }
-        if (icon != null) {
-            button.setIcon(new ThemeResource(icon));
-        }
-        return button;
+        WebButton webButton = new WebButton();
+        webButton.setIcon(icon);
+        return (Button) unwrap(webButton);
     }
 }

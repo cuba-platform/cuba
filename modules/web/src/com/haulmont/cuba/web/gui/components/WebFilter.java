@@ -30,6 +30,7 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.web.gui.components.filter.*;
+import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.security.entity.User;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
@@ -76,7 +77,7 @@ public class WebFilter
         HorizontalLayout topLayout = new HorizontalLayout();
         topLayout.setSpacing(true);
 
-        select = new Select();
+        select = new FilterSelect();
         select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setImmediate(true);
