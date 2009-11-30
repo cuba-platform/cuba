@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
 
 import java.text.ParseException;
+import java.math.BigDecimal;
 
 public class DoubleValidator implements Field.Validator {
 
@@ -41,7 +42,7 @@ public class DoubleValidator implements Field.Validator {
             } catch (ParseException e) {
                 result = false;
             }
-        } else if (value instanceof Double) {
+        } else if ((value instanceof Double) || (value instanceof BigDecimal)) {
             result = true;
         } else {
             result = false;
