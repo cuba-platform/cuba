@@ -58,7 +58,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             {
                 if (item instanceof Instance) {
                     final MetaClass aClass = ((Instance) item).getMetaClass();
-                    if (!aClass.equals(this.metaClass)) {
+                    if (!aClass.equals(this.metaClass) && !this.metaClass.getDescendants().contains(aClass)) {
                         throw new IllegalStateException(String.format("Invalid item metaClass"));
                     }
                 }
