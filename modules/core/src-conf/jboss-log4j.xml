@@ -30,7 +30,7 @@
           so the full JBoss system property format is not supported; e.g.
           setting a default via ${jboss.server.log.threshold:WARN} will not work.
         -->
-        <param name="Threshold" value="${jboss.server.log.threshold}"/>
+        <param name="Threshold" value="DEBUG"/>
 
         <!-- Rollover at midnight each day -->
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
@@ -148,6 +148,22 @@
     </logger>
 
     <!-- End Perf4J -->
+
+    <category name="org.hibernate">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="sun">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="com.sun">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="javax">
+        <priority value="INFO"/>
+    </category>
 
     <!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
     <category name="org.apache">

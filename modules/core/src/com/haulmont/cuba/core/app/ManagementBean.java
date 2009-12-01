@@ -22,6 +22,8 @@ import java.util.Date;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 import org.jboss.varia.scheduler.Schedulable;
 
 /**
@@ -31,6 +33,8 @@ import org.jboss.varia.scheduler.Schedulable;
  */
 public class ManagementBean
 {
+    private Log log = LogFactory.getLog(getClass());
+
     /**
      * Base class for creating of <code>org.jboss.varia.scheduler.Schedulable</code> instances.<br>
      * Used for setting login credentials when invoking MBean methods from JBoss schedulers.
@@ -85,11 +89,15 @@ public class ManagementBean
      * Should be placed into "finally" section of a try/finally block. 
      */
     protected void logout() {
-        if (BooleanUtils.isTrue(loginPerformed.get())) {
-            UUID sessionId = ServerSecurityUtils.getSessionId();
-            if (sessionId != null)
-                getLoginWorker().logout();
-            loginPerformed.remove();
+        try {
+            if (BooleanUtils.isTrue(loginPerformed.get())) {
+                UUID sessionId = ServerSecurityUtils.getSessionId();
+                if (sessionId != null)
+                    getLoginWorker().logout();
+                loginPerformed.remove();
+            }
+        } catch (Exception e) {
+            log.error("Error logging out", e);
         }
     }
 

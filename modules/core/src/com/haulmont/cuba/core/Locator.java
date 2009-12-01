@@ -96,7 +96,7 @@ public abstract class Locator
 
     /**
      * Creates a new JTA transaction.<br>
-     * @throws IllegalStateException if a JTA transaction exists
+     * If there is an active transaction, it will be suspended.
     */
     public static Transaction createTransaction() {
         return getInstance().__createTransaction();
