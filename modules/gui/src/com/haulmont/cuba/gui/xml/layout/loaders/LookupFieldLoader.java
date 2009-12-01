@@ -35,7 +35,7 @@ public class LookupFieldLoader extends AbstractFieldLoader {
         String nullName = element.attributeValue("nullName");
         if (!StringUtils.isEmpty(captionProperty)) {
             nullName = loadResourceString(nullName);
-            component.setNullName(nullName);
+            component.setNullOption(nullName);
         }
 
         return component;

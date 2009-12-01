@@ -13,8 +13,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 public interface LookupField extends OptionsField {
-    String getNullName();
-    void setNullName(String nullName);
+    Object getNullOption();
+    void setNullOption(Object nullOption);
 
     void setFilterMode(FilterMode mode);
     FilterMode getFilterMode();

@@ -32,7 +32,7 @@ public class WebLookupField
     implements
         LookupField, Component.Wrapper
 {
-    private String nullName;
+    private Object nullOption;
     private FilterMode filterMode;
 
     public WebLookupField() {
@@ -128,14 +128,13 @@ public class WebLookupField
         super.setValue(getKeyFromValue(value));
     }
 
-    public String getNullName() {
-        return nullName;
+    public Object getNullOption() {
+        return nullOption;
     }
 
-    public void setNullName(String nullName) {
-        this.nullName = nullName;
-//        component.setNullSelectionItemId(nullName);
-//        component.requestRepaint();
+    public void setNullOption(Object nullOption) {
+        this.nullOption = nullOption;
+        component.setNullSelectionItemId(nullOption);
     }
 
     @Override
