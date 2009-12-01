@@ -190,10 +190,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 }
                 case SESSION: {
                     Object value;
-                    if ("userId".equals(name)) 
-                        value = UserSessionClient.getUserSession().getUser().getId();
+                    UserSession us = UserSessionClient.getUserSession();
+                    if ("userId".equals(path))
+                        value = us.getSubstitutedUser() != null ? us.getSubstitutedUser().getId() : us.getUser().getId();
                     else
-                        value = UserSessionClient.getUserSession().getAttribute(path);
+                        value = us.getAttribute(path);
 
                     if (value instanceof String && info.isCaseInsensitive()) {
                         value = makeCaseInsensitive((String) value);

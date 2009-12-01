@@ -128,7 +128,10 @@ public abstract class SecurityProvider
             if (CONSTRAINT_PARAM_USER_LOGIN.equals(attrName)) {
                 query.setParameter(paramName, userSession.getUser().getLogin());
             } else if (CONSTRAINT_PARAM_USER_ID.equals(attrName)) {
-                query.setParameter(paramName, userSession.getUser().getId());
+                UUID userId = userSession.getSubstitutedUser() != null ? 
+                        userSession.getSubstitutedUser().getId() :
+                        userSession.getUser().getId();
+                query.setParameter(paramName, userId);
             } else if (CONSTRAINT_PARAM_USER_GROUP_ID.equals(attrName)) {
                 Object groupId = userSession.getSubstitutedUser() == null ?
                         userSession.getUser().getGroup().getId() :
