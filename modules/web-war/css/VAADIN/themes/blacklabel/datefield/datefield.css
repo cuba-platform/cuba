@@ -22,7 +22,7 @@
 	font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
 	color: white;
 	font-size: 12px;
-    background: url(img/calendar-popup-bg.png) top left repeat-x;
+    background: #373b3e url(img/calendar-popup-bg.png) top left repeat-x;
 	border: 1px solid #83888c;
 	padding: 6px;
 }
