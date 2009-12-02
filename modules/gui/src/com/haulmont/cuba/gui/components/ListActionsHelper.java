@@ -66,7 +66,11 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createEditAction(final WindowManager.OpenType openType) {
-        final AbstractAction action = new EditAction("edit", openType);
+        return createEditAction(openType, Collections.EMPTY_MAP);
+    }
+
+    public Action createEditAction(final WindowManager.OpenType openType, Map<String, Object> params) {
+        final AbstractAction action = new EditAction("edit", openType, params);
         ListActionsHelper.this.component.addAction(action);
 
         return action;
@@ -262,9 +266,18 @@ abstract class ListActionsHelper<T extends List> {
     protected class EditAction extends AbstractAction {
         private final WindowManager.OpenType openType;
 
+        private Map<String, Object> params;
+
         public EditAction(String id, WindowManager.OpenType openType) {
             super(id);
             this.openType = openType;
+            this.params = Collections.EMPTY_MAP;
+        }
+
+        public EditAction(String id, WindowManager.OpenType openType, Map<String, Object> params) {
+            super(id);
+            this.openType = openType;
+            this.params = params;
         }
 
         public String getCaption() {
@@ -293,7 +306,7 @@ abstract class ListActionsHelper<T extends List> {
                     }
                 }
 
-                final Window window = frame.openEditor(windowID, datasource.getItem(), openType, parentDs);
+                final Window window = frame.openEditor(windowID, datasource.getItem(), openType, params, parentDs);
 
                 if (parentDs == null) {
                     window.addListener(new Window.CloseListener() {
