@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.GroovyHelper;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.DataService;
@@ -67,7 +68,7 @@ public class CustomCollectionDatasource<T extends Entity<K>, K>
             query = query.replaceAll(":" + paramName, info.getFlatName());
         }
 
-        query = com.haulmont.cuba.core.app.TemplateHelper.processTemplate(query, parameterValues);
+        query = TemplateHelper.processTemplate(query, parameterValues);
 
         return query;
     }

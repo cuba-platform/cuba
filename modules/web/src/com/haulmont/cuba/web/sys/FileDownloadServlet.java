@@ -10,15 +10,13 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.app.FileStorageMBean;
+import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.FileTypesHelper;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.logging.Log;
@@ -79,16 +77,9 @@ public class FileDownloadServlet extends HttpServlet {
 
         boolean attach = Boolean.valueOf(request.getParameter("a"));
 
-        FileDescriptor fd = null;
-
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            fd = em.find(FileDescriptor.class, fileId);
-            tx.commit();
-        } finally {
-            tx.end();
-        }
+        FileDescriptor fd = ServiceLocator.getDataService().load(
+                new LoadContext(FileDescriptor.class).setId(fileId)
+        );
 
         String fileName;
         try {
@@ -105,9 +96,9 @@ public class FileDownloadServlet extends HttpServlet {
                 + "; filename=" + fileName);
 
         byte[] data;
-        FileStorageMBean mbean = Locator.lookupMBean(FileStorageMBean.class, FileStorageMBean.OBJECT_NAME);
+        FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
         try {
-            data = mbean.getAPI().loadFile(fd);
+            data = fss.loadFile(fd);
         } catch (FileStorageException e) {
             log.error("Unable to download file", e);
             error(response);

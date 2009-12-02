@@ -7,7 +7,7 @@
  * Created: 26.01.2009 16:15:29
  * $Id$
  */
-package com.haulmont.cuba.core.app;
+package com.haulmont.cuba.core.global;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

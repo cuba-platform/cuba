@@ -10,7 +10,7 @@
     <orderEntry type="library" name="chile" level="project" />
     <orderEntry type="library" name="common" level="project" />
     <orderEntry type="library" name="client" level="project" />
-    <orderEntry type="module" module-name="core" />
+    <orderEntry type="module" module-name="global" />
   </component>
 </module>
 

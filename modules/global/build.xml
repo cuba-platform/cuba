@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project xmlns:ext="http://haulmont.com/schema/ant"
+	name="cuba-global" default="build-module" basedir=".">
+
+	<property name="project.dir" location="../.."/>
+	<property name="root.dir" location="${project.dir}/.."/>
+
+	<property name="module.name" value="global"/>
+	<property name="module.jar" value="cuba-global.jar"/>
+
+	<import file="${root.dir}/build-inc-mod.xml"/>
+	<property file="${root.dir}/build.properties"/>
+
+    <fileset id="chile-jars" dir="${root.dir}/chile/build">
+        <include name="*.jar"/>
+    </fileset>
+
+    <path id="compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="chile-jars"/>
+    </path>
+
+    <path id="test-compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="test-lib-fs"/>
+        <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/${module.name}"/>
+    </path>
+
+    <path id="enhance-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/${module.name}"/>
+        <pathelement location="${test.out.dir}/${module.name}"/>
+    </path>
+
+    <target name="compile-module" depends="base-mod.compile-module">
+        <echo>==> enhancing ${project.dir} ${module.name}</echo>
+        <java classpathref="enhance-cp"
+              classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="true">
+            <arg value="-properties"/>
+            <arg value="${project.dir}/modules/core/src/META-INF/cuba-persistence.xml"/>
+            <!--<jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"/>-->
+        </java>
+    </target>
+
+    <target name="build-module" depends="compile-module">
+        <echo>==> building ${project.dir} ${module.name}</echo>
+
+        <mkdir dir="${build.dir}"/>
+        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
+            <include name="**/*"/>
+        </jar>
+    </target>
+</project>

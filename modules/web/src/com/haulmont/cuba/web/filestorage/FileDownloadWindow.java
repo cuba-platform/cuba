@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.web.filestorage;
 
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.FileStorageMBean;
+import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.FileTypesHelper;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.vaadin.terminal.DownloadStream;
 
 import java.io.*;
@@ -37,9 +37,9 @@ public class FileDownloadWindow extends FileWindow {
         }
 
         byte[] data;
-        FileStorageMBean mbean = Locator.lookupMBean(FileStorageMBean.class, FileStorageMBean.OBJECT_NAME);
+        FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
         try {
-            data = mbean.getAPI().loadFile(fd);
+            data = fss.loadFile(fd);
         } catch (FileStorageException e) {
             log.error("Unable to download file", e);
             throw new RuntimeException(e);

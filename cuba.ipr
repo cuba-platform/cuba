@@ -104,8 +104,8 @@
     <option name="DEFAULT_COMPILER" value="Javac" />
     <option name="DEPLOY_AFTER_MAKE" value="0" />
     <excludeFromCompile>
-      <directory url="file://$PROJECT_DIR$/modules/core/src/com/haulmont/cuba/core/entity" includeSubdirectories="true" />
-      <directory url="file://$PROJECT_DIR$/modules/core/src/com/haulmont/cuba/security/entity" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/modules/global/src/com/haulmont/cuba/core/entity" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/modules/global/src/com/haulmont/cuba/security/entity" includeSubdirectories="true" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
@@ -363,12 +363,13 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/_root.iml" filepath="$PROJECT_DIR$/_root.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" filepath="$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/client/client.iml" filepath="$PROJECT_DIR$/modules/client/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/deploymarker/deploymarker.iml" filepath="$PROJECT_DIR$/modules/deploymarker/deploymarker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/global/global.iml" filepath="$PROJECT_DIR$/modules/global/global.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/gui/gui.iml" filepath="$PROJECT_DIR$/modules/gui/gui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web/web.iml" filepath="$PROJECT_DIR$/modules/web/web.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web-war/web-war.iml" filepath="$PROJECT_DIR$/modules/web-war/web-war.iml" />
     </modules>
@@ -446,9 +447,7 @@
     <library name="server">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/serp-1.13.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-javaee.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jbosssx.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-vfs.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2se.jar!/" />
@@ -465,7 +464,6 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jboss-vfs-src.zip!/" />
-        <root url="NullVirtualFilePointer" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jcifs-1.3.10-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
       </SOURCES>
@@ -499,6 +497,8 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/antlr.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.5.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/serp-1.13.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/jboss-javaee.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

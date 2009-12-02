@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.cuba.core.PersistenceProvider;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -32,10 +31,10 @@ public class User extends StandardEntity
 {
     private static final long serialVersionUID = 5007187642916030394L;
 
-    @Column(name = "LOGIN", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "LOGIN", length = LOGIN_FIELD_LEN)
     private String login;
 
-    @Column(name = "LOGIN_LC", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "LOGIN_LC", length = LOGIN_FIELD_LEN)
     private String loginLowerCase;
 
     @Column(name = "PASSWORD", length = 32)

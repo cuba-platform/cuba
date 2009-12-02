@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -34,7 +33,7 @@ public class BaseUuidEntity implements BaseEntity<UUID>
     @Column(name = "CREATE_TS")
     protected Date createTs;
 
-    @Column(name = "CREATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
     protected String createdBy;
 
     public BaseUuidEntity() {

@@ -19,6 +19,8 @@ import java.util.Date;
  */
 public interface BaseEntity<T> extends Entity<T>
 {
+    int LOGIN_FIELD_LEN = 50;
+
     UUID getUuid();
 
     Date getCreateTs();

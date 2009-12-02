@@ -10,6 +10,7 @@
 
 	<target name="delegate">
 		<property name="target" value="noop" />
+        <ant dir="modules/global" target="${target}" inheritAll="false"/>
         <ant dir="modules/deploymarker" target="${target}" inheritAll="false"/>
 		<ant dir="modules/core" target="${target}" inheritAll="false"/>
         <ant dir="modules/gui" target="${target}" inheritAll="false"/>
@@ -19,9 +20,8 @@
 	</target>
 
 	<target name="clean">
-		<antcall target="delegate" inheritAll="false">
-			<param name="target" value="clean-module"/>
-		</antcall>
+        <delete dir="build"/>
+        <delete dir="out"/>
 	</target>
 		
 	<target name="install-lib">
@@ -36,9 +36,11 @@
         <ext:install-lib name="groovy" version="${groovy.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="asm" version="${asm.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.common.dir}"/>
         <ext:install-jboss-lib name="antlr" version="${jboss.version}" toDir="${lib.common.dir}"/>
+        <ext:install-jboss-lib name="jboss-javaee" version="${jboss.version}" toDir="${lib.common.dir}"/>
+        <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.common.dir}"/>
 		<!-- server libs -->
-        <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="vaadin" version="${vaadin.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="jcifs" version="${jcifs.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="jespa" version="${jespa.version}" toDir="${lib.server.dir}"/>
@@ -49,14 +51,12 @@
         <ext:install-jboss-lib name="jboss-vfs" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-common-core" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
 		<ext:install-jboss-lib name="jboss" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="jboss-javaee" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-remoting" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jbosssx" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="servlet-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="scheduler-plugin" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-ejb3-ext-api" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <ext:install-jboss-lib name="jboss-j2se" path="lib" version="${jboss.version}" toDir="${lib.server.dir}"/>
-        <ext:install-jboss-lib name="xercesImpl" path="lib/endorsed" version="${jboss.version}" toDir="${lib.server.dir}"/>
         <!-- jasper -->
         <ext:install-lib name="jasperreports" version="${jasperreports.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="commons-digester" version="${commons-digester.version}" toDir="${lib.server.dir}"/>

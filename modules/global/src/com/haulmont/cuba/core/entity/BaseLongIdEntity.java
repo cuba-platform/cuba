@@ -9,8 +9,6 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.cuba.core.PersistenceProvider;
-
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.util.UUID;

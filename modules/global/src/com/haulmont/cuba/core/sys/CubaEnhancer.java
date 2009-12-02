@@ -7,7 +7,7 @@
  * Created: 15.12.2008 13:19:13
  * $Id$
  */
-package com.haulmont.cuba.core.sys.persistence;
+package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.Instance;

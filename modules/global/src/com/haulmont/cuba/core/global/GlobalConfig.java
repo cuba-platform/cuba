@@ -16,6 +16,27 @@ import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 public interface GlobalConfig extends Config {
 
     /**
+     * Logs directory. Place app-specific log files here.
+     * Does not end with "/"
+     */
+    @Property("jboss.server.log.dir")
+    String getLogDir();
+
+    /**
+     * Temporary files directory. Place app-specific temp files under this directory.
+     * Does not end with "/"
+     */
+    @Property("jboss.server.temp.dir")
+    String getTempDir();
+
+    /**
+     * Data directory. Place persistent app-specific data files under this directory.
+     * Does not end with "/"
+     */
+    @Property("jboss.server.data.dir")
+    String getDataDir();
+
+    /**
      * Used to support automatic testing
      */
     @Property("cuba.testMode")

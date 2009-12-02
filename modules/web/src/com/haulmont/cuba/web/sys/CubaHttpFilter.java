@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import jespa.http.HttpSecurityService;
 import jespa.security.SecurityProviderException;
 import org.apache.commons.logging.Log;
@@ -30,13 +30,13 @@ public class CubaHttpFilter extends HttpSecurityService implements Filter
         Map<String, String> properties = new HashMap<String, String>();
 
         if (ActiveDirectoryHelper.useActiveDirectory()) {
-            ServerConfig serverConfig = ConfigProvider.getConfig(ServerConfig.class);
+            GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
 
             properties.put("jespa.bindstr", ActiveDirectoryHelper.getBindStr());
             properties.put("jespa.service.acctname", ActiveDirectoryHelper.getAcctName());
             properties.put("jespa.service.password", ActiveDirectoryHelper.getAcctPassword());
             properties.put("jespa.account.canonicalForm", "3");
-            properties.put("jespa.log.path", serverConfig.getServerLogDir() + "/jespa.log");
+            properties.put("jespa.log.path", config.getLogDir() + "/jespa.log");
             ActiveDirectoryHelper.fillFromSystemProperties(properties);
         }
         try {

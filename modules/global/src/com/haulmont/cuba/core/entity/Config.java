@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.cuba.core.PersistenceProvider;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -35,7 +33,7 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable
     @Column(name = "UPDATE_TS")
     private Date updateTs;
 
-    @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "UPDATED_BY", length = LOGIN_FIELD_LEN)
     private String updatedBy;
 
     @Column(name = "NAME")

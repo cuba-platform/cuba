@@ -14,8 +14,8 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 
@@ -79,7 +79,7 @@ public class Connection
 
         session = getLoginService().login(login, password, locale);
         connected = true;
-        ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
+        WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
 
         if (log.isDebugEnabled()) {
@@ -97,7 +97,7 @@ public class Connection
     public void loginActiveDirectory(String login) throws LoginException {
         session = getLoginService().loginActiveDirectory(login, App.getInstance().getLocale());
         connected = true;
-        ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
+        WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
 
         if (log.isDebugEnabled()) {

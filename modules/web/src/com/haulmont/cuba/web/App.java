@@ -11,7 +11,6 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -20,6 +19,7 @@ import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
+import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
@@ -284,7 +284,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
         if (connection.isConnected()) {
             UserSession userSession = connection.getSession();
             if (userSession != null) {
-                ServerSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+                WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
             }
 
             requestStartTimes.put(transactionData, System.currentTimeMillis());

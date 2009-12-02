@@ -10,7 +10,7 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.core.app.TemplateHelper;
+import com.haulmont.cuba.core.global.TemplateHelper;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -61,7 +61,7 @@ public class LayoutLoader {
                 final Document dsContextDocument = loadDocument("<dsContext>" + dsContext + "</dsContext>");
                 document.getRootElement().add(dsContextDocument.getRootElement());
             } else {
-                template = com.haulmont.cuba.core.app.TemplateHelper.processTemplate(template, params);
+                template = TemplateHelper.processTemplate(template, params);
                 document = loadDocument(template);
             }
         } catch (IOException e) {

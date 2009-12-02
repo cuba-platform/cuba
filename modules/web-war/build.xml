@@ -27,7 +27,7 @@
         <fileset refid="server-lib-fs"/>
         <fileset refid="gwt-lib-fs"/>
 
-        <pathelement location="${prod.out.dir}/core"/>
+        <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/gui"/>
         <pathelement location="${prod.out.dir}/web"/>
     </path>
@@ -118,9 +118,5 @@
     </target>
 
     <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
-
-    <target name="deploy4test-module">
-        <!-- do nothing -->
-    </target>
 
 </project>

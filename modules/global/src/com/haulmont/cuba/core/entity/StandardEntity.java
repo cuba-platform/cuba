@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.cuba.core.PersistenceProvider;
-
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
 import javax.persistence.Version;
@@ -33,13 +31,13 @@ public class StandardEntity
     @Column(name = "UPDATE_TS")
     protected Date updateTs;
 
-    @Column(name = "UPDATED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "UPDATED_BY", length = LOGIN_FIELD_LEN)
     protected String updatedBy;
 
     @Column(name = "DELETE_TS")
     protected Date deleteTs;
 
-    @Column(name = "DELETED_BY", length = PersistenceProvider.LOGIN_FIELD_LEN)
+    @Column(name = "DELETED_BY", length = LOGIN_FIELD_LEN)
     protected String deletedBy;
 
     public Integer getVersion() {

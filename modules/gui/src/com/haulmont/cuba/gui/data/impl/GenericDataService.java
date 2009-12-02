@@ -9,12 +9,12 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.PropertyVisitor;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
@@ -30,13 +30,8 @@ public class GenericDataService implements DataService {
         this.service = service;
     }
 
-    // TODO KK: fix this, wont work for remote client (Locator is not global)
     public GenericDataService(boolean remoteCalls) {
-        if (remoteCalls) {
-            this.service = Locator.lookupRemote(DataServiceRemote.JNDI_NAME);
-        } else {
-            this.service = Locator.lookupLocal(DataServiceRemote.JNDI_NAME);
-        }
+        this.service = ServiceLocator.getDataService();
     }
 
     public <A extends Entity> A newInstance(MetaClass metaClass) {

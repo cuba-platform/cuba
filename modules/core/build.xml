@@ -10,9 +10,8 @@
 
 	<property name="module.name" value="core"/>
 	<property name="module.jar" value="20cuba-core.jar"/>
-    <property name="module.global.jar" value="cuba-core-global.jar"/>
-    <property name="module.test.jar" value="cuba-core-test.jar"/>
-    <property name="module.service.xml" value="21cuba-core-service.xml"/>
+    <property name="module.test.jar" value="cuba-test.jar"/>
+    <property name="module.service.xml" value="21cuba-service.xml"/>
     <property name="module.ds.xml" value="cuba-ds.xml"/>
 
 	<import file="${root.dir}/build-inc-mod.xml"/>
@@ -26,6 +25,7 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/deploymarker"/>
     </path>
 
@@ -34,43 +34,16 @@
         <fileset refid="server-lib-fs"/>
         <fileset refid="test-lib-fs"/>
         <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/${module.name}"/>
     </path>
-
-    <path id="enhance-cp">
-        <fileset refid="common-lib-fs"/>
-        <fileset refid="server-lib-fs"/>
-        <fileset refid="chile-jars"/>
-        <pathelement location="${prod.out.dir}/${module.name}"/>
-        <pathelement location="${test.out.dir}/${module.name}"/>
-    </path>
-
-    <target name="clean-module" depends="base-mod.clean-module">
-		<delete file="${build.dir}/${module.global.jar}"/>
-        <delete file="${build.dir}/${module.test.jar}"/>
-    </target>
-
-    <target name="compile-module" depends="base-mod.compile-module">
-        <echo>==> enhancing ${project.dir} ${module.name}</echo>
-        <java classpathref="enhance-cp"
-              classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="true">
-            <arg value="-properties"/>
-            <arg value="META-INF/cuba-persistence.xml"/>
-            <!--<jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"/>-->
-        </java>
-    </target>
 
     <target name="build-module" depends="compile-module">
         <echo>==> building ${project.dir} ${module.name}</echo>
 
         <mkdir dir="${build.dir}"/>
         <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
-            <exclude name="**/entity/*"/>
-            <exclude name="**/global/*"/>
-        </jar>
-        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.global.jar}">
-            <include name="**/entity/*"/>
-            <include name="**/global/*"/>
+            <include name="**/*"/>
         </jar>
         <jar basedir="${test.out.dir}/${module.name}" destfile="${build.dir}/${module.test.jar}">
             <include name="**/*"/>
@@ -89,7 +62,6 @@
     </target>
 
     <target name="deploy-module" depends="base-mod.deploy-module">
-        <copy file="${build.dir}/${module.global.jar}" todir="${jboss.dir}/server/default/deploy"/>
         <copy file="${build.dir}/${module.service.xml}" todir="${jboss.deploy.dir}"/>
         <copy file="${src-serv.dir}/${module.ds.xml}" todir="${jboss.deploy.dir}"/>
         <copy todir="${jboss.dir}/server/default/conf">
@@ -98,7 +70,6 @@
     </target>
 
     <target name="undeploy-module" depends="base-mod.undeploy-module">
-        <delete file="${jboss.dir}/server/default/deploy/${module.global.jar}"/>
         <delete file="${jboss.dir}/server/default/deploy/${module.service.xml}"/>
     </target>
 

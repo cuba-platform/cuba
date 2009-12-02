@@ -10,7 +10,7 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.app.TemplateHelper;
+import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
