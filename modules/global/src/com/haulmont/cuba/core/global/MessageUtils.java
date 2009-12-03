@@ -18,6 +18,11 @@ import com.haulmont.chile.core.model.MetaProperty;
 public class MessageUtils {
 
     /**
+     * Prefix pointing that the string is actually a key in a localized messages pack
+     */
+    public static final String MARK = "msg://";
+
+    /**
      * Get localized message by reference provided in full format
      * @param ref reference to message in the following format: <code>msg://message_pack/message_id</code>
      * @return localized message or input string itself if it doesn't begin with <code>msg://</code>
@@ -37,7 +42,7 @@ public class MessageUtils {
      * @return localized message or input string itself if it doesn't begin with <code>msg://</code>
      */
     public static String loadString(String messagesPack, String ref) {
-        if (ref.startsWith("msg://")) {
+        if (ref.startsWith(MARK)) {
             String path = ref.substring(6);
             final String[] strings = path.split("/");
             if (strings.length == 1 && messagesPack != null) {
@@ -51,6 +56,9 @@ public class MessageUtils {
         return ref;
     }
 
+    /**
+     * Get localized name of an entity. Messages pack should be placed in the packet of entity.
+     */
     public static String getEntityCaption(MetaClass metaClass) {
         String className = metaClass.getJavaClass().getName();
         int i = className.lastIndexOf('.');
@@ -60,11 +68,17 @@ public class MessageUtils {
         return MessageProvider.getMessage(metaClass.getJavaClass(), className);
     }
 
+    /**
+     * Get localized name of an entity property. Messages pack should be placed in the packet of entity.
+     */
     public static String getPropertyCaption(MetaClass metaClass, String propertyName) {
         MetaProperty property = metaClass.getProperty(propertyName);
         return getPropertyCaption(property);
     }
 
+    /**
+     * Get localized name of an entity property. Messages pack should be placed in the packet of entity.
+     */
     public static String getPropertyCaption(MetaProperty property) {
         Class<?> declaringClass = property.getDeclaringClass();
         String className = declaringClass.getName();
@@ -75,11 +89,17 @@ public class MessageUtils {
         return MessageProvider.getMessage(declaringClass, className + "." + property.getName());
     }
 
+    /**
+     * Get message key of an entity property. Messages pack part of the key points to the packet of entity.
+     */
     public static String getMessageRef(MetaClass metaClass, String propertyName) {
         MetaProperty property = metaClass.getProperty(propertyName);
         return getMessageRef(property);
     }
 
+    /**
+     * Get message key of an entity property. Messages pack part of the key points to the packet of entity.
+     */
     public static String getMessageRef(MetaProperty property) {
         Class<?> declaringClass = property.getDeclaringClass();
         String className = declaringClass.getName();
@@ -90,6 +110,6 @@ public class MessageUtils {
             className = className.substring(i + 1);
         }
 
-        return "msg://" + packageName + "/" + className + "." + property.getName();
+        return MARK + packageName + "/" + className + "." + property.getName();
     }
 }
