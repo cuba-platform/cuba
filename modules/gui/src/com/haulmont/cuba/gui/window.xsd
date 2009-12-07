@@ -251,6 +251,20 @@
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
+
+                <xs:element name="accessControl">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="visible" minOccurs="0" maxOccurs="1" type="accessControlAccessType"/>
+                            <xs:element name="editable" minOccurs="0" maxOccurs="1" type="accessControlAccessType"/>
+                            <xs:group ref="layoutOrComponent" minOccurs="0"/>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="data" type="xs:string" use="optional"/>
+                        <xs:attribute name="param" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+
             </xs:choice>
         </xs:sequence>
     </xs:group>
@@ -665,4 +679,17 @@
             <xs:element name="or" type="filterLogicalType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:complexType name="accessControlAccessType" mixed="true">
+        <xs:sequence>
+            <xs:element name="param" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType mixed="true">
+                    <xs:attribute name="name" use="required"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="script" type="xs:string" use="optional"/>
+        <xs:attribute name="property" type="xs:string" use="optional"/>
+    </xs:complexType>
+
 </xs:schema>
