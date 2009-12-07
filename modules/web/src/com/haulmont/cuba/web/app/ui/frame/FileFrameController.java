@@ -16,10 +16,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 
@@ -46,6 +43,10 @@ public class FileFrameController extends AbstractWindow {
         uploadField = getComponent("uploadField");
         filesTable = getComponent("files");
         ds = getDsContext().get("filesDs");
+        TableActionsHelper helper = new TableActionsHelper(this, filesTable);
+        Button remove = getComponent("remove");
+        remove.setAction(helper.createRemoveAction(false));
+
         uploadField.addListener(new FileUploadField.Listener() {
             public void uploadStarted(Event event) {
                 uploadField.setEnabled(false);

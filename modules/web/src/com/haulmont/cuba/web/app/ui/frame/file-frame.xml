@@ -6,6 +6,7 @@
         <vbox id="main" margin="true" height="100%" stylename="frame-details" spacing="true" expand="files">
             <label value="msg://uploadedFiles" stylename="h2"/>
             <upload id="uploadField"/>
+            <button id="remove"/>
             <table id="files" editable="false">
                 <columns>
                     <column id="name" caption="msg://name"/>
