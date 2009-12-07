@@ -111,7 +111,12 @@ public abstract class WindowManager {
         window.setId(windowInfo.getId());
 
         componentLoaderContext.setFrame(window);
+
         initDatasources(window, dsContext, params);
+
+        FrameContext frameContext = new FrameContext(window, params);
+        window.setContext(frameContext);
+        dsContext.setWindowContext(frameContext);
 
         final Window windowWrapper = wrapByCustomClass(window, element, params);
         componentLoaderContext.setFrame(windowWrapper);
@@ -149,8 +154,6 @@ public abstract class WindowManager {
                 ((DatasourceImplementation) ds).initialized();
             }
         }
-
-        dsContext.setWindowContext(new FrameContext(window, params));
     }
 
     protected Window loadLayout(String descriptorPath, Element rootElement, ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {
@@ -422,7 +425,7 @@ public abstract class WindowManager {
         if (!StringUtils.isBlank(screenClass)) {
             Class<Window> aClass = null;
             if (groovyClassLoaderEnabled) {
-                aClass = ScriptingProvider.loadGroovyClass(screenClass);
+                aClass = ScriptingProvider.loadClass(screenClass);
             }
             if (aClass == null)
                 aClass = ReflectionHelper.getClass(screenClass);

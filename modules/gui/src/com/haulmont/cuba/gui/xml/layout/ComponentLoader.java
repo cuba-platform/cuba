@@ -23,7 +23,7 @@ import groovy.lang.Binding;
 public interface ComponentLoader {
 
     public interface Context {
-        Map<String, Object> getParameters();
+        Map<String, Object> getParams();
         DsContext getDsContext();
         Binding getBinding();
 

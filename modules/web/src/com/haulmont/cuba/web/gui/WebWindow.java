@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -69,6 +70,8 @@ public class WebWindow
     private Element element;
 
     private DsContext dsContext;
+    private WindowContext context;
+
     private String caption;
 
     private List<CloseListener> listeners = new ArrayList<CloseListener>();
@@ -214,6 +217,14 @@ public class WebWindow
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public WindowContext getContext() {
+        return context;
+    }
+
+    public void setContext(WindowContext ctx) {
+        this.context = ctx;
+    }
 
     public DsContext getDsContext() {
         return dsContext;

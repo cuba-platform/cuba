@@ -67,6 +67,7 @@ public class LayoutLoaderConfig {
         config.register("tabsheet", TabsheetLoader.class);
         config.register("embedded", EmbeddedLoader.class);
         config.register("filter", FilterLoader.class);
+        config.register("accessControl", AccessControlLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

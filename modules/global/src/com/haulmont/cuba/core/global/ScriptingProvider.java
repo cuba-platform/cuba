@@ -10,24 +10,27 @@
  */
 package com.haulmont.cuba.core.global;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
-import groovy.lang.Binding;
-import groovy.lang.GroovyClassLoader;
 
 import java.io.InputStream;
-import java.io.File;
+import java.util.Map;
 
 public abstract class ScriptingProvider {
+
+    public enum Layer {
+        CORE,
+        GUI
+    }
 
     public static final String IMPL_PROP = "cuba.ScriptingProvider.impl";
 
     private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.ScriptingProviderImpl";
 
     private static ScriptingProvider instance;
-
-    protected static String groovyClassPath = "";
 
     private static ScriptingProvider getInstance() {
         if (instance == null) {
@@ -49,15 +52,28 @@ public abstract class ScriptingProvider {
     }
 
     public static void addGroovyClassPath(String path) {
-        groovyClassPath = groovyClassPath + File.pathSeparator + path;
+        getInstance().__addGroovyClassPath(path);
     }
 
-    public static void runGroovyScript(String name, Binding binding) {
-        getInstance().__runGroovyScript(name, binding);
+    public static void addGroovyEvaluatorImport(Layer layer, String className) {
+        getInstance().__addGroovyEvaluatorImport(layer, className);
     }
 
-    public static Class loadGroovyClass(String name) {
-        return getInstance().__loadGroovyClass(name);
+    public static <T> T evaluateGroovy(Layer layer, String text, Binding binding) {
+        return (T) getInstance().__evaluateGroovy(layer, text, binding);
+    }
+
+    public static <T> T evaluateGroovy(Layer layer, String text, Map<String, Object> context) {
+        Binding binding = createBinding(context);
+        return (T) evaluateGroovy(layer, text, binding);
+    }
+
+    public static <T> T runGroovyScript(String name, Binding binding) {
+        return (T) getInstance().__runGroovyScript(name, binding);
+    }
+
+    public static Class loadClass(String name) {
+        return getInstance().__loadClass(name);
     }
 
     public static InputStream getResourceAsStream(String name) {
@@ -72,9 +88,9 @@ public abstract class ScriptingProvider {
         getInstance().__getGroovyClassLoader().clearCache();
     }
 
-    protected void __runGroovyScript(String name, Binding binding) {
+    protected <T> T __runGroovyScript(String name, Binding binding) {
         try {
-            __getGroovyScriptEngine().run(name, binding);
+            return (T) __getGroovyScriptEngine().run(name, binding);
         } catch (ResourceException e) {
             throw new RuntimeException(e);
         } catch (ScriptException e) {
@@ -82,7 +98,7 @@ public abstract class ScriptingProvider {
         }
     }
 
-    private Class __loadGroovyClass(String name) {
+    private Class __loadClass(String name) {
         try {
             return __getGroovyClassLoader().loadClass(name, true, false);
         } catch (ClassNotFoundException e) {
@@ -93,6 +109,21 @@ public abstract class ScriptingProvider {
     private InputStream __getResourceAsStream(String name) {
         return __getGroovyClassLoader().getResourceAsStream(name);
     }
+
+    protected static Binding createBinding(Map<String, Object> map) {
+        Binding binding = new Binding();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            binding.setVariable(entry.getKey(), entry.getValue());
+        }
+
+        return binding;
+    }
+
+    protected abstract void __addGroovyClassPath(String path);
+
+    protected abstract void __addGroovyEvaluatorImport(Layer layer, String str);
+
+    protected abstract <T> T __evaluateGroovy(Layer layer, String text, Binding binding);
 
     protected abstract GroovyScriptEngine __getGroovyScriptEngine();
 

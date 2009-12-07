@@ -41,6 +41,14 @@ public class FrameContext implements WindowContext {
         return (T) params.get("param$" + property);
     }
 
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public <T> T getParamValue(String param) {
+        return (T) params.get(param);
+    }
+
     public <T> T getValue(String property) {
         final String[] elements = ValuePathHelper.parse(property);
         String[] path = elements;

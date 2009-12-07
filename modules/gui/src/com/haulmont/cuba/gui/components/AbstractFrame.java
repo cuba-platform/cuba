@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.entity.Entity;
 
@@ -129,6 +130,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
 
     public void expand(Component component, String height, String width) {
         frame.expand(component, height, width);
+    }
+
+    public WindowContext getContext() {
+        return frame.getContext();
+    }
+
+    public void setContext(WindowContext ctx) {
+        frame.setContext(ctx);
     }
 
     public DsContext getDsContext() {

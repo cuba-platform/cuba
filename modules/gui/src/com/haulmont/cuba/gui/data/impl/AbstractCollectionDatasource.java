@@ -170,9 +170,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     break;
                 }
                 case PARAM: {
-                    Object value =
-                            dsContext.getWindowContext() == null ?
-                                    null : dsContext.getWindowContext().getParameterValue(path);
+                    Object value = dsContext.getWindowContext() == null ?
+                            null :
+                            dsContext.getWindowContext().getParams().get(ParameterInfo.Type.PARAM.getPrefix() + "$" + path);
                     if (value instanceof String && info.isCaseInsensitive()) {
                         value = makeCaseInsensitive((String) value);
                     }
@@ -282,12 +282,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             templateParams.put(customPerfix + entry.getKey(), entry.getValue());
         }
 
-        String paramPrefix = ParameterInfo.Type.PARAM.getPrefix() + "$";
         WindowContext windowContext = dsContext.getWindowContext();
         if (windowContext != null) {
-            for (String name : windowContext.getParameterNames()) {
-                templateParams.put(paramPrefix + name, windowContext.getParameterValue(name));
-            }
+            templateParams.putAll(windowContext.getParams());
         }
 
         UserSession userSession = UserSessionClient.getUserSession();

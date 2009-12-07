@@ -25,8 +25,8 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         this.parameters = parameters;
     }
 
-    public Map<String, Object> getParameters() {
-        return Collections.unmodifiableMap(parameters);
+    public Map<String, Object> getParams() {
+        return parameters;
     }
 
     public DsContext getDsContext() {
@@ -37,7 +37,8 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         if (binding == null) {
             binding = new Binding();
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-                binding.setVariable(entry.getKey(), entry.getValue());
+                String name = entry.getKey().replace('$', '_');
+                binding.setVariable(name, entry.getValue());
             }
         }
         return binding;

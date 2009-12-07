@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.Map;
@@ -22,6 +23,9 @@ import java.util.Map;
  * Includes functionality for work with datasources and other windows.
  */
 public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLayout {
+
+    WindowContext getContext();
+    void setContext(WindowContext ctx);
 
     DsContext getDsContext();
     void setDsContext(DsContext dsContext);

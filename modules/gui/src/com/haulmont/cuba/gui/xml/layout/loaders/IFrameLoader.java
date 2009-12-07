@@ -46,7 +46,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
             }
         }
 
-        final IFrame component = (IFrame) loader.loadComponent(stream, parent, context.getParameters());
+        final IFrame component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(messagesPack);
         }

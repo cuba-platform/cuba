@@ -24,13 +24,11 @@ import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.dom4j.Document;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,7 +51,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         final Element dsContextElement = element.element("dsContext");
         final DsContext dsContext;
-        final Map<String,Object> params = Collections.emptyMap();
+        final Map<String,Object> params = context.getParams();
 
         if (dsContextElement != null) {
             final DsContextLoader contextLoader =
@@ -78,6 +76,9 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         loadExpandLayout(component, layoutElement);
         loadSubComponentsAndExpand(component, layoutElement);
 
+        FrameContext frameContext = new FrameContext(component, params);
+        component.setContext(frameContext);
+
         if (dsContext != null) {
             component.setDsContext(dsContext);
 
@@ -87,7 +88,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 }
             }
 
-            dsContext.setWindowContext(new FrameContext(component, params));
+            dsContext.setWindowContext(frameContext);
         }
         component = wrapByCustomClass(component, element, params, parentContext);
 
@@ -105,7 +106,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             try {
                 Class<Window> aClass = null;
                 if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled()) {
-                    aClass = ScriptingProvider.loadGroovyClass(screenClass);
+                    aClass = ScriptingProvider.loadClass(screenClass);
                 }
                 if (aClass == null)
                     aClass = ReflectionHelper.getClass(screenClass);

@@ -26,7 +26,7 @@ public class ScriptingProviderTest extends CubaTestCase {
     }
 
     public void testClass() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        Class cls = ScriptingProvider.loadGroovyClass("cuba.test.TestClass1");
+        Class cls = ScriptingProvider.loadClass("cuba.test.TestClass1");
         Object obj = cls.newInstance();
         assertTrue(obj instanceof HsqlDbDialect);
         Method method = cls.getMethod("testMethod");

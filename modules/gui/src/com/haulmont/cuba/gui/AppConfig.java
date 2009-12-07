@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -150,15 +151,11 @@ public class AppConfig
      }
 
 
-    public Set<String> getGroovyImports() {
-        return unmodifiableGroovyImports;
-    }
-
     public void addGroovyImport(Class aClass) {
-        groovyImports.add(aClass.getName());
+        ScriptingProvider.addGroovyEvaluatorImport(ScriptingProvider.Layer.GUI, aClass.getName());
     }
 
-    public void addGroovyImport(String classpath) {
-        groovyImports.add(classpath);
+    public void addGroovyImport(String className) {
+        ScriptingProvider.addGroovyEvaluatorImport(ScriptingProvider.Layer.GUI, className);
     }
 }

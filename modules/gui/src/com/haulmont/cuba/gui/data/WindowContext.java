@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.gui.data;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
  * Provides access to window parameters and component values
@@ -17,15 +17,14 @@ import java.util.Collection;
 public interface WindowContext {
 
     /**
-     * Names of external parameters passed to the window on opening. Have no "param$" prefix.
+     * External parameters passed to the window on opening.
      */
-    Collection<String> getParameterNames();
+    Map<String, Object> getParams();
 
     /**
-     * Value of an external parameter passed to the window on opening.
-     * @param property parameter name without "param$" prefix.
+     * Value of an external parameters passed to the window on opening.
      */
-    <T> T getParameterValue(String property);
+    <T> T getParamValue(String param);
 
     /**
      * Retrieves value of a component by complex name, dereferencing path to the component

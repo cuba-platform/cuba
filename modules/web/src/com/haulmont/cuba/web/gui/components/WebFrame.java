@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
@@ -40,6 +41,7 @@ public class WebFrame extends WebAbstractPanel
             Layout.AlignmentHandler
 {
     private String messagePack;
+    private WindowContext context;
     private DsContext dsContext;
     private IFrame frame;
     private Element element;
@@ -113,6 +115,14 @@ public class WebFrame extends WebAbstractPanel
 
     public Collection<com.haulmont.cuba.gui.components.Component> getComponents() {
         return WebComponentsHelper.getComponents(this);
+    }
+
+    public WindowContext getContext() {
+        return context == null ? getFrame().getContext() : context;
+    }
+
+    public void setContext(WindowContext ctx) {
+        this.context = ctx;
     }
 
     public DsContext getDsContext() {

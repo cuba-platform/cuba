@@ -95,10 +95,11 @@ public class GenericBrowserWindow extends WebWindow
         if (metaClass == null) throw new UnsupportedOperationException();
         initCaption(metaClass);
 
-        final DsContextImpl context = createDsContext(metaClass, view, params);
-        setDsContext(context);
+        final DsContextImpl dsContext = createDsContext(metaClass, view, params);
+        setDsContext(dsContext);
+        setContext(dsContext.getWindowContext());
 
-        final CollectionDatasource ds = context.get(metaClass.getName());
+        final CollectionDatasource ds = dsContext.get(metaClass.getName());
         ds.refresh();
 
         if (view != null) {

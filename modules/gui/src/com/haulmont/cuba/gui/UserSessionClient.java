@@ -12,6 +12,8 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.security.global.UserSession;
 
+import java.util.UUID;
+
 /**
  * GenericUI class providing access to the current user session
  */
@@ -46,6 +48,11 @@ public abstract class UserSessionClient
      */
     public static UserSession getUserSession() {
         return getInstance().__getUserSession();
+    }
+
+    public static UUID currentOrSubstitutedUserId() {
+        UserSession us = getInstance().__getUserSession();
+        return us.getSubstitutedUser() != null ? us.getSubstitutedUser().getId() : us.getUser().getId();
     }
 
     protected abstract UserSession __getUserSession();
