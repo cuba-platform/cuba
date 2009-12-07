@@ -148,3 +148,15 @@
     color: white;
     font-weight: bold;
 }
+
+/*
+ *  e.g. text labels for fields
+ *  at popup dialog editors
+ */
+.v-window-contents .v-verticallayout-edit-area,
+.v-window-contents .v-horizontallayout-edit-area,
+.v-window-contents .v-gridlayout-edit-area {
+    font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+	color: #000;
+	font-size: 8pt;
+}
