@@ -409,9 +409,15 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 final String id = windowInfo.getId();
                 if (id.endsWith(".create") || id.endsWith(".edit")) {
                     final String[] strings = id.split("[.]");
-                    if (strings.length != 2) throw new UnsupportedOperationException();
+                    String metaClassName = null;
 
-                    final String metaClassName = strings[0];
+                    if (strings.length == 2)
+                        metaClassName = strings[0];
+                    else if (strings.length == 3)
+                        metaClassName = strings[1];                        
+                    else
+                        throw new UnsupportedOperationException();
+
                     final MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
                     if (metaClass == null)
                         throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
