@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.gui.AppConfig;
 import com.vaadin.Application;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
@@ -270,6 +271,6 @@ public class LoginWindow extends Window
     }
 
     protected String getMessagesPack() {
-        return "com.haulmont.cuba.web";
+        return AppConfig.getInstance().getMessagesPack();
     }
 }

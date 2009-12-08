@@ -174,7 +174,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      * Can be overridden in descendant to create an app-specific caption
      */
     protected String getAppCaption() {
-        return MessageProvider.getMessage(getClass(), "application.caption");
+        return MessageProvider.getMessage(getMessagesPack(), "application.caption");
     }
 
     /**
@@ -275,7 +275,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      * Can be overriding by client application to change title caption
      */
     protected String getLogoLabelCaption() {
-        return MessageProvider.getMessage(getClass(), "logoLabel");
+        return MessageProvider.getMessage(getMessagesPack(), "logoLabel");
     }
 
     /**
@@ -301,7 +301,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         HorizontalLayout loginLayout = new HorizontalLayout();
         loginLayout.setMargin(false, true, false, false);
         loginLayout.setSpacing(true);
-        Label userLabel = new Label(MessageProvider.getMessage(getClass(), "loggedInLabel"));
+        Label userLabel = new Label(MessageProvider.getMessage(getMessagesPack(), "loggedInLabel"));
         userLabel.setStyleName("select-label");
 
         loginLayout.addComponent(userLabel);
@@ -318,7 +318,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         loginLayout.addComponent(substUserSelect);
         
 
-        Button logoutBtn = new Button(MessageProvider.getMessage(getClass(), "logoutBtn"),
+        Button logoutBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
                 new Button.ClickListener() {
                     private static final long serialVersionUID = 4885156177472913997L;
 
@@ -332,7 +332,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         logoutBtn.setStyleName("white-border");
         logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
 
-        Button viewLogBtn = new Button(MessageProvider.getMessage(getClass(), "viewLogBtn"),
+        Button viewLogBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "viewLogBtn"),
                 new Button.ClickListener() {
                     private static final long serialVersionUID = -2017737447316558248L;
 
@@ -474,6 +474,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
     }
 
+     protected String getMessagesPack() {
+        return AppConfig.getInstance().getMessagesPack();
+    }
+
     private class ChangeSubstUserAction extends AbstractAction {
         private AbstractSelect substUserSelect;
 
@@ -526,8 +530,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             User oldUser = userSession.getSubstitutedUser() == null ? userSession.getUser() : userSession.getSubstitutedUser();
             if (!oldUser.equals(newUser)) {
                 App.getInstance().getWindowManager().showOptionDialog(
-                        MessageProvider.getMessage(AppWindow.class, "substUserSelectDialog.title"),
-                        MessageProvider.formatMessage(AppWindow.class, "substUserSelectDialog.msg", newUser.toString()),
+                        MessageProvider.getMessage(getMessagesPack(), "substUserSelectDialog.title"),
+                        MessageProvider.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", newUser.toString()),
                         IFrame.MessageType.WARNING,
                         new Action[]{new ChangeSubstUserAction(substUserSelect), new DoNotChangeSubstUserAction(substUserSelect)}
                 );
