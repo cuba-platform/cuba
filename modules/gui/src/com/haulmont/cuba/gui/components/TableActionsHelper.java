@@ -27,6 +27,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 
 public class TableActionsHelper extends ListActionsHelper<Table>{
     public TableActionsHelper(IFrame frame, Table table) {
@@ -50,17 +51,19 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                 final String windowID = datasource.getMetaClass().getName() + ".edit";
 
                 final Entity item = dataservice.newInstance(datasource.getMetaClass());
-                for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
-                    final Object value = entry.getValue();
-                    if (value instanceof Collection) {
-                        final Collection collection = (Collection) value;
-                        if (collection.size() != 1) {
-                            throw new UnsupportedOperationException();
+                if (valueProvider.getValues() != null) {
+                    for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
+                        final Object value = entry.getValue();
+                        if (value instanceof Collection) {
+                            final Collection collection = (Collection) value;
+                            if (collection.size() != 1) {
+                                throw new UnsupportedOperationException();
+                            } else {
+                                ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
+                            }
                         } else {
-                            ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
+                            ((Instance) item).setValue(entry.getKey(), value);
                         }
-                    } else {
-                        ((Instance) item).setValue(entry.getKey(), value);
                     }
                 }
 
@@ -72,8 +75,10 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                     }
                 }
 
-                final Window window = frame.openEditor(
-                        windowID, item, openType, valueProvider.getParameters(), parentDs);
+                Map<String, Object> params = valueProvider.getParameters() != null ?
+                        valueProvider.getParameters() : Collections.<String, Object>emptyMap();
+
+                final Window window = frame.openEditor(windowID, item, openType, params, parentDs);
 
                 if (parentDs == null) {
                     window.addListener(new Window.CloseListener() {

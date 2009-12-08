@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import java.util.Map;
+import java.util.Collections;
 
 public class TreeActionsHelper extends ListActionsHelper<Tree>{
     public TreeActionsHelper(IFrame frame, Tree tree) {
@@ -39,10 +40,16 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
                 ((Instance) item).setValue(hierarchyProperty, parentItem);
 
                 final String windowID = datasource.getMetaClass().getName() + ".edit";
-                for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
-                    ((Instance) item).setValue(entry.getKey(), entry.getValue());
+                if (valueProvider.getValues() != null) {
+                    for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
+                        ((Instance) item).setValue(entry.getKey(), entry.getValue());
+                    }
                 }
-                final Window window = frame.openEditor(windowID, item, openType, valueProvider.getParameters());
+
+                Map<String, Object> params = valueProvider.getParameters() != null ?
+                        valueProvider.getParameters() : Collections.<String, Object>emptyMap();
+
+                final Window window = frame.openEditor(windowID, item, openType, params);
                 window.addListener(new Window.CloseListener() {
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
