@@ -62,7 +62,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         sendEmail(info.getAddresses(), info.getCaption(), info.getBody(), config.getFromAddress(), info.getAttachment());
     }
 
-    @Deprecated
     public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachment)
             throws EmailException {
         sendEmail(addresses, caption, body, config.getFromAddress(), attachment);
@@ -135,7 +134,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
         MimeMultipart content = new MimeMultipart("related");
         MimeBodyPart contentBodyPart = new MimeBodyPart();
-        if (text.startsWith("<html>")) {
+        if (text.trim().startsWith("<html>")) {
             contentBodyPart.setContent(text, "text/html; charset=UTF-8");
         } else {
             contentBodyPart.setContent(text, "text/plain; charset=UTF-8");
