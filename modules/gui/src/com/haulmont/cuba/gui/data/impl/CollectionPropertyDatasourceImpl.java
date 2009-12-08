@@ -217,6 +217,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         } else {
             throw new UnsupportedOperationException("Type " + type + " not supported, should implement List or Set");
         }
+
+        if (item.getValue(metaProperty.getName()) == null) {
+            throw new RuntimeException("Cannot set collection property " + metaProperty.getName() + ". Probably not contained in view.");
+        }
     }
 
     public void removeItem(T item) throws UnsupportedOperationException {
