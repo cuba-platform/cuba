@@ -11,9 +11,22 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 @Source(type = SourceType.SYSTEM)
 public interface GlobalConfig extends Config {
+
+    @Property("cuba.webHostName")
+    @DefaultString("localhost")
+    String getWebHostName();
+
+    @Property("cuba.webPort")
+    @DefaultString("8080")
+    String getWebPort();
+
+    @Property("cuba.webContextName")
+    @DefaultString("cuba")
+    String getWebContextName();
 
     /**
      * Logs directory. Place app-specific log files here.
