@@ -360,6 +360,7 @@
                                 <xs:complexType>
                                     <xs:attribute name="class" type="xs:string" use="required"/>
                                     <xs:attribute name="message" type="xs:string" use="optional"/>
+                                    <xs:attribute name="script" type="xs:string" use="optional"/>
                                     <xs:attribute name="onlyPositive" type="xs:boolean" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
