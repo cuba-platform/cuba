@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Eugeniy Degtyarjov
+ * Created: 08.12.2009 10:51:20
+ *
+ * $Id$
+ */
+package com.haulmont.cuba.gui.components.validators;
+
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
+
+import java.util.Collections;
+
+import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
+
+public class ScriptValidator implements Field.Validator {
+    private String script;
+    protected String message;
+    protected String messagesPack;
+    private String scriptPath;
+    private boolean innerScript;
+    public ScriptValidator(Element element, String messagesPack) {
+        this.script = element.getText();
+        innerScript = StringUtils.isNotBlank(script);
+        if (!innerScript) {
+            scriptPath = element.attributeValue("script");
+        }
+        message = element.attributeValue("message");
+        this.messagesPack = messagesPack;
+    }
+
+    public void validate(Object value) throws ValidationException {
+        Boolean isValid = false;
+        if (innerScript) {
+            isValid = ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.GUI, script, Collections.<String, Object>singletonMap("value", value));
+        } else if (scriptPath != null) {
+            isValid = ScriptingProvider.runGroovyScript(scriptPath, Collections.<String, Object>singletonMap("value", value));
+        }
+        if (!isValid) {
+            String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
+            throw new ValidationException(String.format(msg, value));
+        }
+    }
+}

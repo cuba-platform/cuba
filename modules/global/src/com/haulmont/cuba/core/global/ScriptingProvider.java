@@ -72,6 +72,11 @@ public abstract class ScriptingProvider {
         return (T) getInstance().__runGroovyScript(name, binding);
     }
 
+    public static <T> T runGroovyScript(String name,  Map<String, Object> context) {
+        Binding binding = createBinding(context);
+        return (T) getInstance().__runGroovyScript(name, binding);
+    }
+
     public static Class loadClass(String name) {
         return getInstance().__loadClass(name);
     }
