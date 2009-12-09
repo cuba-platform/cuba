@@ -92,6 +92,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     public static Application.SystemMessages getSystemMessages() {
         Application.CustomizedSystemMessages msgs = new Application.CustomizedSystemMessages();
         msgs.setInternalErrorURL("/cuba?restartApplication");
+        msgs.setOutOfSyncNotificationEnabled(false);
         return msgs;
     }
 
