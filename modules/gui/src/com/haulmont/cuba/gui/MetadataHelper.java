@@ -24,6 +24,7 @@ import javax.persistence.ManyToMany;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -177,7 +178,11 @@ public class MetadataHelper {
             List<Element> fileElements = metadataContextElement.elements("deployViews");
             for (Element fileElement : fileElements) {
                 final String resource = fileElement.attributeValue("name");
-                MetadataProvider.getViewRepository().deployViews(MetadataHelper.class.getResourceAsStream(resource));
+                InputStream resourceInputStream = MetadataHelper.class.getResourceAsStream(resource);
+                if (resourceInputStream == null) {
+                    throw new RuntimeException("View resource not found: " + ((resource == null) ? "[null]" : resource));
+                }
+                MetadataProvider.getViewRepository().deployViews(resourceInputStream);
             }
 
             @SuppressWarnings({"unchecked"})
