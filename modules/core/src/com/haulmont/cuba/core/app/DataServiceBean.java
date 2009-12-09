@@ -245,9 +245,9 @@ public class DataServiceBean implements DataService, DataServiceRemote
             if (metaClass == null) continue;
 
             if (PersistenceHelper.isNew(entity)) {
-                checkPermission(checkedUpdateRights, metaClass, EntityOp.UPDATE);
-            } else {
                 checkPermission(checkedCreateRights, metaClass, EntityOp.CREATE);
+            } else {
+                checkPermission(checkedUpdateRights, metaClass, EntityOp.UPDATE);
             }
         }
 
