@@ -72,8 +72,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
     protected Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
     private static volatile boolean viewsDeployed;
-    private String contextName;
-    private boolean testMode;
+
+    private volatile String contextName;
 
     static {
         // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
@@ -109,10 +109,6 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     public void init() {
         log.debug("Initializing application");
-
-        GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
-        contextName = config.getWebContextName();
-        testMode = config.getTestMode();
 
         AppConfig.getInstance().addGroovyImport(PersistenceHelper.class);
 
@@ -257,7 +253,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public void terminalError(Terminal.ErrorEvent event) {
-        if (testMode) {
+        GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
+        if (config.getTestMode()) {
             String fileName = System.getProperty("cuba.testModeExceptionLog");
             if (!StringUtils.isBlank(fileName)) {
                 try {
@@ -317,6 +314,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
             currentApp.set((App) application);
         }
         application.setLocale(request.getLocale());
+
+        if (contextName == null) {
+            contextName = request.getContextPath().substring(1);
+        }
 
         String requestURI = request.getRequestURI();
 
