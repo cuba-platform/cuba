@@ -38,4 +38,9 @@ public class DateField extends com.vaadin.ui.DateField {
     protected Date handleUnparsableDateString(String dateString) throws ConversionException {
         return null;
     }
+
+    @Override
+    protected boolean isEmpty() {
+        return getValue() == null;
+    }
 }
