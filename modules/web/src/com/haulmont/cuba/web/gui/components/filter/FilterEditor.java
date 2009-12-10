@@ -321,7 +321,7 @@ public class FilterEditor {
                 sb.append(error).append("\n");
         }
         if (sb.length() > 0) {
-            App.getInstance().getMainWindow().showNotification(
+            App.getInstance().getAppWindow().showNotification(
                     getMessage("FilterEditor.commitError"),
                     sb.toString(),
                     Window.Notification.TYPE_HUMANIZED_MESSAGE);

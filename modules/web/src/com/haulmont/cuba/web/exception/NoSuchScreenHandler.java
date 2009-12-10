@@ -23,7 +23,7 @@ public class NoSuchScreenHandler extends AbstractExceptionHandler<NoSuchScreenEx
 
     protected void doHandle(NoSuchScreenException t, App app) {
         String msg = MessageProvider.getMessage(getClass(), "noSuchScreen.message");
-        app.getMainWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
     public void handle(NoSuchScreenException e, App app) {

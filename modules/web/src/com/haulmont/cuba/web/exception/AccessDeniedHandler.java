@@ -23,7 +23,7 @@ public class AccessDeniedHandler extends AbstractExceptionHandler<AccessDeniedEx
 
     protected void doHandle(AccessDeniedException t, App app) {
         String msg = MessageProvider.getMessage(getClass(), "accessDenied.message");
-        app.getMainWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
     public void handle(AccessDeniedException e, App app) {

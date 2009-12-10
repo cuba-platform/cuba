@@ -115,7 +115,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         rootLayout = createLayout();
         initLayout();
         setContent(rootLayout);
-        setTheme("saneco");
         postInitLayout();
     }
 
@@ -312,7 +311,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         substUserSelect.setStyleName("select-label");
 
         fillSubstitutedUsers(substUserSelect);
-        substUserSelect.select(App.getInstance().getConnection().getSession().getUser());
+        UserSession us = App.getInstance().getConnection().getSession();
+        substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
         substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
 
         loginLayout.addComponent(substUserSelect);
@@ -345,6 +345,19 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         viewLogBtn.setStyleName("white-border");
         viewLogBtn.setIcon(new ThemeResource("images/show-log.gif"));
 
+        Button newWindowBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "newWindowBtn"),
+                new Button.ClickListener() {
+                    private static final long serialVersionUID = -2017737447316558248L;
+
+                    public void buttonClick(Button.ClickEvent event) {
+                        String name = GlobalUtils.generateWebWindowName();
+                        open(new ExternalResource(App.getInstance().getURL() + name), "_new");
+                    }
+                }
+        );
+        newWindowBtn.setStyleName("white-border");
+        newWindowBtn.setIcon(new ThemeResource("images/clean.gif"));
+
         titleLayout.addComponent(loginLayout);
         titleLayout.setComponentAlignment(loginLayout, Alignment.MIDDLE_RIGHT);
 
@@ -353,6 +366,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         titleLayout.addComponent(viewLogBtn);
         titleLayout.setComponentAlignment(viewLogBtn, Alignment.MIDDLE_RIGHT);
+
+        titleLayout.addComponent(newWindowBtn);
+        titleLayout.setComponentAlignment(newWindowBtn, Alignment.MIDDLE_RIGHT);
 
         return titleLayout;
     }
@@ -512,7 +528,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
 
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-            substUserSelect.select(App.getInstance().getConnection().getSession().getUser());
+            UserSession us = App.getInstance().getConnection().getSession();
+            substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
         }
     }
 

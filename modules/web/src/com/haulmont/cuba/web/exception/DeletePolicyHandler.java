@@ -23,6 +23,6 @@ public class DeletePolicyHandler extends AbstractExceptionHandler<DeletePolicyEx
 
     protected void doHandle(DeletePolicyException t, App app) {
         String msg = MessageProvider.getMessage(getClass(), "deletePolicy.message");
-        app.getMainWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 }

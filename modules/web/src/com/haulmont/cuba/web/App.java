@@ -34,7 +34,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * Main class of the web application. Each client connection has its own App.
@@ -44,9 +43,10 @@ import java.io.IOException;
  * Specific application should inherit from this class and set derived class name
  * in <code>application</code> servlet parameter of <code>web.xml</code>
  */
-@SuppressWarnings("serial")
 public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
 {
+    private static final long serialVersionUID = -3435976475534930050L;
+
     private Log log = LogFactory.getLog(App.class);
 
     public static final String THEME_NAME = "blacklabel";
@@ -60,6 +60,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
 
+    private ThreadLocal<String> currentWindowName = new ThreadLocal<String>();
+
     private boolean principalIsWrong;
 
     private LinkHandler linkHandler;
@@ -70,6 +72,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
     protected Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
     private static volatile boolean viewsDeployed;
+    private String contextName;
+    private boolean testMode;
 
     static {
         // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
@@ -106,6 +110,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
     public void init() {
         log.debug("Initializing application");
 
+        GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
+        contextName = config.getWebContextName();
+        testMode = config.getTestMode();
+
         AppConfig.getInstance().addGroovyImport(PersistenceHelper.class);
 
         ApplicationContext appContext = getContext();
@@ -118,6 +126,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
             deployViews();
             viewsDeployed = true;
         }
+
+        setTheme(THEME_NAME);
     }
 
     /**
@@ -151,7 +161,6 @@ public class App extends Application implements ConnectionListener, ApplicationC
      */
     protected LoginWindow createLoginWindow() {
         LoginWindow window = new LoginWindow(this, connection);
-        window.setTheme(THEME_NAME);
         return window;
     }
 
@@ -167,12 +176,31 @@ public class App extends Application implements ConnectionListener, ApplicationC
      */
     protected AppWindow createAppWindow() {
         AppWindow appWindow = new AppWindow(connection);
-        appWindow.setTheme(THEME_NAME);
         return appWindow;
     }
 
     public AppWindow getAppWindow() {
-        return (AppWindow) getMainWindow();
+        String name = currentWindowName.get();
+        //noinspection deprecation
+        return (AppWindow) (name == null ? getMainWindow() : getWindow(name));
+    }
+
+    /**
+     * Don't use this method in application code.<br>
+     * Use {@link #getAppWindow} instead
+     */
+    @Deprecated
+    @Override
+    public Window getMainWindow() {
+        return super.getMainWindow();
+    }
+
+    @Override
+    public void removeWindow(Window window) {
+        super.removeWindow(window);
+        if (window instanceof AppWindow) {
+            connection.removeListener((AppWindow) window);
+        }
     }
 
     /**
@@ -196,10 +224,10 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
             stopTimers();
 
-            AppWindow window = createAppWindow();
-            setMainWindow(window);
+            String name = GlobalUtils.generateWebWindowName();
+            Window window = getWindow(name);
 
-            connection.addListener(window);
+            setMainWindow(window);
 
             initExceptionHandlers(true);
 
@@ -214,7 +242,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
             stopTimers();
 
-            connection.removeListener(getAppWindow());
+            for (Object win : new ArrayList(getWindows())) {
+                removeWindow((Window) win);
+            }
 
             Window window = createLoginWindow();
             setMainWindow(window);
@@ -227,7 +257,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public void terminalError(Terminal.ErrorEvent event) {
-        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+        if (testMode) {
             String fileName = System.getProperty("cuba.testModeExceptionLog");
             if (!StringUtils.isBlank(fileName)) {
                 try {
@@ -251,6 +281,30 @@ public class App extends Application implements ConnectionListener, ApplicationC
         }
     }
 
+    @Override
+    public Window getWindow(String name) {
+        Window window = super.getWindow(name);
+
+        // it does not exist yet, create it.
+        if (window == null/* && name.startsWith("window")*/) {
+            if (connection.isConnected()) {
+
+                final AppWindow appWindow = createAppWindow();
+                appWindow.setName(name);
+                addWindow(appWindow);
+
+                connection.addListener(appWindow);
+
+                return appWindow;
+            } else {
+                //noinspection deprecation
+                return getMainWindow();
+            }
+        }
+
+        return window;
+    }
+
     public void transactionStart(Application application, Object transactionData) {
         HttpServletRequest request = (HttpServletRequest) transactionData;
         if (log.isTraceEnabled()) {
@@ -265,6 +319,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
         application.setLocale(request.getLocale());
 
         String requestURI = request.getRequestURI();
+
+        setupCurrentWindowName(requestURI);
 
         if (!connection.isConnected()
                 && request.getUserPrincipal() != null
@@ -291,6 +347,36 @@ public class App extends Application implements ConnectionListener, ApplicationC
             requestStartTimes.put(transactionData, System.currentTimeMillis());
         }
 
+        processExternalLink(request, requestURI);
+    }
+
+    private void setupCurrentWindowName(String requestURI) {
+        //noinspection deprecation
+        currentWindowName.set(getMainWindow() == null ? null : getMainWindow().getName());
+
+        if (connection.isConnected()) {
+            String[] parts = requestURI.split("/");
+            boolean contextFound = false;
+            for (String part : parts) {
+                if (StringUtils.isEmpty(part)) {
+                    continue;
+                }
+                if (part.equals(contextName) && !contextFound) {
+                    contextFound = true;
+                    continue;
+                }
+                if (contextFound && part.equals("UIDL")) {
+                    continue;
+                }
+                if (!part.startsWith("open")) {
+                    currentWindowName.set(part);
+                }
+                break;
+            }
+        }
+    }
+
+    private void processExternalLink(HttpServletRequest request, String requestURI) {
         if (requestURI.endsWith("/open") && !requestURI.contains("/UIDL/")) {
             Map<String, String> params = new HashMap<String, String>();
             Enumeration parameterNames = request.getParameterNames();

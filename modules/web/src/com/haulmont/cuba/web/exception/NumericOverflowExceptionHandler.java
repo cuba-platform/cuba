@@ -25,7 +25,7 @@ public class NumericOverflowExceptionHandler extends AbstractExceptionHandler<Re
     protected void doHandle(ReportingSQLException e, App app) {
         if (StringUtils.containsIgnoreCase(e.getMessage(), MessageProvider.getMessage(getClass(), "numericFieldOverflow.marker"))) {
             String msg = MessageProvider.getMessage(getClass(), "numericFieldOverflow.message");
-            app.getMainWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+            app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 }

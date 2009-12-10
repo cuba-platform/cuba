@@ -19,9 +19,7 @@ import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Locale;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,8 +32,8 @@ public class Connection
 {
     private Log log = LogFactory.getLog(Connection.class);
 
-    private Set<ConnectionListener> connListeners = new HashSet<ConnectionListener>();
-    private Set<UserSubstitutionListener> usListeners = new HashSet<UserSubstitutionListener>();
+    private Map<ConnectionListener, Object> connListeners = new WeakHashMap<ConnectionListener, Object>();
+    private Map<UserSubstitutionListener, Object> usListeners = new WeakHashMap<UserSubstitutionListener, Object>();
 
     private boolean connected;
     private UserSession session;
@@ -135,7 +133,7 @@ public class Connection
     }
 
     public void addListener(ConnectionListener listener) {
-        connListeners.add(listener);
+        connListeners.put(listener, null);
     }
 
     public void removeListener(ConnectionListener listener) {
@@ -143,7 +141,7 @@ public class Connection
     }
 
     public void addListener(UserSubstitutionListener listener) {
-        usListeners.add(listener);
+        usListeners.put(listener, null);
     }
 
     public void removeListener(UserSubstitutionListener listener) {
@@ -151,13 +149,13 @@ public class Connection
     }
 
     private void fireConnectionListeners() throws LoginException {
-        for (ConnectionListener listener : connListeners) {
+        for (ConnectionListener listener : connListeners.keySet()) {
             listener.connectionStateChanged(this);
         }
     }
 
     private void fireSubstitutionListeners() {
-        for (UserSubstitutionListener listener : usListeners) {
+        for (UserSubstitutionListener listener : usListeners.keySet()) {
             listener.userSubstituted(this);
         }
     }

@@ -54,7 +54,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler<NoUserSession
         public void actionPerform(Component component) {
             App app = App.getInstance();
             String restartUrl = app.getURL().toString() + "?restartApplication";
-            app.getMainWindow().open(new ExternalResource(restartUrl));
+            app.getAppWindow().open(new ExternalResource(restartUrl));
         }
 
         @Override

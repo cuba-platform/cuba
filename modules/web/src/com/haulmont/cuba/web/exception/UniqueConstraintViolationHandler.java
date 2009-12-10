@@ -63,6 +63,6 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler
             msg = msg + " (" + s + ")";
         }
         ExceptionDialog dialog = new ExceptionDialog(msg);
-        app.getMainWindow().addWindow(dialog);
+        app.getAppWindow().addWindow(dialog);
     }
 }

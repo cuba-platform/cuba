@@ -33,10 +33,10 @@ public class CustomOperationEditor extends OperationEditor {
                 final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
                 dlg.addListener(new Window.CloseListener() {
                     public void windowClose(Window.CloseEvent e) {
-                        App.getInstance().getMainWindow().removeWindow(dlg);
+                        App.getInstance().getAppWindow().removeWindow(dlg);
                     }
                 });
-                App.getInstance().getMainWindow().addWindow(dlg);
+                App.getInstance().getAppWindow().addWindow(dlg);
                 dlg.center();
             }
         });

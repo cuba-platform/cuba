@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.gui.ComponentVisitor;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
@@ -17,11 +19,9 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.ComponentVisitor;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.components.WebButton;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.vaadin.terminal.Sizeable;
@@ -32,17 +32,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
-import java.util.List;
 
 public class WebWindowManager extends WindowManager
 {
+    protected static class WindowData {
+        protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
+        protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
+    }
+
     protected App app;
 
     protected List<WindowCloseListener> listeners = new ArrayList<WindowCloseListener>();
 
-    protected Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
-
-    protected Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
+    private Map<AppWindow, WindowData> appWindowMap = new WeakHashMap<AppWindow, WindowData>();
 
     protected Map<String, Integer> debugIds = new HashMap<String, Integer>();
 
@@ -50,6 +52,23 @@ public class WebWindowManager extends WindowManager
 
     public WebWindowManager(App app) {
         this.app = app;
+    }
+
+    private WindowData getCurrentWindowData() {
+        WindowData data = appWindowMap.get(app.getAppWindow());
+        if (data == null) {
+            data = new WindowData();
+            appWindowMap.put(app.getAppWindow(), data);
+        }
+        return data;
+    }
+
+    private Map<Layout, WindowBreadCrumbs> getTabs() {
+        return getCurrentWindowData().tabs;
+    }
+
+    private Map<Window, WindowOpenMode> getWindowOpenMode() {
+        return getCurrentWindowData().windowOpenMode;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,13 +80,14 @@ public class WebWindowManager extends WindowManager
 
     @Override
     public Collection<Window> getOpenWindows() {
-        return new ArrayList(windowOpenMode.keySet());
+        return new ArrayList(getWindowOpenMode().keySet());
     }
 
     protected static class WindowOpenMode {
         protected Window window;
         protected OpenType openType;
         protected Object data;
+        protected com.vaadin.ui.Window vaadinWindow;
 
         public WindowOpenMode(Window window, OpenType openType) {
             this.window = window;
@@ -88,6 +108,14 @@ public class WebWindowManager extends WindowManager
 
         public OpenType getOpenType() {
             return openType;
+        }
+
+        public com.vaadin.ui.Window getVaadinWindow() {
+            return vaadinWindow;
+        }
+
+        public void setVaadinWindow(com.vaadin.ui.Window vaadinWindow) {
+            this.vaadinWindow = vaadinWindow;
         }
     }
 
@@ -110,60 +138,80 @@ public class WebWindowManager extends WindowManager
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
 
         Component component;
-        if (OpenType.NEW_TAB.equals(type)) {
-            if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
-                VerticalLayout mainLayout = appWindow.getMainLayout();
-                if (mainLayout.getComponentIterator().hasNext()) {
-                    Layout oldLayout = (Layout) mainLayout.getComponentIterator().next();
-                    WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
-                    if (oldBreadCrumbs != null) {
-                        Window oldWindow = oldBreadCrumbs.getCurrentWindow();
-                        WebWindow webWindow;
-                        if (oldWindow instanceof Window.Wrapper) {
-                            webWindow = ((Window.Wrapper) oldWindow).getWrappedWindow();
-                        } else {
-                            webWindow = (WebWindow) oldWindow;
-                        }
-
-                        webWindow.closeAndRun("mainMenu", new Runnable() {
-                            public void run() {
-                                showWindow(window, caption, OpenType.NEW_TAB);
+        switch (type) {
+            case NEW_TAB:
+                if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
+                    VerticalLayout mainLayout = appWindow.getMainLayout();
+                    if (mainLayout.getComponentIterator().hasNext()) {
+                        Layout oldLayout = (Layout) mainLayout.getComponentIterator().next();
+                        WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
+                        if (oldBreadCrumbs != null) {
+                            Window oldWindow = oldBreadCrumbs.getCurrentWindow();
+                            WebWindow webWindow;
+                            if (oldWindow instanceof Window.Wrapper) {
+                                webWindow = ((Window.Wrapper) oldWindow).getWrappedWindow();
+                            } else {
+                                webWindow = (WebWindow) oldWindow;
                             }
-                        });
 
-                        return;
+                            webWindow.closeAndRun("mainMenu", new Runnable() {
+                                public void run() {
+                                    showWindow(window, caption, OpenType.NEW_TAB);
+                                }
+                            });
+                            return;
+                        }
                     }
                 }
-            }
+                component = showWindowNewTab(window, caption, appWindow);
+                break;
 
-            component = showWindowNewTab(window, caption, appWindow);
+            case THIS_TAB:
+                component = showWindowThisTab(window, caption, appWindow);
+                break;
 
-        } else if (OpenType.THIS_TAB.equals(type)) {
-            component = showWindowThisTab(window, caption, appWindow);
+            case DIALOG:
+                component = showWindowDialog(window, caption, appWindow);
+                break;
 
-        } else if (OpenType.DIALOG.equals(type)) {
-            component = showWindowDialog(window, caption, appWindow);
-
-        } else {
-            throw new UnsupportedOperationException();
+            default:
+                throw new UnsupportedOperationException();
         }
 
         openMode.setData(component);
 
         if (window instanceof Window.Wrapper) {
             Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
-            windowOpenMode.put(wrappedWindow, openMode);
+            getWindowOpenMode().put(wrappedWindow, openMode);
         } else {
-            windowOpenMode.put(window, openMode);
+            getWindowOpenMode().put(window, openMode);
         }
 
         window.applySettings(new SettingsImpl(window.getId(), getSettingService()));
     }
 
+    protected Layout createNewWinLayout(Window window, Component... components) {
+
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        if (components != null) {
+            for (final Component c : components) {
+                layout.addComponent(c);
+            }
+        }
+
+        final Component component = WebComponentsHelper.getComposition(window);
+        component.setSizeFull();
+        layout.addComponent(component);
+        layout.setExpandRatio(component, 1);
+
+        return layout;
+    }
+
     protected Component showWindowNewTab(final Window window, final String caption, AppWindow appWindow) {
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
         breadCrumbs.addListener(
-                    new WindowBreadCrumbs.Listener()
+                new WindowBreadCrumbs.Listener()
                 {
                     public void windowClick(final Window window) {
                         Runnable op = new Runnable() {
@@ -189,7 +237,7 @@ public class WebWindowManager extends WindowManager
 
         final Layout layout = createNewTabLayout(window, caption, appWindow, breadCrumbs);
 
-        tabs.put(layout, breadCrumbs);
+        getTabs().put(layout, breadCrumbs);
 
         return layout;
     }
@@ -232,7 +280,7 @@ public class WebWindowManager extends WindowManager
             layout = (VerticalLayout) appWindow.getMainLayout().getComponentIterator().next();
         }
 
-        final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+        final WindowBreadCrumbs breadCrumbs = getTabs().get(layout);
         if (breadCrumbs == null)
             throw new IllegalStateException("BreadCrumbs not found");
 
@@ -282,7 +330,7 @@ public class WebWindowManager extends WindowManager
 //        win.setResizable(false);
         win.setModal(true);
 
-        App.getInstance().getMainWindow().addWindow(win);
+        App.getInstance().getAppWindow().addWindow(win);
         win.center();
 
         return win;
@@ -301,19 +349,28 @@ public class WebWindowManager extends WindowManager
             window = ((Window.Wrapper) window).getWrappedWindow();
         }
 
-        final WindowOpenMode openMode = windowOpenMode.get(window);
+        final WindowOpenMode openMode = getWindowOpenMode().get(window);
         if (openMode == null) throw new IllegalStateException();
 
         closeWindow(window, openMode);
-        windowOpenMode.remove(window);
+        getWindowOpenMode().remove(window);
     }
 
     public void closeAll() {
-        List<Map.Entry<Window,WindowOpenMode>> entries = new ArrayList(windowOpenMode.entrySet());
+        List<Map.Entry<Window,WindowOpenMode>> entries = new ArrayList(getWindowOpenMode().entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
             closeWindow(entries.get(i).getKey(), entries.get(i).getValue());
         }
-        windowOpenMode.clear();
+        getWindowOpenMode().clear();
+
+        Collection windows = App.getInstance().getWindows();
+        for (Object win : new ArrayList(windows)) {
+            if (!win.equals(App.getInstance().getAppWindow())) {
+                App.getInstance().removeWindow((com.vaadin.ui.Window) win);
+                if (win instanceof AppWindow)
+                    appWindowMap.remove(win);
+            }
+        }
     }
 
     private void closeWindow(Window window, WindowOpenMode openMode) {
@@ -321,8 +378,8 @@ public class WebWindowManager extends WindowManager
         switch (openMode.openType) {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
-                App.getInstance().getMainWindow().removeWindow(win);
-                fireListeners(window, tabs.size() != 0);
+                App.getInstance().getAppWindow().removeWindow(win);
+                fireListeners(window, getTabs().size() != 0);
                 break;
             }
             case NEW_TAB: {
@@ -335,18 +392,18 @@ public class WebWindowManager extends WindowManager
                     appWindow.getMainLayout().removeComponent(layout);
                 }
 
-                WindowBreadCrumbs windowBreadCrumbs = tabs.get(layout);
+                WindowBreadCrumbs windowBreadCrumbs = getTabs().get(layout);
                 if (windowBreadCrumbs != null)
                     windowBreadCrumbs.clearListeners();
 
-                tabs.remove(layout);
-                fireListeners(window, tabs.size() != 0);
+                getTabs().remove(layout);
+                fireListeners(window, getTabs().size() != 0);
                 break;
             }
             case THIS_TAB: {
                 final VerticalLayout layout = (VerticalLayout) openMode.getData();
 
-                final WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+                final WindowBreadCrumbs breadCrumbs = getTabs().get(layout);
                 if (breadCrumbs == null) throw new IllegalStateException("Unable to close screen: breadCrumbs not found");
 
                 breadCrumbs.removeWindow();
@@ -364,7 +421,7 @@ public class WebWindowManager extends WindowManager
                     tabSheet.setTabCaption(layout, currentWindow.getCaption());
                     tabSheet.requestRepaintAll();
                 }
-                fireListeners(window, tabs.size() != 0);
+                fireListeners(window, getTabs().size() != 0);
                 break;
             }
             default: {
@@ -387,7 +444,7 @@ public class WebWindowManager extends WindowManager
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                App.getInstance().getMainWindow().removeWindow(window);
+                App.getInstance().getAppWindow().removeWindow(window);
             }
         });
 
@@ -402,7 +459,7 @@ public class WebWindowManager extends WindowManager
         window.setResizable(false);
         window.setModal(true);
 
-        App.getInstance().getMainWindow().addWindow(window);
+        App.getInstance().getAppWindow().addWindow(window);
         window.center();
     }
 
@@ -416,7 +473,7 @@ public class WebWindowManager extends WindowManager
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                app.getMainWindow().removeWindow(window);
+                app.getAppWindow().removeWindow(window);
             }
         });
 
@@ -441,7 +498,7 @@ public class WebWindowManager extends WindowManager
             Button button = new Button(action.getCaption(), new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
-                    app.getMainWindow().removeWindow(window);
+                    app.getAppWindow().removeWindow(window);
                 }
             });
             if (action.getIcon() != null) {
@@ -461,12 +518,12 @@ public class WebWindowManager extends WindowManager
         layout.setExpandRatio(messageBox, 1);
         layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
-        App.getInstance().getMainWindow().addWindow(window);
+        App.getInstance().getAppWindow().addWindow(window);
         window.center();
     }
 
     private void removeWindowsWithName(String name) {
-        final com.vaadin.ui.Window mainWindow = app.getMainWindow();
+        final com.vaadin.ui.Window mainWindow = app.getAppWindow();
 
         for (com.vaadin.ui.Window childWindow : new ArrayList<com.vaadin.ui.Window>(mainWindow.getChildWindows())) {
             if (name.equals(childWindow.getName())) {
@@ -495,7 +552,7 @@ public class WebWindowManager extends WindowManager
         }
 
         if (layout != null) {
-            WindowBreadCrumbs breadCrumbs = tabs.get(layout);
+            WindowBreadCrumbs breadCrumbs = getTabs().get(layout);
             if (breadCrumbs != null) {
                 breadCrumbs.update();
             }
