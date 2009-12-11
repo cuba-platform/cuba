@@ -79,7 +79,7 @@ public class WebFilter
 
         select = new FilterSelect();
         select.setWidth("300px");
-        select.setNullSelectionAllowed(false);
+        select.setNullSelectionAllowed(true);
         select.setImmediate(true);
         select.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
@@ -183,14 +183,20 @@ public class WebFilter
     }
 
     private void apply() {
-        Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
-        QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
+        if (filterEntity != null) {
+            Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
+            QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
 
-        if (dsQueryFilter != null) {
-            queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+            if (dsQueryFilter != null) {
+                queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+            }
+
+            datasource.setQueryFilter(queryFilter);
+
+        } else {
+            datasource.setQueryFilter(dsQueryFilter);
         }
 
-        datasource.setQueryFilter(queryFilter);
         datasource.refresh();
     }
 
@@ -356,7 +362,7 @@ public class WebFilter
     private void updateButtons() {
         select.setEnabled(!editing);
         createBtn.setEnabled(!editing);
-        applyBtn.setEnabled(filterEntity != null && !editing);
+        applyBtn.setEnabled(!editing);
         editBtn.setEnabled(filterEntity != null && !editing && checkGlobalFilterPermission());
         deleteBtn.setEnabled(filterEntity != null && !editing && checkGlobalFilterPermission());
         defaultCb.setEnabled(filterEntity != null && !editing);
