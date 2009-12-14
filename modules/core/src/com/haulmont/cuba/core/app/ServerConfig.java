@@ -16,8 +16,7 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
-import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
-import com.haulmont.cuba.core.sys.ServerConfigDirFactory;
+import com.haulmont.cuba.core.sys.ConfigDirFactory;
 
 /**
  * Common server configuration parameters
@@ -29,7 +28,7 @@ public interface ServerConfig extends Config {
      * Config directory. Root of all not deployable application configuration and logic.
      * Does not end with "/"
      */
-    @Factory(factory = ServerConfigDirFactory.class)
+    @Factory(factory = ConfigDirFactory.class)
     String getServerConfDir();
 
     /**

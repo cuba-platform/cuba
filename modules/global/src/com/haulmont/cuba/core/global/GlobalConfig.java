@@ -10,8 +10,10 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
+import com.haulmont.cuba.core.sys.ConfigDirFactory;
 
 @Source(type = SourceType.SYSTEM)
 public interface GlobalConfig extends Config {
@@ -27,6 +29,13 @@ public interface GlobalConfig extends Config {
     @Property("cuba.webContextName")
     @DefaultString("cuba")
     String getWebContextName();
+
+    /**
+     * Config directory. Root of all not deployable application configuration and logic.
+     * Does not end with "/"
+     */
+    @Factory(factory = ConfigDirFactory.class)
+    String getConfDir();
 
     /**
      * Logs directory. Place app-specific log files here.

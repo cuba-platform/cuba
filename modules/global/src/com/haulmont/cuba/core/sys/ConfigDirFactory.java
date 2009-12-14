@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.config.type.TypeFactory;
 import java.net.URI;
 import java.io.File;
 
-public class ServerConfigDirFactory extends TypeFactory {
+public class ConfigDirFactory extends TypeFactory {
 
     public Object build(String string) {
         String confUrl = System.getProperty("jboss.server.config.url");
