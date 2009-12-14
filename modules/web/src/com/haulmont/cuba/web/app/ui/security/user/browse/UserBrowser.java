@@ -29,8 +29,8 @@ public class UserBrowser extends AbstractLookup {
 
         final TableActionsHelper helper = new TableActionsHelper(this, table);
 
-        helper.createFilterApplyAction("filter.apply");
-        helper.createFilterClearAction("filter.clear", "group-box");
+//        helper.createFilterApplyAction("filter.apply");
+//        helper.createFilterClearAction("filter.clear", "group-box");
 
         helper.createCreateAction();
         helper.createEditAction();
@@ -64,6 +64,6 @@ public class UserBrowser extends AbstractLookup {
                 }
         );
 
-        getDsContext().get("users").refresh();
+//        getDsContext().get("users").refresh();
     }
 }

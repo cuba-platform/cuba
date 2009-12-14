@@ -31,7 +31,11 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.SearchFolder;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -41,6 +45,7 @@ import org.dom4j.Element;
 import org.dom4j.Attribute;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 import java.util.*;
@@ -66,9 +71,11 @@ public class WebFilter
     private Button deleteBtn;
     private Button applyBtn;
     private CheckBox defaultCb;
+    private Button saveAsFolderBtn;
 
     private boolean changingFilter;
     private boolean editing;
+    private FoldersPane foldersPane;
 
     public WebFilter() {
         component = new VerticalLayout();
@@ -153,6 +160,14 @@ public class WebFilter
             }
         });
         topLayout.addComponent(deleteBtn);
+
+        foldersPane = App.getInstance().getAppWindow().getFoldersPane();
+        if (foldersPane != null) {
+            saveAsFolderBtn = WebComponentsHelper.createButton("icons/move.png");
+            saveAsFolderBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderBtn"));
+            saveAsFolderBtn.addListener(new SaveAsFolderListener());
+            topLayout.addComponent(saveAsFolderBtn);
+        }
 
         defaultCb = new CheckBox();
         defaultCb.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "defaultCb"));
@@ -268,6 +283,28 @@ public class WebFilter
         paramsLayout = grid;
     }
 
+    public void setFilterEntity(FilterEntity filterEntity) {
+        changingFilter = true;
+        try {
+            this.filterEntity = filterEntity;
+
+            parseFilterXml();
+
+            select.addItem(filterEntity);
+            select.setItemCaption(filterEntity, InstanceUtils.getInstanceName((Instance) filterEntity));
+            select.setValue(filterEntity);
+
+            updateButtons();
+            if (paramsLayout != null)
+                component.removeComponent(paramsLayout);
+            createParamsLayout();
+            component.addComponent(paramsLayout);
+        } finally {
+            changingFilter = false;
+        }
+        apply();
+    }
+
     public void editorCommitted() {
         changingFilter = true;
         try {
@@ -313,6 +350,9 @@ public class WebFilter
     }
 
     private void saveFilterEntity() {
+        if (BooleanUtils.isTrue(filterEntity.getIsTemporary()))
+            return;
+
         DataService ds = ServiceLocator.getDataService();
         CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
         ds.commit(ctx);
@@ -363,6 +403,10 @@ public class WebFilter
         select.setEnabled(!editing);
         createBtn.setEnabled(!editing);
         applyBtn.setEnabled(!editing);
+
+        if (saveAsFolderBtn != null)
+            saveAsFolderBtn.setEnabled(filterEntity != null && !editing);
+
         editBtn.setEnabled(filterEntity != null && !editing && checkGlobalFilterPermission());
         deleteBtn.setEnabled(filterEntity != null && !editing && checkGlobalFilterPermission());
         defaultCb.setEnabled(filterEntity != null && !editing);
@@ -612,6 +656,71 @@ public class WebFilter
         }
 
         public void setFrame(IFrame frame) {
+        }
+    }
+
+    private class SaveAsFolderListener implements Button.ClickListener {
+
+        public void buttonClick(Button.ClickEvent event) {
+            final SearchFolder folder = new SearchFolder();
+            folder.setName(filterEntity.getName());
+            folder.setFilterComponentId(filterEntity.getComponentId());
+            folder.setFilterXml(filterEntity.getXml());
+            folder.setUser(UserSessionClient.getUserSession().getUser());
+
+            final FolderEditWindow window = new FolderEditWindow(false, folder,
+                    new Runnable() {
+                        public void run() {
+                            // search for existing folders with the same name
+                            boolean found = false;
+                            Collection<SearchFolder> folders = foldersPane.getSearchFolders();
+                            for (final SearchFolder existingFolder : folders) {
+                                if (ObjectUtils.equals(existingFolder.getName(), folder.getName())) {
+                                    found = true;
+                                    App.getInstance().getWindowManager().showOptionDialog(
+                                            MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dialogs.Confirmation"),
+                                            MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderConfirmUpdate"),
+                                            IFrame.MessageType.CONFIRMATION,
+                                            new Action[] {
+                                                    new DialogAction(DialogAction.Type.YES) {
+                                                        @Override
+                                                        public void actionPerform(Component component) {
+                                                            // update existing folder
+                                                            existingFolder.setFilterComponentId(folder.getFilterComponentId());
+                                                            existingFolder.setFilterXml(folder.getFilterXml());
+                                                            saveFolder(existingFolder);
+                                                        }
+                                                    },
+                                                    new DialogAction(DialogAction.Type.NO) {
+                                                        @Override
+                                                        public void actionPerform(Component component) {
+                                                            // create new folder
+                                                            saveFolder(folder);
+                                                        }
+                                                    }
+                                            }
+                                    );
+                                }
+                            }
+                            if (!found) {
+                                // create new folder
+                                saveFolder(folder);
+                            }
+                        }
+                    }
+            );
+
+            window.addListener(new com.vaadin.ui.Window.CloseListener() {
+                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
+                    App.getInstance().getAppWindow().removeWindow(window);
+                }
+            });
+            App.getInstance().getAppWindow().addWindow(window);
+        }
+
+        private void saveFolder(SearchFolder folder) {
+            foldersPane.saveFolder(folder);
+            foldersPane.refreshFolders();
         }
     }
 }

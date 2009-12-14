@@ -37,4 +37,15 @@ public class UserSettingHelper {
         UserSettingService uss = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
         uss.saveSetting(ClientType.WEB, "appWindowMode", mode.name());
     }
+
+    public static boolean loadFoldersVisibleState() {
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
+        String s = uss.loadSetting(ClientType.WEB, "foldersVisible");
+        return Boolean.valueOf(s);
+    }
+
+    public static void saveFoldersVisibleState(boolean visible) {
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
+        uss.saveSetting(ClientType.WEB, "foldersVisible", String.valueOf(visible));
+    }
 }

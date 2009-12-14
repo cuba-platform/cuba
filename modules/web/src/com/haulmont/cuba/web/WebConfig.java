@@ -70,4 +70,7 @@ public interface WebConfig extends Config
 
     @DefaultInt(5)
     int getLogLongRequestsThresholdSec();
+
+    @DefaultInt(10)
+    int getAppFoldersRefreshPeriodSec();
 }

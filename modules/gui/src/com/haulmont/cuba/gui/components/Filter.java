@@ -11,6 +11,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.security.entity.FilterEntity;
 
 public interface Filter
         extends Component.Container, Component.BelongToFrame,
@@ -18,4 +19,6 @@ public interface Filter
 {
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
+
+    void setFilterEntity(FilterEntity filterEntity);
 }

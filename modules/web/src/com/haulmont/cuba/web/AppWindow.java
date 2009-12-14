@@ -30,6 +30,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
+import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.data.Property;
@@ -39,6 +40,7 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +97,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected HorizontalLayout emptyLayout;
 
+    protected HorizontalLayout middleLayout;
+
+    protected FoldersPane foldersPane;
+
     /**
      * Layout containing application screens
      */
@@ -150,6 +156,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         layout.addComponent(emptyLayout);
 
+        middleLayout = new HorizontalLayout();
+        middleLayout.setSizeFull();
+
+        foldersPane = createFoldersPane();
+
+        middleLayout.addComponent(foldersPane);
+
         mainLayout = new VerticalLayout();
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
@@ -163,10 +176,23 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             mainLayout.setExpandRatio(tabSheet, 1);
         }
 
-        layout.addComponent(mainLayout);
-        layout.setExpandRatio(mainLayout, 1);
+        middleLayout.addComponent(mainLayout);
+        middleLayout.setExpandRatio(mainLayout, 1);
+
+        layout.addComponent(middleLayout);
+        layout.setExpandRatio(middleLayout, 1);
 
         return layout;
+    }
+
+    /**
+     * Creates folders pane.
+     * <br>Can be overridden in descendant to create an app-specific folders pane.
+     * <br>If this method returns null, no folders functionality is available for application.
+     */
+    @Nullable
+    protected FoldersPane createFoldersPane() {
+        return new FoldersPane(menuBar);
     }
 
     /**
@@ -222,6 +248,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     public VerticalLayout getMainLayout() {
         return mainLayout;
+    }
+
+    @Nullable
+    public FoldersPane getFoldersPane() {
+        return foldersPane;
     }
 
     /**

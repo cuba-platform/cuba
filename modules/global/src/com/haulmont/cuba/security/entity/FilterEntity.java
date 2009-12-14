@@ -39,6 +39,9 @@ public class FilterEntity extends StandardEntity {
     @Transient
     private Boolean isDefault;
 
+    @Transient
+    private Boolean isTemporary;
+
     public String getComponentId() {
         return componentId;
     }
@@ -77,5 +80,13 @@ public class FilterEntity extends StandardEntity {
 
     public void setIsDefault(Boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public Boolean getIsTemporary() {
+        return isTemporary;
+    }
+
+    public void setIsTemporary(Boolean temporary) {
+        isTemporary = temporary;
     }
 }

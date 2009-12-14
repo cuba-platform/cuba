@@ -316,6 +316,53 @@ alter table SEC_FILTER add constraint FK_SEC_FILTER_USER foreign key (USER_ID) r
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SYS_FOLDER (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    TYPE char(1),
+    PARENT_ID varchar(36),
+    NAME varchar(100),
+    SORT_ORDER integer,
+    primary key (ID)
+);
+
+alter table SYS_FOLDER add constraint FK_SYS_FOLDER_PARENT foreign key (PARENT_ID) references SYS_FOLDER(ID);
+
+------------------------------------------------------------------------------------------------------------
+
+create table SYS_APP_FOLDER (
+    FOLDER_ID varchar(36),
+    FILTER_COMPONENT varchar(200),
+    FILTER_XML varchar(7000),
+    VISIBILITY_SCRIPT varchar(200),
+    QUANTITY_SCRIPT varchar(200),
+    primary key (FOLDER_ID)
+);
+
+alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID);
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_SEARCH_FOLDER (
+    FOLDER_ID varchar(36),
+    FILTER_COMPONENT varchar(200),
+    FILTER_XML varchar(7000),
+    USER_ID varchar(36),
+    primary key (FOLDER_ID)
+);
+
+alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID);
+
+alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_USER foreign key (USER_ID) references SEC_USER(ID);
+
+------------------------------------------------------------------------------------------------------------
+
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null);
 

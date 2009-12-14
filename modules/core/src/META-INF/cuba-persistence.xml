@@ -9,6 +9,10 @@
         <class>com.haulmont.cuba.core.entity.Server</class>
         <class>com.haulmont.cuba.core.entity.Config</class>
         <class>com.haulmont.cuba.core.entity.FileDescriptor</class>
+        <class>com.haulmont.cuba.core.entity.Folder</class>
+        <class>com.haulmont.cuba.core.entity.AbstractSearchFolder</class>
+        <class>com.haulmont.cuba.core.entity.AppFolder</class>
+
         <class>com.haulmont.cuba.security.entity.User</class>
         <class>com.haulmont.cuba.security.entity.Role</class>
         <class>com.haulmont.cuba.security.entity.UserRole</class>
@@ -23,6 +27,7 @@
         <class>com.haulmont.cuba.security.entity.EntityLogItem</class>
         <class>com.haulmont.cuba.security.entity.EntityLogAttr</class>
         <class>com.haulmont.cuba.security.entity.FilterEntity</class>
+        <class>com.haulmont.cuba.security.entity.SearchFolder</class>
 
         <properties>
             <property name="openjpa.ManagedRuntime" value="org.apache.openjpa.ee.JNDIManagedRuntime"/>
