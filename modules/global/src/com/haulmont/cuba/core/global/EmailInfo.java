@@ -21,19 +21,21 @@ import java.io.Serializable;
 public class EmailInfo implements Serializable {
     private String addresses;
     private String caption;
+    private String from;
     private String templatePath;
     private Map<String, Serializable> templateParameters;
     private String body;
     private EmailAttachment[] attachment;
     private static final long serialVersionUID = -382773435130109083L;
 
-    public EmailInfo(String addresses, String caption, String templatePath,Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
+    public EmailInfo(String addresses, String caption, String from, String templatePath, Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
         this.addresses = addresses;
         this.caption = caption;
         this.templatePath = templatePath;
         this.body = body;
         this.attachment = attachment;
         this.templateParameters = templateParameters;
+        this.from = from;
     }
 
     public String getAddresses() {
@@ -82,5 +84,13 @@ public class EmailInfo implements Serializable {
 
     public void setTemplateParameters(Map<String, Serializable> templateParameters) {
         this.templateParameters = templateParameters;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
     }
 }

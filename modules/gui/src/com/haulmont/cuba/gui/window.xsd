@@ -319,6 +319,8 @@
                             <xs:element name="formatter" minOccurs="0" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:attribute name="class" type="xs:string" use="required"/>
+                                    <xs:attribute name="message" type="xs:string" use="optional"/>
+                                    <xs:attribute name="messagepack" type="xs:string" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>

@@ -35,7 +35,7 @@ import org.apache.commons.io.FileUtils;
 
 /**
  * Emailer MBean implementation.
- * <p>
+ * <p/>
  * Provides email functionality, allows to set some emailing parameters through JMX-console.
  */
 public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI {
@@ -54,12 +54,12 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             try {
                 template = FileUtils.readFileToString(f);
             } catch (IOException e) {
-                throw new RuntimeException("File is not available: "+ info.getTemplatePath());
+                throw new RuntimeException("File is not available: " + info.getTemplatePath());
             }
             Map map = info.getTemplateParameters();
             info.setBody(TemplateHelper.processTemplate(template, map));
         }
-        sendEmail(info.getAddresses(), info.getCaption(), info.getBody(), config.getFromAddress(), info.getAttachment());
+        sendEmail(info.getAddresses(), info.getCaption(), info.getBody(), info.getFrom() != null ? info.getFrom() : config.getFromAddress(), info.getAttachment());
     }
 
     public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachment)
@@ -195,7 +195,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             String att = "<html><body><h1>Test attachment</h1></body></html>";
             EmailAttachment emailAtt = new EmailAttachment(att.getBytes(), "test attachment.html");
             //sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
-            EmailInfo info = new EmailInfo(addresses, "Test email from mailer", "../server/default/conf/cuba/templates/testEmail.html", new HashMap<String, Serializable>(), null, emailAtt);
+            EmailInfo info = new EmailInfo(addresses, "Test email from mailer", "cuba@haulmont.com", "../server/default/conf/cuba/templates/testEmail.html", new HashMap<String, Serializable>(), null, emailAtt);
             sendEmail(info);
             return "Email to '" + addresses + "' sent succesfully";
         } catch (Exception e) {
