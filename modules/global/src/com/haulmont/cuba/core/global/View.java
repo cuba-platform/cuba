@@ -78,6 +78,11 @@ public class View implements Serializable
         return includeSystemProperties;
     }
 
+    public View addProperty(String name, View view, boolean lazy) {
+        properties.put(name, new ViewProperty(name, view, lazy));
+        return this;
+    }
+
     public View addProperty(String name, View view) {
         properties.put(name, new ViewProperty(name, view));
         return this;

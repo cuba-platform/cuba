@@ -58,6 +58,9 @@ public class ViewHelper
 
 
         for (ViewProperty property : view.getProperties()) {
+            if (property.isLazy())
+                continue;
+
             MetaProperty metaProperty = metaClass.getProperty(property.getName());
             if (metaProperty == null)
                 throw new RuntimeException("View '" + view + "' definition error: property '"
@@ -131,5 +134,17 @@ public class ViewHelper
                 }
             }
         }
+    }
+
+    public static boolean hasLazyProperties(View view) {
+        for (ViewProperty property : view.getProperties()) {
+            if (property.isLazy())
+                return true;
+            if (property.getView() != null) {
+                if (hasLazyProperties(property.getView()))
+                    return true;
+            }
+        }
+        return false;
     }
 }

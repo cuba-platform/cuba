@@ -163,8 +163,8 @@ public class DataServiceBean implements DataService, DataServiceRemote
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             resultList = query.getResultList();
 
-            // Fetch if StoreCache is enabled
-            if (isStoreCacheEnabled() && context.getView() != null) {
+            // Fetch if StoreCache is enabled or there are lazy properties in the view
+            if (context.getView() != null && (isStoreCacheEnabled() || ViewHelper.hasLazyProperties(context.getView()))) {
                 for (Object entity : resultList) {
                     ViewHelper.fetchInstance((Instance) entity, context.getView());
                 }

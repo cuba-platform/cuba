@@ -23,9 +23,16 @@ public class ViewProperty implements Serializable
 
     private View view;
 
+    private boolean lazy;
+
     public ViewProperty(String name, View view) {
+        this(name, view, false);
+    }
+
+    public ViewProperty(String name, View view, boolean lazy) {
         this.name = name;
         this.view = view;
+        this.lazy = lazy;
     }
 
     public String getName() {
@@ -36,9 +43,11 @@ public class ViewProperty implements Serializable
         return view;
     }
 
+    public boolean isLazy() {
+        return lazy;
+    }
+
     public String toString() {
-        return "ViewProperty{" +
-                "name='" + name + '\'' +
-                '}';
+        return name;
     }
 }

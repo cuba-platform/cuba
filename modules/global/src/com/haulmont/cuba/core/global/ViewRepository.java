@@ -227,7 +227,9 @@ public class ViewRepository
                 }
             }
 
-            view.addProperty(propertyName, refView);
+            boolean lazy = Boolean.valueOf(propElem.attributeValue("lazy"));
+
+            view.addProperty(propertyName, refView, lazy);
         }
     }
 
