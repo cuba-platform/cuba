@@ -51,7 +51,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     public static final String THEME_NAME = "blacklabel";
 
-    private Connection connection;
+    protected Connection connection;
     private WebWindowManager windowManager;
 
     private AppLog appLog;

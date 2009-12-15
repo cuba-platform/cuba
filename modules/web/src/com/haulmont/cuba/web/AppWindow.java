@@ -161,7 +161,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         foldersPane = createFoldersPane();
 
-        middleLayout.addComponent(foldersPane);
+        if (foldersPane != null)
+            middleLayout.addComponent(foldersPane);
 
         mainLayout = new VerticalLayout();
         mainLayout.setMargin(true);
@@ -347,7 +348,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
 
         loginLayout.addComponent(substUserSelect);
-        
+
 
         Button logoutBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
                 new Button.ClickListener() {
@@ -461,7 +462,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     if (strings.length == 2)
                         metaClassName = strings[0];
                     else if (strings.length == 3)
-                        metaClassName = strings[1];                        
+                        metaClassName = strings[1];
                     else
                         throw new UnsupportedOperationException();
 
@@ -521,7 +522,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
     }
 
-     protected String getMessagesPack() {
+    protected String getMessagesPack() {
         return AppConfig.getInstance().getMessagesPack();
     }
 
