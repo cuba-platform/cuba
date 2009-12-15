@@ -74,26 +74,28 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                         parentDs = datasource;
                     }
                 }
+                final Datasource pDs = parentDs;
 
                 Map<String, Object> params = valueProvider.getParameters() != null ?
                         valueProvider.getParameters() : Collections.<String, Object>emptyMap();
 
                 final Window window = frame.openEditor(windowID, item, openType, params, parentDs);
 
-                if (parentDs == null) {
-                    window.addListener(new Window.CloseListener() {
-                        public void windowClosed(String actionId) {
-                            if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                                Object item = ((Window.Editor) window).getItem();
-                                if (item instanceof Entity) {
+                window.addListener(new Window.CloseListener() {
+                    public void windowClosed(String actionId) {
+                        if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
+                            Object item = ((Window.Editor) window).getItem();
+                            if (item instanceof Entity) {                                    
+                                if (pDs == null) {
                                     boolean modified = datasource.isModified();
                                     datasource.addItem((Entity) item);
                                     ((DatasourceImplementation) datasource).setModified(modified);
                                 }
+                                fireCreateEvent((Entity) item);
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
         };
         TableActionsHelper.this.component.addAction(action);

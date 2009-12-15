@@ -14,12 +14,15 @@ import com.haulmont.chile.core.model.MetaClass;
 import java.util.Set;
 import java.util.Map;
 import java.util.Collections;
+import java.util.ArrayList;
 
 abstract class ListActionsHelper<T extends List> {
     protected IFrame frame;
     protected T component;
     protected UserSession userSession;
     protected MetaClass metaClass;
+
+    protected java.util.List<Listener> listeners;
 
     ListActionsHelper(IFrame frame, T component) {
         if (component == null) {
@@ -29,6 +32,7 @@ abstract class ListActionsHelper<T extends List> {
         this.component = component;
         userSession = UserSessionClient.getUserSession();
         metaClass = component.getDatasource().getMetaClass();
+        listeners = new ArrayList<Listener>();
     }
 
     public Action createCreateAction() {
@@ -139,6 +143,8 @@ abstract class ListActionsHelper<T extends List> {
                                     for (Object item : selected) {
                                         ds.removeItem((Entity) item);
                                     }
+
+                                    fireRemoveEvent(selected);
 
                                     if (autocommit) {
                                         try {
@@ -263,6 +269,34 @@ abstract class ListActionsHelper<T extends List> {
         return action;
     }
 
+    protected void fireCreateEvent(Entity entity) {
+        for (Listener listener: listeners) {
+            listener.entityCreated(entity);
+        }
+    }
+
+    protected void fireEditEvent(Entity entity) {
+        for (Listener listener: listeners) {
+            listener.entityEdited(entity);
+        }
+    }
+
+    protected void fireRemoveEvent(Set<Entity> entities) {
+        for (Listener listener: listeners) {
+            listener.entityRemoved(entities);
+        }
+    }
+
+    public void addListener(Listener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public void removeListener(Listener listener) {
+        listeners.remove(listener);
+    }
+
     protected class EditAction extends AbstractAction {
         private final WindowManager.OpenType openType;
 
@@ -305,21 +339,30 @@ abstract class ListActionsHelper<T extends List> {
                         parentDs = datasource;
                     }
                 }
+                final Datasource pDs = parentDs;
 
                 final Window window = frame.openEditor(windowID, datasource.getItem(), openType, params, parentDs);
 
-                if (parentDs == null) {
-                    window.addListener(new Window.CloseListener() {
-                        public void windowClosed(String actionId) {
-                            if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                                Object item = ((Window.Editor) window).getItem();
-                                if (item instanceof Entity)
+                window.addListener(new Window.CloseListener() {
+                    public void windowClosed(String actionId) {
+                        if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
+                            Object item = ((Window.Editor) window).getItem();
+                            if (item instanceof Entity) {
+                                if (pDs == null) {
                                     datasource.updateItem((Entity) item);
+                                }
+                                fireEditEvent((Entity) item);
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
         }
+    }
+
+    public static interface Listener {
+        void entityCreated(Entity entity);
+        void entityEdited(Entity entity);
+        void entityRemoved(Set<Entity> entity);
     }
 }
