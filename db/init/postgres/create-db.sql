@@ -312,6 +312,53 @@ create table SEC_FILTER (
 alter table SEC_FILTER add constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID)^
 
 ------------------------------------------------------------------------------------------------------------
+
+create table SYS_FOLDER (
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    TYPE char(1),
+    PARENT_ID uuid,
+    NAME varchar(100),
+    SORT_ORDER integer,
+    primary key (ID)
+)^
+
+alter table SYS_FOLDER add constraint FK_SYS_FOLDER_PARENT foreign key (PARENT_ID) references SYS_FOLDER(ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table SYS_APP_FOLDER (
+    FOLDER_ID uuid,
+    FILTER_COMPONENT varchar(200),
+    FILTER_XML varchar(7000),
+    VISIBILITY_SCRIPT varchar(200),
+    QUANTITY_SCRIPT varchar(200),
+    primary key (FOLDER_ID)
+)^
+
+alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_SEARCH_FOLDER (
+    FOLDER_ID uuid,
+    FILTER_COMPONENT varchar(200),
+    FILTER_XML varchar(7000),
+    USER_ID uuid,
+    primary key (FOLDER_ID)
+)^
+
+alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
+
+alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_USER foreign key (USER_ID) references SEC_USER(ID)^
+
+------------------------------------------------------------------------------------------------------------
 create or replace function newid()
 returns uuid
 as '$libdir/uuid-ossp', 'uuid_generate_v1'
@@ -330,3 +377,4 @@ values ('0c018061-b26f-4de2-a5be-dff348347f93', now(), 0, 'Administrators', true
 
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('c838be0a-96d0-4ef4-a7c0-dff348347f93', now(), 0, '60885987-1b61-4247-94c7-dff348347f93', '0c018061-b26f-4de2-a5be-dff348347f93')^
+
