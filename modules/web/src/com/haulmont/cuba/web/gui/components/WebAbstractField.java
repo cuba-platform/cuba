@@ -112,15 +112,16 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         component.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 final Object value = getValue();
-                fireValueChanged(prevValue, value);
+                String property = getMetaProperty() == null ? "value" : getMetaProperty().getName();
+                fireValueChanged(prevValue, value, property);
                 prevValue = value;
             }
         });
     }
 
-    protected void fireValueChanged(Object prevValue, Object value) {
+    protected void fireValueChanged(Object prevValue, Object value, String property) {
         for (ValueListener listener : listeners) {
-            listener.valueChanged(this, "value", prevValue, value);
+            listener.valueChanged(this, property, prevValue, value);
         }
     }
 
