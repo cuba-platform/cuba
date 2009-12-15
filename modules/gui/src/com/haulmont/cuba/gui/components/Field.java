@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.data.ValueListener;
+
 public interface Field
     extends
         DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
@@ -18,6 +20,13 @@ public interface Field
     boolean isRequired();
     void setRequired(boolean required);
     void setRequiredMessage(String msg);
+
+    /**
+     * Use listeners on the component only if the component is not linked to a datasource.<br>
+     * Otherwise use {@link ValueListener} bound to the datasource.
+     */
+    void addListener(ValueListener listener);
+    void removeListener(ValueListener listener);
 
     void addValidator(Validator validator);
     void removeValidator(Validator validator);

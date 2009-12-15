@@ -114,8 +114,7 @@ public class WebLookupField
         component.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 final Object value = getValue();
-                String property = getMetaProperty() == null ? "value" : getMetaProperty().getName();
-                fireValueChanged(prevValue, value, property);
+                fireValueChanged(prevValue, value);
                 prevValue = value;
                 if (optionsDatasource != null) {
                     optionsDatasource.setItem((Entity) value);
