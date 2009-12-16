@@ -37,6 +37,7 @@ public abstract class Condition {
     protected Class javaClass;
     protected Param param;
     protected String entityAlias;
+    protected boolean hidden;
 
     protected List<Listener> listeners = new ArrayList<Listener>();
 
@@ -50,6 +51,7 @@ public abstract class Condition {
         text = StringEscapeUtils.unescapeXml(element.getText());
         caption = element.attributeValue("caption");
         unary = Boolean.valueOf(element.attributeValue("unary"));
+        hidden = Boolean.valueOf(element.attributeValue("hidden"));
 
         String aclass = element.attributeValue("class");
         if (!isBlank(aclass))
@@ -143,6 +145,14 @@ public abstract class Condition {
         return filterComponentName;
     }
 
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
     public void toXml(Element element) {
         element.setText(getText());
         element.addAttribute("name", name);
@@ -154,6 +164,9 @@ public abstract class Condition {
 
         if (unary)
             element.addAttribute("unary", "true");
+
+        if (hidden)
+            element.addAttribute("hidden", "true");
 
         if (param != null) {
             Element paramElem = element.addElement("param");

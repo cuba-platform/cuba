@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 public class FilterEditor {
@@ -47,7 +48,7 @@ public class FilterEditor {
     private String filterComponentName;
     private AbstractSelect addSelect;
 
-    private static final String EDITOR_WIDTH = "500px";
+    private static final String EDITOR_WIDTH = "600px";
     private static List<String> defaultExcludedProps = Arrays.asList("version");
     private CheckBox globalCb;
 
@@ -182,6 +183,7 @@ public class FilterEditor {
         String nameCol = getMessage("FilterEditor.column.name");
         String opCol = getMessage("FilterEditor.column.op");
         String paramCol = getMessage("FilterEditor.column.param");
+        String hiddenCol = getMessage("FilterEditor.column.hidden");
         String cntrCol = getMessage("FilterEditor.column.control");
 
         table.addContainerProperty(nameCol, NameEditor.class, null);
@@ -192,6 +194,9 @@ public class FilterEditor {
 
         table.addContainerProperty(paramCol, ParamEditor.class, null);
         table.setColumnWidth(paramCol, 160);
+
+        table.addContainerProperty(hiddenCol, CheckBox.class, null);
+        table.setColumnWidth(cntrCol, 50);
 
         table.addContainerProperty(cntrCol, Button.class, null);
         table.setColumnWidth(cntrCol, 80);
@@ -205,6 +210,7 @@ public class FilterEditor {
                     nameEditor,
                     operationEditor,
                     paramEditor,
+                    createHiddenCheckbox(condition),
                     createDeleteConditionBtn(condition)
                     },
                     condition
@@ -230,6 +236,7 @@ public class FilterEditor {
                 nameEditor,
                 operationEditor,
                 paramEditor,
+                createHiddenCheckbox(condition),
                 createDeleteConditionBtn(condition)
                 },
                 condition
@@ -250,6 +257,18 @@ public class FilterEditor {
             }
         });
         return delBtn;
+    }
+
+    private CheckBox createHiddenCheckbox(final Condition condition) {
+        final CheckBox checkBox = new CheckBox();
+        checkBox.setValue(condition.isHidden());
+        checkBox.addListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                boolean hidden = BooleanUtils.isTrue((Boolean) checkBox.getValue());
+                condition.setHidden(hidden);
+            }
+        });
+        return checkBox;
     }
 
     private void parseDescriptorXml() {

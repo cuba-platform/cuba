@@ -252,20 +252,26 @@ public class WebFilter
     }
 
     private void createParamsLayout() {
-        if (conditions.isEmpty()) {
+        List<Condition> visibleConditions = new ArrayList<Condition>();
+        for (Condition condition : conditions) {
+            if (!condition.isHidden())
+                visibleConditions.add(condition);
+        }
+
+        if (visibleConditions.isEmpty()) {
             paramsLayout = new HorizontalLayout();
             return;
         }
 
         int columns = 3;
-        int rows = conditions.size() / columns;
-        if (conditions.size() % columns != 0)
+        int rows = visibleConditions.size() / columns;
+        if (visibleConditions.size() % columns != 0)
             rows++;
         com.vaadin.ui.GridLayout grid = new com.vaadin.ui.GridLayout(columns, rows);
         grid.setMargin(true, false, false, false);
 
-        for (int i = 0; i < conditions.size(); i++) {
-            Condition condition = conditions.get(i);
+        for (int i = 0; i < visibleConditions.size(); i++) {
+            Condition condition = visibleConditions.get(i);
             HorizontalLayout paramLayout = new HorizontalLayout();
             paramLayout.setSpacing(true);
             paramLayout.setMargin(false, true, true, false);
