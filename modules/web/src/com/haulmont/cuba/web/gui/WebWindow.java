@@ -543,8 +543,8 @@ public class WebWindow
 
                 @Override
                 public boolean isEnabled() {
-                    return UserSessionClient.getUserSession().isEntityOpPermitted(
-                            getMetaClass(), EntityOp.UPDATE);
+                    return super.isEnabled() &&
+                            UserSessionClient.getUserSession().isEntityOpPermitted(getMetaClass(), EntityOp.UPDATE);
                 }
 
                 public void actionPerform(Component component) {
@@ -588,7 +588,7 @@ public class WebWindow
             final Window.Editor window = (Window.Editor) super.wrapBy(aClass);
 
             final Action commitAction = getAction("windowCommit");
-            ((ActionWrapper) commitAction).setAction(new ActionWrapper("windowCommit") {
+            ((ActionWrapper) commitAction).setAction(new AbstractAction("windowCommit") {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -601,7 +601,7 @@ public class WebWindow
             });
             
             final Action closeAction = getAction("windowClose");
-            ((ActionWrapper) closeAction).setAction(new ActionWrapper("windowClose") {
+            ((ActionWrapper) closeAction).setAction(new AbstractAction("windowClose") {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();

@@ -52,7 +52,7 @@ public class WebAbstractActionOwnerComponent<T extends com.vaadin.ui.Component>
 
         public void handleAction(Action tableAction, Object sender, Object target) {
             final com.haulmont.cuba.gui.components.Action action = actions.inverse().get(tableAction);
-            if (action != null) {
+            if (action != null && action.isEnabled()) {
                 action.actionPerform(WebAbstractActionOwnerComponent.this);
             }
         }

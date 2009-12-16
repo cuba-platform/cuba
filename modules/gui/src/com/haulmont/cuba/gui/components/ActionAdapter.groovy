@@ -44,12 +44,10 @@ public class ActionAdapter extends AbstractAction {
   }
 
   public boolean isEnabled() {
-    Closure closure = methods['getIcon']
+    Closure closure = methods['isEnabled']
     if (closure)
       return closure.call()
     else
       return super.isEnabled()
   }
-
-
 }

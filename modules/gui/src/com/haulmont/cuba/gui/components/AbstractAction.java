@@ -20,6 +20,10 @@ public abstract class AbstractAction implements Action {
 
     private String icon;
 
+    private boolean enabled = true;
+
+    private Component.ActionOwner owner;
+
     protected AbstractAction(String id) {
         this.id = id;
     }
@@ -33,7 +37,22 @@ public abstract class AbstractAction implements Action {
     }
 
     public boolean isEnabled() {
-        return true;
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        if (owner != null && owner instanceof Component) {
+            ((Component) owner).setEnabled(enabled);
+        }
+    }
+
+    public Component.ActionOwner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Component.ActionOwner actionOwner) {
+        this.owner = actionOwner;
     }
 
     public String getIcon() {

@@ -81,22 +81,8 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createRefreshAction() {
-        final Action action = new AbstractAction("refresh") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Refresh");
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                ListActionsHelper.this.component.getDatasource().refresh();
-            }
-        };
-        ListActionsHelper.this.component.addAction(action);
-
+        Action action = new RefreshAction();
+        component.addAction(action);
         return action;
     }
 
@@ -105,127 +91,20 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createRemoveAction(final boolean autocommit) {
-        final Action action = new AbstractAction("remove") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Remove");
-            }
-
-            public boolean isEnabled() {
-                return userSession.isEntityOpPermitted(metaClass, EntityOp.DELETE);
-            }
-
-            public void actionPerform(Component component) {
-                final Set selected = ListActionsHelper.this.component.getSelected();
-                if (!selected.isEmpty()) {
-                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                    frame.showOptionDialog(
-                            MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
-                            MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
-                            IFrame.MessageType.CONFIRMATION,
-                            new Action[]{new AbstractAction("ok") {
-                                public String getCaption() {
-                                    return MessageProvider.getMessage(messagesPackage, "actions.Ok");
-                                }
-
-                                public boolean isEnabled() {
-                                    return true;
-                                }
-
-                                @Override
-                                public String getIcon() {
-                                    return "icons/ok.png";
-                                }
-
-                                public void actionPerform(Component component) {
-                                    @SuppressWarnings({"unchecked"})
-                                    final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
-                                    for (Object item : selected) {
-                                        ds.removeItem((Entity) item);
-                                    }
-
-                                    fireRemoveEvent(selected);
-
-                                    if (autocommit) {
-                                        try {
-                                            ds.commit();
-                                        } catch (RuntimeException e) {
-                                            ds.refresh();
-                                            throw e;
-                                        }
-                                    }
-                                }
-                            }, new AbstractAction("cancel") {
-                                public String getCaption() {
-                                    return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
-                                }
-
-                                public boolean isEnabled() {
-                                    return true;
-                                }
-
-                                @Override
-                                public String getIcon() {
-                                    return "icons/cancel.png";
-                                }
-
-                                public void actionPerform(Component component) {
-                                }
-                            }});
-                }
-            }
-        };
-        ListActionsHelper.this.component.addAction(action);
-
+        Action action = new RemoveAction(autocommit);
+        component.addAction(action);
         return action;
     }
 
     public Action createFilterApplyAction(final String componentId) {
-        final Action action = new AbstractAction("apply") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Apply");
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                ListActionsHelper.this.component.getDatasource().refresh();
-            }
-        };
-        ((Button)ListActionsHelper.this.frame.getComponent(componentId)).setAction(action);
-
+        Action action = new FilterApplyAction();
+        ((Button) frame.getComponent(componentId)).setAction(action);
         return action;
     }
 
     public Action createFilterClearAction(final String componentId, final String containerName) {
-        final Action action = new AbstractAction("clear") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Clear");
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                Component.Container container = ListActionsHelper.this.frame.getComponent(containerName);
-                ComponentsHelper.walkComponents(container,
-                        new ComponentVisitor() {
-                            public void visit(Component component, String name) {
-                                if (component instanceof Field) {
-                                    ((Field) component).setValue(null);
-                                }
-                            }
-                        }
-                );
-            }
-        };
-        ((Button)ListActionsHelper.this.frame.getComponent(componentId)).setAction(action);
-
+        Action action = new FilterClearAction(containerName);
+        ((Button) frame.getComponent(componentId)).setAction(action);
         return action;
     }
 
@@ -247,25 +126,8 @@ abstract class ListActionsHelper<T extends List> {
 
     public Action createAddAction(final Window.Lookup.Handler handler, final WindowManager.OpenType openType,
                                   final Map<String, Object> params, final String captionKey) {
-        final AbstractAction action = new AbstractAction("add") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, captionKey == null ? "actions.Add" : captionKey);
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
-                final String windowID = datasource.getMetaClass().getName() + ".browse";
-
-                frame.openLookup(windowID, handler, openType, params);
-            }
-        };
-        ListActionsHelper.this.component.addAction(action);
-
+        AbstractAction action = new AddAction(captionKey, handler, openType, params);
+        component.addAction(action);
         return action;
     }
 
@@ -322,10 +184,6 @@ abstract class ListActionsHelper<T extends List> {
                 return MessageProvider.getMessage(messagesPackage, "actions.View");
         }
 
-        public boolean isEnabled() {
-            return true;
-        }
-
         public void actionPerform(Component component) {
             final Set selected = ListActionsHelper.this.component.getSelected();
             if (selected.size() == 1) {
@@ -364,5 +222,167 @@ abstract class ListActionsHelper<T extends List> {
         void entityCreated(Entity entity);
         void entityEdited(Entity entity);
         void entityRemoved(Set<Entity> entity);
+    }
+
+    private class RefreshAction extends AbstractAction {
+        public RefreshAction() {
+            super("refresh");
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, "actions.Refresh");
+        }
+
+        public void actionPerform(Component component) {
+            ListActionsHelper.this.component.getDatasource().refresh();
+        }
+    }
+
+    private class RemoveAction extends AbstractAction {
+        private final boolean autocommit;
+
+        public RemoveAction(boolean autocommit) {
+            super("remove");
+            this.autocommit = autocommit;
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, "actions.Remove");
+        }
+
+        public boolean isEnabled() {
+            return super.isEnabled() && userSession.isEntityOpPermitted(metaClass, EntityOp.DELETE);
+        }
+
+        public void actionPerform(Component component) {
+            final Set selected = ListActionsHelper.this.component.getSelected();
+            if (!selected.isEmpty()) {
+                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                frame.showOptionDialog(
+                        MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
+                        MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
+                        IFrame.MessageType.CONFIRMATION,
+                        new Action[]{new AbstractAction("ok") {
+                            public String getCaption() {
+                                return MessageProvider.getMessage(messagesPackage, "actions.Ok");
+                            }
+
+                            public boolean isEnabled() {
+                                return true;
+                            }
+
+                            @Override
+                            public String getIcon() {
+                                return "icons/ok.png";
+                            }
+
+                            public void actionPerform(Component component) {
+                                @SuppressWarnings({"unchecked"})
+                                final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
+                                for (Object item : selected) {
+                                    ds.removeItem((Entity) item);
+                                }
+
+                                fireRemoveEvent(selected);
+
+                                if (autocommit) {
+                                    try {
+                                        ds.commit();
+                                    } catch (RuntimeException e) {
+                                        ds.refresh();
+                                        throw e;
+                                    }
+                                }
+                            }
+                        }, new AbstractAction("cancel") {
+                            public String getCaption() {
+                                return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
+                            }
+
+                            public boolean isEnabled() {
+                                return true;
+                            }
+
+                            @Override
+                            public String getIcon() {
+                                return "icons/cancel.png";
+                            }
+
+                            public void actionPerform(Component component) {
+                            }
+                        }});
+            }
+        }
+    }
+
+    private class FilterApplyAction extends AbstractAction {
+        public FilterApplyAction() {
+            super("apply");
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, "actions.Apply");
+        }
+
+        public void actionPerform(Component component) {
+            ListActionsHelper.this.component.getDatasource().refresh();
+        }
+    }
+
+    private class FilterClearAction extends AbstractAction {
+        private final String containerName;
+
+        public FilterClearAction(String containerName) {
+            super("clear");
+            this.containerName = containerName;
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, "actions.Clear");
+        }
+
+        public void actionPerform(Component component) {
+            Component.Container container = ListActionsHelper.this.frame.getComponent(containerName);
+            ComponentsHelper.walkComponents(container,
+                    new ComponentVisitor() {
+                        public void visit(Component component, String name) {
+                            if (component instanceof Field) {
+                                ((Field) component).setValue(null);
+                            }
+                        }
+                    }
+            );
+        }
+    }
+
+    private class AddAction extends AbstractAction {
+        private final String captionKey;
+        private final Window.Lookup.Handler handler;
+        private final WindowManager.OpenType openType;
+        private final Map<String, Object> params;
+
+        public AddAction(String captionKey, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+            super("add");
+            this.captionKey = captionKey;
+            this.handler = handler;
+            this.openType = openType;
+            this.params = params;
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, captionKey == null ? "actions.Add" : captionKey);
+        }
+
+        public void actionPerform(Component component) {
+            final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
+            final String windowID = datasource.getMetaClass().getName() + ".browse";
+
+            frame.openLookup(windowID, handler, openType, params);
+        }
     }
 }

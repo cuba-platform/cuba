@@ -20,5 +20,10 @@ public interface Action {
     void setIcon(String icon);
 
     boolean isEnabled();
+    void setEnabled(boolean enabled);
+
+    Component.ActionOwner getOwner();
+    void setOwner(Component.ActionOwner actionOwner);
+
     void actionPerform(Component component);
 }

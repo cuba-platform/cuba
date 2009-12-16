@@ -68,6 +68,8 @@ public class WebButton
         if (action.getIcon() != null) {
             setIcon(action.getIcon());
         }
+
+        action.setOwner(this);
     }
 
     public String getIcon() {

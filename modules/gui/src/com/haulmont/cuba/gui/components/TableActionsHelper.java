@@ -35,106 +35,133 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
     }
 
     public Action createCreateAction(final ValueProvider valueProvider, final WindowManager.OpenType openType) {
-        final AbstractAction action = new AbstractAction("create") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Create");
-            }
-
-            public boolean isEnabled() {
-                return userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE);
-            }
-
-            public void actionPerform(Component component) {
-                final CollectionDatasource datasource = TableActionsHelper.this.component.getDatasource();
-                final DataService dataservice = datasource.getDataService();
-                final String windowID = datasource.getMetaClass().getName() + ".edit";
-
-                final Entity item = dataservice.newInstance(datasource.getMetaClass());
-                if (valueProvider.getValues() != null) {
-                    for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
-                        final Object value = entry.getValue();
-                        if (value instanceof Collection) {
-                            final Collection collection = (Collection) value;
-                            if (collection.size() != 1) {
-                                throw new UnsupportedOperationException();
-                            } else {
-                                ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
-                            }
-                        } else {
-                            ((Instance) item).setValue(entry.getKey(), value);
-                        }
-                    }
-                }
-
-                Datasource parentDs = null;
-                if (datasource instanceof PropertyDatasource) {
-                    MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
-                    if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
-                        parentDs = datasource;
-                    }
-                }
-                final Datasource pDs = parentDs;
-
-                Map<String, Object> params = valueProvider.getParameters() != null ?
-                        valueProvider.getParameters() : Collections.<String, Object>emptyMap();
-
-                final Window window = frame.openEditor(windowID, item, openType, params, parentDs);
-
-                window.addListener(new Window.CloseListener() {
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                            Object item = ((Window.Editor) window).getItem();
-                            if (item instanceof Entity) {                                    
-                                if (pDs == null) {
-                                    boolean modified = datasource.isModified();
-                                    datasource.addItem((Entity) item);
-                                    ((DatasourceImplementation) datasource).setModified(modified);
-                                }
-                                fireCreateEvent((Entity) item);
-                            }
-                        }
-                    }
-                });
-            }
-        };
-        TableActionsHelper.this.component.addAction(action);
-
+        AbstractAction action = new CreateAction(valueProvider, openType);
+        component.addAction(action);
         return action;
     }
 
     public Action createExcelAction(final ExportDisplay display) {
-        AbstractAction action = new AbstractAction("excel") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Excel");
-            }
-
-            public void actionPerform(Component component) {
-                ExcelExporter exporter = new ExcelExporter();
-                exporter.exportTable(TableActionsHelper.this.component, display);
-            }
-        };
-        TableActionsHelper.this.component.addAction(action);
+        AbstractAction action = new ExcelAction(display);
+        component.addAction(action);
         return action;
     }
 
     public Action createParametrizedExcelAction(final ExportDisplay display) {
-        AbstractAction action = new AbstractAction("excel") {
-            public String getCaption() {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                return MessageProvider.getMessage(messagesPackage, "actions.Excel");
-            }
-
-            public void actionPerform(Component component) {
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("table", TableActionsHelper.this.component);
-                params.put("exportDisplay", display);                
-                frame.openWindow("cuba$ExcelExport", WindowManager.OpenType.DIALOG, params);
-            }
-        };
-        TableActionsHelper.this.component.addAction(action);
+        AbstractAction action = new ParameterizedExcelAction(display);
+        component.addAction(action);
         return action;
     }
 
+    private class CreateAction extends AbstractAction {
+        private final ValueProvider valueProvider;
+        private final WindowManager.OpenType openType;
+
+        public CreateAction(ValueProvider valueProvider, WindowManager.OpenType openType) {
+            super("create");
+            this.valueProvider = valueProvider;
+            this.openType = openType;
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, "actions.Create");
+        }
+
+        public boolean isEnabled() {
+            return super.isEnabled() && userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE);
+        }
+
+        public void actionPerform(Component component) {
+            final CollectionDatasource datasource = TableActionsHelper.this.component.getDatasource();
+            final DataService dataservice = datasource.getDataService();
+            final String windowID = datasource.getMetaClass().getName() + ".edit";
+
+            final Entity item = dataservice.newInstance(datasource.getMetaClass());
+            if (valueProvider.getValues() != null) {
+                for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
+                    final Object value = entry.getValue();
+                    if (value instanceof Collection) {
+                        final Collection collection = (Collection) value;
+                        if (collection.size() != 1) {
+                            throw new UnsupportedOperationException();
+                        } else {
+                            ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
+                        }
+                    } else {
+                        ((Instance) item).setValue(entry.getKey(), value);
+                    }
+                }
+            }
+
+            Datasource parentDs = null;
+            if (datasource instanceof PropertyDatasource) {
+                MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
+                if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
+                    parentDs = datasource;
+                }
+            }
+            final Datasource pDs = parentDs;
+
+            Map<String, Object> params = valueProvider.getParameters() != null ?
+                    valueProvider.getParameters() : Collections.<String, Object>emptyMap();
+
+            final Window window = frame.openEditor(windowID, item, openType, params, parentDs);
+
+            window.addListener(new Window.CloseListener() {
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
+                        Object item = ((Window.Editor) window).getItem();
+                        if (item instanceof Entity) {
+                            if (pDs == null) {
+                                boolean modified = datasource.isModified();
+                                datasource.addItem((Entity) item);
+                                ((DatasourceImplementation) datasource).setModified(modified);
+                            }
+                            fireCreateEvent((Entity) item);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private class ExcelAction extends AbstractAction {
+        private final ExportDisplay display;
+
+        public ExcelAction(ExportDisplay display) {
+            super("excel");
+            this.display = display;
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, "actions.Excel");
+        }
+
+        public void actionPerform(Component component) {
+            ExcelExporter exporter = new ExcelExporter();
+            exporter.exportTable(TableActionsHelper.this.component, display);
+        }
+    }
+
+    private class ParameterizedExcelAction extends AbstractAction {
+        private final ExportDisplay display;
+
+        public ParameterizedExcelAction(ExportDisplay display) {
+            super("excel");
+            this.display = display;
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, "actions.Excel");
+        }
+
+        public void actionPerform(Component component) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("table", TableActionsHelper.this.component);
+            params.put("exportDisplay", display);
+            frame.openWindow("cuba$ExcelExport", WindowManager.OpenType.DIALOG, params);
+        }
+    }
 }
