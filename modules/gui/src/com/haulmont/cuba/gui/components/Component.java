@@ -216,4 +216,9 @@ public interface Component {
         String getIcon();
         void setIcon(String icon);
     }
+
+    interface HasButtonsPanel {
+        ButtonsPanel getButtonsPanel();
+        void setButtonsPanel(ButtonsPanel panel);
+    }
 }

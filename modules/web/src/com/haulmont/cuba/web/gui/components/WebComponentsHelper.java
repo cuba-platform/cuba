@@ -27,8 +27,6 @@ import java.util.*;
 
 public class WebComponentsHelper {
 
-    private static Boolean useNativeButtons;
-
     public static Resource getResource(String resURL) {
         if (StringUtils.isEmpty(resURL)) return null;
 
@@ -246,11 +244,11 @@ public class WebComponentsHelper {
             default: throw new IllegalArgumentException("Unknown function: " + function);
         }
     }
-    
+
     public static Button createButton() {
         return createButton(null);
     }
-    
+
     public static Button createButton(String icon) {
         WebButton webButton = new WebButton();
         webButton.setIcon(icon);

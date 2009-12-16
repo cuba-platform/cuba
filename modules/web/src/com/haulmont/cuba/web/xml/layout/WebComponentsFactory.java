@@ -55,6 +55,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put("embedded", WebEmbedded.class);
         classes.put("filter", WebFilter.class);
         classes.put("accessControl", WebAccessControl.class);
+        classes.put("buttonsPanel", WebButtonsPanel.class);
     }
 
     public <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException {

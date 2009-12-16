@@ -300,18 +300,9 @@
     <xs:group name="component">
         <xs:sequence>
             <xs:choice minOccurs="1" maxOccurs="unbounded">
-                <xs:element name="button">
-                    <xs:complexType>
-                        <xs:attribute name="id" type="xs:string" use="optional"/>
-                        <xs:attribute name="action" type="xs:string" use="optional"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
-                        <xs:attribute name="visible" type="xs:string" use="optional"/>
-                        <xs:attribute name="enable" type="xs:string" use="optional"/>
-                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
-                        <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
-                    </xs:complexType>
-                </xs:element>
+                <xs:element name="button" type="buttonType" />
 
+                <xs:element name="buttonsPanel" type="buttonsPanelType" />
 
                 <xs:element name="label">
                     <xs:complexType>
@@ -599,7 +590,7 @@
 
     <xs:complexType name="tableType">
         <xs:sequence>
-            <xs:element name="actionButtons" minOccurs="0" maxOccurs="1" type="actionButtonsType"/>
+            <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
             <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:sequence>
@@ -633,18 +624,27 @@
         <xs:attribute name="format" type="xs:string" use="optional"/>
     </xs:complexType>
 
-    <xs:complexType name="actionButtonsType">
+    <xs:complexType name="buttonsPanelType">
         <xs:sequence>
-            <xs:element name="actionButton" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                    <xs:attribute name="id" type="xs:string" use="optional"/>
-                    <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
-                    <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
-                    <xs:attribute name="action" type="xs:string" use="optional"/>
-                </xs:complexType>
-            </xs:element>
+            <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType" />
         </xs:sequence>
-        <xs:attribute name="class" type="xs:string" use="optional"/>
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+        <xs:attribute name="width" type="xs:string" use="optional"/>
+        <xs:attribute name="height" type="xs:string" use="optional"/>
+        <xs:attribute name="expand" type="xs:string" use="optional"/>
+        <xs:attribute name="align" type="align" use="optional"/>
+        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+        <xs:attribute name="providerClass" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="buttonType">
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+        <xs:attribute name="action" type="xs:string" use="optional"/>
+        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+        <xs:attribute name="visible" type="xs:string" use="optional"/>
+        <xs:attribute name="enable" type="xs:string" use="optional"/>
+        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+        <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
     </xs:complexType>
 
     <xs:simpleType name="orientation">

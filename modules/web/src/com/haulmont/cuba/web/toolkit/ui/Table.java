@@ -38,9 +38,6 @@ public class Table
 
     protected PagingProvider pagingProvider = null;
 
-//    protected List<ActionButton> actionButtons = null;
-//    protected KeyMapper idActionButtons = null;
-
     protected boolean aggregatable = false;
 
     public enum PagingMode {
@@ -107,16 +104,6 @@ public class Table
             setPageLength(((Integer) variables.get("pagelength")).intValue());
             clientNeedsContentRefresh = true;
         }
-
-/*
-        if (variables.containsKey("actionButton")) {
-            final String key = (String) variables.get("actionButton");
-            ActionButton actionButton = (ActionButton) idActionButtons.get(key);
-            if (actionButton != null) {
-                actionButton.actionPerform(this);
-            }
-        }
-*/
 
         return clientNeedsContentRefresh;
     }
@@ -296,8 +283,6 @@ public class Table
             }
         }
         target.addAttribute("vcolorder", visibleColOrder.toArray());
-
-//        paintActionButtons(target);
 
         if (items instanceof AggregationContainer && isAggregatable()
                 && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {
@@ -806,32 +791,6 @@ public class Table
         }
     }
 
-/*
-    protected void paintActionButtons(PaintTarget target) throws PaintException {
-        if (actionButtons != null) {
-            if (idActionButtons == null) {
-                idActionButtons = new KeyMapper();
-            }
-
-            target.startTag("actionButtons");
-
-            for (final ActionButton actionButton : actionButtons) {
-                target.startTag("actionButton");
-                target.addAttribute("key", idActionButtons.key(actionButton));
-                if (actionButton.getCaption() != null) {
-                    target.addAttribute("caption", actionButton.getCaption());
-                }
-                if (actionButton.getIcon() != null) {
-                    target.addAttribute("icon", actionButton.getIcon());
-                }
-                target.endTag("actionButton");
-            }
-
-            target.endTag("actionButtons");
-        }
-    }
-*/
-
     public Map<Object, String> aggregate(Collection itemIds) {
         if (items instanceof AggregationContainer && isAggregatable()) {
             return ((AggregationContainer) items).aggregate(itemIds);
@@ -914,34 +873,6 @@ public class Table
         requestRepaint();
     }
 
-/*
-    public void addActionButton(ActionButton actionButton) {
-        if (actionButtons == null) {
-            actionButtons = new LinkedList<ActionButton>();
-            idActionButtons = new KeyMapper();
-        }
-        actionButtons.add(actionButton);
-        requestRepaint();
-    }
-
-    public void removeActionButton(ActionButton actionButton) {
-        if (actionButtons != null) {
-            actionButtons.remove(actionButton);
-            if (actionButtons.isEmpty()) {
-                actionButtons = null;
-            }
-            requestRepaint();
-        }
-    }
-
-    public List<ActionButton> getActionButtons() {
-        if (actionButtons != null) {
-            return Collections.unmodifiableList(actionButtons);
-        }
-        return Collections.emptyList();
-    }
-*/
-
     public interface PagingProvider extends Serializable {
         String firstCaption();
         String prevCaption();
@@ -952,12 +883,4 @@ public class Table
         boolean showPageLengthSelector();
         int[] pageLengths();
     }
-
-/*
-    public interface ActionButton extends Serializable {
-        String getCaption();
-        Resource getIcon();
-        void actionPerform(Table source);
-    }
-*/
 }

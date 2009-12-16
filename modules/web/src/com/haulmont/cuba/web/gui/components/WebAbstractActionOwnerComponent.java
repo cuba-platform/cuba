@@ -5,10 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.vaadin.event.Action;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class WebAbstractActionOwnerComponent<T extends com.vaadin.ui.Component>
         extends WebAbstractComponent<T>
@@ -27,7 +24,7 @@ public class WebAbstractActionOwnerComponent<T extends com.vaadin.ui.Component>
     }
 
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
-        return actionsOrder;
+        return Collections.unmodifiableCollection(actionsOrder);
     }
 
     public com.haulmont.cuba.gui.components.Action getAction(String id) {

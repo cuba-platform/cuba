@@ -20,7 +20,7 @@ public class LayoutLoaderConfig {
 
     private static LayoutLoaderConfig windowLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig editorLoaders = new LayoutLoaderConfig();
-    private static LayoutLoaderConfig lookupLoaders = new LayoutLoaderConfig();    
+    private static LayoutLoaderConfig lookupLoaders = new LayoutLoaderConfig();
     private static LayoutLoaderConfig frameLoaders = new LayoutLoaderConfig();
 
     private static Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> customLoaders =
@@ -60,7 +60,7 @@ public class LayoutLoaderConfig {
         config.register("optionsGroup", OptionsGroupLoader.class);
         config.register("upload", FileUploadFieldLoader.class);
         config.register("table", TableLoader.class);
-                config.register("treeTable", TreeTableLoader.class);
+        config.register("treeTable", TreeTableLoader.class);
         config.register("iframe", IFrameLoader.class);
         config.register("split", SplitPanelLoader.class);
         config.register("tree", TreeLoader.class);
@@ -68,6 +68,7 @@ public class LayoutLoaderConfig {
         config.register("embedded", EmbeddedLoader.class);
         config.register("filter", FilterLoader.class);
         config.register("accessControl", AccessControlLoader.class);
+        config.register("buttonsPanel", ButtonsPanelLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

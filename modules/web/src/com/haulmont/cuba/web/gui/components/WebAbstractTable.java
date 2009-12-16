@@ -27,10 +27,10 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.vaadin.data.Item;
@@ -42,7 +42,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Layout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -78,9 +77,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             new LinkedHashSet<com.haulmont.cuba.gui.components.Field.Validator>();
 
     protected VerticalLayout componentComposition;
-    protected Layout actionButtonsLayout;
 
-    protected Table.ActionButtonsProvider actionButtonsProvider;
+    protected ButtonsPanel buttonsPanel;
 
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
@@ -150,11 +148,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setAggregatable(aggregatable);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Component getComposition() {
-        return componentComposition != null
-                ? componentComposition : component;
+        return componentComposition;
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
@@ -233,7 +229,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         });
 
         componentComposition = new CompositionLayout(component);
-        componentComposition.setSpacing(true);
+        componentComposition.setSpacing(false);
+        componentComposition.setMargin(false);
         componentComposition.setExpandRatio(component, 1);
     }
 
@@ -290,7 +287,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             component.setVisible(false);
             return;
         }
-        
+
         final Collection<MetaPropertyPath> columns;
         if (this.columns.isEmpty()) {
             columns = null;
@@ -557,6 +554,20 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    public ButtonsPanel getButtonsPanel() {
+        return buttonsPanel;
+    }
+
+    public void setButtonsPanel(ButtonsPanel panel) {
+        if (buttonsPanel != null) {
+            componentComposition.removeComponent(WebComponentsHelper.unwrap(buttonsPanel));
+        }
+        buttonsPanel = panel;
+        if (panel != null) {
+            componentComposition.addComponentAsFirst(WebComponentsHelper.unwrap(panel));
+        }
+    }
+
     public void setPagingProvider(final Table.PagingProvider pagingProvider) {
         this.pagingProvider = pagingProvider;
         component.setPagingProvider(new com.haulmont.cuba.web.toolkit.ui.Table.PagingProvider() {
@@ -604,74 +615,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 aggregationInfos.toArray(new Aggregation[aggregationInfos.size()]),
                 itemIds
         );
-    }
-
-    public Table.ActionButtonsProvider getActionButtonsProvider() {
-        return actionButtonsProvider;
-    }
-
-    public void setActionButtonsProvider(Table.ActionButtonsProvider buttonsProvider) {
-        if (actionButtonsProvider != null) {
-            componentComposition.removeComponent(actionButtonsLayout);
-        }
-        actionButtonsProvider = buttonsProvider;
-        if (buttonsProvider != null) {
-            actionButtonsLayout = createActionButtonsLayout();
-            componentComposition.addComponentAsFirst(actionButtonsLayout);
-        }
-    }
-
-    protected Layout createActionButtonsLayout() {
-        final HorizontalLayout buttonsLayout = new HorizontalLayout();
-        buttonsLayout.setSpacing(true);
-        buttonsLayout.setMargin(true, true, false, true);
-        for (final Table.ActionButton actionButton : actionButtonsProvider.getButtons()) {
-            buttonsLayout.addComponent(createButton(actionButton));
-        }
-        return buttonsLayout;
-    }
-
-    protected Component createButton(Table.ActionButton actionButton) {
-        final WebButton webButton = new WebButton();
-        webButton.setId(actionButton.getId());
-        webButton.setAction(new ActionButtonAction(actionButton));
-        return WebComponentsHelper.getComposition(webButton);
-    }
-
-    private class ActionButtonAction extends com.haulmont.cuba.gui.components.AbstractAction  {
-
-        private Table.ActionButton actionButton;
-
-        public ActionButtonAction(Table.ActionButton actionButton) {
-            super(null);
-            this.actionButton = actionButton;
-        }
-
-        @Override
-        public String getId() {
-            return actionButton.getAction() != null
-                    ? actionButton.getAction().getId() : actionButton.getId();
-        }
-
-        @Override
-        public String getCaption() {
-            String caption = actionButton.getCaption();
-            if (StringUtils.isEmpty(caption) && actionButton.getAction() != null) {
-                caption = actionButton.getAction().getCaption();
-            }
-            return caption;
-        }
-
-        @Override
-        public String getIcon() {
-            return actionButton.getIcon();
-        }
-
-        public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-            if (actionButton.getAction() != null) {
-                actionButton.getAction().actionPerform(component);
-            }
-        }
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {

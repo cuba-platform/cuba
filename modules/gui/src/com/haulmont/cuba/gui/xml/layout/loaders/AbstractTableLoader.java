@@ -114,11 +114,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             }
         }
 
-        //action buttons
-        final Element actionButtonsElement = element.element("actionButtons");
-        if (actionButtonsElement != null) {
-            loadActionButtons(component, actionButtonsElement);
-        }
+        loadButtonsPanel(component, element);
 
         addAssignWindowTask(component);
 
@@ -129,6 +125,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         String aggregatable = element.attributeValue("aggregatable");
         if (!StringUtils.isEmpty(aggregatable)) {
             component.setAggregatable(BooleanUtils.toBoolean(aggregatable));
+        }
+    }
+
+    private void loadButtonsPanel(Component.HasButtonsPanel component, Element element)
+            throws InstantiationException, IllegalAccessException {
+        Element panelElement = element.element("buttonsPanel");
+        if (panelElement != null) {
+            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader("buttonsPanel");
+            ButtonsPanel panel = (ButtonsPanel) loader.loadComponent(factory, panelElement, null);
+
+            component.setButtonsPanel(panel);
         }
     }
 
@@ -177,62 +184,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                 return null;
             }
         });
-    }
-
-    private void loadActionButtons(final T component, Element element) throws InstantiationException {
-        final String className = element.attributeValue("class");
-        if (className != null) {
-            final Class<Table.ActionButtonsProvider> clazz = ReflectionHelper.getClass(className);
-
-            try {
-                final Constructor<Table.ActionButtonsProvider> constructor = clazz.getConstructor(Element.class);
-                try {
-                    final Table.ActionButtonsProvider instance = constructor.newInstance(element);
-                    component.setActionButtonsProvider(instance);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            } catch (NoSuchMethodException e) {
-                try {
-                    final Table.ActionButtonsProvider instance = clazz.newInstance();
-                    component.setActionButtonsProvider(instance);
-                } catch (Throwable e1) {
-                    throw new RuntimeException(e);
-                }
-            }
-        } else {
-            final List<Element> actionButtonElements = element.elements("actionButton");
-            if (!actionButtonElements.isEmpty()) {
-                final TableActionButtonsProvider actionButtonsProvider = new TableActionButtonsProvider();
-                for (final Element actionButtonElement : actionButtonElements) {
-                    actionButtonsProvider.addActionButton(loadActionButton(component, actionButtonElement));
-                }
-                context.addLazyTask(new LazyTask() {
-                    public void execute(Context context, IFrame frame) {
-                        component.setActionButtonsProvider(actionButtonsProvider);
-                    }
-                });
-            } else {
-                throw new InstantiationException(
-                        "<actionButtons> element must contains \"class\" attribute or at least one <actionButton> element");
-            }
-        }
-    }
-
-    private Table.ActionButton loadActionButton(T component, Element element) {
-        final Table.ActionButton actionButton = new Table.ActionButton();
-        actionButton.setXmlDescriptor(element);
-
-        final String id = element.attributeValue("id");
-        if (!StringUtils.isEmpty(id)) {
-            actionButton.setId(id);
-        }
-
-        loadCaption(actionButton, element);
-        loadIcon(actionButton, element);
-        loadAction(actionButton, element);
-
-        return actionButton;
     }
 
     private void loadRequired(T component, Table.Column column) {
@@ -395,24 +346,27 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    class TableActionButtonsProvider implements Table.ActionButtonsProvider {
-
-        private List<Table.ActionButton> actionButtons = new LinkedList<Table.ActionButton>();
-        private Map<String, Table.ActionButton> idActionButton = new HashMap<String, Table.ActionButton>();
-
-        public void addActionButton(Table.ActionButton actionButton) {
-            actionButtons.add(actionButton);
-            if (actionButton.getId() != null) {
-                idActionButton.put(actionButton.getId(), actionButton);
-            }
+    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
+        Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
+        if (loaderClass == null) {
+            throw new IllegalStateException(String.format("Unknown component '%s'", name));
         }
 
-        public List<Table.ActionButton> getButtons() {
-            return Collections.unmodifiableList(actionButtons);
+        com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
+        try {
+            final Constructor<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> constructor =
+                    loaderClass.getConstructor(Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
+            loader = constructor.newInstance(context, config, factory);
+
+            loader.setLocale(locale);
+            loader.setMessagesPack(messagesPack);
+        } catch (Throwable e) {
+            loader = loaderClass.newInstance();
+            loader.setLocale(locale);
+            loader.setMessagesPack(messagesPack);
         }
 
-        public Table.ActionButton getButton(String id) {
-            return idActionButton.get(id);
-        }
+        return loader;
     }
+
 }
