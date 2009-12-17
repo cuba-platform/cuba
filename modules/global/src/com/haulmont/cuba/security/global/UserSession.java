@@ -210,11 +210,14 @@ public class UserSession implements Serializable
 
     /**
      * Get user session attribute. Attribute is a named serializable object bound to session.
-     * @param name attribute name
+     * @param name attribute name, or <code>userId</code> to obtain current or substituted user ID
      * @return attribute value
      */
-    public <T extends Serializable> T getAttribute(String name) {
-        return (T) attributes.get(name);
+    public <T> T getAttribute(String name) {
+        if ("userId".equals(name))
+            return (T) (substitutedUser == null ? user.getId() : substitutedUser.getId());
+        else
+            return (T) attributes.get(name);
     }
 
     /**

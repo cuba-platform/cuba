@@ -109,7 +109,7 @@ public class CustomConditionEditDlg extends Window {
 
         whereText = new TextField();
         whereText.setWidth(FIELD_WIDTH);
-        whereText.setRows(2);
+        whereText.setRows(4);
         whereText.setNullRepresentation("");
         String where = replaceParamWithQuestionMark(condition.getWhere());
         whereText.setValue(where);
@@ -238,7 +238,13 @@ public class CustomConditionEditDlg extends Window {
         String res = where.trim();
         if (!StringUtils.isBlank(res)) {
             Matcher matcher = QueryParserRegex.PARAM_PATTERN.matcher(res);
-            res = matcher.replaceAll("?");
+            StringBuffer sb = new StringBuffer();
+            while (matcher.find()) {
+                if (!matcher.group().startsWith(":session$"))
+                    matcher.appendReplacement(sb, "?");
+            }
+            matcher.appendTail(sb);
+            return sb.toString();
         }
         return res;
     }
@@ -329,6 +335,8 @@ public class CustomConditionEditDlg extends Window {
                         select.setValue(ParamType.BOOLEAN);
                     else if (Number.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.NUMBER);
+                    else if (UUID.class.equals(param.getJavaClass()))
+                        select.setValue(ParamType.UUID);
                     else
                         throw new UnsupportedOperationException("Unsupported param class: " + param.getJavaClass());
                     break;
