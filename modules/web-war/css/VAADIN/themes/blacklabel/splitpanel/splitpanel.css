@@ -25,12 +25,12 @@
 }
 
 .v-splitpanel-vertical .v-splitpanel-vsplitter div {
-	height: 10px;
+	height: 8px;
 	font-size: 1px; /* for IE6 */
-	background: #e5eafa url(img/bg_splitter2_ver.gif) repeat-x 50% 50%;
-	border: 0 solid #d7dddb;
+	background: #36393B url(img/split-ver-bg.png) repeat-x 50% 50%;
+	border: 0;
 	cursor: n-resize;
-	margin: 1px 0;
+	margin: 0px 0;
 }
 
 
