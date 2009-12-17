@@ -154,6 +154,8 @@ public class AccessControlLoader extends ContainerLoader {
 
         public void execute(Context context, IFrame frame) {
             component.setEnabled(false);
+            if (component instanceof Component.ActionOwner)
+                ((Component.ActionOwner) component).getAction().setEnabled(false);
         }
     }
 }
