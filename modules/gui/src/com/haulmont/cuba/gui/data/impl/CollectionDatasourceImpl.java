@@ -214,14 +214,16 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         data.remove(item.getId());
         detachListener((Instance) item);
 
-        if (PersistenceHelper.isNew(item)) {
-            itemToCreate.remove(item);
-        } else {
-            itemToDelete.add(item);
-        }
+        deleted(item);
 
-        modified = true;
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+    }
+
+    public void modifyItem(T item) {
+        if (data.containsKey(item.getId())) {
+            updateItem(item);
+            modified(item);
+        }
     }
 
     public void updateItem(T item) {

@@ -239,6 +239,23 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    public void modifyItem(T item) {
+        for (T t : __getCollection()) {
+            if (t.equals(item)) {
+                InstanceUtils.copy((Instance) item, (Instance) t);
+
+                modified = true;
+                if (cascadeProperty) {
+                    final Entity parentItem = ds.getItem();
+                    ((DatasourceImplementation) ds).modified(parentItem);
+                } else {
+                    modified(t);
+                }
+            }
+        }
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+    }
+
     public void updateItem(T item) {
         for (T t : __getCollection()) {
             if (t.equals(item)) {

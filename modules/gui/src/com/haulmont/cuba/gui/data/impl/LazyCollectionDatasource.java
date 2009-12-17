@@ -64,6 +64,13 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         throw new UnsupportedOperationException();
     }
 
+    public void modifyItem(T item) {
+        if (data.containsKey(item.getId())) {
+            updateItem(item);
+            modified(item);
+        }
+    }
+
     public void updateItem(T item) {
         if (!State.VALID.equals(state))
             throw new IllegalStateException("Invalid datasource state: " + state);

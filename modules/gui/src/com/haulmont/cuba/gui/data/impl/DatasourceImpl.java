@@ -72,7 +72,7 @@ public class DatasourceImpl<T extends Entity>
             if (parentDs instanceof CollectionDatasource) {
                 CollectionDatasource ds = (CollectionDatasource) parentDs;
                 if (ds.containsItem(item.getId())) {
-                    ds.updateItem(item);
+                    ds.modifyItem(item);
                 } else {
                     ds.addItem(item);
                 }

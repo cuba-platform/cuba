@@ -80,7 +80,12 @@ public abstract class AbstractDatasource<T extends Entity>
     }
 
     public void deleted(T item) {
-        itemToDelete.add(item);
+        if (PersistenceHelper.isNew(item)) {
+            itemToCreate.remove(item);
+        } else {
+            itemToDelete.add(item);
+        }
+        modified = true;
     }
 
     public CommitMode getCommitMode() {
@@ -147,5 +152,10 @@ public abstract class AbstractDatasource<T extends Entity>
             if (!MetadataHelper.isTransient(item, property))
                 modified((T)item);
         }
+    }
+
+    @Override
+    public String toString() {
+        return id + "{modified=" + modified + ", parent=" + parentDs + "}";
     }
 }
