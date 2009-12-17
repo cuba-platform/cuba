@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.logging.Log;
@@ -62,10 +63,12 @@ public class FileDownloadServlet extends HttpServlet {
             error(response);
             return;
         }
-        if (!sessionId.equals(app.getConnection().getSession().getId())) {
+        UserSession userSession = app.getConnection().getSession();
+        if (!sessionId.equals(userSession.getId())) {
             error(response);
             return;
         }
+        WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
 
         UUID fileId;
         try {
