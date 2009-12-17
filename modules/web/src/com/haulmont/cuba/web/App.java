@@ -343,8 +343,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
             UserSession userSession = connection.getSession();
             if (userSession != null) {
                 WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+                application.setLocale(userSession.getLocale());
             }
-
             requestStartTimes.put(transactionData, System.currentTimeMillis());
         }
 
