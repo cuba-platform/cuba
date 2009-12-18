@@ -26,6 +26,7 @@ public class ScriptValidator implements Field.Validator {
     protected String messagesPack;
     private String scriptPath;
     private boolean innerScript;
+
     public ScriptValidator(Element element, String messagesPack) {
         this.script = element.getText();
         innerScript = StringUtils.isNotBlank(script);
@@ -34,6 +35,12 @@ public class ScriptValidator implements Field.Validator {
         }
         message = element.attributeValue("message");
         this.messagesPack = messagesPack;
+    }
+
+    public ScriptValidator(String scriptPath, String message, String messagesPack) {
+        this.message = message;
+        this.messagesPack = messagesPack;
+        this.scriptPath = scriptPath;
     }
 
     public void validate(Object value) throws ValidationException {
