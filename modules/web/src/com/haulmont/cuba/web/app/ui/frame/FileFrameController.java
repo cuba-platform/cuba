@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 
 import java.util.Map;
@@ -78,7 +79,9 @@ public class FileFrameController extends AbstractWindow {
     }
 
     public void initGeneratedColumn() {
-        FileDownloadHelper.initGeneratedColumn(filesTable);
+        if (filesTable.getDatasource().getState().equals(Datasource.State.VALID)) {
+            FileDownloadHelper.initGeneratedColumn(filesTable);
+        }
     }
 
     private void saveFile() {
