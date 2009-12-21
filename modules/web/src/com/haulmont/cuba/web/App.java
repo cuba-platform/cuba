@@ -224,6 +224,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
             Window window = getWindow(name);
 
             setMainWindow(window);
+            currentWindowName.set(window.getName());
 
             initExceptionHandlers(true);
 
@@ -244,6 +245,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
             Window window = createLoginWindow();
             setMainWindow(window);
+            currentWindowName.set(null);
 
             initExceptionHandlers(false);
         }

@@ -28,6 +28,8 @@ public abstract class AbstractDatasourceComponentLoader extends ComponentLoader 
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDsContext().get(datasource);
+            if (ds == null)
+                throw new IllegalStateException(String.format("Datasource '%s' not defined", datasource));
 
             final String property = element.attributeValue("property");
             if (StringUtils.isEmpty(property))
