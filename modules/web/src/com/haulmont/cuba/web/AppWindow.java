@@ -520,6 +520,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     public void userSubstituted(Connection connection) {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
+        if (foldersPane != null) {
+            FoldersPane oldFoldersPane = foldersPane;
+            foldersPane = createFoldersPane();
+            middleLayout.replaceComponent(oldFoldersPane, foldersPane);
+        }
     }
 
     protected String getMessagesPack() {
