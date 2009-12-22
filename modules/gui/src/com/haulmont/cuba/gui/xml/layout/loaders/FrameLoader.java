@@ -61,7 +61,9 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         } else {
             dsContext = null;
         }
-        ComponentLoaderContext newContext = new ComponentLoaderContext(dsContext, params);
+        ComponentLoaderContext newContext = new ComponentLoaderContext(
+                dsContext == null ? parentContext.getDsContext() : dsContext,
+                params);
         newContext.setFrame(component);
         setContext(newContext);
 
