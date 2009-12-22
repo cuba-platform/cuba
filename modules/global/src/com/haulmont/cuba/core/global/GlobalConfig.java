@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
@@ -71,4 +72,12 @@ public interface GlobalConfig extends Config {
     @Property("cuba.groovyClassLoaderEnabled")
     @DefaultBoolean(true)
     boolean isGroovyClassLoaderEnabled();
+
+    /**
+     * User session expiration timeout in seconds.
+     * Not the same as HTTP session timeout, but should have the same value.
+     */
+    @Property("cuba.userSessionExpirationTimeoutSec")
+    @DefaultInt(1800)
+    int getUserSessionExpirationTimeoutSec();
 }
