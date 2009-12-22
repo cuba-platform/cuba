@@ -62,6 +62,9 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         loadHeight(component, element, "-1px");
         loadWidth(component, element);
 
+        if (context.getFrame() != null)
+            component.setFrame(context.getFrame());
+
         return component;
     }
 }

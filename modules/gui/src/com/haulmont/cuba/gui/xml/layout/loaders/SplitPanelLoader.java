@@ -54,6 +54,8 @@ public class SplitPanelLoader extends ContainerLoader{
 
         loadExpandable(component, element);
 
+        assignFrame(component);
+
         return component;
     }
 }

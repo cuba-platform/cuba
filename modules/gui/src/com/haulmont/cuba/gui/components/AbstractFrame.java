@@ -163,6 +163,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return MessageProvider.getMessage(msgPack, key);
     }
 
+    public void registerComponent(Component component) {
+        frame.registerComponent(component);
+    }
+
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         return frame.<T>openWindow(windowAlias, openType, params);
     }
@@ -236,6 +240,8 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
 
     public void setFrame(IFrame frame) {
         this.frame.setFrame(frame);
+        // register this wrapper instead of underlying frame
+        frame.registerComponent(this);
     }
 
     public String getStyleName() {

@@ -29,6 +29,9 @@ public interface ComponentLoader {
 
         void addLazyTask(LazyTask task);
         void executeLazyTasks();
+
+        IFrame getFrame();
+        void setFrame(IFrame frame);
     }
 
     public interface LazyTask {

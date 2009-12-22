@@ -110,8 +110,6 @@ public abstract class WindowManager {
 
         window.setId(windowInfo.getId());
 
-        componentLoaderContext.setFrame(window);
-
         initDatasources(window, dsContext, params);
 
         FrameContext frameContext = new FrameContext(window, params);

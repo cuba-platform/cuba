@@ -10,13 +10,14 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Layout;
 
 import java.util.*;
 
 class WebAbstractContainer extends AbstractOrderedLayout
-        implements Component.Container, Component.Expandable
+        implements Component.Container, Component.Expandable, Component.BelongToFrame
 {
     protected String id;
 
@@ -26,6 +27,8 @@ class WebAbstractContainer extends AbstractOrderedLayout
     private Alignment alignment = Alignment.TOP_LEFT;
 
     private boolean expandable = true;
+
+    private IFrame frame;
 
     public void add(Component component) {
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
@@ -101,5 +104,14 @@ class WebAbstractContainer extends AbstractOrderedLayout
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this, WebComponentsHelper.convertAlignment(alignment));
         }
+    }
+
+    public <A extends IFrame> A getFrame() {
+        return (A) frame;
+    }
+
+    public void setFrame(IFrame frame) {
+        this.frame = frame;
+        frame.registerComponent(this);
     }
 }

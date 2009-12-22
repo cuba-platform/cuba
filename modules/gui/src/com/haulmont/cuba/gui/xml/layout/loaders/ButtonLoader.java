@@ -11,7 +11,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoader {
@@ -37,7 +36,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
 
         loadWidth(component, element);
 
-        addAssignWindowTask(component);
+        assignFrame(component);
 
         return component;
     }

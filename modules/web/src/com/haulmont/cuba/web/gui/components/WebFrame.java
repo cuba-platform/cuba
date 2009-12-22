@@ -13,10 +13,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.WrappedFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -30,6 +27,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import java.util.*;
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 import org.dom4j.Element;
 
@@ -48,8 +46,9 @@ public class WebFrame extends WebAbstractPanel
 
     protected Collection<com.haulmont.cuba.gui.components.Component> ownComponents = new HashSet<com.haulmont.cuba.gui.components.Component>();
     protected Map<String, com.haulmont.cuba.gui.components.Component> componentByIds = new HashMap<String, com.haulmont.cuba.gui.components.Component>();
-
-    boolean inGetComponent;
+    
+    protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = 
+            new WeakHashMap<String, com.haulmont.cuba.gui.components.Component>();
 
     public WebFrame() {
         setContent(new VerticalLayout());
@@ -95,17 +94,21 @@ public class WebFrame extends WebAbstractPanel
     }
 
     public <T extends com.haulmont.cuba.gui.components.Component> T getComponent(String id) {
-        if (inGetComponent)
-            return null;
-        inGetComponent = true;
-        try {
-            T result = WebComponentsHelper.<T>getComponent(this, id);
+        final String[] elements = ValuePathHelper.parse(id);
+        if (elements.length == 1) {
+            T result = (T) allComponents.get(id);
             if (result == null && frame != null) {
                 result = frame.<T>getComponent(id);
             }
             return result;
-        } finally {
-            inGetComponent = false;
+        } else {
+            com.haulmont.cuba.gui.components.Component frame = allComponents.get(elements[0]);
+            if (frame != null && frame instanceof Container) {
+                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                String subPath = ValuePathHelper.format(subList.toArray(new String[]{}));
+                return (T) ((Container) frame).getComponent(subPath);
+            } else
+                return null;
         }
     }
 
@@ -145,6 +148,11 @@ public class WebFrame extends WebAbstractPanel
         if (messagePack == null)
             throw new IllegalStateException("MessagePack is not set");
         return MessageProvider.getMessage(messagePack, key);
+    }
+
+    public void registerComponent(com.haulmont.cuba.gui.components.Component component) {
+        if (component.getId() != null)
+            allComponents.put(component.getId(), component);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
@@ -217,6 +225,7 @@ public class WebFrame extends WebAbstractPanel
 
     public void setFrame(com.haulmont.cuba.gui.components.IFrame frame) {
         this.frame = frame;
+        frame.registerComponent(this);
     }
 
     public void setComponentAlignment(Component childComponent, int horizontalAlignment, int verticalAlignment) {

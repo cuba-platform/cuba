@@ -44,7 +44,7 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
 
         component.setFormatter(loadFormatter(element));
 
-        addAssignWindowTask(component);
+        assignFrame(component);
 
         return component;
     }

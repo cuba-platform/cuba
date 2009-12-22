@@ -67,7 +67,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
 
         loadExpandable(component, element);
 
-        addAssignWindowTask(component);
+        assignFrame(component);
 
         return component;
     }

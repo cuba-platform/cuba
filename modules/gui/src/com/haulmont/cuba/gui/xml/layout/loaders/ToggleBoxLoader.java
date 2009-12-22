@@ -55,6 +55,8 @@ public class ToggleBoxLoader extends ContainerLoader
 
         loadExpandable(component, element);
 
+        assignFrame(component);
+
         return component;
     }
 }

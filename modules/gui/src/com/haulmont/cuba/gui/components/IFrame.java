@@ -39,6 +39,8 @@ public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLa
     /** Get message from message pack assigned by {@link #setMessagesPack(String)} or from XML descriptor */
     String getMessage(String key);
 
+    void registerComponent(Component component);
+
     /**
      * Open window specifying additional parameters
      * @param windowAlias screen ID as defined in <code>screen-config.xml</code>

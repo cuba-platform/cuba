@@ -208,12 +208,11 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
-    protected void addAssignWindowTask(final Component.BelongToFrame component) {
-        context.addLazyTask(new LazyTask() {
-            public void execute(Context context, IFrame frame) {
-                component.setFrame(frame);
-            }
-        });
+    protected void assignFrame(final Component.BelongToFrame component) {
+        if (context.getFrame() != null) {
+            component.setFrame(context.getFrame());
+        } else
+            throw new IllegalStateException("ComponentLoaderContext.frame is null");
     }
 
     protected Boolean evaluateBoolean(String expression) {
@@ -233,7 +232,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadAction(Component.ActionOwner component, Element element) {
         final String actionName = element.attributeValue("action");
         if (!StringUtils.isEmpty(actionName)) {
-            context.addLazyTask(new AssignActionLazyTask(component, actionName));
+            context.addLazyTask(new AssignActionLazyTask(component, actionName, context.getFrame()));
         }
     }
 

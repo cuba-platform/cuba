@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +29,8 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     private Alignment alignment = Alignment.TOP_LEFT;
 
     private boolean expandable = true;
+
+    private IFrame frame;
 
     public void add(Component component) {
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
@@ -113,5 +116,14 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         e.addAttribute("value", String.valueOf(pos));
         e.addAttribute("unit", String.valueOf(posUnit));
         return true;
+    }
+
+    public <A extends IFrame> A getFrame() {
+        return (A) frame;
+    }
+
+    public void setFrame(IFrame frame) {
+        this.frame = frame;
+        frame.registerComponent(this);
     }
 }

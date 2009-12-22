@@ -64,6 +64,8 @@ public class WebWindow
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
     protected Collection<Component> ownComponents = new HashSet<Component>();
 
+    protected Map<String, Component> allComponents = new WeakHashMap<String, Component>();
+
     private String messagePack;
 
     protected com.vaadin.ui.Component component;
@@ -113,6 +115,11 @@ public class WebWindow
         if (messagePack == null)
             throw new IllegalStateException("MessagePack is not set");
         return MessageProvider.getMessage(messagePack, key);
+    }
+
+    public void registerComponent(Component component) {
+        if (component.getId() != null)
+            allComponents.put(component.getId(), component);
     }
 
     public String getStyleName() {
@@ -382,7 +389,19 @@ public class WebWindow
     }
 
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.<T>getComponent(this, id);
+        final String[] elements = ValuePathHelper.parse(id);
+        if (elements.length == 1) {
+            return (T) allComponents.get(id);
+        } else {
+            Component frame = allComponents.get(elements[0]);
+            if (frame != null && frame instanceof Container) {
+                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                String subPath = ValuePathHelper.format(subList.toArray(new String[]{}));
+                return (T) ((Container) frame).getComponent(subPath);
+            } else
+                return null;
+        }
+//        return WebComponentsHelper.<T>getComponent(this, id);
     }
 
     public Alignment getAlignment() {

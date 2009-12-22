@@ -33,6 +33,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final Window window = createComponent(factory);
 
+        context.setFrame(window);
+
         assignXmlDescriptor(window, element);
         loadMessagesPack(window, element);
         loadCaption(window, element);

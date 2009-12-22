@@ -116,7 +116,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         loadButtonsPanel(component, element);
 
-        addAssignWindowTask(component);
+        assignFrame(component);
 
         return component;
     }

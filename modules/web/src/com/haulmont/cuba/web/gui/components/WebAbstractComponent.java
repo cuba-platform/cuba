@@ -33,6 +33,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     public void setFrame(IFrame frame) {
         this.frame = frame;
+        frame.registerComponent(this);
     }
 
     public String getId() {

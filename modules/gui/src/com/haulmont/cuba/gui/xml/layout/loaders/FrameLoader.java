@@ -58,11 +58,12 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                     new DsContextLoader(new DatasourceFactoryImpl(), context.getDsContext().getDataService());
 
             dsContext = contextLoader.loadDatasources(dsContextElement, parentContext.getDsContext());
-
-            setContext(new ComponentLoaderContext(dsContext, params));
         } else {
             dsContext = null;
         }
+        ComponentLoaderContext newContext = new ComponentLoaderContext(dsContext, params);
+        newContext.setFrame(component);
+        setContext(newContext);
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -92,7 +93,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
         component = wrapByCustomClass(component, element, params, parentContext);
 
-        ((ComponentLoaderContext) context).setFrame(component);
+        parentContext.getLazyTasks().addAll(newContext.getLazyTasks());
 
         return component;
     }

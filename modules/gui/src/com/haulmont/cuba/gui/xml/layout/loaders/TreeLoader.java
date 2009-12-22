@@ -54,7 +54,7 @@ public class TreeLoader extends ComponentLoader
             }
         }
 
-        addAssignWindowTask(component);
+        assignFrame(component);
 
         return component;
     }

@@ -62,4 +62,8 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
             task.execute(this, frame);
         }
     }
+
+    public List<ComponentLoader.LazyTask> getLazyTasks() {
+        return lazyTasks;
+    }
 }

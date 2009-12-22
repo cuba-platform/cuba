@@ -9,7 +9,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface FileUploadField extends Component, Component.HasCaption, Component.Expandable {
+public interface FileUploadField 
+        extends Component, Component.HasCaption, Component.Expandable, Component.BelongToFrame
+{
     interface Listener {
         class Event {
             String filename;

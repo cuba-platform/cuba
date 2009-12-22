@@ -42,7 +42,7 @@ public class FilterLoader extends ComponentLoader {
             filter.setDatasource(ds);
         }
 
-        addAssignWindowTask(filter);
+        assignFrame(filter);
         return filter;
     }
 }
