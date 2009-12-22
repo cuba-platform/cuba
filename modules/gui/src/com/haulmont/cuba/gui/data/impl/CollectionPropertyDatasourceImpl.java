@@ -9,9 +9,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.MetadataHelper;
@@ -30,12 +28,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     extends
         PropertyDatasourceImpl<T>
     implements
-        CollectionDatasource<T, K>
+        CollectionDatasource<T, K>,
+        CollectionDatasource.Sortable<T, K>
 {
     private T item;
     protected boolean cascadeProperty;
 
     private Log log = LogFactory.getLog(CollectionPropertyDatasourceImpl.class);
+
+    protected SortInfo<MetaPropertyPath>[] sortInfos;
 
     public CollectionPropertyDatasourceImpl(String id, Datasource<Entity> ds, String property) {
         super(id, ds, property);
@@ -343,5 +344,73 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     public void setSoftDeletion(boolean softDeletion) {
+    }
+
+
+    //Implementation of CollectionDatasource.Sortable<T, K> interface
+    public void sort(SortInfo[] sortInfos) {
+        if (sortInfos.length != 1)
+            throw new UnsupportedOperationException("Supporting sort by one field only");
+
+        if (!Arrays.equals(this.sortInfos, sortInfos)) {
+            //noinspection unchecked
+            this.sortInfos = sortInfos;
+            doSort();
+        }
+    }
+
+    protected void doSort() {
+        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+        final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+
+        @SuppressWarnings({"unchecked"})
+        List<T> list = new LinkedList<T>(__getCollection());
+        Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
+        __getCollection().clear();
+        __getCollection().addAll(list);
+    }
+
+    public K firstItemId() {
+        Collection<T> collection = __getCollection();
+        if ((collection != null) && !collection.isEmpty()) {
+            return new LinkedList<T>(collection).getFirst().getId();
+        }
+        return null;
+    }
+
+    public K lastItemId() {
+        Collection<T> collection = __getCollection();
+        if ((collection != null) && !collection.isEmpty()) {
+            return new LinkedList<T>(collection).getLast().getId();
+        }
+        return null;
+    }
+
+    public K nextItemId(K itemId) {
+        Collection<T> collection = __getCollection();
+        if ((collection != null) && !collection.isEmpty() && !itemId.equals(lastItemId())) {
+            List<T> list = new ArrayList<T>(collection);
+            T currentItem = getItem(itemId);
+            return list.get(list.indexOf(currentItem) + 1).getId();
+        }
+        return null;
+    }
+
+    public K prevItemId(K itemId) {
+        Collection<T> collection = __getCollection();
+        if ((collection != null) && !collection.isEmpty() && !itemId.equals(firstItemId())) {
+            List<T> list = new ArrayList<T>(collection);
+            T currentItem = getItem(itemId);
+            return list.get(list.indexOf(currentItem) - 1).getId();
+        }
+        return null;
+    }
+
+    public boolean isFirstId(K itemId) {
+        return itemId != null && itemId.equals(firstItemId());
+    }
+
+    public boolean isLastId(K itemId) {
+        return itemId != null && itemId.equals(lastItemId());
     }
 }
