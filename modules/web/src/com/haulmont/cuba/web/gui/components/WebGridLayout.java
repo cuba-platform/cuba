@@ -11,6 +11,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.Layout;
 
 import java.util.*;
@@ -25,6 +26,8 @@ public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayou
     private Alignment alignment = Alignment.TOP_LEFT;
 
     private boolean expandable = true;
+
+    private IFrame frame;
 
     public void add(Component component) {
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
@@ -108,4 +111,12 @@ public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayou
         }
     }
 
+    public <A extends IFrame> A getFrame() {
+        return (A) frame;
+    }
+
+    public void setFrame(IFrame frame) {
+        this.frame = frame;
+        frame.registerComponent(this);
+    }
 }

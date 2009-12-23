@@ -188,8 +188,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
 
         public void execute(Context context, IFrame frame) {
-            this.frame.setFrame(frame);
-
             if (wrapped) {
                 try {
                     ReflectionHelper.invokeMethod(this.frame, "init", params);
