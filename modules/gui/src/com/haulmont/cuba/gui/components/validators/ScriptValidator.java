@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +27,8 @@ public class ScriptValidator implements Field.Validator {
     protected String messagesPack;
     private String scriptPath;
     private boolean innerScript;
+
+    private Map<String, Object> params;
 
     public ScriptValidator(Element element, String messagesPack) {
         this.script = element.getText();
@@ -43,12 +46,24 @@ public class ScriptValidator implements Field.Validator {
         this.scriptPath = scriptPath;
     }
 
+    public ScriptValidator(String scriptPath, String message, String messagesPack, Map<String, Object> params) {
+        this.scriptPath = scriptPath;
+        this.message = message;
+        this.messagesPack = messagesPack;
+        this.params = params;
+    }
+
     public void validate(Object value) throws ValidationException {
         Boolean isValid = false;
+        if (params == null) {
+            params = Collections.singletonMap("value", value);
+        } else {
+            params.put("value", value);
+        }
         if (innerScript) {
-            isValid = ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.GUI, script, Collections.<String, Object>singletonMap("value", value));
+            isValid = ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.GUI, script, params);
         } else if (scriptPath != null) {
-            isValid = ScriptingProvider.runGroovyScript(scriptPath, Collections.<String, Object>singletonMap("value", value));
+            isValid = ScriptingProvider.runGroovyScript(scriptPath, params);
         }
         if (!isValid) {
             String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
