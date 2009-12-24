@@ -6,7 +6,7 @@
  * Author: Nikolay Gorodnov
  * Created: 05.11.2009 19:09:00
  *
- * $Id: FileDisplay.java 1057 2009-11-20 13:54:45Z gorodnov $
+ * $Id$
  */
 package com.haulmont.cuba.web.filestorage;
 
@@ -16,6 +16,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.terminal.ExternalResource;
 
 import java.net.URL;
+import java.io.File;
 
 public class FileDisplay {
     private boolean newWindow;
@@ -36,6 +37,14 @@ public class FileDisplay {
         show(app, window);
     }
 
+     public void show(String windowName, File f, boolean attachment) {
+        App app = App.getInstance();
+        cleanOpenedWindows(app);
+        FileWindow window = attachment ? createDownloadWindow(windowName, f)
+                : createDisplayWindow(windowName, f);
+        show(app, window);
+    }
+
     public void show(String windowName, URL url) {
         App app = App.getInstance();
         cleanOpenedWindows(app);
@@ -51,8 +60,16 @@ public class FileDisplay {
         return new FileDisplayWindow(windowName, url);
     }
 
+    protected FileWindow createDisplayWindow(String windowName, File f) {
+        return new FileDisplayWindow(windowName, f);
+    }
+
     protected FileWindow createDownloadWindow(String windowName, FileDescriptor fd) {
         return new FileDownloadWindow(windowName, fd);
+    }
+
+     protected FileWindow createDownloadWindow(String windowName, File f) {
+        return new FileDownloadWindow(windowName, f);
     }
 
     private void show(final App application, final FileWindow window) {

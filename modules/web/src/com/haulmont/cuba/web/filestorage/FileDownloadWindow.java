@@ -21,34 +21,70 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.apache.commons.io.FileUtils;
+
 public class FileDownloadWindow extends FileWindow {
 
     public FileDownloadWindow(String windowName, FileDescriptor fd) {
         super(windowName, fd);
     }
 
+    public FileDownloadWindow(String windowName, File f) {
+        super(windowName, f);
+    }
+
     @Override
     public DownloadStream handleURI(URL context, String relativeUri) {
-        String fileName;
-        try {
-            fileName = URLEncoder.encode(fd.getName(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-        byte[] data;
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
-        try {
-            data = fss.loadFile(fd);
-        } catch (FileStorageException e) {
-            log.error("Unable to download file", e);
-            throw new RuntimeException(e);
-        }
-
-        DownloadStream downloadStream = new FileDownloadStream(new ByteArrayInputStream(data),
-                FileTypesHelper.getMIMEType("." + fd.getExtension()), fileName);
+        DownloadStream downloadStream = new FileDownloadStream(new ByteArrayInputStream(getFileData()),
+                FileTypesHelper.getMIMEType("." + getExtension()), getFileName());
 
         return downloadStream;
+    }
+
+    protected String getFileName() {
+        if (fd != null) {
+            try {
+                return URLEncoder.encode(fd.getName(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (f != null) {
+            return f.getName();
+        } else {
+            throw new RuntimeException("file descriptor and file are null");
+        }
+    }
+
+    protected byte[] getFileData() {
+        if (fd != null) {
+            FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
+            try {
+                return fss.loadFile(fd);
+            } catch (FileStorageException e) {
+                log.error("Unable to download file", e);
+                throw new RuntimeException(e);
+            }
+        } else if (f != null){
+            try {
+                return FileUtils.readFileToByteArray(f);
+            } catch (IOException e) {
+                log.error("Unable to download file", e);
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new RuntimeException("file descriptor and file are null");
+        }
+    }
+
+    protected String getExtension() {
+        if (fd != null) {
+            return fd.getExtension();
+        } else if (f != null){
+            int i = f.getName().lastIndexOf(".");
+            return i > 0 ? f.getName().substring(i, f.getName().length()) : "txt";
+        } else {
+            throw new RuntimeException("file descriptor and file are null");
+        }
     }
 
     public class FileDownloadStream extends DownloadStream implements Closeable {

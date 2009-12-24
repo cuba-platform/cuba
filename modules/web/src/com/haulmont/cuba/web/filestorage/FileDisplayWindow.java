@@ -6,7 +6,7 @@
  * Author: Nikolay Gorodnov
  * Created: 05.11.2009 18:48:33
  *
- * $Id: FileDisplayWindow.java 1057 2009-11-20 13:54:45Z gorodnov $
+ * $Id$
  */
 package com.haulmont.cuba.web.filestorage;
 
@@ -14,11 +14,13 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.FileResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.VerticalLayout;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.io.File;
 
 public class FileDisplayWindow extends FileWindow {
 
@@ -30,8 +32,13 @@ public class FileDisplayWindow extends FileWindow {
     }
 
     public FileDisplayWindow(String windowName, URL url) {
-        super(windowName, null);
+        super(windowName, (FileDescriptor) null);
         sourceURL = url;
+        initUI();
+    }
+
+    public FileDisplayWindow(String windowName, File f) {
+        super(windowName, f);
         initUI();
     }
 
@@ -43,7 +50,15 @@ public class FileDisplayWindow extends FileWindow {
 
         final Embedded embedded = new Embedded();
         embedded.setSizeFull();
-        embedded.setSource(new ExternalResource(fd != null ? createURL() : sourceURL));
+        if (fd != null) {
+            embedded.setSource(new ExternalResource(createURL()));
+        } else if (sourceURL != null) {
+            embedded.setSource(new ExternalResource(sourceURL));
+        } else if (f != null) {
+            embedded.setSource(new FileResource(f, App.getInstance()));
+        } else {
+            throw new RuntimeException("there is no resourse for display");
+        }
         embedded.setType(Embedded.TYPE_BROWSER);
         mainLayout.addComponent(embedded);
 
