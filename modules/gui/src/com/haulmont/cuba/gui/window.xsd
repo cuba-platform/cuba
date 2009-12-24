@@ -645,6 +645,7 @@
         <xs:attribute name="enable" type="xs:string" use="optional"/>
         <xs:attribute name="stylename" type="xs:string" use="optional"/>
         <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
+        <xs:attribute name="width" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:simpleType name="orientation">
