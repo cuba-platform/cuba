@@ -15,8 +15,8 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 
-import java.util.Collections;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +56,8 @@ public class ScriptValidator implements Field.Validator {
     public void validate(Object value) throws ValidationException {
         Boolean isValid = false;
         if (params == null) {
-            params = Collections.singletonMap("value", value);
+              params = new HashMap<String, Object>();
+              params.put("value", value);
         } else {
             params.put("value", value);
         }
