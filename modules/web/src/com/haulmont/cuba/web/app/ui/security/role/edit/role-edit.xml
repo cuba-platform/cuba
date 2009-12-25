@@ -1,9 +1,9 @@
 <window
-    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    datasource="role"
-    caption="msg://caption"
-    class="com.haulmont.cuba.web.app.ui.security.role.edit.RoleEditor"
->
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        datasource="role"
+        caption="msg://caption"
+        class="com.haulmont.cuba.web.app.ui.security.role.edit.RoleEditor"
+        >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
@@ -12,65 +12,65 @@
 
     <dsContext>
         <datasource
-            id="role"
-            class="com.haulmont.cuba.security.entity.Role"
-            view="role.edit"
-        >
+                id="role"
+                class="com.haulmont.cuba.security.entity.Role"
+                view="role.edit"
+                >
             <!--<collectionDatasource id="permissions" property="permissions"/>-->
         </datasource>
 
         <collectionDatasource
-            id="entity-permissions"
-            class="com.haulmont.cuba.security.entity.Permission"
-            view="role.edit"
-        >
+                id="entity-permissions"
+                class="com.haulmont.cuba.security.entity.Permission"
+                view="role.edit"
+                >
             <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 20</query>
         </collectionDatasource>
 
         <collectionDatasource
-            id="property-permissions"
-            class="com.haulmont.cuba.security.entity.Permission"
-            view="role.edit"
-        >
+                id="property-permissions"
+                class="com.haulmont.cuba.security.entity.Permission"
+                view="role.edit"
+                >
             <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 30</query>
         </collectionDatasource>
 
         <collectionDatasource
-            id="screen-permissions"
-            class="com.haulmont.cuba.security.entity.Permission"
-            view="role.edit"
-        >
+                id="screen-permissions"
+                class="com.haulmont.cuba.security.entity.Permission"
+                view="role.edit"
+                >
             <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 10</query>
         </collectionDatasource>
 
         <collectionDatasource
-            id="specific-permissions"
-            class="com.haulmont.cuba.security.entity.Permission"
-            view="role.edit"
-        >
+                id="specific-permissions"
+                class="com.haulmont.cuba.security.entity.Permission"
+                view="role.edit"
+                >
             <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 40</query>
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="permissions-pane">
-        <vbox stylename="edit-area" margin="true">
-            <hbox spacing="true" align="MIDDLE_LEFT" expand="superRole">
+    <layout expandLayout="true" expand="main">
+        <vbox id="main" spacing="true" expand="permissions-types">
+            <hbox spacing="true" margin="true" align="MIDDLE_LEFT" expand="superRole" width="100%"
+                  stylename="edit-area">
                 <label value="msg://name"/>
                 <textField id="name" datasource="role" property="name"/>
 
                 <label value="msg://superRole"/>
                 <checkBox id="superRole" datasource="role" property="superRole"/>
             </hbox>
-        </vbox>
 
-
-        <vbox id="permissions-pane" expand="roles" spacing="true">
             <tabsheet id="permissions-types">
                 <tab id="screen-permissions-tab" caption="msg://screen-permissions">
                     <vbox expand="screen-permissions" margin="true">
                         <hbox margin="true" spacing="true">
-                            <button id="screen-permissions-grant" action="screen-permissions.grant" caption="msg://permissions.grant" icon="icons/add.png"/>
-                            <button id="screen-permissions-remove" action="screen-permissions.remove" caption="msg://permissions.remove" icon="icons/remove.png"/>
+                            <button id="screen-permissions-grant" action="screen-permissions.grant"
+                                    caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <button id="screen-permissions-remove" action="screen-permissions.remove"
+                                    caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
                         <table id="screen-permissions">
                             <columns>
@@ -84,8 +84,10 @@
                 <tab id="entity-permissions-tab" caption="msg://entity-permissions" lazy="true">
                     <vbox expand="entity-permissions" margin="true">
                         <hbox margin="true" spacing="true">
-                            <button id="entity-permissions-grant" action="entity-permissions.grant" caption="msg://permissions.grant" icon="icons/add.png"/>
-                            <button id="entity-permissions-remove" action="entity-permissions.remove" caption="msg://permissions.remove" icon="icons/remove.png"/>
+                            <button id="entity-permissions-grant" action="entity-permissions.grant"
+                                    caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <button id="entity-permissions-remove" action="entity-permissions.remove"
+                                    caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
                         <table id="entity-permissions">
                             <columns>
@@ -99,8 +101,10 @@
                 <tab id="property-permissions-tab" caption="msg://property-permissions" lazy="true">
                     <vbox expand="property-permissions" margin="true">
                         <hbox margin="true" spacing="true">
-                            <button id="property-permissions-grant" action="property-permissions.grant" caption="msg://permissions.grant" icon="icons/add.png"/>
-                            <button id="property-permissions-remove" action="property-permissions.remove" caption="msg://permissions.remove" icon="icons/remove.png"/>
+                            <button id="property-permissions-grant" action="property-permissions.grant"
+                                    caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <button id="property-permissions-remove" action="property-permissions.remove"
+                                    caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
                         <table id="property-permissions">
                             <columns>
@@ -114,8 +118,10 @@
                 <tab id="specific-permissions-tab" caption="msg://specific-permissions" lazy="true">
                     <vbox expand="specific-permissions" margin="true">
                         <hbox margin="true" spacing="true">
-                            <button id="specific-permissions-grant" action="specific-permissions.grant" caption="msg://permissions.grant" icon="icons/add.png"/>
-                            <button id="specific-permissions-remove" action="specific-permissions.remove" caption="msg://permissions.remove" icon="icons/remove.png"/>
+                            <button id="specific-permissions-grant" action="specific-permissions.grant"
+                                    caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <button id="specific-permissions-remove" action="specific-permissions.remove"
+                                    caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
                         <table id="specific-permissions">
                             <columns>

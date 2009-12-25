@@ -48,9 +48,12 @@
 }
 
 .v-button .v-button-caption {
-    color: #fff;
     font-size: 10pt;
     font-family: Tahoma, sans-serif;
+}
+
+.v-button-link .v-button-caption, .v-button .v-button-caption {
+    color: #fff;
 }
 
 .v-button-wrap,
@@ -88,10 +91,6 @@ border: none;
     text-align: left;
     background: transparent;
     padding: 0;
-}
-
-.v-button-link .v-button-caption {
-    color: black;
 }
 
 .v-button-link .v-button-wrap {

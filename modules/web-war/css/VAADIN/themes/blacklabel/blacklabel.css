@@ -90,7 +90,6 @@
 
 .v-verticallayout-loginBottom {
     background: url('images/login-form-bg-key.png') no-repeat top center;
-    padding-top: 5px;
 }
 
 .v-verticallayout-loginBottom .v-textfield-password-field {
@@ -131,12 +130,16 @@
  *  Custom Control styles
  */
 
-.v-verticallayout-edit-area,
-.v-horizontallayout-edit-area,
-.v-gridlayout-edit-area {
+.v-verticallayout .edit-area,
+.v-horizontallayout .edit-area,
+.v-gridlayout .edit-area {
     background-color: #eeeeee;
-    color: black;
     border: 1px solid #808080;
+    color: #000;
+}
+
+.edit-area .v-label, .edit-area .v-label.h2 {
+    color: #000;
 }
 
 .v-label.h2 {
