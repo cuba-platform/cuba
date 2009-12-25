@@ -10,11 +10,13 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.DeletePolicyException;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Window;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DeletePolicyHandler extends AbstractExceptionHandler<DeletePolicyException> {
     public DeletePolicyHandler() {
@@ -22,7 +24,18 @@ public class DeletePolicyHandler extends AbstractExceptionHandler<DeletePolicyEx
     }
 
     protected void doHandle(DeletePolicyException t, App app) {
+        Matcher matcher = Pattern.compile("there are references from (.*)")
+                .matcher(t.getMessage());
+        String localizedEntityName = "";
+        if (matcher.find()) {
+            String entityName = matcher.group(1);
+            MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
+            localizedEntityName = MessageProvider.getMessage(metaClass.getJavaClass(),
+                    entityName.substring(entityName.lastIndexOf("$") + 1));
+        }
         String msg = MessageProvider.getMessage(getClass(), "deletePolicy.message");
-        app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
+        String references = MessageProvider.getMessage(getClass(), "deletePolicy.references.message");
+        app.getAppWindow().showNotification(msg + "<br>" + references + " \"" + localizedEntityName + "\"",
+                Window.Notification.TYPE_ERROR_MESSAGE);
     }
 }

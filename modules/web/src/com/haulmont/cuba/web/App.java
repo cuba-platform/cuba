@@ -147,6 +147,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
             exceptionHandlers.addHandler(new NoSuchScreenHandler());
             exceptionHandlers.addHandler(new DeletePolicyHandler());
             exceptionHandlers.addHandler(new NumericOverflowExceptionHandler());
+            exceptionHandlers.addHandler(new OptimisticExceptionHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }
