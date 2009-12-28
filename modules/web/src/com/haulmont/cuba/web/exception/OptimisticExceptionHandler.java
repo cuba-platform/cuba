@@ -33,15 +33,11 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler<Optimis
         }
 
         String localizedEntityName = "";
-        try {
-            String entityName = entityClassName.substring(entityClassName.lastIndexOf(".") + 1);
-            localizedEntityName = MessageProvider.getMessage(Class.forName(entityClassName), entityName);
-        } catch (ClassNotFoundException e1) {
-            e1.printStackTrace();
-        }
-        
-        String msg = MessageProvider.getMessage(getClass(), "optimisticException.message");
-        msg = msg.replace("$1", "\"" + localizedEntityName + "\"");
+        String entityName = entityClassName.substring(entityClassName.lastIndexOf(".") + 1);
+        String packageName = entityClassName.substring(0, entityClassName.lastIndexOf("."));
+        localizedEntityName = MessageProvider.getMessage(packageName, entityName);
+
+        String msg = MessageProvider.formatMessage(getClass(), "optimisticException.message", "\"" + localizedEntityName + "\"");
         app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 }
