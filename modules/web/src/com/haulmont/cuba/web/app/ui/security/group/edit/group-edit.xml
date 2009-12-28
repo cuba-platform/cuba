@@ -12,25 +12,15 @@
         <datasource id="group" class="com.haulmont.cuba.security.entity.Group" view="group.browse"/>
     </dsContext>
 
-    <layout expand="spring">
-        <hbox stylename="edit-area" spacing="true" margin="true" expand="grid">
-            <grid id="grid" spacing="true" stylename="edit-area">
-                <columns>
-                    <column flex="1"/>
-                    <column flex="1"/>
-                </columns>
-                <rows>
-                    <row>
-                        <vbox align="MIDDLE_RIGHT">
-                            <label value="msg://group.name"/>
-                        </vbox>
-                        <textField id="name" datasource="group" property="name"
-                                   width="300px"/>
-                    </row>
-                </rows>
-            </grid>
-        </hbox>
+    <layout expand="windowActions">
+        <vbox stylename="edit-area" width="100%">
+            <hbox spacing="true" margin="true" align="MIDDLE_LEFT" expandable="false">
+                <label value="msg://group.name"/>
+                <textField id="name" datasource="group" property="name"
+                           width="300px"/>
+            </hbox>
+        </vbox>
+
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-        <hbox id="spring"/>
     </layout>
 </window>
