@@ -181,6 +181,10 @@
     padding: 0;
 }
 
+.v-table-cell-content .v-button-link .v-button-caption {
+    color: #000;
+}
+
 .v-table-cell-content .v-textfield,
 .v-table-cell-content .v-datefield {
 	width: 97%; /* approximate */
