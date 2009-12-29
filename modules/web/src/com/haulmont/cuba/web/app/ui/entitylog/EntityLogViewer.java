@@ -43,7 +43,7 @@ public class EntityLogViewer extends AbstractWindow {
         Table table = getComponent("events");
         TableActionsHelper helper = new TableActionsHelper(this, table);
         helper.createFilterApplyAction("filter.apply");
-        helper.createFilterClearAction("filter.clear", "filter-pane");
+        helper.createFilterClearAction("filter.clear", "filter.filter-pane");
 
         Date date = TimeProvider.currentTimestamp();
         ((DateField) getComponent("filter.createdFrom")).setValue(DateUtils.addDays(date, -1));
