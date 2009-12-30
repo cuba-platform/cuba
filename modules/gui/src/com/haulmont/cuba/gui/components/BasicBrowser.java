@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Map;
 
-public class BasicBrowser extends AbstractWindow{
+public class BasicBrowser extends AbstractLookup{
     public BasicBrowser(IFrame frame) {
         super(frame);
     }
