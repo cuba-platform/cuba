@@ -35,9 +35,6 @@ public class EntityLogViewer extends AbstractWindow {
     protected void init(Map<String, Object> params) {
         super.init(params);
 
-        final CollectionDatasource datasource = getDsContext().get("events");
-        datasource.refresh();
-
         ((LookupField) getComponent("filter.object")).setOptionsMap(getTargets());
 
         Table table = getComponent("events");
