@@ -25,8 +25,8 @@
                 </rows>
             </grid>
             <hbox align="MIDDLE_LEFT" spacing="true">
-                <button id="apply" caption="msg://com.haulmont.well.web/actions.Apply" icon="icons/search.png"/>
-                <button id="clear" caption="msg://com.haulmont.well.web/actions.Clear" icon="icons/clear.png"/>
+                <button id="apply" icon="icons/search.png"/>
+                <button id="clear" icon="icons/clear.png"/>
             </hbox>
         </vbox>
     </layout>
