@@ -407,7 +407,7 @@
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
-                        <xs:attribute name="resolution" type="xs:string" use="optional"/>
+                        <xs:attribute name="resolution" type="dateFieldResolution" use="optional"/>
 
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>
@@ -695,5 +695,17 @@
         <xs:attribute name="script" type="xs:string" use="optional"/>
         <xs:attribute name="property" type="xs:string" use="optional"/>
     </xs:complexType>
+
+    <xs:simpleType name="dateFieldResolution">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MSEC"/>
+            <xs:enumeration value="SEC"/>
+            <xs:enumeration value="MIN"/>
+            <xs:enumeration value="HOUR"/>
+            <xs:enumeration value="DAY"/>
+            <xs:enumeration value="MONTH"/>
+            <xs:enumeration value="YEAR"/>
+        </xs:restriction>
+    </xs:simpleType>
 
 </xs:schema>
