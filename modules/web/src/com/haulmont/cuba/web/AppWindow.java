@@ -413,9 +413,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
 
             createSubMenu(menuItem, item, session);
-//            if (!menuItem.hasChildren()) {
-//                menuBar.removeItem(menuItem);
-//            }
+            if (!menuItem.hasChildren() && menuItem.getCommand() == null) {
+                menuBar.removeItem(menuItem);
+            }
         }
     }
 
