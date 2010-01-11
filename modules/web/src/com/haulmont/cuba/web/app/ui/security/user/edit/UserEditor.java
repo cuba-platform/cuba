@@ -201,8 +201,9 @@ public class UserEditor extends AbstractEditor {
         public void actionPerform(Component component) {
             final CollectionDatasource<UserSubstitution, UUID> usDs = substTable.getDatasource();
 
-            openEditor("sec$UserSubstitution.edit", usDs.getItem(),
-                    WindowManager.OpenType.DIALOG, usDs);
+            if (usDs.getItem() != null)
+                openEditor("sec$UserSubstitution.edit", usDs.getItem(),
+                        WindowManager.OpenType.DIALOG, usDs);
         }
     }
 }
