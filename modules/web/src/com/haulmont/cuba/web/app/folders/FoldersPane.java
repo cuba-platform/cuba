@@ -124,7 +124,7 @@ public class FoldersPane extends VerticalLayout {
         }
 
         visible = show;
-        UserSettingHelper.saveFoldersVisibleState(visible);        
+        UserSettingHelper.saveFoldersVisibleState(visible);
     }
 
     public void refreshFolders() {
@@ -151,7 +151,7 @@ public class FoldersPane extends VerticalLayout {
         appFoldersTree.setSizeFull();
 
         appFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot");
-        fillTree(appFoldersTree, appFolders, appFoldersRoot);
+        fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
         appFoldersTree.addListener(new FolderClickListener());
         appFoldersTree.addActionHandler(new AppFolderActionsHandler());
 
@@ -181,7 +181,9 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected void fillTree(Tree tree, List<? extends Folder> folders, Object rootItemId) {
-        tree.addItem(rootItemId);
+        if (rootItemId != null) {
+            tree.addItem(rootItemId);
+        }
         for (Folder folder : folders) {
             tree.addItem(folder);
             tree.setItemCaption(folder, folder.getCaption());
@@ -228,6 +230,10 @@ public class FoldersPane extends VerticalLayout {
         }
     }
 
+    protected boolean isNeedRootAppFolder() {
+        return true;
+    }
+
     public void saveFolder(Folder folder) {
         CommitContext commitContext = new CommitContext(Collections.singleton(folder));
         ServiceLocator.getDataService().commit(commitContext);
@@ -249,24 +255,27 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class FolderClickListener implements ItemClickEvent.ItemClickListener {
+        public FolderClickListener() {
+        }
 
         public void itemClick(ItemClickEvent event) {
             if (!event.isDoubleClick())
                 return;
 
             if (event.getItemId() instanceof AbstractSearchFolder
-                    && !StringUtils.isBlank(((AbstractSearchFolder) event.getItemId()).getFilterComponentId()))
-            {
+                    && !StringUtils.isBlank(((AbstractSearchFolder) event.getItemId()).getFilterComponentId())) {
                 openFolder((AbstractSearchFolder) event.getItemId());
             }
         }
     }
 
     protected class AppFolderActionsHandler implements Action.Handler {
+        public AppFolderActionsHandler() {
+        }
 
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof Folder)
-                return new Action[] { new OpenAction() };
+                return new Action[]{new OpenAction()};
             else
                 return null;
         }
@@ -284,11 +293,11 @@ public class FoldersPane extends VerticalLayout {
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof SearchFolder) {
                 if (StringUtils.isBlank(((SearchFolder) target).getFilterComponentId()))
-                    return new Action[] { new CreateAction(), new EditAction(), new RemoveAction() };
+                    return new Action[]{new CreateAction(), new EditAction(), new RemoveAction()};
                 else
-                    return new Action[] { new OpenAction(), new CreateAction(), new EditAction(), new RemoveAction() };
+                    return new Action[]{new OpenAction(), new CreateAction(), new EditAction(), new RemoveAction()};
             } else
-                return new Action[] { new CreateAction() };
+                return new Action[]{new CreateAction()};
         }
     }
 
@@ -372,7 +381,7 @@ public class FoldersPane extends VerticalLayout {
                     MessageProvider.getMessage(messagesPack, "dialogs.Confirmation"),
                     MessageProvider.getMessage(messagesPack, "folders.removeFolderConfirmation"),
                     IFrame.MessageType.CONFIRMATION,
-                    new com.haulmont.cuba.gui.components.Action[] {
+                    new com.haulmont.cuba.gui.components.Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
@@ -397,7 +406,7 @@ public class FoldersPane extends VerticalLayout {
 
                 List<AppFolder> appFolders = service.loadAppFolders();
                 if (!appFolders.isEmpty()) {
-                    fillTree(appFoldersTree, appFolders, appFoldersRoot);
+                    fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
                     for (Object itemId : appFoldersTree.rootItemIds()) {
                         appFoldersTree.expandItemsRecursively(itemId);
                     }
