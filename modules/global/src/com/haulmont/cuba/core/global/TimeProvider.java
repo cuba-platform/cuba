@@ -24,6 +24,9 @@ public abstract class TimeProvider
     }
 
     public static Date currentTimestamp() {
+        if (AppContext.getApplicationContext() == null)
+            return null;
+
         return getInstance().__currentTimestamp();
     }
 

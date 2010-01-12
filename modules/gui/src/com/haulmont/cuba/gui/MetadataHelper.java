@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 
@@ -178,7 +179,7 @@ public class MetadataHelper {
             List<Element> fileElements = metadataContextElement.elements("deployViews");
             for (Element fileElement : fileElements) {
                 final String resource = fileElement.attributeValue("name");
-                InputStream resourceInputStream = MetadataHelper.class.getResourceAsStream(resource);
+                InputStream resourceInputStream = ScriptingProvider.getResourceAsStream(resource);
                 if (resourceInputStream == null) {
                     throw new RuntimeException("View resource not found: " + ((resource == null) ? "[null]" : resource));
                 }
