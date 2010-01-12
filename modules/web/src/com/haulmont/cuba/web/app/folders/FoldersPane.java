@@ -67,6 +67,7 @@ public class FoldersPane extends VerticalLayout {
         service = ServiceLocator.lookup(FoldersService.JNDI_NAME);
 
         setHeight(100, Sizeable.UNITS_PERCENTAGE);
+        setStyleName("folderspane");
 
         showFolders(UserSettingHelper.loadFoldersVisibleState());
 

@@ -107,7 +107,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
     }
 
     protected boolean updateImmediate() {
-        return false;
+        return true;
     }
 
     protected void updateBody(UIDL rowData) {
