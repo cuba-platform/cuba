@@ -86,6 +86,38 @@
                         </row>
                     </rows>
                 </grid>
+                <grid spacing="true" expandable="false">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <vbox align="MIDDLE_RIGHT">
+                                <label value="msg://lastName"/>
+                            </vbox>
+                            <textField id="lastName" datasource="user" property="lastName" width="300px"/>
+                        </row>
+                        <row>
+                            <vbox align="MIDDLE_RIGHT">
+                                <label value="msg://firstName"/>
+                            </vbox>
+                            <textField id="firstName" datasource="user" property="firstName" width="300px"/>
+                        </row>
+                        <row>
+                            <vbox align="MIDDLE_RIGHT">
+                                <label value="msg://middleName"/>
+                            </vbox>
+                            <textField id="middleName" datasource="user" property="middleName" width="300px"/>
+                        </row>
+                        <row>
+                            <vbox align="MIDDLE_RIGHT">
+                                <label value="msg://position"/>
+                            </vbox>
+                            <textField id="position" datasource="user" property="position" width="300px"/>
+                        </row>
+                    </rows>
+                </grid>
                 <hbox align="TOP_RIGHT" spacing="true">
                     <label value="msg://permissions"/>
                     <lookupField id="permissionsLookupField"/>

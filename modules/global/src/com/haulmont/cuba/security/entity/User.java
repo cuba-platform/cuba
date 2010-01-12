@@ -43,6 +43,18 @@ public class User extends StandardEntity
     @Column(name = "NAME", length = 100)
     private String name;
 
+    @Column(name = "FIRST_NAME", length = 100)
+    private String firstName;
+
+    @Column(name = "LAST_NAME", length = 100)
+    private String lastName;
+
+    @Column(name = "MIDDLE_NAME", length = 100)
+    private String middleName;
+
+    @Column(name = "POSITION", length = 100)
+    private String position;
+
     @Column(name = "EMAIL", length = 100)
     private String email;
 
@@ -123,6 +135,37 @@ public class User extends StandardEntity
         this.email = email;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
 
     public Set<UserSubstitution> getSubstitutions() {
         return substitutions;

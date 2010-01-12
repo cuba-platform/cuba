@@ -5,6 +5,34 @@
 		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
            version="2.5">
 
+    <!-- Application properties. May be overridden in app properties config file (see below). -->
+    <context-param>
+        <param-name>appProperties</param-name>
+        <param-value>
+            cuba.WindowConfig.impl=com.haulmont.cuba.web.WebWindowConfig
+            cuba.WindowConfig.xml=cuba/client/web/screen-config.xml
+            cuba.MenuConfig.xml=cuba/client/web/menu-config.xml
+            cuba.PermissionConfig.xml=cuba/permission-config.xml
+            cuba.AppConfig.messagesPack=com.haulmont.cuba.web
+        </param-value>
+    </context-param>
+
+    <!-- Application properties config file name, relative to web application root -->
+    <context-param>
+        <param-name>appPropertiesConfigName</param-name>
+        <param-value>WEB-INF/app.properties</param-value>
+    </context-param>
+
+    <!-- Application context config file names, relative to classpath root -->
+    <context-param>
+        <param-name>appContextConfigName</param-name>
+        <param-value>cuba-spring.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>com.haulmont.cuba.web.sys.AppContextLoader</listener-class>
+    </listener>
+
     <servlet>
         <servlet-name>cuba_servlet</servlet-name>
         <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet

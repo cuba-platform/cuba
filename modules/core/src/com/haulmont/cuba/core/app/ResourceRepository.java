@@ -10,10 +10,15 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * This MBean allows to read and cache external resources placed in files 
  * inside <code>jboss/server/default/conf</code> directory.
  */
+@ManagedBean(ResourceRepositoryAPI.NAME)
 public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepositoryAPI
 {
     private Log log = LogFactory.getLog(ResourceRepository.class);
@@ -41,29 +47,22 @@ public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepo
 
     private static final String MSG_UNABLE_TO_LOAD_RESOURCE = "Unable to load resource %s";
 
-    public void create() {
-        log.debug("create");
-
-        String confUrl = System.getProperty("jboss.server.config.url");
-        if (confUrl == null)
-            throw new IllegalStateException("Environment variable jboss.server.config.url is not set");
-        rootPath = URI.create(confUrl).getPath() + "/";
-    }
-
-    public void start() {
-        log.debug("start");
+    @Inject
+    public ResourceRepository(ConfigProvider configProvider) {
+        String confDir = configProvider.doGetConfig(GlobalConfig.class).getConfDir();
+        rootPath = confDir + "/";
     }
 
     public ResourceRepositoryAPI getAPI() {
         return this;
     }
 
-    public String getContent() {
+    public String printContent() {
         List<String> list = new ArrayList<String>(repository.keySet());
         Collections.sort(list);
         StringBuilder sb = new StringBuilder();
         for (String s : list) {
-            sb.append(s).append("<br>");
+            sb.append(s).append("\n");
         }
         return sb.toString();
     }

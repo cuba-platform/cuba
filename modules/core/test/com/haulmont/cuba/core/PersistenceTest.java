@@ -20,7 +20,7 @@ public class PersistenceTest extends CubaTestCase
 {
     public void test() {
         UUID id;
-        beginTran();
+        Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
@@ -30,82 +30,40 @@ public class PersistenceTest extends CubaTestCase
             server.setAddress("127.0.0.1");
             server.setRunning(true);
             em.persist(server);
-            commitTran();
-        } catch (Exception e) {
-            rollbackTran();
-            throw new RuntimeException(e);
+
+            tx.commit();
+        } finally {
+            tx.end();
         }
 
-        beginTran();
+        tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Server server = em.find(Server.class, id);
             assertEquals(id, server.getId());
 
             server.setAddress("222");
-            commitTran();
-        } catch (Exception e) {
-            rollbackTran();
-            throw new RuntimeException(e);
+
+            tx.commit();
+        } finally {
+            tx.end();
         }
 
-        beginTran();
+        tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Server server = em.find(Server.class, id);
             assertEquals(id, server.getId());
 
             em.remove(server);
-            commitTran();
-        } catch (Exception e) {
-            rollbackTran();
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private void beginTran() {
-        try {
-            TransactionManager tm = getTransactionManager();
-            if (tm.getStatus() != Status.STATUS_ACTIVE)
-                tm.begin();
-        } catch (NotSupportedException e) {
-            throw new RuntimeException(e);
-        } catch (SystemException e) {
-            throw new RuntimeException(e);
+            
+            tx.commit();
+        } finally {
+            tx.end();
         }
     }
 
-    private void commitTran() {
-        try {
-            getTransactionManager().commit();
-        } catch (RollbackException e) {
-            throw new RuntimeException(e);
-        } catch (HeuristicMixedException e) {
-            throw new RuntimeException(e);
-        } catch (HeuristicRollbackException e) {
-            throw new RuntimeException(e);
-        } catch (SystemException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void rollbackTran() {
-        TransactionManager tm = getTransactionManager();
-        try {
-            if (tm.getStatus() == Status.STATUS_ACTIVE)
-                tm.rollback();
-        } catch (SystemException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private TransactionManager getTransactionManager() {
-        Context ctx = Locator.getJndiContext();
-        try {
-            return (TransactionManager) ctx.lookup("java:/TransactionManager");
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        }
+    private void raiseException() {
+        throw new RuntimeException("test_ex");
     }
 }

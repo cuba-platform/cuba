@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Common web layer configuration parameters. Can be set up in <code>conf/system.properties</code> file.
  */
-@Source(type = SourceType.SYSTEM)
+@Source(type = SourceType.APP)
 @Prefix("cuba.web.")
 public interface WebConfig extends Config
 {

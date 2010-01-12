@@ -24,7 +24,7 @@ import java.util.UUID;
 public class BasicServiceTest extends CubaTestCase
 {
     public void test() {
-        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);
+        DataService bs = Locator.lookup(DataService.JNDI_NAME);
 
         Server server = new Server();
         UUID id = server.getId();

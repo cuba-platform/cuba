@@ -12,7 +12,7 @@
     <property name="sql.delimiter" value=";"/>
 
     <path id="run-cp">
-        <fileset refid="server-lib-fs"/>
+        <fileset refid="jdbc-lib-fs"/>
     </path>
 
     <target name="run-hsqldb">

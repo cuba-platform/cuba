@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.sys.AppContext;
+
 import java.util.Locale;
 import java.util.IllegalFormatException;
 
@@ -19,29 +21,8 @@ import java.util.IllegalFormatException;
  */
 public abstract class MessageProvider
 {
-    public static final String IMPL_PROP = "cuba.MetadataProvider.impl";
-
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.ResourceBundleMessageProvider";
-
-    private static MessageProvider instance;
-
     private static MessageProvider getInstance() {
-        if (instance == null) {
-            String implClassName = System.getProperty(IMPL_PROP);
-            if (implClassName == null)
-                implClassName = DEFAULT_IMPL;
-            try {
-                Class implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
-                instance = (MessageProvider) implClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
+        return AppContext.getApplicationContext().getBean("cuba_MessageProvider", MessageProvider.class);
     }
 
     public static void clearCache() {

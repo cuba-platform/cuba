@@ -14,12 +14,12 @@ import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.EmailInfo;
 
-import javax.ejb.Local;
-
-@Local
 public interface EmailService {
 
-    String JNDI_NAME = "cuba/core/EmailService";
+    String NAME = "cuba_EmailService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     /**
      * Sends email

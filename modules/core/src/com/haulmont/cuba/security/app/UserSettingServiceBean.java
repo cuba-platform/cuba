@@ -13,12 +13,10 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSetting;
+import org.springframework.stereotype.Service;
 
-import javax.ejb.*;
-import javax.interceptor.Interceptors;
 import java.util.List;
 
 /**
@@ -26,9 +24,7 @@ import java.util.List;
  * an application can save/load some "setting" (plain or XML string) for current user.
  * <br>Ususally used by UI forms and components. 
  */
-@Stateless(name = UserSettingService.JNDI_NAME)
-@Interceptors({ServiceInterceptor.class})
-@TransactionManagement(TransactionManagementType.BEAN)
+@Service(UserSettingService.NAME)
 public class UserSettingServiceBean implements UserSettingService
 {
     public String loadSetting(String name) {

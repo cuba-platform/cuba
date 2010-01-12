@@ -20,6 +20,8 @@ import com.haulmont.cuba.core.global.EmailInfo;
  */
 public interface EmailerAPI
 {
+    String NAME = "cuba_Emailer";
+
     /**
      * Sends email
      * @param address   comma or semicolon separated list of addresses

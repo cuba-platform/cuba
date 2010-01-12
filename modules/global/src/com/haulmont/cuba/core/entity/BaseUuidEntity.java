@@ -86,4 +86,9 @@ public class BaseUuidEntity implements BaseEntity<UUID>
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "-" + id;
+    }
 }

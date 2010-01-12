@@ -10,34 +10,35 @@
  */
 package com.haulmont.cuba.security.sys;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
-import com.haulmont.cuba.security.app.UserSessionsMBean;
 import com.haulmont.cuba.core.*;
 
 import java.util.*;
 
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
+
+@ManagedBean(UserSessionManager.NAME)
 public class UserSessionManager
 {
-    private static UserSessionManager instance;
+    public static final String NAME = "cuba_UserSessionManager";
 
     private UserSessionsAPI sessions;
 
     public static UserSessionManager getInstance() {
-        if (instance == null) {
-            instance = new UserSessionManager();
-        }
-        return instance;
+        // TODO KK: remove this, change to injection
+        return AppContext.getApplicationContext().getBean(NAME, UserSessionManager.class);
     }
 
-    public UserSessionManager() {
-        UserSessionsMBean mBean = Locator.lookupMBean(UserSessionsMBean.class, UserSessionsMBean.OBJECT_NAME);
-        sessions = mBean.getAPI();
+    @Inject
+    public void setSessions(UserSessionsAPI sessions) {
+        this.sessions = sessions;
     }
 
     public UserSession createSession(User user, Locale locale) {

@@ -10,24 +10,23 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.security.sys.UserSessionManager;
-import com.haulmont.cuba.security.app.UserSessionsMBean;
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.UserSessionEntity;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserSessionEntity;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.springframework.stereotype.Service;
 
-import javax.ejb.Stateless;
-import java.util.UUID;
-import java.util.Collection;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.UUID;
 
 /**
  * Service facade to user sessions management
  */
-@Stateless(name = UserSessionService.JNDI_NAME)
+@Service(UserSessionService.NAME)
 public class UserSessionServiceBean implements UserSessionService
 {
     public void putSessionAttribute(UUID sessionId, String name, Serializable value) {

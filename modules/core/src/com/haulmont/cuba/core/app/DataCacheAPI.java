@@ -18,6 +18,8 @@ import java.util.Collection;
  */
 public interface DataCacheAPI {
 
+    String NAME = "cuba_DataCache";
+
     boolean isStoreCacheEnabled();
 
     boolean isQueryCacheEnabled();

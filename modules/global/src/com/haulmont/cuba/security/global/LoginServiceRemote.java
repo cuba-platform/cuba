@@ -12,16 +12,17 @@ package com.haulmont.cuba.security.global;
 
 import com.haulmont.cuba.security.entity.User;
 
-import javax.ejb.Remote;
 import java.util.Locale;
 
 /**
- * Remote interface to {@link com.haulmont.cuba.security.app.LoginServiceBean}
+ * Remote interface to LoginServiceBean
  */
-@Remote
 public interface LoginServiceRemote
 {
-    String JNDI_NAME = "cuba/security/LoginService";
+    String NAME = "cuba_LoginService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     /**
      * Login to middleware for local and remote clients.

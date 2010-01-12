@@ -135,7 +135,7 @@ public class PermissionTest extends CubaTestCase
     }
 
     public void test() throws LoginException {
-        LoginWorker lw = Locator.lookupLocal(LoginWorker.JNDI_NAME);
+        LoginWorker lw = Locator.lookup(LoginWorker.NAME);
 
         UserSession userSession = lw.login(USER_NAME, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);

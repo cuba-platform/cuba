@@ -11,7 +11,6 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.PropertyVisitor;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -21,12 +20,14 @@ import com.haulmont.chile.core.model.Instance;
 
 import java.util.*;
 
+import com.haulmont.cuba.gui.data.DataService;
 import org.apache.openjpa.util.Proxy;
 
 public class GenericDataService implements DataService {
-    protected DataServiceRemote service;
 
-    public GenericDataService(DataServiceRemote service) {
+    protected com.haulmont.cuba.core.app.DataService service;
+
+    public GenericDataService(DataService service) {
         this.service = service;
     }
 

@@ -17,6 +17,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * This MBean is intended to support configuration parameters functionality.
  * It works with database and caches parameters.
  */
+@ManagedBean(ConfigStorageAPI.NAME)
 public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI
 {
     private Log log = LogFactory.getLog(ConfigStorage.class);
@@ -58,7 +60,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
             }
             List<Config> list = query.getResultList();
             for (Config config : list) {
-                sb.append(config.getName()).append("=").append(config.getValue()).append("<br>");
+                sb.append(config.getName()).append("=").append(config.getValue()).append("\n");
             }
             tx.commit();
             return sb.toString();
@@ -115,11 +117,6 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     public void clearCache() {
         cache.clear();
-    }
-
-    public String loadSystemProperties() {
-        PersistenceConfigMBean mbean = Locator.lookupMBean(PersistenceConfigMBean.class, PersistenceConfigMBean.OBJECT_NAME);
-        return mbean.loadSystemProperties();
     }
 
     public String getConfigProperty(String name) {

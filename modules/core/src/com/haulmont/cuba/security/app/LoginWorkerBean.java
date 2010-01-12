@@ -20,7 +20,7 @@ import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.ejb.Stateless;
+import javax.annotation.ManagedBean;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,7 +28,7 @@ import java.util.Locale;
  * Worker bean providing middleware login/logout functionality.
  * Used by {@link com.haulmont.cuba.security.app.LoginServiceBean} and MBeans
  */
-@Stateless(name = LoginWorker.JNDI_NAME)
+@ManagedBean(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker
 {
     private Log log = LogFactory.getLog(LoginWorkerBean.class);
@@ -70,23 +70,37 @@ public class LoginWorkerBean implements LoginWorker
     public UserSession login(String login, String password, Locale locale)
             throws LoginException
     {
-        User user = loadUser(login, password, locale);
-        UserSession session = UserSessionManager.getInstance().createSession(user, locale);
-        if (user.getDefaultSubstitutedUser() != null) {
-            UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+        Transaction tx = Locator.createTransaction();
+        try {
+            User user = loadUser(login, password, locale);
+            UserSession session = UserSessionManager.getInstance().createSession(user, locale);
+            if (user.getDefaultSubstitutedUser() != null) {
+                UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+            }
+            log.info("Logged in: " + session);
+
+            tx.commit();
+            return session;
+        } finally {
+            tx.end();
         }
-        log.info("Logged in: " + session);
-        return session;
     }
 
     public UserSession loginActiveDirectory(String login, Locale locale) throws LoginException {
-        User user = loadUser(login, null, locale);
-        UserSession session = UserSessionManager.getInstance().createSession(user, locale);
-        if (user.getDefaultSubstitutedUser() != null) {
-            UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+        Transaction tx = Locator.createTransaction();
+        try {
+            User user = loadUser(login, null, locale);
+            UserSession session = UserSessionManager.getInstance().createSession(user, locale);
+            if (user.getDefaultSubstitutedUser() != null) {
+                UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+            }
+            log.info("Logged in: " + session);
+
+            tx.commit();
+            return session;
+        } finally {
+            tx.end();
         }
-        log.info("Logged in: " + session);
-        return session;
     }
 
     public void logout() {

@@ -23,7 +23,7 @@ public class ConfigProviderImpl extends ConfigProvider
 {
     private Map<Class, ConfigHandler> cache = new HashMap<Class, ConfigHandler>();
 
-    protected synchronized <T extends Config> T __getConfig(Class<T> configInterface) {
+    public synchronized <T extends Config> T doGetConfig(Class<T> configInterface) {
         ConfigHandler handler = cache.get(configInterface);
         if (handler == null) {
             ConfigPersisterImpl persister = new ConfigPersisterImpl();

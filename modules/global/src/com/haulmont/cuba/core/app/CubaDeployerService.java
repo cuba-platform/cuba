@@ -10,15 +10,15 @@
  */
 package com.haulmont.cuba.core.app;
 
-import javax.ejb.Local;
-
 /**
- * Local interface to the {@link CubaDeployerServiceBean} MBean
+ * Service interface to the CubaDeployer MBean
  */
-@Local
 public interface CubaDeployerService {
 
-    String JNDI_NAME = "cuba/core/DeployerService";
+    String NAME = "cuba_DeployerService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     String getReleaseNumber();
 

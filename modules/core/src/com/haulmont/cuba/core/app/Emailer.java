@@ -14,6 +14,8 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.global.LoginException;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import javax.mail.internet.*;
 import javax.mail.Session;
 import javax.mail.MessagingException;
@@ -38,10 +40,17 @@ import org.apache.commons.io.FileUtils;
  * <p/>
  * Provides email functionality, allows to set some emailing parameters through JMX-console.
  */
+@ManagedBean(EmailerAPI.NAME)
 public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI {
+
     private Log log = LogFactory.getLog(Emailer.class);
 
-    private EmailerConfig config = ConfigProvider.getConfig(EmailerConfig.class);
+    private EmailerConfig config; // = ConfigProvider.getConfig(EmailerConfig.class);
+
+    @Inject
+    public Emailer(ConfigProvider configProvider) {
+        this.config = configProvider.doGetConfig(EmailerConfig.class);
+    }
 
     public EmailerAPI getAPI() {
         return this;
@@ -110,6 +119,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     }
 
     private Session getMailSession() {
+        // TODO KK: Spring mail session
         Context ctx = Locator.getJndiContext();
         Session session;
         try {

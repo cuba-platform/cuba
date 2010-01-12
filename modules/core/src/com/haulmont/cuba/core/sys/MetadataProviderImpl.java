@@ -102,13 +102,25 @@ public class MetadataProviderImpl extends MetadataProvider
     }
 
     protected Collection<String> getJPAClassesPackageNames() {
-        String path = "/" + PersistenceProvider.getPersistenceXmlPath();
-        return getPackages(path, "persistence-unit", PersistenceProvider.getPersistenceUnitName());
+        return getPackages(PersistenceProvider.getPersistentClassNames());
     }
 
     protected Collection<String> getMetaClassesPackageNames() {
         String path = "/" + MetadataProvider.getMetadataXmlPath();
         return getPackages(path, "metadata-model");
+    }
+
+    protected Collection<String> getPackages(List<String> classNames) {
+        List<String> packages = new ArrayList<String>();
+        for (String className : classNames) {
+            int i = className.lastIndexOf(".");
+            if (i <= 0)
+                throw new IllegalStateException("Invalid persistent class definition: " + className);
+            String packageName = className.substring(0, i);
+            if (!packages.contains(packageName))
+                packages.add(packageName);
+        }
+        return packages;
     }
 
     protected Collection<String> getPackages(String path, String unitTag, String...unitNames) {

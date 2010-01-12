@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.sys.AppContext;
+
 import java.util.Date;
 
 /**
@@ -17,30 +19,8 @@ import java.util.Date;
  */
 public abstract class TimeProvider
 {
-
-    public static final String IMPL_PROP = "cuba.TimeProvider.impl";
-
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.TimeProviderImpl";
-
-    private static TimeProvider instance;
-
     private static TimeProvider getInstance() {
-        if (instance == null) {
-            String implClassName = System.getProperty(IMPL_PROP);
-            if (implClassName == null)
-                implClassName = DEFAULT_IMPL;
-            try {
-                Class implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
-                instance = (TimeProvider) implClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
+        return AppContext.getApplicationContext().getBean("cuba_TimeProvider", TimeProvider.class);
     }
 
     public static Date currentTimestamp() {

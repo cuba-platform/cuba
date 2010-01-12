@@ -56,7 +56,7 @@ public class EntityManagerImpl implements EntityManager
     EntityManagerImpl(OpenJPAEntityManager jpaEntityManager) {
         delegate = jpaEntityManager;
         // Set AutoDetachType to none to prevent automatic detach after transaction rollback 
-        delegate.setAutoDetach(EnumSet.noneOf(AutoDetachType.class));
+//        delegate.setAutoDetach(EnumSet.noneOf(AutoDetachType.class));
     }
 
     private static boolean isStoreCacheEnabled() {

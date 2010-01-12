@@ -119,7 +119,7 @@ public class ConstraintTest extends CubaTestCase
     }
 
     public void test() throws LoginException {
-        LoginWorker lw = Locator.lookupLocal(LoginWorker.JNDI_NAME);
+        LoginWorker lw = Locator.lookup(LoginWorker.NAME);
 
         UserSession userSession = lw.login(USER_LOGIN, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);

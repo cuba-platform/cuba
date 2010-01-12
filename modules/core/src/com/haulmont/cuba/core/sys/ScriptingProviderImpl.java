@@ -12,6 +12,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceConnector;
@@ -41,40 +42,22 @@ public class ScriptingProviderImpl extends ScriptingProvider {
 
     private Map<Layer, Set<String>> imports = new HashMap<Layer, Set<String>>();
 
-    private GroovyScriptEngine gse;
+    private volatile GroovyScriptEngine gse;
 
     private GroovyClassLoader gcl;
 
     private Map<Layer, GenericKeyedObjectPool> pools = new HashMap<Layer, GenericKeyedObjectPool>();
 
-    public ScriptingProviderImpl() {
-        final String rootPath = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir() + "/";
-
-        gse = new GroovyScriptEngine(new ResourceConnector() {
-            public URLConnection getResourceConnection(String resourceName) throws ResourceException {
-                try {
-                    final URL resource = getClass().getResource(resourceName);
-                    if (resource != null) return resource.openConnection();
-
-                    final URL fileURL = new File(rootPath + resourceName).toURI().toURL();
-                    return fileURL.openConnection();
-                } catch (IOException e) {
-                    throw new ResourceException(e);
-                }
-            }
-        });
-
-        CompilerConfiguration cc = new CompilerConfiguration();
-        cc.setClasspath(groovyClassPath);
-        cc.setRecompileGroovySource(true);
-        gcl = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), cc);
+    public ScriptingProviderImpl(ConfigProvider configProvider) {
+        GlobalConfig config = configProvider.doGetConfig(GlobalConfig.class);
+        doAddGroovyClassPath(config.getConfDir());
     }
 
-    protected void __addGroovyClassPath(String path) {
+    public void doAddGroovyClassPath(String path) {
         groovyClassPath = groovyClassPath + File.pathSeparator + path;
     }
 
-    protected synchronized void __addGroovyEvaluatorImport(Layer layer, String className) {
+    public synchronized void doAddGroovyEvaluatorImport(Layer layer, String className) {
         Set<String> list = imports.get(layer);
         if (list == null) {
             list = new HashSet<String>();
@@ -83,15 +66,45 @@ public class ScriptingProviderImpl extends ScriptingProvider {
         list.add(className);
     }
 
-    protected GroovyScriptEngine __getGroovyScriptEngine() {
+    public GroovyScriptEngine doGetGroovyScriptEngine() {
+        if (gse == null) {
+            synchronized (this) {
+                if (gse == null) {
+                    final String rootPath = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir() + "/";
+                    gse = new GroovyScriptEngine(new ResourceConnector() {
+                        public URLConnection getResourceConnection(String resourceName) throws ResourceException {
+                            try {
+                                final URL resource = getClass().getResource(resourceName);
+                                if (resource != null) return resource.openConnection();
+
+                                final URL fileURL = new File(rootPath + resourceName).toURI().toURL();
+                                return fileURL.openConnection();
+                            } catch (IOException e) {
+                                throw new ResourceException(e);
+                            }
+                        }
+                    });
+                }
+            }
+        }
         return gse;
     }
 
-    protected GroovyClassLoader __getGroovyClassLoader() {
+    public GroovyClassLoader doGetGroovyClassLoader() {
+        if (gcl == null) {
+            synchronized (this) {
+                if (gcl == null) {
+                    CompilerConfiguration cc = new CompilerConfiguration();
+                    cc.setClasspath(groovyClassPath);
+                    cc.setRecompileGroovySource(true);
+                    gcl = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), cc);
+                }
+            }
+        }
         return gcl;
     }
 
-    protected <T> T __evaluateGroovy(Layer layer, String text, Binding binding) {
+    public <T> T doEvaluateGroovy(Layer layer, String text, Binding binding) {
         Script script = null;
         try {
             script = (Script) getPool(layer).borrowObject(text);

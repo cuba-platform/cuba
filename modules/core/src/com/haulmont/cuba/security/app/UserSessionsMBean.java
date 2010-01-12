@@ -12,9 +12,6 @@ package com.haulmont.cuba.security.app;
 
 /**
  * Management interface of the {@link UserSessions} MBean.<br>
- * Use {@link #getAPI()} method to obtain a direct reference to application interface.<br>
- * <p>
- * Reference to this interface can be obtained through {@link com.haulmont.cuba.core.Locator#lookupMBean(Class, String)} method
  */
 
 public interface UserSessionsMBean {
@@ -23,7 +20,9 @@ public interface UserSessionsMBean {
 
     /**
      * Get direct reference to application interface. Direct means no proxies or container interceptors.
+     * <p>DEPRECATED - lookup API directly
      */
+    @Deprecated
     UserSessionsAPI getAPI();
 
     /**

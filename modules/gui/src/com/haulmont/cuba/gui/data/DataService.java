@@ -9,12 +9,11 @@
  */
 package com.haulmont.cuba.gui.data;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataServiceRemote;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 
-public interface DataService extends DataServiceRemote {
+public interface DataService extends com.haulmont.cuba.core.app.DataService {
     <A extends Entity> A newInstance(MetaClass metaClass);
     <A extends Entity> A reload(A entity, View view);
 

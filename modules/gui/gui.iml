@@ -10,7 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="groovy" level="application" />
     <orderEntry type="library" name="common" level="project" />
-    <orderEntry type="library" name="common" level="project" />
     <orderEntry type="library" name="chile" level="project" />
     <orderEntry type="library" name="test" level="project" />
     <orderEntry type="module" module-name="global" />

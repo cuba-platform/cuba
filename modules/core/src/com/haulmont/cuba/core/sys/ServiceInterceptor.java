@@ -14,14 +14,11 @@ import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import org.aspectj.lang.ProceedingJoinPoint;
 
 public class ServiceInterceptor
 {
-    @AroundInvoke
-    private Object aroundInvoke(InvocationContext ctx) throws Exception {
+    private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
         Log log = LogFactory.getLog(ctx.getTarget().getClass());
 
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
@@ -35,12 +32,12 @@ public class ServiceInterceptor
 
         UserSession userSession = SecurityProvider.currentUserSession();
         if (log.isTraceEnabled())
-            log.trace("Invoking: method=" + ctx.getMethod().getName() + ", session=" + userSession);
+            log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
 
         try {
             Object res = ctx.proceed();
             return res;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("ServiceInterceptor caught exception: ", e);
             throw e;
         }

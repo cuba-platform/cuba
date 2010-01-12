@@ -6,15 +6,15 @@
  */
 package com.haulmont.cuba.core.app;
 
-import javax.ejb.Local;
-
 /**
- * Local interface to {@link com.haulmont.cuba.core.app.UniqueNumbersServiceBean}
+ * Service interface to UniqueNumbers MBean
  */
-@Local
 public interface UniqueNumbersService
 {
-    String JNDI_NAME = "cuba/core/UniqueNumbersService";
+    String NAME = "cuba_UniqueNumbersService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     long getNextNumber(String domain);
 }

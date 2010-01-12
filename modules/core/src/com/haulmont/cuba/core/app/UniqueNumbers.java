@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.SequenceSupport;
 
+import javax.annotation.ManagedBean;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Collections;
  * <p>
  * Provides unique numbers based on database sequences.
  */
+@ManagedBean(UniqueNumbersAPI.NAME)
 public class UniqueNumbers
         extends ManagementBean implements UniqueNumbersMBean, UniqueNumbersAPI
 {

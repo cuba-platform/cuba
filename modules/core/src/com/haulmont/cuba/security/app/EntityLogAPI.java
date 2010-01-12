@@ -18,6 +18,8 @@ import com.haulmont.cuba.core.entity.BaseEntity;
  */
 public interface EntityLogAPI
 {
+    String NAME = "cuba_EntityLog";
+
     boolean isEnabled();
     void setEnabled(boolean enabled);
 

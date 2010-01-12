@@ -66,4 +66,9 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
     public UUID getId() {
         return uuid;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "-" + uuid;
+    }
 }

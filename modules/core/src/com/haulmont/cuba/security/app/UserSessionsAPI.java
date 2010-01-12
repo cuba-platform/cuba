@@ -22,6 +22,8 @@ import java.util.Collection;
  */
 public interface UserSessionsAPI
 {
+    String NAME = "cuba_UserSessions";
+    
     void add(UserSession session);
 
     void remove(UserSession session);

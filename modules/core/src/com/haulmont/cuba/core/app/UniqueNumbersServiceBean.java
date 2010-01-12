@@ -6,26 +6,21 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Transaction;
-
-import javax.ejb.*;
-import javax.interceptor.Interceptors;
+import org.springframework.stereotype.Service;
 
 /**
  * Service facade for {@link com.haulmont.cuba.core.app.UniqueNumbers} MBean
  */
-@Stateless(name = UniqueNumbersService.JNDI_NAME)
-@Interceptors(ServiceInterceptor.class)
-@TransactionManagement(TransactionManagementType.BEAN)
+@Service(UniqueNumbersService.NAME)
 public class UniqueNumbersServiceBean implements UniqueNumbersService
 {
     public long getNextNumber(String domain) {
-        UniqueNumbersMBean mbean = Locator.lookupMBean(UniqueNumbersMBean.class, UniqueNumbersMBean.OBJECT_NAME);
+        UniqueNumbersAPI mbean = Locator.lookup(UniqueNumbersAPI.NAME);
         Transaction tx = Locator.createTransaction();
         try {
-            long number = mbean.getAPI().getNextNumber(domain);
+            long number = mbean.getNextNumber(domain);
             tx.commit();
             return number;
         } finally {

@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 
 import javax.naming.Context;
@@ -29,12 +30,8 @@ public class ServiceLocatorImpl extends ServiceLocator
         return jndiContext;
     }
 
-    protected Object __lookup(String jndiName) {
-        try {
-            return getJndiContext().lookup(jndiName + "/local");
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        }
+    protected Object __lookup(String name) {
+        return AppContext.getApplicationContext().getBean(name);
     }
 
 }

@@ -12,15 +12,15 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.global.ClientType;
 
-import javax.ejb.Local;
-
 /**
- * Local interface to {@link com.haulmont.cuba.security.app.UserSettingServiceBean}
+ * Service interface to UserSettingServiceBean
  */
-@Local
 public interface UserSettingService
 {
-    String JNDI_NAME = "cuba/security/UserSettingService";
+    String NAME = "cuba_UserSettingService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     /** Load settings for the current user and null client type */
     String loadSetting(String name);

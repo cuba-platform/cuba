@@ -18,6 +18,7 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import com.haulmont.cuba.core.sys.EntityManagerFactoryImpl;
 import com.haulmont.cuba.core.PersistenceProvider;
 
+import javax.annotation.ManagedBean;
 import java.util.Collection;
 
 /**
@@ -26,6 +27,7 @@ import java.util.Collection;
  * This MBean is a facade to OpenJPA data cache functionality.
  * It allows to control data cache through JMX-console. 
  */
+@ManagedBean(DataCacheAPI.NAME)
 public class DataCache implements DataCacheAPI, DataCacheMBean {
 
     private StoreCache getStoreCache() {

@@ -18,6 +18,8 @@ import java.io.InputStream;
  */
 public interface ResourceRepositoryAPI
 {
+    String NAME = "cuba_ResourceRepository";
+    
     /**
      * Loads resource into cache as byte array and returns it
      * @param name resource file name relative to resources root (jboss/server/default/conf)

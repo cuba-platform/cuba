@@ -13,13 +13,14 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.security.entity.SearchFolder;
 
-import javax.ejb.Local;
 import java.util.List;
 
-@Local
 public interface FoldersService {
 
-    String JNDI_NAME = "cuba/core/FoldersService";
+    String NAME = "cuba_FoldersService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     List<AppFolder> loadAppFolders();
 

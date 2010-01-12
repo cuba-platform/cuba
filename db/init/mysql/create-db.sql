@@ -97,6 +97,10 @@ create table SEC_USER (
     LOGIN varchar(20),
     PASSWORD varchar(32),
     NAME varchar(255),
+    FIRST_NAME varchar(255),
+    LAST_NAME varchar(255),
+    MIDDLE_NAME varchar(255),
+    POSITION varchar(255),
     EMAIL varchar(100),
     GROUP_ID binary(16),
     primary key (ID)

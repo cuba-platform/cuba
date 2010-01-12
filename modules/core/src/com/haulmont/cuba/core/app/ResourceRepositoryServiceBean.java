@@ -11,16 +11,12 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.sys.ServiceInterceptor;
-
-import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
+import org.springframework.stereotype.Service;
 
 /**
  * Service facade for {@link com.haulmont.cuba.core.app.ResourceRepository} MBean
  */
-@Stateless(name = ResourceRepositoryService.JNDI_NAME)
-@Interceptors({ServiceInterceptor.class})
+@Service(ResourceRepositoryService.NAME)
 public class ResourceRepositoryServiceBean implements ResourceRepositoryService
 {
     private ResourceRepositoryAPI repository;

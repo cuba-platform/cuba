@@ -10,15 +10,15 @@
  */
 package com.haulmont.cuba.core.app;
 
-import javax.ejb.Local;
-
 /**
- * Local interface to {@link com.haulmont.cuba.core.app.ResourceRepositoryServiceBean}
+ * Service interface to ResourceRepository MBean
  */
-@Local
 public interface ResourceRepositoryService
 {
-    String JNDI_NAME = "cuba/core/ResourceRepositoryService";
+    String NAME = "cuba_ResourceRepositoryService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     /**
      * Loads resource into cache as String and returns it

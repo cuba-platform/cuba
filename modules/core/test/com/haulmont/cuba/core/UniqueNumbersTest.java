@@ -6,15 +6,13 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.app.UniqueNumbersMBean;
 import com.haulmont.cuba.core.app.UniqueNumbersAPI;
 
 public class UniqueNumbersTest extends CubaTestCase
 {
     public void test() {
-        UniqueNumbersMBean mBean = Locator.lookupMBean(UniqueNumbersMBean.class, UniqueNumbersMBean.OBJECT_NAME);
-        UniqueNumbersAPI un = mBean.getAPI();
-        long n = un.getNextNumber("test1");
+        UniqueNumbersAPI mBean = Locator.lookup(UniqueNumbersAPI.NAME);
+        long n = mBean.getNextNumber("test1");
         assertTrue(n >= 0);
     }
 }

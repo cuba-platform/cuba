@@ -10,22 +10,23 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.security.entity.UserSessionEntity;
-import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserSessionEntity;
 
-import javax.ejb.Local;
-import java.util.UUID;
-import java.util.Collection;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.UUID;
 
 /**
- * Local interface to {@link com.haulmont.cuba.security.app.UserSessionServiceBean}
+ * Service interface to UserSessions MBean
  */
-@Local
 public interface UserSessionService
 {
-    String JNDI_NAME = "cuba/security/UserSessionService";
+    String NAME = "cuba_UserSessionService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     void putSessionAttribute(UUID sessionId, String name, Serializable value);
 

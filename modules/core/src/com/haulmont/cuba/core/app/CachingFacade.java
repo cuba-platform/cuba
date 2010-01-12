@@ -15,6 +15,9 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.app.EntityLogMBean;
 
+import javax.annotation.ManagedBean;
+
+@ManagedBean("cuba_CachingFacade")
 public class CachingFacade implements CachingFacadeMBean {
 
     public void clearGroovyCache() {

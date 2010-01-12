@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +43,7 @@ public class MenuConfig
      * @param id screen ID as defined in <code>screen-config.xml</code>
      */
     public static String getMenuItemCaption(String id) {
-        String messagePack = System.getProperty(AppConfig.MESSAGES_PACK_PROP);
+        String messagePack = AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP);
         try {
             return MessageProvider.getMessage(messagePack, "menu-config." + id);
         } catch (MissingResourceException e) {

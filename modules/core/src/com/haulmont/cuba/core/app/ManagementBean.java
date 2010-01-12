@@ -10,8 +10,9 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.app.LoginWorker;
@@ -20,11 +21,13 @@ import java.util.UUID;
 import java.util.Locale;
 import java.util.Date;
 
+import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
-import org.jboss.varia.scheduler.Schedulable;
+
+import javax.inject.Inject;
 
 /**
  * Base class for MBeans.<br>
@@ -35,11 +38,27 @@ public class ManagementBean
 {
     private Log log = LogFactory.getLog(getClass());
 
+    private LoginWorker loginWorker;
+
+    private UserSessionManager userSessionManager;
+
+    @Inject
+    public void setLoginWorker(LoginWorker loginWorker) {
+        this.loginWorker = loginWorker;
+    }
+
+    @Inject
+    public void setUserSessionManager(UserSessionManager userSessionManager) {
+        this.userSessionManager = userSessionManager;
+    }
+
     /**
      * Base class for creating of <code>org.jboss.varia.scheduler.Schedulable</code> instances.<br>
      * Used for setting login credentials when invoking MBean methods from JBoss schedulers.
+     * <p>DEPRECATED - use Spring scheduling
      */
-    public static abstract class LoginSupport implements Schedulable
+    @Deprecated
+    public static abstract class LoginSupport //implements Schedulable
     {
         protected String user;
         protected String password;
@@ -60,25 +79,30 @@ public class ManagementBean
     private ThreadLocal<Boolean> loginPerformed = new ThreadLocal<Boolean>();
 
     /**
-     * Performs login with credentials set by web container (JMX-console)
+     * Performs login with credentials set in app.properties
      * or a {@link LoginSupport} instance.<br>
      * Should be placed inside try/finally block with logout in "finally" section
      * @throws LoginException
      */
     protected void login() throws LoginException {
         UUID sessionId = ServerSecurityUtils.getSessionId();
-        if (sessionId == null) {
-            String[] info = ServerSecurityUtils.getUserInfo();
-            if (info == null)
-                throw new LoginException("No user information in security context");
-            String name = info[0];
-            String password = info[1];
+        if (sessionId == null || userSessionManager.findSession(sessionId) == null) {
+            String name;
+            String password;
+            SecurityContext securityContext = ServerSecurityUtils.getSecurityAssociation();
+            if (securityContext == null) {
+                name = AppContext.getProperty("cuba.jmxUserLogin");
+                password = AppContext.getProperty("cuba.jmxUserPassword");
+            } else {
+                name = securityContext.getUser();
+                password = securityContext.getPassword();
+            }
             if (password.startsWith("md5:"))
                 password = password.substring("md5:".length(), password.length());
             else
-                password = DigestUtils.md5Hex(info[1]);
+                password = DigestUtils.md5Hex(password);
 
-            UserSession session = getLoginWorker().login(name, password, Locale.getDefault());
+            UserSession session = loginWorker.login(name, password, Locale.getDefault());
             ServerSecurityUtils.setSecurityAssociation(name, session.getId());
             loginPerformed.set(true);
         }
@@ -92,16 +116,14 @@ public class ManagementBean
         try {
             if (BooleanUtils.isTrue(loginPerformed.get())) {
                 UUID sessionId = ServerSecurityUtils.getSessionId();
-                if (sessionId != null)
-                    getLoginWorker().logout();
+                if (sessionId != null) {
+                    loginWorker.logout();
+                    ServerSecurityUtils.clearSecurityAssociation();
+                }
                 loginPerformed.remove();
             }
         } catch (Exception e) {
             log.error("Error logging out", e);
         }
-    }
-
-    private LoginWorker getLoginWorker() {
-        return Locator.lookupLocal(LoginWorker.JNDI_NAME);
     }
 }

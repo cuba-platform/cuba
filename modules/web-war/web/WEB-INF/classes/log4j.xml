@@ -21,15 +21,9 @@
     <!-- ================================= -->
 
     <!-- A time/date based rolling appender -->
-    <appender name="FILE" class="org.jboss.logging.appender.DailyRollingFileAppender">
-        <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
-        <param name="File" value="${jboss.server.log.dir}/server.log"/>
+    <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${catalina.home}/logs/cuba.log"/>
         <param name="Append" value="false"/>
-        <!--
-          Set the threshold via a system property. Note this is parsed by log4j,
-          so the full JBoss system property format is not supported; e.g.
-          setting a default via ${jboss.server.log.threshold:WARN} will not work.
-        -->
         <param name="Threshold" value="DEBUG"/>
 
         <!-- Rollover at midnight each day -->
@@ -56,7 +50,6 @@
     <!-- ============================== -->
 
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-        <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
         <param name="Target" value="System.out"/>
         <param name="Threshold" value="INFO"/>
 
@@ -99,7 +92,7 @@
     </appender>
 
     <appender name="PerfFileAppender" class="org.apache.log4j.FileAppender">
-        <param name="File" value="${jboss.server.log.dir}/perfstat.log"/>
+        <param name="File" value="${catalina.home}/logs/cuba-perfstat.log"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%m%n"/>
         </layout>
@@ -114,7 +107,7 @@
     <!--</appender>-->
 
     <!--<appender name="GraphsFileAppender" class="org.apache.log4j.FileAppender">-->
-        <!--<param name="File" value="${jboss.server.log.dir}/perfgraphs.log"/>-->
+        <!--<param name="File" value="${catalina.home}/logs/cuba-perfgraphs.log"/>-->
         <!--<layout class="org.apache.log4j.PatternLayout">-->
             <!--<param name="ConversionPattern" value="%m%n"/>-->
         <!--</layout>-->
@@ -131,6 +124,10 @@
     </category>
 
     <!-- End Cuba categories -->
+
+    <category name="org.springframework">
+        <priority value="INFO"/>
+    </category>
 
     <category name="openjpa">
         <priority value="INFO"/>
@@ -169,62 +166,6 @@
     <category name="org.apache">
         <priority value="INFO"/>
     </category>
-
-    <!-- Limit JSF logging to DEBUG.  FINER and FINEST will not be logged -->
-    <category name="javax.enterprise.resource.webcontainer.jsf">
-        <priority value="INFO"/>
-    </category>
-
-    <!-- Limit the jacorb category to WARN as its INFO is verbose -->
-    <category name="jacorb">
-        <priority value="WARN"/>
-    </category>
-
-    <!-- Set the logging level of the JSF implementation -->
-    <category name="javax.enterprise.resource.webcontainer.jsf">
-        <priority value="INFO"/>
-    </category>
-
-    <!-- Limit the org.jgroups category to WARN as its INFO is verbose -->
-    <category name="org.jgroups">
-        <priority value="WARN"/>
-    </category>
-
-    <!-- Limit the org.quartz category to INFO as its DEBUG is verbose -->
-    <category name="org.quartz">
-        <priority value="INFO"/>
-    </category>
-
-    <!-- Limit JBoss categories -->
-    <category name="org.jboss">
-        <priority value="INFO"/>
-    </category>
-
-    <category name="com.arjuna">
-        <priority value="ERROR"/>
-    </category>
-
-    <!-- Limit the JSR77 categories -->
-    <category name="org.jboss.management">
-        <priority value="INFO"/>
-    </category>
-
-    <!-- Limit the org.jboss.serial (jboss-serialization) to INFO as its DEBUG is verbose -->
-    <category name="org.jboss.serial">
-        <priority value="INFO"/>
-    </category>
-
-    <!-- Decrease the priority threshold for the org.jboss.varia category
-    <category name="org.jboss.varia">
-      <priority value="DEBUG"/>
-    </category>
-    -->
-
-    <!-- Enable JBossWS message tracing
-    <category name="org.jboss.ws.core.MessageTrace">
-      <priority value="TRACE"/>
-    </category>
-    -->
 
     <!-- ======================= -->
     <!-- Setup the Root category -->

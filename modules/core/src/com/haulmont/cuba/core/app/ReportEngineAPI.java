@@ -18,10 +18,11 @@ import java.util.Map;
 
 /**
  * API of {@link ReportEngine} MBean.<br>
- * Reference to this interface must be obtained through {@link ReportEngineMBean#getAPI()} method
  */
 public interface ReportEngineAPI
 {
+    String NAME = "cuba_ReportEngine";
+    
     JasperReport getJasperReport(String name);
 
     JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource);

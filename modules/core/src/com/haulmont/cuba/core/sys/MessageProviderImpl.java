@@ -11,30 +11,27 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.SecurityProvider;
-import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ResourceBundleMessageProvider extends MessageProvider
+public class MessageProviderImpl extends MessageProvider
 {
     public static final String BUNDLE_NAME = "messages";
 
-    private Log log = LogFactory.getLog(ResourceBundleMessageProvider.class);
+    private Log log = LogFactory.getLog(MessageProviderImpl.class);
 
     private String confDir;
 
     private Map<String, String> strCache = new ConcurrentHashMap<String, String>();
-    private Map<String, ResourceBundle> rbCache = new ConcurrentHashMap<String, ResourceBundle>();
-
-    public ResourceBundleMessageProvider() {
-        confDir = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir().replaceAll("\\\\", "/");
-    }
 
     protected void __clearCache() {
         strCache.clear();
@@ -70,9 +67,9 @@ public class ResourceBundleMessageProvider extends MessageProvider
     }
 
     protected String __getMessage(String pack, String key, Locale locale) {
-        String msg = searchProperties(pack, key, locale);
+        String msg = searchFiles(pack, key, locale);
         if (msg == null) {
-            msg = searchResourceBundles(pack, key, locale);
+            msg = searchClasspath(pack, key, locale);
         }
         if (msg == null) {
             log.warn("Resource '" + makeCacheKey(pack, key, locale) + "' not found");
@@ -81,7 +78,7 @@ public class ResourceBundleMessageProvider extends MessageProvider
             return msg;
     }
 
-    private String searchProperties(String pack, String key, Locale locale) {
+    private String searchFiles(String pack, String key, Locale locale) {
         String cacheKey = makeCacheKey(pack, key, locale);
 
         String msg = strCache.get(cacheKey);
@@ -89,6 +86,9 @@ public class ResourceBundleMessageProvider extends MessageProvider
             return msg;
 
         File file;
+        if (confDir == null)
+            confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
+
         String s = confDir + "/" + pack.replaceAll("\\.", "/");
         while (s != null && !s.equals(confDir)) {
             file = new File(s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + ".properties");
@@ -130,49 +130,54 @@ public class ResourceBundleMessageProvider extends MessageProvider
         return null;
     }
 
-    private String searchResourceBundles(String pack, String key, Locale locale) {
+    private String searchClasspath(String pack, String key, Locale locale) {
         String cacheKey = makeCacheKey(pack, key, locale);
 
-        ResourceBundle bundle = rbCache.get(cacheKey);
-        if (bundle != null) {
-            try {
-                return bundle.getString(key);
-            } catch (MissingResourceException e) {
-                rbCache.remove(cacheKey);
-                bundle = null;
-            }
-        }
-        String msg = null;
-        String s = pack;
+        String msg = strCache.get(cacheKey);
+        if (msg != null)
+            return msg;
+
+        String s = "/" + pack.replaceAll("\\.", "/");
         while (s != null) {
-            try {
-                bundle = ResourceBundle.getBundle(
-                        s + "." + BUNDLE_NAME,
-                        locale,
-                        new ResourceBundle.Control() {
-                            @Override
-                            public Locale getFallbackLocale(String baseName, Locale locale) {
-                                Locale fallbackLocale = locale.equals(Locale.ROOT) ?
-                                        null : Locale.ROOT;
-                                return fallbackLocale;
-                            }
-                        }
-                );
-                msg = bundle.getString(key);
-                break;
-            } catch (MissingResourceException e) {
-                // not found, keep searching
+            String name = s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + ".properties";
+            InputStream stream;
+            stream = getClass().getResourceAsStream(name);
+            if (stream == null) {
+                name = s + "/" + BUNDLE_NAME + ".properties";
+                stream = getClass().getResourceAsStream(name);
             }
-            int pos = s.lastIndexOf(".");
+            if (stream != null) {
+                try {
+                    InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+                    Properties properties = new Properties();
+                    properties.load(reader);
+                    // load all found strings into cache
+                    for (String k : properties.stringPropertyNames()) {
+                        strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    log.warn("Unable to read " + s, e);
+                } catch (IOException e) {
+                    log.warn("Unable to read " + s, e);
+                } finally {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        //
+                    }
+                }
+                msg = strCache.get(cacheKey);
+                if (msg != null)
+                    return msg;
+            }
+            // not found, keep searching
+            int pos = s.lastIndexOf("/");
             if (pos < 0)
                 s = null;
             else
                 s = s.substring(0, pos);
         }
-        if (msg != null) {
-            rbCache.put(cacheKey, bundle);
-        }
-        return msg;
+        return null;
     }
 
     private String makeCacheKey(String pack, String key, Locale locale) {

@@ -123,6 +123,8 @@ public class Connection
         LoginService ls = getLoginService();
         ls.logout();
 
+        WebSecurityUtils.clearSecurityAssociation();
+
         connected = false;
         session = null;
         try {

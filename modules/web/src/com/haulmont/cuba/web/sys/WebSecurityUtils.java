@@ -10,16 +10,18 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import org.jboss.security.SecurityAssociation;
-import org.jboss.security.SimplePrincipal;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 
 import java.util.UUID;
 
 public class WebSecurityUtils {
 
     public static void setSecurityAssociation(String userName, UUID sessionId) {
-        SecurityAssociation.setPrincipal(new SimplePrincipal(userName + " : " + sessionId));
-        SecurityAssociation.setCredential(null);
+        AppContext.setSecurityContext(new SecurityContext(userName, null, sessionId));
     }
 
+    public static void clearSecurityAssociation() {
+        AppContext.setSecurityContext(null);
+    }
 }

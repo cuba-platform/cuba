@@ -10,28 +10,26 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.sys.ManagedPersistenceProvider;
-import com.haulmont.cuba.core.sys.EntityManagerFactoryImpl;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.HsqlDbDialect;
 import com.haulmont.cuba.core.global.PostgresDbDialect;
-import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.EntityManagerContext;
+import com.haulmont.cuba.core.sys.EntityManagerFactoryImpl;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 
-import java.lang.annotation.Annotation;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import javax.annotation.Nonnull;
+import java.util.*;
 
 /**
  * Entry point to middleware persistence functionality.
@@ -41,41 +39,15 @@ import java.util.Set;
  */
 public abstract class PersistenceProvider
 {
-    private static PersistenceProvider instance;
-
-    public static final String PERSISTENCE_XML = "cuba.PersistenceXml";
-    public static final String PERSISTENCE_UNIT = "cuba.PersistenceUnit";
-
-    protected static final String DEFAULT_PERSISTENCE_XML = "META-INF/cuba-persistence.xml";
-    protected static final String DEFAULT_PERSISTENCE_UNIT = "cuba";
-
     private DbDialect dbDialect;
 
     private static PersistenceProvider getInstance() {
-        if (instance == null) {
-            instance = new ManagedPersistenceProvider(Locator.getJndiContext());
-        }
-        return instance;
+        return AppContext.getApplicationContext().getBean("cuba_PersistenceProvider", PersistenceProvider.class);
     }
 
-    /**
-     * Path to persistence.xml which is currently in use
-     */
-    public static String getPersistenceXmlPath() {
-        String xmlPath = System.getProperty(PERSISTENCE_XML);
-        if (StringUtils.isBlank(xmlPath))
-            xmlPath = DEFAULT_PERSISTENCE_XML;
-        return xmlPath;
-    }
-
-    /**
-     * Persistence unit name which is currently in use
-     */
-    public static String getPersistenceUnitName() {
-        String unitName = System.getProperty(PERSISTENCE_UNIT);
-        if (StringUtils.isBlank(unitName))
-            unitName = DEFAULT_PERSISTENCE_UNIT;
-        return unitName;
+    public static List<String> getPersistentClassNames() {
+        Object emfBean = AppContext.getApplicationContext().getBean("entityManagerFactory");
+        return ((EntityManagerFactoryInfo) emfBean).getPersistenceUnitInfo().getManagedClassNames();
     }
 
     /**
@@ -141,6 +113,11 @@ public abstract class PersistenceProvider
         getInstance().__setSoftDeletion(value);
     }
 
+    @Nonnull
+    public static EntityManagerContext getEntityManagerContext() {
+        return getInstance().__getEntityManagerContext();
+    }
+
     protected DbDialect __getDbDialect() {
         if (dbDialect == null) {
             OpenJPAEntityManagerFactory factory = ((EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory()).getDelegate();
@@ -168,4 +145,6 @@ public abstract class PersistenceProvider
     protected abstract boolean __isSoftDeletion();
 
     protected abstract void __setSoftDeletion(boolean value);
+
+    protected abstract EntityManagerContext __getEntityManagerContext();
 }

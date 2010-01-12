@@ -142,7 +142,7 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/modules/web/src-conf" charset="UTF-8" />
   </component>
   <component name="EntryPointsManager">
@@ -185,9 +185,67 @@
       <profile version="1.0" is_locked="false">
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
+        <inspection_tool class="AntDuplicateImportedTargetsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="EmptyWebServiceClass" level="WARNING" enabled="false" />
+        <inspection_tool class="ImplicitlyExposedWebServiceMethods" level="INFO" enabled="false" />
+        <inspection_tool class="JavaDoc" enabled="false" level="WARNING" enabled_by_default="false">
+          <option name="TOP_LEVEL_CLASS_OPTIONS">
+            <value>
+              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
+              <option name="REQUIRED_TAGS" value="" />
+            </value>
+          </option>
+          <option name="INNER_CLASS_OPTIONS">
+            <value>
+              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
+              <option name="REQUIRED_TAGS" value="" />
+            </value>
+          </option>
+          <option name="METHOD_OPTIONS">
+            <value>
+              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
+              <option name="REQUIRED_TAGS" value="@return@param@throws or @exception" />
+            </value>
+          </option>
+          <option name="FIELD_OPTIONS">
+            <value>
+              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
+              <option name="REQUIRED_TAGS" value="" />
+            </value>
+          </option>
+          <option name="IGNORE_DEPRECATED" value="false" />
+          <option name="IGNORE_JAVADOC_PERIOD" value="true" />
+          <option name="IGNORE_DUPLICATED_THROWS" value="false" />
+          <option name="myAdditionalJavadocTags" value="" />
+        </inspection_tool>
+        <inspection_tool class="JpaQlInspection" level="ERROR" enabled="false" />
+        <inspection_tool class="NonJaxWsWebServices" level="WARNING" enabled="false" />
+        <inspection_tool class="NonSerializableObjectBoundToHttpSession" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="NonSerializableObjectPassedToObjectStream" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="NonSerializableWithSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="NonSerializableWithSerializationMethods" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="OneWayWebMethod" level="ERROR" enabled="false" />
+        <inspection_tool class="ReadObjectAndWriteObjectPrivate" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="ReadResolveAndWriteReplaceProtected" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="SerialVersionUIDNotStaticFinal" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="SerializableHasSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="superClassString" value="java.awt.Component" />
         </inspection_tool>
+        <inspection_tool class="SerializableInnerClassHasSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="superClassString" value="java.awt.Component" />
+        </inspection_tool>
+        <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+          <option name="processCode" value="true" />
+          <option name="processLiterals" value="true" />
+          <option name="processComments" value="true" />
+        </inspection_tool>
+        <inspection_tool class="TransientFieldNotInitialized" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="UNCHECKED_WARNING" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="UnnecessaryLocalVariable" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="m_ignoreImmediatelyReturnedVariables" value="true" />
+          <option name="m_ignoreAnnotatedVariables" value="false" />
+        </inspection_tool>
+        <inspection_tool class="ValidExternallyBoundObject" level="ERROR" enabled="false" />
       </profile>
     </profiles>
     <option name="PROJECT_PROFILE" value="Project Default" />
@@ -351,7 +409,6 @@
       <module fileurl="file://$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" filepath="$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/client/client.iml" filepath="$PROJECT_DIR$/modules/client/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/modules/deploymarker/deploymarker.iml" filepath="$PROJECT_DIR$/modules/deploymarker/deploymarker.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/global/global.iml" filepath="$PROJECT_DIR$/modules/global/global.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/gui/gui.iml" filepath="$PROJECT_DIR$/modules/gui/gui.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/web/web.iml" filepath="$PROJECT_DIR$/modules/web/web.iml" />
@@ -437,9 +494,9 @@
   <component name="libraryTable">
     <library name="chile">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../chile/build/11chile-jpa.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../chile/build/10chile-core.jar!/" />
         <root url="jar://$PROJECT_DIR$/../chile/build/bali.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../chile/build/chile-core.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../chile/build/chile-jpa.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -451,33 +508,29 @@
     </library>
     <library name="server">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jbosssx.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-vfs.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-j2se.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/postgresql-8.3-603.jdbc4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-digester-1.7.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/commons-beanutils-1.7.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/scheduler-plugin.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jcifs-1.3.10.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jespa-1.0.4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/jboss-ejb3-ext-api.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/hsqldb-1.8.0.9.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/springframework.jdbc-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/springframework.transaction-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/springframework.orm-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/jdbc/postgresql-8.3-603.jdbc4.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/jboss-vfs-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jcifs-1.3.10-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.1-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.orm-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.transaction-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.jdbc-3.0.0.RELEASE-src.zip!/" />
       </SOURCES>
     </library>
     <library name="common">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-lang-2.4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/ejb3-persistence.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/commons-logging.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/dom4j-1.6.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-codec-1.3.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-io-1.4.jar!/" />
@@ -489,21 +542,26 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/asm-2.2.3.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-pool-1.5.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/openjpa-1.2.1-patch1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/mail.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/google-collect-1.0-rc2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/jsr305-ri.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-vfs-1.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/reflections-0.9.4-patch1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/slf4j-api.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/slf4j-jboss-logging.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/jboss-logging-spi.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/javassist.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/log4j.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/antlr.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.6.5.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/serp-1.13.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/jboss-javaee.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.beans-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.context-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.core-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.asm-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.expression-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/aopalliance-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/springframework.aop-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/antlr-2.7.7.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections-3.2.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/commons-logging-1.1.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/javaee-api-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/log4j-1.2.15.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/mail-1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/aspectjrt-1.6.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/aspectjweaver-1.6.6.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -514,8 +572,15 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-pool-1.5.1-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/openjpa-1.2.1-patch1-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/google-collect-1.0-rc2-src.zip!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/src/reflections-0.9.4-patch1-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/groovy-1.6.5-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.context-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.core-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.beans-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.expression-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/springframework.aop-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-collections-3.2.1-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-logging-1.1.1-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/log4j-1.2.15-src.zip!/" />
       </SOURCES>
     </library>
     <library name="test">

@@ -10,16 +10,16 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.core.CubaTestCase;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
+import junit.framework.TestCase;
 
 import java.util.HashSet;
 
-public class MetadataHelperTest extends CubaTestCase {
+public class MetadataHelperTest extends TestCase {
 
     public void testWalkProperties() {
         Role role = new Role();

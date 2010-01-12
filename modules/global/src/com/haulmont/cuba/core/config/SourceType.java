@@ -13,5 +13,6 @@ package com.haulmont.cuba.core.config;
 public enum SourceType
 {
     SYSTEM,
+    APP,
     DATABASE
 }

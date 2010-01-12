@@ -6,7 +6,6 @@
     <property name="root.dir" location="${project.dir}/.."/>
 
     <property name="module.name" value="web-war"/>
-    <property name="module.jar" value="24cuba.war"/>
 
     <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
@@ -79,8 +78,6 @@
         </condition>
 
         <antcall target="build-gwt"/>
-
-        <jar basedir="${build.dir}/${module.name}" destfile="${build.dir}/${module.jar}"/>
     </target>
 
     <target name="build-gwt" if="do-build-gwt">
@@ -116,7 +113,5 @@
             <arg value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>
         </java>
     </target>
-
-    <target name="deploy-module" depends="undeploy-module, base-mod.deploy-module"/>
 
 </project>

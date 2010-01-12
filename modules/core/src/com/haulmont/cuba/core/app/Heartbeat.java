@@ -10,17 +10,15 @@
  */
 package com.haulmont.cuba.core.app;
 
-import org.jboss.varia.scheduler.Schedulable;
-
-import java.util.Date;
+import javax.annotation.ManagedBean;
 import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * Singleton providing "heartbeat" functionality.<br>
- * Notifies registered listeners on each beat. Beat frequency is set through
- * <code>haulmont.cuba:service=HeartbeatScheduler</code> scheduling MBean.
+ * Bean providing "heartbeat" functionality.<br>
+ * Notifies registered listeners on each beat. Beat frequency is set in cuba_Heartbeat schedulable (see cuba-beans.xml).
  */
+@ManagedBean("cuba_Heartbeat")
 public class Heartbeat {
 
     /**
@@ -32,21 +30,9 @@ public class Heartbeat {
         void beat();
     }
 
-    public static class Starter implements Schedulable {
-        public void perform(Date date, long l) {
-            Heartbeat.getInstance().beat();
-        }
-    }
-
-    private static final Heartbeat instance = new Heartbeat();
-
-    private static final Map<Listener, Integer> listeners = new Hashtable<Listener, Integer>();
+    private final Map<Listener, Integer> listeners = new Hashtable<Listener, Integer>();
 
     private int current = 0;
-
-    public static Heartbeat getInstance() {
-        return instance;
-    }
 
     /**
      * Register heartbeat listener
@@ -65,7 +51,7 @@ public class Heartbeat {
         listeners.remove(listener);
     }
 
-    private void beat() {
+    public void beat() {
         current++;
         for (Map.Entry<Listener, Integer> entry : listeners.entrySet()) {
             Integer factor = entry.getValue();

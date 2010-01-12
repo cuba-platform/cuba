@@ -19,6 +19,8 @@ import java.util.Date;
 
 public interface FileStorageAPI {
 
+    String NAME = "cuba_FileStorage";
+    
     void saveFile(FileDescriptor fileDescr, byte[] data) throws FileStorageException;
 
     void removeFile(FileDescriptor fileDescr) throws FileStorageException;    

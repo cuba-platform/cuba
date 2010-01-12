@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.ConfigStorageAPI;
-import com.haulmont.cuba.core.app.ConfigStorageMBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,33 +23,42 @@ public class ConfigPersisterImpl implements ConfigPersister
 
     public String getProperty(SourceType sourceType, String name) {
         log.trace("Getting property '" + name + "', source=" + sourceType.name());
-        if (SourceType.SYSTEM.equals(sourceType)) {
-            return System.getProperty(name);
+        String value;
+        switch (sourceType) {
+            case SYSTEM:
+                value = System.getProperty(name);
+                break;
+            case APP:
+                value = AppContext.getProperty(name);
+                break;
+            case DATABASE:
+                value = getConfigStorageAPI().getConfigProperty(name);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
         }
-        else if (SourceType.DATABASE.equals(sourceType)) {
-            String value = getConfigStorageAPI().getConfigProperty(name);
-            return value;
-        }
-        else {
-            throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
-        }
+        return value;
     }
 
     public void setProperty(SourceType sourceType, String name, String value) {
         log.debug("Setting property '" + name + "' to '" + value + "', source=" + sourceType.name());
-        if (SourceType.SYSTEM.equals(sourceType)) {
-            System.setProperty(name, value);
-        }
-        else if (SourceType.DATABASE.equals(sourceType)) {
-            getConfigStorageAPI().setConfigProperty(name, value);
-        }
-        else {
-            throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
+        switch (sourceType) {
+            case SYSTEM:
+                System.setProperty(name, value);
+                break;
+            case APP:
+                AppContext.setProperty(name, value);
+                break;
+            case DATABASE:
+                getConfigStorageAPI().setConfigProperty(name, value);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
         }
     }
 
     private ConfigStorageAPI getConfigStorageAPI() {
-        ConfigStorageMBean mbean = Locator.lookupMBean(ConfigStorageMBean.class, ConfigStorageMBean.OBJECT_NAME);
-        return mbean.getAPI();
+        ConfigStorageAPI mbean = Locator.lookup(ConfigStorageAPI.NAME);
+        return mbean;
     }
 }

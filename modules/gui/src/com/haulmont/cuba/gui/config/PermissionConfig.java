@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
@@ -171,7 +172,7 @@ public class PermissionConfig {
         Node<Target> root = new Node<Target>(new Target("specific", getMessage("permissionConfig.specificRoot"), null));
         specific = new Tree<Target>(root);
 
-        final String configPath = System.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
+        final String configPath = AppContext.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
         String xml = repository.getResAsString(configPath);
         SAXReader reader = new SAXReader();
         Document doc;

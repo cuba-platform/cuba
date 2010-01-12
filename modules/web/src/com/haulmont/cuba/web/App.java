@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -76,13 +77,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     private volatile String contextName;
 
     static {
-        // set up system properties necessary for com.haulmont.cuba.gui.AppConfig
-        System.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
-        System.setProperty(AppConfig.MENU_CONFIG_XML_PROP, "cuba/client/web/menu-config.xml");
-        System.setProperty(AppConfig.WINDOW_CONFIG_XML_PROP, "cuba/client/web/screen-config.xml");
-        System.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, "com.haulmont.cuba.web.WebWindowConfig");
-        System.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
-        System.setProperty(AppConfig.MESSAGES_PACK_PROP, "com.haulmont.cuba.web");
+        AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
 
     public App() {
@@ -123,7 +118,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
             viewsDeployed = true;
         }
 
-        setTheme(THEME_NAME);
+        setTheme(getThemeName());
     }
 
     /**
@@ -258,7 +253,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     public void terminalError(Terminal.ErrorEvent event) {
         GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
         if (config.getTestMode()) {
-            String fileName = System.getProperty("cuba.testModeExceptionLog");
+            String fileName = AppContext.getProperty("cuba.testModeExceptionLog");
             if (!StringUtils.isBlank(fileName)) {
                 try {
                     FileOutputStream stream = new FileOutputStream(fileName);
@@ -411,6 +406,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
             currentApp.set(null);
             currentApp.remove();
         }
+
+        WebSecurityUtils.clearSecurityAssociation();
+
         if (log.isTraceEnabled()) {
             log.trace("requestEnd: [@" + Integer.toHexString(System.identityHashCode(transactionData)) + "]");
         }
@@ -464,5 +462,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     public Set<Timer> getApplicationTimers() {
         return Collections.unmodifiableSet(timers);
+    }
+
+    public String getThemeName() {
+        return THEME_NAME;
     }
 }

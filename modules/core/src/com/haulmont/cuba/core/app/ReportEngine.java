@@ -10,27 +10,30 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
-
-import java.io.File;
-import java.net.URI;
-import java.util.Map;
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.haulmont.cuba.core.Locator;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.io.File;
+import java.net.URI;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * ReportEngine MBean implementation.
  * <p>
  * This MBean is intended for compiling and executing of Jasper Reports
  */
+@ManagedBean(ReportEngineAPI.NAME)
 public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
 {
     private static final String SRC_EXT = ".jrxml";
@@ -41,20 +44,11 @@ public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
 
     private Log log = LogFactory.getLog(ReportEngine.class);
 
-    public void create() {
-        String confUrl = System.getProperty("jboss.server.config.url");
-        if (confUrl == null)
-            throw new IllegalStateException("System property jboss.server.config.url not defined");
-        srcRootPath = URI.create(confUrl).getPath() + "/";
-
-        String tmpDir = System.getProperty("jboss.server.temp.dir");
-        if (tmpDir == null)
-            throw new IllegalStateException("System property jboss.server.temp.dir not defined");    
-        tmpRootPath = tmpDir + "/";
-    }
-
-    public ReportEngineAPI getAPI() {
-        return this;
+    @Inject
+    public ReportEngine(ConfigProvider configProvider) {
+        GlobalConfig config = configProvider.doGetConfig(GlobalConfig.class);
+        srcRootPath = config.getConfDir() + "/";
+        tmpRootPath = config.getTempDir() + "/";
     }
 
     public JasperReport getJasperReport(String name) {
@@ -74,8 +68,7 @@ public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
                 print = JasperFillManager.fillReport(report, params, dataSource);
             } else {
                 PersistenceConfigMBean mbean = Locator.lookupMBean(PersistenceConfigMBean.class, PersistenceConfigMBean.OBJECT_NAME);
-                String s = mbean.getDatasourceName();
-                DataSource ds = (DataSource) Locator.getJndiContext().lookup(s);
+                DataSource ds = Locator.getDataSource();
                 Connection conn = ds.getConnection();
                 try {
                     print = JasperFillManager.fillReport(report, params, conn);
@@ -88,8 +81,6 @@ public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
                 }
             }
         } catch (JRException e) {
-            throw new RuntimeException(e);
-        } catch (NamingException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {
             throw new RuntimeException(e);

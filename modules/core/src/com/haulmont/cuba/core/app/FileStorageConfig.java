@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.Property;
 
-@Source(type = SourceType.SYSTEM)
+@Source(type = SourceType.APP)
 public interface FileStorageConfig extends Config {
 
     @Property("cuba.fileStorageDir")

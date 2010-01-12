@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.WebConfig;
 import jespa.ntlm.NtlmSecurityProvider;
@@ -153,9 +154,9 @@ public class ActiveDirectoryHelper
     }
 
     public static void fillFromSystemProperties(Map<String, String> params) {
-        for (Map.Entry entry : System.getProperties().entrySet()) {
-            if (((String) entry.getKey()).startsWith("jespa.")) {
-                params.put(((String) entry.getKey()), (String) entry.getValue());
+        for (String name : AppContext.getPropertyNames()) {
+            if (name.startsWith("jespa.")) {
+                params.put(name, AppContext.getProperty(name));
             }
         }
     }

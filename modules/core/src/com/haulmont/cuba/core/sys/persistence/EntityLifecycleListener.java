@@ -33,7 +33,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
 
     private EntityLogAPI getEntityLog() {
         if (entityLog == null) {
-            entityLog = Locator.lookupMBean(EntityLogMBean.class, EntityLogMBean.OBJECT_NAME).getAPI();
+            entityLog = Locator.lookup(EntityLogAPI.NAME);
         }
         return entityLog;
     }

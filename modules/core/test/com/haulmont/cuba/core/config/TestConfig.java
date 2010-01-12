@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.config.type.UuidTypeFactory;
 import java.util.UUID;
 
 @Prefix("cuba.test.")
-@Source(type = SourceType.SYSTEM)
+@Source(type = SourceType.APP)
 public interface TestConfig extends Config
 {
     String getStringProp();

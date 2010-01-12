@@ -13,14 +13,12 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 
-import javax.ejb.Local;
-import java.io.InputStream;
-import java.util.Date;
-
-@Local
 public interface FileStorageService {
 
-    String JNDI_NAME = "cuba/core/FileStorageService";
+    String NAME = "cuba_FileStorageService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     void saveFile(FileDescriptor fileDescr, byte[] data) throws FileStorageException;
 

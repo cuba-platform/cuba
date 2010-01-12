@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.sys.logging;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -18,24 +19,39 @@ import java.util.UUID;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.springframework.context.ApplicationContext;
 
 public class CubaLogWrapper implements Log {
 
     private final Log delegate;
+
+    private ThreadLocal<Boolean> inLogging = new ThreadLocal<Boolean>();
 
     public CubaLogWrapper(Log delegate) {
         this.delegate = delegate;
     }
 
     private String getCurrentUser() {
-        String prop = System.getProperty("cuba.logUserName");
+        String prop = AppContext.getProperty("cuba.logUserName");
         if (Boolean.valueOf(prop)) {
-            UUID sessionId = ServerSecurityUtils.getSessionId();
-            if (sessionId != null) {
-                UserSession session = UserSessionManager.getInstance().findSession(sessionId);
-                if (session != null) {
-                    return "[" + session.getUser().getLogin() + "] ";
+            if (BooleanUtils.isTrue(inLogging.get()))
+                return "";
+
+            inLogging.set(true);
+            try {
+                UUID sessionId = ServerSecurityUtils.getSessionId();
+                if (sessionId != null) {
+                    ApplicationContext context = AppContext.getApplicationContext();
+                    if (context != null) {
+                        UserSessionManager usm = context.getBean(UserSessionManager.NAME, UserSessionManager.class);
+                        UserSession session = usm.findSession(sessionId);
+                        if (session != null) {
+                            return "[" + session.getUser().getLogin() + "] ";
+                        }
+                    }
                 }
+            } finally {
+                inLogging.set(null);
             }
         }
         return "";

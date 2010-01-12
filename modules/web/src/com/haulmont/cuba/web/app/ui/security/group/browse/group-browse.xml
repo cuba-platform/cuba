@@ -68,8 +68,8 @@
                                 </hbox>
                                 <table id="users">
                                     <columns>
-                                        <column id="name" caption="Name"/>
-                                        <column id="login" caption="Login"/>
+                                        <column id="name" caption="msg://user.name"/>
+                                        <column id="login" caption="msg://user.login"/>
                                     </columns>
                                     <rows datasource="users"/>
                                 </table>

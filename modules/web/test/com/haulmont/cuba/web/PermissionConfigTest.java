@@ -11,26 +11,25 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.bali.datastruct.Tree;
-import com.haulmont.cuba.core.CubaTestCase;
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.config.PermissionConfig;
+import junit.framework.TestCase;
 
 import java.util.List;
 import java.util.Locale;
 
-public class PermissionConfigTest extends CubaTestCase
+public class PermissionConfigTest extends TestCase
 {
     @Override
     protected void setUp() throws Exception {
-        System.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
-        System.setProperty(AppConfig.MENU_CONFIG_XML_PROP, "cuba/client/web/menu-config.xml");
-        System.setProperty(AppConfig.WINDOW_CONFIG_XML_PROP, "cuba/client/web/screen-config.xml");
-        System.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, "com.haulmont.cuba.web.WindowConfig");
-        System.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
-        System.setProperty(AppConfig.MESSAGES_PACK_PROP, "com.haulmont.cuba.web");
+        AppContext.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
+        AppContext.setProperty(AppConfig.MENU_CONFIG_XML_PROP, "cuba/client/web/menu-config.xml");
+        AppContext.setProperty(AppConfig.WINDOW_CONFIG_XML_PROP, "cuba/client/web/screen-config.xml");
+        AppContext.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, "com.haulmont.cuba.web.WindowConfig");
+        AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
+        AppContext.setProperty(AppConfig.MESSAGES_PACK_PROP, "com.haulmont.cuba.web");
     }
 
     public void test() {

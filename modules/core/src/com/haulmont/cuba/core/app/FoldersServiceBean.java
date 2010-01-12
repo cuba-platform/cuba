@@ -11,28 +11,20 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.entity.AppFolder;
-import com.haulmont.cuba.core.sys.ServiceInterceptor;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.security.entity.SearchFolder;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.interceptor.Interceptors;
-import java.util.List;
-import java.util.ArrayList;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 import groovy.lang.Binding;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Service;
 
-@Stateless(name = FoldersService.JNDI_NAME)
-@Interceptors(ServiceInterceptor.class)
-@TransactionManagement(TransactionManagementType.BEAN)
+import java.util.ArrayList;
+import java.util.List;
 
+@Service(FoldersService.NAME)
 public class FoldersServiceBean implements FoldersService {
 
     private Log log = LogFactory.getLog(FoldersServiceBean.class);

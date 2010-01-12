@@ -14,6 +14,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.app.ResourceRepositoryService;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
@@ -63,7 +64,7 @@ public class AppConfig
     }
 
     protected static <T> T createInstance(String propertyName, String defaultImplementation) {
-        String implClassName = System.getProperty(propertyName);
+        String implClassName = AppContext.getProperty(propertyName);
         if (implClassName == null)
             implClassName = defaultImplementation;
         try {
@@ -106,7 +107,7 @@ public class AppConfig
             ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
 
             menuConfig = createInstance(MENU_CONFIG_IMPL_PROP, MENU_CONFIG_DEFAULT_IMPL);
-            final String path = System.getProperty(MENU_CONFIG_XML_PROP);
+            final String path = AppContext.getProperty(MENU_CONFIG_XML_PROP);
             menuConfig.loadConfig(repository.getResAsString(path));
         }
         return menuConfig;
@@ -122,7 +123,7 @@ public class AppConfig
             ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
 
             windowConfig = createInstance(WINDOW_CONFIG_IMPL_PROP, WINDOW_CONFIG_DEFAULT_IMPL);
-            final String path = System.getProperty(WINDOW_CONFIG_XML_PROP);
+            final String path = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
             windowConfig.loadConfig(repository.getResAsString(path));
         }
         return windowConfig;
@@ -134,7 +135,7 @@ public class AppConfig
      */
     public ClientType getClientType() {
         if (clientType == null) {
-            clientType = ClientType.valueOf(System.getProperty(CLIENT_TYPE_PROP));
+            clientType = ClientType.valueOf(AppContext.getProperty(CLIENT_TYPE_PROP));
         }
         return clientType;
     }
@@ -145,7 +146,7 @@ public class AppConfig
      */
     public String getMessagesPack() {
         if (messagesPackage == null) {
-            messagesPackage = System.getProperty(MESSAGES_PACK_PROP);
+            messagesPackage = AppContext.getProperty(MESSAGES_PACK_PROP);
         }
         return messagesPackage;
      }

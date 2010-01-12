@@ -10,15 +10,17 @@
  */
 package com.haulmont.cuba.core.sys.persistence;
 
-import org.apache.openjpa.jdbc.sql.*;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
-import org.apache.openjpa.jdbc.schema.Column;
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.app.PersistenceConfigAPI;
-import com.haulmont.cuba.core.app.PersistenceConfigMBean;
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
+import org.apache.openjpa.jdbc.sql.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class DBDictionaryUtils
 {
@@ -50,7 +52,7 @@ public class DBDictionaryUtils
             // KK: support deferred delete for collections
             if (inverse
                     && to[i].getTable().containsColumn(deleteTsCol)
-                    && PersistenceProvider.getEntityManager().isSoftDeletion())
+                    && PersistenceProvider.getEntityManagerContext().isSoftDeletion())
             {
                 buf.append(" AND ");
                 buf.append(join.getAlias2()).append(".").append(deleteTsCol).append(" IS NULL");
@@ -107,7 +109,7 @@ public class DBDictionaryUtils
             || joins == null || joins.isEmpty())
         {
             SQLBuffer buf = sel.getWhere();
-            if (!PersistenceProvider.getEntityManager().isSoftDeletion())
+            if (!PersistenceProvider.getEntityManagerContext().isSoftDeletion())
                 return buf;
 
             Set<String> aliases = new HashSet<String>();
@@ -153,7 +155,9 @@ public class DBDictionaryUtils
                 where.append(sel.getWhere());
             if (joins != null)
                 sel.append(where, joins);
-            if (sel instanceof SelectImpl && PersistenceProvider.getEntityManager().isSoftDeletion()) {
+            if (sel instanceof SelectImpl
+                    && PersistenceProvider.getEntityManagerContext().isSoftDeletion())
+            {
                 StringBuilder sb = new StringBuilder();
                 Map tables = ((SelectImpl) sel).getTables();
                 for (Object table : tables.values()) {
@@ -181,8 +185,7 @@ public class DBDictionaryUtils
 
     private static PersistenceConfigAPI getPersistenceConfigAPI() {
         if (persistenceConfig == null) {
-            PersistenceConfigMBean mbean = Locator.lookupMBean(PersistenceConfigMBean.class, PersistenceConfigMBean.OBJECT_NAME);
-            persistenceConfig = mbean.getAPI();
+            persistenceConfig = Locator.lookup(PersistenceConfigAPI.NAME);
         }
         return persistenceConfig;
     }

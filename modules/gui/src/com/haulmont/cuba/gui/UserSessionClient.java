@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.UUID;
@@ -26,7 +27,7 @@ public abstract class UserSessionClient
 
     private static UserSessionClient getInstance() {
         if (instance == null) {
-            String implClassName = System.getProperty(IMPL_PROP);
+            String implClassName = AppContext.getProperty(IMPL_PROP);
             if (implClassName == null)
                 implClassName = DEFAULT_IMPL;
             try {

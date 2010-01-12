@@ -11,16 +11,14 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.security.app.EntityLogAPI;
+import com.haulmont.cuba.security.app.EntityLogMBean;
+import com.haulmont.cuba.security.entity.Group;
+import com.haulmont.cuba.security.entity.LoggedAttribute;
 import com.haulmont.cuba.security.entity.LoggedEntity;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.LoggedAttribute;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.app.EntityLogMBean;
-import com.haulmont.cuba.security.app.EntityLog;
-import com.haulmont.cuba.security.app.EntityLogAPI;
 
 import java.util.UUID;
-import java.util.Set;
 
 public class EntityLogTest extends CubaTestCase
 {
@@ -56,7 +54,7 @@ public class EntityLogTest extends CubaTestCase
             tx.end();
         }
 
-        mBean = Locator.lookupMBean(EntityLogMBean.class, EntityLogMBean.OBJECT_NAME);
+        mBean = Locator.lookup(EntityLogAPI.NAME);
         mBean.invalidateCache();
     }
 

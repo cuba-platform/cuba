@@ -9,10 +9,11 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.app.ResourceRepositoryMBean;
 import com.haulmont.cuba.core.app.ResourceRepositoryAPI;
+import com.haulmont.cuba.core.sys.AppContext;
 
 import javax.naming.Context;
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 
 /**
@@ -22,32 +23,18 @@ import java.lang.reflect.Field;
  */
 public abstract class Locator
 {
-    public static final String IMPL_PROP = "cuba.Locator.impl";
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.LocatorImpl";
-
-    private volatile static Locator instance;
-
     public static Locator getInstance() {
-        if (instance == null) {
-            synchronized (Locator.class) {
-                if (instance == null) {
-                    String implClassName = System.getProperty(IMPL_PROP);
-                    if (implClassName == null)
-                        implClassName = DEFAULT_IMPL;
-                    try {
-                        Class implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
-                        instance = (Locator) implClass.newInstance();
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    } catch (InstantiationException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-        return instance;
+        return AppContext.getApplicationContext().getBean("cuba_Locator", Locator.class);
+    }
+
+    /** Lookups bean */
+    public static <T> T lookup(String name) {
+        return (T) getInstance().__lookup(name);
+    }
+
+    /** Lookups JDBC DataSource */
+    public static DataSource getDataSource() {
+        return getInstance().__getDataSource();
     }
 
     /** Returns current JNDI context */
@@ -55,31 +42,34 @@ public abstract class Locator
         return getInstance().__getJndiContextImpl();
     }
 
-    /** Lookups local EJB by name (without /local suffix)*/
+    /**
+     * Lookups local EJB by name (without /local suffix)
+     * <p>DEPRECATED - use {@link #lookup(String)} instead
+     */
+    @Deprecated
     public static <T> T lookupLocal(String name) {
         return (T) getInstance().__lookupLocal(name);
     }
 
-    /** Lookups remote EJB by name (without /remote suffix) */
-    public static <T> T lookupRemote(String name) {
-        return (T) getInstance().__lookupRemote(name);
-    }
-
     /**
      * Lookups MBean by interface and object name
+     * <p>DEPRECATED - use {@link #lookup(String)} instead
      *
      * @param mbeanClass management interface class
-     * @param name JMX object name 
+     * @param objecName JMX object name
     */
-    public static <T> T lookupMBean(Class<T> mbeanClass, String name) {
-        return (T) getInstance().__lookupMBean(mbeanClass, name);
+    @Deprecated
+    public static <T> T lookupMBean(Class<T> mbeanClass, String objecName) {
+        return (T) getInstance().__lookupMBean(mbeanClass, objecName);
     }
 
     /**
      * Lookups MBean by interface. Object name should be declared in OBJECT_NAME constant of the interface.
+     * <p>DEPRECATED - use {@link #lookup(String)} instead
      *
      * @param mbeanClass management interface class
     */
+    @Deprecated
     public static <T> T lookupMBean(Class<T> mbeanClass) {
         String objectName;
         try {
@@ -118,17 +108,18 @@ public abstract class Locator
 
     /** Returns reference to ResourceRepositoryAPI */
     public static ResourceRepositoryAPI getResourceRepository() {
-        ResourceRepositoryMBean mbean = getInstance().__lookupMBean(ResourceRepositoryMBean.class, ResourceRepositoryMBean.OBJECT_NAME);
-        return mbean.getAPI();
+        return (ResourceRepositoryAPI) getInstance().__lookup(ResourceRepositoryAPI.NAME);
     }
+
+    protected abstract Object __lookup(String name);
+
+    protected abstract DataSource __getDataSource();
 
     protected abstract Context __getJndiContextImpl();
 
     protected abstract Object __lookupLocal(String name);
 
-    protected abstract Object __lookupRemote(String name);
-
-    protected abstract <T> T __lookupMBean(Class<T> mbeanClass, String name);
+    protected abstract <T> T __lookupMBean(Class<T> mbeanClass, String objectName);
 
     protected abstract Transaction __createTransaction();
 

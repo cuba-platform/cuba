@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="cuba_Locator" class="com.haulmont.cuba.testsupport.TestLocator">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="persistenceProvider" ref="cuba_PersistenceProvider"/>
+    </bean>
+
+    <bean id="cuba_SecurityProvider" class="com.haulmont.cuba.core.sys.TestSecurityProvider"/>
+
+    <bean id="cuba_MBeanExporter" class="com.haulmont.cuba.testsupport.TestMBeanExporter"/>
+
+</beans>
+

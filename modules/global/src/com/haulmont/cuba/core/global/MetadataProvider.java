@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -19,31 +20,11 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class MetadataProvider
 {
-    public static final String IMPL_PROP = "cuba.MetadataProvider.impl";
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.MetadataProviderImpl";
-
     public static final String METADATA_XML = "cuba.MetadataXml";
-    protected static final String DEFAULT_METADATA_XML = "META-INF/cuba-metadata.xml";
-
-    private static MetadataProvider instance;
+    protected static final String DEFAULT_METADATA_XML = "cuba-metadata.xml";
 
     private static MetadataProvider getInstance() {
-        if (instance == null) {
-            String implClassName = System.getProperty(IMPL_PROP);
-            if (implClassName == null)
-                implClassName = DEFAULT_IMPL;
-            try {
-                Class implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
-                instance = (MetadataProvider) implClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
+        return AppContext.getApplicationContext().getBean("cuba_MetadataProvider", MetadataProvider.class);
     }
 
     /**
@@ -64,7 +45,7 @@ public abstract class MetadataProvider
      * Get the location of non-persistent metadata descriptor
      */
     public static String getMetadataXmlPath() {
-        String xmlPath = System.getProperty(METADATA_XML);
+        String xmlPath = AppContext.getProperty(METADATA_XML);
         if (StringUtils.isBlank(xmlPath))
             xmlPath = DEFAULT_METADATA_XML;
         return xmlPath;

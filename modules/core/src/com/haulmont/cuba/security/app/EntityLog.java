@@ -24,6 +24,8 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -34,20 +36,23 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Configured by {@link com.haulmont.cuba.security.entity.LoggedEntity} and {@link com.haulmont.cuba.security.entity.LoggedAttribute} entities.
  * See also {@link com.haulmont.cuba.security.app.EntityLogConfig} configuration parameters. 
  */
+@ManagedBean(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogMBean, EntityLogAPI {
+    
     private Log log = LogFactory.getLog(EntityLog.class);
 
     private volatile boolean loaded;
 
-    private EntityLogConfig config = ConfigProvider.getConfig(EntityLogConfig.class);
+    private EntityLogConfig config;
 
     private Map<String, Set<String>> entitiesManual;
     private Map<String, Set<String>> entitiesAuto;
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public EntityLogAPI getAPI() {
-        return this;
+    @Inject
+    public EntityLog(ConfigProvider configProvider) {
+        config = configProvider.doGetConfig(EntityLogConfig.class);
     }
 
     public synchronized boolean isEnabled() {

@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.util.GroovyScriptEngine;
@@ -26,41 +27,20 @@ public abstract class ScriptingProvider {
         GUI
     }
 
-    public static final String IMPL_PROP = "cuba.ScriptingProvider.impl";
-
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.ScriptingProviderImpl";
-
-    private static ScriptingProvider instance;
-
     private static ScriptingProvider getInstance() {
-        if (instance == null) {
-            String implClassName = System.getProperty(IMPL_PROP);
-            if (implClassName == null)
-                implClassName = DEFAULT_IMPL;
-            try {
-                Class implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
-                instance = (ScriptingProvider) implClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
+        return AppContext.getApplicationContext().getBean("cuba_ScriptingProvider", ScriptingProvider.class);
     }
 
     public static void addGroovyClassPath(String path) {
-        getInstance().__addGroovyClassPath(path);
+        getInstance().doAddGroovyClassPath(path);
     }
 
     public static void addGroovyEvaluatorImport(Layer layer, String className) {
-        getInstance().__addGroovyEvaluatorImport(layer, className);
+        getInstance().doAddGroovyEvaluatorImport(layer, className);
     }
 
     public static <T> T evaluateGroovy(Layer layer, String text, Binding binding) {
-        return (T) getInstance().__evaluateGroovy(layer, text, binding);
+        return (T) getInstance().doEvaluateGroovy(layer, text, binding);
     }
 
     public static <T> T evaluateGroovy(Layer layer, String text, Map<String, Object> context) {
@@ -69,33 +49,33 @@ public abstract class ScriptingProvider {
     }
 
     public static <T> T runGroovyScript(String name, Binding binding) {
-        return (T) getInstance().__runGroovyScript(name, binding);
+        return (T) getInstance().doRunGroovyScript(name, binding);
     }
 
     public static <T> T runGroovyScript(String name,  Map<String, Object> context) {
         Binding binding = createBinding(context);
-        return (T) getInstance().__runGroovyScript(name, binding);
+        return (T) getInstance().doRunGroovyScript(name, binding);
     }
 
     public static Class loadClass(String name) {
-        return getInstance().__loadClass(name);
+        return getInstance().doLoadClass(name);
     }
 
     public static InputStream getResourceAsStream(String name) {
-        return getInstance().__getResourceAsStream(name);
+        return getInstance().doGetResourceAsStream(name);
     }
 
     public static ClassLoader getGroovyClassLoader() {
-        return getInstance().__getGroovyClassLoader();
+        return getInstance().doGetGroovyClassLoader();
     }
 
     public static void clearCache() {
-        getInstance().__getGroovyClassLoader().clearCache();
+        getInstance().doGetGroovyClassLoader().clearCache();
     }
 
-    protected <T> T __runGroovyScript(String name, Binding binding) {
+    public <T> T doRunGroovyScript(String name, Binding binding) {
         try {
-            return (T) __getGroovyScriptEngine().run(name, binding);
+            return (T) doGetGroovyScriptEngine().run(name, binding);
         } catch (ResourceException e) {
             throw new RuntimeException(e);
         } catch (ScriptException e) {
@@ -103,16 +83,17 @@ public abstract class ScriptingProvider {
         }
     }
 
-    private Class __loadClass(String name) {
+    public Class doLoadClass(String name) {
         try {
-            return __getGroovyClassLoader().loadClass(name, true, false);
+            return doGetGroovyClassLoader().loadClass(name, true, false);
         } catch (ClassNotFoundException e) {
             return null;
         }
     }
 
-    private InputStream __getResourceAsStream(String name) {
-        return __getGroovyClassLoader().getResourceAsStream(name);
+    public InputStream doGetResourceAsStream(String name) {
+        String s = name.startsWith("/") ? name.substring(1) : name;
+        return doGetGroovyClassLoader().getResourceAsStream(s);
     }
 
     protected static Binding createBinding(Map<String, Object> map) {
@@ -124,13 +105,13 @@ public abstract class ScriptingProvider {
         return binding;
     }
 
-    protected abstract void __addGroovyClassPath(String path);
+    public abstract void doAddGroovyClassPath(String path);
 
-    protected abstract void __addGroovyEvaluatorImport(Layer layer, String str);
+    public abstract void doAddGroovyEvaluatorImport(Layer layer, String str);
 
-    protected abstract <T> T __evaluateGroovy(Layer layer, String text, Binding binding);
+    public abstract <T> T doEvaluateGroovy(Layer layer, String text, Binding binding);
 
-    protected abstract GroovyScriptEngine __getGroovyScriptEngine();
+    public abstract GroovyScriptEngine doGetGroovyScriptEngine();
 
-    protected abstract GroovyClassLoader __getGroovyClassLoader();
+    public abstract GroovyClassLoader doGetGroovyClassLoader();
 }

@@ -19,24 +19,21 @@ import javax.naming.Context;
  */
 public abstract class ServiceLocator
 {
-    public static final String IMPL_PROP = "cuba.ServiceLocator.impl";
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.web.sys.ServiceLocatorImpl";
+    private static Class implClass;
 
     private static ServiceLocator instance;
 
     protected Context jndiContext;
     protected DataService dataService;
 
+    public static void setImplClass(Class implClass) {
+        ServiceLocator.implClass = implClass;
+    }
+
     private static ServiceLocator getInstance() {
         if (instance == null) {
-            String implClassName = System.getProperty(IMPL_PROP);
-            if (implClassName == null)
-                implClassName = DEFAULT_IMPL;
             try {
-                Class implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
                 instance = (ServiceLocator) implClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             } catch (InstantiationException e) {
@@ -56,26 +53,26 @@ public abstract class ServiceLocator
     /**
      * Locate service reference by its JNDI name
      */
-    public static <T> T lookup(String jndiName) {
-        return (T) getInstance().__lookup(jndiName);
+    public static <T> T lookup(String name) {
+        return (T) getInstance().__lookup(name);
     }
 
     /**
      * Reference to DataService
      */
     public static DataService getDataService() {
-        return getInstance().__getBasicService();
+        return getInstance().__getDataService();
     }
 
-    private DataService __getBasicService() {
+    private DataService __getDataService() {
         if (dataService == null) {
-            dataService = (DataService) __lookup(DataService.JNDI_NAME);
+            dataService = (DataService) __lookup(DataService.NAME);
         }
         return dataService;
     }
 
     protected abstract Context __getJndiContext();
 
-    protected abstract Object __lookup(String jndiName);
+    protected abstract Object __lookup(String name);
 
 }

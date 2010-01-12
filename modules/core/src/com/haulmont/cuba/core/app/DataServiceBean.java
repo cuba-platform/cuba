@@ -10,31 +10,26 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.ServiceInterceptor;
 import com.haulmont.cuba.core.sys.ViewHelper;
-import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.bali.util.StringHelper;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Service;
 
-import javax.ejb.*;
-import javax.interceptor.Interceptors;
 import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
-@Stateless(name = DataService.JNDI_NAME)
-@Interceptors({ServiceInterceptor.class})
-@TransactionManagement(TransactionManagementType.BEAN)
-public class DataServiceBean implements DataService, DataServiceRemote
+@Service(DataService.NAME)
+public class DataServiceBean implements DataService
 {
     private volatile static Boolean storeCacheEnabled;
 
@@ -268,7 +263,7 @@ public class DataServiceBean implements DataService, DataServiceRemote
 
     private static boolean isStoreCacheEnabled() {
         if (storeCacheEnabled == null) {
-            DataCacheMBean bean = Locator.lookupMBean(DataCacheMBean.class, DataCacheMBean.OBJECT_NAME);
+            DataCacheAPI bean = Locator.lookup(DataCacheAPI.NAME);
             storeCacheEnabled = bean.isStoreCacheEnabled();
         }
         return storeCacheEnabled;

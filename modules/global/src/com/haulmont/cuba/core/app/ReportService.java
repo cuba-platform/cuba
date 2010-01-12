@@ -19,12 +19,14 @@ import javax.ejb.TransactionAttributeType;
 import java.util.Map;
 
 /**
- * Local interface for {@link com.haulmont.cuba.core.app.ReportServiceBean}
+ * Service interface for ReportEngine
  */
-@Local
 public interface ReportService
 {
-    String JNDI_NAME = "cuba/core/ReportService";
+    String NAME = "cuba_ReportService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
 
     JasperPrint executeJasperReport(String name, Map<String, Object> params);
 

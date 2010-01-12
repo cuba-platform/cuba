@@ -10,11 +10,25 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.global.DataServiceRemote;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.DbDialect;
+import com.haulmont.cuba.core.global.LoadContext;
 
-import javax.ejb.Local;
+import java.util.List;
+import java.util.Map;
 
-@Local
-public interface DataService extends DataServiceRemote
+public interface DataService
 {
+    String NAME = "cuba_DataService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
+
+    DbDialect getDbDialect();
+
+    Map<Entity, Entity> commit(CommitContext<Entity> context);
+
+    <A extends Entity> A load(LoadContext context);
+    <A extends Entity> List<A> loadList(LoadContext context);
 }

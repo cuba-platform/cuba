@@ -10,31 +10,26 @@
  */
 package com.haulmont.cuba.core.app;
 
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JRDataSource;
-
-import javax.ejb.*;
-import javax.interceptor.Interceptors;
-import java.util.Map;
-
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.sys.ServiceInterceptor;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JasperPrint;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * Service facade for {@link com.haulmont.cuba.core.app.ReportEngine} MBean
  */
-@Stateless(name = ReportService.JNDI_NAME)
-@Interceptors(ServiceInterceptor.class)
-@TransactionManagement(TransactionManagementType.BEAN)
+@Service(ReportService.NAME)
 public class ReportServiceBean implements ReportService
 {
     public JasperPrint executeJasperReport(String name, Map<String, Object> params) {
-        ReportEngineMBean mbean = Locator.lookupMBean(ReportEngineMBean.class, ReportEngineMBean.OBJECT_NAME);
+        ReportEngineAPI mbean = Locator.lookup(ReportEngineAPI.NAME);
         JasperPrint print;
         Transaction tx = Locator.createTransaction();
         try {
-            print = mbean.getAPI().executeJasperReport(name, params, null);
+            print = mbean.executeJasperReport(name, params, null);
             tx.commit();
         } finally {
             tx.end();
@@ -43,11 +38,11 @@ public class ReportServiceBean implements ReportService
     }
 
     public JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource) {
-        ReportEngineMBean mbean = Locator.lookupMBean(ReportEngineMBean.class, ReportEngineMBean.OBJECT_NAME);
+        ReportEngineAPI mbean = Locator.lookup(ReportEngineAPI.NAME);
         JasperPrint print;
         Transaction tx = Locator.createTransaction();
         try {
-            print = mbean.getAPI().executeJasperReport(name, params, dataSource);
+            print = mbean.executeJasperReport(name, params, dataSource);
             tx.commit();
         } finally {
             tx.end();

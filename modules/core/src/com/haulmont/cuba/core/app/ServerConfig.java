@@ -16,40 +16,39 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
-import com.haulmont.cuba.core.sys.ConfigDirFactory;
 
 /**
  * Common server configuration parameters
  */
-@Source(type = SourceType.SYSTEM)
+@Source(type = SourceType.APP)
 public interface ServerConfig extends Config {
 
     /**
      * Config directory. Root of all not deployable application configuration and logic.
      * Does not end with "/"
      */
-    @Factory(factory = ConfigDirFactory.class)
+    @Property("cuba.confDir")
     String getServerConfDir();
 
     /**
      * Logs directory. Place app-specific log files here.
      * Does not end with "/"
      */
-    @Property("jboss.server.log.dir")
+    @Property("cuba.logDir")
     String getServerLogDir();
 
     /**
      * Temporary files directory. Place app-specific temp files under this directory.
      * Does not end with "/"
      */
-    @Property("jboss.server.temp.dir")
+    @Property("cuba.tempDir")
     String getServerTempDir();
 
     /**
      * Data directory. Place persistent app-specific data files under this directory.
      * Does not end with "/"
      */
-    @Property("jboss.server.data.dir")
+    @Property("cuba.dataDir")
     String getServerDataDir();
 
     /**

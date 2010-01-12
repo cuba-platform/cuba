@@ -10,17 +10,13 @@
  */
 package com.haulmont.cuba.core.app;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.io.IOUtils;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.security.app.UserSessionsMBean;
-import com.haulmont.cuba.deploymarker.DeployMarkerMBean;
 
-import java.io.InputStream;
+import javax.annotation.ManagedBean;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * CubaDeployer MBean implementation.
@@ -28,6 +24,7 @@ import java.io.IOException;
  * Intended to support other MBeans dependencies because it starts after all other platform MBeans.
  * Also holds some information about the system.
  */
+@ManagedBean(CubaDeployerMBean.NAME)
 public class CubaDeployer implements CubaDeployerMBean
 {
     private Log log = LogFactory.getLog(CubaDeployer.class);
@@ -35,13 +32,7 @@ public class CubaDeployer implements CubaDeployerMBean
     private String releaseNumber = "?";
     private String releaseTimestamp = "?";
 
-    public void start() {
-        log.debug("start");
-
-        ServerConfig config = ConfigProvider.getConfig(ServerConfig.class);
-        UserSessionsMBean mBean = Locator.lookupMBean(UserSessionsMBean.class, UserSessionsMBean.OBJECT_NAME);
-        mBean.setExpirationTimeoutSec(config.getUserSessionExpirationTimeoutSec());
-
+    public CubaDeployer() {
         InputStream stream = getClass().getResourceAsStream("/com/haulmont/cuba/core/global/release.number");
         if (stream != null)
             try {
@@ -57,8 +48,6 @@ public class CubaDeployer implements CubaDeployerMBean
             } catch (IOException e) {
                 log.warn("Unable to read release timestamp", e);
             }
-
-        ScriptingProvider.addGroovyClassPath(config.getServerConfDir() + "/cuba");
     }
 
     public String getReleaseNumber() {

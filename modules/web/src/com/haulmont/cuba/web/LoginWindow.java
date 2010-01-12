@@ -240,8 +240,7 @@ public class LoginWindow extends Window
             }
             else {
                 String passwd = DigestUtils.md5Hex((String) passwdField.getValue());
-                String lang = (String) localesSelect.getValue();
-                Locale locale = locales.get(lang);
+                Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 connection.login(login, passwd, locale);
             }
@@ -249,6 +248,12 @@ public class LoginWindow extends Window
         } catch (LoginException e) {
             showNotification(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    protected Locale getUserLocale() {
+        String lang = (String) localesSelect.getValue();
+        Locale locale = locales.get(lang);
+        return locale;
     }
 
     protected Layout createUserHint(App app) {

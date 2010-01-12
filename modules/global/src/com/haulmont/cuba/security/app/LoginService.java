@@ -10,17 +10,15 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.UserSession;
 
-import javax.ejb.Local;
 import java.util.Locale;
 
 /**
- * Local interface to {@link com.haulmont.cuba.security.app.LoginServiceBean}
+ * Local interface to LoginServiceBean
  */
-@Local
 public interface LoginService extends LoginServiceRemote
 {
     /**

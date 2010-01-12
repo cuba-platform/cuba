@@ -10,9 +10,6 @@
  */
 package com.haulmont.cuba.testsupport;
 
-import com.haulmont.cuba.core.sys.ManagedPersistenceProvider;
-import com.haulmont.cuba.core.EntityManager;
-
 import javax.transaction.*;
 import javax.transaction.xa.XAResource;
 import java.util.List;
@@ -33,10 +30,6 @@ public class TestTransaction implements Transaction {
         Connection conn = null;
         for (Synchronization sync : syncs) {
             sync.beforeCompletion();
-            if (sync instanceof ManagedPersistenceProvider.TxSync) {
-                EntityManager em = ((ManagedPersistenceProvider.TxSync) sync).getEntityManager();
-                conn = em.getConnection();
-            }
         }
         if (conn != null) {
             try {
@@ -52,16 +45,6 @@ public class TestTransaction implements Transaction {
     }
 
     public void rollback() throws IllegalStateException, SystemException {
-        for (Synchronization sync : syncs) {
-            if (sync instanceof ManagedPersistenceProvider.TxSync) {
-                EntityManager em = ((ManagedPersistenceProvider.TxSync) sync).getEntityManager();
-                try {
-                    em.getConnection().rollback();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
         if (status != Status.STATUS_ACTIVE && status != Status.STATUS_MARKED_ROLLBACK)
             throw new SystemException("Unable to rollback: invalid tx status: " + status);
 

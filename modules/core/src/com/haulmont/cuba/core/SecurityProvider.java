@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
@@ -26,34 +27,13 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class SecurityProvider
 {
-    public static final String IMPL_PROP = "cuba.SecurityProvider.impl";
-
-    private static final String DEFAULT_IMPL = "com.haulmont.cuba.core.sys.SecurityProviderImpl";
-
     public static final String CONSTRAINT_PARAM_SESSION_ATTR = "session$";
     public static final String CONSTRAINT_PARAM_USER_LOGIN = "userLogin";
     public static final String CONSTRAINT_PARAM_USER_ID = "userId";
     public static final String CONSTRAINT_PARAM_USER_GROUP_ID = "userGroupId";
 
-    private static SecurityProvider instance;
-
     private static SecurityProvider getInstance() {
-        if (instance == null) {
-            String implClassName = System.getProperty(IMPL_PROP);
-            if (implClassName == null)
-                implClassName = DEFAULT_IMPL;
-            try {
-                Class implClass = Thread.currentThread().getContextClassLoader().loadClass(implClassName);
-                instance = (SecurityProvider) implClass.newInstance();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
+        return AppContext.getApplicationContext().getBean("cuba_SecurityProvider", SecurityProvider.class);
     }
 
     /**

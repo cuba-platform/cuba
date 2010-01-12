@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
-@Source(type = SourceType.SYSTEM)
+@Source(type = SourceType.APP)
 public interface LogConfig extends Config {
 
     @Property("cuba.log.cutLoadListQueries")

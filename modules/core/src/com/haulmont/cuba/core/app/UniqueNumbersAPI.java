@@ -12,6 +12,8 @@ package com.haulmont.cuba.core.app;
  */
 public interface UniqueNumbersAPI
 {
+    String NAME = "cuba_UniqueNumbers";
+    
     /**
      * Returns next sequence value
      * @param domain sequence identifier

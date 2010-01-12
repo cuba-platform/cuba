@@ -59,7 +59,7 @@ public class GroupBrowser extends AbstractWindow
         usersActions.createEditAction();
         users.addAction(new AbstractAction("moveToGroup") {
             public String getCaption() {
-                return "Move to Group";
+                return getMessage("users.moveToGroup");
             }
 
             public boolean isEnabled() {

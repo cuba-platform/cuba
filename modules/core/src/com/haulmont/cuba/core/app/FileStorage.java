@@ -25,11 +25,13 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.net.URLEncoder;
 
+@ManagedBean(FileStorageAPI.NAME)
 public class FileStorage implements FileStorageMBean, FileStorageAPI {
 
     private Log log = LogFactory.getLog(FileStorage.class);

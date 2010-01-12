@@ -68,50 +68,54 @@ public class FileDownloadServlet extends HttpServlet {
             error(response);
             return;
         }
+
         WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
-
-        UUID fileId;
         try {
-            fileId = UUID.fromString(request.getParameter("f"));
-        } catch (Exception e) {
-            error(response);
-            return;
+            UUID fileId;
+            try {
+                fileId = UUID.fromString(request.getParameter("f"));
+            } catch (Exception e) {
+                error(response);
+                return;
+            }
+
+            boolean attach = Boolean.valueOf(request.getParameter("a"));
+
+            FileDescriptor fd = ServiceLocator.getDataService().load(
+                    new LoadContext(FileDescriptor.class).setId(fileId)
+            );
+
+            String fileName;
+            try {
+                fileName = URLEncoder.encode(fd.getName(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
+            response.setHeader("Content-Type", getContentType(fd));
+            response.setHeader("Content-Disposition", (attach ? "attachment" : "inline")
+                    + "; filename=" + fileName);
+
+            byte[] data;
+            FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
+            try {
+                data = fss.loadFile(fd);
+            } catch (FileStorageException e) {
+                log.error("Unable to download file", e);
+                error(response);
+                return;
+            }
+
+            ServletOutputStream os = response.getOutputStream();
+            os.write(data, 0, data.length);
+            os.flush();
+            os.close();
+        } finally {
+            WebSecurityUtils.clearSecurityAssociation();
         }
-
-        boolean attach = Boolean.valueOf(request.getParameter("a"));
-
-        FileDescriptor fd = ServiceLocator.getDataService().load(
-                new LoadContext(FileDescriptor.class).setId(fileId)
-        );
-
-        String fileName;
-        try {
-            fileName = URLEncoder.encode(fd.getName(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-        response.setHeader("Cache-Control", "no-cache");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
-        response.setHeader("Content-Type", getContentType(fd));
-        response.setHeader("Content-Disposition", (attach ? "attachment" : "inline") 
-                + "; filename=" + fileName);
-
-        byte[] data;
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
-        try {
-            data = fss.loadFile(fd);
-        } catch (FileStorageException e) {
-            log.error("Unable to download file", e);
-            error(response);
-            return;
-        }
-
-        ServletOutputStream os = response.getOutputStream();
-        os.write(data, 0, data.length);
-        os.flush();
-        os.close();
     }
 
     protected String getContentType(FileDescriptor fd) {

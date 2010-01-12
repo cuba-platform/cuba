@@ -10,13 +10,10 @@
  */
 package com.haulmont.cuba.security.app;
 
-import javax.ejb.Local;
-
 /**
- * Local interface to {@link com.haulmont.cuba.security.app.LoginWorkerBean}
+ * Interface to {@link com.haulmont.cuba.security.app.LoginWorkerBean}
  */
-@Local
 public interface LoginWorker extends LoginService
 {
-    String JNDI_NAME = "cuba/security/LoginWorker";
+    String NAME = "cuba_LoginWorker";
 }

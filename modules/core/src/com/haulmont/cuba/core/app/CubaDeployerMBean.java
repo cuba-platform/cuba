@@ -15,9 +15,9 @@ package com.haulmont.cuba.core.app;
  */
 public interface CubaDeployerMBean
 {
-    String OBJECT_NAME = "haulmont.cuba:service=CubaDeployer";
+    String NAME = "cuba_CubaDeployer";
 
-    void start();
+    String OBJECT_NAME = "haulmont.cuba:service=CubaDeployer";
 
     String getReleaseNumber();
 

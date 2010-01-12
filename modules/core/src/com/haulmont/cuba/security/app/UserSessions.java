@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.core.app.ServerConfig;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.core.global.TimeProvider;
@@ -20,14 +23,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.io.Serializable;
 
 import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 
 /**
  * UserSessions MBean implementation.
  * <p>
  * Holds and controls the current user sessions list.
  */
-
+@ManagedBean(UserSessionsAPI.NAME)
 public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbeat.Listener {
+    
     private static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
 
@@ -47,13 +56,25 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
         }
     }
 
+    private Log log = LogFactory.getLog(UserSessions.class);
+
     private Map<UUID, UserSessionInfo> cache = new ConcurrentHashMap<UUID, UserSessionInfo>();
 
     private volatile int expirationTimeout = 1800;
 
     public UserSessions() {
-        System.setProperty("cuba.logUserName", "true");
-        Heartbeat.getInstance().addListener(this, 10);
+        AppContext.setProperty("cuba.logUserName", "true");
+    }
+
+    @Inject
+    public void setConfigProvider(ConfigProvider configProvider) {
+        ServerConfig config = configProvider.doGetConfig(ServerConfig.class);
+        setExpirationTimeoutSec(config.getUserSessionExpirationTimeoutSec());
+    }
+
+    @Inject
+    public void setHeartbeat(Heartbeat heartbeat) {
+        heartbeat.addListener(this, 10);
     }
 
     public void add(UserSession session) {
@@ -112,10 +133,13 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
         }
         return sessionInfoList;
     }
+
     public void killSession(UUID id){
         cache.remove(id);
     }
+
     public void processEviction() {
+        log.trace("Processing eviction");
         long now = TimeProvider.currentTimestamp().getTime();
         for (Iterator<UserSessionInfo> it = cache.values().iterator(); it.hasNext();) {
             UserSessionInfo info = it.next();

@@ -9,10 +9,8 @@
     <property name="src-conf.dir" location="src-conf"/>
 
 	<property name="module.name" value="core"/>
-	<property name="module.jar" value="20cuba-core.jar"/>
+	<property name="module.jar" value="cuba-core.jar"/>
     <property name="module.test.jar" value="cuba-test.jar"/>
-    <property name="module.service.xml" value="21cuba-service.xml"/>
-    <property name="module.ds.xml" value="cuba-ds.xml"/>
 
 	<import file="${root.dir}/build-inc-mod.xml"/>
 	<property file="${root.dir}/build.properties"/>
@@ -24,6 +22,7 @@
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
+        <fileset refid="jdbc-lib-fs"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/deploymarker"/>
@@ -49,9 +48,6 @@
             <include name="**/*"/>
         </jar>
 
-        <copy file="src-serv/${module.service.xml}" todir="${build.dir}"/>
-        <copy file="src-serv/${module.ds.xml}" todir="${build.dir}"/>
-
         <mkdir dir="${build.dir}/conf"/>
         <copy todir="${build.dir}/conf">
             <fileset dir="src-conf" includes="**/*"/>
@@ -59,18 +55,6 @@
         <copy todir="${build.dir}/conf">
             <fileset dir="fonts" includes="**/*"/>
         </copy>
-    </target>
-
-    <target name="deploy-module" depends="base-mod.deploy-module">
-        <copy file="${build.dir}/${module.service.xml}" todir="${jboss.deploy.dir}"/>
-        <copy file="${src-serv.dir}/${module.ds.xml}" todir="${jboss.deploy.dir}"/>
-        <copy todir="${jboss.dir}/server/default/conf">
-            <fileset dir="${build.dir}/conf" includes="**/*"/>
-        </copy>
-    </target>
-
-    <target name="undeploy-module" depends="base-mod.undeploy-module">
-        <delete file="${jboss.dir}/server/default/deploy/${module.service.xml}"/>
     </target>
 
 </project>
