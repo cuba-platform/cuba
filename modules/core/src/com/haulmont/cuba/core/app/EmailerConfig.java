@@ -10,20 +10,20 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.config.Config;
-import com.haulmont.cuba.core.config.Source;
-import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.config.Prefix;
+import com.haulmont.cuba.core.config.*;
 import com.haulmont.cuba.core.config.defaults.Default;
 
 /**
  * Parameters 
  */
-@Prefix("cuba.Emailer.")
-@Source(type = SourceType.DATABASE)
+@Prefix("cuba.email.")
+@Source(type = SourceType.APP)
 public interface EmailerConfig extends Config
 {
     @Default("DoNotReply@haulmont.com")
     String getFromAddress();
-    void setFromAddress(String address);
+    void setFromAddress(String fromAddress);
+
+    @Default("test.host")
+    String getSmtpHost();
 }

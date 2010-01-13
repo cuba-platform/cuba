@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.global.EmailInfo;
 
 /**
  * API of {@link Emailer} MBean.<br>
- * Reference to this interface must be obtained through {@link EmailerMBean#getAPI()} method
  */
 public interface EmailerAPI
 {

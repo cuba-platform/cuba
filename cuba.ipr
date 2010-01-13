@@ -518,6 +518,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/springframework.orm-3.0.0.RELEASE.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/servlet-api-1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/jdbc/postgresql-8.3-603.jdbc4.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/springframework.context.support-3.0.0.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -526,6 +527,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.orm-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.transaction-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.jdbc-3.0.0.RELEASE-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.context.support-3.0.0.RELEASE-src.zip!/" />
       </SOURCES>
     </library>
     <library name="common">

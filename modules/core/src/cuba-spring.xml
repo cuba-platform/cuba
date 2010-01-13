@@ -188,4 +188,10 @@
         <task:scheduled ref="cuba_Heartbeat" method="beat" fixed-rate="1000"/>
     </task:scheduled-tasks>
 
+    <!-- Email setup -->
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${cuba.email.smtpHost}"/>
+    </bean>
+
 </beans>
