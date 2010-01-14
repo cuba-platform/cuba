@@ -51,6 +51,7 @@ public class FilterEditor {
     private static final String EDITOR_WIDTH = "600px";
     private static List<String> defaultExcludedProps = Arrays.asList("version");
     private CheckBox globalCb;
+    private Button saveBtn;
 
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity, Element filterDescriptor)
     {
@@ -71,14 +72,18 @@ public class FilterEditor {
         layout.setMargin(true, false, false, false);
         layout.setWidth(EDITOR_WIDTH);
 
-        GridLayout grid = new GridLayout(2, 2);
-        grid.setWidth("100%");
-        grid.setSpacing(true);
+        GridLayout topGrid = new GridLayout(2, 1);
+        topGrid.setWidth("100%");
+        topGrid.setSpacing(true);
+
+        GridLayout bottomGrid = new GridLayout(2, 1);
+        bottomGrid.setWidth("100%");
+        bottomGrid.setSpacing(true);
 
         HorizontalLayout controlLayout = new HorizontalLayout();
         controlLayout.setSpacing(true);
 
-        Button saveBtn = WebComponentsHelper.createButton("icons/ok.png");
+        saveBtn = WebComponentsHelper.createButton("icons/ok.png");
         saveBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Ok"));
         saveBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
@@ -97,7 +102,7 @@ public class FilterEditor {
         });
         controlLayout.addComponent(cancelBtn);
 
-        grid.addComponent(controlLayout, 0, 0);
+        bottomGrid.addComponent(controlLayout, 0, 0);
 
         globalCb = new CheckBox();
         globalCb.setCaption(getMessage("FilterEditor.global"));
@@ -105,8 +110,8 @@ public class FilterEditor {
         globalCb.setEnabled(UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
         controlLayout.addComponent(globalCb);
 
-        grid.addComponent(globalCb, 1, 0);
-        grid.setComponentAlignment(globalCb, Alignment.MIDDLE_RIGHT);
+        bottomGrid.addComponent(globalCb, 1, 0);
+        bottomGrid.setComponentAlignment(globalCb, Alignment.MIDDLE_RIGHT);
 
         HorizontalLayout nameLayout = new HorizontalLayout();
         nameLayout.setSpacing(true);
@@ -119,21 +124,23 @@ public class FilterEditor {
         nameField.setWidth("200px");
         nameLayout.addComponent(nameField);
 
-        grid.addComponent(nameLayout, 0, 1);
+        topGrid.addComponent(nameLayout, 0, 0);
 
         AbstractLayout addLayout = initAddSelect();
 
-        grid.addComponent(addLayout, 1, 1);
-        grid.setComponentAlignment(addLayout, Alignment.MIDDLE_RIGHT);
+        topGrid.addComponent(addLayout, 1, 0);
+        topGrid.setComponentAlignment(addLayout, Alignment.MIDDLE_RIGHT);
 
-        layout.addComponent(grid);
+        layout.addComponent(topGrid);
 
         HorizontalLayout mainLayout = new HorizontalLayout();
         mainLayout.setSpacing(true);
-
         initTable(mainLayout);
-
         layout.addComponent(mainLayout);
+
+        layout.addComponent(bottomGrid);
+
+        updateControls();
     }
 
     private AbstractLayout initAddSelect() {
@@ -241,11 +248,18 @@ public class FilterEditor {
                 },
                 condition
         );
+
+        updateControls();
     }
 
     private void deleteCondition(Condition condition) {
         conditions.remove(condition);
         table.removeItem(condition);
+        updateControls();
+    }
+
+    private void updateControls() {
+        saveBtn.setEnabled(!conditions.isEmpty());
     }
 
     private Button createDeleteConditionBtn(final Condition condition) {
