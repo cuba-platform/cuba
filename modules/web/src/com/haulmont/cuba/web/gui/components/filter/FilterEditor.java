@@ -39,6 +39,7 @@ public class FilterEditor {
     private MetaClass metaClass;
     private CollectionDatasource datasource;
     private List<ConditionDescriptor> descriptors = new ArrayList<ConditionDescriptor>();
+    private List<String> existingNames;
 
     private List<Condition> conditions = new ArrayList<Condition>();
     private AbstractOrderedLayout layout;
@@ -53,7 +54,8 @@ public class FilterEditor {
     private CheckBox globalCb;
     private Button saveBtn;
 
-    public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity, Element filterDescriptor)
+    public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
+                        Element filterDescriptor, List<String> existingNames)
     {
         this.filterEntity = filterEntity;
         this.filterDescriptor = filterDescriptor;
@@ -61,6 +63,7 @@ public class FilterEditor {
         this.datasource = webFilter.getDatasource();
         this.messagesPack = webFilter.getFrame().getMessagesPack();
         this.metaClass = datasource.getMetaClass();
+        this.existingNames = existingNames;
 
         parseDescriptorXml();
 
@@ -347,6 +350,14 @@ public class FilterEditor {
     }
 
     public boolean commit() {
+        if (existingNames.contains(nameField.getValue())) {
+            App.getInstance().getAppWindow().showNotification(
+                    getMessage("FilterEditor.commitError"),
+                    getMessage("FilterEditor.nameAlreadyExists"),
+                    Window.Notification.TYPE_HUMANIZED_MESSAGE);
+            return false;
+        }
+
         StringBuilder sb = new StringBuilder();
         for (Condition condition : conditions) {
             String error = condition.getError();
