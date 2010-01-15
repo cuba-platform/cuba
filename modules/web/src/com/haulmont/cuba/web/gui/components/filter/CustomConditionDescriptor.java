@@ -40,11 +40,12 @@ public class CustomConditionDescriptor extends ConditionDescriptor {
 
     @Override
     public Class getJavaClass() {
-        element.attributeValue("paramClass");
-        Class paramClass = ReflectionHelper.getClass(element.attributeValue("paramClass"));
-//        
-//        Element paramElem = element.element("param");
-//        Class paramClass = ReflectionHelper.getClass(paramElem.attributeValue("class"));
-        return paramClass;
+        String className = element.attributeValue("paramClass");
+        if (className == null)
+            return null;
+        else {
+            Class paramClass = ReflectionHelper.getClass(element.attributeValue("paramClass"));
+            return paramClass;
+        }
     }
 }

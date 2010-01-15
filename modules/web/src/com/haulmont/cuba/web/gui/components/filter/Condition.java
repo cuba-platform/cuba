@@ -84,6 +84,7 @@ public abstract class Condition {
         locCaption = descriptor.getLocCaption();
         filterComponentName = descriptor.getFilterComponentName();
         javaClass = descriptor.getJavaClass();
+        unary = javaClass == null;
         param = descriptor.createParam(this);
     }
 

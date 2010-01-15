@@ -48,6 +48,9 @@
                             join="left join u.group.hierarchyList h" paramClass="com.haulmont.cuba.security.entity.Group">
                         (h.parent.id = ? or h.group.id = ?) or (u.group.id = ? and h.parent is null)
                     </custom>
+                    <custom name="customByEmail" caption="customByEmail">
+                        u.email like '%aaa%'
+                    </custom>
                 </filter>
             </vbox>
                 <!--</tab>-->

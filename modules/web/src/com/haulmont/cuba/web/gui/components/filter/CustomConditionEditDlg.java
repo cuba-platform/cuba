@@ -53,7 +53,7 @@ public class CustomConditionEditDlg extends Window {
 
     public CustomConditionEditDlg(final CustomCondition condition) {
         super(condition.getLocCaption());
-        setWidth("400px");
+        setWidth("420px");
 
         this.condition = condition;
         this.messagesPack = AppConfig.getInstance().getMessagesPack();
