@@ -210,8 +210,16 @@ public abstract class Condition {
         return entityParamView;
     }
 
+    public void setEntityParamView(String entityParamView) {
+        this.entityParamView = entityParamView;
+    }
+
     public String getEntityParamWhere() {
         return entityParamWhere;
+    }
+
+    public void setEntityParamWhere(String entityParamWhere) {
+        this.entityParamWhere = entityParamWhere;
     }
 
     public String createParamName() {

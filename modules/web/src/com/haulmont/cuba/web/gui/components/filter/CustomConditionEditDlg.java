@@ -238,8 +238,11 @@ public class CustomConditionEditDlg extends Window {
             condition.setJavaClass(javaClass);
 
             String entityParamWhere = (String) entityParamWhereText.getValue();
-            String entityParamView = (String) entityParamViewText.getValue();
+            condition.setEntityParamWhere(entityParamWhere);
 
+            String entityParamView = (String) entityParamViewText.getValue();
+            condition.setEntityParamView(entityParamView);
+            
             Param param = new Param(paramName, javaClass, entityParamWhere, entityParamView);
             condition.setParam(param);
         }

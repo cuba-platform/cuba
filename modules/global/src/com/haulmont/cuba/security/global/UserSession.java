@@ -100,6 +100,13 @@ public class UserSession implements Serializable
     }
 
     /**
+     * Returns substituted user if it is not null, logged-in user otherwise.
+     */
+    public User getCurrentOrSubstitutedUser() {
+        return substitutedUser == null ? user : substitutedUser;
+    }
+
+    /**
      * User role names
      */
     public String[] getRoles() {
@@ -215,7 +222,9 @@ public class UserSession implements Serializable
      */
     public <T> T getAttribute(String name) {
         if ("userId".equals(name))
-            return (T) (substitutedUser == null ? user.getId() : substitutedUser.getId());
+            return (T) getCurrentOrSubstitutedUser().getId();
+        if ("userLogin".equals(name))
+            return (T) getCurrentOrSubstitutedUser().getLoginLowerCase();
         else
             return (T) attributes.get(name);
     }

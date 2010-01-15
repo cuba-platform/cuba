@@ -36,12 +36,12 @@ public class ConditionCreator extends ConditionDescriptor {
     }
 
     @Override
-    protected String getEntityParamWhere() {
+    public String getEntityParamWhere() {
         return null;
     }
 
     @Override
-    protected String getEntityParamView() {
+    public String getEntityParamView() {
         return null;
     }
 }

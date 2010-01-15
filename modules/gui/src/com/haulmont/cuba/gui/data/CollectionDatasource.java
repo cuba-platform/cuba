@@ -61,10 +61,10 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     /** Updates item in the collection if it is already there. Does not affect the "modified" state */
     void updateItem(T item);
 
-    /** True if this datasource supports soft deletion functionality. Corresponds to {@link com.haulmont.cuba.core.EntityManager#setSoftDeletion(boolean)} */
+    /** True if this datasource supports soft deletion functionality. Corresponds to EntityManager.setSoftDeletion(boolean) */
     boolean isSoftDeletion();
 
-    /** Switch on/off soft deletion functionality. Corresponds to {@link com.haulmont.cuba.core.EntityManager#setSoftDeletion(boolean)} */
+    /** Switch on/off soft deletion functionality. Corresponds to EntityManager.setSoftDeletion(boolean) */
     void setSoftDeletion(boolean softDeletion);
 
     /** True if the underlying collection contains an item with the specified ID */
@@ -83,7 +83,8 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
      * <li><code>ds$</code> - current item in the specified datasource
      * <li><code>component$</code> - value of the specified UI component
      * <li><code>param$</code> - value of parameter passed to the window when opening it
-     * <li><code>session$</code> - <code>userId</code> represents current user ID,
+     * <li><code>session$</code> - <code>userId</code> represents current or substituted user ID,
+     * <code>userLogin</code> represents current or substituted user login in lower case,
      * any other string represents a user session attribute with this name
      * <li><code>custom$</code> - value of parameter passed to the {@link #refresh(java.util.Map)} method 
      * </ul>
