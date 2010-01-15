@@ -146,10 +146,10 @@ public class PropertyCondition extends Condition {
 
             if (operator.isUnary()) {
                 unary = true;
-                setParam(new Param(paramName, null));
+                setParam(new Param(paramName, null, null, null));
             } else {
                 unary = false;
-                setParam(new Param(paramName, javaClass));
+                setParam(new Param(paramName, javaClass, entityParamWhere, entityParamView));
             }
         }
     }

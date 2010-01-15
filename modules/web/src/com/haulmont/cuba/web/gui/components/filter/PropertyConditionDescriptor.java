@@ -18,6 +18,8 @@ import com.haulmont.cuba.core.global.MessageUtils;
 
 public class PropertyConditionDescriptor extends ConditionDescriptor {
 
+    protected String entityParamWhere;
+    protected String entityParamView;
 
     public PropertyConditionDescriptor(String name,
                                        String caption,
@@ -46,6 +48,8 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
                 messagesPack,
                 filterComponentName,
                 datasource);
+        entityParamWhere = element.attributeValue("paramWhere");
+        entityParamView = element.attributeValue("paramView");
     }
 
     @Override
@@ -53,6 +57,7 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
         return new PropertyCondition(this, entityAlias);
     }
 
+    @Override
     public Class getJavaClass() {
         MetaProperty metaProperty = metaClass.getPropertyEx(name).getMetaProperty();
         Class paramClass;
@@ -63,5 +68,13 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
         return paramClass;
     }
 
+    @Override
+    protected String getEntityParamWhere() {
+        return entityParamWhere;
+    }
 
+    @Override
+    protected String getEntityParamView() {
+        return entityParamView;
+    }
 }

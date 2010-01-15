@@ -25,6 +25,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 public class CustomConditionEditDlg extends Window {
+    private Label entityParamWhereLab;
+    private Label entityParamViewLab;
 
     public enum ParamType {
         STRING,
@@ -44,6 +46,9 @@ public class CustomConditionEditDlg extends Window {
     private TextField whereText;
     private TextField joinText;
     private AbstractSelect typeSelect;
+    private TextField entityParamWhereText;
+    private TextField entityParamViewText;
+
 
     private static final String FIELD_WIDTH = "250px";
     private String messagesPack;
@@ -53,7 +58,7 @@ public class CustomConditionEditDlg extends Window {
 
     public CustomConditionEditDlg(final CustomCondition condition) {
         super(condition.getLocCaption());
-        setWidth("420px");
+        setWidth("450px");
 
         this.condition = condition;
         this.messagesPack = AppConfig.getInstance().getMessagesPack();
@@ -75,9 +80,9 @@ public class CustomConditionEditDlg extends Window {
         grid.setMargin(true, false, true, false);
 
         int i = 0;
-        // allow to change caption if it doesn't set in descriptor
+        // allow to change caption if it isn't set in descriptor
         if (StringUtils.isBlank(condition.getCaption())) {
-            grid.setRows(5);
+            grid.setRows(7);
 
             Label nameLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.nameLabel"));
             grid.addComponent(nameLab, 0, i);
@@ -90,7 +95,7 @@ public class CustomConditionEditDlg extends Window {
             grid.addComponent(nameText, 1, i++);
 
         } else {
-            grid.setRows(4);
+            grid.setRows(6);
         }
 
         Label joinLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.joinLabel"));
@@ -125,10 +130,14 @@ public class CustomConditionEditDlg extends Window {
         fillTypeSelect(typeSelect, condition.getParam());
         typeSelect.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
-                boolean entity = ParamType.ENTITY.equals(typeSelect.getValue())
-                        || ParamType.ENUM.equals(typeSelect.getValue());
-                entityLab.setEnabled(entity);
-                entitySelect.setEnabled(entity);
+                boolean isEntity = ParamType.ENTITY.equals(typeSelect.getValue());
+                boolean isEnum = ParamType.ENUM.equals(typeSelect.getValue());
+                entityLab.setEnabled(isEntity || isEnum);
+                entitySelect.setEnabled(isEntity || isEnum);
+                entityParamWhereLab.setEnabled(isEntity);
+                entityParamWhereText.setEnabled(isEntity);
+                entityParamViewLab.setEnabled(isEntity);
+                entityParamViewText.setEnabled(isEntity);
                 fillEntitySelect(entitySelect, condition.getParam());
             }
         });
@@ -147,6 +156,31 @@ public class CustomConditionEditDlg extends Window {
         fillEntitySelect(entitySelect, condition.getParam());
         grid.addComponent(entitySelect, 1, i++);
         grid.setComponentAlignment(entitySelect, Alignment.MIDDLE_RIGHT);
+
+        entityParamWhereLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.entityParamWhereLab"));
+        entityParamWhereLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
+        grid.addComponent(entityParamWhereLab, 0, i);
+        grid.setComponentAlignment(entityParamWhereLab, Alignment.MIDDLE_RIGHT);
+
+        entityParamWhereText = new TextField();
+        entityParamWhereText.setWidth(FIELD_WIDTH);
+        entityParamWhereText.setRows(2);
+        entityParamWhereText.setNullRepresentation("");
+        entityParamWhereText.setValue(condition.getEntityParamWhere());
+        entityParamWhereText.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
+        grid.addComponent(entityParamWhereText, 1, i++);
+
+        entityParamViewLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.entityParamViewLab"));
+        entityParamViewLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
+        grid.addComponent(entityParamViewLab, 0, i);
+        grid.setComponentAlignment(entityParamViewLab, Alignment.MIDDLE_RIGHT);
+
+        entityParamViewText = new TextField();
+        entityParamViewText.setWidth(FIELD_WIDTH);
+        entityParamViewText.setNullRepresentation("");
+        entityParamViewText.setValue(condition.getEntityParamView());
+        entityParamViewText.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
+        grid.addComponent(entityParamViewText, 1, i++);
 
         layout.addComponent(grid);
 
@@ -203,7 +237,10 @@ public class CustomConditionEditDlg extends Window {
             Class javaClass = getParamJavaClass(type);
             condition.setJavaClass(javaClass);
 
-            Param param = new Param(paramName, javaClass);
+            String entityParamWhere = (String) entityParamWhereText.getValue();
+            String entityParamView = (String) entityParamViewText.getValue();
+
+            Param param = new Param(paramName, javaClass, entityParamWhere, entityParamView);
             condition.setParam(param);
         }
 

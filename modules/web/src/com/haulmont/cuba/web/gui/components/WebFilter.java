@@ -627,7 +627,6 @@ public class WebFilter
                 saveAsFolder();
             }
 
-            System.out.println(event.getProperty().getValue());
             actions.setValue(nullActionId);
         }
     }

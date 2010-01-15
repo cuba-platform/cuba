@@ -48,4 +48,14 @@ public class CustomConditionDescriptor extends ConditionDescriptor {
             return paramClass;
         }
     }
+
+    @Override
+    protected String getEntityParamWhere() {
+        return element.attributeValue("paramWhere");
+    }
+
+    @Override
+    protected String getEntityParamView() {
+        return element.attributeValue("paramView");
+    }
 }

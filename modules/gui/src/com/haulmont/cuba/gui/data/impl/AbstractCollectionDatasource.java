@@ -279,9 +279,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             templateParams.put(customPerfix + entry.getKey(), entry.getValue());
         }
 
-        WindowContext windowContext = dsContext.getWindowContext();
-        if (windowContext != null) {
-            templateParams.putAll(windowContext.getParams());
+        if (dsContext != null) {
+            WindowContext windowContext = dsContext.getWindowContext();
+            if (windowContext != null) {
+                templateParams.putAll(windowContext.getParams());
+            }
         }
 
         UserSession userSession = UserSessionClient.getUserSession();

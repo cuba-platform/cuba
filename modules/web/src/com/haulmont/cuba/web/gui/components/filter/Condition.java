@@ -38,6 +38,8 @@ public abstract class Condition {
     protected Param param;
     protected String entityAlias;
     protected boolean hidden;
+    protected String entityParamWhere;
+    protected String entityParamView;
 
     protected List<Listener> listeners = new ArrayList<Listener>();
 
@@ -52,6 +54,8 @@ public abstract class Condition {
         caption = element.attributeValue("caption");
         unary = Boolean.valueOf(element.attributeValue("unary"));
         hidden = Boolean.valueOf(element.attributeValue("hidden"));
+        entityParamWhere = element.attributeValue("paramWhere");
+        entityParamView = element.attributeValue("paramView");
 
         String aclass = element.attributeValue("class");
         if (!isBlank(aclass))
@@ -63,15 +67,9 @@ public abstract class Condition {
             String paramName = paramElem.attributeValue("name");
 
             if (unary) {
-                param = new Param(paramName, null);
+                param = new Param(paramName, null, null, null);
             } else {
-                aclass = paramElem.attributeValue("class");
-                if (isBlank(aclass)) {
-                    param = new Param(paramName, javaClass);
-                } else {
-                    param = new Param(paramName,
-                            ReflectionHelper.getClass(paramElem.attributeValue("class")));
-                }
+                param = new Param(paramName, javaClass, entityParamWhere, entityParamView);
             }
 
             param.parseValue(paramElem.getText());
@@ -86,6 +84,8 @@ public abstract class Condition {
         javaClass = descriptor.getJavaClass();
         unary = javaClass == null;
         param = descriptor.createParam(this);
+        entityParamWhere = descriptor.getEntityParamWhere();
+        entityParamView = descriptor.getEntityParamView();
     }
 
     public void addListener(Listener listener) {
@@ -174,6 +174,11 @@ public abstract class Condition {
             paramElem.addAttribute("name", param.getName());
 
             paramElem.setText(param.formatValue());
+
+            if (entityParamWhere != null)
+                element.addAttribute("paramWhere", entityParamWhere);
+            if (entityParamView != null)
+                element.addAttribute("paramView", entityParamView);
         }
     }
 
@@ -199,6 +204,14 @@ public abstract class Condition {
 
     public String getOperationCaption() {
         return "";
+    }
+
+    public String getEntityParamView() {
+        return entityParamView;
+    }
+
+    public String getEntityParamWhere() {
+        return entityParamWhere;
     }
 
     public String createParamName() {

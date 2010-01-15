@@ -20,15 +20,28 @@ public class ConditionCreator extends ConditionDescriptor {
         locCaption = MessageProvider.getMessage(getClass(), "conditionCreator");
     }
 
+    @Override
     public Condition createCondition() {
         return new NewCustomCondition(this, "", null, entityAlias);
     }
 
+    @Override
     public Param createParam(Condition condition) {
         return null;
     }
 
+    @Override
     public Class getJavaClass() {
+        return null;
+    }
+
+    @Override
+    protected String getEntityParamWhere() {
+        return null;
+    }
+
+    @Override
+    protected String getEntityParamView() {
         return null;
     }
 }

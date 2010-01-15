@@ -16,9 +16,7 @@ import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -37,6 +35,9 @@ import java.util.UUID;
 
 public class Param {
 
+    private String entityWhere;
+    private String entityView;
+
     public enum Type {
         ENTITY,
         ENUM,
@@ -51,7 +52,7 @@ public class Param {
     private Class javaClass;
     private Object value;
 
-    public Param(String name, Class javaClass) {
+    public Param(String name, Class javaClass, String entityWhere, String entityView) {
         this.name = name;
         if (javaClass != null) {
             this.javaClass = javaClass;
@@ -67,6 +68,8 @@ public class Param {
             type = Type.UNARY;
             this.javaClass = Boolean.class;
         }
+        this.entityWhere = entityWhere;
+        this.entityView = entityView;
     }
 
     public String getName() {
@@ -318,7 +321,16 @@ public class Param {
     private AbstractField createEntityLookup() {
         MetaClass metaClass = MetadataProvider.getSession().getClass(javaClass);
         CollectionDatasourceImpl ds =
-                new CollectionDatasourceImpl(null, new GenericDataService(false), "ds", metaClass, null);
+                new CollectionDatasourceImpl(null, new GenericDataService(false), "ds", metaClass, entityView);
+
+        if (entityWhere != null) {
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(
+                    "select e from " + metaClass.getName() + " e",
+                    metaClass.getName());
+            transformer.addWhere(entityWhere);
+            String q = transformer.getResult();
+            ds.setQuery(q);
+        }
 
         WebLookupField lookup = new WebLookupField();
         lookup.setOptionsDatasource(ds);
