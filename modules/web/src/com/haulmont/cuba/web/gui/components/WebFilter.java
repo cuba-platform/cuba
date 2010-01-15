@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -49,8 +47,6 @@ import org.dom4j.Attribute;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
-
-import javax.annotation.Nullable;
 
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
