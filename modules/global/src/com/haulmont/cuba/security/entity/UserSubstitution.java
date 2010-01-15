@@ -11,6 +11,8 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -27,6 +29,7 @@ public class UserSubstitution extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUBSTITUTED_USER_ID")
+    @OnDeleteInverse(DeletePolicy.CASCADE)
     private User substitutedUser;
 
     @Column(name = "END_DATE")
