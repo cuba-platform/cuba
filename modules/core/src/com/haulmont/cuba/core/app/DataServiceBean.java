@@ -126,8 +126,10 @@ public class DataServiceBean implements DataService
                 }
             }
 
-            if (result != null && context.getView() != null)
+            if (result != null && context.getView() != null) {
+                em.setView(null);
                 ViewHelper.fetchInstance((Instance) result, context.getView());
+            }
 
             tx.commit();
         } finally {
@@ -160,6 +162,7 @@ public class DataServiceBean implements DataService
 
             // Fetch if StoreCache is enabled or there are lazy properties in the view
             if (context.getView() != null && (isStoreCacheEnabled() || ViewHelper.hasLazyProperties(context.getView()))) {
+                em.setView(null);
                 for (Object entity : resultList) {
                     ViewHelper.fetchInstance((Instance) entity, context.getView());
                 }
