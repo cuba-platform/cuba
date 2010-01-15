@@ -50,6 +50,10 @@ public interface WebConfig extends Config
     @Default("TABBED")
     String getAppWindowMode();
 
+    /** Max number of open tabs. 0 for unlimited. */
+    @DefaultInt(0)
+    int getMaxTabCount();
+
     /**
      * If true, {@link WebWindowManager} will try to create generic screens
      * instead of undefined screens. See {@link WebWindowConfig#getWindowInfo(String)}

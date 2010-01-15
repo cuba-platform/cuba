@@ -228,6 +228,8 @@ public abstract class WindowManager {
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params)
     {
+        checkCanOpenWindow(windowInfo, openType, params);
+
         params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();
         if (template != null) {
@@ -255,6 +257,8 @@ public abstract class WindowManager {
                 return null;
         }
     }
+
+    protected abstract void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params);
 
     protected String loadCaption(Window window, Map<String, Object> params) {
         String caption = window.getCaption();
@@ -300,6 +304,8 @@ public abstract class WindowManager {
                                            OpenType openType, Map<String, Object> params,
                                            Datasource parentDs)
     {
+        checkCanOpenWindow(windowInfo, openType, params);
+
         params = createParametersMap(windowInfo, params);
         params.put("param$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
@@ -333,6 +339,8 @@ public abstract class WindowManager {
             WindowInfo windowInfo, Window.Lookup.Handler handler,
                 OpenType openType, Map<String, Object> params)
     {
+        checkCanOpenWindow(windowInfo, openType, params);
+
         params = createParametersMap(windowInfo, params);
 
         String template = windowInfo.getTemplate();

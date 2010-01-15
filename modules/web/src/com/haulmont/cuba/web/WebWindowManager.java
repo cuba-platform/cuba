@@ -10,11 +10,16 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.SilentException;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
@@ -567,6 +572,19 @@ public class WebWindowManager extends WindowManager
                 component.setDebugId(generateDebugId(id));
             }
         });
+    }
+
+    @Override
+    protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
+        if (OpenType.NEW_TAB.equals(openType)) {
+            int maxCount = ConfigProvider.getConfig(WebConfig.class).getMaxTabCount();
+            if (maxCount > 0 && maxCount <= getCurrentWindowData().tabs.size()) {
+                app.getAppWindow().showNotification(
+                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "tooManyOpenTabs.message"), 
+                        com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
+                throw new SilentException();
+            }
+        }
     }
 
     public void setDebugId(Component component, String id) {

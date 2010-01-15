@@ -137,6 +137,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
     protected void initExceptionHandlers(boolean isConnected) {
         if (isConnected) {
             exceptionHandlers.addHandler(new NoUserSessionHandler()); // must be the first handler
+            exceptionHandlers.addHandler(new SilentExceptionHandler());
             exceptionHandlers.addHandler(new UniqueConstraintViolationHandler());
             exceptionHandlers.addHandler(new AccessDeniedHandler());
             exceptionHandlers.addHandler(new NoSuchScreenHandler());
