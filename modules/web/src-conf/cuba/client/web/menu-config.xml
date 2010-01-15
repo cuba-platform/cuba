@@ -1,10 +1,8 @@
 <menu-config>
-    <menu id="security">
+    <menu id="administration">
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
-    </menu>
-    <menu id="administration">
         <item id="sec$UserSessionEntity.browse"/>
         <item id="core$FileDescriptor.browse"/>
     </menu>
