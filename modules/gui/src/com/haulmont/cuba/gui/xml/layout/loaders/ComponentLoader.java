@@ -87,7 +87,11 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
 
                 UserSession userSession = UserSessionClient.getUserSession();
-                if (!userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY)) {
+                boolean editable = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                                        || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
+                        && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+
+                if (!editable) {
                     ((Component.Editable) component).setEditable(false);
                     return;
                 }
