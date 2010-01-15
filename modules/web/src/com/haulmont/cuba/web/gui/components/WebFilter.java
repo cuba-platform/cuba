@@ -364,7 +364,8 @@ public class WebFilter
 
         List<String> names = new ArrayList<String>();
         for (Object id : select.getItemIds()) {
-            names.add(((FilterEntity) id).getName());
+            if (id != filterEntity)
+                names.add(((FilterEntity) id).getName());
         }
 
         final FilterEditor editor = new FilterEditor(this, filterEntity, getXmlDescriptor(), names);
