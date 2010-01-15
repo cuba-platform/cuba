@@ -16,6 +16,11 @@
 
     <layout>
         <vbox margin="true" expand="files" spacing="true">
+            <vbox expand="genericFilter" stylename="edit-area">
+                <filter id="genericFilter" datasource="filesDs">
+                    <properties include=".*"/>
+                </filter>
+            </vbox>
             <hbox spacing="true" margin="true">
                 <button action="files.refresh" icon="icons/refresh.png"/>
                 <button action="files.create" icon="icons/create.png"/>
