@@ -10,35 +10,31 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AccessDeniedException;
+import com.haulmont.cuba.core.global.EntityLoadInfo;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.exception.AccessDeniedHandler;
 import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
-import com.haulmont.chile.core.model.MetaClass;
-
-import java.util.Map;
-import java.util.UUID;
-import java.util.HashMap;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LinkHandler {
 
     private Log log = LogFactory.getLog(LinkHandler.class);
     private App app;
     private Map<String, String> requestParams;
-
-    private static Pattern INSTANCE_RE = Pattern.compile("\\w+\\$\\w+-\\w+-\\w+-\\w+-\\w+-\\w+");
 
     public LinkHandler(App app, Map<String, String> requestParams) {
         this.app = app;
@@ -66,7 +62,12 @@ public class LinkHandler {
                         WindowManager.OpenType.NEW_TAB,
                         getParamsMap());
             } else {
-                Entity entity = loadEntityInstance(itemStr);
+                EntityLoadInfo info = EntityLoadInfo.parse(itemStr);
+                if (info == null) {
+                    log.warn("Invalid item definition: " + itemStr);
+                    return;
+                }
+                Entity entity = loadEntityInstance(info);
                 if (entity != null) {
                     app.getWindowManager().openEditor(windowInfo,
                             entity,
@@ -96,9 +97,9 @@ public class LinkHandler {
             }
             String name = parts[0];
             String value = parts[1];
-            Matcher matcher = INSTANCE_RE.matcher(value);
-            if (matcher.matches()) {
-                Entity entity = loadEntityInstance(value);
+            EntityLoadInfo info = EntityLoadInfo.parse(value);
+            if (info != null) {
+                Entity entity = loadEntityInstance(info);
                 if (entity != null)
                     params.put(name, entity);
             } else {
@@ -108,42 +109,16 @@ public class LinkHandler {
         return params;
     }
 
-    private Entity loadEntityInstance(String str) {
-        int p = str.indexOf('-');
-        if (p < 2) {
-            log.warn("Invalid item description: " + str);
-            return null;
-        }
-        String entityName = str.substring(0, p);
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
-        if (metaClass == null) {
-            log.warn("No metaclass found for item: " + str);
-            return null;
-        }
-
-        String viewName = null;
-        if ("saneco$GenDoc".equals(entityName)) {
-            viewName = "gen-doc-search";
-        }
-
-        String entityIdStr = str.substring(p + 1);
-        UUID id;
-        try {
-            id = UUID.fromString(entityIdStr);
-        } catch (Exception e) {
-            log.warn("Invalid ID for item: " + str);
-            return null;
-        }
-
+    private Entity loadEntityInstance(EntityLoadInfo info) {
         DataService ds = ServiceLocator.getDataService();
-        LoadContext ctx = new LoadContext(metaClass).setId(id);
-        if (viewName != null)
-            ctx.setView(viewName);
+        LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
+        if (info.getViewName() != null)
+            ctx.setView(info.getViewName());
         Entity entity;
         try {
             entity = ds.load(ctx);
         } catch (Exception e) {
-            log.warn("Unable to load item: " + str, e);
+            log.warn("Unable to load item: " + info, e);
             return null;
         }
         return entity;

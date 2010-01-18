@@ -14,6 +14,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
@@ -442,56 +443,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         } catch (NoSuchScreenException e) {
             return null;
         }
-
-        return new MenuBar.Command() {
-            public void menuSelected(MenuBar.MenuItem selectedItem) {
-                String caption = MenuConfig.getMenuItemCaption(item.getId());
-
-                Map<String, Object> params = new HashMap<String, Object>();
-                Element descriptor = item.getDescriptor();
-                for (Element element : Dom4j.elements(descriptor, "param")) {
-                    params.put(element.attributeValue("name"), element.attributeValue("value"));
-                }
-                params.put("caption", caption);
-
-                final String id = windowInfo.getId();
-                if (id.endsWith(".create") || id.endsWith(".edit")) {
-                    final String[] strings = id.split("[.]");
-                    String metaClassName = null;
-
-                    if (strings.length == 2)
-                        metaClassName = strings[0];
-                    else if (strings.length == 3)
-                        metaClassName = strings[1];
-                    else
-                        throw new UnsupportedOperationException();
-
-                    final MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
-                    if (metaClass == null)
-                        throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
-
-                    Entity newItem;
-                    try {
-                        newItem = metaClass.createInstance();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    App.getInstance().getWindowManager().openEditor(
-                            windowInfo,
-                            newItem,
-                            WindowManager.OpenType.NEW_TAB,
-                            params
-                    );
-                } else {
-                    App.getInstance().getWindowManager().openWindow(
-                            windowInfo,
-                            WindowManager.OpenType.NEW_TAB,
-                            params
-                    );
-                }
-            }
-        };
+        return new MainMenuCommand(item, windowInfo);
     }
 
     protected void fillSubstitutedUsers(AbstractSelect select) {
@@ -592,5 +544,81 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             }
 
         }
+    }
+
+    public static class MainMenuCommand implements MenuBar.Command {
+
+        private final MenuItem item;
+        private final WindowInfo windowInfo;
+
+        public MainMenuCommand(MenuItem item, WindowInfo windowInfo) {
+            this.item = item;
+            this.windowInfo = windowInfo;
+        }
+
+        public void menuSelected(MenuBar.MenuItem selectedItem) {
+            String caption = MenuConfig.getMenuItemCaption(item.getId());
+
+            Map<String, Object> params = new HashMap<String, Object>();
+            Element descriptor = item.getDescriptor();
+            for (Element element : Dom4j.elements(descriptor, "param")) {
+                String value = element.attributeValue("value");
+                EntityLoadInfo info = EntityLoadInfo.parse(value);
+                if (info == null)
+                    params.put(element.attributeValue("name"), value);
+                else
+                    params.put(element.attributeValue("name"), loadEntityInstance(info));
+            }
+            params.put("caption", caption);
+
+            final String id = windowInfo.getId();
+            if (id.endsWith(".create") || id.endsWith(".edit")) {
+                Entity entityItem;
+                if (params.containsKey("item")) {
+                    entityItem = (Entity) params.get("item");
+                } else {
+                    final String[] strings = id.split("[.]");
+                    String metaClassName;
+                    if (strings.length == 2)
+                        metaClassName = strings[0];
+                    else if (strings.length == 3)
+                        metaClassName = strings[1];
+                    else
+                        throw new UnsupportedOperationException();
+
+                    final MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
+                    if (metaClass == null)
+                        throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
+
+                    try {
+                        entityItem = metaClass.createInstance();
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                App.getInstance().getWindowManager().openEditor(
+                        windowInfo,
+                        entityItem,
+                        WindowManager.OpenType.NEW_TAB,
+                        params
+                );
+            } else {
+                App.getInstance().getWindowManager().openWindow(
+                        windowInfo,
+                        WindowManager.OpenType.NEW_TAB,
+                        params
+                );
+            }
+        }
+
+        private Entity loadEntityInstance(EntityLoadInfo info) {
+            DataService ds = ServiceLocator.getDataService();
+            LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
+            if (info.getViewName() != null)
+                ctx.setView(info.getViewName());
+            Entity entity = ds.load(ctx);
+            return entity;
+        }
+
     }
 }
