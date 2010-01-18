@@ -18,6 +18,8 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
@@ -35,9 +37,6 @@ import java.util.UUID;
 
 public class Param {
 
-    private String entityWhere;
-    private String entityView;
-
     public enum Type {
         ENTITY,
         ENUM,
@@ -51,8 +50,11 @@ public class Param {
     private Type type;
     private Class javaClass;
     private Object value;
+    private String entityWhere;
+    private String entityView;
+    private Datasource datasource;
 
-    public Param(String name, Class javaClass, String entityWhere, String entityView) {
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource) {
         this.name = name;
         if (javaClass != null) {
             this.javaClass = javaClass;
@@ -70,6 +72,7 @@ public class Param {
         }
         this.entityWhere = entityWhere;
         this.entityView = entityView;
+        this.datasource = datasource;
     }
 
     public String getName() {
@@ -320,8 +323,8 @@ public class Param {
 
     private AbstractField createEntityLookup() {
         MetaClass metaClass = MetadataProvider.getSession().getClass(javaClass);
-        CollectionDatasourceImpl ds =
-                new CollectionDatasourceImpl(null, new GenericDataService(false), "ds", metaClass, entityView);
+        CollectionDatasourceImpl ds = new CollectionDatasourceImpl(datasource.getDsContext(),
+                new GenericDataService(false), "ds", metaClass, entityView);
 
         if (entityWhere != null) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(

@@ -67,7 +67,7 @@ public class FilterEditor {
 
         parseDescriptorXml();
 
-        FilterParser parser = new FilterParser(this.filterEntity.getXml(), messagesPack, filterComponentName);
+        FilterParser parser = new FilterParser(this.filterEntity.getXml(), messagesPack, filterComponentName, datasource);
         this.conditions = parser.fromXml().getConditions();
 
         layout = new VerticalLayout();
@@ -372,7 +372,7 @@ public class FilterEditor {
             return false;
         }
 
-        FilterParser parser = new FilterParser(conditions, messagesPack, filterComponentName);
+        FilterParser parser = new FilterParser(conditions, messagesPack, filterComponentName, datasource);
         String xml = parser.toXml().getXml();
 
         filterEntity.setName((String) nameField.getValue());

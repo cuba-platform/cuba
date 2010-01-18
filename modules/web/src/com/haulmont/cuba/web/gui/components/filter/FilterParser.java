@@ -11,10 +11,11 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -30,17 +31,20 @@ public class FilterParser {
     private String xml;
     private String messagesPack;
     private String filterComponentName;
+    private Datasource datasource;
 
-    public FilterParser(List<Condition> conditions, String messagesPack, String filterComponentName) {
+    public FilterParser(List<Condition> conditions, String messagesPack, String filterComponentName, Datasource datasource) {
         this.conditions = conditions;
         this.messagesPack = messagesPack;
         this.filterComponentName = filterComponentName;
+        this.datasource = datasource;
     }
 
-    public FilterParser(String xml, String messagesPack, String filterComponentName) {
+    public FilterParser(String xml, String messagesPack, String filterComponentName, Datasource datasource) {
         this.xml = xml;
         this.messagesPack = messagesPack;
         this.filterComponentName = filterComponentName;
+        this.datasource = datasource;
     }
 
     public FilterParser fromXml() {
@@ -62,9 +66,9 @@ public class FilterParser {
                 Condition condition;
                 String type = element.attributeValue("type");
                 if (ConditionType.PROPERTY.name().equals(type))
-                    condition = new PropertyCondition(element, messagesPack, filterComponentName);
+                    condition = new PropertyCondition(element, messagesPack, filterComponentName, datasource);
                 else if (ConditionType.CUSTOM.name().equals(type))
-                    condition = new CustomCondition(element, messagesPack, filterComponentName);
+                    condition = new CustomCondition(element, messagesPack, filterComponentName, datasource);
                 else
                     throw new IllegalStateException("Unknown condition type: " + type + " in " + xml);
 

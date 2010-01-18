@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.ui.*;
 import com.vaadin.data.Property;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -243,7 +244,7 @@ public class CustomConditionEditDlg extends Window {
             String entityParamView = (String) entityParamViewText.getValue();
             condition.setEntityParamView(entityParamView);
             
-            Param param = new Param(paramName, javaClass, entityParamWhere, entityParamView);
+            Param param = new Param(paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource());
             condition.setParam(param);
         }
 

@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -83,8 +84,8 @@ public class PropertyCondition extends Condition {
 
     private Op operator;
 
-    public PropertyCondition(Element element, String messagesPack, String filterComponentName) {
-        super(element, filterComponentName);
+    public PropertyCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
+        super(element, filterComponentName, datasource);
 
         this.locCaption = MessageUtils.loadString(messagesPack, caption);
 
@@ -146,10 +147,10 @@ public class PropertyCondition extends Condition {
 
             if (operator.isUnary()) {
                 unary = true;
-                setParam(new Param(paramName, null, null, null));
+                setParam(new Param(paramName, null, null, null, null));
             } else {
                 unary = false;
-                setParam(new Param(paramName, javaClass, entityParamWhere, entityParamView));
+                setParam(new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource));
             }
         }
     }

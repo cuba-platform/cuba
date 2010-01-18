@@ -1,4 +1,4 @@
-<menu-config>
+<menu-config xmlns="http://www.haulmont.com/schema/cuba/gui/menu-config.xsd">
     <menu id="administration">
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>

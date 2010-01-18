@@ -460,7 +460,7 @@ public class WebFilter
             conditions = new ArrayList<Condition>();
         } else {
             FilterParser parser =
-                    new FilterParser(filterEntity.getXml(), getFrame().getMessagesPack(), getId());
+                    new FilterParser(filterEntity.getXml(), getFrame().getMessagesPack(), getId(), datasource);
             conditions = parser.fromXml().getConditions();
         }
     }

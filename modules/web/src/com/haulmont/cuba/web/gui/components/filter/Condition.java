@@ -12,6 +12,8 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -40,6 +42,7 @@ public abstract class Condition {
     protected boolean hidden;
     protected String entityParamWhere;
     protected String entityParamView;
+    protected Datasource datasource;
 
     protected List<Listener> listeners = new ArrayList<Listener>();
 
@@ -47,7 +50,7 @@ public abstract class Condition {
         throw new UnsupportedOperationException();
     }
 
-    protected Condition(Element element, String filterComponentName) {
+    protected Condition(Element element, String filterComponentName, Datasource datasource) {
         this.filterComponentName = filterComponentName;
         name = element.attributeValue("name");
         text = StringEscapeUtils.unescapeXml(element.getText());
@@ -56,6 +59,7 @@ public abstract class Condition {
         hidden = Boolean.valueOf(element.attributeValue("hidden"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");
+        this.datasource = datasource;
 
         String aclass = element.attributeValue("class");
         if (!isBlank(aclass))
@@ -67,9 +71,9 @@ public abstract class Condition {
             String paramName = paramElem.attributeValue("name");
 
             if (unary) {
-                param = new Param(paramName, null, null, null);
+                param = new Param(paramName, null, null, null, null);
             } else {
-                param = new Param(paramName, javaClass, entityParamWhere, entityParamView);
+                param = new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource);
             }
 
             param.parseValue(paramElem.getText());
@@ -86,6 +90,7 @@ public abstract class Condition {
         param = descriptor.createParam(this);
         entityParamWhere = descriptor.getEntityParamWhere();
         entityParamView = descriptor.getEntityParamView();
+        datasource = descriptor.getDatasource();
     }
 
     public void addListener(Listener listener) {
@@ -216,6 +221,10 @@ public abstract class Condition {
 
     public String getEntityParamWhere() {
         return entityParamWhere;
+    }
+
+    public Datasource getDatasource() {
+        return datasource;
     }
 
     public void setEntityParamWhere(String entityParamWhere) {

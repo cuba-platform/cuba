@@ -10,22 +10,19 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.core.global.MessageUtils;
-import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.ObjectUtils;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import org.dom4j.Element;
 
-import java.util.Set;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class CustomCondition extends Condition {
 
     private String join;
 
-    public CustomCondition(Element element, String messagesPack, String filterComponentName) {
-        super(element, filterComponentName);
+    public CustomCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
+        super(element, filterComponentName, datasource);
 
         if (isBlank(caption))
             locCaption = element.attributeValue("locCaption");

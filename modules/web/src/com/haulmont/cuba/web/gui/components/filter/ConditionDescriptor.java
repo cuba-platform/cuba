@@ -59,8 +59,13 @@ public abstract class ConditionDescriptor {
     }
 
     public Param createParam(Condition condition) {
-        Param param = new Param(condition.createParamName(), getJavaClass(), getEntityParamWhere(), getEntityParamView());
+        Param param = new Param(condition.createParamName(), getJavaClass(),
+                getEntityParamWhere(), getEntityParamView(), datasource);
         return param;
+    }
+
+    public CollectionDatasource getDatasource() {
+        return datasource;
     }
 
     public abstract Condition createCondition();
