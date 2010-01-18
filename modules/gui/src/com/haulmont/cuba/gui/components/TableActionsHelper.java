@@ -82,10 +82,12 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                     final Object value = entry.getValue();
                     if (value instanceof Collection) {
                         final Collection collection = (Collection) value;
-                        if (collection.size() != 1) {
-                            throw new UnsupportedOperationException();
-                        } else {
-                            ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
+                        if (!collection.isEmpty()) {
+                            if (collection.size() != 1) {
+                                throw new UnsupportedOperationException();
+                            } else {
+                                ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
+                            }
                         }
                     } else {
                         ((Instance) item).setValue(entry.getKey(), value);
