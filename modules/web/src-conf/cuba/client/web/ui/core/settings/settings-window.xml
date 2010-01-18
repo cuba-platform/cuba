@@ -1,0 +1,32 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.core.settings.SettingsWindow"
+        messagesPack="cuba.client.web.ui.core.settings"
+        >
+
+    <dsContext/>
+    
+    <layout expand="mainPane">
+        <vbox id="mainPane" expand="spring" margin="true" spacing="true">
+            <vbox stylename="edit-area" margin="true" spacing="true">
+                <grid spacing="true" expandable="false">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://mainWindowMode"/>
+                            <optionsGroup id="mainWindowMode"/>
+                        </row>
+                    </rows>
+                </grid>
+            </vbox>
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <button id="ok" icon="icons/ok.png"/>
+                <button id="cancel" icon="icons/cancel.png"/>
+            </hbox>
+            <vbox id="spring"/>
+        </vbox>
+    </layout>
+</window>

@@ -12,14 +12,22 @@ package com.haulmont.cuba.gui.components
 
 import com.haulmont.cuba.gui.components.AbstractAction
 import com.haulmont.cuba.gui.components.Component
+import com.haulmont.cuba.core.global.MessageProvider
 
 public class ActionAdapter extends AbstractAction {
 
   private Map<String, Closure> methods
+  private String messagesPack
 
   def ActionAdapter(String id, Map<String, Closure> methods) {
     super(id)
     this.methods = methods
+  }
+
+  def ActionAdapter(String id, String messagesPack, Map<String, Closure> methods) {
+    super(id)
+    this.methods = methods
+    this.messagesPack = messagesPack
   }
 
   public void actionPerform(Component component) {
@@ -31,6 +39,8 @@ public class ActionAdapter extends AbstractAction {
     Closure closure = methods['getCaption']
     if (closure)
       return closure.call()
+    else if (messagesPack)
+      return MessageProvider.getMessage(messagesPack, id)
     else
       return super.getCaption()
   }

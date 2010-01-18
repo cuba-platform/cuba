@@ -58,4 +58,7 @@
     <screen id="sec$Constraint.edit"
             template="/com/haulmont/cuba/web/app/ui/security/constraint/edit/constraint-edit.xml"/>
 
+    <screen id="settings"
+            template="cuba/client/web/ui/core/settings/settings-window.xml"/>
+
 </screen-config>
