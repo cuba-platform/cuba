@@ -139,6 +139,7 @@ public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLa
     
     void showMessageDialog(String title, String message, MessageType messageType);
     void showOptionDialog(String title, String message, MessageType messageType, Action[] actions);
+    void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

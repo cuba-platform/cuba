@@ -75,6 +75,11 @@ public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepo
         repository.clear();
     }
 
+    public boolean resourceExists(String name) {
+        File file = new File(rootPath + name);
+        return file.exists();
+    }
+
     public InputStream getResAsStream(String name) {
         Object value = repository.get(name);
         if (value != null) {

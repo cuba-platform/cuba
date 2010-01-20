@@ -10,8 +10,9 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.Locator;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * Service facade for {@link com.haulmont.cuba.core.app.ResourceRepository} MBean
@@ -19,15 +20,14 @@ import org.springframework.stereotype.Service;
 @Service(ResourceRepositoryService.NAME)
 public class ResourceRepositoryServiceBean implements ResourceRepositoryService
 {
+    @Inject
     private ResourceRepositoryAPI repository;
 
-    private ResourceRepositoryAPI getRepository() {
-        if (repository == null)
-            repository = Locator.getResourceRepository();
-        return repository;
+    public boolean resourceExists(String name) {
+        return repository.resourceExists(name);
     }
 
     public String getResAsString(String name) {
-        return getRepository().getResAsString(name);
+        return repository.getResAsString(name);
     }
 }

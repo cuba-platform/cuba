@@ -211,6 +211,10 @@ public class WebFrame extends WebAbstractPanel
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
+    public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
+        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
+    }
+
     public void showNotification(String caption, String description, NotificationType type) {
         getWindow().showNotification(caption, description, WebComponentsHelper.convertNotificationType(type));
     }

@@ -210,6 +210,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         frame.showOptionDialog(title, message, messageType, actions);
     }
 
+    public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
+        frame.showOptionDialog(title, message, messageType, actions);
+    }
+
     public void showNotification(String caption, NotificationType type) {
         frame.showNotification(caption, type);
     }

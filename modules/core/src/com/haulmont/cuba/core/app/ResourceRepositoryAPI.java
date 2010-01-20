@@ -19,17 +19,23 @@ import java.io.InputStream;
 public interface ResourceRepositoryAPI
 {
     String NAME = "cuba_ResourceRepository";
-    
+
+    /**
+     * Checks whether the specified resource exists
+     * @param name resource file name relative to resources root (WEB-INF/conf)
+     */
+    boolean resourceExists(String name);
+
     /**
      * Loads resource into cache as byte array and returns it
-     * @param name resource file name relative to resources root (jboss/server/default/conf)
+     * @param name resource file name relative to resources root (WEB-INF/conf)
      * @return resource as stream
      */
     InputStream getResAsStream(String name);
 
     /**
      * Loads resource into cache as String and returns it
-     * @param name resource file name relative to resources root (jboss/server/default/conf)
+     * @param name resource file name relative to resources root (WEB-INF/conf)
      * @return String resource
      */
     String getResAsString(String name);
