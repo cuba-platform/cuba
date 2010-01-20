@@ -47,13 +47,13 @@
                             <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://login"/>
                             </vbox>
-                            <textField id="login" datasource="user" property="login" width="300px"/>
+                            <textField id="login" datasource="user" property="login" width="300px" required="true"/>
                         </row>
                         <row visible="PersistenceHelper.isNew(param_item)">
                             <vbox align="MIDDLE_RIGHT">
                                 <label id="passwLab" value="msg://password"/>
                             </vbox>
-                            <textField id="passw" secret="true" width="300px"/>
+                            <textField id="passw" secret="true" width="300px" required="true"/>
                         </row>
                         <row visible="PersistenceHelper.isNew(param_item)">
                             <vbox align="MIDDLE_RIGHT">
