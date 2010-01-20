@@ -614,9 +614,11 @@ public class ApplicationConnection {
         }
         // Handle redirect
         if (json.containsKey("redirect")) {
-            String url = json.getValueMap("redirect").getString("url");
-            console.log("redirecting to " + url);
-            redirect(url);
+            final ValueMap redirectMap = json.getValueMap("redirect");
+            String url = redirectMap.getString("url");
+            console.log("redirecting to " + url + ", top: " +
+                    String.valueOf(redirectMap.containsKey("top") && redirectMap.getBoolean("top")));
+            redirect(url, redirectMap.containsKey("top") && redirectMap.getBoolean("top"));
             return;
         }
 
@@ -882,11 +884,16 @@ public class ApplicationConnection {
         }
     }
 
+    private static void redirect(String url) {
+        redirect(url, false);
+    }
+
     // Redirect browser, null reloads current page
-    private static native void redirect(String url)
+    private static native void redirect(String url, boolean onTop)
     /*-{
+      var w = onTop ? $wnd.top : $wnd;
       if (url) {
-         $wnd.location = url;
+         w.location = url;
       } else {
           $wnd.location.reload(false);
       }
