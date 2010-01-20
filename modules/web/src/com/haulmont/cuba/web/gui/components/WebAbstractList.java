@@ -59,7 +59,11 @@ public abstract class WebAbstractList<T extends AbstractSelect>
     }
 
     public void setSelected(Entity item) {
-        setSelected(Collections.singletonList(item));
+        if (item == null) {
+            component.setValue(null);
+        } else {
+            setSelected(Collections.singletonList(item));
+        }
     }
 
     public void setSelected(Collection<Entity> items) {

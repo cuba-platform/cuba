@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.*;
 
@@ -80,6 +81,7 @@ public class GroupBrowser extends AbstractWindow
                                 final CollectionDatasource ds = users.getDatasource();
                                 ds.commit();
                                 ds.refresh();
+                                users.setSelected((Entity) null);
                             }
                         }
                     }, WindowManager.OpenType.DIALOG);
