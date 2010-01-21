@@ -145,10 +145,12 @@
     color: #000;
 }
 
+/*
 .v-table-cell-content .v-icon {
     height: 15px;
     margin-right: 5px;
 }
+*/
 
 .v-table-cell .v-table-cell-content {
     white-space: nowrap;
@@ -170,16 +172,24 @@
     height: auto;
 }
 
+.v-table-cell-content .v-button-link .v-button-caption {
+    font-size: 8pt;
+}
+
+/*
 .v-table-cell-content .v-button-wrap {
     padding: 0;
     height: auto;
 }
+*/
 
+/*
 .v-table-cell-content .v-button-caption {
     font-size: 8pt;
     margin: 0;
     padding: 0;
 }
+*/
 
 .v-table-cell-content .v-button-link .v-button-caption {
     color: #000;
