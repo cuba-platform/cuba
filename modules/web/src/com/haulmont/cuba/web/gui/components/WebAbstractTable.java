@@ -683,16 +683,16 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     if (!StringUtils.isEmpty(clickAction)) {
 
                         if (clickAction.startsWith("open:")) {
-                            final com.haulmont.cuba.gui.components.Window window = WebAbstractTable.this.getFrame();
+                            final com.haulmont.cuba.gui.components.IFrame frame = WebAbstractTable.this.getFrame();
                             String screenName = clickAction.substring("open:".length()).trim();
-                            window.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
+                            frame.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
 
                         } else if (clickAction.startsWith("invoke:")) {
-                            final com.haulmont.cuba.gui.components.Window window = WebAbstractTable.this.getFrame();
+                            final com.haulmont.cuba.gui.components.IFrame frame = WebAbstractTable.this.getFrame();
                             String methodName = clickAction.substring("invoke:".length()).trim();
                             try {
-                                Method method = window.getClass().getMethod(methodName, Object.class);
-                                method.invoke(window, getItem(item, property));
+                                Method method = frame.getClass().getMethod(methodName, Object.class);
+                                method.invoke(frame, getItem(item, property));
                             } catch (NoSuchMethodException e) {
                                 throw new RuntimeException("Unable to invoke clickAction", e);
                             } catch (InvocationTargetException e) {
