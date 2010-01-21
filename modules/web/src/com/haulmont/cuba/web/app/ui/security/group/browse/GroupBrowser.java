@@ -19,8 +19,7 @@ import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.*;
 
-public class GroupBrowser extends AbstractWindow
-{
+public class GroupBrowser extends AbstractWindow {
     public GroupBrowser(Window frame) {
         super(frame);
     }
@@ -58,6 +57,7 @@ public class GroupBrowser extends AbstractWindow
             }
         });
         usersActions.createEditAction();
+        usersActions.addListener(new EditUserListener(users));
         users.addAction(new AbstractAction("moveToGroup") {
             public String getCaption() {
                 return getMessage("users.moveToGroup");
@@ -77,7 +77,7 @@ public class GroupBrowser extends AbstractWindow
                                 for (User user : selected) {
                                     user.setGroup(group);
                                 }
-                                
+
                                 final CollectionDatasource ds = users.getDatasource();
                                 ds.commit();
                                 ds.refresh();
@@ -105,5 +105,26 @@ public class GroupBrowser extends AbstractWindow
         constraintsActions.createEditAction();
         constraintsActions.createRemoveAction();
         constraintsActions.createRefreshAction();
+    }
+
+    private class EditUserListener implements TableActionsHelper.Listener {
+
+        private Table users;
+
+        private EditUserListener(Table users) {
+            this.users = users;
+        }
+
+        public void entityCreated(Entity entity) {
+        }
+
+        public void entityEdited(Entity entity) {
+            final CollectionDatasource ds = users.getDatasource();
+            ds.refresh();
+            users.setSelected((Entity) null);
+        }
+
+        public void entityRemoved(Set<Entity> entity) {
+        }
     }
 }
