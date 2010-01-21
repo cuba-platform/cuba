@@ -85,7 +85,7 @@ public class ViewRepository
     }
 
     public void deployViews(String resourceUrl) {
-        deployViews(getClass().getResourceAsStream(resourceUrl));
+        deployViews(ScriptingProvider.getResourceAsStream(resourceUrl));
     }
 
     public void deployViews(InputStream xml) {
