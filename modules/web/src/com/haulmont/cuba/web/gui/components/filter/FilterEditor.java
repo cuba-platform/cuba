@@ -209,7 +209,7 @@ public class FilterEditor {
         table.setColumnWidth(cntrCol, 50);
 
         table.addContainerProperty(cntrCol, Button.class, null);
-        table.setColumnWidth(cntrCol, 80);
+        table.setColumnWidth(cntrCol, 100);
 
         for (final Condition condition : this.conditions) {
             NameEditor nameEditor = new NameEditor(condition);
