@@ -169,7 +169,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return collection == null ? 0 : collection.size();
         }
     }
-
+                                                                                         
     protected Collection<T> __getCollection() {
         final Instance item = (Instance) ds.getItem();
         return item == null ? null : (Collection<T>) item.getValue(metaProperty.getName());
@@ -360,6 +360,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void doSort() {
+        if (__getCollection() == null) return;
         final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
@@ -387,6 +388,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     public K nextItemId(K itemId) {
+        if (itemId == null) return null;
         Collection<T> collection = __getCollection();
         if ((collection != null) && !collection.isEmpty() && !itemId.equals(lastItemId())) {
             List<T> list = new ArrayList<T>(collection);
@@ -397,6 +399,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     public K prevItemId(K itemId) {
+        if (itemId == null) return null;
         Collection<T> collection = __getCollection();
         if ((collection != null) && !collection.isEmpty() && !itemId.equals(firstItemId())) {
             List<T> list = new ArrayList<T>(collection);
