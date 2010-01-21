@@ -144,6 +144,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
             exceptionHandlers.addHandler(new DeletePolicyHandler());
             exceptionHandlers.addHandler(new NumericOverflowExceptionHandler());
             exceptionHandlers.addHandler(new OptimisticExceptionHandler());
+            exceptionHandlers.addHandler(new JPAOptimisticExceptionHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }
