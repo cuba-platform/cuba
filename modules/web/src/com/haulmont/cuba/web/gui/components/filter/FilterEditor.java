@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -27,6 +28,7 @@ import com.vaadin.data.Property;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.text.StrBuilder;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -59,11 +61,13 @@ public class FilterEditor {
     {
         this.filterEntity = filterEntity;
         this.filterDescriptor = filterDescriptor;
-        this.filterComponentName = filterDescriptor.attributeValue("id");
         this.datasource = webFilter.getDatasource();
         this.messagesPack = webFilter.getFrame().getMessagesPack();
         this.metaClass = datasource.getMetaClass();
         this.existingNames = existingNames;
+
+        String[] strings = ValuePathHelper.parse(filterEntity.getComponentId());
+        this.filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
 
         parseDescriptorXml();
 

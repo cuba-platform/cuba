@@ -429,7 +429,7 @@ public class WebFilter
         for (Condition condition : conditions) {
             if (condition.getParam() != null) {
                 String paramName = condition.getParam().getName();
-                String componentName = paramName.substring(paramName.indexOf('.') + 1);
+                String componentName = paramName.substring(paramName.lastIndexOf('.') + 1);
                 if (id.equals(componentName)) {
                     ParamWrapper wrapper = new ParamWrapper(condition);
                     return (T) wrapper;
