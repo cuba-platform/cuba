@@ -441,6 +441,17 @@ public class WebWindowManager extends WindowManager
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @Override
+    public void showNotification(String caption, IFrame.NotificationType type) {
+        app.getAppWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+    }
+
+    @Override
+    public void showNotification(String caption, String description, IFrame.NotificationType type) {
+        app.getAppWindow().showNotification(caption, description, WebComponentsHelper.convertNotificationType(type));
+    }
+
+    @Override
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
         removeWindowsWithName("cuba-message-dialog");
 
@@ -468,6 +479,7 @@ public class WebWindowManager extends WindowManager
         window.center();
     }
 
+    @Override
     public void showOptionDialog(String title, String message,
                                  IFrame.MessageType messageType, Action[] actions)
     {

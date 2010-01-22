@@ -450,6 +450,8 @@ public abstract class WindowManager {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public abstract void showNotification(String caption, IFrame.NotificationType type);
+    public abstract void showNotification(String caption, String description, IFrame.NotificationType type);
     public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
     public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
 }
