@@ -30,10 +30,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Param {
 
@@ -351,10 +348,13 @@ public class Param {
     }
 
     private AbstractField createEnumLookup() {
-        List<Object> list = Arrays.asList(javaClass.getEnumConstants());
-
+        Map<String, Object> options = new HashMap<String, Object>();
+        for (Object obj : javaClass.getEnumConstants()) {
+            options.put(MessageProvider.getMessage((Enum) obj), obj);
+        }
+        
         WebLookupField lookup = new WebLookupField();
-        lookup.setOptionsList(list);
+        lookup.setOptionsMap(options);
 
         lookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
