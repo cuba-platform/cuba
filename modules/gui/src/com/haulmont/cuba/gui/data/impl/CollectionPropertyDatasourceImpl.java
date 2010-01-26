@@ -198,9 +198,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (cascadeProperty) {
             final Entity parentItem = ds.getItem();
             ((DatasourceImplementation) ds).modified(parentItem);
-        } else {
-            modified(item);
         }
+        modified(item);
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
