@@ -2,6 +2,7 @@
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="cuba.client.web.ui.security.role.RoleBrowser"
         lookupComponent="roles"
+        caption="msg://roles"
         >
 
     <dsContext>
