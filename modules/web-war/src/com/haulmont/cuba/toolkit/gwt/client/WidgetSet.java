@@ -30,6 +30,8 @@ public class WidgetSet extends DefaultWidgetSet {
             } else {
                 return IScrollTable.class;
             }
+        } else if ("grouptable".equals(tag)) {
+            return IScrollGroupTable.class;
         } else if ("scrollablepanel".equals(tag)) {
             return IScrollablePanel.class;
         } else if ("horizontalBox".equals(tag) || "verticalBox".equals(tag)) {
@@ -57,6 +59,8 @@ public class WidgetSet extends DefaultWidgetSet {
             return new IPageTable();
         } else if (IScrollTable.class.equals(classType)) {
             return new IScrollTable();
+        } else if (IScrollGroupTable.class.equals(classType)) {
+            return new IScrollGroupTable();
         }
         return super.createWidget(uidl);
     }

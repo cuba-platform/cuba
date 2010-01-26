@@ -228,6 +228,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
         });
 
+        component.setSelectable(true);
+        component.setTableFieldFactory(new FieldFactory());
+        component.setColumnCollapsingAllowed(true);
+        component.setColumnReorderingAllowed(true);
+
+        setEditable(false);
+
         componentComposition = new CompositionLayout(component);
         componentComposition.setSpacing(false);
         componentComposition.setMargin(false);

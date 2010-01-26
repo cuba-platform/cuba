@@ -4,177 +4,59 @@
  * Use is subject to license terms.
 
  * Author: Nikolay Gorodnov
- * Created: 09.07.2009 17:19:11
+ * Created: 13.11.2009 11:10:14
  *
  * $Id$
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
+import com.haulmont.cuba.web.toolkit.data.util.GroupTableContainerWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.Action;
+import com.vaadin.terminal.KeyMapper;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
 
-import java.io.Serializable;
 import java.util.*;
 
-public class Table
-        extends com.vaadin.ui.Table implements AggregationContainer
-{
-    protected LinkedList<Object> editableColumns = null;
-    protected boolean storeColWidth = false;
+public class GroupTable extends Table implements GroupTableContainer {
 
-    protected PagingMode pagingMode;
+    private KeyMapper groupIdMap = new KeyMapper();
 
-    protected int currentPage = 1;
-    protected int pagesCount = -1;
-
-    protected PagingProvider pagingProvider = null;
-
-    protected boolean aggregatable = false;
-
-    public enum PagingMode {
-        PAGE,
-        SCROLLING
+    public GroupTable() {
+        super();
     }
 
-    public Table() {
-    }
-
-    public Table(String caption) {
+    public GroupTable(String caption) {
         super(caption);
     }
 
-    public Table(String caption, Container dataSource) {
+    public GroupTable(String caption, Container dataSource) {
         super(caption, dataSource);
     }
 
-    public Object[] getEditableColumns() {
-        if (editableColumns == null) {
-            return null;
-        }
-        return editableColumns.toArray();
-    }
-
-    public void setEditableColumns(Object[] editableColumns) {
-        if (editableColumns == null) {
-            throw new NullPointerException("You cannot set null as editable columns");
-        }
-
-        if (this.editableColumns == null) {
-            this.editableColumns = new LinkedList<Object>();
-        } else {
-            this.editableColumns.clear();
-        }
-
-        final Collection properties = getContainerPropertyIds();
-        for (final Object editableColumn : editableColumns) {
-            if (editableColumn == null) {
-                throw new NullPointerException("Ids must be non-nulls");
-            } else if (!properties.contains(editableColumn)
-                    || columnGenerators.containsKey(editableColumn)) {
-                throw new IllegalArgumentException(
-                        "Ids must exist in the Container and it must be not a generated column, incorrect id: "
-                                + editableColumn);
-            }
-            this.editableColumns.add(editableColumn);
-        }
-
-        resetPageBuffer();
-        refreshRenderedCells();
-    }
-
     @Override
-    protected boolean changeVariables(Map variables) {
+    public void setContainerDataSource(Container newDataSource) {
 
-        boolean clientNeedsContentRefresh = false;
+        disableContentRefreshing();
 
-        if (variables.containsKey("colwidth")) {
-            try {
-                final ColumnWidth colWidth = ColumnWidth.deSerialize((String) variables.get("colwidth"));
-                final Object id = columnIdMap.get(colWidth.getColId());
-                setColumnWidth(id, colWidth.getWidth());
-            } catch (Exception e) {
-                //ignore
-            }
+        if (newDataSource == null) {
+            newDataSource = new IndexedContainer();
         }
 
-        if (variables.containsKey("curpage")) {
-            currentPage = ((Integer) variables.get("curpage")).intValue();
-            clientNeedsContentRefresh = true;
-        }
+        super.setContainerDataSource(
+                new GroupTableContainerWrapper(newDataSource));
 
-        if (variables.containsKey("pagelength")) {
-            setPageLength(((Integer) variables.get("pagelength")).intValue());
-            clientNeedsContentRefresh = true;
-        }
+        initComponent();
 
-        return clientNeedsContentRefresh;
-    }
+        enableContentRefreshing(true);
 
-    @Override
-    public void addGeneratedColumn(Object id, ColumnGenerator generatedColumn) {
-        if (generatedColumn == null) {
-            throw new IllegalArgumentException(
-                    "Can not add null as a GeneratedColumn");
-        }
-        if (columnGenerators.containsKey(id)) {
-            throw new IllegalArgumentException(
-                    "Can not add the same GeneratedColumn twice, id:" + id);
-        } else {
-            columnGenerators.put(id, generatedColumn);
-            /*
-             * add to visible column list unless already there (overriding
-             * column from DS)
-             */
-            if (!visibleColumns.contains(id)) {
-                visibleColumns.add(id);
-            }
-
-            if (editableColumns != null) {
-                editableColumns.remove(id);
-            }
-
-            resetPageBuffer();
-            refreshRenderedCells();
-        }
-    }
-
-    @Override
-    protected Object getPropertyValue(Object rowId, Object colId, Property property) {
-        if (isColumnEditable(colId) && fieldFactory != null) {
-            final Field f = fieldFactory.createField(getContainerDataSource(),
-                    rowId, colId, this);
-            if (f != null) {
-                f.setPropertyDataSource(property);
-                return f;
-            }
-        }
-
-        return formatPropertyValue(rowId, colId, property);
-    }
-
-    protected boolean isColumnEditable(Object columnId) {
-        return isEditable() &&
-                editableColumns != null && editableColumns.contains(columnId);
-    }
-
-    @Override
-    public boolean removeContainerProperty(Object propertyId)
-            throws UnsupportedOperationException {
-        if (editableColumns != null) {
-            editableColumns.remove(propertyId);
-        }
-        if (isAggregatable() && items instanceof AggregationContainer) {
-            removeContainerPropertyAggregation(propertyId);
-        }
-        return super.removeContainerProperty(propertyId);
     }
 
     @Override
@@ -285,18 +167,18 @@ public class Table
 
         // Visible column order
         final Collection sortables = getSortableContainerPropertyIds();
-        final ArrayList visibleColOrder = new ArrayList();
-        for (final Iterator it = visibleColumns.iterator(); it.hasNext();) {
-            final Object columnId = it.next();
+        final List<String> visibleColOrder = new ArrayList<String>(visibleColumns.size());
+        for (final Object columnId : visibleColumns) {
             if (!isColumnCollapsed(columnId)) {
                 visibleColOrder.add(columnIdMap.key(columnId));
             }
         }
         target.addAttribute("vcolorder", visibleColOrder.toArray());
 
-        if (items instanceof AggregationContainer && isAggregatable()
-                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {
-            paintAggregationRow(target, ((AggregationContainer) items).aggregate(items.getItemIds()));
+        boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
+                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
+        if (hasAggregation) {
+            paintAggregationRow(target, ((AggregationContainer) items).aggregate(allItemIds()));
         }
 
         // Rows
@@ -338,6 +220,8 @@ public class Table
             end = cells[CELL_ITEMID].length;
         }
 
+        boolean hasGroups = hasGroups();
+
         for (int i = start; i < end; i++) {
             final Object itemId = cells[CELL_ITEMID][i];
 
@@ -347,7 +231,14 @@ public class Table
                 continue;
             }
 
-            target.startTag("tr");
+//            todo remove next code
+//            if (isGroup(itemId)) continue;
+
+            if (hasGroups && isGroup(itemId)) {
+                target.startTag("gr");
+            } else {
+                target.startTag("tr");
+            }
 
             // tr attributes
             if (rowheads) {
@@ -367,20 +258,57 @@ public class Table
                 }
             }
 
-            // Actions
             paintRowActions(target, actionSet, itemId);
 
             paintCellStyleGenerator(target, itemId);
 
-            // cells
-            int currentColumn = 0;
-            for (final Iterator it = visibleColumns.iterator(); it.hasNext(); currentColumn++) {
-                final Object columnId = it.next();
-                paintCell(target, itemId, columnId, cells[CELL_FIRSTCOL + currentColumn][i],
-                        iscomponent[currentColumn]);
+            //add group table attributes
+            if (hasGroups) {
+                final Collection groupProperties = getGroupProperties();
+
+                if (isGroup(itemId)) {
+                    target.addAttribute("colKey", columnIdMap.key(getGroupProperty(itemId)));
+                    target.addAttribute("groupKey", groupIdMap.key(itemId));
+                    if (isExpanded(itemId)) {
+                        target.addAttribute("expanded", true);
+                    }
+                    final Object caption = getGroupCaption(itemId);
+                    target.addAttribute("caption", caption != null ? caption.toString() : "");
+
+                    if (hasAggregation) {
+                        paintGroupAggregation(target, itemId,
+                                ((AggregationContainer) items).aggregate(getGroupItemIds(itemId)));
+                    }
+                    //todo gorodnov: fix the situation when a groupped column is collapsed or non visible
+                } else {
+                    // paint none groupped cells
+                    int currentColumn = 0;
+                    for (final Iterator it = visibleColumns.iterator(); it.hasNext(); currentColumn++) {
+                        final Object columnId = it.next();
+                        if (!groupProperties.contains(columnId)) {
+                            paintCell(target, itemId, columnId, cells[CELL_FIRSTCOL + currentColumn][i],
+                                    iscomponent[currentColumn]);
+                        } else {
+                            paintCell(target, itemId, columnId, "", false);
+                        }
+                    }
+                }
+
+            } else {
+                // cells
+                int currentColumn = 0;
+                for (final Iterator it = visibleColumns.iterator(); it.hasNext(); currentColumn++) {
+                    final Object columnId = it.next();
+                    paintCell(target, itemId, columnId, cells[CELL_FIRSTCOL + currentColumn][i],
+                            iscomponent[currentColumn]);
+                }
             }
 
-            target.endTag("tr");
+            if (hasGroups && isGroup(itemId)) {
+                target.endTag("gr");
+            } else {
+                target.endTag("tr");
+            }
         }
         target.endTag("rows");
 
@@ -440,8 +368,7 @@ public class Table
         // Available columns
         if (isColumnCollapsingAllowed()) {
             final HashSet ccs = new HashSet();
-            for (final Iterator i = visibleColumns.iterator(); i.hasNext();) {
-                final Object o = i.next();
+            for (final Object o : visibleColumns) {
                 if (isColumnCollapsed(o)) {
                     ccs.add(o);
                 }
@@ -457,114 +384,53 @@ public class Table
             }
             target.addVariable(this, "collapsedcolumns", collapsedkeys);
         }
+
+        if (hasGroups) {
+            final Collection groupProperties = getGroupProperties();
+            final String[] groupColumns = new String[groupProperties.size()];
+
+            int index = 0;
+            for (final Object groupColumnId : groupProperties) {
+                groupColumns[index++] = columnIdMap.key(groupColumnId);
+            }
+            target.addVariable(this, "groupColumns", groupColumns);
+        }
+
         paintVisibleColumns(target, sortables, colheads);
     }
 
-    protected void paintVisibleColumns(PaintTarget target, Collection sortables, boolean colheads)
-            throws PaintException {
-        target.startTag("visiblecolumns");
-        for (final Object columnId : visibleColumns) {
-            if (columnId != null) {
-                target.startTag("column");
-                target.addAttribute("cid", columnIdMap.key(columnId));
-                final String head = getColumnHeader(columnId);
-                target.addAttribute("caption", (head != null ? head : ""));
-                if (isColumnCollapsed(columnId)) {
-                    target.addAttribute("collapsed", true);
-                }
-                if (colheads) {
-                    if (getColumnIcon(columnId) != null) {
-                        target.addAttribute("icon", getColumnIcon(columnId));
-                    }
-                    if (sortables.contains(columnId)) {
-                        target.addAttribute("sortable", true);
-                    }
-                }
-                if (!ALIGN_LEFT.equals(getColumnAlignment(columnId))) {
-                    target.addAttribute("align", getColumnAlignment(columnId));
-                }
-                if (getColumnWidth(columnId) > -1) {
-                    target.addAttribute("width", String
-                            .valueOf(getColumnWidth(columnId)));
-                }
-
-                target.endTag("column");
+    private Collection<?> allItemIds() {
+        if (hasGroups()) {
+            List itemIds = new LinkedList();
+            for (final Object groupId : rootGroups()) {
+                itemIds.addAll(getGroupItemIds(groupId));
             }
-        }
-        target.endTag("visiblecolumns");
-    }
-
-    protected void paintRowActions(PaintTarget target, Set actionSet, Object itemId) {
-        if (actionHandlers != null) {
-            final ArrayList keys = new ArrayList();
-            for (final Iterator ahi = actionHandlers.iterator(); ahi
-                    .hasNext();) {
-                final Action[] aa = ((Action.Handler) ahi.next())
-                        .getActions(itemId, this);
-                if (aa != null) {
-                    for (int ai = 0; ai < aa.length; ai++) {
-                        final String key = actionMapper.key(aa[ai]);
-                        actionSet.add(aa[ai]);
-                        keys.add(key);
-                    }
-                }
-            }
-            target.addAttribute("al", keys.toArray());
-        }
-    }
-
-    protected void paintCellStyleGenerator(PaintTarget target, Object itemId) throws PaintException {
-        /*
-        * For each row, if a cellStyleGenerator is specified, get the
-    * specific style for the cell, using null as propertyId. If there
-    * is any, add it to the target.
-    */
-        if (cellStyleGenerator != null) {
-            String rowStyle = cellStyleGenerator.getStyle(itemId, null);
-            if (rowStyle != null && !rowStyle.equals("")) {
-                target.addAttribute("rowstyle", rowStyle);
-            }
-        }
-    }
-
-    protected void paintCell(PaintTarget target, Object itemId, Object columnId,
-                             Object value, boolean component
-    ) throws PaintException {
-        if (columnId == null || isColumnCollapsed(columnId)) {
-            return;
-        }
-        /*
-        * For each cell, if a cellStyleGenerator is specified, get the
-        * specific style for the cell. If there is any, add it to the
-        * target.
-        */
-        if (cellStyleGenerator != null) {
-            String cellStyle = cellStyleGenerator.getStyle(itemId,
-                    columnId);
-            if (cellStyle != null && !cellStyle.equals("")) {
-                target.addAttribute("style-"
-                        + columnIdMap.key(columnId), cellStyle);
-            }
-        }
-        if ((component || isColumnEditable(columnId))
-                && Component.class.isInstance(value)) {
-            final Component c = (Component) value;
-            if (c == null) {
-                target.addText("");
-            } else {
-                c.paint(target);
-            }
+            return itemIds;
         } else {
-            target.addText((String) value);
+            return items.getItemIds();
         }
     }
 
-    protected void paintAggregationRow(PaintTarget target, Map<Object, String> aggregationValues) throws PaintException {
-        target.startTag("arow");
+    protected void paintGroupAggregation(PaintTarget target, Object groupId, Map<Object, String> aggregations)
+            throws PaintException {
+
+        boolean paintGroupProperty = false;
+
+        final Collection groupProperties = getGroupProperties();
+        final Object groupProperty = getGroupProperty(groupId);
+
         for (final Object columnId : visibleColumns) {
             if (columnId == null || isColumnCollapsed(columnId)) {
                 continue;
             }
+
+            if (groupProperties.contains(columnId) && !paintGroupProperty) {
+                if (columnId.equals(groupProperty)) {
+                    paintGroupProperty = true;
+                }
+                continue;
+            }
+
             if (cellStyleGenerator != null) {
                 String cellStyle = cellStyleGenerator.getStyle(null, columnId);
                 if (cellStyle != null && !cellStyle.equals("")) {
@@ -572,9 +438,8 @@ public class Table
                             + columnIdMap.key(columnId), cellStyle + "-ag");
                 }
             }
-            target.addText(aggregationValues.get(columnId));
+            target.addText(aggregations.get(columnId));
         }
-        target.endTag("arow");
     }
 
     @Override
@@ -606,6 +471,7 @@ public class Table
 
             int firstIndex = pagingMode == PagingMode.PAGE
                     ? currentPageFirstItemIndex() : getCurrentPageFirstItemIndex();
+
             if (rows > 0 && firstIndex >= 0) {
                 rows -= firstIndex;
             }
@@ -636,6 +502,10 @@ public class Table
                 } else {
                     rows = 0;
                 }
+            }
+
+            if (rows < 0) {
+                rows = 0;
             }
 
             Object[][] cells = new Object[cols + CELL_FIRSTCOL][rows];
@@ -695,9 +565,14 @@ public class Table
                     cells[CELL_ICON][i] = getItemIcon(id);
                 }
 
-                if (cols > 0) {
+                final GroupTableContainer items = (GroupTableContainer) this.items;
+                final boolean groupped = items.hasGroups();
+
+                if (cols > 0 && (!groupped || !items.isGroup(id)))
+                {
                     for (int j = 0; j < cols; j++) {
-                        if (isColumnCollapsed(colids[j])) {
+                        if (isColumnCollapsed(colids[j]) || (groupped &&
+                                getGroupProperties().contains(colids[j]))) {
                             continue;
                         }
                         Property p = null;
@@ -730,10 +605,8 @@ public class Table
                                 value = pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
                             } else {
                                 if (isGenerated) {
-                                    ColumnGenerator cg = (ColumnGenerator) columnGenerators
-                                            .get(colids[j]);
-                                    value = cg
-                                            .generateCell(this, id, colids[j]);
+                                    final ColumnGenerator cg = columnGenerators.get(colids[j]);
+                                    value = cg.generateCell(this, id, colids[j]);
 
                                 } else if (iscomponent[j]) {
                                     value = p.getValue();
@@ -766,9 +639,7 @@ public class Table
             if (filledRows != cells[0].length) {
                 final Object[][] temp = new Object[cells.length][filledRows];
                 for (int i = 0; i < cells.length; i++) {
-                    for (int j = 0; j < filledRows; j++) {
-                        temp[i][j] = cells[i][j];
-                    }
+                    System.arraycopy(cells[i], 0, temp[i], 0, filledRows);
                 }
                 cells = temp;
             }
@@ -785,126 +656,153 @@ public class Table
         }
     }
 
-    protected void paintPaging(PaintTarget target) throws PaintException {
-        if (pagingProvider != null) {
-            target.startTag("paging");
-            if (pagingProvider.firstCaption() != null) {
-                target.addAttribute("fc", pagingProvider.firstCaption());
+    @Override
+    protected boolean changeVariables(Map variables) {
+        boolean clientNeedsContentRefresh = super.changeVariables(variables);
+
+        boolean needsResetPageBuffer = false;
+        Object[] newGroupProperties = null;
+
+        if (variables.containsKey("columnorder") && !variables.containsKey("groupedcolumns")) {
+            newGroupProperties = new Object[0];
+        } else if (variables.containsKey("groupedcolumns")) {
+            final Object[] ids = (Object[]) variables.get("groupedcolumns");
+            final Object[] groupProperties = new Object[ids.length];
+            for (int i = 0; i < ids.length; i++) {
+                groupProperties[i] = columnIdMap.get(ids[i].toString());
             }
-            if (pagingProvider.prevCaption() != null) {
-                target.addAttribute("pc", pagingProvider.prevCaption());
-            }
-            if (pagingProvider.nextCaption() != null) {
-                target.addAttribute("nc", pagingProvider.nextCaption());
-            }
-            if (pagingProvider.lastCaption() != null) {
-                target.addAttribute("lc", pagingProvider.lastCaption());
-            }
-            if (pagingProvider.showPageLengthSelector() && pagingProvider.pageLengths() != null) {
-                final int[] arr = pagingProvider.pageLengths();
-                Arrays.sort(arr);
-                Integer[] lengths = new Integer[arr.length];
-                for (int i = 0; i < arr.length; i++) {
-                    lengths[i] = arr[i];
+            newGroupProperties = groupProperties;
+        }
+
+        if (variables.containsKey("collapsedcolumns")) {
+            boolean needToRegroup = false;
+            final List<Object> groupProperties = new ArrayList<Object>(getGroupProperties());
+            for (final Iterator it = groupProperties.iterator(); it.hasNext();) {
+                final Object propertyId = it.next();
+                if (collapsedColumns.contains(propertyId)) {
+                    it.remove();
+                    needToRegroup = true;
                 }
-                target.addAttribute("lengths", lengths);
-
-                target.addAttribute("sc", pagingProvider.pageLengthSelectorCaption());
             }
-            target.endTag("paging");
+            if (needToRegroup) {
+                newGroupProperties = groupProperties.toArray();
+            }
         }
-    }
 
-    public Map<Object, String> aggregate(Collection itemIds) {
-        if (items instanceof AggregationContainer && isAggregatable()) {
-            return ((AggregationContainer) items).aggregate(itemIds);
+        if (variables.containsKey("expand")) {
+            Object groupId = groupIdMap.get((String) variables.get("expand"));
+            expand(groupId, false);
+            clientNeedsContentRefresh = true;
+            needsResetPageBuffer = true;
         }
-        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
-    }
 
-    public Map<Object, String> aggregate() {
-        return aggregate(getItemIds());
-    }
-
-    public Collection getAggregationPropertyIds() {
-        if (items instanceof AggregationContainer) {
-            return ((AggregationContainer) items).getAggregationPropertyIds();
+        if (variables.containsKey("collapse")) {
+            Object groupId = groupIdMap.get((String) variables.get("collapse"));
+            collapse(groupId, false);
+            clientNeedsContentRefresh = true;
+            needsResetPageBuffer = true;
         }
-        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
-    }
 
-    public Type getContainerPropertyAggregation(Object propertyId) {
-        if (items instanceof AggregationContainer) {
-            return ((AggregationContainer) items).getContainerPropertyAggregation(propertyId);
+        if (newGroupProperties != null) {
+            groupBy(newGroupProperties, false);
         }
-        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
-    }
 
-    public void addContainerPropertyAggregation(Object propertyId, Type type) {
-        if (items instanceof AggregationContainer) {
-            ((AggregationContainer) items).addContainerPropertyAggregation(propertyId, type);
-        } else {
-            throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+        if (needsResetPageBuffer) {
+            resetPageBuffer();
         }
+
+        return clientNeedsContentRefresh;
     }
 
-    public void removeContainerPropertyAggregation(Object propertyId) {
-        if (items instanceof AggregationContainer) {
-            ((AggregationContainer) items).removeContainerPropertyAggregation(propertyId);
-        } else {
-            throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
-        }
+    public void groupBy(Object[] properties) {
+        groupBy(properties, true);
     }
 
-    public boolean isAggregatable() {
-        return aggregatable;
-    }
-
-    public void setAggregatable(boolean aggregatable) {
-        if (this.aggregatable != aggregatable) {
-            this.aggregatable = aggregatable;
+    protected void groupBy(Object[] properties, boolean rerender) {
+        ((GroupTableContainer) items).groupBy(properties);
+        if (rerender) {
+            resetPageBuffer();
+            refreshRenderedCells();
             requestRepaint();
         }
     }
 
-    public boolean isStoreColWidth() {
-        return storeColWidth;
+    public boolean hasGroups() {
+        return ((GroupTableContainer) items).hasGroups();
     }
 
-    public void setStoreColWidth(boolean storeColWidth) {
-        this.storeColWidth = storeColWidth;
+    public Collection<?> rootGroups() {
+        return ((GroupTableContainer) items).rootGroups();
     }
 
-    protected int currentPageFirstItemIndex() {
-        return (currentPage - 1) * getPageLength();
+    public boolean hasChildren(Object id) {
+        return ((GroupTableContainer) items).hasChildren(id);
     }
 
-    public PagingMode getPagingMode() {
-        return pagingMode;
+    public Collection<?> getChildren(Object id) {
+        return ((GroupTableContainer) items).getChildren(id);
     }
 
-    public void setPagingMode(PagingMode pagingMode) {
-        this.pagingMode = pagingMode;
-        requestRepaint();
+    public Object getGroupCaption(Object itemId) {
+        return ((GroupTableContainer) items).getGroupCaption(itemId);
     }
 
-    public PagingProvider getPagingProvider() {
-        return pagingProvider;
+    public Object getGroupProperty(Object itemId) {
+        return ((GroupTableContainer) items).getGroupProperty(itemId);
     }
 
-    public void setPagingProvider(PagingProvider pagingProvider) {
-        this.pagingProvider = pagingProvider;
-        requestRepaint();
+    public boolean isGroup(Object itemId) {
+        return ((GroupTableContainer) items).isGroup(itemId);
     }
 
-    public interface PagingProvider extends Serializable {
-        String firstCaption();
-        String prevCaption();
-        String nextCaption();
-        String lastCaption();
+    public Collection<?> getGroupItemIds(Object itemId) {
+        return ((GroupTableContainer) items).getGroupItemIds(itemId);
+    }
 
-        String pageLengthSelectorCaption();
-        boolean showPageLengthSelector();
-        int[] pageLengths();
+    public Collection<?> getGroupProperties() {
+        return ((GroupTableContainer) items).getGroupProperties();
+    }
+
+    public void expand(Object id) {
+        expand(id, true);
+    }
+
+    protected void expand(Object id, boolean rerender) {
+        ((GroupTableContainer) items).expand(id);
+        if (rerender) {
+            resetPageBuffer();
+            refreshRenderedCells();
+            requestRepaint();
+        }
+    }
+
+    public boolean isExpanded(Object id) {
+        return ((GroupTableContainer) items).isExpanded(id);
+    }
+
+    public void expandAll() {
+        ((GroupTableContainer) items).expandAll();
+    }
+
+    public void collapseAll() {
+        ((GroupTableContainer) items).collapseAll();
+    }
+
+    public void collapse(Object id) {
+        collapse(id, true);
+    }
+
+    protected void collapse(Object id, boolean rerender) {
+        ((GroupTableContainer) items).collapse(id);
+        if (rerender) {
+            resetPageBuffer();
+            refreshRenderedCells();
+            requestRepaint();
+        }
+    }
+
+    @Override
+    public String getTag() {
+        return "grouptable";
     }
 }

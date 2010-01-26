@@ -9,10 +9,8 @@
 }
 
 .v-table-header-wrap {
-	height: 23px;
+	height: 24px;
 	background: #DCE3EB url(img/table-header-bg.gif) repeat-x;
-	border: 1px solid #DCE3EB;
-	border-bottom: none;
 	overflow: hidden;
 }
 
@@ -22,7 +20,7 @@
 
 .v-table-header,
 .v-table-header-container {
-	height: 23px;
+	height: 24px;
 }
 
 
@@ -49,13 +47,13 @@
 }
 
 .v-table-header td {
-    height: 23px;
+    height: 24px;
     cursor: pointer;
 }
 
 .v-table-resizer {
 	display: block;
-	height: 23px;
+	height: 24px;
 	float: right;
 	background: transparent url(img/table-resizer-bg.gif) repeat-y 50% 50%;
 	cursor: col-resize;
@@ -100,7 +98,6 @@
 	margin: 0;
 	padding: 0;
 	background-color: #fff;
-    border-bottom:1px solid #DCE3EB;
 	cursor: default;
 }
 .v-table-row-odd {
@@ -112,9 +109,11 @@
 }
 .v-table-row .v-table-cell,
 .v-table-row-odd .v-table-cell,
-.v-table-caption-row .v-table-cell {
+.v-table-caption-row .v-table-cell,
+.v-table-group-row .v-table-cell,
+.v-table-arow-row .v-table-cell {
 	padding: 0;
-    border-bottom:1px solid #83888c;
+    border-bottom: 1px solid #fff;
 }
 
 .v-table .v-table-caption-row {
@@ -231,21 +230,25 @@
 }
 
 .v-table-focus-slot-left {
-	border-left: 2px solid #b6bbbc;
+	border-left: 3px solid #b6bbbc;
 	margin-right: -2px;
 }
 .v-table-focus-slot-right {
-	border-right: 2px solid #b6bbbc;
+	border-right: 3px solid #b6bbbc;
 	margin-left: -2px;
 }
 
 .v-table-header-drag {
 	position: absolute;
-	background: #e7edf3 url(img/table-header-bg.gif) repeat-x;
-	border: 1px solid #b6bbbc;
-	padding: 4px;
+	background: transparent url(img/table-header-bg.gif) repeat-x;
 	opacity: 0.5;
 	filter: alpha(opacity=50);
+    font-family: tahoma,verdana,arial,geneva,helvetica,sans-serif,"Trebuchet MS";
+    font-size: 8pt;
+    font-weight: bold;
+    padding: 4px 0 5px 5px;
+    color: #fff;
+    height: 24px;
 	margin-top: 20px;
 	z-index: 20000;
 }
@@ -283,7 +286,7 @@
 
 .v-table .v-table-group-cell {
     float: left;
-    background: transparent url(img/nav-plus.gif) center right no-repeat;
+    background: transparent url(img/nav-plus.gif) center left no-repeat;
     width: 19px;
     line-height: 15px;
     cursor: pointer;
@@ -298,7 +301,7 @@
 }
 
 .v-expanded .v-table-group-cell {
-    background: transparent url(img/nav-minus.gif) center right no-repeat;
+    background-image: url(img/nav-minus.gif);
 }
 
 /* IE6 hack */
@@ -337,4 +340,18 @@
 .v-pager .v-pager-editor {
     float: right;
     line-height: 18px;
-}   
+}
+
+.v-table .v-table-group-row {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.v-table .v-table-arow-row {
+    background-color: gainsboro;
+    cursor: default;
+}
+
+.v-table .v-table-arow {
+    background-color: #fff;
+}

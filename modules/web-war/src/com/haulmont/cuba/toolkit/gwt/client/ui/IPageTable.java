@@ -85,9 +85,6 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
     protected void setContainerHeight() {
         if (height != null && !"".equals(height)) {
             int contentH = getOffsetHeight() - tHead.getOffsetHeight();
-//            if (actionButtonsPanel != null) {
-//                contentH -= actionButtonsPanel.getOffsetHeight();
-//            }
             if (pager != null) {
                 contentH -= pager.getOffsetHeight();
             }
@@ -188,13 +185,6 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
 
         protected ITableRow createRowInstance(UIDL uidl) {
             return new ITableRow(uidl, aligns);
-/*
-            if (uidl.getTag().equals("atr")) {
-                return new ITableAggregationRow(uidl, aligns);
-            } else {
-                return new ITableRow(uidl, aligns);
-            }
-*/
         }
 
         protected void addRow(ITableRow row) {
@@ -218,32 +208,6 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
 
         protected void applyAlternatingRowColor(ITableRow row, String style) {
             row.addStyleName(CLASSNAME + style);
-        }
-
-        // Aggregation row
-        protected class ITableAggregationRow extends ITableRow {
-            public ITableAggregationRow(UIDL uidl, char[] aligns) {
-                super();
-                setElement(DOM.createElement("tr"));
-                tHead.getColumnAlignments();
-                int col = 0;
-                // row header
-                if (showRowHeaders) {
-                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
-                            true);
-                    col++;
-                }
-                addCells(uidl, col);
-            }
-
-            @Override
-            public boolean isSelected() {
-                return false;
-            }
-
-            @Override
-            public void onBrowserEvent(Event event) {
-            }
         }
     }
 

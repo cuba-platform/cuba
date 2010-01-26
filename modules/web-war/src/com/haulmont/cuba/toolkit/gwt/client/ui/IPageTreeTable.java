@@ -395,29 +395,5 @@ public class IPageTreeTable extends IPageTable {
             protected void moveCol(int oldIndex, int newIndex) {
             }
         }
-
-        protected class IPageTreeTableAggregationRow extends IPageTreeTableRow {
-            public IPageTreeTableAggregationRow(UIDL uidl, char[] aligns) {
-                setElement(DOM.createElement("tr"));
-                tHead.getColumnAlignments();
-                int col = 0;
-                // row header
-                if (showRowHeaders) {
-                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
-                            true);
-                    col++;
-                }
-                addCells(uidl, col);
-            }
-
-            @Override
-            public boolean isSelected() {
-                return false;
-            }
-
-            @Override
-            public void onBrowserEvent(Event event) {
-            }
-        }
     }
 }

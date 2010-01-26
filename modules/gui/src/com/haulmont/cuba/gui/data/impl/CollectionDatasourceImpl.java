@@ -386,13 +386,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected Double sum(MetaPropertyPath propertyPath, Collection<K> itemIds) {
         Double sum = null;
         for (final K itemId : itemIds) {
-            final Instance instance = (Instance) getItem(itemId);
-            Double value;
-            if (propertyPath.getMetaProperties().length == 1) {
-                value = instance.getValue(propertyPath.getMetaProperty().toString());
-            } else {
-                value = instance.getValueEx(propertyPath.toString());
-            }
+            Double value = (Double) getItemValue(propertyPath, itemId);
             if (value != null) {
                 sum +=value;
             }
@@ -419,17 +413,20 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     private List<Double> valuesByProperty(MetaPropertyPath propertyPath, Collection<K> itemIds) {
         final List<Double> values = new LinkedList<Double>();
         for (final K itemId : itemIds) {
-            final Instance instance = (Instance) getItem(itemId);
-            Double value;
-            if (propertyPath.getMetaProperties().length == 1) {
-                value = instance.getValue(propertyPath.getMetaProperty().toString());
-            } else {
-                value = instance.getValueEx(propertyPath.toString());
-            }
+            Double value = (Double) getItemValue(propertyPath, itemId);
             if (value != null) {
                 values.add(value);
             }
         }
         return values;
+    }
+
+    protected Object getItemValue(MetaPropertyPath property, K itemId) {
+        Instance instance = (Instance) getItem(itemId);
+        if (property.getMetaProperties().length == 1) {
+            return instance.getValue(property.getMetaProperty().getName());
+        } else {
+            return instance.getValueEx(property.toString());
+        }
     }
 }

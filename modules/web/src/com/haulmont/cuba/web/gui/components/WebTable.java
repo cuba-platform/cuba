@@ -54,14 +54,7 @@ public class WebTable
     @Override
     protected void initComponent(com.haulmont.cuba.web.toolkit.ui.Table component) {
         super.initComponent(component);
-
-        component.setSelectable(true);
-        component.setFieldFactory(new FieldFactory());
-
-        component.setColumnCollapsingAllowed(true);
-        component.setColumnReorderingAllowed(true);
         setSortable(true);
-        setEditable(false);
     }
 
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {

@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 public class TableLoader extends AbstractTableLoader<Table> {
 
     public TableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, factory, config);
+        super(context, config, factory);
     }
 
     protected Table createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {

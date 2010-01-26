@@ -29,7 +29,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
 
-    public AbstractTableLoader(Context context, ComponentsFactory factory, LayoutLoaderConfig config) {
+    public AbstractTableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context);
         this.factory = factory;
         this.config = config;

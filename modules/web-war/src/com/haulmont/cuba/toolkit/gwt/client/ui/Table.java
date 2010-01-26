@@ -45,7 +45,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected int selectMode = com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
 
-    protected final HashSet selectedRowKeys = new HashSet();
+    protected final Set<Object> selectedRowKeys = new HashSet<Object>();
 
     protected boolean initializedAndAttached = false;
 
@@ -100,9 +100,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected boolean nullSelectionDisallowed = false;
 
     protected boolean storeColWidth = false;
-
-//    protected ActionButtonsPanel actionButtonsPanel = null;
-//    protected boolean needSetPanelPosition = false;
 
     protected AggregationRow aggregationRow = null;
 
@@ -173,8 +170,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             final Set selectedKeys = uidl
                     .getStringArrayVariableAsSet("selected");
             selectedRowKeys.clear();
-            for (final Iterator it = selectedKeys.iterator(); it.hasNext();) {
-                selectedRowKeys.add(it.next());
+            for (Object selectedKey : selectedKeys) {
+                selectedRowKeys.add(selectedKey);
             }
         }
 
@@ -209,8 +206,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 updateActionMap(c);
             } else if (c.getTag().equals("visiblecolumns")) {
                 tHead.updateCellsFromUIDL(c);
-//            } else if (c.getTag().equals("actionButtons")) {
-//                updateActionButtons(c);
             }
         }
 
@@ -260,26 +255,16 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
     }
 
-//    protected void updateActionButtons(UIDL uidl) {
-//        if (actionButtonsPanel == null) {
-//            actionButtonsPanel = new ActionButtonsPanel();
-////            needSetPanelPosition = true;
-//            insert(actionButtonsPanel, 0);
-//        }
-//        actionButtonsPanel.updateFromUIDL(uidl);
-///*
-//        if (!actionButtonsPanel.isShowing()) {
-//            actionButtonsPanel.show();
-//        }
-//*/
-//    }
-
     protected void updateAggregationRow(UIDL uidl) {
         if (aggregationRow == null) {
-            aggregationRow = new AggregationRow();
+            aggregationRow = createAggregationRow(uidl);
             insert(aggregationRow, getWidgetIndex(bodyContainer));
         }
         aggregationRow.updateFromUIDL(uidl);
+    }
+
+    protected AggregationRow createAggregationRow(UIDL uidl) {
+        return new AggregationRow();
     }
 
     public String getActionCaption(String actionKey) {
@@ -290,12 +275,12 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         return (String) actionMap.get(actionKey + "_i");
     }
 
-    private void updateHeader(String[] strings) {
-        if (strings == null) {
+    protected void updateHeader(String[] colIds) {
+        if (colIds == null) {
             return;
         }
 
-        int visibleCols = strings.length;
+        int visibleCols = colIds.length;
         int colIndex = 0;
         if (showRowHeaders) {
             tHead.enableColumn("0", colIndex);
@@ -308,22 +293,26 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             tHead.removeCell("0");
         }
 
-        int i;
-        for (i = 0; i < strings.length; i++) {
-            final String cid = strings[i];
-            visibleColOrder[colIndex] = cid;
-            tHead.enableColumn(cid, colIndex);
-            colIndex++;
-        }
+        updateHeaderColumns(colIds, colIndex);
 
         tHead.setVisible(showColHeaders);
 
     }
 
+    protected void updateHeaderColumns(String[] colIds, int colIndex) {
+        int i;
+        for (i = 0; i < colIds.length; i++) {
+            final String cid = colIds[i];
+            visibleColOrder[colIndex] = cid;
+            tHead.enableColumn(cid, colIndex);
+            colIndex++;
+        }
+    }
+
     /**
      * Gives correct column index for given column key ("cid" in UIDL).
      *
-     * @param colKey
+     * @param colKey column key
      * @return column index of visible columns, -1 if column not visible
      */
     protected int getColIndexByKey(String colKey) {
@@ -340,13 +329,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     }
 
     protected boolean isCollapsedColumn(String colKey) {
-        if (collapsedColumns == null) {
-            return false;
-        }
-        if (collapsedColumns.contains(colKey)) {
-            return true;
-        }
-        return false;
+        return collapsedColumns != null && collapsedColumns.contains(colKey);
     }
 
     protected String getColKeyByIndex(int index) {
@@ -366,7 +349,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         return tHead.getHeaderCell(colKey).getWidth();
     }
 
-    private void reOrderColumn(String columnKey, int newIndex) {
+    protected void reOrderColumn(String columnKey, int newIndex) {
 
         final int oldIndex = getColIndexByKey(columnKey);
 
@@ -388,11 +371,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             newIndex--; // columnOrder don't have rowHeader
         }
         // add back hidden rows,
-        for (int i = 0; i < columnOrder.length; i++) {
-            if (columnOrder[i].equals(oldKeyOnNewIndex)) {
+        for (final String aColumnOrder : columnOrder) {
+            if (aColumnOrder.equals(oldKeyOnNewIndex)) {
                 break; // break loop at target
             }
-            if (isCollapsedColumn(columnOrder[i])) {
+            if (isCollapsedColumn(aColumnOrder)) {
                 newIndex++;
             }
         }
@@ -415,8 +398,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         columnOrder = newOrder;
         // also update visibleColumnOrder
         int i = showRowHeaders ? 1 : 0;
-        for (int j = 0; j < newOrder.length; j++) {
-            final String cid = newOrder[j];
+        for (final String cid : newOrder) {
             if (!isCollapsedColumn(cid)) {
                 visibleColOrder[i++] = cid;
             }
@@ -432,16 +414,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
     }
 
-/*
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        if (actionButtonsPanel != null) {
-            actionButtonsPanel.hide();
-        }
-    }
-
-*/
     /**
      * Run only once when component is attached and received its initial
      * content. This function : * Syncs headers and bodys "natural widths and
@@ -596,12 +568,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         isNewBody = false;
 
         initializedAndAttached = true;
-/*
-
-        if (actionButtonsPanel != null && needSetPanelPosition) {
-            actionButtonsPanel.setPanelPosition();
-        }
-*/
     }
 
     public class HeaderCell extends Widget {
@@ -699,7 +665,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             return cid;
         }
 
-        private void setSorted(boolean sorted) {
+        protected void setSorted(boolean sorted) {
             if (sorted) {
                 if (sortAscending) {
                     this.setStyleName(CLASSNAME + "-header-cell-asc");
@@ -717,7 +683,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         @Override
         public void onBrowserEvent(Event event) {
             if (enabled && event != null) {
-                if (isResizing || event.getTarget() == colResizeWidget) {
+                if (isResizing || event.getEventTarget().cast() == colResizeWidget) {
                     onResizeEvent(event);
                 } else {
                     handleCaptionEvent(event);
@@ -800,11 +766,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         if (sortColumn.equals(cid)) {
                             // just toggle order
                             client.updateVariable(paintableId, "sortascending",
-                                    !sortAscending, updateImmediate());
+                                    !sortAscending, true);
                         } else {
                             // set table scrolled by this column
                             client.updateVariable(paintableId, "sortcolumn",
-                                    cid, updateImmediate());
+                                    cid, true);
                         }
                         // get also cache columns at the same request
                         bodyContainer.setScrollPosition(0);
@@ -853,7 +819,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
         }
 
-        private void onResizeEvent(Event event) {
+        protected void onResizeEvent(Event event) {
             switch (DOM.eventGetType(event)) {
             case Event.ONMOUSEDOWN:
                 isResizing = true;
@@ -967,9 +933,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         private static final int WRAPPER_WIDTH = 9000;
 
-        Vector<Widget> visibleCells = new Vector<Widget>();
+        protected Vector<Widget> visibleCells = new Vector<Widget>();
 
-        HashMap<String, HeaderCell> availableCells = new HashMap<String, HeaderCell>();
+        protected HashMap<String, HeaderCell> availableCells = new HashMap<String, HeaderCell>();
 
         Element div = DOM.createDiv();
         Element hTableWrapper = DOM.createDiv();
@@ -987,7 +953,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.setElementProperty(hTableWrapper, "className", CLASSNAME
                     + "-header");
 
-            // TODO move styles to CSS
             DOM.setElementProperty(columnSelector, "className", CLASSNAME
                     + "-column-selector");
             DOM.setStyleAttribute(columnSelector, "display", "none");
@@ -1062,13 +1027,13 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 }
             }
             // check for orphaned header cells
-            for (String cid : availableCells.keySet()) {
+            for (Iterator cellsIterator = availableCells.keySet().iterator(); cellsIterator.hasNext();) {
+                final String cid = (String) cellsIterator.next();
                 if (!updated.contains(cid)) {
                     removeCell(cid);
-                    it.remove();
+                    cellsIterator.remove();
                 }
             }
-
         }
 
         protected HeaderCell createHeaderCell(String cid, String caption) {
@@ -1226,7 +1191,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         @Override
         public void onBrowserEvent(Event event) {
             if (enabled) {
-                if (event.getTarget() == columnSelector) {
+                if (event.getEventTarget().cast() == columnSelector) {
                     final int left = DOM.getAbsoluteLeft(columnSelector);
                     final int top = DOM.getAbsoluteTop(columnSelector)
                             + DOM.getElementPropertyInt(columnSelector,
@@ -1289,24 +1254,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
          * Returns columns as Action array for column select popup
          */
         public Action[] getActions() {
-            Object[] cols;
-            if (columnReordering) {
-                cols = columnOrder;
-            } else {
-                // if columnReordering is disabled, we need different way to get
-                // all available columns
-                cols = visibleColOrder;
-                cols = new Object[visibleColOrder.length
-                        + collapsedColumns.size()];
-                int i;
-                for (i = 0; i < visibleColOrder.length; i++) {
-                    cols[i] = visibleColOrder[i];
-                }
-                for (final Iterator it = collapsedColumns.iterator(); it
-                        .hasNext();) {
-                    cols[i++] = it.next();
-                }
-            }
+            final Object[] cols = getActionColumns();
             final Action[] actions = new Action[cols.length];
 
             for (int i = 0; i < cols.length; i++) {
@@ -1323,6 +1271,26 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             return actions;
         }
 
+        protected Object[] getActionColumns() {
+            Object[] cols;
+            if (columnReordering) {
+                cols = columnOrder;
+            } else {
+                // if columnReordering is disabled, we need different way to get
+                // all available columns
+                cols = new Object[visibleColOrder.length
+                        + collapsedColumns.size()];
+                int i;
+                for (i = 0; i < visibleColOrder.length; i++) {
+                    cols[i] = visibleColOrder[i];
+                }
+                for (Object collapsedColumn : collapsedColumns) {
+                    cols[i++] = collapsedColumn;
+                }
+            }
+            return cols;
+        }
+
         protected VisibleColumnAction createColumnAction(String key) {
             return new VisibleColumnAction(key);
         }
@@ -1335,7 +1303,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             return paintableId;
         }
 
-        /**
+        /*
          * Returns column alignments for visible columns
          */
         public char[] getColumnAlignments() {
@@ -1357,7 +1325,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         private int rowHeight = -1;
 
-        protected final List renderedRows = new Vector();
+        protected final List<Widget> renderedRows = new Vector<Widget>();
 
         protected boolean initDone = false;
 
@@ -1523,7 +1491,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 }
             }
 
-            private void paintComponent(Paintable p, UIDL uidl) {
+            protected void paintComponent(Paintable p, UIDL uidl) {
                 if (isAttached()) {
                     p.updateFromUIDL(uidl, client);
                 } else {
@@ -1550,12 +1518,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
 
             protected void addCells(UIDL uidl, int col) {
-                int visibleColumnIndex = 0;
                 final Iterator cells = uidl.getChildIterator();
                 while (cells.hasNext()) {
                     final Object cell = cells.next();
 
-                    String columnId = visibleColOrder[visibleColumnIndex++];
+                    String columnId = visibleColOrder[col];
 
                     String style = "";
                     if (uidl.hasAttribute("style-" + columnId)) {
@@ -1886,8 +1853,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     public void deselectAll() {
         final Object[] keys = selectedRowKeys.toArray();
-        for (int i = 0; i < keys.length; i++) {
-            Object key = keys[i];
+        for (Object key : keys) {
             final ITableBody.ITableRow row = getRenderedRowByKey((String) key);
             if (row != null && row.isSelected()) {
                 row.toggleSelection();
@@ -1931,7 +1897,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     /**
      * helper to set pixel size of head and body part
      *
-     * @param pixels
+     * @param pixels content width in pixels
      */
     protected void setContentWidth(int pixels) {
         tHead.setWidth(pixels + "px");
@@ -1960,9 +1926,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected void setContainerHeight() {
         if (height != null && !"".equals(height)) {
             int contentH = getOffsetHeight() - tHead.getOffsetHeight();
-//            if (actionButtonsPanel != null) {
-//                contentH -= actionButtonsPanel.getOffsetHeight();
-//            }
             if (aggregationRow != null) {
                 contentH -= aggregationRow.getOffsetHeight();
             }
@@ -2094,10 +2057,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected class AggregationRow extends SimplePanel {
 
-        private boolean initialized = false;
+        protected boolean initialized = false;
 
-        private char[] aligns;
-        private Element tr;
+        protected char[] aligns;
+        protected Element tr;
 
         public AggregationRow() {
             setStyleName(CLASSNAME + "-arow");
@@ -2112,29 +2075,14 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             if (uidl.getChildCount() > 0) {
                 final Element table = DOM.createTable();
+                DOM.setElementAttribute(table, "cellpadding", "0");
+                DOM.setElementAttribute(table, "cellspacing", "0");
                 final Element tBody = DOM.createTBody();
                 tr = DOM.createTR();
 
                 DOM.setElementProperty(tr, "className", CLASSNAME + "-arow-row");
 
-                int col = 0;
-                for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
-                    final String cell = (String) it.next();
-                    String columnId = visibleColOrder[col];
-                    String style = "";
-                    if (uidl.hasAttribute("style-" + columnId)) {
-                        style = uidl.getStringAttribute("style-" + columnId);
-                    }
-                    addCell(cell, style, aligns[col]);
-
-                    final String colKey = getColKeyByIndex(col);
-                    int colWidth;
-                    if ((colWidth = getColWidth(colKey)) > -1) {
-                        setColWidth(col, colWidth);
-                    }
-
-                    col++;
-                }
+                paintRow(uidl);
 
                 DOM.appendChild(tBody, tr);
                 DOM.appendChild(table, tBody);
@@ -2142,6 +2090,27 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
 
             initialized = getContainerElement().hasChildNodes();
+        }
+
+        protected void paintRow(UIDL uidl) {
+            int col = 0;
+            for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
+                final String cell = (String) it.next();
+                String columnId = visibleColOrder[col];
+                String style = "";
+                if (uidl.hasAttribute("style-" + columnId)) {
+                    style = uidl.getStringAttribute("style-" + columnId);
+                }
+                addCell(cell, aligns[col], style);
+
+                final String colKey = getColKeyByIndex(col);
+                int colWidth;
+                if ((colWidth = getColWidth(colKey)) > -1) {
+                    setColWidth(col, colWidth);
+                }
+
+                col++;
+            }
         }
 
         public void clearRow() {
@@ -2170,14 +2139,14 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
         }
 
-        private void addCell(String text, String style, char align) {
+        protected void addCell(String text, char align, String style) {
             final Element td = DOM.createTD();
             final Element container = DOM.createDiv();
-            String classNameTd = CLASSNAME + "-arow-cell";
-            String className = CLASSNAME + "-arow-cell-content";
+            String classNameTd = CLASSNAME + "-cell";
+            String className = CLASSNAME + "-cell-content";
             if (style != null && !style.equals("")) {
-                classNameTd += " " + CLASSNAME + "-arow-cell-" + style;
-                className += " " + CLASSNAME + "-arow-cell-content-" + style;
+                classNameTd += " " + CLASSNAME + "-cell-" + style;
+                className += " " + CLASSNAME + "-cell-content-" + style;
             }
             DOM.setElementProperty(td, "className", classNameTd);
             DOM.setElementProperty(container, "className", className);

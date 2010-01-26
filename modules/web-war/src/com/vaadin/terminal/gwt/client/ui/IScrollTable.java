@@ -16,9 +16,9 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.user.client.*;
-import com.google.gwt.user.client.ui.ScrollListener;
-import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.UIDL;
 
@@ -48,7 +48,7 @@ import java.util.Iterator;
  * TODO implement unregistering for child components in Cells
  */
 public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
-        implements ScrollListener {
+        implements ScrollHandler {
 
     /**
      * multiple of pagelength which component will cache when requesting more
@@ -71,7 +71,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
 
     public IScrollTable() {
         super();
-        bodyContainer.addScrollListener(this);
+        bodyContainer.addScrollHandler(this);
         rowRequestHandler = new RowRequestHandler();
     }
 
@@ -220,11 +220,9 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         }
     }
 
-    /**
-     * This method has logic which rows needs to be requested from server when
-     * user scrolls
-     */
-    public void onScroll(Widget widget, int scrollLeft, int scrollTop) {
+    public void onScroll(ScrollEvent event) {
+        int scrollLeft = bodyContainer.getElement().getScrollLeft();
+        int scrollTop = bodyContainer.getScrollPosition();
         if (!initializedAndAttached) {
             return;
         }
@@ -640,11 +638,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         }
 
         protected IScrollTableRow createRowInstance(UIDL uidl) {
-            if (uidl.getTag().equals("atr")) {
-                return new IScrollTableAggregationRow(uidl, aligns);
-            } else {
-                return new IScrollTableRow(uidl, aligns);
-            }
+            return new IScrollTableRow(uidl, aligns);
         }
 
         protected IScrollTableRow[] createRowsArray(int rows) {
@@ -755,30 +749,6 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
 
             public IScrollTableRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
-            }
-        }
-
-        public class IScrollTableAggregationRow extends IScrollTableRow {
-            public IScrollTableAggregationRow(UIDL uidl, char[] aligns) {
-                setElement(DOM.createElement("tr"));
-                tHead.getColumnAlignments();
-                int col = 0;
-                // row header
-                if (showRowHeaders) {
-                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
-                            true);
-                    col++;
-                }
-                addCells(uidl, col);
-            }
-
-            @Override
-            public boolean isSelected() {
-                return false;
-            }
-
-            @Override
-            public void onBrowserEvent(Event event) {
             }
         }
     }

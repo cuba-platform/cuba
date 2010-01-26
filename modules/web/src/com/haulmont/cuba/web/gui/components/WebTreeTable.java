@@ -58,16 +58,6 @@ public class WebTreeTable
     }
 
     @Override
-    protected void initComponent(com.haulmont.cuba.web.toolkit.ui.TreeTable component) {
-        super.initComponent(component);
-        component.setSelectable(true);
-        component.setFieldFactory(new FieldFactory());
-        component.setColumnCollapsingAllowed(true);
-        component.setColumnReorderingAllowed(true);
-        setEditable(false);
-    }
-
-    @Override
     public void setDatasource(CollectionDatasource datasource) {
         super.setDatasource(datasource);
         this.hierarchyProperty = ((HierarchicalDatasource) datasource).getHierarchyPropertyName();

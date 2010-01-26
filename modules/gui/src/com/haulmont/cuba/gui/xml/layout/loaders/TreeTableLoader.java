@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 
 public class TreeTableLoader extends AbstractTableLoader<TreeTable> {
     public TreeTableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, factory, config);
+        super(context, config, factory);
     }
 
     protected TreeTable createComponent(ComponentsFactory factory) throws InstantiationException, IllegalAccessException {

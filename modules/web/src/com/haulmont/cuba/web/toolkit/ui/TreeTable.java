@@ -524,70 +524,17 @@ public class TreeTable
             }
 
             // Actions
-            if (actionHandlers != null) {
-                final List<String> keys = new LinkedList<String>();
-                for (final Object actionHandler : actionHandlers) {
-                    final Action[] aa = ((Action.Handler) actionHandler)
-                            .getActions(itemId, this);
-                    if (aa != null) {
-                        for (final Action action : aa) {
-                            final String key = actionMapper.key(action);
-                            actions.add(action);
-                            keys.add(key);
-                        }
-                    }
-                }
-                target.addAttribute("al", keys.toArray());
-            }
+            paintRowActions(target, actions, itemId);
 
-            /*
-             * For each row, if a cellStyleGenerator is specified, get the
-             * specific style for the cell, using null as propertyId. If there
-             * is any, add it to the target.
-             */
-            if (cellStyleGenerator != null) {
-                String rowStyle = cellStyleGenerator.getStyle(itemId, null);
-                if (rowStyle != null && !rowStyle.equals("")) {
-                    target.addAttribute("rowstyle", rowStyle);
-                }
-            }
+            paintCellStyleGenerator(target, itemId);
 
             if (!isCaption) {
                 // cells
                 int currentColumn = 0;
                 for (final Iterator it = visibleColumns.iterator(); it.hasNext(); currentColumn++) {
                     final Object columnId = it.next();
-                    if (columnId == null || isColumnCollapsed(columnId)) {
-                        continue;
-                    }
-                    /*
-                    * For each cell, if a cellStyleGenerator is specified, get the
-                    * specific style for the cell. If there is any, add it to the
-                    * target.
-                    */
-                    if (cellStyleGenerator != null) {
-                        String cellStyle = cellStyleGenerator.getStyle(itemId,
-                                columnId);
-                        if (cellStyle != null && !cellStyle.equals("")) {
-                            target.addAttribute("style-"
-                                    + columnIdMap.key(columnId), cellStyle);
-                        }
-                    }
-                    if ((iscomponent[currentColumn] || isColumnEditable(columnId))
-                            && Component.class.isInstance(cells[CELL_FIRSTCOL
-                            + currentColumn][i])) {
-                        final Component c = (Component) cells[CELL_FIRSTCOL
-                                + currentColumn][i];
-                        if (c == null) {
-                            target.addText("");
-                        } else {
-                            c.paint(target);
-                        }
-                    } else {
-                        target
-                                .addText((String) cells[CELL_FIRSTCOL
-                                        + currentColumn][i]);
-                    }
+                    paintCell(target, itemId, columnId, cells[CELL_FIRSTCOL + currentColumn][i],
+                            iscomponent[currentColumn]);
                 }
             }
 
@@ -666,36 +613,8 @@ public class TreeTable
             }
             target.addVariable(this, "collapsedcolumns", collapsedkeys);
         }
-        target.startTag("visiblecolumns");
-        for (final Object columnId : visibleColumns) {
-            if (columnId != null) {
-                target.startTag("column");
-                target.addAttribute("cid", columnIdMap.key(columnId));
-                final String head = getColumnHeader(columnId);
-                target.addAttribute("caption", (head != null ? head : ""));
-                if (isColumnCollapsed(columnId)) {
-                    target.addAttribute("collapsed", true);
-                }
-                if (colheads) {
-                    if (getColumnIcon(columnId) != null) {
-                        target.addAttribute("icon", getColumnIcon(columnId));
-                    }
-                    if (sortables.contains(columnId)) {
-                        target.addAttribute("sortable", true);
-                    }
-                }
-                if (!ALIGN_LEFT.equals(getColumnAlignment(columnId))) {
-                    target.addAttribute("align", getColumnAlignment(columnId));
-                }
-                if (getColumnWidth(columnId) > -1) {
-                    target.addAttribute("width", String
-                            .valueOf(getColumnWidth(columnId)));
-                }
 
-                target.endTag("column");
-            }
-        }
-        target.endTag("visiblecolumns");
+        paintVisibleColumns(target, sortables, colheads);
     }
 
     @Override

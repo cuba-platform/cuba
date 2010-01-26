@@ -52,10 +52,6 @@ public class IScrollTreeTable
         protected IScrollTreeTableRow createRowInstance(UIDL uidl) {
             if (isCaptionRow(uidl)) {
                 return new IScrollTreeTableCaptionRow(uidl, aligns);
-/*
-            } else if (uidl.getTag().equals("arow")) {
-                return new IScrollTreeTableAggregationRow(uidl, aligns);
-*/
             } else {
                 return new IScrollTreeTableRow(uidl, aligns);
             }
@@ -87,7 +83,7 @@ public class IScrollTreeTable
                 }
                 if (row != null) {
                     final Element e = DOM.getChild(row.getElement(), i);
-                    DOM.getElementPropertyInt(e, "offsetWidth");
+                    return DOM.getElementPropertyInt(e, "offsetWidth");
                 }
             }
             return 0;
@@ -95,7 +91,7 @@ public class IScrollTreeTable
 
         @Override
         public void setColWidth(int colIndex, int w) {
-            for (final Object o : renderedRows) {
+            for (final Widget o : renderedRows) {
                 if (o instanceof IScrollTreeTableCaptionRow) {
                     if (colIndex < groupColIndex) {
                         applyCellWidth((IScrollTreeTableRow) o, colIndex, w);
@@ -110,7 +106,7 @@ public class IScrollTreeTable
             }
         }
 
-        protected void applyCellWidth(IScrollTreeTableRow row,
+        private void applyCellWidth(IScrollTreeTableRow row,
                                       int colIndex, int w) {
             final Element cell = DOM.getChild(row.getElement(),
                     colIndex);
@@ -418,30 +414,6 @@ public class IScrollTreeTable
                 } else {
                     super.handleRowClick(event);
                 }
-            }
-        }
-
-        public class IScrollTreeTableAggregationRow extends IScrollTreeTableRow {
-            public IScrollTreeTableAggregationRow(UIDL uidl, char[] aligns) {
-                setElement(DOM.createElement("tr"));
-                tHead.getColumnAlignments();
-                int col = 0;
-                // row header
-                if (showRowHeaders) {
-                    addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
-                            true);
-                    col++;
-                }
-                addCells(uidl, col);
-            }
-
-            @Override
-            public boolean isSelected() {
-                return false;
-            }
-
-            @Override
-            public void onBrowserEvent(Event event) {
             }
         }
     }
