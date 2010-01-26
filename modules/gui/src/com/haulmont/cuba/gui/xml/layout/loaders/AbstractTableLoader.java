@@ -67,23 +67,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             if (ds == null) {
                 throw new IllegalStateException("Cannot find data source by name: " + datasource);
             }
-            List<Table.Column> availableColumns = new ArrayList<Table.Column>();
+            List<Table.Column> availableColumns;
 
             if (columnsElement != null) {
-                //noinspection unchecked
-                for (Element columnElement : (Collection<Element>) columnsElement.elements("column")) {
-                    String visible = columnElement.attributeValue("visible");
-                    if (visible == null) {
-                        final Element e = columnElement.element("visible");
-                        if (e != null) {
-                            visible = e.getText();
-                        }
-                    }
-
-                    if (StringUtils.isEmpty(visible) || evaluateBoolean(visible)) {
-                        availableColumns.add(loadColumn(columnElement, ds));
-                    }
-                }
+                availableColumns = loadColumns(component, columnsElement, ds);
+            } else {
+                availableColumns = new ArrayList<Table.Column>();
             }
 
             for (Table.Column column : availableColumns) {
@@ -119,6 +108,25 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         assignFrame(component);
 
         return component;
+    }
+
+    protected List<Table.Column> loadColumns(Table component, Element columnsElement, CollectionDatasource ds) {
+        final List<Table.Column> columns = new ArrayList<Table.Column>();
+        //noinspection unchecked
+        for (final Element columnElement : (Collection<Element>) columnsElement.elements("column")) {
+            String visible = columnElement.attributeValue("visible");
+            if (visible == null) {
+                final Element e = columnElement.element("visible");
+                if (e != null) {
+                    visible = e.getText();
+                }
+            }
+
+            if (StringUtils.isEmpty(visible) || evaluateBoolean(visible)) {
+                columns.add(loadColumn(columnElement, ds));
+            }
+        }
+        return columns;
     }
 
     private void loadAggregatable(Table component, Element element) {

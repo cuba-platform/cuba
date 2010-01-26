@@ -22,6 +22,10 @@ public interface DatasourceFactory {
     HierarchicalDatasource createHierarchicalDatasource(
             DsContext dsContext, DataService dataservice,
                 String id, MetaClass metaClass, String viewName, CollectionDatasource.FetchMode fetchMode, boolean softDeletion);
+    GroupDatasource createGroupDatasource(
+            DsContext dsContext, DataService dataService, String id, MetaClass metaClass,
+            String viewName, CollectionDatasource.FetchMode fetchMode, boolean softDeletion
+    );
 
     Datasource createDatasource(String id, Datasource ds, String property);
     CollectionDatasource createCollectionDatasource(String id, Datasource ds, String property);

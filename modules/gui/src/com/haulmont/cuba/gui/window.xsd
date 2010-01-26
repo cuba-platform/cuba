@@ -67,6 +67,22 @@
                                         <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
                                     </xs:complexType>
                                 </xs:element>
+                                <xs:element name="groupDatasource">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
+                                            <xs:element name="dataserviceClass" minOccurs="0" maxOccurs="1"/>
+                                            <xs:element name="query" minOccurs="0" maxOccurs="1"/>
+                                            <xs:group ref="nestedDatasources" minOccurs="0"/>
+                                        </xs:sequence>
+                                        <xs:attribute name="id" type="xs:string" use="required"/>
+                                        <xs:attribute name="class" type="xs:string" use="required"/>
+                                        <xs:attribute name="query" type="xs:string" use="optional"/>
+                                        <xs:attribute name="view" type="xs:string" use="required"/>
+                                        <xs:attribute name="fetchMode" type="fetchMode" use="optional"/>
+                                        <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
+                                    </xs:complexType>
+                                </xs:element>
                                 <xs:element name="datasource">
                                     <xs:complexType>
                                         <xs:group ref="nestedDatasources"/>
@@ -496,6 +512,31 @@
                 </xs:element>
                 <xs:element name="table" type="tableType"/>
                 <xs:element name="treeTable" type="tableType"/>
+                <xs:element name="groupTable">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
+                            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="groupTableColumnsType" />
+                            <xs:element name="rows" minOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="datasource" type="xs:string" use="required"/>
+                                    <xs:attribute name="headerMode" type="headerMode" use="optional"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+                        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="margin" type="xs:string" use="optional"/>
+                        <xs:attribute name="visible" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
+                        <xs:attribute name="aggregatable" type="xs:boolean" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="filter">
                     <xs:complexType>
                         <xs:sequence>
@@ -595,14 +636,7 @@
     <xs:complexType name="tableType">
         <xs:sequence>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
-            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded"
-                                    type="columnType"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="tableColumnsType" />
             <xs:element name="rows" minOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="datasource" type="xs:string" use="required"/>
@@ -621,6 +655,28 @@
         <xs:attribute name="height" type="xs:string" use="optional"/>
         <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
         <xs:attribute name="aggregatable" type="xs:boolean" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="tableColumnsType">
+        <xs:sequence>
+            <xs:element name="column" minOccurs="1" maxOccurs="unbounded"
+                        type="columnType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="groupTableColumnsType">
+        <xs:sequence>
+            <xs:element name="group" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded"
+                                    type="columnType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="column" minOccurs="1" maxOccurs="unbounded"
+                        type="columnType"/>
+        </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="formatterType">

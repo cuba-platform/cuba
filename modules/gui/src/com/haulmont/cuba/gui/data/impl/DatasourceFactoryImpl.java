@@ -36,6 +36,14 @@ public class DatasourceFactoryImpl implements DatasourceFactory {
         return new HierarchicalDatasourceImpl(dsContext, dataservice, id, metaClass, viewName, softDeletion);
     }
 
+    public GroupDatasource createGroupDatasource(
+            DsContext dsContext, DataService dataService,
+            String id, MetaClass metaClass, String viewName,
+            CollectionDatasource.FetchMode fetchMode, boolean softDeletion
+    ) {
+        return new GroupDatasourceImpl(dsContext, dataService, id, metaClass, viewName, softDeletion);
+    }
+
     public Datasource createDatasource(String id, Datasource ds, String property) {
         return new PropertyDatasourceImpl(id, ds, property);
     }

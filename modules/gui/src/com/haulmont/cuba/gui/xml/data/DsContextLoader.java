@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -77,6 +76,12 @@ public class DsContextLoader {
             context.register(loadCollectionDatasource(ds));
         }
 
+        //noinspection unchecked
+        elements = element.elements("groupDatasource");
+        for (Element ds : elements) {
+            context.register(loadGroupDatasource(ds));
+        }
+
         context.executeLazyTasks();
 
         return context;
@@ -130,6 +135,46 @@ public class DsContextLoader {
 
         if (!StringUtils.isEmpty(hierarchyProperty)) {
             datasource.setHierarchyPropertyName(hierarchyProperty);
+        }
+
+        final String query = element.elementText("query");
+        if (!StringUtils.isBlank(query)) {
+            datasource.setQuery(query);
+        }
+
+        loadDatasources(element, datasource);
+
+        return datasource;
+    }
+
+    protected Datasource loadGroupDatasource(Element element) {
+        final String id = element.attributeValue("id");
+        final MetaClass metaClass = loadMetaClass(element);
+        final String viewName = element.attributeValue("view");
+        String deletion = element.attributeValue("softDeletion");
+        boolean softDeletion = deletion == null || "true".equals(deletion);
+
+        final Element datasourceClassElement = element.element("datasourceClass");
+
+        final GroupDatasource datasource;
+        if (datasourceClassElement != null) {
+            final String datasourceClass = datasourceClassElement.getText();
+            if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
+
+            try {
+                final Class<GroupDatasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Constructor<GroupDatasource> constructor =
+                        aClass.getConstructor(
+                                DsContext.class, DataService.class,
+                                    String.class, MetaClass.class, String.class);
+                datasource = constructor.newInstance(context, dataservice, id, metaClass, viewName);
+                datasource.setSoftDeletion(softDeletion);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            final CollectionDatasource.FetchMode mode = getFetchMode(element);
+            datasource = factory.createGroupDatasource(context, dataservice, id, metaClass, viewName, mode, softDeletion);
         }
 
         final String query = element.elementText("query");
