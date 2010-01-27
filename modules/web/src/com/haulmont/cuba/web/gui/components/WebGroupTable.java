@@ -11,14 +11,23 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.vaadin.data.Item;
@@ -27,6 +36,7 @@ import com.vaadin.terminal.Resource;
 import java.util.*;
 
 import org.dom4j.Element;
+import org.apache.commons.lang.StringUtils;
 
 public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.GroupTable>
         implements GroupTable, Component.Wrapper
@@ -48,6 +58,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         };
         initComponent(component);
+
+        component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
     }
 
     @Override
@@ -143,6 +155,30 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             groupDatasource = datasource instanceof GroupDatasource;
         }
 
+        @Override
+        protected void createProperties(View view, MetaClass metaClass) {
+            if (columns.isEmpty()) {
+                super.createProperties(view, metaClass);
+            } else {
+                for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
+                    final MetaPropertyPath propertyPath = entry.getKey();
+                    if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
+                        properties.add(propertyPath);
+                    }
+                }
+            }
+        }
+
+        @Override
+        protected ItemWrapper createItemWrapper(Object item) {
+            return new ItemWrapper(item, properties) {
+                @Override
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                    return new TablePropertyWrapper(item, propertyPath);
+                }
+            };
+        }
+
         public void groupBy(Object[] properties) {
             if (groupDatasource) {
                 doGroup(properties);
@@ -197,6 +233,13 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        public int getGroupItemsCount(Object id) {
+            if (isGroup(id)) {
+                return ((GroupDatasource) datasource).getGroupItemsCount((GroupInfo) id);
+            }
+            return 0;
+        }
+
         public boolean isGroup(Object id) {
             return (id instanceof GroupInfo) && ((GroupDatasource) datasource).containsGroup((GroupInfo) id);
         }
@@ -208,9 +251,9 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return null;
         }
 
-        public Object getGroupCaption(Object id) {
+        public Object getGroupPropertyValue(Object id) {
             if (isGroup(id)) {
-                return ((GroupDatasource) datasource).getGroupCaption((GroupInfo) id);
+                return ((GroupDatasource) datasource).getGroupPropertyValue((GroupInfo) id);
             }
             return null;
         }
@@ -417,6 +460,54 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 return getItemIds().size();
             }
             return super.size();
+        }
+    }
+
+    protected class AggregatableGroupPropertyValueFormatter extends DefaultGroupPropertyValueFormatter {
+        @Override
+        public String format(Object groupId, Object value) {
+            String formattedValue = super.format(groupId, value);
+            if (!StringUtils.isEmpty(formattedValue)) {
+                int count = WebGroupTable.this.component.getGroupItemsCount(groupId);
+                return String.format("%s (%d)", formattedValue, count);
+            } else {
+                return formattedValue;
+            }
+        }
+    }
+
+    protected class DefaultGroupPropertyValueFormatter
+            implements com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupPropertyValueFormatter
+    {
+        public String format(Object groupId, Object value) {
+            if (value == null) {
+                return "";
+            }
+            final MetaPropertyPath propertyPath = ((GroupInfo<MetaPropertyPath>) groupId).getProperty();
+            final Table.Column column = columns.get(propertyPath);
+            if (column != null && column.getXmlDescriptor() != null) {
+                String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
+                if (column.getFormatter() != null) {
+                    return column.getFormatter().format(value);
+                } else if (!StringUtils.isEmpty(captionProperty)) {
+                    return propertyPath.getRange().isDatatype() ?
+                            propertyPath.getRange().asDatatype().format(value) :
+                            String.valueOf(((Instance) value).getValue(captionProperty));
+                }
+            }
+            final Range range = propertyPath.getRange();
+            if (range.isDatatype()) {
+                return range.asDatatype().format(value);
+            } else if (range.isEnum()){
+                String nameKey = value.getClass().getSimpleName() + "." + value.toString();
+                return MessageProvider.getMessage(value.getClass(), nameKey);
+            } else {
+                if (value instanceof Instance) {
+                    return ((Instance) value).getInstanceName();
+                } else {
+                    return value.toString();
+                }
+            }
         }
     }
 }

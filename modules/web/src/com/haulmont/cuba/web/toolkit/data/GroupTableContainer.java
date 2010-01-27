@@ -27,9 +27,11 @@ public interface GroupTableContainer extends Container.Ordered {
 
     Object getGroupProperty(Object id);
 
-    Object getGroupCaption(Object id);
+    Object getGroupPropertyValue(Object id);
 
     Collection<?> getGroupItemIds(Object id);
+
+    int getGroupItemsCount(Object id);
 
     boolean hasGroups();
 

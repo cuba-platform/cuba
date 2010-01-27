@@ -76,9 +76,9 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
                 + container.getClass());
     }
 
-    public Object getGroupCaption(Object itemId) {
+    public Object getGroupPropertyValue(Object itemId) {
         if (groupTableContainer) {
-            return ((GroupTableContainer) container).getGroupCaption(itemId);
+            return ((GroupTableContainer) container).getGroupPropertyValue(itemId);
         }
         throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                 + container.getClass());
@@ -87,6 +87,14 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
     public Collection<?> getGroupItemIds(Object itemId) {
         if (groupTableContainer) {
             return ((GroupTableContainer) container).getGroupItemIds(itemId);
+        }
+        throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
+                + container.getClass());
+    }
+
+    public int getGroupItemsCount(Object itemId) {
+        if (groupTableContainer) {
+            return ((GroupTableContainer) container).getGroupItemsCount(itemId);
         }
         throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                 + container.getClass());

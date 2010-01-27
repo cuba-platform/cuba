@@ -37,9 +37,11 @@ public interface GroupDatasource<T extends Entity<K>, K> extends CollectionDatas
 
     Object getGroupProperty(GroupInfo groupId);
 
-    Object getGroupCaption(GroupInfo groupId);
+    Object getGroupPropertyValue(GroupInfo groupId);
 
     Collection<K> getGroupItemIds(GroupInfo groupId);
+
+    int getGroupItemsCount(GroupInfo groupId);
 
     boolean hasGroups();
 

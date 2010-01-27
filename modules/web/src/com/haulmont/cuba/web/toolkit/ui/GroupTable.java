@@ -29,6 +29,8 @@ public class GroupTable extends Table implements GroupTableContainer {
 
     private KeyMapper groupIdMap = new KeyMapper();
 
+    private GroupPropertyValueFormatter groupPropertyValueFormatter;
+
     public GroupTable() {
         super();
     }
@@ -231,9 +233,6 @@ public class GroupTable extends Table implements GroupTableContainer {
                 continue;
             }
 
-//            todo remove next code
-//            if (isGroup(itemId)) continue;
-
             if (hasGroups && isGroup(itemId)) {
                 target.startTag("gr");
             } else {
@@ -272,14 +271,13 @@ public class GroupTable extends Table implements GroupTableContainer {
                     if (isExpanded(itemId)) {
                         target.addAttribute("expanded", true);
                     }
-                    final Object caption = getGroupCaption(itemId);
-                    target.addAttribute("caption", caption != null ? caption.toString() : "");
+                    final Object propertyValue = getGroupPropertyValue(itemId);
+                    target.addAttribute("caption", formatGroupPropertyValue(itemId, propertyValue));
 
                     if (hasAggregation) {
                         paintGroupAggregation(target, itemId,
                                 ((AggregationContainer) items).aggregate(getGroupItemIds(itemId)));
                     }
-                    //todo gorodnov: fix the situation when a groupped column is collapsed or non visible
                 } else {
                     // paint none groupped cells
                     int currentColumn = 0;
@@ -727,6 +725,15 @@ public class GroupTable extends Table implements GroupTableContainer {
         }
     }
 
+    protected String formatGroupPropertyValue(Object groupId, Object groupValue) {
+        if (groupValue == null) {
+            return "";
+        }
+        return groupPropertyValueFormatter != null
+                ? groupPropertyValueFormatter.format(groupId, groupValue)
+                : groupValue.toString();
+    }
+
     public boolean hasGroups() {
         return ((GroupTableContainer) items).hasGroups();
     }
@@ -743,8 +750,8 @@ public class GroupTable extends Table implements GroupTableContainer {
         return ((GroupTableContainer) items).getChildren(id);
     }
 
-    public Object getGroupCaption(Object itemId) {
-        return ((GroupTableContainer) items).getGroupCaption(itemId);
+    public Object getGroupPropertyValue(Object itemId) {
+        return ((GroupTableContainer) items).getGroupPropertyValue(itemId);
     }
 
     public Object getGroupProperty(Object itemId) {
@@ -757,6 +764,10 @@ public class GroupTable extends Table implements GroupTableContainer {
 
     public Collection<?> getGroupItemIds(Object itemId) {
         return ((GroupTableContainer) items).getGroupItemIds(itemId);
+    }
+
+    public int getGroupItemsCount(Object itemId) {
+        return ((GroupTableContainer) items).getGroupItemsCount(itemId);
     }
 
     public Collection<?> getGroupProperties() {
@@ -801,8 +812,20 @@ public class GroupTable extends Table implements GroupTableContainer {
         }
     }
 
+    public GroupPropertyValueFormatter getGroupPropertyValueFormatter() {
+        return groupPropertyValueFormatter;
+    }
+
+    public void setGroupPropertyValueFormatter(GroupPropertyValueFormatter groupPropertyValueFormatter) {
+        this.groupPropertyValueFormatter = groupPropertyValueFormatter;
+    }
+
     @Override
     public String getTag() {
         return "grouptable";
+    }
+
+    public interface GroupPropertyValueFormatter {
+        String format(Object groupId, Object value);
     }
 }

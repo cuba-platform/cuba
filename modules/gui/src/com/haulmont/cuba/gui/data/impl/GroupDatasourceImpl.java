@@ -151,7 +151,7 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
 
     public boolean hasChildren(GroupInfo groupId) {
         List<GroupInfo> children;
-        return hasGroups() && (children = this.children.get(groupId)) != null
+        return containsGroup(groupId) && (children = this.children.get(groupId)) != null
                 && !children.isEmpty();
     }
 
@@ -163,21 +163,21 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
     }
 
     public Object getGroupProperty(GroupInfo groupId) {
-        if (hasGroups()) {
+        if (containsGroup(groupId)) {
             return groupId.getProperty();
         }
         return null;
     }
 
-    public Object getGroupCaption(GroupInfo groupId) {
-        if (hasGroups()) {
+    public Object getGroupPropertyValue(GroupInfo groupId) {
+        if (containsGroup(groupId)) {
             return groupId.getValue();
         }
         return null;
     }
 
     public Collection<K> getGroupItemIds(GroupInfo groupId) {
-        if (hasGroups()) {
+        if (containsGroup(groupId)) {
             List<K> itemIds;
             if ((itemIds = groupItems.get(groupId)) == null) {
                 itemIds = new LinkedList<K>();
@@ -189,6 +189,23 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
             return Collections.unmodifiableList(itemIds);
         }
         return Collections.emptyList();
+    }
+
+    public int getGroupItemsCount(GroupInfo groupId) {
+        if (containsGroup(groupId)) {
+            List<K> itemIds;
+            if ((itemIds = groupItems.get(groupId)) == null) {
+                int count = 0;
+                final List<GroupInfo> children = getChildren(groupId);
+                for (final GroupInfo child : children) {
+                    count += getGroupItemsCount(child);
+                }
+                return count;
+            } else {
+                return itemIds.size();
+            }
+        }
+        return 0;
     }
 
     public boolean hasGroups() {
