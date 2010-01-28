@@ -38,6 +38,9 @@ public interface Tabsheet
 
         String getCaption();
         void setCaption(String caption);
+
+        boolean isEnabled();
+        void setEnabled(boolean enabled);
     }
 
     interface TabChangeListener {

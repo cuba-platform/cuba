@@ -59,6 +59,20 @@ public class TabsheetLoader extends ContainerLoader {
                 caption = loadResourceString(caption);
                 tab.setCaption(caption);
             }
+
+            String enable = tabElement.attributeValue("enable");
+            if (enable == null) {
+                final Element e = tabElement.element("enable");
+                if (e != null) {
+                    enable = e.getText();
+                }
+            }
+
+            if (!StringUtils.isEmpty(enable)) {
+                if (isBoolean(enable)) {
+                    tab.setEnabled(Boolean.valueOf(enable));
+                }
+            }
         }
 
         assignFrame(component);

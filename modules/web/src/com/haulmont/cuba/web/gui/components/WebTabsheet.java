@@ -99,6 +99,14 @@ public class WebTabsheet
             WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setCaption(caption);
         }
 
+        public boolean isEnabled() {
+            return WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).isEnabled();
+        }
+
+        public void setEnabled(boolean enabled) {
+            WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setEnabled(enabled);
+        }
+
         public Component getComponent() {
             return component;
         }
