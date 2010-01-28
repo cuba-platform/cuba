@@ -100,9 +100,10 @@ public class DatasourceImpl<T extends Entity>
     }
 
     public T getItem() {
-        if (State.VALID.equals(state)) return item;
-
-        throw new UnsupportedOperationException();
+        if (State.VALID.equals(state)) 
+            return item;
+        else
+            throw new IllegalStateException("Datasource state is " + state);
     }
 
     public void refresh() {

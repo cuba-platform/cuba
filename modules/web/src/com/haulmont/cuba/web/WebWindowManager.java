@@ -355,7 +355,10 @@ public class WebWindowManager extends WindowManager
         }
 
         final WindowOpenMode openMode = getWindowOpenMode().get(window);
-        if (openMode == null) throw new IllegalStateException();
+        if (openMode == null) {
+            log.warn("Problem closing window " + window + " : WindowOpenMode not found");
+            return;
+        }
 
         closeWindow(window, openMode);
         getWindowOpenMode().remove(window);

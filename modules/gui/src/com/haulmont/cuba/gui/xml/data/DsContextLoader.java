@@ -13,6 +13,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
@@ -91,7 +92,7 @@ public class DsContextLoader {
     protected DsContextImplementation createDsContext(String contextClass, Element element) {
         DsContextImplementation context;
 
-        final Class<Object> aClass = ReflectionHelper.getClass(contextClass);
+        final Class<Object> aClass = ScriptingProvider.loadClass(contextClass);
         try {
             final Constructor<Object> constructor = aClass.getConstructor(DataService.class);
             context = (DsContextImplementation) constructor.newInstance(dataservice);
@@ -118,7 +119,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
 
             try {
-                final Class<HierarchicalDatasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Class<HierarchicalDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
                 final Constructor<HierarchicalDatasource> constructor =
                         aClass.getConstructor(
                                 DsContext.class, DataService.class,
@@ -162,7 +163,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
 
             try {
-                final Class<GroupDatasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Class<GroupDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
                 final Constructor<GroupDatasource> constructor =
                         aClass.getConstructor(
                                 DsContext.class, DataService.class,
@@ -200,7 +201,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
 
             try {
-                final Class<Datasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Class<Datasource> aClass = ScriptingProvider.loadClass(datasourceClass);
                 final Constructor<Datasource> constructor =
                         aClass.getConstructor(
                                 DsContext.class, DataService.class,
@@ -275,7 +276,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
             try {
-                final Class<CollectionDatasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Class<CollectionDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
                 final Constructor<CollectionDatasource> constructor =
                         aClass.getConstructor(String.class, Datasource.class, String.class);
                 datasource = constructor.newInstance(id, ds, property);
@@ -293,6 +294,9 @@ public class DsContextLoader {
 
     private MetaClass loadMetaClass(Element element) {
         final String className = element.attributeValue("class");
+        if (className == null)
+            return null;
+        
         final Class<?> aClass = ReflectionHelper.getClass(className);
         final MetaClass metaClass = MetadataProvider.getSession().getClass(aClass);
 
@@ -317,7 +321,7 @@ public class DsContextLoader {
             if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
 
             try {
-                final Class<CollectionDatasource> aClass = ReflectionHelper.getClass(datasourceClass);
+                final Class<CollectionDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
                 final Constructor<CollectionDatasource> constructor =
                         aClass.getConstructor(
                                 DsContext.class, DataService.class,

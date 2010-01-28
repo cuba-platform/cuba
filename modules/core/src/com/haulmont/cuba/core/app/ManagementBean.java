@@ -90,7 +90,7 @@ public class ManagementBean
             String name;
             String password;
             SecurityContext securityContext = ServerSecurityUtils.getSecurityAssociation();
-            if (securityContext == null) {
+            if (securityContext == null || securityContext.getUser() == null || securityContext.getPassword() == null) {
                 name = AppContext.getProperty("cuba.jmxUserLogin");
                 password = AppContext.getProperty("cuba.jmxUserPassword");
             } else {

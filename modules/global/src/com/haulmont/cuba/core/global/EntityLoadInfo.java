@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.UUID;
@@ -21,7 +22,7 @@ public class EntityLoadInfo {
     private UUID id;
     private String viewName;
 
-    public EntityLoadInfo(UUID id, MetaClass metaClass, String viewName) {
+    private EntityLoadInfo(UUID id, MetaClass metaClass, String viewName) {
         this.id = id;
         this.metaClass = metaClass;
         this.viewName = viewName;
@@ -37,6 +38,15 @@ public class EntityLoadInfo {
 
     public String getViewName() {
         return viewName;
+    }
+
+    public static EntityLoadInfo create(Entity entity, String viewName) {
+        MetaClass metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+        return new EntityLoadInfo((UUID) entity.getId(), metaClass, viewName);
+    }
+
+    public static EntityLoadInfo create(Entity entity) {
+        return create(entity, null);
     }
 
     public static EntityLoadInfo parse(String str) {
