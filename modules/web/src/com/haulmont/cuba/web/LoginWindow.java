@@ -82,12 +82,8 @@ public class LoginWindow extends Window
         setPositionX(100);
     }
 
-    protected void initUI(App app) {
-        final String WIDTH = "125px";
-
-        final int formWidth = 267;
-        final int formHeight = 222;
-        final int totalHeight = formHeight;
+    protected void initStandartUI(App app, int formWidth, int formHeight, int fieldWidth, boolean localesSelectVisible) {
+        int totalHeight = formHeight;
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setStyleName("mainLayout");
@@ -119,22 +115,24 @@ public class LoginWindow extends Window
 
         loginField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginField", loc));
         form.addField("loginField", loginField);
-        loginField.setWidth(WIDTH);
+        loginField.setWidth(fieldWidth + "px");
         loginField.setStyleName("login-field");
         formLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
         passwdField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
         passwdField.setSecret(true);
-        passwdField.setWidth(WIDTH);
+        passwdField.setWidth(fieldWidth + "px");
         passwdField.setStyleName("password-field");
         form.addField("passwordField", passwdField);
         formLayout.setComponentAlignment(passwdField, Alignment.MIDDLE_CENTER);
 
-        localesSelect.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
-        localesSelect.setWidth(WIDTH);
-        localesSelect.setNullSelectionAllowed(false);
-        formLayout.addComponent(localesSelect);
-        formLayout.setComponentAlignment(localesSelect, Alignment.MIDDLE_CENTER);
+        if (localesSelectVisible) {
+            localesSelect.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
+            localesSelect.setWidth(fieldWidth + "px");
+            localesSelect.setNullSelectionAllowed(false);
+            formLayout.addComponent(localesSelect);
+            formLayout.setComponentAlignment(localesSelect, Alignment.MIDDLE_CENTER);
+        }
 
         Button okButton = new Button(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc),
                 new SubmitListener());
@@ -162,8 +160,10 @@ public class LoginWindow extends Window
         else {
             setContent(mainLayout);
         }
+    }
 
-        setTheme("blacklabel");
+    protected void initUI(App app) {
+        initStandartUI(app, 267, 222, 125, true);
     }
 
     protected void initFields() {
