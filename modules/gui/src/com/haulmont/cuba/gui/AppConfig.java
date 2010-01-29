@@ -44,6 +44,7 @@ public class AppConfig
 
     public static final String CLIENT_TYPE_PROP = "cuba.AppConfig.clientType";
     public static final String MESSAGES_PACK_PROP = "cuba.AppConfig.messagesPack";
+    public static final String THEME_NAME_PROP = "cuba.AppConfig.themeName";
 
     protected static AppConfig instance;
 

@@ -118,7 +118,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
             viewsDeployed = true;
         }
 
-        setTheme(getThemeName());
+        String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
+        if (themeName == null) themeName = THEME_NAME;
+        setTheme(themeName);
     }
 
     /**
@@ -466,7 +468,4 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return Collections.unmodifiableSet(timers);
     }
 
-    public String getThemeName() {
-        return THEME_NAME;
-    }
 }

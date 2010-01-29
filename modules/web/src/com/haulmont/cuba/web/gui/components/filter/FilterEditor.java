@@ -213,7 +213,7 @@ public class FilterEditor {
         table.setColumnWidth(cntrCol, 50);
 
         table.addContainerProperty(cntrCol, Button.class, null);
-        table.setColumnWidth(cntrCol, 100);
+        table.setColumnWidth(cntrCol, 30);
 
         for (final Condition condition : this.conditions) {
             NameEditor nameEditor = new NameEditor(condition);
@@ -271,7 +271,7 @@ public class FilterEditor {
 
     private Button createDeleteConditionBtn(final Condition condition) {
         Button delBtn = WebComponentsHelper.createButton("icons/remove.png");
-        delBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Remove"));
+        delBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.FilterRemove"));
         delBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 deleteCondition(condition);
