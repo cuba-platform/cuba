@@ -59,7 +59,7 @@
         </copy>
         <mkdir dir="${themes.out.dir}"/>
         <copy todir="${themes.out.dir}">
-            <fileset dir="${themes.src.dir}" includes="blacklabel/**"/>
+            <fileset dir="${themes.src.dir}" includes="blacklabel/** peyto/**"/>
         </copy>
 
         <taskdef name="build-theme" classname="com.haulmont.cuba.ant.BuildThemeTask">
@@ -70,6 +70,7 @@
         </taskdef>
 
         <build-theme themeDir="${themes.out.dir}/blacklabel" destFile="styles-include.css"/>
+        <build-theme themeDir="${themes.out.dir}/peyto" destFile="styles-include.css"/>
 
         <condition property="do-build-gwt" value="true">
             <not>

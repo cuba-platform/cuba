@@ -1,0 +1,185 @@
+/*
+ * Menu bar
+ */
+
+.v-horizontallayout-menubar {
+    border-bottom: 1px solid #83888c;
+    background: url('images/menu-bg.png') repeat-x top left;
+    padding-bottom: 0;
+}
+
+/*
+ * Title bar
+ */
+
+.v-horizontallayout-titlebar {
+    background: #373738;
+}
+
+.v-horizontallayout-titlebar .v-button:hover {
+    background: transparent;
+}
+
+.v-horizontallayout-titlebar .v-label-appname {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Tahoma, Verdana, Arial, sans-serif;
+}
+
+.v-horizontallayout-titlebar .v-label-select-label {
+    color: #fff;
+    font-size: 12px;
+    font-weight: normal;
+    font-family: Arial, sans-serif;
+}
+
+/**
+ *  Breadcrumbs styles
+ */
+.v-horizontallayout-breadcrumbs .v-label {
+    font-family: tahoma, sans-serif;
+    font-size: 14px;
+    color: #000;
+    font-weight: bold;
+}
+
+.v-horizontallayout-breadcrumbs .v-button:hover {
+   background: transparent;
+}
+
+.v-horizontallayout-headline-container .v-button:hover {
+   background: transparent;
+}
+
+.v-horizontallayout-titlebar .v-button:hover {
+    background: transparent;
+}
+
+.v-horizontallayout-breadcrumbs .v-button-link .v-button-caption {
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Breadcrumbs close button */
+
+.v-button-closetab-button {
+    background: transparent none;
+}
+
+.v-button-closetab-button .v-button-wrap {
+    background: transparent none;
+    padding: 0;
+}
+
+/* Logout & View-log buttons */
+.v-button-white-border {
+    background: transparent url(button/img/btn-wb-left.png) no-repeat left center;
+    height: 26px;
+    padding: 0 0 0 4px;
+}
+
+.v-button-white-border .v-button-wrap {
+    height: 23px;
+    padding-top: 2px;
+    background: transparent url(button/img/btn-wb-right.png) no-repeat right top;
+}
+
+.v-button-white-border .v-button-caption {
+    /* looks not very pretty
+    text-decoration: underline;
+    */
+}
+
+/*
+ * Login page styles
+ */
+.v-verticallayout-centerLayout {
+    margin-bottom: 0;
+}
+
+.v-verticallayout-loginBottom {
+    background: url('images/login-form-bg-key.png') no-repeat top center;
+}
+
+.v-verticallayout-loginBottom .v-textfield-password-field {
+    border: #a0a1a3 ridge 1px;
+}
+
+.v-verticallayout-loginBottom .v-textfield-login-field {
+    border: #a0a1a3 ridge 1px;
+}
+
+.v-verticallayout-loginBottom .v-caption {
+    color: #000;
+    font-family: arial, sans-serif;
+}
+
+.v-verticallayout-loginBottom .v-label-login-caption {
+    color: #000;
+    font-weight: bold;
+    font-family: arial, sans-serif;
+    font-size: 9pt;
+}
+
+.v-verticallayout-mainLayout {
+    background-color: #fff;
+}
+
+.v-form-loginForm {
+    padding-left: 55px;
+    font-weight: normal;
+}
+
+.v-form-loginForm .v-form-description {
+    height: 0;
+}
+
+/*
+ * Here go
+ *  Custom Control styles
+ */
+
+.v-verticallayout .edit-area,
+.v-horizontallayout .edit-area,
+.v-gridlayout .edit-area {
+    background-color: #dee7f8;
+    border: 1px solid #c3c3c3;
+    color: #000;
+}
+
+.edit-area .v-label, .edit-area .v-label.h2 {
+    color: #000;
+}
+
+.v-label.h2 {
+    font-family: tahoma, sans-serif;
+    font-size: 14px;
+    color: #000;
+    font-weight: bold;
+}
+
+/*
+ *  e.g. text labels for fields
+ *  at popup dialog editors
+ */
+.v-window-contents .v-verticallayout-edit-area,
+.v-window-contents .v-horizontallayout-edit-area,
+.v-window-contents .v-gridlayout-edit-area,
+.v-window-contents .v-table {
+    font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+	color: #000;
+	font-size: 8pt;
+}
+
+
+/* Folders pane styles */
+
+.v-verticallayout-folderspane {
+/*    border-right : solid 2px #8aa9d1; */
+}
+
+.v-verticallayout-folderspane .v-tree {
+    border: 0px;
+}

@@ -1,0 +1,70 @@
+.v-menubar {
+    padding-top: 4px;
+}
+
+.v-ie .v-menubar {
+    padding-top: 2px;
+}
+
+.v-menubar table {
+    font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
+    font-size: 11px;
+    color: #fff;
+    white-space: nowrap;
+    border: 0;
+    margin: 0 0 0 5px;
+    vertical-align: top;
+    padding: 0;
+}
+
+.v-menubar tbody {
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+.v-menubar table td {
+    
+}
+
+.v-menubar .menuitem {
+    cursor: pointer;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: transparent;
+    height: 19px;
+}
+
+.v-menubar .menuitem-selected {
+    padding-left: 10px;
+    padding-right: 10px;
+    background: #fff repeat-x top left;
+    color: #4d7ab2;
+    height: 19px;
+}
+
+.v-menubar-submenu {
+    white-space: nowrap;
+    border: solid 1px #8aa9d1;
+    background: #fff;
+    padding: 5px;
+    font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
+    font-size: 11px;
+}
+
+.v-menubar-submenu table td {
+    padding: 3px;
+}
+
+.v-menubar-submenu .menuitem {
+    cursor: pointer;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: transparent;
+    color: #4d7ab2;
+}
+
+.v-menubar-submenu .menuitem-selected {
+    background-color: #4d7ab2;
+    color: #fff;
+}
