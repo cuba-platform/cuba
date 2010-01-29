@@ -89,8 +89,9 @@ public class App extends Application implements ConnectionListener, ApplicationC
     }
 
     public static Application.SystemMessages getSystemMessages() {
+        String webContext = AppContext.getProperty("cuba.webContextName");
         Application.CustomizedSystemMessages msgs = new Application.CustomizedSystemMessages();
-        msgs.setInternalErrorURL("/cuba?restartApplication");
+        msgs.setInternalErrorURL("/" + webContext + "?restartApplication");
         msgs.setOutOfSyncNotificationEnabled(false);
         return msgs;
     }
