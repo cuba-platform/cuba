@@ -37,6 +37,8 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
 
     protected Map<GroupInfo, List<K>> groupItems;
 
+    private boolean inGrouping = false;
+
     public GroupDatasourceImpl(
             DsContext context, DataService dataservice,
             String id, MetaClass metaClass, String viewName
@@ -52,27 +54,47 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
         super(context, dataservice, id, metaClass, viewName, softDeletion);
     }
 
-    public void groupBy(Object[] properties) {
-        if (properties == null) {
-            throw new NullPointerException("Group properties cannot be NULL");
+    @Override
+    public void refresh(Map<String, Object> parameters) {
+        super.refresh(parameters);
+        if (groupProperties == null) {
+            groupBy(new MetaPropertyPath[0]);
+        } else {
+            groupBy(groupProperties);
         }
-        if (!ArrayUtils.isEquals(properties, groupProperties)) {
+    }
 
-            //check datasource state
-            if (!State.VALID.equals(state)) {
-                refresh();
+    public void groupBy(Object[] properties) {
+        if (inGrouping) {
+            return;
+        }
+
+        inGrouping = true;
+
+        try {
+            if (properties == null) {
+                throw new NullPointerException("Group properties cannot be NULL");
             }
+            if (!ArrayUtils.isEquals(properties, groupProperties)) {
 
-            groupProperties = properties;
+                //check datasource state
+                if (!State.VALID.equals(state)) {
+                    refresh();
+                }
 
-            if (!ArrayUtils.isEmpty(groupProperties)) {
-                doGroup();
-            } else {
-                roots = null;
-                parent = null;
-                children = null;
-                groupItems = null;
+                groupProperties = properties;
+
+                if (!ArrayUtils.isEmpty(groupProperties)) {
+                    doGroup();
+                } else {
+                    roots = null;
+                    parent = null;
+                    children = null;
+                    groupItems = null;
+                }
             }
+        } finally {
+            inGrouping = false;
         }
     }
 
