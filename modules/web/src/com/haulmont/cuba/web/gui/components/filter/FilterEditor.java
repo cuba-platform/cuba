@@ -271,7 +271,6 @@ public class FilterEditor {
 
     private Button createDeleteConditionBtn(final Condition condition) {
         Button delBtn = WebComponentsHelper.createButton("icons/remove.png");
-        delBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.FilterRemove"));
         delBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 deleteCondition(condition);
