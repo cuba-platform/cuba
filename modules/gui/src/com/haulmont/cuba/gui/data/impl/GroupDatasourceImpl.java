@@ -37,7 +37,7 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
 
     protected Map<GroupInfo, List<K>> groupItems;
 
-    private boolean inGrouping = false;
+    private boolean inGrouping;
 
     public GroupDatasourceImpl(
             DsContext context, DataService dataservice,
@@ -54,16 +54,6 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
         super(context, dataservice, id, metaClass, viewName, softDeletion);
     }
 
-    @Override
-    public void refresh(Map<String, Object> parameters) {
-        super.refresh(parameters);
-        if (groupProperties == null) {
-            groupBy(new MetaPropertyPath[0]);
-        } else {
-            groupBy(groupProperties);
-        }
-    }
-
     public void groupBy(Object[] properties) {
         if (inGrouping) {
             return;
@@ -75,23 +65,21 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
             if (properties == null) {
                 throw new NullPointerException("Group properties cannot be NULL");
             }
-            if (!ArrayUtils.isEquals(properties, groupProperties)) {
 
-                //check datasource state
-                if (!State.VALID.equals(state)) {
-                    refresh();
-                }
+            //check datasource state
+            if (!State.VALID.equals(state)) {
+                refresh();
+            }
 
-                groupProperties = properties;
+            groupProperties = properties;
 
-                if (!ArrayUtils.isEmpty(groupProperties)) {
-                    doGroup();
-                } else {
-                    roots = null;
-                    parent = null;
-                    children = null;
-                    groupItems = null;
-                }
+            if (!ArrayUtils.isEmpty(groupProperties)) {
+                doGroup();
+            } else {
+                roots = null;
+                parent = null;
+                children = null;
+                groupItems = null;
             }
         } finally {
             inGrouping = false;

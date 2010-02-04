@@ -20,9 +20,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.GroupDatasource;
-import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
@@ -60,6 +58,29 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         initComponent(component);
 
         component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
+    }
+
+    @Override
+    public void setDatasource(CollectionDatasource datasource) {
+        super.setDatasource(datasource);
+        if (datasource instanceof GroupDatasource) {
+            datasource.addListener(new CollectionDatasourceListener<Entity>() {
+                public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                    //todo gorodnov: make a review of CollectionDatasourceListener invocation
+                    Collection groupProperties = component.getGroupProperties();
+                    component.groupBy(groupProperties.toArray());
+                }
+
+                public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                }
+
+                public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+                }
+
+                public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                }
+            });
+        }
     }
 
     @Override
