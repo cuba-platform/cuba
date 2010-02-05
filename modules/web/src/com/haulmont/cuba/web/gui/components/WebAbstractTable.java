@@ -698,8 +698,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                             final com.haulmont.cuba.gui.components.IFrame frame = WebAbstractTable.this.getFrame();
                             String methodName = clickAction.substring("invoke:".length()).trim();
                             try {
-                                Method method = frame.getClass().getMethod(methodName, Object.class);
-                                method.invoke(frame, getItem(item, property));
+                                AbstractFrame controllerFrame = WebComponentsHelper.getFrame(frame);
+                                Method method = controllerFrame.getClass().getMethod(methodName, Object.class);
+                                method.invoke(controllerFrame, getItem(item, property));
                             } catch (NoSuchMethodException e) {
                                 throw new RuntimeException("Unable to invoke clickAction", e);
                             } catch (InvocationTargetException e) {

@@ -9,9 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Aggregation;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.Table;
@@ -20,10 +18,14 @@ import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.*;
+import java.util.List;
 
 public class WebComponentsHelper {
 
@@ -253,5 +255,13 @@ public class WebComponentsHelper {
         WebButton webButton = new WebButton();
         webButton.setIcon(icon);
         return (Button) unwrap(webButton);
+    }
+
+    public static AbstractFrame getFrame(IFrame frame) {
+        if (frame instanceof AbstractFrame) {
+            return (AbstractFrame) frame;
+        } else {
+            return getFrame(frame.getFrame());
+        }
     }
 }
