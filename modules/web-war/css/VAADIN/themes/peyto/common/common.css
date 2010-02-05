@@ -4,7 +4,7 @@ body {
 }
 
 .v-app-loading {
-    background: url(img/black-load-indicator.gif) no-repeat 50%;
+    background: url(img/ajax-loader.gif) no-repeat 50%;
 }
 
 .v-view {
@@ -234,15 +234,15 @@ input.v-modified,
 .v-loading-indicator-wait {
 	width: 45px;
 	height: 45px;
-	background: transparent url(img/black-load-indicator.gif);
+	background: transparent url(img/ajax-loader.gif);
 }
 
 .v-loading-indicator-delay {
-	background: transparent url(img/black-load-indicator.gif);
+	background: transparent url(img/ajax-loader.gif);
 }
 
 .v-loading-indicator-wait {
-	background: transparent url(img/black-load-indicator.gif);
+	background: transparent url(img/ajax-loader.gif);
 }
 .v-loading-indicator,
 .v-loading-indicator-delay,

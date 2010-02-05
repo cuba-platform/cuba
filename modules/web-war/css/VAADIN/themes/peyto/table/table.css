@@ -117,6 +117,10 @@
     border-bottom:1px solid #83888c;
 }
 
+.v-table .v-table-group-row {
+    border-bottom:1px solid #83888c;
+} 
+
 .v-table .v-table-caption-row {
     background-color: #c6cbcd;
     cursor: default;
@@ -209,7 +213,7 @@
 }
 
 .v-table-cell-content .v-button-link .v-button-caption {
-    color: #000;
+    /*color: #000;*/
 }
 
 .v-table-cell-content .v-textfield,
