@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.sys.JtaTransaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.SystemException;
 import javax.naming.NamingException;
+import java.util.List;
 import java.util.UUID;
 
 public class TransactionTest extends CubaTestCase
@@ -241,6 +242,11 @@ public class TransactionTest extends CubaTestCase
             try {
                 EntityManager em1 = PersistenceProvider.getEntityManager();
                 assertTrue(em != em1);
+
+                Query query = em1.createQuery("select s from core$Server s");
+                List list = query.getResultList();
+                assertNotNull(list);
+
                 tx1.commit();
             } finally {
                 tx1.end();
