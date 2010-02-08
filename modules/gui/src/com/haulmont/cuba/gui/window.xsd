@@ -72,7 +72,14 @@
                                         <xs:sequence>
                                             <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
                                             <xs:element name="dataserviceClass" minOccurs="0" maxOccurs="1"/>
-                                            <xs:element name="query" minOccurs="0" maxOccurs="1"/>
+                                            <xs:element name="query" minOccurs="0" maxOccurs="1">
+                                                <xs:complexType mixed="true">
+                                                    <xs:sequence>
+                                                        <xs:element name="filter" type="filterType" minOccurs="0"
+                                                                    maxOccurs="1"/>
+                                                    </xs:sequence>
+                                                </xs:complexType>
+                                            </xs:element>
                                             <xs:group ref="nestedDatasources" minOccurs="0"/>
                                         </xs:sequence>
                                         <xs:attribute name="id" type="xs:string" use="required"/>

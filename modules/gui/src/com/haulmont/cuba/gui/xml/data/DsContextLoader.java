@@ -178,10 +178,19 @@ public class DsContextLoader {
             datasource = factory.createGroupDatasource(context, dataservice, id, metaClass, viewName, mode, softDeletion);
         }
 
-        final String query = element.elementText("query");
-        if (!StringUtils.isBlank(query)) {
-            datasource.setQuery(query);
+        Element queryElem = element.element("query");
+        if (queryElem != null) {
+            Element filterElem = queryElem.element("filter");
+
+            String query = queryElem.getText();
+            if (!StringUtils.isBlank(query)) {
+                if (filterElem != null)
+                    datasource.setQuery(query, new QueryFilter(filterElem, metaClass.getName()));
+                else
+                    datasource.setQuery(query);
+            }
         }
+
 
         loadDatasources(element, datasource);
 
