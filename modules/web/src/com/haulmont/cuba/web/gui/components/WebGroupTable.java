@@ -373,8 +373,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 if (isLastId(itemId)) {
                     return null;
                 }
-                int index = cachedItemIds.indexOf(itemId);
-                return cachedItemIds.get(index + 1);
+                int index = getCachedItemIds().indexOf(itemId);
+                return getCachedItemIds().get(index + 1);
             }
             return super.nextItemId(itemId);
         }
@@ -388,8 +388,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 if (isFirstId(itemId)) {
                     return null;
                 }
-                int index = cachedItemIds.indexOf(itemId);
-                return cachedItemIds.get(index - 1);
+                int index = getCachedItemIds().indexOf(itemId);
+                return getCachedItemIds().get(index - 1);
             }
             return super.prevItemId(itemId);
         }
@@ -427,7 +427,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
-        protected synchronized Collection getCachedItemIds() {
+        protected synchronized LinkedList getCachedItemIds() {
             if (cachedItemIds == null) {
                 final LinkedList<Object> result = new LinkedList<Object>();
                 final List<GroupInfo> roots = ((GroupDatasource) datasource).rootGroups();
@@ -481,16 +481,16 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         protected class GroupDataSourceRefreshListener extends DataSourceRefreshListener {
             @Override
             public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
-                resetCachedItems();
+                Collection groupProperties = component.getGroupProperties();
+                component.groupBy(groupProperties.toArray());
                 super.stateChanged(ds, prevState, state);
             }
 
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                resetCachedItems();
-                super.collectionChanged(ds, operation);
                 Collection groupProperties = component.getGroupProperties();
                 component.groupBy(groupProperties.toArray());
+                super.collectionChanged(ds, operation);
             }
         }
 
