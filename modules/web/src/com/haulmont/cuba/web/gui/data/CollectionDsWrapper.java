@@ -15,6 +15,7 @@ import com.vaadin.data.Property;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -64,7 +65,11 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             this.properties = properties;
         }
 
-        datasource.addListener(new DataSourceRefreshListener());
+        datasource.addListener(createDatasourceListener());
+    }
+
+    protected DatasourceListener createDatasourceListener() {
+        return new DataSourceRefreshListener();
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -200,10 +205,10 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         }
     }
 
-    private class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
+    protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
         public void itemChanged(Datasource ds, Entity prevItem, Entity item) {}
 
-        public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+        public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
                 itemsCache.clear();

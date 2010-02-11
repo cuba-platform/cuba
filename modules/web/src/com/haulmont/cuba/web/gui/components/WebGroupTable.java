@@ -63,24 +63,6 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         super.setDatasource(datasource);
-        if (datasource instanceof GroupDatasource) {
-            datasource.addListener(new CollectionDatasourceListener<Entity>() {
-                public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                    //todo gorodnov: make a review of CollectionDatasourceListener invocation
-                    Collection groupProperties = component.getGroupProperties();
-                    component.groupBy(groupProperties.toArray());
-                }
-
-                public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                }
-
-                public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-                }
-
-                public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                }
-            });
-        }
     }
 
     @Override
@@ -439,22 +421,28 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         @Override
         public Collection getItemIds() {
             if (hasGroups()) {
-                if (cachedItemIds == null) {
-                    final LinkedList<Object> result = new LinkedList<Object>();
-                    final List<GroupInfo> roots = ((GroupDatasource) datasource).rootGroups();
-                    for (final GroupInfo root : roots) {
-                        result.add(root);
-                        collectItemIds(root, result);
-                    }
-                    cachedItemIds = result;
-
-                    first = cachedItemIds.peekFirst();
-                    last = cachedItemIds.peekLast();
-                }
-                return cachedItemIds;
+                return getCachedItemIds();
             } else {
                 return super.getItemIds();
             }
+        }
+
+        protected synchronized Collection getCachedItemIds() {
+            if (cachedItemIds == null) {
+                final LinkedList<Object> result = new LinkedList<Object>();
+                final List<GroupInfo> roots = ((GroupDatasource) datasource).rootGroups();
+                for (final GroupInfo root : roots) {
+                    result.add(root);
+                    collectItemIds(root, result);
+                }
+                cachedItemIds = result;
+
+                if (!cachedItemIds.isEmpty()) {
+                    first = cachedItemIds.peekFirst();
+                    last = cachedItemIds.peekLast();
+                }
+            }
+            return cachedItemIds;
         }
 
         private void collectItemIds(GroupInfo groupId, final List<Object> itemIds) {
@@ -471,8 +459,10 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
-        private void resetCachedItems() {
+        protected void resetCachedItems() {
             cachedItemIds = null;
+            first = null;
+            last = null;
         }
 
         @Override
@@ -482,6 +472,28 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
             return super.size();
         }
+
+        @Override
+        protected DatasourceListener createDatasourceListener() {
+            return new GroupDataSourceRefreshListener();
+        }
+
+        protected class GroupDataSourceRefreshListener extends DataSourceRefreshListener {
+            @Override
+            public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
+                resetCachedItems();
+                super.stateChanged(ds, prevState, state);
+            }
+
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                resetCachedItems();
+                super.collectionChanged(ds, operation);
+                Collection groupProperties = component.getGroupProperties();
+                component.groupBy(groupProperties.toArray());
+            }
+        }
+
     }
 
     protected class AggregatableGroupPropertyValueFormatter extends DefaultGroupPropertyValueFormatter {

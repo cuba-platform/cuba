@@ -34,7 +34,7 @@ public class WebLookupField
 {
     private Object nullOption;
     private FilterMode filterMode;
-    private NewOptionHandler newItemHandler;
+    private NewOptionHandler newOptionHandler;
 
     public WebLookupField() {
         this.component = new FilterSelect() {
@@ -63,10 +63,10 @@ public class WebLookupField
         setNewOptionAllowed(false);
         component.setNewItemHandler(new AbstractSelect.NewItemHandler() {
             public void addNewItem(String newItemCaption) {
-                if (newItemHandler == null) {
+                if (newOptionHandler == null) {
                     throw new IllegalStateException("New item handler cannot be NULL");
                 }
-                newItemHandler.addNewOption(newItemCaption);
+                newOptionHandler.addNewOption(newItemCaption);
             }
         });
     }
@@ -168,11 +168,11 @@ public class WebLookupField
     }
 
     public NewOptionHandler getNewOptionHandler() {
-        return newItemHandler;
+        return newOptionHandler;
     }
 
     public void setNewOptionHandler(NewOptionHandler newItemHandler) {
-        this.newItemHandler = newItemHandler;
+        this.newOptionHandler = newItemHandler;
     }
 
     private class DsWrapper extends CollectionDsWrapper {
