@@ -9,18 +9,18 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.vaadin.data.Property;
+import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 
 import java.util.Collection;
@@ -34,6 +34,7 @@ public class WebLookupField
 {
     private Object nullOption;
     private FilterMode filterMode;
+    private NewOptionHandler newItemHandler;
 
     public WebLookupField() {
         this.component = new FilterSelect() {
@@ -56,7 +57,18 @@ public class WebLookupField
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
         component.setFixedTextBoxWidth(true);
+
         setFilterMode(FilterMode.CONTAINS);
+
+        setNewOptionAllowed(false);
+        component.setNewItemHandler(new AbstractSelect.NewItemHandler() {
+            public void addNewItem(String newItemCaption) {
+                if (newItemHandler == null) {
+                    throw new IllegalStateException("New item handler cannot be NULL");
+                }
+                newItemHandler.addNewOption(newItemCaption);
+            }
+        });
     }
 
     protected Object getKeyFromValue(Object value) {
@@ -145,6 +157,22 @@ public class WebLookupField
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
         }
+    }
+
+    public boolean isNewOptionAllowed() {
+        return component.isNewItemsAllowed();
+    }
+
+    public void setNewOptionAllowed(boolean newItemAllowed) {
+        component.setNewItemsAllowed(newItemAllowed);
+    }
+
+    public NewOptionHandler getNewOptionHandler() {
+        return newItemHandler;
+    }
+
+    public void setNewOptionHandler(NewOptionHandler newItemHandler) {
+        this.newItemHandler = newItemHandler;
     }
 
     private class DsWrapper extends CollectionDsWrapper {

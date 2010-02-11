@@ -9,20 +9,26 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-
 public interface LookupField extends OptionsField {
     Object getNullOption();
     void setNullOption(Object nullOption);
 
-    void setFilterMode(FilterMode mode);
     FilterMode getFilterMode();
+    void setFilterMode(FilterMode mode);
+
+    boolean isNewOptionAllowed();
+    void setNewOptionAllowed(boolean newOptionAllowed);
+
+    NewOptionHandler getNewOptionHandler();
+    void setNewOptionHandler(NewOptionHandler newOptionHandler);
 
     enum FilterMode {
             NO,
             STARTS_WITH,
             CONTAINS
+    }
 
+    public interface NewOptionHandler {
+        void addNewOption(String caption);
     }
 }
