@@ -13,15 +13,15 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.components.Aggregation;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
-import com.haulmont.cuba.gui.components.Aggregation;
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
@@ -383,10 +383,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    //todo gorodnov: review next code
     protected Double sum(MetaPropertyPath propertyPath, Collection<K> itemIds) {
         Double sum = null;
         for (final K itemId : itemIds) {
-            Double value = (Double) getItemValue(propertyPath, itemId);
+            Object o = getItemValue(propertyPath, itemId);
+            Double value = Double.valueOf(o != null ? o.toString() : "0");
             if (value != null) {
                 sum +=value;
             }
