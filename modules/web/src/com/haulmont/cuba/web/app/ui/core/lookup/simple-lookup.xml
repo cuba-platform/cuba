@@ -1,0 +1,13 @@
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    class="com.haulmont.cuba.web.app.ui.core.lookup.SimpleLookup">
+
+    <dsContext/>
+
+    <layout>
+        <vbox id="mainPanel" expand="lookupPanel" spacing="true" margin="true" stylename="edit-area">
+            <label id="lookupCaption"/>
+            <vbox id="lookupPanel"/>
+        </vbox>
+    </layout>
+</window>

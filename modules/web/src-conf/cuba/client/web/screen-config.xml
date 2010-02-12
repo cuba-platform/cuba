@@ -61,4 +61,6 @@
     <screen id="settings"
             template="cuba/client/web/ui/core/settings/settings-window.xml"/>
 
+    <screen id="core$SimpleLookup"
+            template="/com/haulmont/cuba/web/app/ui/core/lookup/simple-lookup.xml"/>
 </screen-config>
