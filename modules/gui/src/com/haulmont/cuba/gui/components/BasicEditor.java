@@ -15,4 +15,6 @@ public class BasicEditor extends AbstractEditor {
     public BasicEditor(IFrame frame) {
         super(frame);
     }
+
+    
 }
