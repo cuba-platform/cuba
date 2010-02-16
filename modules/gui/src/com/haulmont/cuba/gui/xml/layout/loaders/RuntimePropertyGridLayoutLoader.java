@@ -16,6 +16,10 @@ import com.haulmont.cuba.gui.components.RuntimePropertyGridLayout;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -63,6 +67,7 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         loadDatasource(component, element);
         loadAttributeProperty(component, element);
         loadComponentWidth(component, element);
+        loadDateFormat(component, element);
 
         final String resolution = element.attributeValue("resolution");
         if (!StringUtils.isEmpty(resolution)) {
@@ -93,6 +98,21 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         String s = element.attributeValue("innerComponentWidth");
         if (!StringUtils.isEmpty(s)) {
             propertyGridLayout.setInnerComponentWidth(s);
+        }
+    }
+
+    protected void loadDateFormat(RuntimePropertyGridLayout propertyGridLayout, Element element) {
+        String dateFormat = element.attributeValue("dateFormat");
+        if (!StringUtils.isEmpty(dateFormat)) {
+            if (dateFormat.startsWith("msg://")) {
+                dateFormat = MessageProvider.getMessage(
+                        AppConfig.getInstance().getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+            }
+            propertyGridLayout.setDateFormat(dateFormat);
+        } else {
+            DateDatatype dateDatatype = Datatypes.getInstance().get(DateDatatype.NAME);
+            if (dateDatatype.getFormatPattern() != null)
+                propertyGridLayout.setDateFormat(dateDatatype.getFormatPattern());
         }
     }
 }

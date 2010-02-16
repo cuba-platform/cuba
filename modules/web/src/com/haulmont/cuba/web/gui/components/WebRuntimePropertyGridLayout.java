@@ -16,10 +16,13 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
-import com.haulmont.cuba.gui.components.validators.DateValidator;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.AttributeEntity;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +41,8 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
     private DateField.Resolution resolution;
 
     private String innerComponentWidth;
+
+    private String dateFormat;
 
     public CollectionDatasource getAttributesDs() {
         return attributesDs;
@@ -87,6 +92,14 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         this.innerComponentWidth = innerComponentWidth;
     }
 
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
     public void checkAttributesType() {
         MetaClass metaClass = attributesDs.getMetaClass();
         MetaProperty property = metaClass.getProperty(attributeProperty);
@@ -110,10 +123,12 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         }
         try {
             Field field;
+            final Class fieldClass;
             switch (value.getAttributeType()) {
                 case BOOLEAN: {
                     field = new WebCheckBox();
                     field.setValue(Datatypes.getInstance().get(Boolean.class).parse(val));
+                    fieldClass = Boolean.class;
                     break;
                 }
                 case DATE: {
@@ -121,25 +136,32 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                     if (resolution != null) {
                         ((DateField) field).setResolution(resolution);
                     }
+                    if (!StringUtils.isEmpty(dateFormat)) {
+                        ((DateField) field).setDateFormat(dateFormat);
+                    }
                     field.addValidator(new DateValidator());
                     field.setValue(Datatypes.getInstance().get(Date.class).parse(val));
+                    fieldClass = Date.class;
                     break;
                 }
                 case DOUBLE: {
                     field = new WebTextField();
                     field.addValidator(new DoubleValidator());
                     field.setValue(Datatypes.getInstance().get(Double.class).parse(val));
+                    fieldClass = Double.class;
                     break;
                 }
                 case STRING: {
                     field = new WebTextField();
                     field.setValue(val);
+                    fieldClass = String.class;
                     break;
                 }
                 case INTEGER: {
                     field = new WebTextField();
                     field.addValidator(new IntegerValidator());
                     field.setValue(Datatypes.getInstance().get(Integer.class).parse(val));
+                    fieldClass = Integer.class;
                     break;
                 }
                 default:
@@ -149,10 +171,10 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             if (!StringUtils.isEmpty(innerComponentWidth)) {
                 field.setWidth(innerComponentWidth);
             }
-            
+
             field.addListener(new ValueListener() {
                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    instance.setValue("value", value);
+                    instance.setValue("value", Datatypes.getInstance().get(fieldClass).format(value));
                 }
             });
             return field;

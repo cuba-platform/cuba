@@ -27,4 +27,6 @@ public interface RuntimePropertyGridLayout extends GridLayout{
     String getInnerComponentWidth();
     void setInnerComponentWidth(String width);
 
+    String getDateFormat();
+    void setDateFormat(String dateFormat);
 }
