@@ -12,8 +12,10 @@ package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.AppConfig;
 import org.dom4j.Element;
 
 import java.text.ParseException;
@@ -31,6 +33,10 @@ public class DoubleValidator implements Field.Validator {
 
     public DoubleValidator(String message) {
         this.message = message;
+    }
+
+    public DoubleValidator() {
+        this.message = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidNumber");
     }
 
     public void validate(Object value) throws ValidationException {

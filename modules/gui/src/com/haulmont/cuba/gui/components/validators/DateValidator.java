@@ -14,8 +14,10 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.AppConfig;
 import org.dom4j.Element;
 
 import java.text.ParseException;
@@ -33,6 +35,10 @@ public class DateValidator implements Field.Validator {
 
     public DateValidator(String message) {
         this.message = message;
+    }
+
+    public DateValidator() {
+        this.message = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidDate");
     }
 
     public void validate(Object value) throws ValidationException {

@@ -17,5 +17,11 @@ public interface AttributeEntity {
 
     public String getMetaClassName();
     public void setMetaClassName(String name);
+
+    public String getDisplayName();
+    public void setDisplayName(String value);
+
+    public String getName();
+    public void setName(String name);
     
 }

@@ -12,8 +12,10 @@ package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.AppConfig;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
@@ -33,6 +35,10 @@ public class IntegerValidator implements Field.Validator {
 
     public IntegerValidator(String message) {
         this.message = message;
+    }
+
+    public IntegerValidator() {
+        this.message = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidNumber");
     }
 
     private boolean checkIntegerOnPositive(Integer value) {
