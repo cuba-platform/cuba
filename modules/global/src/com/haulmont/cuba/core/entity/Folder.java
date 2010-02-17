@@ -29,6 +29,9 @@ public class Folder extends StandardEntity {
     @Column(name = "NAME", length = 100)
     private String name;
 
+    @Column(name = "SORT_ORDER")
+    private Integer sortOrder;
+
     public Folder getParent() {
         return parent;
     }
@@ -47,5 +50,13 @@ public class Folder extends StandardEntity {
 
     public String getCaption() {
         return name;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

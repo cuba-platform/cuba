@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -61,11 +62,15 @@ public class FoldersPane extends VerticalLayout {
     protected Object appFoldersRoot;
     protected Object searchFoldersRoot;
     private Timer timer;
+    private final int DEFAULT_PANE_WIDTH = 200;
+    private int paneWidth;
 
     public FoldersPane(MenuBar menuBar) {
         messagesPack = AppConfig.getInstance().getMessagesPack();
         service = ServiceLocator.lookup(FoldersService.JNDI_NAME);
 
+        String paneWidthStr = AppContext.getProperty("cuba.foldersPane.width");
+        paneWidth = paneWidthStr == null ? DEFAULT_PANE_WIDTH : Integer.parseInt(paneWidthStr);
         setHeight(100, Sizeable.UNITS_PERCENTAGE);
         setStyleName("folderspane");
 
@@ -88,7 +93,7 @@ public class FoldersPane extends VerticalLayout {
             return;
 
         if (show) {
-            setWidth(200, Sizeable.UNITS_PIXELS);
+            setWidth(paneWidth, Sizeable.UNITS_PIXELS);
             setMargin(true, false, true, true);
             setSpacing(true);
 

@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.app.folders;
 
+import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.*;
 import com.vaadin.terminal.Sizeable;
 import com.haulmont.cuba.gui.AppConfig;
@@ -27,6 +28,7 @@ public class FolderEditWindow extends Window {
     private String messagesPack;
     private TextField nameField;
     private Select parentSelect;
+    private TextField sortOrderField;
     private Runnable commitHandler;
 
     public FolderEditWindow(boolean adding, Folder folder, Runnable commitHandler) {
@@ -60,6 +62,13 @@ public class FolderEditWindow extends Window {
         parentSelect.setValue(folder.getParent());
         layout.addComponent(parentSelect);
 
+        sortOrderField = new TextField();
+        sortOrderField.setCaption(getMessage("folders.folderEditWindow.sortOrder"));
+        sortOrderField.setWidth(250, Sizeable.UNITS_PIXELS);
+        sortOrderField.setValue(folder.getSortOrder() == null ? "" : folder.getSortOrder());
+        layout.addComponent(sortOrderField);
+
+
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setMargin(true, false, false, false);
         buttonsLayout.setSpacing(true);
@@ -69,6 +78,20 @@ public class FolderEditWindow extends Window {
         okBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 FolderEditWindow.this.folder.setName((String) nameField.getValue());
+
+                String sortOrderStr = (String)sortOrderField.getValue();
+                if (sortOrderStr == null || "".equals(sortOrderStr)) {
+                    FolderEditWindow.this.folder.setSortOrder(null);
+                } else {
+                    try {
+                        int sortOrder = Integer.parseInt(sortOrderStr);
+                        FolderEditWindow.this.folder.setSortOrder(sortOrder);
+                    } catch (NumberFormatException e) {
+                        String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
+                        showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
+                        return;
+                    }
+                }
 
                 Object parent = parentSelect.getValue();
                 if (parent instanceof Folder)

@@ -37,7 +37,7 @@ public class FoldersServiceBean implements FoldersService {
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select f from core$AppFolder f order by f.name");
+            Query q = em.createQuery("select f from core$AppFolder f order by f.sortOrder, f.name");
             List<AppFolder> list = q.getResultList();
 
             if (!list.isEmpty()) {
@@ -78,7 +78,7 @@ public class FoldersServiceBean implements FoldersService {
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select f from sec$SearchFolder f where f.user.id = ?1 order by f.name");
+            Query q = em.createQuery("select f from sec$SearchFolder f where f.user.id = ?1 order by f.sortOrder, f.name");
             q.setParameter(1, SecurityProvider.currentOrSubstitutedUserId());
             List<SearchFolder> list = q.getResultList();
             // fetch parents
