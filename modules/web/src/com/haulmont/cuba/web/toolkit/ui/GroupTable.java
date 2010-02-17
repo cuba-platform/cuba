@@ -139,7 +139,7 @@ public class GroupTable extends Table implements GroupTableContainer {
                 (reqFirstRowToPaint >= 0 ? reqFirstRowToPaint
                         : firstToBeRenderedInClient));
         target.addAttribute("totalrows", total);
-        if (pagelen != 0 && !allowMultiStringCells) {
+        if (pagelen > 0 && !allowMultiStringCells) {
             target.addAttribute("pagelength", pagelen);
         }
         if (colheads) {

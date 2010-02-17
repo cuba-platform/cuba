@@ -150,10 +150,12 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         recalcWidths = uidl.hasAttribute("recalcWidths");
 
-        pageLength = uidl.getIntAttribute("pagelength");
-        if (pageLength == 0) {
-            pageLength = totalRows;
+        if (uidl.hasAttribute("pagelength")) {
+            pageLength = uidl.getIntAttribute("pagelength");
+        } else {
+            pageLength = 0;
         }
+        if (pageLength == 0) pageLength = totalRows;
 
         showRowHeaders = uidl.getBooleanAttribute("rowheaders");
         showColHeaders = uidl.getBooleanAttribute("colheaders");
