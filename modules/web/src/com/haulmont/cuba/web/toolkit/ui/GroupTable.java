@@ -793,10 +793,16 @@ public class GroupTable extends Table implements GroupTableContainer {
 
     public void expandAll() {
         ((GroupTableContainer) items).expandAll();
+        resetPageBuffer();
+        refreshRenderedCells();
+        requestRepaint();
     }
 
     public void collapseAll() {
         ((GroupTableContainer) items).collapseAll();
+        resetPageBuffer();
+        refreshRenderedCells();
+        requestRepaint();
     }
 
     public void collapse(Object id) {
