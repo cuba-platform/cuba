@@ -384,7 +384,7 @@ public class FilterEditor {
         if (isTrue((Boolean) globalCb.getValue()))
             filterEntity.setUser(null);
         else
-            filterEntity.setUser(UserSessionClient.getUserSession().getUser());
+            filterEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
 
         return true;
     }

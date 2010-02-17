@@ -206,7 +206,7 @@ public class WebFilter
 
         filterEntity.setComponentId(getComponentPath());
         filterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
-        filterEntity.setUser(UserSessionClient.getUserSession().getUser());
+        filterEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
 //        filterEntity.setXml(
 //                "<filter><and>\n" +
 //                        "<c type=\"PROPERTY\" name=\"login\">u.login like :component$usersFilter.login\n" +
@@ -528,7 +528,7 @@ public class WebFilter
         folder.setName(filterEntity.getName());
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(filterEntity.getXml());
-        folder.setUser(UserSessionClient.getUserSession().getUser());
+        folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
 
         final FolderEditWindow window = new FolderEditWindow(false, folder,
                 new Runnable() {
