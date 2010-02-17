@@ -14,9 +14,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
@@ -31,16 +28,16 @@ public class DateFieldLoader extends AbstractFieldLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final DateField component = (DateField) super.loadComponent(factory, element, parent);
 
+        TemporalType tt = null;
+        if (component.getMetaProperty() != null) {
+            tt = (TemporalType) component.getMetaProperty().getAnnotations().get("temporal");
+        }
+
         final String resolution = element.attributeValue("resolution");
         if (!StringUtils.isEmpty(resolution)) {
             component.setResolution(DateField.Resolution.valueOf(resolution));
-        } else {
-            if (component.getMetaProperty() != null) {
-                TemporalType tt = (TemporalType) component.getMetaProperty().getAnnotations().get("temporal");
-                if (tt == TemporalType.DATE) {
-                    component.setResolution(DateField.Resolution.DAY);
-                }
-            }
+        } else if (tt == TemporalType.DATE) {
+            component.setResolution(DateField.Resolution.DAY);
         }
 
         String dateFormat = element.attributeValue("dateFormat");
@@ -51,9 +48,13 @@ public class DateFieldLoader extends AbstractFieldLoader {
             }
             component.setDateFormat(dateFormat);
         } else {
-            DateDatatype dateDatatype = Datatypes.getInstance().get(DateDatatype.NAME);
-            if (dateDatatype.getFormatPattern() != null)
-                component.setDateFormat(dateDatatype.getFormatPattern());
+            String formatStr;
+            if (tt == TemporalType.DATE) {
+                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
+            } else {
+                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
+            }
+            component.setDateFormat(formatStr);
         }
 
         return component;

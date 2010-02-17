@@ -18,6 +18,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -248,16 +249,16 @@ public class Param {
         field.setImmediate(true);
 
         int resolution = DateField.RESOLUTION_MIN;
+        String formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
         if (property != null) {
             TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
             if (tt == TemporalType.DATE) {
                 resolution = DateField.RESOLUTION_DAY;
+                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
             }
         }
         ((DateField) field).setResolution(resolution);
-
-        if (((DateDatatype) datatype).getFormatPattern() != null)
-            ((DateField) field).setDateFormat(((DateDatatype) datatype).getFormatPattern());
+        ((DateField) field).setDateFormat(formatStr);
 
         field.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
