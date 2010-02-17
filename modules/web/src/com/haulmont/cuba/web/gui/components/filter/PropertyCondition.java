@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 import org.apache.commons.lang.ObjectUtils;
@@ -106,6 +107,12 @@ public class PropertyCondition extends Condition {
     public PropertyCondition(ConditionDescriptor descriptor, String entityAlias) {
         super(descriptor);
         this.entityAlias = entityAlias;
+    }
+
+    @Override
+    protected Param createParam(String paramName) {
+        MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
+        return new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource, metaProperty);
     }
 
     @Override

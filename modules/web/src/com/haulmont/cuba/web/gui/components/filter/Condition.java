@@ -73,7 +73,7 @@ public abstract class Condition {
             if (unary) {
                 param = new Param(paramName, null, null, null, null);
             } else {
-                param = new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource);
+                param = createParam(paramName);
             }
 
             param.parseValue(paramElem.getText());
@@ -91,6 +91,10 @@ public abstract class Condition {
         entityParamWhere = descriptor.getEntityParamWhere();
         entityParamView = descriptor.getEntityParamView();
         datasource = descriptor.getDatasource();
+    }
+
+    protected Param createParam(String paramName) {
+        return new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource);
     }
 
     public void addListener(Listener listener) {

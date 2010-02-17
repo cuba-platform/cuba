@@ -20,6 +20,8 @@ import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
+import javax.persistence.TemporalType;
+
 public class DateFieldLoader extends AbstractFieldLoader {
     public DateFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
@@ -32,6 +34,13 @@ public class DateFieldLoader extends AbstractFieldLoader {
         final String resolution = element.attributeValue("resolution");
         if (!StringUtils.isEmpty(resolution)) {
             component.setResolution(DateField.Resolution.valueOf(resolution));
+        } else {
+            if (component.getMetaProperty() != null) {
+                TemporalType tt = (TemporalType) component.getMetaProperty().getAnnotations().get("temporal");
+                if (tt == TemporalType.DATE) {
+                    component.setResolution(DateField.Resolution.DAY);
+                }
+            }
         }
 
         String dateFormat = element.attributeValue("dateFormat");

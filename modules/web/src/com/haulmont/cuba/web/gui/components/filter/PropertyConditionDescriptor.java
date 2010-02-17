@@ -58,6 +58,14 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
     }
 
     @Override
+    public Param createParam(Condition condition) {
+        MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
+        Param param = new Param(condition.createParamName(), getJavaClass(),
+                getEntityParamWhere(), getEntityParamView(), datasource, metaProperty);
+        return param;
+    }
+
+    @Override
     public Class getJavaClass() {
         MetaProperty metaProperty = metaClass.getPropertyEx(name).getMetaProperty();
         Class paramClass;

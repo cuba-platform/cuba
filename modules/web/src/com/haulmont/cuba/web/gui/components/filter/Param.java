@@ -14,6 +14,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -29,6 +30,7 @@ import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.util.*;
 
@@ -50,8 +52,15 @@ public class Param {
     private String entityWhere;
     private String entityView;
     private Datasource datasource;
+    private MetaProperty property;
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource) {
+        this(name, javaClass, entityWhere, entityView, datasource, null);
+    }
+
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
+                 MetaProperty property)
+    {
         this.name = name;
         if (javaClass != null) {
             this.javaClass = javaClass;
@@ -70,6 +79,7 @@ public class Param {
         this.entityWhere = entityWhere;
         this.entityView = entityView;
         this.datasource = datasource;
+        this.property = property;
     }
 
     public String getName() {
@@ -236,7 +246,15 @@ public class Param {
     private AbstractField createDateField(Datatype datatype) {
         final AbstractField field = new com.haulmont.cuba.web.toolkit.ui.DateField();
         field.setImmediate(true);
-        ((DateField) field).setResolution(DateField.RESOLUTION_MIN);
+
+        int resolution = DateField.RESOLUTION_MIN;
+        if (property != null) {
+            TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+            if (tt == TemporalType.DATE) {
+                resolution = DateField.RESOLUTION_DAY;
+            }
+        }
+        ((DateField) field).setResolution(resolution);
 
         if (((DateDatatype) datatype).getFormatPattern() != null)
             ((DateField) field).setDateFormat(((DateDatatype) datatype).getFormatPattern());
