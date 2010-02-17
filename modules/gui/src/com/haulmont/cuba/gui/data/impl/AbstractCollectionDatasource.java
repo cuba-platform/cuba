@@ -16,6 +16,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Versioned;
 import com.haulmont.cuba.core.global.TemplateHelper;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.*;
@@ -40,6 +41,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     public AbstractCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
         super(dsContext, dataservice, id, metaClass, viewName);
+        this.softDeletion = true;
+    }
+
+    public AbstractCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, View view) {
+        super(dsContext, dataservice, id, metaClass, view);
         this.softDeletion = true;
     }
 

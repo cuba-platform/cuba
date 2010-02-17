@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Aggregation;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
@@ -50,6 +51,15 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     {
         super(context, dataservice, id, metaClass, viewName);
     }
+
+     public CollectionDatasourceImpl(
+            DsContext context, DataService dataservice,
+                String id, MetaClass metaClass, View view)
+    {
+        super(context, dataservice, id, metaClass, view);
+    }
+
+
 
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,

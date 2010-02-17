@@ -11,12 +11,13 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 
 public interface RuntimePropertyGridLayout extends GridLayout{
 
-    CollectionDatasource getAttributesDs();
-    void setAttributesDs(CollectionDatasource ds);
+    Datasource getMainDs();
+    void setMainDs(Datasource ds);
 
     DateField.Resolution getResolution();
     void setResolution(DateField.Resolution resolution);
@@ -29,4 +30,13 @@ public interface RuntimePropertyGridLayout extends GridLayout{
 
     String getDateFormat();
     void setDateFormat(String dateFormat);
+
+    String getAttributeValueProperty();
+    void setAttributeValueProperty(String attributeValueProperty);
+
+    String getTypeProperty();
+    void setTypeProperty(String typeProperty);
+
+    Boolean getCheckNewAttributes();
+    void setCheckNewAttributes(Boolean checkNewAttributes);
 }

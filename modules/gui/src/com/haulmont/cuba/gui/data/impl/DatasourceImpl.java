@@ -49,6 +49,19 @@ public class DatasourceImpl<T extends Entity>
 
     }
 
+    public DatasourceImpl(
+            DsContext dsContext, DataService dataservice,
+                String id, MetaClass metaClass, View view)
+    {
+        super(id);
+        this.dsContext = dsContext;
+        this.dataservice = dataservice;
+
+        this.metaClass = metaClass;
+        this.view = view;
+
+    }
+
     public DsContext getDsContext() {
         return dsContext;
     }

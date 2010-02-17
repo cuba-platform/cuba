@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.RuntimePropertyGridLayout;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.AppConfig;
@@ -66,6 +67,8 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         loadExpandable(component, element);
         loadDatasource(component, element);
         loadAttributeProperty(component, element);
+        loadTypeProperty(component, element);
+        loadAttributeValueProperty(component, element);
         loadComponentWidth(component, element);
         loadDateFormat(component, element);
 
@@ -82,8 +85,8 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
     protected void loadDatasource(RuntimePropertyGridLayout propertyGridLayout, Element element) {
         String s = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(s)) {
-            CollectionDatasource ds = context.getDsContext().get(s);
-            propertyGridLayout.setAttributesDs(ds);
+            Datasource ds = context.getDsContext().get(s);
+            propertyGridLayout.setMainDs(ds);
         }
     }
 
@@ -91,6 +94,20 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         String s = element.attributeValue("attributeProperty");
         if (!StringUtils.isEmpty(s)) {
             propertyGridLayout.setAttributeProperty(s);
+        }
+    }
+
+     protected void loadTypeProperty(RuntimePropertyGridLayout propertyGridLayout, Element element) {
+        String s = element.attributeValue("typeProperty");
+        if (!StringUtils.isEmpty(s)) {
+            propertyGridLayout.setTypeProperty(s);
+        }
+    }
+
+     protected void loadAttributeValueProperty(RuntimePropertyGridLayout propertyGridLayout, Element element) {
+        String s = element.attributeValue("attributeValueProperty");
+        if (!StringUtils.isEmpty(s)) {
+            propertyGridLayout.setAttributeValueProperty(s);
         }
     }
 
