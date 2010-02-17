@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -40,6 +41,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+
+        assignFrame(component);
+
         loadVisible(component, element);
         loadEditable(component, element);
         loadValidators(component, element);
@@ -103,9 +107,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             }
         }
 
-        loadButtonsPanel(component, element);
-
-        assignFrame(component);
+        Window window = ComponentsHelper.getWindow(component);
+        if (!(window instanceof Window.Lookup))
+            loadButtonsPanel(component, element);
 
         return component;
     }

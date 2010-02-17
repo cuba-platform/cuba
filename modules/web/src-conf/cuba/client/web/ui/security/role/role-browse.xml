@@ -2,7 +2,7 @@
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="cuba.client.web.ui.security.role.RoleBrowser"
         lookupComponent="roles"
-        caption="msg://roles"
+        caption="msg://caption"
         >
 
     <dsContext>
@@ -15,15 +15,15 @@
 
     <layout>
         <vbox id="table-panel" expand="roles" spacing="true">
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button action="roles.create" icon="icons/create.png"/>
-                <button action="roles.edit" icon="icons/edit.png"/>
-                <button action="roles.remove" icon="icons/remove.png"/>
-                <button action="roles.excel" icon="icons/excel.png"/>
-            </hbox>
             <table id="roles" editable="false">
+                <buttonsPanel>
+                    <button action="roles.create" icon="icons/create.png"/>
+                    <button action="roles.edit" icon="icons/edit.png"/>
+                    <button action="roles.excel" icon="icons/excel.png"/>
+                    <button action="roles.excel" icon="icons/excel.png"/>
+                </buttonsPanel>
                 <columns>
-                    <column id="name" caption="msg://role.name"  clickAction="open:sec$Role.edit"/>
+                    <column id="name" caption="msg://role.name" clickAction="open:sec$Role.edit"/>
                 </columns>
                 <rows datasource="roles"/>
             </table>

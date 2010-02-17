@@ -15,10 +15,12 @@ import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -216,13 +218,15 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (event.isDoubleClick() && event.getItem() != null) {
                     Action action = getItemClickAction();
                     if (action == null) {
-                        action = getAction("edit"); //todo gorodnov: check rights before the action performing
+                        action = getAction("edit");
                         if (action == null) {
                             action = getAction("view");
                         }
                     }
-                    if (action != null) {
-                        action.actionPerform(WebAbstractTable.this);
+                    if (action != null && action.isEnabled()) {
+                        Window window = ComponentsHelper.getWindow(WebAbstractTable.this);
+                        if (!(window instanceof Window.Lookup))
+                            action.actionPerform(WebAbstractTable.this);
                     }
                 }
             }
@@ -244,6 +248,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected Collection<MetaPropertyPath> createColumns(com.vaadin.data.Container ds) {
         @SuppressWarnings({"unchecked"})
         final Collection<MetaPropertyPath> properties = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
+
+        Window window = ComponentsHelper.getWindow(this);
+        boolean isLookup = window instanceof Window.Lookup;
+
         for (MetaPropertyPath propertyPath : properties) {
             final Table.Column column = columns.get(propertyPath);
             if (column != null && !(editable && BooleanUtils.toBoolean(column.isEditable()))) {
@@ -252,21 +260,17 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                                 null : column.getXmlDescriptor().attributeValue("clickAction");
 
                 if (propertyPath.getRange().isClass()) {
-                    if (!StringUtils.isEmpty(clickAction)) {
+                    if (!isLookup && !StringUtils.isEmpty(clickAction)) {
                         addGeneratedColumn(propertyPath, new ReadOnlyAssociationGenerator(column));
                     }
                 } else if (propertyPath.getRange().isDatatype()) {
-                    if (!StringUtils.isEmpty(clickAction)) {
+                    if (!isLookup && !StringUtils.isEmpty(clickAction)) {
                         addGeneratedColumn(propertyPath, new CodePropertyGenerator(column));
                     } else {
-
-                        final Datatype datatype = propertyPath.getRange()
-                                .asDatatype();
-
+                        final Datatype datatype = propertyPath.getRange().asDatatype();
                         if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
                             addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
                         }
-
                     }
                 } else if (propertyPath.getRange().isEnum()) {
                     // TODO (abramov)
