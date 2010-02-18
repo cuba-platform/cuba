@@ -18,6 +18,7 @@ public enum AttributeType implements EnumClass<String>{
     DOUBLE("DOUBLE"),
     BOOLEAN("BOOLEAN"),
     DATE("DATE"),
+    DATE_TIME("DATE_TIME"),
     ENTITY("ENTITY");
 
     private String id;

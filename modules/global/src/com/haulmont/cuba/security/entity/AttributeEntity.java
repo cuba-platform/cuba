@@ -23,5 +23,11 @@ public interface AttributeEntity {
 
     public String getName();
     public void setName(String name);
+
+    public Boolean getMandatory();
+    public void setMandatory(Boolean mandatory);
+
+    public String getDefaultValue();
+    public void setDefaultValue(String value);
     
 }

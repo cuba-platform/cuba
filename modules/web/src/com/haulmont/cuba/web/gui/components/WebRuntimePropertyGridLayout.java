@@ -45,6 +45,10 @@ import java.util.List;
 
 public class WebRuntimePropertyGridLayout extends WebGridLayout implements RuntimePropertyGridLayout {
 
+    //TODO add Boolean type to loader
+    //TODO use Query transformer
+    //TODO add ability set more than 2 columns
+
     private Datasource mainDs;
 
     private String attributeProperty;
@@ -59,7 +63,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     private String dateFormat;
 
-    private Boolean checkNewAttributes;
+    private Boolean checkNewAttributes = true;
 
     public void executeLazyTask() {
         if (isAddNewProperties()) {
@@ -67,10 +71,11 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             checkAttributesType();
 
             MetaClass metaClass = defineMetaClass(attributeValueProperty);
+            String attributePropertyName = getInversePropertyName(metaClass, defineMetaClass(typeProperty, attributeProperty));
             CollectionDatasource cds = new CollectionDatasourceImpl(mainDs.getDsContext(), mainDs.getDataService(),
                     "valuesDs", defineMetaClass(attributeValueProperty), createAttributesView());
             cds.setQuery("select e from " + metaClass.getName() + " e where e." + getInversePropertyName(metaClass)
-                    + ".id = :custom$id");
+                    + ".id = :custom$id order by e." + attributePropertyName + ".name");
             cds.refresh(Collections.singletonMap("id", mainDs.getItem().getId()));
             ((DsContextImplementation) mainDs.getDsContext()).register(cds);
 
@@ -78,7 +83,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             List<Entity> addedAttributes = getAddedAttributes(attributes, cds);
 
             String entityPropertyName = getInversePropertyName(metaClass);
-            String attributePropertyName = getInversePropertyName(metaClass, defineMetaClass(typeProperty, attributeProperty));
+
             for (Entity entity : addedAttributes) {
                 try {
                     Entity en = (Entity) metaClass.getJavaClass().newInstance();
@@ -97,6 +102,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             if (size > 0) {
                 setRows(size / (getColumns() / 2));
             }
+
             for (Object o : cds.getItemIds()) {
                 Entity entity = cds.getItem(o);
                 add(createCaption(entity), 0, row);
@@ -153,16 +159,6 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         }
     }
 
-    protected String createPath(String... properties) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < properties.length; i++) {
-            sb.append(properties[i]);
-            sb.append(".");
-        }
-        String propertyPath = sb.toString();
-        return propertyPath.substring(0, propertyPath.length() - 1);
-    }
-
     protected View createAttributesView() {
         MetaClass valueMetaClass = defineMetaClass(attributeValueProperty);
         MetaClass attributeMetaClass = defineMetaClass(typeProperty, attributeProperty);
@@ -184,7 +180,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         if (type == null) {
             return Collections.EMPTY_LIST;
         }
-        lc.setQueryString("select e from " + attributesMetaClass.getName() + " e where e." + typeName + ".id = :id");
+        lc.setQueryString("select e from " + attributesMetaClass.getName() + " e where e." + typeName + ".id = :id order by e.name");
         lc.getQuery().addParameter("id", type.getId());
         return service.loadList(lc);
     }
@@ -265,6 +261,9 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
             if (!StringUtils.isEmpty(innerComponentWidth)) {
                 field.setWidth(innerComponentWidth);
+            }
+            if (BooleanUtils.isTrue(value.getMandatory())) {
+                field.setRequired(true);
             }
 
             field.addListener(new ValueListener() {
