@@ -22,19 +22,21 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.app.UserSettingHelper;
+import com.vaadin.data.Item;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.*;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.Action;
 
@@ -58,6 +60,9 @@ public class FoldersPane extends VerticalLayout {
     protected Tree searchFoldersTree;
 
     protected MenuBar.MenuItem menuItem;
+
+    protected Label appFoldersLabel;
+    protected Label searchFoldersLabel;
 
     protected Object appFoldersRoot;
     protected Object searchFoldersRoot;
@@ -99,6 +104,11 @@ public class FoldersPane extends VerticalLayout {
 
             Component appFoldersPane = createAppFoldersPane();
             if (appFoldersPane != null) {
+                if (isNeedFoldersTitle()) {
+                    appFoldersLabel = new Label(MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot"));
+                    appFoldersLabel.setStyleName("folderspane-caption");
+                    addComponent(appFoldersLabel);
+                }
                 addComponent(appFoldersPane);
 
                 int period = ConfigProvider.getConfig(WebConfig.class).getAppFoldersRefreshPeriodSec() * 1000;
@@ -108,9 +118,14 @@ public class FoldersPane extends VerticalLayout {
             }
 
             Component searchFoldersPane = createSearchFoldersPane();
-            if (searchFoldersPane != null)
+            if (searchFoldersPane != null) {
+                if (isNeedFoldersTitle()) {
+                    searchFoldersLabel = new Label(MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot"));
+                    searchFoldersLabel.setStyleName("folderspane-caption");
+                    addComponent(searchFoldersLabel);
+                }
                 addComponent(searchFoldersPane);
-
+            }
             adjustLayout();
 
             if (getParent() != null)
@@ -172,11 +187,10 @@ public class FoldersPane extends VerticalLayout {
 
         List<SearchFolder> searchFolders = service.loadSearchFolders();
         searchFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot");
-        searchFoldersTree.addItem(searchFoldersRoot);
         searchFoldersTree.addListener(new FolderClickListener());
         searchFoldersTree.addActionHandler(new SearchFolderActionsHandler());
         if (!searchFolders.isEmpty()) {
-            fillTree(searchFoldersTree, searchFolders, searchFoldersRoot);
+            fillTree(searchFoldersTree, searchFolders, isNeedRootSearchFolder() ? searchFoldersRoot : null);
         }
 
         for (Object itemId : searchFoldersTree.rootItemIds()) {
@@ -201,6 +215,11 @@ public class FoldersPane extends VerticalLayout {
                     tree.setParent(folder, folder.getParent());
                 else
                     tree.setParent(folder, rootItemId);
+            }
+        }
+        for (Folder folder : folders) {
+            if (!tree.hasChildren(folder)) {
+                tree.setChildrenAllowed(folder, false);
             }
         }
     }
@@ -236,7 +255,19 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected boolean isNeedRootAppFolder() {
+        return false;
+    }
+
+    protected boolean isNeedRootSearchFolder() {
+        return false;
+    }
+
+    protected boolean isNeedFoldersTitle() {
         return true;
+    }
+
+    protected boolean isDoubleClickOpenMode() {
+        return false;
     }
 
     public void saveFolder(Folder folder) {
@@ -264,12 +295,19 @@ public class FoldersPane extends VerticalLayout {
         }
 
         public void itemClick(ItemClickEvent event) {
-            if (!event.isDoubleClick())
+            if (isDoubleClickOpenMode() && !event.isDoubleClick())
                 return;
 
             if (event.getItemId() instanceof AbstractSearchFolder
                     && !StringUtils.isBlank(((AbstractSearchFolder) event.getItemId()).getFilterComponentId())) {
-                openFolder((AbstractSearchFolder) event.getItemId());
+                if (event.getButton() == ItemClickEvent.BUTTON_LEFT)
+                    openFolder((AbstractSearchFolder) event.getItemId());
+                else if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
+                    if (appFoldersTree.containsId(event.getItemId()))
+                        appFoldersTree.select(event.getItemId());
+                    else if (searchFoldersTree.containsId(event.getItemId()))
+                        searchFoldersTree.select(event.getItemId());
+                }
             }
         }
     }
