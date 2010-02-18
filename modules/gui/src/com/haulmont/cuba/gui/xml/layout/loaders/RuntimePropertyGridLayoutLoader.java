@@ -65,17 +65,12 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         loadHeight(component, element);
 
         loadExpandable(component, element);
-        loadDatasource(component, element);
         loadAttributeProperty(component, element);
         loadTypeProperty(component, element);
         loadAttributeValueProperty(component, element);
         loadComponentWidth(component, element);
         loadDateFormat(component, element);
-
-        final String resolution = element.attributeValue("resolution");
-        if (!StringUtils.isEmpty(resolution)) {
-            component.setResolution(DateField.Resolution.valueOf(resolution));
-        }
+        loadDatasource(component, element);
 
         assignFrame(component);
 

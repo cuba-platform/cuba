@@ -19,9 +19,6 @@ public interface RuntimePropertyGridLayout extends GridLayout{
     Datasource getMainDs();
     void setMainDs(Datasource ds);
 
-    DateField.Resolution getResolution();
-    void setResolution(DateField.Resolution resolution);
-
     String getAttributeProperty();
     void setAttributeProperty(String value);
 
