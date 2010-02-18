@@ -515,7 +515,9 @@ public class WebWindowManager extends WindowManager
         buttonsContainer.setSpacing(true);
 
         for (final Action action : actions) {
-            Button button = new Button(action.getCaption(), new Button.ClickListener() {
+            final Button button = WebComponentsHelper.createButton();
+            button.setCaption(action.getCaption());
+            button.addListener(new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
                     app.getAppWindow().removeWindow(window);
