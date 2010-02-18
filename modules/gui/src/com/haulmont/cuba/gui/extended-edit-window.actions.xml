@@ -1,6 +1,7 @@
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
     <layout>
         <hbox align="MIDDLE_LEFT" spacing="true" margin="true;false;false;false">
+            <button id="windowCommitAndClose" action="windowCommitAndClose" icon="icons/ok.png"/>
             <button id="windowCommit" action="windowCommit" icon="icons/ok.png"/>
             <button id="windowClose" action="windowClose" icon="icons/cancel.png"/>
         </hbox>

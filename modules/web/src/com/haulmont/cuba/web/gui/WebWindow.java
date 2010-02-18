@@ -19,10 +19,10 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -52,12 +52,11 @@ import java.util.*;
 import java.util.List;
 
 public class WebWindow
-    implements
+        implements
         Window,
         Component.Wrapper,
         Component.HasXmlDescriptor,
-        WrappedWindow
-{
+        WrappedWindow {
     private String id;
     private String debugId;
 
@@ -133,7 +132,7 @@ public class WebWindow
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder =
-        new LinkedList<com.haulmont.cuba.gui.components.Action>();
+            new LinkedList<com.haulmont.cuba.gui.components.Action>();
 
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
         actionsOrder.add(action);
@@ -353,7 +352,7 @@ public class WebWindow
     }
 
     public boolean isVisible() {
-        return true; 
+        return true;
     }
 
     public void setVisible(boolean visible) {
@@ -409,10 +408,11 @@ public class WebWindow
     }
 
     public Alignment getAlignment() {
-        return Alignment.MIDDLE_CENTER; 
+        return Alignment.MIDDLE_CENTER;
     }
 
-    public void setAlignment(Alignment alignment) {}
+    public void setAlignment(Alignment alignment) {
+    }
 
     public void expand(Component component, String height, String width) {
         final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
@@ -450,7 +450,7 @@ public class WebWindow
                     MessageProvider.getMessage(WebWindow.class, "closeUnsaved.caption"),
                     MessageProvider.getMessage(WebWindow.class, "closeUnsaved"),
                     MessageType.WARNING,
-                    new Action[] {
+                    new Action[]{
                             new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.Yes")) {
                                 public void actionPerform(Component component) {
                                     forceClose = true;
@@ -476,7 +476,7 @@ public class WebWindow
             );
             return false;
         }
-        
+
         ComponentsHelper.walkComponents(
                 this,
                 new ComponentVisitor() {
@@ -574,6 +574,28 @@ public class WebWindow
                     if (action != null) {
                         action.actionPerform(component);
                     } else {
+                        commit();
+                    }
+                }
+            });
+
+            addAction(new ActionWrapper("windowCommitAndClose") {
+                @Override
+                public String getCaption() {
+                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                    return MessageProvider.getMessage(messagesPackage, "actions.OkClose");
+                }
+
+                @Override
+                public boolean isEnabled() {
+                    return super.isEnabled() &&
+                            UserSessionClient.getUserSession().isEntityOpPermitted(getMetaClass(), EntityOp.UPDATE);
+                }
+
+                public void actionPerform(Component component) {
+                    if (action != null) {
+                        action.actionPerform(component);
+                    } else {
                         commitAndClose();
                     }
                 }
@@ -609,6 +631,7 @@ public class WebWindow
         @Override
         public Window wrapBy(Class<Window> aClass) {
             final Window.Editor window = (Window.Editor) super.wrapBy(aClass);
+            final Component commitAndCloseButton = WebComponentsHelper.findComponent(window, "windowCommitAndClose");
 
             final Action commitAction = getAction("windowCommit");
             ((ActionWrapper) commitAction).setAction(new AbstractAction("windowCommit") {
@@ -619,10 +642,33 @@ public class WebWindow
                 }
 
                 public void actionPerform(Component component) {
-                    window.commitAndClose();
+                    if (commitAndCloseButton == null) {
+                        window.commitAndClose();
+                    } else {
+                        if (window.commit()) {
+                            window.showNotification(MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(),
+                                    "info.EntitySave", ((Instance) window.getItem()).getInstanceName()),
+                                    NotificationType.HUMANIZED);
+                        }
+                    }
                 }
             });
-            
+
+            if (commitAndCloseButton != null) {
+                final Action commitAndCloseAction = getAction("windowCommitAndClose");
+                ((ActionWrapper) commitAndCloseAction).setAction(new AbstractAction("windowCommitAndClose") {
+                    @Override
+                    public String getCaption() {
+                        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                        return MessageProvider.getMessage(messagesPackage, "actions.OkClose");
+                    }
+
+                    public void actionPerform(Component component) {
+                        window.commitAndClose();
+                    }
+                });
+            }
+
             final Action closeAction = getAction("windowClose");
             ((ActionWrapper) closeAction).setAction(new AbstractAction("windowClose") {
                 @Override
@@ -673,14 +719,14 @@ public class WebWindow
         }
 
         public boolean isValid() {
-            for (com.vaadin.ui.Field  field : getFields()) {
+            for (com.vaadin.ui.Field field : getFields()) {
                 if (!field.isValid()) return false;
             }
             return true;
         }
 
         public void validate() throws ValidationException {
-            for (com.vaadin.ui.Field  field : getFields()) {
+            for (com.vaadin.ui.Field field : getFields()) {
                 try {
                     field.validate();
                 } catch (Validator.InvalidValueException e) {
@@ -775,8 +821,7 @@ public class WebWindow
                             problems.put(e, ((com.vaadin.ui.Field) impl));
                         }
                     } else if (impl instanceof com.vaadin.ui.Field
-                            && impl.isVisible() && impl.isEnabled() && !impl.isReadOnly())
-                    {
+                            && impl.isVisible() && impl.isEnabled() && !impl.isReadOnly()) {
                         try {
                             ((com.vaadin.ui.Field) impl).validate();
                         } catch (Validator.InvalidValueException e) {
