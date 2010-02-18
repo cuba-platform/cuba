@@ -227,15 +227,18 @@ public class IScrollGroupTable extends IScrollTable {
             }
         }
 
-        // add back hidden rows,
-        for (final String aColumnOrder : columnOrder) {
-            if (aColumnOrder.equals(oldKeyOnNewIndex)) {
-                break; // break loop at target
-            }
-            if (isCollapsedColumn(aColumnOrder)) {
-                newIndex++;
+        if (!"-1".equals(oldKeyOnNewIndex)) {
+            // add back hidden rows,
+            for (final String aColumnOrder : columnOrder) {
+                if (aColumnOrder.equals(oldKeyOnNewIndex)) {
+                    break; // break loop at target
+                }
+                if (isCollapsedColumn(aColumnOrder)) {
+                    newIndex++;
+                }
             }
         }
+
         // finally we can build the new columnOrder for server
         final String[] newOrder = new String[columnOrder.length];
         for (int i = 0, j = 0; j < newOrder.length; i++) {

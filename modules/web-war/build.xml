@@ -109,6 +109,8 @@
             <jvmarg value="-Xmx256M"/>
             <arg value="-startupUrl"/>
             <arg value="/cuba"/>
+            <arg value="-port"/>
+            <arg value="8080"/>
             <arg value="-logLevel"/>
             <arg value="DEBUG"/>
             <arg value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>

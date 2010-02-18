@@ -416,9 +416,7 @@ public class TreeTable
         target.addAttribute("pagingMode", pagingMode.name());
 
         // Visible column order
-        final Collection sortables = getSortableContainerPropertyIds();
-        final List<Object> visibleColOrder =
-                new ArrayList<Object>(visibleColumns.size());
+        final List<Object> visibleColOrder = new ArrayList<Object>(visibleColumns.size());
         for (final Object columnId : visibleColumns) {
             if (!isColumnCollapsed(columnId)) {
                 visibleColOrder.add(columnIdMap.key(columnId));
@@ -614,7 +612,7 @@ public class TreeTable
             target.addVariable(this, "collapsedcolumns", collapsedkeys);
         }
 
-        paintVisibleColumns(target, sortables, colheads);
+        paintVisibleColumns(target, colheads);
     }
 
     @Override

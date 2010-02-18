@@ -284,7 +284,6 @@ public class Table
         target.addAttribute("pagingMode", pagingMode.name());
 
         // Visible column order
-        final Collection sortables = getSortableContainerPropertyIds();
         final ArrayList visibleColOrder = new ArrayList();
         for (final Iterator it = visibleColumns.iterator(); it.hasNext();) {
             final Object columnId = it.next();
@@ -457,11 +456,15 @@ public class Table
             }
             target.addVariable(this, "collapsedcolumns", collapsedkeys);
         }
-        paintVisibleColumns(target, sortables, colheads);
+
+        paintVisibleColumns(target, colheads);
     }
 
-    protected void paintVisibleColumns(PaintTarget target, Collection sortables, boolean colheads)
+    protected void paintVisibleColumns(PaintTarget target, boolean colheads)
             throws PaintException {
+
+        final Collection sortables = getSortableContainerPropertyIds();
+
         target.startTag("visiblecolumns");
         for (final Object columnId : visibleColumns) {
             if (columnId != null) {

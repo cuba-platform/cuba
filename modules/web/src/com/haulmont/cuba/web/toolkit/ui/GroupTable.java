@@ -168,7 +168,6 @@ public class GroupTable extends Table implements GroupTableContainer {
         target.addAttribute("pagingMode", pagingMode.name());
 
         // Visible column order
-        final Collection sortables = getSortableContainerPropertyIds();
         final List<String> visibleColOrder = new ArrayList<String>(visibleColumns.size());
         for (final Object columnId : visibleColumns) {
             if (!isColumnCollapsed(columnId)) {
@@ -394,7 +393,7 @@ public class GroupTable extends Table implements GroupTableContainer {
             target.addVariable(this, "groupColumns", groupColumns);
         }
 
-        paintVisibleColumns(target, sortables, colheads);
+        paintVisibleColumns(target, colheads);
     }
 
     private Collection<?> allItemIds() {
