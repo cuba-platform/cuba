@@ -141,7 +141,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         //Supports items expanding
         private final Set<GroupInfo> expanded = new HashSet<GroupInfo>();
 
-        private Set<GroupInfo> expandState;
+        private Set<GroupInfo> expandState = new HashSet<GroupInfo>();
 
         //Items cache
         private LinkedList<Object> cachedItemIds;
@@ -197,7 +197,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 
         private void saveState() {
             //save expanding state
-            expandState = new HashSet<GroupInfo>(expanded);
+            expandState.clear();
+            expandState.addAll(expanded);
         }
 
         private void restoreState() {
@@ -208,7 +209,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                     expand(groupInfo);
                 }
             }
-            expandState = null;
+            expandState.clear();
         }
 
         public Collection<?> rootGroups() {

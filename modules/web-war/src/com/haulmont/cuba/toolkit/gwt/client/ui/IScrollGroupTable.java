@@ -292,6 +292,8 @@ public class IScrollGroupTable extends IScrollTable {
         public GroupDividerHeaderCell() {
             super("-1", "");
             setWidth(10);
+            DOM.setElementProperty(td, "className", CLASSNAME
+                    + "-group-div");
         }
 
         @Override

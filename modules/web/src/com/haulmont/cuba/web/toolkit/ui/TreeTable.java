@@ -592,25 +592,8 @@ public class TreeTable
             }
             target.addVariable(this, "columnorder", colorder);
         }
-        // Available columns
-        if (isColumnCollapsingAllowed()) {
-            final HashSet<Object> ccs = new HashSet<Object>();
-            for (final Object o : visibleColumns) {
-                if (isColumnCollapsed(o)) {
-                    ccs.add(o);
-                }
-            }
-            final String[] collapsedkeys = new String[ccs.size()];
-            int nextColumn = 0;
-            for (final Iterator it = visibleColumns.iterator(); it.hasNext()
-                    && nextColumn < collapsedkeys.length;) {
-                final Object columnId = it.next();
-                if (isColumnCollapsed(columnId)) {
-                    collapsedkeys[nextColumn++] = columnIdMap.key(columnId);
-                }
-            }
-            target.addVariable(this, "collapsedcolumns", collapsedkeys);
-        }
+
+        paintCollapsedColumns(target);
 
         paintVisibleColumns(target, colheads);
     }

@@ -436,28 +436,31 @@ public class Table
             }
             target.addVariable(this, "columnorder", colorder);
         }
-        // Available columns
+
+        paintCollapsedColumns(target);
+
+        paintVisibleColumns(target, colheads);
+    }
+
+    protected void paintCollapsedColumns(PaintTarget target) throws PaintException {
         if (isColumnCollapsingAllowed()) {
-            final HashSet ccs = new HashSet();
-            for (final Iterator i = visibleColumns.iterator(); i.hasNext();) {
-                final Object o = i.next();
-                if (isColumnCollapsed(o)) {
-                    ccs.add(o);
-                }
-            }
-            final String[] collapsedkeys = new String[ccs.size()];
-            int nextColumn = 0;
-            for (final Iterator it = visibleColumns.iterator(); it.hasNext()
-                    && nextColumn < collapsedkeys.length;) {
-                final Object columnId = it.next();
-                if (isColumnCollapsed(columnId)) {
-                    collapsedkeys[nextColumn++] = columnIdMap.key(columnId);
+            String[] collapsedkeys;
+            if (collapsedColumns == null || collapsedColumns.isEmpty()) {
+                collapsedkeys = new String[0];
+            } else {
+                collapsedkeys = new String[collapsedColumns.size()];
+
+                int nextColumn = 0;
+                for (final Iterator it = visibleColumns.iterator(); it.hasNext()
+                        && nextColumn < collapsedkeys.length;) {
+                    final Object columnId = it.next();
+                    if (isColumnCollapsed(columnId)) {
+                        collapsedkeys[nextColumn++] = columnIdMap.key(columnId);
+                    }
                 }
             }
             target.addVariable(this, "collapsedcolumns", collapsedkeys);
         }
-
-        paintVisibleColumns(target, colheads);
     }
 
     protected void paintVisibleColumns(PaintTarget target, boolean colheads)

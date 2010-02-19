@@ -1090,6 +1090,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         public void setHeaderCell(int index, HeaderCell cell) {
             if (cell.isEnabled()) {
                 // we're moving the cell
+                visibleCells.remove(cell);
                 DOM.removeChild(tr, cell.getElement());
                 orphan(cell);
             }

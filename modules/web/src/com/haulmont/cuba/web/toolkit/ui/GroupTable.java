@@ -362,25 +362,8 @@ public class GroupTable extends Table implements GroupTableContainer {
             }
             target.addVariable(this, "columnorder", colorder);
         }
-        // Available columns
-        if (isColumnCollapsingAllowed()) {
-            final HashSet ccs = new HashSet();
-            for (final Object o : visibleColumns) {
-                if (isColumnCollapsed(o)) {
-                    ccs.add(o);
-                }
-            }
-            final String[] collapsedkeys = new String[ccs.size()];
-            int nextColumn = 0;
-            for (final Iterator it = visibleColumns.iterator(); it.hasNext()
-                    && nextColumn < collapsedkeys.length;) {
-                final Object columnId = it.next();
-                if (isColumnCollapsed(columnId)) {
-                    collapsedkeys[nextColumn++] = columnIdMap.key(columnId);
-                }
-            }
-            target.addVariable(this, "collapsedcolumns", collapsedkeys);
-        }
+
+        paintCollapsedColumns(target);
 
         if (hasGroups) {
             final Collection groupProperties = getGroupProperties();
@@ -674,11 +657,13 @@ public class GroupTable extends Table implements GroupTableContainer {
         if (variables.containsKey("collapsedcolumns")) {
             boolean needToRegroup = false;
             final List<Object> groupProperties = new ArrayList<Object>(getGroupProperties());
-            for (final Iterator it = groupProperties.iterator(); it.hasNext();) {
-                final Object propertyId = it.next();
-                if (collapsedColumns.contains(propertyId)) {
-                    it.remove();
+            for (int index = 0; index < groupProperties.size(); index++) {
+                final Object propertyId = groupProperties.get(index);
+                if (isColumnCollapsed(propertyId)) {
+                    groupProperties.subList(index, groupProperties.size())
+                            .clear();
                     needToRegroup = true;
+                    break;
                 }
             }
             if (needToRegroup) {
