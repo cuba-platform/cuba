@@ -51,6 +51,17 @@ create table SYS_FILE (
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SYS_LOCK_CONFIG (
+    ID uuid not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    NAME varchar(100),
+    TIMEOUT_SEC integer,
+    primary key (ID)
+);
+
+------------------------------------------------------------------------------------------------------------
+
 create table SEC_ROLE (
     ID uuid not null,
     CREATE_TS timestamp,

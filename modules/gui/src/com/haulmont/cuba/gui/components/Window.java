@@ -64,6 +64,10 @@ public interface Window extends IFrame, Component.HasCaption, Component.ActionsH
      */
     interface Editor extends Window {
 
+        String WINDOW_COMMIT = "windowCommit";
+        String WINDOW_COMMIT_AND_CLOSE = "windowCommitAndClose";
+        String WINDOW_CLOSE = "windowClose";
+
         /** Get edited entity  */
         Entity getItem();
 

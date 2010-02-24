@@ -63,4 +63,8 @@
 
     <screen id="core$SimpleLookup"
             template="/com/haulmont/cuba/web/app/ui/core/lookup/simple-lookup.xml"/>
+
+    <screen id="core$LockInfo.browse"
+            template="cuba/client/web/ui/core/locking/lock-browse.xml"/>
+
 </screen-config>

@@ -13,7 +13,10 @@ package com.haulmont.cuba.web.gui;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LockInfo;
+import com.haulmont.cuba.core.global.LockNotSupported;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.*;
@@ -48,6 +51,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -549,6 +553,7 @@ public class WebWindow
     public static class Editor extends WebWindow implements Window.Editor {
 
         protected Entity item;
+        protected boolean locked;
 
         private boolean commitActionPerformed;
 
@@ -559,7 +564,7 @@ public class WebWindow
         public Editor() {
             super();
 
-            addAction(new ActionWrapper("windowCommit") {
+            addAction(new ActionWrapper(WINDOW_COMMIT) {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -581,7 +586,7 @@ public class WebWindow
                 }
             });
 
-            addAction(new ActionWrapper("windowCommitAndClose") {
+            addAction(new ActionWrapper(WINDOW_COMMIT_AND_CLOSE) {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -603,7 +608,7 @@ public class WebWindow
                 }
             });
 
-            addAction(new ActionWrapper("windowClose") {
+            addAction(new ActionWrapper(WINDOW_CLOSE) {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -633,10 +638,10 @@ public class WebWindow
         @Override
         public Window wrapBy(Class<Window> aClass) {
             final Window.Editor window = (Window.Editor) super.wrapBy(aClass);
-            final Component commitAndCloseButton = WebComponentsHelper.findComponent(window, "windowCommitAndClose");
+            final Component commitAndCloseButton = WebComponentsHelper.findComponent(window, WINDOW_COMMIT_AND_CLOSE);
 
-            final Action commitAction = getAction("windowCommit");
-            ((ActionWrapper) commitAction).setAction(new AbstractAction("windowCommit") {
+            final Action commitAction = getAction(WINDOW_COMMIT);
+            ((ActionWrapper) commitAction).setAction(new AbstractAction(WINDOW_COMMIT) {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -658,8 +663,8 @@ public class WebWindow
             });
 
             if (commitAndCloseButton != null) {
-                final Action commitAndCloseAction = getAction("windowCommitAndClose");
-                ((ActionWrapper) commitAndCloseAction).setAction(new AbstractAction("windowCommitAndClose") {
+                final Action commitAndCloseAction = getAction(WINDOW_COMMIT_AND_CLOSE);
+                ((ActionWrapper) commitAndCloseAction).setAction(new AbstractAction(WINDOW_COMMIT_AND_CLOSE) {
                     @Override
                     public String getCaption() {
                         final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -672,8 +677,8 @@ public class WebWindow
                 });
             }
 
-            final Action closeAction = getAction("windowClose");
-            ((ActionWrapper) closeAction).setAction(new AbstractAction("windowClose") {
+            final Action closeAction = getAction(WINDOW_CLOSE);
+            ((ActionWrapper) closeAction).setAction(new AbstractAction(WINDOW_CLOSE) {
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
@@ -704,6 +709,40 @@ public class WebWindow
             //noinspection unchecked
             ds.setItem(item);
             ((DatasourceImplementation) ds).setModified(false);
+
+            LockService lockService = ServiceLocator.lookup(LockService.NAME);
+            LockInfo lockInfo = lockService.lock(ds.getMetaClass().getName(), item.getId().toString());
+            if (lockInfo == null) {
+                locked = true;
+            } else if (!(lockInfo instanceof LockNotSupported)) {
+                String mp = AppConfig.getInstance().getMessagesPack();
+                App.getInstance().getWindowManager().showNotification(
+                        MessageProvider.getMessage(mp, "entityLocked.msg"),
+                        MessageProvider.formatMessage(mp, "entityLocked.desc",
+                                lockInfo.getUser().getLogin(),
+                                new SimpleDateFormat(MessageProvider.getMessage(mp, "dateTimeFormat")).format(lockInfo.getSince())
+                        ),
+                        NotificationType.HUMANIZED
+                );
+                Action action = getAction(WINDOW_COMMIT);
+                if (action != null)
+                    action.setEnabled(false);
+                action = getAction(WINDOW_COMMIT_AND_CLOSE);
+                if (action != null)
+                    action.setEnabled(false);
+            }
+        }
+
+        @Override
+        public boolean onClose(String actionId) {
+            if (locked) {
+                Entity entity = getDatasource().getItem();
+                if (entity != null) {
+                    LockService lockService = ServiceLocator.lookup(LockService.NAME);
+                    lockService.unlock(getDatasource().getMetaClass().getName(), entity.getId().toString());
+                }
+            }
+            return super.onClose(actionId);
         }
 
         public void setParentDs(Datasource parentDs) {

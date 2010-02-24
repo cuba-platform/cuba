@@ -98,6 +98,7 @@
                 <entry key="${cuba.webContextName}.cuba:service=EntityLog" value-ref="cuba_EntityLog"/>
                 <entry key="${cuba.webContextName}.cuba:service=ReportEngine" value-ref="cuba_ReportEngine"/>
                 <entry key="${cuba.webContextName}.cuba:service=FileStorage" value-ref="cuba_FileStorage"/>
+                <entry key="${cuba.webContextName}.cuba:service=LockManager" value-ref="cuba_LockManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=CachingFacade" value-ref="cuba_CachingFacade"/>
                 <entry key="${cuba.webContextName}.cuba:service=CubaDeployer" value-ref="cuba_CubaDeployer"/>
             </map>
@@ -117,6 +118,7 @@
                         <entry key="cuba_EntityLog" value="com.haulmont.cuba.security.app.EntityLogMBean"/>
                         <entry key="cuba_ReportEngine" value="com.haulmont.cuba.core.app.ReportEngineMBean"/>
                         <entry key="cuba_FileStorage" value="com.haulmont.cuba.core.app.FileStorageMBean"/>
+                        <entry key="cuba_LockManager" value="com.haulmont.cuba.core.app.LockManagerMBean"/>
                         <entry key="cuba_CachingFacade" value="com.haulmont.cuba.core.app.CachingFacadeMBean"/>
                         <entry key="cuba_CubaDeployer" value="com.haulmont.cuba.core.app.CubaDeployerMBean"/>
                     </map>
@@ -186,6 +188,7 @@
 
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="cuba_Heartbeat" method="beat" fixed-rate="1000"/>
+        <task:scheduled ref="cuba_LockManager" method="expireLocks" fixed-rate="60000"/>
     </task:scheduled-tasks>
 
     <!-- Email setup -->

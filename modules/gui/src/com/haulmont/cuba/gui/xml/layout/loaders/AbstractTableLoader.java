@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -305,7 +306,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
-            final Class<Formatter> aClass = ReflectionHelper.getClass(className);
+            final Class<Formatter> aClass = ScriptingProvider.loadClass(className);
             try {
                 final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
                 try {

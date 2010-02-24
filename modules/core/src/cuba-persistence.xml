@@ -8,6 +8,7 @@
         <class>com.haulmont.cuba.core.entity.Server</class>
         <class>com.haulmont.cuba.core.entity.Config</class>
         <class>com.haulmont.cuba.core.entity.FileDescriptor</class>
+        <class>com.haulmont.cuba.core.entity.LockDescriptor</class>
         <class>com.haulmont.cuba.core.entity.Folder</class>
         <class>com.haulmont.cuba.core.entity.AbstractSearchFolder</class>
         <class>com.haulmont.cuba.core.entity.AppFolder</class>
