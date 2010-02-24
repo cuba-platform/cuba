@@ -550,6 +550,8 @@ public class WebWindow
 
         protected Entity item;
 
+        private boolean commitActionPerformed;
+
         public Entity getItem() {
             return item;
         }
@@ -646,6 +648,7 @@ public class WebWindow
                         window.commitAndClose();
                     } else {
                         if (window.commit()) {
+                            commitActionPerformed = true;
                             window.showNotification(MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(),
                                     "info.EntitySave", ((Instance) window.getItem()).getInstanceName()),
                                     NotificationType.HUMANIZED);
@@ -678,7 +681,7 @@ public class WebWindow
                 }
 
                 public void actionPerform(Component component) {
-                    window.close(getId());
+                    window.close(commitActionPerformed ? COMMIT_ACTION_ID : getId());
                 }
             });
 
