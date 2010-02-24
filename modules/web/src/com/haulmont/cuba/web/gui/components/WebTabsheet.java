@@ -154,6 +154,7 @@ public class WebTabsheet
         final Tab tab = tabs.get(name);
         if (tab == null) throw new IllegalStateException(String.format("Can't find tab '%s'", name));
 
+        this.components.remove(tab.getComponent());
         this.component.removeComponent(WebComponentsHelper.unwrap(tab.getComponent()));
     }
 
