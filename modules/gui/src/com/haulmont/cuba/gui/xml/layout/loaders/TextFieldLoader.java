@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextField;
@@ -39,6 +41,12 @@ public class TextFieldLoader extends AbstractFieldLoader {
         String secret = element.attributeValue("secret");
         if (!StringUtils.isEmpty(secret)) {
             component.setSecret(Boolean.valueOf(secret));
+        }
+
+        String datatypeStr = element.attributeValue("datatype");
+        if (!StringUtils.isEmpty(datatypeStr)) {
+            Datatype datatype = Datatypes.getInstance().get(datatypeStr);
+            component.setDatatype(datatype);
         }
 
         return component;

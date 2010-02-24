@@ -9,15 +9,24 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.text.ParseException;
 
 public class WebTextField
     extends
         WebAbstractField<com.haulmont.cuba.web.toolkit.ui.TextField>
     implements
         TextField, Component.Wrapper {
+
+    private Log log = LogFactory.getLog(WebTextField.class);
+
+    private Datatype datatype;
 
     public WebTextField() {
         this.component = new com.haulmont.cuba.web.toolkit.ui.TextField();
@@ -56,6 +65,39 @@ public class WebTextField
 
     public void setMaxLength(int value) {
         component.setMaxLength(value);
+    }
+
+    public Datatype getDatatype() {
+        return datatype;
+    }
+
+    public void setDatatype(Datatype datatype) {
+        this.datatype = datatype;
+    }
+
+    @Override
+    public <T> T getValue() {
+        Object value = super.getValue();
+        if (datasource == null && datatype != null && value instanceof String) {
+            try {
+                return (T) datatype.parse((String) value);
+            } catch (ParseException e) {
+                log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                return null;
+            }
+        } else {
+            return (T) value;
+        }
+    }
+
+    @Override
+    public void setValue(Object value) {
+        if (datasource == null && datatype != null && value != null) {
+            String str = datatype.format(value);
+            super.setValue(str);
+        } else {
+            super.setValue(value);
+        }
     }
 
     @Override

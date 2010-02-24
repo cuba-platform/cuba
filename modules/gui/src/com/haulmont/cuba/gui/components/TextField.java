@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+
 public interface TextField extends Field {
     int getRows();
     void setRows(int rows);
@@ -21,4 +23,7 @@ public interface TextField extends Field {
 
     int getMaxLength();
     void setMaxLength(int value);
+
+    Datatype getDatatype();
+    void setDatatype(Datatype datatype);
 }

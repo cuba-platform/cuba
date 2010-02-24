@@ -430,6 +430,8 @@
 
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="datatype" type="datatypeType" use="optional"/>
+
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
@@ -805,6 +807,20 @@
             <xs:enumeration value="DAY"/>
             <xs:enumeration value="MONTH"/>
             <xs:enumeration value="YEAR"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="datatypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="decimal"/>
+            <xs:enumeration value="boolean"/>
+            <xs:enumeration value="byte array"/>
+            <xs:enumeration value="date"/>
+            <xs:enumeration value="double"/>
+            <xs:enumeration value="int"/>
+            <xs:enumeration value="long"/>
+            <xs:enumeration value="string"/>
+            <xs:enumeration value="uuid"/>
         </xs:restriction>
     </xs:simpleType>
 
