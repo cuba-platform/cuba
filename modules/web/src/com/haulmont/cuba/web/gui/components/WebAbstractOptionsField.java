@@ -67,19 +67,15 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     }
 
     public void setOptionsMap(Map<String, Object> options) {
-        if (metaProperty == null) {
-            List opts = new ArrayList();
-            for (String key : options.keySet()) {
-                Object itemId = options.get(key);
-                component.setItemCaption(itemId, key);
-                opts.add(itemId);
-            }
-            component.setContainerDataSource(new ObjectContainer(opts));
-            component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
-            this.optionsMap = options;
-        } else {
-            throw new UnsupportedOperationException();
+        List opts = new ArrayList();
+        for (String key : options.keySet()) {
+            Object itemId = options.get(key);
+            component.setItemCaption(itemId, key);
+            opts.add(itemId);
         }
+        component.setContainerDataSource(new ObjectContainer(opts));
+        component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
+        this.optionsMap = options;
     }
 
     public void setOptionsList(List optionsList) {
@@ -128,7 +124,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
                 break;
             }
-            default :{
+            default: {
                 throw new UnsupportedOperationException();
             }
         }
