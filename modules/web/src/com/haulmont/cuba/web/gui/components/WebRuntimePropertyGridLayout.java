@@ -253,11 +253,13 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             switch (value.getAttributeType()) {
                 case BOOLEAN: {
                     field = new WebCheckBox();
+                    setListenerToField(field, instance, Boolean.class);
                     field.setValue(Datatypes.getInstance().get(Boolean.class).parse(val));
                     break;
                 }
                 case DATE: {
                     field = new WebDateField();
+                    setListenerToField(field, instance, Date.class);
                     ((DateField) field).setResolution(DateField.Resolution.DAY);
                     if (!StringUtils.isEmpty(dateFormat)) {
                         ((DateField) field).setDateFormat(dateFormat);
@@ -268,6 +270,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                 }
                 case DATE_TIME: {
                     field = new WebDateField();
+                    setListenerToField(field, instance, Date.class);
                     ((DateField) field).setResolution(DateField.Resolution.MIN);
                     if (!StringUtils.isEmpty(dateFormat)) {
                         ((DateField) field).setDateFormat(dateFormat);
@@ -278,23 +281,27 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                 }
                 case DOUBLE: {
                     field = new WebTextField();
+                    setListenerToField(field, instance, Double.class);
                     field.addValidator(new DoubleValidator());
                     field.setValue(Datatypes.getInstance().get(Double.class).parse(val));
                     break;
                 }
                 case STRING: {
                     field = new WebTextField();
+                    setListenerToField(field, instance, String.class);
                     field.setValue(val);
                     break;
                 }
                 case INTEGER: {
                     field = new WebTextField();
+                    setListenerToField(field, instance, Integer.class);
                     field.addValidator(new IntegerValidator());
                     field.setValue(Datatypes.getInstance().get(Integer.class).parse(val));
                     break;
                 }
                 case ENTITY: {
                     field = new WebLookupField();
+                    setListenerToField(field, instance, null);
                     ((LookupField) field).setOptionsDatasource(createDatasource(value.getMetaClassName(), value.getWhereCondition()));
                     field.setValue(loadEntity(value.getMetaClassName(), val == null ? null : UUID.fromString(val)));
                     break;
@@ -309,18 +316,27 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             if (BooleanUtils.isTrue(value.getMandatory())) {
                 field.setRequired(true);
             }
-            field.addListener(new ValueListener() {
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    if (value instanceof Entity) {
-                        instance.setValue("value", ((Entity) value).getId().toString());
-                    } else {
-                        instance.setValue("value", value);
-                    }
-                }
-            });
             return field;
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected void setListenerToField(Field field, final Instance instance, final Class type) {
+        field.addListener(new ValueListener() {
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                setValue(instance, value, type);
+            }
+        });
+    }
+
+    protected void setValue(Instance instance, Object value, Class type) {
+        if (value != null) {
+            if (value instanceof Entity) {
+                instance.setValue("value", ((Entity) value).getId().toString());
+            } else {
+                instance.setValue("value", Datatypes.getInstance().get(type).format(value));
+            }
         }
     }
 
