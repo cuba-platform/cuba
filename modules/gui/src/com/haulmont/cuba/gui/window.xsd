@@ -250,7 +250,7 @@
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="runtimepropertygrid">
+                <xs:element name="runtimePropertyGrid">
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="columns">
@@ -280,6 +280,7 @@
                         <xs:attribute name="innerComponentWidth" type="xs:string" use="optional"/>
                         <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:string" use="optional"/>
+                        <xs:attribute name="checkNewAttributes" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="groupBox">

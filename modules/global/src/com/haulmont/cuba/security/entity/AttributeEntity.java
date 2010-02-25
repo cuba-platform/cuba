@@ -29,5 +29,8 @@ public interface AttributeEntity {
 
     public String getDefaultValue();
     public void setDefaultValue(String value);
+
+    public String getWhereCondition();
+    public void setWhereCondition(String condition);
     
 }

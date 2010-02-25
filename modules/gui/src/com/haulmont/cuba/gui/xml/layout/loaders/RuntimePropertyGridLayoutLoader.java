@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
             throws InstantiationException, IllegalAccessException {
-        final RuntimePropertyGridLayout component = factory.createComponent("runtimepropertygrid");
+        final RuntimePropertyGridLayout component = factory.createComponent("runtimePropertyGrid");
 
         loadId(component, element);
         loadVisible(component, element);
@@ -70,6 +71,7 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         loadAttributeValueProperty(component, element);
         loadComponentWidth(component, element);
         loadDateFormat(component, element);
+        loadCheckNewAttributes(component, element);
         loadDatasource(component, element);
 
         assignFrame(component);
@@ -92,14 +94,14 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         }
     }
 
-     protected void loadTypeProperty(RuntimePropertyGridLayout propertyGridLayout, Element element) {
+    protected void loadTypeProperty(RuntimePropertyGridLayout propertyGridLayout, Element element) {
         String s = element.attributeValue("typeProperty");
         if (!StringUtils.isEmpty(s)) {
             propertyGridLayout.setTypeProperty(s);
         }
     }
 
-     protected void loadAttributeValueProperty(RuntimePropertyGridLayout propertyGridLayout, Element element) {
+    protected void loadAttributeValueProperty(RuntimePropertyGridLayout propertyGridLayout, Element element) {
         String s = element.attributeValue("attributeValueProperty");
         if (!StringUtils.isEmpty(s)) {
             propertyGridLayout.setAttributeValueProperty(s);
@@ -110,6 +112,13 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         String s = element.attributeValue("innerComponentWidth");
         if (!StringUtils.isEmpty(s)) {
             propertyGridLayout.setInnerComponentWidth(s);
+        }
+    }
+
+    protected void loadCheckNewAttributes(RuntimePropertyGridLayout propertyGridLayout, Element element) {
+        String s = element.attributeValue("checkNewAttributes");
+        if (!StringUtils.isEmpty(s)) {
+            propertyGridLayout.setCheckNewAttributes(BooleanUtils.toBoolean(s));
         }
     }
 

@@ -16,10 +16,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
@@ -35,6 +32,8 @@ import com.haulmont.cuba.security.entity.AttributeEntity;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.text.ParseException;
 import java.util.*;
@@ -42,11 +41,7 @@ import java.util.List;
 
 public class WebRuntimePropertyGridLayout extends WebGridLayout implements RuntimePropertyGridLayout {
 
-    //TODO add Boolean type to loader
-    //TODO use Query transformer
-    //TODO edit window.xsd
-    //TODO ENTITY Type
-    //TODO Default values
+    private static Log log = LogFactory.getLog(WebRuntimePropertyGridLayout.class);
 
     private Datasource mainDs;
 
@@ -120,7 +115,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                 ins.setValue(inverseAttributePropertyInValue, entity);
                 cds.addItem(en);
             } catch (Exception e) {
-                //TODO Log here
+                log.error("error instantiating class " + attributeValueMetaClass);
             }
         }
     }
@@ -242,10 +237,16 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     protected Component defineComponent(Entity entity) {
         final Instance instance = ((Instance) entity);
-        String val = instance.getValue("value");
         AttributeEntity value = instance.getValue(inverseAttributePropertyInValue);
         if (value == null) {
             throw new RuntimeException("attribute entity can not be null");
+        }
+
+        String val;
+        if (PersistenceHelper.isNew(mainDs.getItem())) {
+            val = value.getDefaultValue();
+        } else {
+            val = instance.getValue("value");
         }
         try {
             Field field;
@@ -292,6 +293,12 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                     field.setValue(Datatypes.getInstance().get(Integer.class).parse(val));
                     break;
                 }
+                case ENTITY: {
+                    field = new WebLookupField();
+                    ((LookupField) field).setOptionsDatasource(createDatasource(value.getMetaClassName(), value.getWhereCondition()));
+                    field.setValue(loadEntity(value.getMetaClassName(), val == null ? null : UUID.fromString(val)));
+                    break;
+                }
                 default:
                     throw new IllegalArgumentException("no variants for " + value.getAttributeType().getId());
             }
@@ -302,16 +309,40 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             if (BooleanUtils.isTrue(value.getMandatory())) {
                 field.setRequired(true);
             }
-
             field.addListener(new ValueListener() {
                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    instance.setValue("value", value);
+                    if (value instanceof Entity) {
+                        instance.setValue("value", ((Entity) value).getId().toString());
+                    } else {
+                        instance.setValue("value", value);
+                    }
                 }
             });
             return field;
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected Entity loadEntity(String metaclass, UUID id) {
+        if (id == null) {
+            return null;
+        }
+        DataService service = ServiceLocator.getDataService();
+        LoadContext lc = new LoadContext(MetadataProvider.getSession().getClass(metaclass)).setId(id);
+        return service.load(lc);
+    }
+
+    protected CollectionDatasource createDatasource(String metaclass, String whereCondition) {
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer("select e from " + metaclass + " e", metaclass);
+        if (whereCondition != null) {
+            transformer.addWhere(whereCondition);
+        }
+        CollectionDatasource cds = new CollectionDatasourceImpl(mainDs.getDsContext(), mainDs.getDataService(),
+                "optionsDs", MetadataProvider.getSession().getClass(metaclass), View.MINIMAL);
+        cds.setQuery(transformer.getResult());
+        cds.refresh();
+        return cds;
     }
 
     protected Component createCaption(Entity entity) {
