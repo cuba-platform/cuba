@@ -62,7 +62,7 @@ public class WebComponentsHelper {
     }
 
     public static <T extends Component> Collection<T> getComponents(ComponentContainer container, Class<T> aClass) {
-        List<T> res  = new ArrayList<T>();
+        List<T> res = new ArrayList<T>();
         final Iterator iterator = container.getComponentIterator();
         while (iterator.hasNext()) {
             Component component = (Component) iterator.next();
@@ -83,7 +83,7 @@ public class WebComponentsHelper {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComponent();
         }
 
-        return  (com.vaadin.ui.Component) comp;
+        return (com.vaadin.ui.Component) comp;
     }
 
     public static com.haulmont.cuba.web.toolkit.Timer unwrap(com.haulmont.cuba.gui.components.Timer timer) {
@@ -96,12 +96,11 @@ public class WebComponentsHelper {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComposition();
         }
 
-        return  (com.vaadin.ui.Component) comp;
+        return (com.vaadin.ui.Component) comp;
     }
 
     public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
-            com.haulmont.cuba.gui.components.Component.Container container)
-    {
+            com.haulmont.cuba.gui.components.Component.Container container) {
         final Collection<com.haulmont.cuba.gui.components.Component> ownComponents = container.getOwnComponents();
         Set<com.haulmont.cuba.gui.components.Component> res = new HashSet<com.haulmont.cuba.gui.components.Component>(ownComponents);
 
@@ -115,12 +114,11 @@ public class WebComponentsHelper {
     }
 
     public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(
-            com.haulmont.cuba.gui.components.Component.Container comp, String id)
-    {
+            com.haulmont.cuba.gui.components.Component.Container comp, String id) {
         final Component unwrapedComponent = unwrap(comp);
         final ComponentContainer container =
                 unwrapedComponent instanceof Form ?
-                        ((Form)unwrapedComponent).getLayout() :
+                        ((Form) unwrapedComponent).getLayout() :
                         (ComponentContainer) unwrapedComponent;
 
         final String[] elements = ValuePathHelper.parse(id);
@@ -128,14 +126,14 @@ public class WebComponentsHelper {
             final com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(id);
 
             if (component == null) {
-                return (T)getComponentByIterate(container, id);
+                return (T) getComponentByIterate(container, id);
             } else {
                 return (T) component;
             }
         } else {
             com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(elements[0]);
             if (component == null) {
-                return (T)getComponentByIterate(container, id);
+                return (T) getComponentByIterate(container, id);
             } else {
                 final List<String> subpath = Arrays.asList(elements).subList(1, elements.length);
                 if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
@@ -190,7 +188,7 @@ public class WebComponentsHelper {
         layout.setExpandRatio(component, 1);
     }
 
-    public static Alignment convertAlignment(com.haulmont.cuba.gui.components.Component.Alignment  alignment) {
+    public static Alignment convertAlignment(com.haulmont.cuba.gui.components.Component.Alignment alignment) {
         if (alignment == null) return null;
 
         switch (alignment) {
@@ -204,33 +202,45 @@ public class WebComponentsHelper {
             case BOTTOM_CENTER: {return Alignment.BOTTOM_CENTER;}
             case BOTTOM_RIGHT: {return Alignment.BOTTOM_RIGHT;}
             default: {throw new UnsupportedOperationException();}
-        }
-    }
+            }
+            }
 
     public static int convertNotificationType(IFrame.NotificationType type) {
         switch (type) {
-            case TRAY: return com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION;
-            case HUMANIZED: return com.vaadin.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE;
-            case WARNING: return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
-            case ERROR: return com.vaadin.ui.Window.Notification.TYPE_ERROR_MESSAGE;
-            default: return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
+            case TRAY:
+                return com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION;
+            case HUMANIZED:
+                return com.vaadin.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE;
+            case WARNING:
+                return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
+            case ERROR:
+                return com.vaadin.ui.Window.Notification.TYPE_ERROR_MESSAGE;
+            default:
+                return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
         }
     }
 
     public static int convertFilterMode(com.haulmont.cuba.gui.components.LookupField.FilterMode filterMode) {
         switch (filterMode) {
-            case NO: return 0;
-            case STARTS_WITH: return 1;
-            case CONTAINS: return 2;
-            default: return 0;
+            case NO:
+                return 0;
+            case STARTS_WITH:
+                return 1;
+            case CONTAINS:
+                return 2;
+            default:
+                return 0;
         }
     }
 
     public static Table.PagingMode convertPagingMode(com.haulmont.cuba.gui.components.Table.PagingMode pagingMode) {
         switch (pagingMode) {
-            case SCROLLING: return Table.PagingMode.SCROLLING;
-            case PAGE: return Table.PagingMode.PAGE;
-            default: throw new IllegalArgumentException("Unknow paging mode: " + pagingMode);
+            case SCROLLING:
+                return Table.PagingMode.SCROLLING;
+            case PAGE:
+                return Table.PagingMode.PAGE;
+            default:
+                throw new IllegalArgumentException("Unknow paging mode: " + pagingMode);
         }
     }
 
@@ -238,12 +248,18 @@ public class WebComponentsHelper {
             Aggregation.Type function
     ) {
         switch (function) {
-            case COUNT: return AggregationContainer.Type.COUNT;
-            case AVG: return AggregationContainer.Type.AVG;
-            case MAX: return AggregationContainer.Type.MAX;
-            case MIN: return AggregationContainer.Type.MIN;
-            case SUM: return AggregationContainer.Type.SUM;
-            default: throw new IllegalArgumentException("Unknown function: " + function);
+            case COUNT:
+                return AggregationContainer.Type.COUNT;
+            case AVG:
+                return AggregationContainer.Type.AVG;
+            case MAX:
+                return AggregationContainer.Type.MAX;
+            case MIN:
+                return AggregationContainer.Type.MIN;
+            case SUM:
+                return AggregationContainer.Type.SUM;
+            default:
+                throw new IllegalArgumentException("Unknown function: " + function);
         }
     }
 
@@ -276,7 +292,7 @@ public class WebComponentsHelper {
                     if (comp != null) {
                         return comp;
                     } else {
-                        return findComponent((IFrame) c, id);
+                        findComponent((IFrame) c, id);
                     }
                 }
             }
