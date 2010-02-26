@@ -36,8 +36,8 @@ public class NoUserSessionHandler extends AbstractExceptionHandler<NoUserSession
     protected void doHandle(NoUserSessionException t, App app) {
         try {
             App.getInstance().getWindowManager().showOptionDialog(
-                MessageProvider.getMessage(getClass(), "dialogs.Information", locale),
-                    MessageProvider.getMessage(getClass(), "noUserSession.message", locale),
+                MessageProvider.getMessage(getClass(), "dialogs.Information"),
+                    MessageProvider.getMessage(getClass(), "noUserSession.message"),
                     IFrame.MessageType.CONFIRMATION,
                     new Action[] {new LoginAction()}
             );
