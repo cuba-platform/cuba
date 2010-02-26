@@ -20,6 +20,7 @@ import java.io.StringWriter;
 
 /**
  * Use static methods of this class to process Freemarker templates.
+ * Does not cache templates.
  */
 public class TemplateHelper {
 

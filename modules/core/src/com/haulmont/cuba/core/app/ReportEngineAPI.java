@@ -26,4 +26,12 @@ public interface ReportEngineAPI
     JasperReport getJasperReport(String name);
 
     JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource);
+
+    /**
+     * Process Freemarker template. Works properly with templates in RTF format.
+     * @param name file name relative to conf directory. RTF templates must have .rtf extension
+     * @param params binding
+     * @return resulting content
+     */
+    String processFreemarkerTemplate(String name, Map<String, Object> params);
 }

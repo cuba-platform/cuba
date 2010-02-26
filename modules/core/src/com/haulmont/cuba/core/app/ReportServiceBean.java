@@ -49,4 +49,9 @@ public class ReportServiceBean implements ReportService
         }
         return print;
     }
+
+    public String processFreemarkerTemplate(String name, Map<String, Object> params) {
+        ReportEngineAPI mbean = Locator.lookup(ReportEngineAPI.NAME);
+        return mbean.processFreemarkerTemplate(name, params);
+    }
 }

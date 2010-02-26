@@ -13,9 +13,6 @@ package com.haulmont.cuba.core.app;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JRDataSource;
 
-import javax.ejb.Local;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import java.util.Map;
 
 /**
@@ -30,6 +27,13 @@ public interface ReportService
 
     JasperPrint executeJasperReport(String name, Map<String, Object> params);
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource);
+
+    /**
+     * Process Freemarker template. Works properly with templates in RTF format.
+     * @param name file name relative to conf directory. RTF templates must have .rtf extension
+     * @param params binding
+     * @return resulting content
+     */
+    String processFreemarkerTemplate(String name, Map<String, Object> params);
 }

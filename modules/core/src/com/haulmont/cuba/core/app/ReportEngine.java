@@ -20,10 +20,8 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.File;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -41,6 +39,9 @@ public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
 
     private String srcRootPath;
     private String tmpRootPath;
+
+    @Inject
+    private FreemarkerProcessor freemarkerProcessor;
 
     private Log log = LogFactory.getLog(ReportEngine.class);
 
@@ -61,13 +62,13 @@ public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
     }
 
     public JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource) {
+        log.debug("Executing report " + name);
         JasperReport report = getJasperReport(name);
         JasperPrint print;
         try {
             if (dataSource != null) {
                 print = JasperFillManager.fillReport(report, params, dataSource);
             } else {
-                PersistenceConfigMBean mbean = Locator.lookupMBean(PersistenceConfigMBean.class, PersistenceConfigMBean.OBJECT_NAME);
                 DataSource ds = Locator.getDataSource();
                 Connection conn = ds.getConnection();
                 try {
@@ -114,5 +115,10 @@ public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
         }
         jasperFile.setLastModified(lm);
         return jasperFile;
+    }
+
+    public String processFreemarkerTemplate(String name, Map<String, Object> params) {
+        log.debug("Processing " + name);
+        return freemarkerProcessor.processTemplate(name, params);
     }
 }
