@@ -38,6 +38,12 @@ public class Role extends StandardEntity
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "LOC_NAME")
+    private String locName;
+
+    @Column(name = "DESCRIPTION", length = 1000)
+    private String description;
+
     @Column(name = "IS_SUPER")
     private Boolean superRole;
 
@@ -67,5 +73,21 @@ public class Role extends StandardEntity
 
     public void setPermissions(Set<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public String getLocName() {
+        return locName;
+    }
+
+    public void setLocName(String locName) {
+        this.locName = locName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

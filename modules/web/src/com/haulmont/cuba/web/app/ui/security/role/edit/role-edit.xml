@@ -54,13 +54,45 @@
 
     <layout expandLayout="true" expand="main">
         <vbox id="main" spacing="true" expand="permissions-types">
-            <hbox spacing="true" margin="true" align="MIDDLE_LEFT" expand="superRole" width="100%"
+            <hbox spacing="true" margin="true" align="MIDDLE_LEFT" width="100%" expand="spacer"
                   stylename="edit-area">
-                <label value="msg://name"/>
-                <textField id="name" datasource="role" property="name"/>
+                <#assign width = 200>
+                <grid  spacing="true">
+                    <columns>
+                        <column/>
+                        <column/>
+                        <column/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://name"/>
+                            <textField id="name" datasource="role" property="name" width="${width}" required="true"/>
+                        </row>
+                        <row>
+                            <label value="msg://locName"/>
+                            <textField id="locName" datasource="role" property="locName" width="${width}"/>
+                        </row>
+                    </rows>
+                </grid>
 
-                <label value="msg://superRole"/>
-                <checkBox id="superRole" datasource="role" property="superRole"/>
+                <grid  spacing="true">
+                    <columns>
+                        <column/>
+                        <column/>
+                        <column/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://superRole"/>
+                            <checkBox id="superRole" datasource="role" property="superRole"/>
+                        </row>
+                        <row>
+                            <label value="msg://description"/>
+                            <textField id="description" datasource="role" property="description" rows="2" width="400px"/>
+                        </row>
+                    </rows>
+                </grid>
+                <vbox id="spacer"/>
             </hbox>
 
             <tabsheet id="permissions-types">

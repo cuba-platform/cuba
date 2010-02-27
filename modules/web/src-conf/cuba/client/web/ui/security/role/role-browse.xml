@@ -8,7 +8,7 @@
     <dsContext>
         <collectionDatasource id="roles" class="com.haulmont.cuba.security.entity.Role" view="_local">
             <query>
-                select r from sec$Role r
+                select r from sec$Role r order by r.name
             </query>
         </collectionDatasource>
     </dsContext>
@@ -24,6 +24,8 @@
                 </buttonsPanel>
                 <columns>
                     <column id="name" caption="msg://role.name" clickAction="open:sec$Role.edit"/>
+                    <column id="locName" caption="msg://role.locName"/>
+                    <column id="description" caption="msg://role.description"/>
                 </columns>
                 <rows datasource="roles"/>
             </table>

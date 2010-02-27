@@ -43,6 +43,8 @@ create table SEC_ROLE (
     DELETE_TS datetime,
     DELETED_BY varchar(50),
     NAME varchar(255),
+    LOC_NAME varchar(255),
+    DESCRIPTION varchar(1000),
     IS_SUPER smallint,
     primary key (ID)
 )^
