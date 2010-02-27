@@ -105,6 +105,7 @@ create table SEC_USER (
     MIDDLE_NAME varchar(255),
     POSITION varchar(255),
     EMAIL varchar(100),
+    ACTIVE smallint,
     GROUP_ID binary(16),
     primary key (ID)
 )^

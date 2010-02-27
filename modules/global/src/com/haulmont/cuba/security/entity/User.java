@@ -58,6 +58,9 @@ public class User extends StandardEntity
     @Column(name = "EMAIL", length = 100)
     private String email;
 
+    @Column(name = "ACTIVE")
+    private Boolean active = true;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
     @OnDeleteInverse(DeletePolicy.DENY)
@@ -181,5 +184,13 @@ public class User extends StandardEntity
 
     public void setDefaultSubstitutedUser(User defaultSubstitutedUser) {
         this.defaultSubstitutedUser = defaultSubstitutedUser;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

@@ -34,6 +34,7 @@
         <!--</collectionDatasource>-->
     </dsContext>
 
+    <#assign width=250>
     <layout>
         <vbox expand="split" spacing="true">
             <hbox spacing="true" margin="true" width="100%" stylename="edit-area">
@@ -47,31 +48,31 @@
                             <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://login"/>
                             </vbox>
-                            <textField id="login" datasource="user" property="login" width="300px" required="true"/>
+                            <textField id="login" datasource="user" property="login" width="${width}" required="true"/>
                         </row>
                         <row visible="PersistenceHelper.isNew(param_item)">
                             <vbox align="MIDDLE_RIGHT">
                                 <label id="passwLab" value="msg://password"/>
                             </vbox>
-                            <textField id="passw" secret="true" width="300px" required="true"/>
+                            <textField id="passw" secret="true" width="${width}" required="true"/>
                         </row>
                         <row visible="PersistenceHelper.isNew(param_item)">
                             <vbox align="MIDDLE_RIGHT">
                                 <label id="confirmPasswLab" value="msg://confirmPassword"/>
                             </vbox>
-                            <textField id="confirmPassw" secret="true" width="300px"/>
+                            <textField id="confirmPassw" secret="true" width="${width}"/>
                         </row>
                         <row>
                             <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://name"/>
                             </vbox>
-                            <textField id="name" datasource="user" property="name" width="300px"/>
+                            <textField id="name" datasource="user" property="name" width="${width}"/>
                         </row>
                         <row>
                             <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://email"/>
                             </vbox>
-                            <textField id="email" datasource="user" property="email" width="300px">
+                            <textField id="email" datasource="user" property="email" width="${width}">
                                 <validator
                                         class="com.haulmont.cuba.gui.components.validators.EmailValidator"
                                         message="msg://email.alert"/>
@@ -82,7 +83,7 @@
                                 <label value="msg://group"/>
                             </vbox>
                             <lookupField id="group" datasource="user" property="group" captionProperty="name"
-                                         optionsDatasource="groups" width="300px"/>
+                                         optionsDatasource="groups" width="${width}"/>
                         </row>
                     </rows>
                 </grid>
@@ -96,28 +97,32 @@
                             <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://lastName"/>
                             </vbox>
-                            <textField id="lastName" datasource="user" property="lastName" width="300px"/>
+                            <textField id="lastName" datasource="user" property="lastName" width="${width}"/>
                         </row>
                         <row>
                             <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://firstName"/>
                             </vbox>
-                            <textField id="firstName" datasource="user" property="firstName" width="300px"/>
+                            <textField id="firstName" datasource="user" property="firstName" width="${width}"/>
                         </row>
                         <row>
                             <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://middleName"/>
                             </vbox>
-                            <textField id="middleName" datasource="user" property="middleName" width="300px"/>
+                            <textField id="middleName" datasource="user" property="middleName" width="${width}"/>
                         </row>
                         <row>
                             <vbox align="MIDDLE_RIGHT">
                                 <label value="msg://position"/>
                             </vbox>
-                            <textField id="position" datasource="user" property="position" width="300px"/>
+                            <textField id="position" datasource="user" property="position" width="${width}"/>
                         </row>
                     </rows>
                 </grid>
+                <hbox spacing="true">
+                    <label value="msg://active"/>
+                    <checkBox id="active" datasource="user" property="active"/>
+                </hbox>
                 <hbox align="TOP_RIGHT" spacing="true">
                     <label value="msg://permissions"/>
                     <lookupField id="permissionsLookupField"/>
@@ -127,13 +132,14 @@
             <split id="split" orientation="horizontal" pos="50">
                 <vbox id="roles-panel" expand="roles" spacing="true" margin="false;true;false;true">
                     <label value="msg://roles" stylename="h2"/>
-                    <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                    <hbox align="MIDDLE_LEFT" spacing="true">
                         <button action="roles.add" icon="icons/add.png"/>
                         <button action="roles.remove" icon="icons/remove.png"/>
                     </hbox>
                     <table id="roles" editable="false">
                         <columns>
-                            <column id="role" caption="msg://role" captionProperty="name" clickAction="open:sec$Role.edit"/>
+                            <column id="role" caption="msg://roleName" captionProperty="name" clickAction="open:sec$Role.edit"/>
+                            <column id="role.locName" caption="msg://localizedRoleName"/>
                         </columns>
                         <rows datasource="roles"/>
                     </table>
@@ -141,7 +147,7 @@
 
                 <vbox id="subst-panel" expand="subst" spacing="true" margin="false;true;false;true">
                     <label value="msg://substUsers" stylename="h2"/>
-                    <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                    <hbox align="MIDDLE_LEFT" spacing="true">
                         <button action="subst.add" icon="icons/add.png"/>
                         <button action="subst.edit" icon="icons/edit.png"/>
                         <button action="subst.remove" icon="icons/remove.png"/>

@@ -40,7 +40,7 @@ public class LoginWorkerBean implements LoginWorker
             throw new IllegalArgumentException("Login is null");
 
         EntityManager em = PersistenceProvider.getEntityManager();
-        String queryStr = "select u from sec$User u where u.loginLowerCase = ?1";
+        String queryStr = "select u from sec$User u where u.loginLowerCase = ?1 and (u.active = true or u.active is null)";
         if (password != null)
             queryStr += " and u.password = ?2";
 

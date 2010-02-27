@@ -454,7 +454,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         LoadContext ctx = new LoadContext(UserSubstitution.class);
         LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
-                "where us.user.id = :userId and (us.endDate is null or us.endDate > :currentDate)");
+                "where us.user.id = :userId and (us.endDate is null or us.endDate > :currentDate) " +
+                "and (us.substitutedUser.active = true or us.substitutedUser.active is null)");
         query.addParameter("userId", userSession.getUser().getId());
         query.addParameter("currentDate", TimeProvider.currentTimestamp());
         ctx.setView("app");

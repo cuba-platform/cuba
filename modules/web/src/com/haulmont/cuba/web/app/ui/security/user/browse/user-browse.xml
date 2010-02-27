@@ -65,7 +65,10 @@
                     <columns>
                         <column id="login" caption="msg://login" clickAction="open:sec$User.edit"/>
                         <column id="name" caption="msg://name"/>
+                        <column id="position" caption="msg://position"/>
+                        <column id="group" caption="msg://group"/>
                         <column id="email" caption="msg://email"/>
+                        <column id="active" caption="msg://active"/>
                     </columns>
                     <rows datasource="users"/>
                 </table>

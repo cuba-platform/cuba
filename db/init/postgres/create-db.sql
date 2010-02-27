@@ -135,6 +135,7 @@ create table SEC_USER (
     MIDDLE_NAME varchar(255),
     POSITION varchar(255),
     EMAIL varchar(100),
+    ACTIVE boolean,
     GROUP_ID uuid,
     DEFAULT_SUBSTITUTED_USER_ID uuid,
     primary key (ID)
@@ -387,8 +388,8 @@ volatile strict language c^
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', now(), 0, 'Company', null)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID)
-values ('60885987-1b61-4247-94c7-dff348347f93', now(), 0, 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93')^
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
+values ('60885987-1b61-4247-94c7-dff348347f93', now(), 0, 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true)^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, IS_SUPER)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', now(), 0, 'Administrators', true)^
