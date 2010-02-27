@@ -23,9 +23,10 @@
                     <button action="roles.excel" icon="icons/excel.png"/>
                 </buttonsPanel>
                 <columns>
-                    <column id="name" caption="msg://role.name" clickAction="open:sec$Role.edit"/>
+                    <column id="name" caption="msg://role.name"/>
                     <column id="locName" caption="msg://role.locName"/>
                     <column id="description" caption="msg://role.description"/>
+                    <column id="defaultRole" caption="msg://role.defaultRole"/>
                 </columns>
                 <rows datasource="roles"/>
             </table>

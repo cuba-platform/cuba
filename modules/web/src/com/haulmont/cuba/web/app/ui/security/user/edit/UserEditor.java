@@ -10,6 +10,8 @@
 package com.haulmont.cuba.web.app.ui.security.user.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
@@ -61,6 +63,28 @@ public class UserEditor extends AbstractEditor {
         setPermissionsShowAction(rolesTable, "show-specific", "sec$Target.specificPermissions.lookup", PermissionType.SPECIFIC);
 
         initPermissionsLookupField();
+    }
+
+    @Override
+    public void setItem(Entity item) {
+        super.setItem(item);
+        if (PersistenceHelper.isNew(item))
+            addDefaultRoles();
+    }
+
+    private void addDefaultRoles() {
+        CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
+        LoadContext ctx = new LoadContext(Role.class);
+        ctx.setQueryString("select r from sec$Role r where r.defaultRole = true");
+        List<Role> defaultRoles = getDsContext().getDataService().loadList(ctx);
+
+        for (Role role : defaultRoles) {
+            final MetaClass metaClass = ds.getMetaClass();
+            UserRole userRole = ds.getDataService().newInstance(metaClass);
+            userRole.setRole(role);
+            userRole.setUser(userDs.getItem());
+            ds.addItem(userRole);
+        }
     }
 
     private void initPermissionsLookupField() {

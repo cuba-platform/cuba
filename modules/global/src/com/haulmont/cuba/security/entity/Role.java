@@ -47,6 +47,9 @@ public class Role extends StandardEntity
     @Column(name = "IS_SUPER")
     private Boolean superRole;
 
+    @Column(name = "IS_DEFAULT_ROLE")
+    private Boolean defaultRole;
+
     @OneToMany(mappedBy = "role")
     @OnDelete(DeletePolicy.CASCADE)
     private Set<Permission> permissions;
@@ -89,5 +92,13 @@ public class Role extends StandardEntity
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Boolean getDefaultRole() {
+        return defaultRole;
+    }
+
+    public void setDefaultRole(Boolean defaultRole) {
+        this.defaultRole = defaultRole;
     }
 }

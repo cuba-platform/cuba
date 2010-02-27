@@ -14,7 +14,7 @@
         <datasource
                 id="role"
                 class="com.haulmont.cuba.security.entity.Role"
-                view="role.edit"
+                view="_local"
                 >
             <!--<collectionDatasource id="permissions" property="permissions"/>-->
         </datasource>
@@ -54,7 +54,7 @@
 
     <layout expandLayout="true" expand="main">
         <vbox id="main" spacing="true" expand="permissions-types">
-            <hbox spacing="true" margin="true" align="MIDDLE_LEFT" width="100%" expand="spacer"
+            <hbox spacing="true" margin="true" align="MIDDLE_LEFT" width="100%"  expand="spacer"
                   stylename="edit-area">
                 <#assign width = 200>
                 <grid  spacing="true">
@@ -87,11 +87,17 @@
                             <checkBox id="superRole" datasource="role" property="superRole"/>
                         </row>
                         <row>
-                            <label value="msg://description"/>
-                            <textField id="description" datasource="role" property="description" rows="2" width="400px"/>
+                            <label value="msg://defaultRole"/>
+                            <checkBox id="defaultRole" datasource="role" property="defaultRole"/>
                         </row>
                     </rows>
                 </grid>
+
+                <hbox spacing="true" id="descrBox">
+                    <label value="msg://description"/>
+                    <textField id="description" datasource="role" property="description" rows="4" width="300px"/>
+                </hbox>
+
                 <vbox id="spacer"/>
             </hbox>
 
