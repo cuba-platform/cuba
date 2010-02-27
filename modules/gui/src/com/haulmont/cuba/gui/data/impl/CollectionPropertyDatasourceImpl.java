@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.gui.components.Aggregation;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -29,7 +30,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         PropertyDatasourceImpl<T>
     implements
         CollectionDatasource<T, K>,
-        CollectionDatasource.Sortable<T, K>
+        CollectionDatasource.Sortable<T, K>,
+        CollectionDatasource.Aggregatable<T, K>
 {
     private T item;
     protected boolean cascadeProperty;
@@ -37,6 +39,17 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     private Log log = LogFactory.getLog(CollectionPropertyDatasourceImpl.class);
 
     protected SortInfo<MetaPropertyPath>[] sortInfos;
+
+    private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
+        @Override
+        public Object getItem(K itemId) {
+            return CollectionPropertyDatasourceImpl.this.getItem(itemId);
+        }
+
+        public Object getItemValue(MetaPropertyPath property, K itemId) {
+            return CollectionPropertyDatasourceImpl.this.getItemValue(property, itemId);
+        }
+    };
 
     public CollectionPropertyDatasourceImpl(String id, Datasource<Entity> ds, String property) {
         super(id, ds, property);
@@ -414,5 +427,18 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public boolean isLastId(K itemId) {
         return itemId != null && itemId.equals(lastItemId());
+    }
+
+    public Map<Object, String> aggregate(Aggregation[] aggregationInfos, Collection<K> itemIds) {
+        return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
+    }
+
+    protected Object getItemValue(MetaPropertyPath property, K itemId) {
+        Instance instance = (Instance) getItem(itemId);
+        if (property.getMetaProperties().length == 1) {
+            return instance.getValue(property.getMetaProperty().getName());
+        } else {
+            return instance.getValueEx(property.toString());
+        }
     }
 }

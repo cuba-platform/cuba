@@ -21,15 +21,18 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ICaptionWrapper extends ComplexPanel {
+public class VCaptionWrapper extends ComplexPanel {
 
     public static final String CLASSNAME = "v-captionwrapper";
-    protected ICaption caption;
+    protected VCaption caption;
     protected Paintable widget;
 
     protected final Element widgetWrapper = DOM.createDiv();
 
-    public ICaptionWrapper(Paintable toBeWrapped) {
+    ApplicationConnection client;
+
+    public VCaptionWrapper(Paintable toBeWrapped, ApplicationConnection client) {
+        this.client = client;
         setElement(DOM.createDiv());
         setStyleName(CLASSNAME);
 
@@ -40,14 +43,14 @@ public class ICaptionWrapper extends ComplexPanel {
         add((Widget) widget, getWidgetContainer());
     }
 
-    public void updateCaption(UIDL uidl, ApplicationConnection client) {
-        if (ICaption.isNeeded(uidl)) {
+    public void updateCaption(UIDL uidl) {
+        if (VCaption.isNeeded(uidl)) {
             // We need a caption
 
-            ICaption newCaption = caption;
+            VCaption newCaption = caption;
 
             if (newCaption == null) {
-                newCaption = new ICaption(widget, client);
+                newCaption = new VCaption(widget, client);
             }
 
             boolean positionChanged = newCaption.updateCaption(uidl);
@@ -69,7 +72,7 @@ public class ICaptionWrapper extends ComplexPanel {
         setVisible(!uidl.getBooleanAttribute("invisible"));
     }
 
-    protected void setCaption(ICaption newCaption) {
+    protected void setCaption(VCaption newCaption) {
         // Detach new child.
         if (newCaption != null) {
             newCaption.removeFromParent();

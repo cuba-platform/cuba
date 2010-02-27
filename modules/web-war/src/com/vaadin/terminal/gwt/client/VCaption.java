@@ -1,12 +1,12 @@
-/* 
- * Copyright 2008 IT Mill Ltd.
- * 
+/*
+ * Copyright 2009 IT Mill Ltd.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -22,7 +22,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML;
 import com.vaadin.terminal.gwt.client.ui.Icon;
 
-public class ICaption extends HTML {
+public class VCaption extends HTML {
 
     public static final String CLASSNAME = "v-caption";
 
@@ -45,12 +45,12 @@ public class ICaption extends HTML {
 
     private int maxWidth = -1;
 
-    private static String ATTRIBUTE_ICON = "icon";
-    private static String ATTRIBUTE_CAPTION = "caption";
-    private static String ATTRIBUTE_DESCRIPTION = "description";
-    private static String ATTRIBUTE_REQUIRED = "required";
-    private static String ATTRIBUTE_ERROR = "error";
-    private static String ATTRIBUTE_HIDEERRORS = "hideErrors";
+    protected static final String ATTRIBUTE_ICON = "icon";
+    protected static final String ATTRIBUTE_CAPTION = "caption";
+    protected static final String ATTRIBUTE_DESCRIPTION = "description";
+    protected static final String ATTRIBUTE_REQUIRED = "required";
+    protected static final String ATTRIBUTE_ERROR = "error";
+    protected static final String ATTRIBUTE_HIDEERRORS = "hideErrors";
 
     private boolean readonly = false;
 
@@ -61,7 +61,7 @@ public class ICaption extends HTML {
      *            null
      * @param client
      */
-    public ICaption(Paintable component, ApplicationConnection client) {
+    public VCaption(Paintable component, ApplicationConnection client) {
         super();
         this.client = client;
         owner = component;
@@ -258,7 +258,7 @@ public class ICaption extends HTML {
             /*
              * The size of the icon might affect the size of the component so we
              * must report the size change to the parent TODO consider moving
-             * the responsibility of reacting to ONLOAD from ICaption to layouts
+             * the responsibility of reacting to ONLOAD from VCaption to layouts
              */
             if (owner != null) {
                 Util.notifyParentOfSizeChange(owner, true);
@@ -266,7 +266,7 @@ public class ICaption extends HTML {
                 ApplicationConnection
                         .getConsole()
                         .log(
-                                "Warning: Icon load event was not propagated because ICaption owner is unknown.");
+                                "Warning: Icon load event was not propagated because VCaption owner is unknown.");
             }
         }
     }
@@ -450,6 +450,10 @@ public class ICaption extends HTML {
             }
 
         }
+    }
+
+    protected Element getTextElement() {
+        return captionText;
     }
 
 }

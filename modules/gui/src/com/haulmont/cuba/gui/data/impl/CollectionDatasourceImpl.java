@@ -39,11 +39,22 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected SortInfo<MetaPropertyPath>[] sortInfos;
 
-    protected Aggregation<MetaPropertyPath>[] aggregationInfos;
+    //protected Aggregation<MetaPropertyPath>[] aggregationInfos;
 
     private Map<String, Object> savedParameters;
 
     private boolean inRefresh;
+
+    private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
+        @Override
+        public Object getItem(K itemId) {
+            return CollectionDatasourceImpl.this.getItem(itemId);
+        }
+
+        public Object getItemValue(MetaPropertyPath property, K itemId) {
+            return CollectionDatasourceImpl.this.getItemValue(property, itemId);
+        }
+    };
 
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
@@ -338,7 +349,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @SuppressWarnings("unchecked")
     public Map<Object, String> aggregate(Aggregation[] aggregationInfos, Collection itemIds) {
-        if (aggregationInfos == null || aggregationInfos.length == 0) {
+        /*if (aggregationInfos == null || aggregationInfos.length == 0) {
             throw new NullPointerException("Aggregation must be executed at least by one field");
         }
 
@@ -351,9 +362,11 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         this.aggregationInfos = aggregationInfos;
 
-        return doAggregation(itemIds);
-    }
+        return doAggregation(itemIds);*/
 
+        return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
+    }
+    /*
     protected Map<Object, String> doAggregation(Collection itemIds) {
         final Map<Object, String> aggregationResults = new HashMap<Object, String>();
         for (final Aggregation<MetaPropertyPath> aggregationInfo : aggregationInfos) {
@@ -431,7 +444,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             }
         }
         return values;
-    }
+    }*/
 
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
         Instance instance = (Instance) getItem(itemId);
