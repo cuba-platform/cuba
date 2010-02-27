@@ -29,6 +29,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
+import java.util.List;
 
 public class UserEditor extends AbstractEditor {
 
@@ -160,20 +161,38 @@ public class UserEditor extends AbstractEditor {
         }
 
         public void actionPerform(Component component) {
+            Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
             final CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
             openLookup("sec$Role.browse", new Lookup.Handler() {
                 public void handleLookup(Collection items) {
+                    Collection<String> existingRoleNames = getExistingRoleNames();
                     for (Object item : items) {
-                        final MetaClass metaClass = ds.getMetaClass();
+                        Role role = (Role)item;
+                        if (existingRoleNames.contains(role.getName())) continue;
 
+                        final MetaClass metaClass = ds.getMetaClass();
                         UserRole userRole = ds.getDataService().newInstance(metaClass);
-                        userRole.setRole((Role) item);
+                        userRole.setRole(role);
                         userRole.setUser(userDs.getItem());
 
                         ds.addItem(userRole);
+                        existingRoleNames.add(role.getName());
                     }
                 }
-            }, WindowManager.OpenType.THIS_TAB);
+
+                private Collection<String> getExistingRoleNames() {
+                    User user = userDs.getItem();
+                    Collection<String> existingRoleNames = new HashSet<String>();
+                    if (user.getUserRoles() != null) { 
+                        for (UserRole userRole : user.getUserRoles()) {
+                            if (userRole.getRole() != null)
+                                existingRoleNames.add(userRole.getRole().getName());
+                        }
+                    }
+                    return existingRoleNames;
+                }
+
+            }, WindowManager.OpenType.THIS_TAB, lookupParams);
         }
     }
 

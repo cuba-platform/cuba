@@ -22,5 +22,11 @@ class RoleBrowser extends AbstractLookup {
     helper.createExcelAction(new WebExportDisplay())
 
     table.refresh()
+
+    String windowOpener = params['param$windowOpener']
+    if (windowOpener == 'sec$User.edit') {
+      table.multiSelect = true
+    }
   }
+
 }
