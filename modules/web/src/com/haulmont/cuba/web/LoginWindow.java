@@ -17,6 +17,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.vaadin.Application;
+import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.service.ApplicationContext;
@@ -34,21 +35,29 @@ import java.util.Map;
 
 /**
  * Login window.
- * <p>
+ * <p/>
  * Specific application should inherit from this class and create appropriate
  * instance in {@link App#createLoginWindow()} method
  */
 public class LoginWindow extends Window
         implements ApplicationContext.TransactionListener,
-        Action.Handler, Action.Container
-{
+        Action.Handler, Action.Container {
+
+    public static final String COOKIE_LOGIN = "rememberMe.Login";
+    public static final String COOKIE_PASSWORD = "rememberMe.Password";
+    public static final String COOKIE_REMEMBER_ME = "rememberMe";
+
     private Connection connection;
 
     protected TextField loginField;
-    protected TextField passwdField;
+    protected TextField passwordField;
     protected AbstractSelect localesSelect;
     protected Locale loc;
     protected Map<String, Locale> locales;
+
+    protected CheckBox rememberMe;
+    protected boolean loginByRememberMe = false;
+    private Property.ValueChangeListener loginChangeListener;
 
     protected Button okButton;
 
@@ -62,15 +71,20 @@ public class LoginWindow extends Window
         app.getContext().addTransactionListener(this);
 
         loginField = new TextField();
-        passwdField = new TextField();
+        passwordField = new TextField();
         localesSelect = new NativeSelect();
+        okButton = new Button();
+
+        if (!ActiveDirectoryHelper.useActiveDirectory()) {
+            rememberMe = new CheckBox();
+        }
 
         initUI(app);
 
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
             WebWindowManager windowManager = app.getWindowManager();
             windowManager.setDebugId(loginField, "loginField");
-            windowManager.setDebugId(passwdField, "pwdField");
+            windowManager.setDebugId(passwordField, "pwdField");
             windowManager.setDebugId(localesSelect, "localesField");
             if (okButton != null) {
                 windowManager.setDebugId(okButton, "loginSubmitButton");
@@ -83,14 +97,13 @@ public class LoginWindow extends Window
     }
 
     protected void initStandartUI(App app, int formWidth, int formHeight, int fieldWidth, boolean localesSelectVisible) {
-        int totalHeight = formHeight;
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setStyleName("mainLayout");
 
         VerticalLayout centerLayout = new VerticalLayout();
         centerLayout.setWidth(formWidth + "px");
-        centerLayout.setHeight(totalHeight + "px");
+        centerLayout.setHeight(formHeight + "px");
         centerLayout.setStyleName("centerLayout");
 
         Form form = new Form(new FormLayout());
@@ -119,12 +132,12 @@ public class LoginWindow extends Window
         loginField.setStyleName("login-field");
         formLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
-        passwdField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
-        passwdField.setSecret(true);
-        passwdField.setWidth(fieldWidth + "px");
-        passwdField.setStyleName("password-field");
-        form.addField("passwordField", passwdField);
-        formLayout.setComponentAlignment(passwdField, Alignment.MIDDLE_CENTER);
+        passwordField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
+        passwordField.setSecret(true);
+        passwordField.setWidth(fieldWidth + "px");
+        passwordField.setStyleName("password-field");
+        form.addField("passwordField", passwordField);
+        formLayout.setComponentAlignment(passwordField, Alignment.MIDDLE_CENTER);
 
         if (localesSelectVisible) {
             localesSelect.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
@@ -134,8 +147,15 @@ public class LoginWindow extends Window
             formLayout.setComponentAlignment(localesSelect, Alignment.MIDDLE_CENTER);
         }
 
-        Button okButton = new Button(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc),
-                new SubmitListener());
+        if (!ActiveDirectoryHelper.useActiveDirectory()) {
+            rememberMe.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.rememberMe", loc));
+            rememberMe.setStyleName("rememberMe");
+            form.addField("rememberMe", rememberMe);
+            formLayout.setComponentAlignment(rememberMe, Alignment.MIDDLE_CENTER);
+        }
+
+        okButton.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
+        okButton.addListener(new SubmitListener());
         okButton.setStyleName("submit-login-btn");
         okButton.setIcon(new ThemeResource("images/tick.png"));
         form.addField("button", okButton);
@@ -146,7 +166,7 @@ public class LoginWindow extends Window
         mainLayout.setComponentAlignment(centerLayout, Alignment.MIDDLE_CENTER);
         setContent(mainLayout);
 
-        initFields();
+        initFields(app);
         loginField.focus();
 
         Layout userHintLayout = createUserHint(app);
@@ -156,8 +176,7 @@ public class LoginWindow extends Window
             wrapLayout.addComponent(mainLayout);
             wrapLayout.addComponent(userHintLayout);
             setContent(wrapLayout);
-        }
-        else {
+        } else {
             setContent(mainLayout);
         }
     }
@@ -166,7 +185,53 @@ public class LoginWindow extends Window
         initStandartUI(app, 267, 222, 125, true);
     }
 
-    protected void initFields() {
+    protected void initRememberMe(final App app) {
+        if (!app.isCookiesEnabled())
+            return;
+
+        String rememberMeCookie = app.getCookieValue(COOKIE_REMEMBER_ME);
+        if (Boolean.parseBoolean(rememberMeCookie)) {
+            rememberMe.setValue(true);
+            loginField.setValue(app.getCookieValue(COOKIE_LOGIN));
+            passwordField.setValue(app.getCookieValue(COOKIE_PASSWORD));
+            loginByRememberMe = true;
+
+            loginChangeListener = new Property.ValueChangeListener() {
+                public void valueChange(Property.ValueChangeEvent event) {
+                    loginByRememberMe = false;
+                }
+            };
+
+            loginField.addListener(loginChangeListener);
+            passwordField.addListener(loginChangeListener);
+        } else {
+            rememberMe.setValue(false);
+            loginChangeListener = null;
+        }
+
+        rememberMe.addListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (app.isCookiesEnabled()) {
+                    Boolean rememberMe = (Boolean) event.getProperty().getValue();
+                    if (rememberMe) {
+                        app.addCookie(COOKIE_REMEMBER_ME, String.valueOf(rememberMe));
+
+                        String login = (String) loginField.getValue();
+                        String password = (String) passwordField.getValue();
+
+                        app.addCookie(COOKIE_LOGIN, login);
+                        app.addCookie(COOKIE_PASSWORD, DigestUtils.md5Hex(password));
+                    } else {
+                        app.removeCookie(COOKIE_REMEMBER_ME);
+                        app.removeCookie(COOKIE_LOGIN);
+                        app.removeCookie(COOKIE_PASSWORD);
+                    }
+                }
+            }
+        });
+    }
+
+    protected void initFields(App app) {
         String selected = null;
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
             localesSelect.addItem(entry.getKey());
@@ -179,9 +244,8 @@ public class LoginWindow extends Window
 
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             loginField.setValue(null);
-            passwdField.setValue("");
-        }
-        else {
+            passwordField.setValue("");
+        } else {
             WebConfig config = ConfigProvider.getConfig(WebConfig.class);
 
             String defaultUser = config.getLoginDialogDefaultUser();
@@ -192,9 +256,11 @@ public class LoginWindow extends Window
 
             String defaultPassw = config.getLoginDialogDefaultPassword();
             if (!StringUtils.isBlank(defaultPassw))
-                passwdField.setValue(defaultPassw);
+                passwordField.setValue(defaultPassw);
             else
-                passwdField.setValue("");
+                passwordField.setValue("");
+
+            initRememberMe(app);
         }
     }
 
@@ -202,8 +268,7 @@ public class LoginWindow extends Window
         HttpServletRequest request = (HttpServletRequest) transactionData;
         if (request.getUserPrincipal() != null
                 && ActiveDirectoryHelper.useActiveDirectory()
-                && loginField.getValue() == null)
-        {
+                && loginField.getValue() == null) {
             loginField.setValue(request.getUserPrincipal().getName());
         }
     }
@@ -211,8 +276,7 @@ public class LoginWindow extends Window
     public void transactionEnd(Application application, Object transactionData) {
     }
 
-    public class SubmitListener implements Button.ClickListener
-    {
+    public class SubmitListener implements Button.ClickListener {
         public void buttonClick(Button.ClickEvent event) {
             login();
         }
@@ -235,11 +299,12 @@ public class LoginWindow extends Window
         String login = (String) loginField.getValue();
         try {
             if (ActiveDirectoryHelper.useActiveDirectory()) {
-                ActiveDirectoryHelper.authenticate(login, (String) passwdField.getValue(), loc);
+                ActiveDirectoryHelper.authenticate(login, (String) passwordField.getValue(), loc);
                 connection.loginActiveDirectory(login);
-            }
-            else {
-                String passwd = DigestUtils.md5Hex((String) passwdField.getValue());
+            } else {
+                String passwd = loginByRememberMe
+                        ? (String) passwordField.getValue()
+                        : DigestUtils.md5Hex((String) passwordField.getValue());
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 connection.login(login, passwd, locale);
@@ -247,13 +312,18 @@ public class LoginWindow extends Window
             open(new ExternalResource(App.getInstance().getMainWindow().getURL()));
         } catch (LoginException e) {
             showNotification(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+            if (loginByRememberMe) {
+                loginByRememberMe = false;
+                loginField.removeListener(loginChangeListener);
+                passwordField.removeListener(loginChangeListener);
+                loginChangeListener = null;
+            }
         }
     }
 
     protected Locale getUserLocale() {
         String lang = (String) localesSelect.getValue();
-        Locale locale = locales.get(lang);
-        return locale;
+        return locales.get(lang);
     }
 
     protected Layout createUserHint(App app) {
@@ -261,10 +331,9 @@ public class LoginWindow extends Window
         WebApplicationContext context = (WebApplicationContext) app.getContext();
         WebBrowser browser = context.getBrowser();
 
-        if (enableChromeFrame && browser.getBrowserApplication() != null)
-        {
+        if (enableChromeFrame && browser.getBrowserApplication() != null) {
             final Browser browserInfo = Browser.getBrowserInfo(browser.getBrowserApplication());
-            if (browserInfo.isIE() && ! browserInfo.isChromeFrame()) {
+            if (browserInfo.isIE() && !browserInfo.isChromeFrame()) {
                 final Layout layout = new VerticalLayout();
                 layout.setStyleName("loginUserHint");
                 layout.addComponent(new Label(MessageProvider.getMessage(getMessagesPack(), "chromeframe.hint", loc),

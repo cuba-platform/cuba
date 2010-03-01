@@ -76,6 +76,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     private volatile String contextName;
 
+    private AppCookies cookies;
+
     static {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
@@ -86,6 +88,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
         connection.addListener(this);
         windowManager = createWindowManager();
         exceptionHandlers = new ExceptionHandlers(this);
+        cookies = new AppCookies();
+        cookies.setCookiesEnabled(true);
     }
 
     public static Application.SystemMessages getSystemMessages() {
@@ -469,4 +473,35 @@ public class App extends Application implements ConnectionListener, ApplicationC
         return Collections.unmodifiableSet(timers);
     }
 
+    public AppCookies getCookies() {
+        return cookies;
+    }
+
+    public String getCookieValue(String name) {
+        return cookies.getCookieValue(name);
+    }
+
+    public int getCookieMaxAge(String name) {
+        return cookies.getCookieMaxAge(name);
+    }
+
+    public void addCookie(String name, String value, int maxAge) {
+        cookies.addCookie(name, value, maxAge);
+    }
+
+    public void addCookie(String name, String value) {
+        cookies.addCookie(name, value);
+    }
+
+    public void removeCookie(String name) {
+        cookies.removeCookie(name);
+    }
+
+    public boolean isCookiesEnabled() {
+        return cookies.isCookiesEnabled();
+    }
+
+    public void setCookiesEnabled(boolean cookiesEnabled) {
+        cookies.setCookiesEnabled(cookiesEnabled);
+    }
 }

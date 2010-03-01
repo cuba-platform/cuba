@@ -10,25 +10,24 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.vaadin.terminal.gwt.server.CommunicationManager;
-import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
-import com.vaadin.terminal.gwt.server.JsonPaintTarget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.toolkit.Timer;
+import com.vaadin.Application;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.VariableOwner;
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
+import com.vaadin.terminal.gwt.server.CommunicationManager;
+import com.vaadin.terminal.gwt.server.JsonPaintTarget;
 import com.vaadin.ui.Component;
-import com.haulmont.cuba.web.toolkit.Timer;
-import com.haulmont.cuba.web.App;
+import com.vaadin.ui.Window;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
+import java.io.*;
+import java.lang.reflect.Method;
 import java.util.*;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.io.CharArrayWriter;
 
 @SuppressWarnings("serial")
 public class CubaCommunicationManager extends CommunicationManager {
@@ -41,6 +40,117 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     public CubaCommunicationManager(Application application, AbstractApplicationServlet applicationServlet) {
         super(application, applicationServlet);
+    }
+
+    /**
+     * Handles UIDL request
+     *
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void handleUidlRequest(HttpServletRequest request,
+            HttpServletResponse response,
+            AbstractApplicationServlet applicationServlet) throws IOException,
+            ServletException, InvalidUIDLSecurityKeyException {
+
+        // repaint requested or session has timed out and new one is created
+        boolean repaintAll = (request.getParameter(GET_PARAM_REPAINT_ALL) != null)
+                || request.getSession().isNew();
+        boolean analyzeLayouts = false;
+        if (repaintAll) {
+            // analyzing can be done only with repaintAll
+            analyzeLayouts = (request.getParameter(GET_PARAM_ANALYZE_LAYOUTS) != null);
+        }
+
+        final OutputStream out = response.getOutputStream();
+        final PrintWriter outWriter = new PrintWriter(new BufferedWriter(
+                new OutputStreamWriter(out, "UTF-8")));
+
+        // The rest of the process is synchronized with the application
+        // in order to guarantee that no parallel variable handling is
+        // made
+        synchronized (application) {
+
+            // Finds the window within the application
+            Window window;
+            if (application.isRunning()) {
+                window = getApplicationWindow(request, applicationServlet,
+                        application, null);
+                // Returns if no window found
+                if (window == null) {
+                    // This should not happen, no windows exists but
+                    // application is still open.
+                    System.err
+                            .println("Warning, could not get window for application with request URI "
+                                    + request.getRequestURI());
+                    return;
+                }
+            } else {
+                // application has been closed
+                endApplication(request, response, application);
+                return;
+            }
+
+            processRequestedCookies(request, response);
+
+            // Change all variables based on request parameters
+            if (!handleVariables(request, response, applicationServlet,
+                    application, window)) {
+
+                // var inconsistency; the client is probably out-of-sync
+                Application.SystemMessages ci = null;
+                try {
+                    Method m = application.getClass().getMethod(
+                            "getSystemMessages", (Class[]) null);
+                    ci = (Application.SystemMessages) m.invoke(null,
+                            (Object[]) null);
+                } catch (Exception e2) {
+                    // FIXME: Handle exception
+                    // Not critical, but something is still wrong; print
+                    // stacktrace
+                    e2.printStackTrace();
+                }
+                if (ci != null) {
+                    String msg = ci.getOutOfSyncMessage();
+                    String cap = ci.getOutOfSyncCaption();
+                    if (msg != null || cap != null) {
+                        ((CubaApplicationServlet) applicationServlet).sendCriticalNotification(request,
+                                response, cap, msg, null, ci.getOutOfSyncURL());
+                        // will reload page after this
+                        return;
+                    }
+                }
+                // No message to show, let's just repaint all.
+                repaintAll = true;
+            }
+
+            processResponsedCookies(request, response);
+
+            paintAfterVariablechanges(request, response, applicationServlet,
+                    repaintAll, outWriter, window, analyzeLayouts);
+
+            // Mark this window to be open on client
+            currentlyOpenWindowsInClient.add(window.getName());
+            if (closingWindowName != null) {
+                currentlyOpenWindowsInClient.remove(closingWindowName);
+                closingWindowName = null;
+            }
+        }
+
+        out.flush();
+        out.close();
+    }
+
+    protected void processRequestedCookies(HttpServletRequest request, HttpServletResponse response) {
+        App app = App.getInstance();
+        app.getCookies().processRequestedCookies(request);
+    }
+
+    protected void processResponsedCookies(HttpServletRequest request, HttpServletResponse response) {
+        App app = App.getInstance();
+        app.getCookies().processResponsedCookies(response);
     }
 
     @Override
@@ -82,7 +192,13 @@ public class CubaCommunicationManager extends CommunicationManager {
     }
 
     @Override
-    protected boolean handleVariables(HttpServletRequest request, HttpServletResponse response, AbstractApplicationServlet applicationServlet, Application application2, Window window) throws IOException, CommunicationManager.InvalidUIDLSecurityKeyException {
+    protected boolean handleVariables(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AbstractApplicationServlet applicationServlet,
+            Application application2,
+            Window window
+    ) throws IOException, CommunicationManager.InvalidUIDLSecurityKeyException {
         boolean success = true;
 
         if (request.getContentLength() > 0) {

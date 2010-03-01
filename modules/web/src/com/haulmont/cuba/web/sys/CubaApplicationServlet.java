@@ -14,11 +14,15 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.web.Browser;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.gwt.server.ApplicationServlet;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
+import com.vaadin.Application;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
@@ -55,5 +59,28 @@ public class CubaApplicationServlet extends ApplicationServlet {
                         + themeUri + "/favicon.ico\" />");
 
         page.write("<title>" + title + "</title>");
+    }
+
+    void sendCriticalNotification(HttpServletRequest request,
+            HttpServletResponse response, String caption, String message,
+            String details, String url) throws IOException {
+        criticalNotification(request, response, caption, message, details, url);
+    }
+
+    @Override
+    protected Application getNewApplication(HttpServletRequest request) throws ServletException {
+        try {
+            // Creates a new application instance
+            final Application application = getApplicationClass().newInstance();
+
+            // Handles requested cookies
+            ((App) application).getCookies().processRequestedCookies(request);
+
+            return application;
+        } catch (final IllegalAccessException e) {
+            throw new ServletException("getNewApplication failed", e);
+        } catch (final InstantiationException e) {
+            throw new ServletException("getNewApplication failed", e);
+        }
     }
 }
