@@ -132,7 +132,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             EmailAttachment[] attachments, String from) throws MessagingException {
         MimeMessage msg = mailSender.createMimeMessage();
         msg.addRecipients(Message.RecipientType.TO, address);
-        msg.setSubject(caption);
+        msg.setSubject(caption, "UTF-8");
         msg.setSentDate(new Date());
         msg.setFrom(new InternetAddress(from));
 
