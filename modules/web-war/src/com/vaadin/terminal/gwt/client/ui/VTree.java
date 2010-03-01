@@ -123,16 +123,23 @@ public class VTree extends FlowPanel implements Paintable {
         isNullSelectionAllowed = uidl.getBooleanAttribute("nullselect");
 
         clear();
+        
+        TreeNode childTree = null;
         for (final Iterator i = uidl.getChildIterator(); i.hasNext();) {
             final UIDL childUidl = (UIDL) i.next();
             if ("actions".equals(childUidl.getTag())) {
                 updateActionMap(childUidl);
                 continue;
             }
-            final TreeNode childTree = new TreeNode();
+            childTree = new TreeNode();
             this.add(childTree);
             childTree.updateFromUIDL(childUidl, client);
         }
+
+        if (childTree != null) {
+            childTree.addStyleName("last");
+        }
+
         final String selectMode = uidl.getStringAttribute("selectmode");
         selectable = !"none".equals(selectMode);
         isMultiselect = "multi".equals(selectMode);
@@ -382,6 +389,8 @@ public class VTree extends FlowPanel implements Paintable {
         private void renderChildNodes(Iterator i) {
             childNodeContainer.clear();
             childNodeContainer.setVisible(true);
+
+            TreeNode childTree = null;
             while (i.hasNext()) {
                 final UIDL childUidl = (UIDL) i.next();
                 // actions are in bit weird place, don't mix them with children,
@@ -390,9 +399,12 @@ public class VTree extends FlowPanel implements Paintable {
                     updateActionMap(childUidl);
                     continue;
                 }
-                final TreeNode childTree = new TreeNode();
+                childTree = new TreeNode();
                 childNodeContainer.add(childTree);
                 childTree.updateFromUIDL(childUidl, client);
+            }
+            if (childTree != null) {
+                childTree.addStyleName("last");
             }
             childrenLoaded = true;
         }
