@@ -11,6 +11,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.Entity;
@@ -21,6 +22,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -44,6 +46,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.DateField;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -842,12 +845,21 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 field = super.createField(container, itemId, propertyId, uiContext);
             }
             ((com.vaadin.ui.AbstractField) field).setImmediate(true);
+
             if (field instanceof TextField) {
                 ((TextField) field).setNullRepresentation("");
-            }
+            } else if (field instanceof DateField) {
+                String format = null;
 
-            if (field instanceof com.vaadin.ui.TextField) {
-                ((com.vaadin.ui.TextField) field).setNullRepresentation("");
+                Formatter formatter = column.getFormatter();
+                if (formatter != null) {
+                    Element formatterElement = column.getXmlDescriptor().element("formatter");
+                    format = formatterElement.attributeValue("format");
+                }
+
+                if (format != null) {
+                    ((DateField) field).setDateFormat(format);
+                }
             }
 
             boolean required = requiredColumns.containsKey(column);
