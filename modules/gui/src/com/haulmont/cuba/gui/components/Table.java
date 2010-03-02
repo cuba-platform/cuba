@@ -47,7 +47,7 @@ public interface Table
         protected Formatter formatter;
         protected Integer width;
         protected boolean collapsed;
-        protected Aggregation aggregation;
+        protected AggregationInfo aggregation;
 
         protected Class type;
         private Element element;
@@ -108,11 +108,11 @@ public interface Table
             this.collapsed = collapsed;
         }
 
-        public Aggregation getAggregation() {
+        public AggregationInfo getAggregation() {
             return aggregation;
         }
 
-        public void setAggregation(Aggregation aggregation) {
+        public void setAggregation(AggregationInfo aggregation) {
             this.aggregation = aggregation;
         }
 

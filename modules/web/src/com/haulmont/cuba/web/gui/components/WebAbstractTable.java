@@ -613,8 +613,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected Map<Object, String> __aggregate(AggregationContainer container, Collection itemIds) {
-        final List<Aggregation> aggregationInfos =
-                new LinkedList<Aggregation>();
+        final List<AggregationInfo> aggregationInfos =
+                new LinkedList<AggregationInfo>();
         for (final Object o : container.getAggregationPropertyIds()) {
             final MetaPropertyPath propertyId = (MetaPropertyPath) o;
             final Table.Column column = columns.get(propertyId);
@@ -623,7 +623,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
         }
         return ((CollectionDatasource.Aggregatable) datasource).aggregate(
-                aggregationInfos.toArray(new Aggregation[aggregationInfos.size()]),
+                aggregationInfos.toArray(new AggregationInfo[aggregationInfos.size()]),
                 itemIds
         );
     }

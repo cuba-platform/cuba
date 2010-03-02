@@ -13,7 +13,7 @@ import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.MetadataHelper;
-import com.haulmont.cuba.gui.components.Aggregation;
+import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -429,7 +429,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         return itemId != null && itemId.equals(lastItemId());
     }
 
-    public Map<Object, String> aggregate(Aggregation[] aggregationInfos, Collection<K> itemIds) {
+    public Map<Object, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds) {
         return aggregatableDelegate.aggregate(aggregationInfos, itemIds);
     }
 

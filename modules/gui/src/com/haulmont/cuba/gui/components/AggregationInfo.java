@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public class Aggregation<P> {
+public class AggregationInfo<P> {
 
     public enum Type {
         SUM,

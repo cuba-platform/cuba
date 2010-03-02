@@ -20,7 +20,6 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -245,7 +244,7 @@ public class WebComponentsHelper {
     }
 
     public static AggregationContainer.Type convertAggregationType(
-            Aggregation.Type function
+            AggregationInfo.Type function
     ) {
         switch (function) {
             case COUNT:

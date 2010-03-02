@@ -537,7 +537,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             final Range range = propertyPath.getRange();
             if (range.isDatatype()) {
                 return range.asDatatype().format(value);
-            } else if (range.isEnum()){
+            } else if (range.isEnum()) {
                 String nameKey = value.getClass().getSimpleName() + "." + value.toString();
                 return MessageProvider.getMessage(value.getClass(), nameKey);
             } else {

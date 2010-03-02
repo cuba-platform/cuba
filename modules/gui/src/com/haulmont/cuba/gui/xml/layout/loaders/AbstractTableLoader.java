@@ -294,9 +294,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     private void loadAggregation(Table.Column column, Element columnElement) {
         Element aggregationElement = columnElement.element("aggregation");
         if (aggregationElement != null) {
-            final Aggregation aggregation = new Aggregation();
+            final AggregationInfo aggregation = new AggregationInfo();
             aggregation.setPropertyPath(column.getId());
-            aggregation.setType(Aggregation.Type.valueOf(aggregationElement.attributeValue("type")));
+            aggregation.setType(AggregationInfo.Type.valueOf(aggregationElement.attributeValue("type")));
             aggregation.setFormatter(loadFormatter(aggregationElement));
             column.setAggregation(aggregation);
         }
