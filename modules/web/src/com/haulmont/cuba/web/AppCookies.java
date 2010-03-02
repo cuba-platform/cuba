@@ -90,8 +90,10 @@ public class AppCookies {
             synchronized (requestedCookies) {
                 requestedCookies.clear();
                 Cookie[] cookies = request.getCookies();
-                for (final Cookie cookie : cookies) {
-                    requestedCookies.put(cookie.getName(), cookie);
+                if (cookies != null) {
+                    for (final Cookie cookie : cookies) {
+                        requestedCookies.put(cookie.getName(), cookie);
+                    }
                 }
             }
         }
