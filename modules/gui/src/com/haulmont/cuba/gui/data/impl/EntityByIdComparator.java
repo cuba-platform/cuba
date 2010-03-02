@@ -3,41 +3,38 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
 
- * Author: Dmitry Abramov
- * Created: 30.03.2009 12:23:57
+ * Author: Nikolay Gorodnov
+ * Created: 01.03.2010 19:53:19
+ *
  * $Id$
  */
-
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 
-public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
+public class EntityByIdComparator<T extends Entity<K>, K> extends AbstractComparator<K> {
     private MetaPropertyPath propertyPath;
     private MetaProperty property;
+    private CollectionDatasource datasource;
 
-    public EntityComparator(MetaPropertyPath propertyPath, boolean asc) {
+    public EntityByIdComparator(MetaPropertyPath propertyPath, CollectionDatasource<T, K> datasource, boolean asc) {
         super(asc);
         this.propertyPath = propertyPath;
         if (propertyPath.get().length == 1) {
             property = this.propertyPath.getMetaProperty();
         }
-
-/*
-        Class<?> javaClass = this.propertyPath.getRangeJavaClass();
-        if (!Comparable.class.isAssignableFrom(javaClass))
-            throw new UnsupportedOperationException(javaClass + " is not comparable");
-*/
+        this.datasource = datasource;
     }
 
-    public int compare(T o1, T o2) {
-        Object v1 = getValue((Instance) o1);
-        Object v2 = getValue((Instance) o2);
-        
-        return __compare(v1, v2);
+    public int compare(K key1, K key2) {
+        Object o1 = getValue((Instance) datasource.getItem(key1));
+        Object o2 = getValue((Instance) datasource.getItem(key2));
+
+        return __compare(o1, o2);
     }
 
     private Object getValue(Instance instance) {

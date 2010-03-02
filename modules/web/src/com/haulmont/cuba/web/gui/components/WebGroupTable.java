@@ -10,31 +10,30 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.vaadin.data.Item;
 import com.vaadin.terminal.Resource;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import java.util.*;
-
-import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
 
 public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.GroupTable>
         implements GroupTable, Component.Wrapper
@@ -426,6 +425,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             } else {
                 return super.getItemIds();
             }
+        }
+
+        @Override
+        public void sort(Object[] propertyId, boolean[] ascending) {
+            resetCachedItems();
+            super.sort(propertyId, ascending);
         }
 
         protected synchronized LinkedList getCachedItemIds() {

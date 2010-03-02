@@ -13,10 +13,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.GroupDatasource;
-import com.haulmont.cuba.gui.data.GroupInfo;
+import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -83,6 +80,10 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
             }
         } finally {
             inGrouping = false;
+
+            if (!ArrayUtils.isEmpty(sortInfos)) {
+                doSort();
+            }
         }
     }
 
@@ -150,6 +151,39 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
         }
 
         return itemGroup;
+    }
+
+    @Override
+    protected void doSort() {
+        if (hasGroups()) {
+            final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+            final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+
+            final int index = Arrays.asList(groupProperties).indexOf(propertyPath);
+            if (index > -1) {
+                if (index == 0) { // Sort roots
+                    Collections.sort(roots, new GroupInfoComparator(asc));
+                } else {
+                    final Object parentProperty = groupProperties[index - 1];
+                    for (final Map.Entry<GroupInfo, List<GroupInfo>> entry : children.entrySet()) {
+                        if (entry.getKey().getProperty().equals(parentProperty)) {
+                            Collections.sort(entry.getValue(), new GroupInfoComparator(asc));
+                        }
+                    }
+                }
+            } else {
+                final Set<GroupInfo> groups = parent.keySet();
+                for (final GroupInfo groupInfo : groups) {
+                    if (groupItems.get(groupInfo) != null) {
+                        Collections.sort(groupItems.get(groupInfo),
+                                new EntityByIdComparator<T, K>(propertyPath, this, asc));
+                    }
+                }
+            }
+
+        } else {
+            super.doSort();
+        }
     }
 
     public List<GroupInfo> rootGroups() {
@@ -229,4 +263,5 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
     public boolean containsGroup(GroupInfo groupId) {
         return hasGroups() && parent.keySet().contains(groupId);
     }
+
 }

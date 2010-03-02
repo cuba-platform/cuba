@@ -14,7 +14,7 @@ import com.vaadin.data.Container;
 
 import java.util.Collection;
 
-public interface GroupTableContainer extends Container.Ordered {
+public interface GroupTableContainer extends Container.Sortable {
     void groupBy(Object[] properties);
 
     boolean isGroup(Object id);

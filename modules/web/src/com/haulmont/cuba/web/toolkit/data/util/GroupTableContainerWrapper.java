@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web.toolkit.data.util;
 
-import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.ContainerOrderedWrapper;
 
@@ -187,6 +187,23 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
             return ((AggregationContainer) container).aggregate(itemIds);
         }
         throw new IllegalStateException("Wrapped container is not AggregationContainer: "
+                + container.getClass());
+    }
+
+    public void sort(Object[] propertyId, boolean[] ascending) {
+        if (container instanceof Sortable) {
+            ((Sortable) container).sort(propertyId, ascending);
+        } else {
+            throw new IllegalStateException("Wrapped container is not Sortable: "
+                    + container.getClass());
+        }
+    }
+
+    public Collection<?> getSortableContainerPropertyIds() {
+        if (container instanceof Sortable) {
+            return ((Sortable) container).getSortableContainerPropertyIds();
+        }
+        throw new IllegalStateException("Wrapped container is not Sortable: "
                 + container.getClass());
     }
 }
