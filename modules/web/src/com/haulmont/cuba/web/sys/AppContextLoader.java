@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.PersistenceConfigProcessor;
 import com.haulmont.cuba.gui.ServiceLocator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
@@ -23,6 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -35,6 +37,8 @@ public class AppContextLoader implements ServletContextListener {
 
     public static final String APP_PROPS_PARAM = "appProperties";
 
+    public static final String PERSISTENCE_CONFIG_NAME_PARAM = "persistenceConfigName";
+
     private Log log = LogFactory.getLog(AppContextLoader.class);
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -42,6 +46,7 @@ public class AppContextLoader implements ServletContextListener {
             ServletContext sc = servletContextEvent.getServletContext();
 
             initAppProperties(sc);
+            initPersistenceConfig(sc);
             initAppContext(sc);
             initServiceLocator(sc);
         } catch (Exception e) {
@@ -97,6 +102,23 @@ public class AppContextLoader implements ServletContextListener {
             String value = substitutor.replace(properties.getProperty((String) key));
             AppContext.setProperty((String) key, value);
         }
+    }
+
+    private void initPersistenceConfig(ServletContext sc) {
+        String pcProperties = sc.getInitParameter(PERSISTENCE_CONFIG_NAME_PARAM);
+        if (StringUtils.isBlank(pcProperties)) {
+            throw new IllegalStateException(PERSISTENCE_CONFIG_NAME_PARAM + " context-param not found in web.xml");
+        }
+
+        StrTokenizer tokenizer = new StrTokenizer(pcProperties);
+        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
+        processor.setSourceFiles(tokenizer.getTokenList());
+
+        String confPath = AppContext.getProperty("cuba.confDir");
+        String webInfPath = new File(confPath).getParent();
+        processor.setOutputFile(webInfPath + "/classes/persistence.xml");
+
+        processor.create();
     }
 
     private void initAppContext(ServletContext sc) {

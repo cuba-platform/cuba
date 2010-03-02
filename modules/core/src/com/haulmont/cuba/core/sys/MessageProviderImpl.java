@@ -26,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MessageProviderImpl extends MessageProvider
 {
     public static final String BUNDLE_NAME = "messages";
+    public static final String EXT = ".properties";
+    public static final String ENCODING = "UTF-8";
 
     private Log log = LogFactory.getLog(MessageProviderImpl.class);
 
@@ -91,20 +93,26 @@ public class MessageProviderImpl extends MessageProvider
 
         String s = confDir + "/" + pack.replaceAll("\\.", "/");
         while (s != null && !s.equals(confDir)) {
-            file = new File(s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + ".properties");
+            file = new File(s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT);
             if (!file.exists()) {
-                file = new File(s + "/" + BUNDLE_NAME + ".properties");
+                file = new File(s + "/" + BUNDLE_NAME + EXT);
             }
             if (file.exists()) {
                 try {
                     FileInputStream stream = new FileInputStream(file);
                     try {
-                        InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+                        InputStreamReader reader = new InputStreamReader(stream, ENCODING);
                         Properties properties = new Properties();
                         properties.load(reader);
+                        // process includes
+                        for (String k : properties.stringPropertyNames()) {
+                            if (k.equals("@include"))
+                                include(pack, properties.getProperty(k), locale);
+                        }
                         // load all found strings into cache
                         for (String k : properties.stringPropertyNames()) {
-                            strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
+                            if (!k.equals("@include"))
+                                strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
                         }
                     } finally {
                         try {
@@ -139,21 +147,27 @@ public class MessageProviderImpl extends MessageProvider
 
         String s = "/" + pack.replaceAll("\\.", "/");
         while (s != null) {
-            String name = s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + ".properties";
+            String name = s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT;
             InputStream stream;
             stream = getClass().getResourceAsStream(name);
             if (stream == null) {
-                name = s + "/" + BUNDLE_NAME + ".properties";
+                name = s + "/" + BUNDLE_NAME + EXT;
                 stream = getClass().getResourceAsStream(name);
             }
             if (stream != null) {
                 try {
-                    InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+                    InputStreamReader reader = new InputStreamReader(stream, ENCODING);
                     Properties properties = new Properties();
                     properties.load(reader);
+                    // process includes
+                    for (String k : properties.stringPropertyNames()) {
+                        if (k.equals("@include"))
+                            include(pack, properties.getProperty(k), locale);
+                    }
                     // load all found strings into cache
                     for (String k : properties.stringPropertyNames()) {
-                        strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
+                        if (!k.equals("@include"))
+                            strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
                     }
                 } catch (UnsupportedEncodingException e) {
                     log.warn("Unable to read " + s, e);
@@ -178,6 +192,57 @@ public class MessageProviderImpl extends MessageProvider
                 s = s.substring(0, pos);
         }
         return null;
+    }
+
+    private void include(String targetPack, String pack, Locale locale) {
+        File file;
+        if (confDir == null)
+            confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
+
+        String s = confDir + "/" + pack.replaceAll("\\.", "/");
+        file = new File(s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT);
+        if (!file.exists()) {
+            file = new File(s + "/" + BUNDLE_NAME + EXT);
+        }
+        InputStream stream;
+        try {
+            if (file.exists()) {
+                stream = new FileInputStream(file);
+            } else {
+                s = "/" + pack.replaceAll("\\.", "/");
+                String name = s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT;
+                stream = getClass().getResourceAsStream(name);
+                if (stream == null) {
+                    name = s + "/" + BUNDLE_NAME + EXT;
+                    stream = getClass().getResourceAsStream(name);
+                }
+                if (stream == null) {
+                    log.warn("Included messages pack not found: " + pack);
+                    return;
+                }
+            }
+            try {
+                InputStreamReader reader = new InputStreamReader(stream, ENCODING);
+                Properties properties = new Properties();
+                properties.load(reader);
+                // load all found strings into cache
+                for (String k : properties.stringPropertyNames()) {
+                    if (k.equals("@include")) {
+                        include(targetPack, properties.getProperty(k), locale);
+                    } else {
+                        strCache.put(makeCacheKey(targetPack, k, locale), properties.getProperty(k));
+                    }
+                }
+            } finally {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    //
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String makeCacheKey(String pack, String key, Locale locale) {

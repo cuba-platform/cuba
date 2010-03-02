@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import com.haulmont.cuba.core.app.ResourceRepositoryService;
+import com.haulmont.cuba.gui.ServiceLocator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +48,14 @@ public class WindowConfig
         }
 
         Element rootElem = doc.getRootElement();
+        for (Element element : (List<Element>) rootElem.elements("include")) {
+            String fileName = element.attributeValue("file");
+            if (!StringUtils.isBlank(fileName)) {
+                ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.NAME);
+                String incXml = repository.getResAsString(fileName);
+                loadConfig(incXml);
+            }
+        }
         for (Element element : (List<Element>) rootElem.elements("screen")) {
             String id = element.attributeValue("id");
             if (StringUtils.isBlank(id)) {

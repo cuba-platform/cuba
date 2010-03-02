@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.ClassMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ViewRepository;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -107,7 +109,9 @@ public class MetadataProviderImpl extends MetadataProvider
 
     protected Collection<String> getMetaClassesPackageNames() {
         String path = "/" + MetadataProvider.getMetadataXmlPath();
-        return getPackages(path, "metadata-model");
+        Collection<String> packages = new ArrayList<String>();
+        getPackages(packages, path, "metadata-model");
+        return packages;
     }
 
     protected Collection<String> getPackages(List<String> classNames) {
@@ -123,20 +127,24 @@ public class MetadataProviderImpl extends MetadataProvider
         return packages;
     }
 
-    protected Collection<String> getPackages(String path, String unitTag, String...unitNames) {
+    protected void getPackages(Collection<String> packages, String path, String unitTag, String...unitNames) {
+        if (!path.startsWith("/"))
+            path = "/" + path;
+
         InputStream stream = MetadataProviderImpl.class.getResourceAsStream(path);
         if (stream == null)
             throw new IllegalStateException("Unable to load resource: " + path);
 
-        SAXReader reader = new SAXReader();
-        Document document;
-        try {
-            document = reader.read(stream);
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
+        Document document = Dom4j.readDocument(stream);
         Element root = document.getRootElement();
-        List<String> packages = new ArrayList<String>();
+
+        for (Element element : Dom4j.elements(root, "include")) {
+            String fileName = element.attributeValue("file");
+            if (!StringUtils.isBlank(fileName)) {
+                getPackages(packages, fileName, unitTag);
+            }
+        }
+
         //noinspection unchecked
         for (Element unitElem : (List<Element>) root.elements(unitTag)) {
             String name = unitElem.attributeValue("name");
@@ -153,7 +161,6 @@ public class MetadataProviderImpl extends MetadataProvider
                 }
             }
         }
-        return packages;
     }
 
     private void initMetaClass(MetaClass metaClass) {

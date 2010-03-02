@@ -23,6 +23,14 @@
         <param-value>WEB-INF/app.properties</param-value>
     </context-param>
 
+    <!-- Persitence config file names, relative to classpath root. Order is important for overriding. -->
+    <context-param>
+        <param-name>persistenceConfigName</param-name>
+        <param-value>
+            cuba-persistence.xml
+        </param-value>
+    </context-param>
+
     <!-- Application context config file names, relative to classpath root -->
     <context-param>
         <param-name>appContextConfigName</param-name>

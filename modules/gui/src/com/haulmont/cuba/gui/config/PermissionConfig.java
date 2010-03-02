@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -28,6 +29,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -174,18 +176,26 @@ public class PermissionConfig {
 
         final String configPath = AppContext.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
         String xml = repository.getResAsString(configPath);
-        SAXReader reader = new SAXReader();
-        Document doc;
-        try {
-            doc = reader.read(new StringReader(xml));
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
+        compileSpecific(xml, root);
+    }
+
+    private void compileSpecific(String xml, Node<Target> root) {
+        Document doc = Dom4j.readDocument(xml);
+        Element rootElem = doc.getRootElement();
+
+        for (Element element : Dom4j.elements(rootElem, "include")) {
+            String fileName = element.attributeValue("file");
+            if (!StringUtils.isBlank(fileName)) {
+                String incXml = repository.getResAsString(fileName);
+                compileSpecific(incXml, root);
+            }
         }
-        Element rootElem = doc.getRootElement().element("specific");
-        if (rootElem == null)
+
+        Element specElem = rootElem.element("specific");
+        if (specElem == null)
             return;
 
-        walkSpecific(rootElem, root);
+        walkSpecific(specElem, root);
     }
 
     private void walkSpecific(Element element, Node<Target> node) {

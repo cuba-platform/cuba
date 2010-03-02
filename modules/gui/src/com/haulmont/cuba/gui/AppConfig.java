@@ -105,7 +105,7 @@ public class AppConfig
     public MenuConfig getMenuConfig() {
         // TODO KK: menu config instance must depend on user's locale, so we have to pass locale here
         if (menuConfig == null) {
-            ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
+            ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.NAME);
 
             menuConfig = createInstance(MENU_CONFIG_IMPL_PROP, MENU_CONFIG_DEFAULT_IMPL);
             final String path = AppContext.getProperty(MENU_CONFIG_XML_PROP);
@@ -121,7 +121,7 @@ public class AppConfig
      */
     public WindowConfig getWindowConfig() {
         if (windowConfig == null) {
-            ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
+            ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.NAME);
 
             windowConfig = createInstance(WINDOW_CONFIG_IMPL_PROP, WINDOW_CONFIG_DEFAULT_IMPL);
             final String path = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);

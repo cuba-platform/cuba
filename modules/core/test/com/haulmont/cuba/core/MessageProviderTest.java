@@ -42,6 +42,15 @@ public class MessageProviderTest extends CubaTestCase
 
         msg = MessageProvider.getMessage(MpTestNestedObj.InternalEnum.FIRST);
         assertEquals("First", msg);
+
+    }
+
+    public void testInclude() {
+        String msg = MessageProvider.getMessage("com.haulmont.cuba.core.mp_test", "includedMsg");
+        assertEquals("Included Message", msg);
+
+        msg = MessageProvider.getMessage("com.haulmont.cuba.core.mp_test", "includedMsgToOverride");
+        assertEquals("Overridden Included Message", msg);
     }
 
 }
