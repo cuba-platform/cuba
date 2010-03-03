@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -36,6 +37,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ViewRepository
 {
+
+    private List<String> readFileNames = new LinkedList<String>();
+
     private Map<MetaClass, Map<String, View>> storage =
             new ConcurrentHashMap<MetaClass, Map<String, View>>();
 
@@ -85,7 +89,10 @@ public class ViewRepository
     }
 
     public void deployViews(String resourceUrl) {
-        deployViews(ScriptingProvider.getResourceAsStream(resourceUrl));
+        if (!readFileNames.contains(resourceUrl)) {
+            deployViews(ScriptingProvider.getResourceAsStream(resourceUrl));
+            readFileNames.add(resourceUrl);
+        }
     }
 
     public void deployViews(InputStream xml) {
