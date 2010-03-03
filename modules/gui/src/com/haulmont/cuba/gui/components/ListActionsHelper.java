@@ -117,8 +117,11 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createAddAction(final Window.Lookup.Handler handler, String windowId) {
-        return createAddAction(handler, WindowManager.OpenType.THIS_TAB,
-                Collections.<String, Object>emptyMap(), null, windowId);
+        return createAddAction(handler, Collections.<String, Object>emptyMap(), windowId);
+    }
+
+    public Action createAddAction(final Window.Lookup.Handler handler, final Map<String, Object> params, String windowId) {
+        return createAddAction(handler, WindowManager.OpenType.THIS_TAB, params, null, windowId);
     }
 
     public Action createAddAction(final Window.Lookup.Handler handler, final Map<String, Object> params) {
