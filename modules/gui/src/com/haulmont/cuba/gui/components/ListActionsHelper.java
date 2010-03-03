@@ -116,6 +116,11 @@ abstract class ListActionsHelper<T extends List> {
         return createAddAction(handler, WindowManager.OpenType.THIS_TAB);
     }
 
+    public Action createAddAction(final Window.Lookup.Handler handler, String windowId) {
+        return createAddAction(handler, WindowManager.OpenType.THIS_TAB,
+                Collections.<String, Object>emptyMap(), null, windowId);
+    }
+
     public Action createAddAction(final Window.Lookup.Handler handler, final Map<String, Object> params) {
         return createAddAction(handler, WindowManager.OpenType.THIS_TAB, params);
     }
@@ -126,7 +131,12 @@ abstract class ListActionsHelper<T extends List> {
 
     public Action createAddAction(final Window.Lookup.Handler handler, final WindowManager.OpenType openType,
                                   final Map<String, Object> params, final String captionKey) {
-        AbstractAction action = new AddAction(captionKey, handler, openType, params);
+        return createAddAction(handler, openType, params, captionKey, null);
+    }
+
+    public Action createAddAction(final Window.Lookup.Handler handler, final WindowManager.OpenType openType,
+                                  final Map<String, Object> params, final String captionKey, String windowId) {
+        AbstractAction action = new AddAction(captionKey, handler, openType, params, windowId);
         component.addAction(action);
         return action;
     }
@@ -364,13 +374,15 @@ abstract class ListActionsHelper<T extends List> {
         private final Window.Lookup.Handler handler;
         private final WindowManager.OpenType openType;
         private final Map<String, Object> params;
+        private String windowId; 
 
-        public AddAction(String captionKey, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        public AddAction(String captionKey, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params, String windowId) {
             super("add");
             this.captionKey = captionKey;
             this.handler = handler;
             this.openType = openType;
             this.params = params;
+            this.windowId = windowId;
         }
 
         public String getCaption() {
@@ -380,9 +392,9 @@ abstract class ListActionsHelper<T extends List> {
 
         public void actionPerform(Component component) {
             final CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
-            final String windowID = datasource.getMetaClass().getName() + ".browse";
+            final String winID = windowId == null ? datasource.getMetaClass().getName() + ".browse" : windowId;
 
-            frame.openLookup(windowID, handler, openType, params);
+            frame.openLookup(winID, handler, openType, params);
         }
     }
 }
