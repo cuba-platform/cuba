@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Layout;
 
@@ -27,6 +28,8 @@ public class WebHtmlBoxLayout extends CustomLayout implements HtmlBoxLayout {
     private Alignment alignment = Alignment.TOP_LEFT;
 
     private boolean expandable = true;
+
+    private IFrame frame;
 
     public WebHtmlBoxLayout() {
         super("");
@@ -106,5 +109,14 @@ public class WebHtmlBoxLayout extends CustomLayout implements HtmlBoxLayout {
 
     public boolean isExpandable() {
         return expandable;
+    }
+
+    public <A extends IFrame> A getFrame() {
+        return (A) frame;
+    }
+
+    public void setFrame(IFrame frame) {
+        this.frame = frame;
+        frame.registerComponent(this);
     }
 }

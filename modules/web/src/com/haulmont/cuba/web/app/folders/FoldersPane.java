@@ -113,7 +113,7 @@ public class FoldersPane extends VerticalLayout {
 
                 int period = ConfigProvider.getConfig(WebConfig.class).getAppFoldersRefreshPeriodSec() * 1000;
                 timer = new Timer(period, true);
-                timer.addListener(new AppFoldersUpdater());
+                timer.addListener(createAppFolderUpdater());
                 App.getInstance().addTimer(timer);
             }
 
@@ -145,6 +145,10 @@ public class FoldersPane extends VerticalLayout {
 
         visible = show;
         UserSettingHelper.saveFoldersVisibleState(visible);
+    }
+
+    protected Timer.Listener createAppFolderUpdater() {
+        return new AppFoldersUpdater();
     }
 
     public void refreshFolders() {
@@ -439,6 +443,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class AppFoldersUpdater implements Timer.Listener {
+        public AppFoldersUpdater() {
+        }
 
         public void onTimer(Timer timer) {
             if (appFoldersTree == null)
