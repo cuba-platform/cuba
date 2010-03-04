@@ -13,4 +13,6 @@ package com.haulmont.cuba.gui.components;
 public interface WrappedFrame {
 
     IFrame wrapBy(Class<? extends IFrame> aClass);
+
+    IFrame getWrapper();
 }

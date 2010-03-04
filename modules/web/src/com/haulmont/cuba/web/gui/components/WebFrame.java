@@ -44,6 +44,8 @@ public class WebFrame extends WebAbstractPanel
     private IFrame frame;
     private Element element;
 
+    private IFrame wrapper;
+
     protected Collection<com.haulmont.cuba.gui.components.Component> ownComponents = new HashSet<com.haulmont.cuba.gui.components.Component>();
     protected Map<String, com.haulmont.cuba.gui.components.Component> componentByIds = new HashMap<String, com.haulmont.cuba.gui.components.Component>();
     
@@ -58,11 +60,15 @@ public class WebFrame extends WebAbstractPanel
         try {
             Constructor<?> constructor = aClass.getConstructor(IFrame.class);
 
-            IFrame wrapper = (IFrame) constructor.newInstance(this);
+            wrapper = (IFrame) constructor.newInstance(this);
             return wrapper;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public IFrame getWrapper() {
+        return wrapper;
     }
 
     public void add(com.haulmont.cuba.gui.components.Component component) {

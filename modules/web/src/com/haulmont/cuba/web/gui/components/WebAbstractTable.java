@@ -10,8 +10,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.Entity;
@@ -705,7 +705,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                             final com.haulmont.cuba.gui.components.IFrame frame = WebAbstractTable.this.getFrame();
                             String methodName = clickAction.substring("invoke:".length()).trim();
                             try {
-                                AbstractFrame controllerFrame = WebComponentsHelper.getFrame(frame);
+                                IFrame controllerFrame = WebComponentsHelper.getControllerFrame(frame);
                                 Method method = controllerFrame.getClass().getMethod(methodName, Object.class);
                                 method.invoke(controllerFrame, getItem(item, property));
                             } catch (NoSuchMethodException e) {

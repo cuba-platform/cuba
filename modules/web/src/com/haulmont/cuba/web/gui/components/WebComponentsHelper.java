@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.Table;
@@ -272,11 +273,15 @@ public class WebComponentsHelper {
         return (Button) unwrap(webButton);
     }
 
-    public static AbstractFrame getFrame(IFrame frame) {
+    public static IFrame getControllerFrame(IFrame frame) {
         if (frame instanceof AbstractFrame) {
-            return (AbstractFrame) frame;
+            return frame;
+        } else if (frame instanceof WrappedWindow) {
+            return ((WrappedWindow) frame).getWrapper();
+        } else if (frame instanceof WrappedFrame) {
+            return ((WrappedFrame) frame).getWrapper();
         } else {
-            return getFrame(frame.getFrame());
+            return getControllerFrame(frame.getFrame());
         }
     }
 

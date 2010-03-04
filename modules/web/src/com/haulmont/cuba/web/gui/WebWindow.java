@@ -89,6 +89,8 @@ public class WebWindow
 
     private Runnable doAfterClose;
 
+    private Window wrapper;
+
     public WebWindow() {
         component = createLayout();
     }
@@ -543,11 +545,15 @@ public class WebWindow
                 constructor = aClass.getConstructor(IFrame.class);
             }
 
-            Window wrapper = (Window) constructor.newInstance(this);
+            wrapper = (Window) constructor.newInstance(this);
             return wrapper;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Window getWrapper() {
+        return wrapper;
     }
 
     public static class Editor extends WebWindow implements Window.Editor {
