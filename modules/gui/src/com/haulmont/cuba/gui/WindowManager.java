@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
+import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -41,12 +42,6 @@ import java.util.List;
  * GenericUI class intended for creating and opening application screens.
  */
 public abstract class WindowManager {
-
-    private boolean groovyClassLoaderEnabled;
-
-    public WindowManager() {
-        groovyClassLoaderEnabled = ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled();
-    }
 
     /**
      * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}
@@ -86,10 +81,7 @@ public abstract class WindowManager {
 
         String templatePath = windowInfo.getTemplate();
 
-        InputStream stream = null;
-        if (groovyClassLoaderEnabled) {
-            stream = ScriptingProvider.getResourceAsStream(templatePath);
-        }
+        InputStream stream = ScriptingProvider.getResourceAsStream(templatePath);
         if (stream == null) {
             stream = getClass().getResourceAsStream(templatePath);
             if (stream == null) {
@@ -98,8 +90,8 @@ public abstract class WindowManager {
         }
         
         Document document = LayoutLoader.parseDescriptor(stream, params);
-
-        final Element element = document.getRootElement();
+        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, params);
+        Element element = processor.getResultRoot();
 
         MetadataHelper.deployViews(element);
 
@@ -430,9 +422,7 @@ public abstract class WindowManager {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             Class<Window> aClass = null;
-            if (groovyClassLoaderEnabled) {
-                aClass = ScriptingProvider.loadClass(screenClass);
-            }
+            aClass = ScriptingProvider.loadClass(screenClass);
             if (aClass == null)
                 aClass = ReflectionHelper.getClass(screenClass);
             res = ((WrappedWindow) window).wrapBy(aClass);

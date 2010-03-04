@@ -146,7 +146,7 @@ public class DatasourceImpl<T extends Entity>
         if (item instanceof Instance) {
             final MetaClass aClass = ((Instance) item).getMetaClass();
             if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
-                throw new IllegalStateException(String.format("Invalid item metaClass"));
+                throw new IllegalStateException(String.format("Invalid item MetaClass: " + aClass));
             }
             attachListener((Instance) item);
         }

@@ -26,19 +26,13 @@
                 >
             <query>select g from sec$Group g</query>
         </collectionDatasource>
-
-        <!--<collectionDatasource id="substitution"-->
-                              <!--class="com.haulmont.cuba.security.entity.UserSubstitution"-->
-                              <!--view="user.edit">-->
-            <!--<query>select us from sec$UserSubstitution us where us.user.id = :ds$user</query>-->
-        <!--</collectionDatasource>-->
     </dsContext>
 
     <#assign width=250>
     <layout>
         <vbox expand="split" spacing="true">
             <hbox spacing="true" margin="true" width="100%" stylename="edit-area">
-                <grid spacing="true" expandable="false">
+                <grid id="leftGrid" spacing="true" expandable="false">
                     <columns>
                         <column flex="1"/>
                         <column flex="1"/>
@@ -87,7 +81,7 @@
                         </row>
                     </rows>
                 </grid>
-                <grid spacing="true" expandable="false">
+                <grid id="rightGrid" spacing="true" expandable="false">
                     <columns>
                         <column flex="1"/>
                         <column flex="1"/>

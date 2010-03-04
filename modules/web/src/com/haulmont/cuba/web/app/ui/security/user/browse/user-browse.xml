@@ -5,6 +5,7 @@
         caption="msg://caption"
         messagesPack="com.haulmont.cuba.web.app.ui.security.user.browse"
         >
+
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
@@ -19,28 +20,12 @@
             <query><![CDATA[
                 select u from sec$User u
                 ]]>
-                <!--<filter>-->
-                    <!--<and>-->
-                        <!--<c>u.name like :(?i)component$filter.name</c>-->
-                        <!--<c>u.login like :component$filter.login</c>-->
-                        <!--<c>u.email = :component$filter.email</c>-->
-                        <!--<c join="left join u.group.hierarchyList h">-->
-                            <!--(h.parent.id = :component$filter.group or h.group.id = :component$filter.group)-->
-                                <!--or (u.group.id = :component$filter.group and h.parent is null)-->
-                        <!--</c>-->
-                    <!--</and>-->
-                <!--</filter>-->
             </query>
         </collectionDatasource>
     </dsContext>
 
     <layout >
         <vbox expand="table-panel" spacing="true">
-            <!--<tabsheet id="filterTabsheet">-->
-                <!--<tab id="simpleFilterTab" caption="msg://simpleFilterTab">-->
-                    <!--<iframe id="filter" src="/com/haulmont/cuba/web/app/ui/security/user/browse/user-browse-filter.xml"/>-->
-                <!--</tab>-->
-                <!--<tab id="genericFilterTab" caption="msg://genericFilterTab">-->
             <vbox expand="genericFilter" stylename="edit-area">
                 <filter id="genericFilter" datasource="users">
                     <properties include=".*" exclude="(password)|(loginLowerCase)"/>
@@ -50,8 +35,6 @@
                     </custom>
                 </filter>
             </vbox>
-                <!--</tab>-->
-            <!--</tabsheet>-->
             <vbox id="table-panel" expand="users" spacing="true">
                 <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                     <button action="users.create" icon="icons/create.png"/>

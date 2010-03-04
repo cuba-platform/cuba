@@ -707,8 +707,16 @@ public class WebWindow
             } else {
                 if (!PersistenceHelper.isNew(item)) {
                     final DataService dataservice = ds.getDataService();
-                    item = dataservice.reload(item, ds.getView());
+                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
                 }
+            }
+
+            if (PersistenceHelper.isNew(item)
+                    && !ds.getMetaClass().equals(((Instance) item).getMetaClass()))
+            {
+                Entity newItem = ds.getDataService().newInstance(ds.getMetaClass());
+                InstanceUtils.copy(((Instance) item), ((Instance) newItem));
+                item = newItem;
             }
 
             this.item = item;
