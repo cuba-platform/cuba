@@ -142,7 +142,7 @@
 .v-table-row.v-selected,
 .v-table-row-odd.v-selected,
 .v-table-caption-row.v-selected {
-    background-color: #d9d9d9;
+    background-color: #98b4d4;
 }
 
 .v-selected .v-table-cell-content {
@@ -286,10 +286,18 @@
 
 
 /* row in column selector */
-.v-on div {
-	background: transparent url(img/check.gif) no-repeat 5px 50%;
+.v-contextmenu .gwt-MenuItem .v-on div {
+	background: transparent url(img/check.png) no-repeat 5px 50%;
 	text-indent: 16px;
 }
+
+.v-contextmenu .gwt-MenuItem-selected .v-on div {
+	background: url(img/check-hover.png) no-repeat 5px 50%;
+	text-indent: 16px;
+    background-color: #5280b7;
+    color: #fff;
+}
+
 .v-off div {
 	text-indent: 6px;
 }
