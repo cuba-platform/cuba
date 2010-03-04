@@ -37,7 +37,13 @@ public class LinkColumnHelper {
             public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                 final Instance enclosingEntity = (Instance) ds.getItem(itemId);
                 if (enclosingEntity != null) {
-                    final Object value = enclosingEntity.getValue(propertyName);
+                    //process properties like building.house.room
+                    String[] props = propertyName.split("\\.");
+                    Instance nestedEntity = enclosingEntity;
+                    for (int i = 0; i < props.length - 1; i++) {
+                        nestedEntity = (Instance) nestedEntity.getValue(props[i]);
+                    }
+                    final Object value = nestedEntity.getValue(props[props.length - 1]);
                     if (value != null) {
                         String str;
                         Datatype datatype = Datatypes.getInstance().get(value.getClass());
