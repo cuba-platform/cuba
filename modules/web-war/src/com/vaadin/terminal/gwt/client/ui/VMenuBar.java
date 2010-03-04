@@ -179,6 +179,10 @@ public class VMenuBar extends Widget implements Paintable,
 
             currentItem = currentMenu.addItem(itemHTML.toString(), cmd);
 
+            if (item.hasAttribute("stylename")) {
+                currentItem.addStyleName(item.getStringAttribute("stylename"));
+            }
+
             if (item.getChildCount() > 0) {
                 menuStack.push(currentMenu);
                 iteratorStack.push(itr);
