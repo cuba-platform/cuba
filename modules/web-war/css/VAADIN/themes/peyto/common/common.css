@@ -168,19 +168,14 @@ input.v-modified,
  * Context menu styles
  */
 .v-contextmenu {
-	background: #cccccc url(../tabsheet/img/tab-bg.gif)repeat-x;
 	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
-	background-color: #383b3e;
-	color: #ffffff;
+    border: solid 1px #5280b7;
+    background: #fff;
 	font-size: 12px;
 	line-height: 14px;
 }
 
 .v-contextmenu .gwt-MenuBar {
-	border-right: 1px solid #c6cbcc;
-	border-bottom: 1px solid #c6cbcc;
-	border-top: 1px solid #d0d4d5;
-	border-left: 1px solid #d0d4d5;
     padding: 3px;
 }
 
@@ -188,6 +183,7 @@ input.v-modified,
 	padding: 2px 0;
 	cursor: pointer;
 	vertical-align: middle;
+    color: #5280b7;	
 }
 
 .v-contextmenu .gwt-MenuItem div { /*border: 1px solid #f6f7f7;*/
@@ -195,11 +191,12 @@ input.v-modified,
 	cursor: pointer;
 	vertical-align: middle;
 	white-space: nowrap;
+	color: #5280b7;
 }
 
 .v-contextmenu .gwt-MenuItem-selected div {
-	color: #fff;
-	background-color: #5a6e86;
+    background-color: #5280b7;
+    color: #fff;
 }
 
 .v-contextmenu table {
