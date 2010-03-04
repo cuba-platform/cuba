@@ -16,6 +16,7 @@ import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
@@ -41,6 +42,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Button;
@@ -51,6 +53,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -779,8 +782,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     private class ReadOnlyBooleanDatatypeGenerator
             implements com.vaadin.ui.Table.ColumnGenerator,
-            TableSupport.ColumnGenerator
-    {
+            TableSupport.ColumnGenerator {
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
@@ -789,15 +791,43 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
+//        protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
+//            final Property property = source.getItem(itemId).getItemProperty(columnId);
+//            final Object value = property.getValue();
+//
+//            final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
+
+        //            checkBox.setValue(BooleanUtils.toBoolean((Boolean) value));
+//            checkBox.setEnabled(false);
+//
+//            return checkBox;
+//        }
         protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
-            final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
-            checkBox.setValue(BooleanUtils.toBoolean((Boolean) value));
-            checkBox.setEnabled(false);
+            //if images for checkboxes exist in theme, we'll display them in table,
+            //otherwise we'll display com.vaadin.ui.CheckBox component
+            String themeName = App.getInstance().getTheme();
+            File confDir = new File(AppContext.getProperty("cuba.confDir"));
+            File webAppRootDir = confDir.getParentFile().getParentFile();
 
-            return checkBox;
+            File checkedFile = new File(webAppRootDir.getPath() + "/VAADIN/themes/" + themeName + "/table/img/checkbox-checked.png");
+            File uncheckedFile = new File(webAppRootDir.getPath() + "/VAADIN/themes/" + themeName + "/table/img/checkbox-unchecked.png");
+
+            if (!checkedFile.exists() || !uncheckedFile.exists()) {
+                final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
+                checkBox.setValue(BooleanUtils.toBoolean((Boolean) value));
+                checkBox.setEnabled(false);
+                return checkBox;
+            } else {
+                com.vaadin.ui.Embedded checkBoxImage;
+                if (BooleanUtils.isTrue((Boolean) value))
+                    checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-checked.png"));
+                else
+                    checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-unchecked.png"));
+                return checkBoxImage;
+            }
         }
     }
 
