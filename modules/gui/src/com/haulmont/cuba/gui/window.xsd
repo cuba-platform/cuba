@@ -127,6 +127,7 @@
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
+            <xs:attribute name="extends" type="xs:string"/>
             <xs:attribute name="class" type="xs:string"/>
             <xs:attribute name="messagesPack" type="xs:string"/>
             <xs:attribute name="lookupComponent" type="xs:string"/>
