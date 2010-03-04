@@ -989,7 +989,9 @@ public class WebWindow
             selectButton.setStyleName("Window-actionButton");
             selectButton.setDebugId("selectButton");
 
-            final Button cancelButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Cancel"), new Button.ClickListener() {
+            final Button cancelButton = WebComponentsHelper.createButton();
+            cancelButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Cancel"));
+            cancelButton.addListener(new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     close("cancel");
                 }

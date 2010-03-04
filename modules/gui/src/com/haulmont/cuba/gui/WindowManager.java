@@ -118,15 +118,6 @@ public abstract class WindowManager {
 
         final Window windowWrapper = wrapByCustomClass(window, element, params);
         componentLoaderContext.setFrame(windowWrapper);
-        componentLoaderContext.addLazyTask(new ComponentLoader.LazyTask() {
-            public void execute(ComponentLoader.Context context, IFrame frame) {
-                for (Component component : windowWrapper.getOwnComponents()) {
-                    if (component instanceof Component.BelongToFrame) {
-                        ((Component.BelongToFrame) component).setFrame(windowWrapper);
-                    }
-                }
-            }
-        });
         componentLoaderContext.executeLazyTasks();
 
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
