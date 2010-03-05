@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.global.MessageUtils;
 import org.dom4j.Element;
@@ -44,7 +45,7 @@ public class CustomConditionDescriptor extends ConditionDescriptor {
         if (className == null)
             return null;
         else {
-            Class paramClass = ReflectionHelper.getClass(element.attributeValue("paramClass"));
+            Class paramClass = ScriptingProvider.loadClass(element.attributeValue("paramClass"));
             return paramClass;
         }
     }

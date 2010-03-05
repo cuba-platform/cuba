@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
@@ -63,7 +64,7 @@ public abstract class Condition {
 
         String aclass = element.attributeValue("class");
         if (!isBlank(aclass))
-            javaClass = ReflectionHelper.getClass(aclass);
+            javaClass = ScriptingProvider.loadClass(aclass);
 
         List<Element> paramElements = Dom4j.elements(element, "param");
         if (!paramElements.isEmpty()) {
