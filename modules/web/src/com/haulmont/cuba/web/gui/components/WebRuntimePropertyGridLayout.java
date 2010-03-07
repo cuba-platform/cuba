@@ -299,6 +299,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                     field.setValue(Datatypes.getInstance().get(Integer.class).parse(val));
                     break;
                 }
+                case DICTIONARY:
                 case ENTITY: {
                     field = new WebLookupField();
                     setListenerToField(field, instance, null);
