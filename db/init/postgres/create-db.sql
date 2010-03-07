@@ -309,6 +309,7 @@ create table SEC_ENTITY_LOG_ATTR (
     ITEM_ID uuid,
     NAME varchar(50),
     VALUE varchar(1500),
+    VALUE_ID uuid,    
     primary key (ID)
 )^
 

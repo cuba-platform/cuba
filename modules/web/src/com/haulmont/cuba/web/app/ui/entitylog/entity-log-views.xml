@@ -10,6 +10,7 @@
     <view entity="sec$EntityLogAttr" name="entityLogAttr.view">
         <property name="name"/>
         <property name="value"/>
+        <property name="valueId"/>
         <property name="logItem" view="entityLog.view"/>
     </view>
 

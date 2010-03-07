@@ -40,6 +40,11 @@
             </query>
         </collectionDatasource>
 
+        <collectionDatasource id="valuesDs" class="com.haulmont.cuba.security.entity.EntityLogAttrWrapper"
+                              view="">
+            <datasourceClass>com.haulmont.cuba.web.app.ui.entitylog.EntityLogDatasource</datasourceClass>
+        </collectionDatasource>
+
     </dsContext>
 
     <layout expand="split">
@@ -65,10 +70,10 @@
             <vbox>
                 <table id="values" editable="false">
                     <columns>
-                        <column id="displayName" caption="msg://name"/>
+                        <column id="entityLogAttr.displayName" caption="msg://name"/>
                         <column id="displayValue" caption="msg://value"/>
                     </columns>
-                    <rows datasource="values"/>
+                    <rows datasource="valuesDs"/>
                 </table>
             </vbox>
         </split>

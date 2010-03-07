@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.entity.LoggedEntity;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -45,6 +46,13 @@ public class EntityLogViewer extends AbstractWindow {
         Date date = TimeProvider.currentTimestamp();
         ((DateField) getComponent("filter.createdFrom")).setValue(DateUtils.addDays(date, -1));
         ((DateField) getComponent("filter.createdTo")).setValue(DateUtils.addDays(date, 1));
+
+        getDsContext().get("values").addListener(new CollectionDsListenerAdapter() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                getDsContext().get("valuesDs").refresh();
+            }
+        });
     }
 
     protected Map<String, Object> getTargets() {

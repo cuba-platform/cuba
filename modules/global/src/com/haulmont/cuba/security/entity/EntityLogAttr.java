@@ -15,13 +15,12 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.datatypes.Datatypes;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.text.ParseException;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.persistence.Persistent;
 
 /**
  * Record containing changed entity attribute
@@ -43,6 +42,10 @@ public class EntityLogAttr extends BaseUuidEntity {
 
     @Column(name = "VALUE", length = VALUE_LEN)
     private String value;
+
+    @Column(name = "VALUE_ID")
+    @Persistent
+    private UUID valueId;
 
     public EntityLogItem getLogItem() {
         return logItem;
@@ -93,6 +96,14 @@ public class EntityLogAttr extends BaseUuidEntity {
         } catch (ClassNotFoundException e) {
             return getValue();
         }
+    }
+
+    public UUID getValueId() {
+        return valueId;
+    }
+
+    public void setValueId(UUID valueId) {
+        this.valueId = valueId;
     }
 
     @MetaProperty

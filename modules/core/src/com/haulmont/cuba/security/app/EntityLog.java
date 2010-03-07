@@ -10,16 +10,14 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.*;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -172,7 +170,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             for (String attr : attributes) {
                 EntityLogAttr attribute = new EntityLogAttr();
                 attribute.setName(attr);
-                attribute.setValue(stringify(((Instance) entity).getValue(attr)));
+                Object value = ((Instance) entity).getValue(attr);
+                attribute.setValue(stringify(value));
+                attribute.setValueId(getValueId(value));
                 attribute.setLogItem(item);
                 em.persist(attribute);
             }
@@ -214,7 +214,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
                     }
                     EntityLogAttr attribute = new EntityLogAttr();
                     attribute.setName(attr);
-                    attribute.setValue(stringify(((Instance) entity).getValue(attr)));
+                    Object value = ((Instance) entity).getValue(attr);
+                    attribute.setValue(stringify(value));
+                    attribute.setValueId(getValueId(value));
                     attribute.setLogItem(item);
                     em.persist(attribute);
                 }
@@ -254,12 +256,22 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             for (String attr : attributes) {
                 EntityLogAttr attribute = new EntityLogAttr();
                 attribute.setName(attr);
-                attribute.setValue(stringify(((Instance) entity).getValue(attr)));
+                Object value = ((Instance) entity).getValue(attr);
+                attribute.setValue(stringify(value));
+                attribute.setValueId(getValueId(value));
                 attribute.setLogItem(item);
                 em.persist(attribute);
             }
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
+        }
+    }
+
+    private UUID getValueId(Object value) {
+        if (value instanceof Entity) {
+            return ((Entity<UUID>) value).getId();
+        } else {
+            return null;
         }
     }
 
