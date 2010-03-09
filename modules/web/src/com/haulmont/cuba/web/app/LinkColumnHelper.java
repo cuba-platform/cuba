@@ -67,4 +67,11 @@ public class LinkColumnHelper {
             }
         });
     }
+
+    public static void removeColumn(Table table, final String propertyName) {
+        final CollectionDatasource ds = table.getDatasource();
+        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx(propertyName);
+        final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        vTable.removeGeneratedColumn(nameProperty);
+    }
 }
