@@ -134,8 +134,8 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             if (StringUtils.isEmpty(colspan) && StringUtils.isEmpty(rowspan)) {
                 component.add(subComponent, col, row);
             } else {
-                int cspan = StringUtils.isEmpty(colspan) ? 1 : Integer.parseInt(colspan);
-                int rspan = StringUtils.isEmpty(rowspan) ? 1 : Integer.parseInt(rowspan);
+                int cspan = StringUtils.isEmpty(colspan) ? 0 : Integer.parseInt(colspan);
+                int rspan = StringUtils.isEmpty(rowspan) ? 0 : Integer.parseInt(rowspan);
 
                 fillSpanMatrix(col, row, cspan, rspan);
                 component.add(subComponent, col, row, col + cspan, row + rspan);
