@@ -991,7 +991,8 @@ public class WebWindow
             okbar.setWidth("100%");
 
             final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-            final Button selectButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Select"));
+            final Button selectButton = WebComponentsHelper.createButton();
+            selectButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Select"));
             selectButton.setIcon(new ThemeResource("icons/ok.png"));
             selectButton.addListener(new SelectAction(this));
             selectButton.setStyleName("Window-actionButton");

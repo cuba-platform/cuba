@@ -10,6 +10,7 @@ import com.haulmont.bali.datastruct.Node;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,16 +25,16 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
 {
     private Log log = LogFactory.getLog(AbstractTreeTableDatasource.class);
 
-    private static class TreeTableNodeComparator implements Comparator<Node> {
-        private final EntityComparator entityComparator;
+    private class TreeTableNodeComparator<T extends Entity> implements Comparator<Node<T>> {
+        private final EntityComparator<T> entityComparator;
 
         private TreeTableNodeComparator(MetaPropertyPath propertyPath, boolean asc) {
-            entityComparator = new EntityComparator(propertyPath, asc);
+            entityComparator = new EntityComparator<T>(propertyPath, asc);
         }
 
-        public int compare(Node n1, Node n2) {
-            Entity e1 = (Entity) n1.getData();
-            Entity e2 = (Entity) n2.getData();
+        public int compare(Node<T> n1, Node<T> n2) {
+            T e1 = n1.getData();
+            T e2 = n2.getData();
             return entityComparator.compare(e1, e2);
         }
     }
@@ -55,12 +56,7 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
             return;
         }
 
-        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-        final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-
-        for (Node<T> rootNode : tree.getRootNodes()) {
-            sortNodeContent(rootNode, propertyPath, asc);
-        }
+        sort(tree.getRootNodes());
 
         data.clear();
         for (Node<T> node : tree.toList()) {
@@ -71,10 +67,19 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         }
     }
 
-    private void sortNodeContent(Node<T> node, MetaPropertyPath propertyPath, boolean asc) {
-        Collections.sort(node.getChildren(), new TreeTableNodeComparator(propertyPath, asc));
-        for (Node<T> n : node.getChildren()) {
-            sortNodeContent(n, propertyPath, asc);
+    private void sort(List<Node<T>> nodesList) {
+        Collections.sort(nodesList, createEntityNodeComparator());
+        for (Node<T> n :nodesList) {
+            if (n.getNumberOfChildren() > 0) {
+                sort(n.getChildren());
+            }
         }
+    }
+
+    protected Comparator<Node<T>> createEntityNodeComparator() {
+        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+        final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+
+        return  new TreeTableNodeComparator<T>(propertyPath, asc);
     }
 }

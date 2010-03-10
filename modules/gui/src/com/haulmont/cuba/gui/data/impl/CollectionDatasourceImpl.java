@@ -163,16 +163,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void doSort() {
-        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-        final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-
         @SuppressWarnings({"unchecked"})
         List<T> list = new ArrayList<T>(data.values());
-        Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
+        Collections.sort(list, createEntityComparator());
         data.clear();
         for (T t : list) {
             data.put(t.getId(), t);
         }
+    }
+
+    protected Comparator<T> createEntityComparator() {
+        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+        final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+        return new EntityComparator<T>(propertyPath, asc);
     }
 
     public K firstItemId() {
