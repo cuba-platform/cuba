@@ -299,6 +299,7 @@ public abstract class WindowManager {
         checkCanOpenWindow(windowInfo, openType, params);
 
         params = createParametersMap(windowInfo, params);
+        params.put("item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
         params.put("param$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
         String template = windowInfo.getTemplate();
@@ -372,6 +373,8 @@ public abstract class WindowManager {
     protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
         final Map<String, Object> map = new HashMap<String, Object>(params.size());
 
+        // resulting map will contain 2 entries for each parameter: one with param$ prefix and one without
+
         final Element element = windowInfo.getDescriptor();
         if (element != null) {
             final Element paramsElement = element.element("params");
@@ -382,12 +385,13 @@ public abstract class WindowManager {
                     final String name = paramElement.attributeValue("name");
                     final String value = paramElement.attributeValue("value");
 
+                    map.put(name, value);
                     map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + name, value);
                 }
             }
         }
 
-
+        map.putAll(params);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + entry.getKey(), entry.getValue());
         }
