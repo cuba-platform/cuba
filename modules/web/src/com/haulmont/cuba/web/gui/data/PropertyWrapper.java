@@ -16,12 +16,16 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.vaadin.data.Property;
 
+import javax.persistence.TemporalType;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
@@ -124,7 +128,18 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
 
         final Range range = propertyPath.getRange();
         if (range.isDatatype()) {
-            return range.asDatatype().format(value);
+            if (range.asDatatype().equals(Datatypes.getInstance().get(Date.class))) {
+                String formatStr;
+                TemporalType tt = (TemporalType) propertyPath.getMetaProperty().getAnnotations().get("temporal");
+                if (TemporalType.DATE.equals(tt)) {
+                    formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
+                } else {
+                    formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
+                }
+                return new SimpleDateFormat(formatStr).format(value);
+            } else {
+                return range.asDatatype().format(value);
+            }
         } else if (range.isEnum()){
             String nameKey = value.getClass().getSimpleName() + "." + value.toString();
             return MessageProvider.getMessage(value.getClass(), nameKey);
