@@ -16,9 +16,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.Element;
+import org.dom4j.*;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -29,6 +27,7 @@ public class XmlInheritanceProcessor {
     private Log log = LogFactory.getLog(XmlInheritanceProcessor.class);
 
     private Document document;
+    private Namespace extNs;
     private Map<String, Object> params;
 
     private List<ElementTargetLocator> targetLocators = new ArrayList<ElementTargetLocator>();
@@ -37,8 +36,11 @@ public class XmlInheritanceProcessor {
         this.document = document;
         this.params = params;
 
+        extNs = new Namespace("ext", "http://www.haulmont.com/schema/cuba/gui/window-ext.xsd");
+
         targetLocators.add(new ViewPropertyElementTargetLocator());
         targetLocators.add(new ViewElementTargetLocator());
+        targetLocators.add(new ButtonElementTargetLocator());
         targetLocators.add(new CommonElementTargetLocator());
     }
 
@@ -103,9 +105,7 @@ public class XmlInheritanceProcessor {
                 if (target != null) {
                     process(target, element);
                 } else {
-                    Element newElem = resultElem.addElement(element.getName());
-                    justAdded.add(newElem);
-                    process(newElem, element);
+                    addNewElement(resultElem, element, justAdded);
                 }
             } else {
                 // if no suitable locator found, look for a single element with the same name
@@ -113,12 +113,24 @@ public class XmlInheritanceProcessor {
                 if (list.size() == 1 && !justAdded.contains(list.get(0))) {
                     process(list.get(0), element);
                 } else {
-                    Element newElem = resultElem.addElement(element.getName());
-                    justAdded.add(newElem);
-                    process(newElem, element);
+                    addNewElement(resultElem, element, justAdded);
                 }
             }
         }
+    }
+
+    private void addNewElement(Element resultElem, Element element, Set<Element> justAdded) {
+        String idx = element.attributeValue(new QName("index", extNs));
+        Element newElem;
+        if (StringUtils.isBlank(idx)) {
+            newElem = resultElem.addElement(element.getName());
+        } else {
+            newElem = DocumentHelper.createElement(element.getName());
+            List elements = resultElem.elements();
+            elements.add(Integer.valueOf(idx), newElem);
+        }
+        justAdded.add(newElem);
+        process(newElem, element);
     }
 
     private interface ElementTargetLocator {
@@ -176,6 +188,25 @@ public class XmlInheritanceProcessor {
             String name = extElem.attributeValue("name");
             for (Element e : Dom4j.elements(resultParentElem)) {
                 if (name.equals(e.attributeValue("name"))) {
+                    return e;
+                }
+            }
+            return null;
+        }
+    }
+
+    private static class ButtonElementTargetLocator implements ElementTargetLocator {
+
+        public boolean suitableFor(Element extElem) {
+            return "button".equals(extElem.getName())
+                    && extElem.attributeValue("id") == null
+                    && extElem.attributeValue("action") != null;
+        }
+
+        public Element locate(Element resultParentElem, Element extElem) {
+            String action = extElem.attributeValue("action");
+            for (Element e : Dom4j.elements(resultParentElem)) {
+                if (action.equals(e.attributeValue("action"))) {
                     return e;
                 }
             }
