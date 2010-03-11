@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.QuasiComponent;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -132,16 +133,31 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             }
 
             if (StringUtils.isEmpty(colspan) && StringUtils.isEmpty(rowspan)) {
-                component.add(subComponent, col, row);
+                addSubComponent(component, subComponent, col, row, col, row);
             } else {
                 int cspan = StringUtils.isEmpty(colspan) ? 0 : Integer.parseInt(colspan);
                 int rspan = StringUtils.isEmpty(rowspan) ? 0 : Integer.parseInt(rowspan);
 
                 fillSpanMatrix(col, row, cspan, rspan);
-                component.add(subComponent, col, row, col + cspan, row + rspan);
+                addSubComponent(component, subComponent, col, row, col + cspan, row + rspan);
             }
 
             col++;
+        }
+    }
+
+    private void addSubComponent(GridLayout grid, Component subComponent, int c1, int r1, int c2, int r2) {
+        if (subComponent instanceof QuasiComponent) {
+            Collection<Component> realComponents = ((QuasiComponent) subComponent).getRealComponents();
+            if (realComponents.size() == 1) {
+                Component comp = realComponents.iterator().next();
+                grid.remove(comp);
+                grid.add(comp, c1, r1, c2, r2);
+            } else {
+                throw new UnsupportedOperationException("Invalid nested components count");
+            }
+        } else {
+            grid.add(subComponent, c1, r1, c2, r2);
         }
     }
 
