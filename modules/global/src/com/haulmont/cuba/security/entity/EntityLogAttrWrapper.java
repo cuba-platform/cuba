@@ -11,7 +11,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
@@ -23,9 +23,9 @@ public class EntityLogAttrWrapper extends AbstractNotPersistentEntity {
     private EntityLogAttr entityLogAttr;
 
     @MetaProperty
-    private Entity valueAttr;
+    private BaseUuidEntity valueAttr;
 
-    public EntityLogAttrWrapper(EntityLogAttr entityLogAttr, Entity valueAttr) {
+    public EntityLogAttrWrapper(EntityLogAttr entityLogAttr, BaseUuidEntity valueAttr) {
         this.entityLogAttr = entityLogAttr;
         this.valueAttr = valueAttr;
     }
@@ -42,11 +42,11 @@ public class EntityLogAttrWrapper extends AbstractNotPersistentEntity {
         this.entityLogAttr = entityLogAttr;
     }
 
-    public Entity getValueAttr() {
+    public BaseUuidEntity getValueAttr() {
         return valueAttr;
     }
 
-    public void setValueAttr(Entity valueAttr) {
+    public void setValueAttr(BaseUuidEntity valueAttr) {
         this.valueAttr = valueAttr;
     }
 
