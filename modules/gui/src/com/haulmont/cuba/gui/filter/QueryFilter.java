@@ -90,7 +90,7 @@ public class QueryFilter {
 
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(query, targetEntity);
 
-        if (isActual(root, paramValues.keySet())) {
+        if (isActual(root, params)) {
             Condition refined = refine(root, params);
             String where = refined.getContent();
 
