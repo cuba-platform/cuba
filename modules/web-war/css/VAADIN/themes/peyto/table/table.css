@@ -330,6 +330,18 @@
     background: transparent url(img/nav-minus.png) center right no-repeat;
 }
 
+.v-table-group-row {
+}
+
+.v-table-arow {
+   border-top: 1px solid #71a4d5;
+   border-left: 1px solid #71a4d5;
+   border-right: 1px solid #71a4d5;
+}
+.v-table-arow-row {
+   background : #CCC;
+}
+
 /* IE6 hack */
 * html .v-table-scrollposition {
 	background: transparent;
