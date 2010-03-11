@@ -12,7 +12,7 @@ package com.haulmont.cuba.web.app.ui.entitylog;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
@@ -67,7 +67,7 @@ public class EntityLogDatasource extends CollectionDatasourceImpl {
         }
     }
 
-    protected Entity loadEntity(Class parentClass, String property, UUID id) {
+    protected BaseUuidEntity loadEntity(Class parentClass, String property, UUID id) {
         MetaClass aClass = MetadataProvider.getSession().getClass(parentClass).getProperty(property).getRange().asClass();
         LoadContext lc = new LoadContext(aClass).setId(id);
         lc.setSoftDeletion(false);
