@@ -1,5 +1,6 @@
 .v-splitpanel-horizontal, .v-splitpanel-vertical {
 	overflow: hidden;
+    background-color: #fff;
 }
 
 .v-splitpanel-horizontal .v-splitpanel-hsplitter {

@@ -634,7 +634,7 @@ public class IPagingTable
             }
 
             public void execute() {
-                Window.alert("Column " + cid + " click");
+//                Window.alert("Column " + cid + " click");
             }
 
             public String getCid() {
@@ -669,7 +669,7 @@ public class IPagingTable
 
             public void execute() {
                 getColumnsMenu().hide();
-                Window.alert("Apply clicked");
+//                Window.alert("Apply clicked");
             }
 
             public String getHTML() {
