@@ -130,6 +130,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
         DOM.appendChild(wrapper, splitter);
 
         DOM.setStyleAttribute(splitter, "position", "absolute");
+        DOM.setStyleAttribute(firstContainer, "position", "absolute");
         DOM.setStyleAttribute(secondContainer, "position", "absolute");
 
         DOM.setStyleAttribute(firstContainer, "overflow", "auto");
