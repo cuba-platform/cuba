@@ -72,6 +72,7 @@ public abstract class AbstractDatasource<T extends Entity>
 
     public void modified(T item) {
         if (PersistenceHelper.isNew(item)) {
+            itemToCreate.remove(item);
             itemToCreate.add(item);
         } else {
             itemToUpdate.add(item);

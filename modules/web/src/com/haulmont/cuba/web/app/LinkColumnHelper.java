@@ -42,8 +42,9 @@ public class LinkColumnHelper {
                     Instance nestedEntity = enclosingEntity;
                     for (int i = 0; i < props.length - 1; i++) {
                         nestedEntity = (Instance) nestedEntity.getValue(props[i]);
+                        if (nestedEntity == null) break;
                     }
-                    final Object value = nestedEntity.getValue(props[props.length - 1]);
+                    final Object value = (nestedEntity == null) ? null : nestedEntity.getValue(props[props.length - 1]);
                     if (value != null) {
                         String str;
                         Datatype datatype = Datatypes.getInstance().get(value.getClass());
