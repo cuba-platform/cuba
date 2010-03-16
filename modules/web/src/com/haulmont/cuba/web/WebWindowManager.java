@@ -267,6 +267,10 @@ public class WebWindowManager extends WindowManager
             tabSheet.addTab(layout, caption, null);
             tabSheet.setSelectedTab(layout);
         } else {
+            layout.addStyleName("single");
+            layout.setMargin(true);
+            layout.setWidth("99.9%");
+            layout.setHeight("99.85%");
             VerticalLayout mainLayout = appWindow.getMainLayout();
             mainLayout.removeAllComponents();
             mainLayout.addComponent(layout);

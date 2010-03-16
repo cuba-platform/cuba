@@ -137,6 +137,15 @@
 }
 
 /*
+ * Work area in single mode
+ */
+
+.v-verticallayout-single {
+    border: 1px solid #5280b7;
+    background: #ffffff;
+}
+
+/*
  * Here go
  *  Custom Control styles
  */
