@@ -277,12 +277,17 @@ public class WebComponentsHelper {
         if (frame instanceof AbstractFrame) {
             return frame;
         } else if (frame instanceof WrappedWindow) {
-            return ((WrappedWindow) frame).getWrapper();
+            IFrame wrapper = ((WrappedWindow) frame).getWrapper();
+            if (wrapper != null) {
+                return wrapper;
+            }
         } else if (frame instanceof WrappedFrame) {
-            return ((WrappedFrame) frame).getWrapper();
-        } else {
-            return getControllerFrame(frame.getFrame());
+            IFrame wrapper = ((WrappedFrame) frame).getWrapper();
+            if (wrapper != null) {
+                return wrapper;
+            }
         }
+        return getControllerFrame(frame.getFrame());
     }
 
     public static com.haulmont.cuba.gui.components.Component findComponent(IFrame frame, String id) {
