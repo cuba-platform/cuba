@@ -177,7 +177,6 @@
           <module name="core" />
         </modules>
       </facet-type>
-      <facet-type id="ejb" />
       <facet-type id="web">
         <modules>
           <module name="web" />
@@ -189,16 +188,8 @@
           </module>
         </modules>
       </facet-type>
-      <facet-type id="gwt">
-        <modules>
-          <module name="web-war">
-            <files>
-              <file url="file://$PROJECT_DIR$/modules/web-war/src/com/haulmont/cuba/toolkit/gwt/WidgetSet.gwt.xml" />
-            </files>
-          </module>
-        </modules>
-      </facet-type>
       <facet-type id="Groovy" />
+      <facet-type id="ejb" />
     </autodetection-disabled>
   </component>
   <component name="IdProvider" IDEtalkID="99EE4594F0AAAC224547C8FE93321E41" />
@@ -436,6 +427,22 @@
   <component name="ProjectDetails">
     <option name="projectName" value="cuba" />
   </component>
+  <component name="ProjectFacetManager">
+    <default-configurations>
+      <entry facet-type="gwt">
+        <default-facet-configuration>
+          <configuration>
+            <setting name="additionalCompilerParameters" value="" />
+            <setting name="compilerMaxHeapSize" value="128" />
+            <setting name="compilerOutputPath" value="" />
+            <setting name="gwtScriptOutputStyle" value="DETAILED" />
+            <setting name="gwtSdkUrl" value="file://$PROJECT_DIR$/../../../../gwt1.7" />
+            <setting name="runGwtCompilerOnMake" value="true" />
+          </configuration>
+        </default-facet-configuration>
+      </entry>
+    </default-configurations>
+  </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
     <option name="state" value="svn://dc/platform/cuba/trunk/cuba.ipr" />
@@ -627,6 +634,15 @@
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-1.7.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-dev-windows-1.7.0.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="gwt-user">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../../../../gwt1.7/gwt-user.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../../../../gwt1.7/gwt-user.jar!/" />
       </SOURCES>
     </library>
   </component>

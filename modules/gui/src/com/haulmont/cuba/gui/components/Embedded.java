@@ -12,7 +12,7 @@ import java.net.URL;
  * Date: 22.06.2009
  */
 public interface Embedded
-        extends Component, Component.Expandable
+        extends Component, Component.Expandable, Component.BelongToFrame
 {
     void setMIMEType(String mt);
 
