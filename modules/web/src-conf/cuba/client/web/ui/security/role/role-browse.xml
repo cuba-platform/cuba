@@ -19,7 +19,7 @@
                 <buttonsPanel>
                     <button action="roles.create" icon="icons/create.png"/>
                     <button action="roles.edit" icon="icons/edit.png"/>
-                    <button action="roles.excel" icon="icons/excel.png"/>
+                    <button action="roles.remove" icon="icons/remove.png"/>
                     <button action="roles.excel" icon="icons/excel.png"/>
                 </buttonsPanel>
                 <columns>
