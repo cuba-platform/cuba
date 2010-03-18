@@ -90,6 +90,10 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             }
         });
+        
+        if (Datasource.State.VALID.equals(this.mainDs.getState())) {
+            executeLazyTask();
+        }
 
     }
 
