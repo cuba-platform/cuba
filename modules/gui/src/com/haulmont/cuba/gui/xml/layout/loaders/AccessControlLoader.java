@@ -13,12 +13,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.gui.ComponentVisitor;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.AccessControl;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import groovy.lang.Binding;
@@ -39,11 +34,11 @@ public class AccessControlLoader extends ContainerLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         AccessControl accessControl = factory.createComponent(element.getName());
 
-        Object accessData = null;
+        final AbstractAccessData data;
         String paramName = element.attributeValue("param");
         if (paramName != null) {
-            accessData = context.getParams().get(paramName);
-            if (accessData == null) {
+            AbstractAccessData d = (AbstractAccessData) context.getParams().get(paramName);
+            if (d == null) {
                 String dataClassName = element.attributeValue("data");
                 if (dataClassName == null)
                     throw new IllegalStateException("Can not instantiate AccessData: no 'data' attribute");
@@ -51,42 +46,32 @@ public class AccessControlLoader extends ContainerLoader {
                 if (dataClass == null)
                     throw new IllegalStateException("Class not found: " + dataClassName);
                 try {
-                    accessData = ReflectionHelper.newInstance(dataClass, context.getParams());
-                    context.getParams().put(paramName, accessData);
+                    data = (AbstractAccessData) ReflectionHelper.newInstance(dataClass, context.getParams());
+                    context.getParams().put(paramName, data);
                 } catch (NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                data = d;
             }
-
+        } else {
+            data = null;
         }
 
-
-        final boolean visible = loadConditions(element, accessData, "visible");
-        final boolean editable = loadConditions(element, accessData, "editable");
+        final boolean visible = loadConditions(element, data, "visible");
+        final boolean editable = loadConditions(element, data, "editable");
 
         Collection<Component> components;
         if (visible) {
             components = loadSubComponents(parent, element, "editable", "visible");
-            for (final Component component : components) {
-                if (component instanceof Component.Editable && !editable) {
-                    ((Component.Editable) component).setEditable(false);
-                }
-                if (component instanceof Button && !editable) {
-                    context.addLazyTask(new AccessControlLoaderLazyTask(component));
-                }
+            for (Component component : components) {
+                applyToComponent(component, editable, data, components);
 
                 if (component instanceof Component.Container) {
-                    ComponentsHelper.walkComponents(((Component.Container) component),
-                            new ComponentVisitor() {
-                                public void visit(Component component, String name) {
-                                    if (component instanceof Component.Editable && !editable) {
-                                        ((Component.Editable) component).setEditable(false);
-                                    }
-                                    if (component instanceof Button && !editable) {
-                                        context.addLazyTask(new AccessControlLoaderLazyTask(component));
-                                    }
-                                }
-                            });
+                    Collection<Component> content = ((Component.Container) component).getComponents();
+                    for (Component c : content) {
+                        applyToComponent(c, editable, data, content);
+                    }
                 }
             }
         } else {
@@ -95,6 +80,21 @@ public class AccessControlLoader extends ContainerLoader {
         accessControl.setRealComponents(components);
 
         return accessControl;
+    }
+
+    protected void applyToComponent(Component component, boolean editable, 
+                                    AbstractAccessData data, Collection<Component> components)
+    {
+        if (component instanceof Component.Editable && !editable) {
+            ((Component.Editable) component).setEditable(false);
+        }
+        if (component instanceof Button && !editable) {
+            context.addLazyTask(new AccessControlLoaderLazyTask(component));
+        }
+
+        if (data != null) {
+            data.visitComponent(component, components);
+        }
     }
 
     private boolean loadConditions(Element element, Object accessData, String access) {

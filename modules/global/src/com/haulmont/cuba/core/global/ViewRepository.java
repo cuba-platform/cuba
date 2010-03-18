@@ -15,8 +15,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.entity.Entity;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -43,7 +43,7 @@ public class ViewRepository
     private Map<MetaClass, Map<String, View>> storage =
             new ConcurrentHashMap<MetaClass, Map<String, View>>();
 
-    public View getView(Class<? extends BaseEntity> entityClass, String name) {
+    public View getView(Class<? extends Entity> entityClass, String name) {
         MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
         if (metaClass == null)
             throw new IllegalStateException("Meta class not found for " + entityClass.getName());

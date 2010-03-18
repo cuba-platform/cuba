@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import java.util.Collection;
 import java.util.Map;
 
 public abstract class AbstractAccessData {
@@ -18,5 +19,13 @@ public abstract class AbstractAccessData {
 
     public AbstractAccessData(Map<String, Object> params) {
         this.params = params;
+    }
+
+    /**
+     * Invoked for each component under AccessControl
+     * @param component visited component
+     * @param components all components under this AccessControl
+     */
+    public void visitComponent(Component component, Collection<Component> components) {
     }
 }

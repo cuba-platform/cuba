@@ -46,6 +46,14 @@ public class GenericDataService implements DataService {
         }
     }
 
+    public <A extends Entity> A reload(A entity, String viewName) {
+        return reload(entity, MetadataProvider.getViewRepository().getView(entity.getClass(), viewName));
+    }
+
+    public <A extends Entity> A reload(A entity, View view) {
+        return reload(entity, view, null);
+    }
+
     public <A extends Entity> A reload(A entity, View view, MetaClass metaClass) {
         if (metaClass == null) {
             metaClass = MetadataProvider.getSession().getClass(entity.getClass());

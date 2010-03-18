@@ -60,6 +60,10 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put("buttonsPanel", WebButtonsPanel.class);
     }
 
+    public static void registerComponent(String element, Class<? extends Component> componentClass) {
+        classes.put(element, componentClass);
+    }
+
     public <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException {
         final Class<Component> componentClass = (Class<Component>) classes.get(name);
         if (componentClass == null) {
