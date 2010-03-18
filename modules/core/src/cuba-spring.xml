@@ -79,7 +79,7 @@
 
     <!-- Annotation-based beans -->
 
-    <context:component-scan base-package="com.haulmont"/>
+    <context:component-scan base-package="com.haulmont.cuba"/>
 
     <!-- MBeans registration -->
 
