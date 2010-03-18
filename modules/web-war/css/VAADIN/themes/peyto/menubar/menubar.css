@@ -35,6 +35,14 @@
     height: 19px;
 }
 
+.v-menubar .menuitem .folders-item{
+    background: url(img/folders-pane.png) top left no-repeat;
+}
+
+.v-menubar .menuitem-selected .folders-item{
+    background: url(img/folders-pane-hover.png) top left no-repeat;
+}
+
 .v-menubar .menuitem-selected {
     padding-left: 10px;
     padding-right: 10px;
