@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceConnector;
 import groovy.util.ResourceException;
@@ -97,7 +98,7 @@ public class ScriptingProviderImpl extends ScriptingProvider {
                     CompilerConfiguration cc = new CompilerConfiguration();
                     cc.setClasspath(groovyClassPath);
                     cc.setRecompileGroovySource(true);
-                    gcl = new GroovyClassLoader(Thread.currentThread().getContextClassLoader(), cc);
+                    gcl = new GroovyClassLoader(JavaClassLoader.getInstance(), cc);
                 }
             }
         }

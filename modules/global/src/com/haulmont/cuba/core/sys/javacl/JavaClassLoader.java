@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.io.FileUtils;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
@@ -56,6 +58,8 @@ public class JavaClassLoader extends URLClassLoader {
             return result;
         }
     }
+
+    private Log log = LogFactory.getLog(JavaClassLoader.class);
 
     protected CharSequenceCompiler compiler;
 
@@ -164,17 +168,20 @@ public class JavaClassLoader extends URLClassLoader {
         return importedClassNames;
     }
 
-
-    public Class loadClass(String name) {
+    public Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
         Class clazz = null;
         try {
-            clazz = super.loadClass(name);
+            clazz = super.loadClass(name, resolve);
         } catch (ClassNotFoundException e) {
+            //
         }
 
-        if (clazz != null) return clazz;
+        if (clazz != null)
+            return clazz;
 
         File srcFile = getSourceFile(name);
+        if (!srcFile.exists())
+            throw new ClassNotFoundException("Java source for " + name + " not found");
 
         TimestampClass timeStampClazz = getTimestampClass(name);
         if (timeStampClazz != null) {
@@ -183,6 +190,8 @@ public class JavaClassLoader extends URLClassLoader {
         }
 
         try {
+            log.debug("Compiling " + name);
+
             String src = FileUtils.readFileToString(srcFile);
             final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<JavaFileObject>();
 
