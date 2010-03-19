@@ -11,12 +11,14 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -85,7 +87,11 @@ public abstract class ScriptingProvider {
 
     public Class doLoadClass(String name) {
         try {
-            return doGetGroovyClassLoader().loadClass(name, true, false);
+            String path = ConfigProvider.getConfig(GlobalConfig.class).getConfDir() + "/" + name.replace(".", "/");
+            if (new File(path + ".java").exists())
+                return JavaClassLoader.getInstance().loadClass(name);
+            else
+                return doGetGroovyClassLoader().loadClass(name, true, false);
         } catch (ClassNotFoundException e) {
             return null;
         }
