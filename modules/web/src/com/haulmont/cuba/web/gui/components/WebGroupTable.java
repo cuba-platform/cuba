@@ -549,4 +549,21 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
     }
+
+    @Override
+    public List<Column> getColumns() {
+        Object[] visibleColumns = component.getVisibleColumns();
+        
+        if (visibleColumns == null) {
+            return Collections.emptyList();
+        }
+
+        List<Column> columns = new ArrayList<Column>(visibleColumns.length);
+        for (final Object column : visibleColumns) {
+            MetaPropertyPath path = (MetaPropertyPath) column;
+            columns.add(getColumn(path.toString()));
+        }
+
+        return columns;
+    }
 }

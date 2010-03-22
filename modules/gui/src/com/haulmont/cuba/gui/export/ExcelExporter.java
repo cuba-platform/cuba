@@ -10,28 +10,30 @@
  */
 package com.haulmont.cuba.gui.export;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.GroupDatasource;
+import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import org.apache.poi.hssf.usermodel.*;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.poi.hssf.usermodel.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.text.ParseException;
 
 /**
  * Use this class to export {@link com.haulmont.cuba.gui.components.Table} into Excel format
@@ -112,9 +114,15 @@ public class ExcelExporter {
             for (Object itemId : ds.getRootItemIds()) {
                 r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
             }
+        } if (table instanceof GroupTable && datasource instanceof GroupDatasource
+                && ((GroupDatasource) datasource).hasGroups()) {
+            GroupDatasource ds = (GroupDatasource) datasource;
+            for (Object item : ds.rootGroups()) {
+                r = createGroupRow((GroupTable) table, columns, ++r, (GroupInfo) item, 0);
+            }
         } else {
             for (Object itemId : datasource.getItemIds()) {
-                createRow(table, columns, ++r, itemId);
+                createRow(table, columns, 0, ++r, itemId);
             }
         }
         for (int c = 0; c < columns.size(); c++) {
@@ -135,7 +143,7 @@ public class ExcelExporter {
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
                                        Boolean exportExpanded, int rowNumber, Object itemId) {
         HierarchicalDatasource hd = (HierarchicalDatasource) table.getDatasource();
-        createRow(table, columns, ++rowNumber, itemId);
+        createRow(table, columns, 0, ++rowNumber, itemId);
         if (BooleanUtils.isTrue(exportExpanded) && !table.isExpanded(itemId) && !hd.getChildren(itemId).isEmpty()) {
             return rowNumber;
         } else {
@@ -143,7 +151,7 @@ public class ExcelExporter {
             if (children != null && !children.isEmpty()) {
                 for (Object id : children) {
                     if (BooleanUtils.isTrue(exportExpanded) && !table.isExpanded(id) && !hd.getChildren(id).isEmpty()) {
-                        createRow(table, columns, ++rowNumber, id);
+                        createRow(table, columns, 0, ++rowNumber, id);
                         continue;
                     }
                     rowNumber = createHierarhicalRow(table, columns, exportExpanded, rowNumber, id);
@@ -153,7 +161,35 @@ public class ExcelExporter {
         return rowNumber;
     }
 
-    protected void createRow(Table table, List<Table.Column> columns, int rowNumber, Object itemId) {
+    protected int createGroupRow(GroupTable table, List<Table.Column> columns, int rowNumber, GroupInfo groupInfo, int groupNumber) {
+        GroupDatasource ds = (GroupDatasource) table.getDatasource();
+
+        HSSFRow row = sheet.createRow(rowNumber);
+        HSSFCell cell = row.createCell(groupNumber);
+        Object val = groupInfo.getValue();
+        val = val == null ? MessageProvider.getMessage(getClass(), "excelExporter.empty") : val;
+        formatValueCell(cell, val, groupNumber++, rowNumber, 0);
+
+        int oldRowNumber = rowNumber;
+        List<GroupInfo> children = ds.getChildren(groupInfo);
+        if (children.size() > 0) {
+            for (GroupInfo child : children) {
+                rowNumber = createGroupRow(table, columns, ++rowNumber, child, groupNumber);
+            }
+        } else {
+            Collection<Object> itemIds = ds.getGroupItemIds(groupInfo);
+            for (Object itemId : itemIds) {
+                createRow(table, columns, groupNumber, ++rowNumber, itemId);
+            }
+        }
+        sheet.groupRow(oldRowNumber + 1, rowNumber);
+        return rowNumber;
+    }
+
+    protected void createRow(Table table, List<Table.Column> columns, int startColumn, int rowNumber, Object itemId) {
+        if (startColumn > columns.size()) {
+            return;
+        }
         HSSFRow row = sheet.createRow(rowNumber);
         Instance instance = (Instance) table.getDatasource().getItem(itemId);
 
@@ -161,7 +197,7 @@ public class ExcelExporter {
         if (table instanceof TreeTable) {
             level = ((TreeTable)table).getLevel(itemId);
         }
-        for (int c = 0; c < columns.size(); c++) {
+        for (int c = startColumn; c < columns.size(); c++) {
             HSSFCell cell = row.createCell(c);
 
             Table.Column column = columns.get(c);
