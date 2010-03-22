@@ -187,7 +187,7 @@ public class ExcelExporter {
     }
 
     protected void createRow(Table table, List<Table.Column> columns, int startColumn, int rowNumber, Object itemId) {
-        if (startColumn > columns.size()) {
+        if (startColumn >= columns.size()) {
             return;
         }
         HSSFRow row = sheet.createRow(rowNumber);
