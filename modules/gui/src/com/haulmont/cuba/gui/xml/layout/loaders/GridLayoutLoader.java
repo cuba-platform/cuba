@@ -163,7 +163,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
 
     private void fillSpanMatrix(int col, int row, int cspan, int rspan) {
         for (int i = col; i < (col + cspan); i++) {
-            for (int j = col; j < (row + rspan); j++) {
+            for (int j = row; j < (row + rspan); j++) {
                 if (spanMatrix[i][j]) throw new IllegalStateException();
                 spanMatrix[i][j] = true;
             }
