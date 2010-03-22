@@ -201,7 +201,7 @@ public class JavaClassLoader extends URLClassLoader {
             Map compiledClasses = compiler.compile(collectDependentClasses(sources), errs);
 
             clazz = (Class) compiledClasses.get(name);
-            setTimestampClass(name, new TimestampClass(clazz, new Date()));
+            setTimestampClass(name, new TimestampClass(clazz, new Date(srcFile.lastModified())));
 
             return clazz;
         } catch (Exception e) {
