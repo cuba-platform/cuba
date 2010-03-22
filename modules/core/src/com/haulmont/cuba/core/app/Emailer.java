@@ -17,14 +17,10 @@ import com.haulmont.cuba.security.global.LoginException;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.mail.internet.*;
-import javax.mail.Session;
 import javax.mail.MessagingException;
 import javax.mail.Message;
-import javax.mail.Transport;
 import javax.activation.DataSource;
 import javax.activation.DataHandler;
-import javax.naming.Context;
-import javax.naming.NamingException;
 import java.util.*;
 import java.io.*;
 
@@ -33,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.EncoderException;
-import org.apache.commons.io.FileUtils;
 import org.springframework.mail.javamail.JavaMailSender;
 
 /**
@@ -67,14 +62,9 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     public void sendEmail(EmailInfo info) throws EmailException {
         if (info.getTemplatePath() != null) {
-            File f = new File(info.getTemplatePath());
-            String template;
-            try {
-                template = FileUtils.readFileToString(f);
-            } catch (IOException e) {
-                throw new RuntimeException("File is not available: " + info.getTemplatePath());
-            }
-            Map map = info.getTemplateParameters();
+            ResourceRepositoryAPI resourceRepository = Locator.lookup(ResourceRepositoryAPI.NAME);
+            String template = resourceRepository.getResAsString(info.getTemplatePath());
+            Map map = info.getTemplateParameters() == null ? Collections.EMPTY_MAP : info.getTemplateParameters();
             info.setBody(TemplateHelper.processTemplate(template, map));
         }
         sendEmail(info.getAddresses(), info.getCaption(), info.getBody(), info.getFrom() != null ? info.getFrom() : config.getFromAddress(), info.getAttachment());
