@@ -81,7 +81,7 @@ public class JavaClassLoader extends URLClassLoader {
         this.rootDir = rootDir;
         compiler = new CharSequenceCompiler(
                 Thread.currentThread().getContextClassLoader(),
-                Arrays.asList("-classpath", buildClasspath())
+                Arrays.asList("-g", "-classpath", buildClasspath())
         );
     }
 
