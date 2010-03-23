@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.components;
 import java.util.Map;
 
 public class BasicBrowser extends AbstractLookup{
+
     public BasicBrowser(IFrame frame) {
         super(frame);
     }
@@ -25,9 +26,12 @@ public class BasicBrowser extends AbstractLookup{
         helper.createCreateAction();
         helper.createEditAction();
         helper.createRemoveAction();
+
         if (getComponent("filter") != null) {
             helper.createFilterApplyAction("filter.apply");
             helper.createFilterClearAction("filter.clear", "filterPanel");
+        } else {
+            helper.createRefreshAction();
         }
     }    
 }
