@@ -18,7 +18,7 @@
 
     <layout expand="windowActions">
         <vbox margin="true">
-            <grid id="grid" spacing="true" expandable="false" stylename="edit-area">
+            <grid id="grid" margin="true" spacing="true" expandable="false" stylename="edit-area">
                 <columns>
                     <column flex="1"/>
                     <column flex="1"/>

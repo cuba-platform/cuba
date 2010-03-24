@@ -10,12 +10,15 @@
  */
 package com.haulmont.cuba.web.app.ui.security.group.browse;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.core.entity.Entity;
 
 import java.util.*;
 
@@ -24,7 +27,7 @@ public class GroupBrowser extends AbstractWindow {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
+    protected void init(final Map<String, Object> params) {
         final Tree tree = getComponent("groups");
 
         final CollectionDatasource treeDS = tree.getDatasource();
@@ -42,7 +45,7 @@ public class GroupBrowser extends AbstractWindow {
         helper.createRemoveAction();
 
         final Table users = getComponent("users");
-        Table constraints = getComponent("constraints");
+        final Table constraints = getComponent("constraints");
 
         final TableActionsHelper usersActions = new TableActionsHelper(this, users);
         usersActions.createCreateAction(new ValueProvider() {
@@ -91,17 +94,40 @@ public class GroupBrowser extends AbstractWindow {
         usersActions.createRefreshAction();
 
         final TableActionsHelper constraintsActions = new TableActionsHelper(this, constraints);
-        constraintsActions.createCreateAction(new ValueProvider() {
-            public Map<String, Object> getValues() {
-                final Map<String, Object> map = new HashMap<String, Object>();
-                map.put("group", tree.getSelected());
-                return map;
-            }
+        constraints.addAction(
+                new AbstractAction("create") {
 
-            public Map<String, Object> getParameters() {
-                return Collections.emptyMap();
-            }
-        });
+                    @Override
+                    public String getCaption() {
+                        String mp = AppConfig.getInstance().getMessagesPack();
+                        return MessageProvider.getMessage(mp, "actions.Create");
+                    }
+
+                    public void actionPerform(Component component) {
+                        Set<Group> selected = tree.getSelected();
+                        if (selected.size() != 1)
+                            return;
+
+                        Constraint constraint = new Constraint();
+                        constraint.setGroup(selected.iterator().next());
+                        final Window window = openEditor(
+                                constraints.getDatasource().getMetaClass().getName() + ".edit",
+                                constraint,
+                                WindowManager.OpenType.THIS_TAB
+                        );
+                        window.addListener(
+                                new CloseListener() {
+                                    public void windowClosed(String actionId) {
+                                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                                            constraints.getDatasource().refresh();
+                                        }
+                                    }
+                                }
+                        );
+                    }
+                }
+        );
+
         constraintsActions.createEditAction();
         constraintsActions.createRemoveAction();
         constraintsActions.createRefreshAction();
