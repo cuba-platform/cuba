@@ -24,7 +24,9 @@
 
         <collectionDatasource id="users" class="com.haulmont.cuba.security.entity.User" view="usersubst.edit">
             <query>
-                select u from sec$User u
+                <![CDATA[
+                select u from sec$User u where u.id <> :ds$subst.user
+                ]]>
             </query>
         </collectionDatasource>
     </dsContext>

@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
@@ -161,11 +162,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     if (State.VALID.equals(datasource.getState())) {
                         final Entity item = datasource.getItem();
                         if (elements.length > 1) {
-                            final List<String> list = Arrays.asList(elements);
-                            final List<String> valuePath = list.subList(1, list.size());
-                            final String propertyName = InstanceUtils.formatValuePath(valuePath.toArray(new String[valuePath.size()]));
-
-                            map.put(name, InstanceUtils.getValueEx((Instance) item, propertyName));
+                            String[] valuePath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
+                            String propertyName = InstanceUtils.formatValuePath(valuePath);
+                            Object value = InstanceUtils.getValueEx((Instance) item, propertyName);
+                            map.put(name, value);
                         } else {
                             map.put(name, item);
                         }
@@ -176,11 +176,23 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     break;
                 }
                 case PARAM: {
-                    Object value = dsContext.getWindowContext() == null ?
-                            null :
-                            dsContext.getWindowContext().getParams().get(ParameterInfo.Type.PARAM.getPrefix() + "$" + path);
-                    if (value instanceof String && info.isCaseInsensitive()) {
-                        value = makeCaseInsensitive((String) value);
+                    Object value;
+                    if (dsContext.getWindowContext() == null) {
+                        value = null;
+                    } else {
+                        Map<String, Object> windowParams = dsContext.getWindowContext().getParams();
+                        value = windowParams.get(ParameterInfo.Type.PARAM.getPrefix() + "$" + path);
+                        if (value == null && elements.length > 1) {
+                            Instance instance = (Instance) windowParams.get(ParameterInfo.Type.PARAM.getPrefix() + "$" + elements[0]);
+                            if (instance != null) {
+                                String[] valuePath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
+                                String propertyName = InstanceUtils.formatValuePath(valuePath);
+                                value = InstanceUtils.getValueEx(instance, propertyName);
+                            }
+                        }
+                    }
+               if (value instanceof String && info.isCaseInsensitive()) {
+                        value =makeCaseInsensitive((String) value);
                     }
                     map.put(name, value);
                     break;
