@@ -31,6 +31,10 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
     @MetaProperty
     private String userName;
     @MetaProperty
+    private String address;
+    @MetaProperty
+    private String clientInfo;
+    @MetaProperty
     private Date since;
     @MetaProperty
     private Date lastUsedTs;
@@ -73,6 +77,22 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getClientInfo() {
+        return clientInfo;
+    }
+
+    public void setClientInfo(String clientInfo) {
+        this.clientInfo = clientInfo;
     }
 
     public String toString() {

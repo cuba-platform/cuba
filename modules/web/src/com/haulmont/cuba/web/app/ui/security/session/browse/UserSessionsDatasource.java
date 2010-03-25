@@ -29,7 +29,7 @@ public class UserSessionsDatasource extends CollectionDatasourceImpl<UserSession
 
     protected void loadData(Map<String, Object> params) {
         data.clear();
-        UserSessionService uss = ServiceLocator.lookup(UserSessionService.JNDI_NAME);
+        UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
         Collection<UserSessionEntity> userSessionList = uss.getUserSessionInfo();
         for (UserSessionEntity entity : userSessionList) {
             data.put(entity.getId(), entity);

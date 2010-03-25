@@ -76,12 +76,16 @@ public class Connection
             throw new IllegalArgumentException("Locale is null");
 
         session = getLoginService().login(login, password, locale);
+
+        WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
+        session.setAddress(browser.getAddress());
+        session.setClientInfo(browser.getBrowserApplication());
+
         connected = true;
         WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
 
         if (log.isDebugEnabled()) {
-            WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
             log.debug(String.format("Logged in: user=%s, ip=%s, browser=%s",
                     login, browser.getAddress(), browser.getBrowserApplication()));
         }

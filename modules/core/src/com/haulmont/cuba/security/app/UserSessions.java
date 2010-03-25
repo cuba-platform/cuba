@@ -123,6 +123,8 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
             userSession.setId(nfo.session.getId());
             userSession.setLogin(nfo.session.getUser().getLogin());
             userSession.setUserName(nfo.session.getUser().getName());
+            userSession.setAddress(nfo.session.getAddress());
+            userSession.setClientInfo(nfo.session.getClientInfo());
             Date since = TimeProvider.currentTimestamp();
             since.setTime(nfo.since);
             userSession.setSince(since);

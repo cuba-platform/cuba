@@ -35,14 +35,14 @@ public class UserSessionServiceBean implements UserSessionService
     }
 
     public Collection<UserSessionEntity> getUserSessionInfo() {
-        UserSessionsMBean mBean =  Locator.lookupMBean(UserSessionsMBean.class, UserSessionsMBean.OBJECT_NAME);
-        Collection<UserSessionEntity> userSessionList = mBean.getAPI().getUserSessionInfo();
+        UserSessionsAPI us =  Locator.lookup(UserSessionsAPI.NAME);
+        Collection<UserSessionEntity> userSessionList = us.getUserSessionInfo();
         return userSessionList;
     }
 
     public void killSession(UUID id) {
-        UserSessionsMBean mBean =  Locator.lookupMBean(UserSessionsMBean.class, UserSessionsMBean.OBJECT_NAME);
-        mBean.getAPI().killSession(id);        
+        UserSessionsAPI us =  Locator.lookup(UserSessionsAPI.NAME);
+        us.killSession(id);
     }
 
     public void pingSession() {

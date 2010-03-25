@@ -31,6 +31,8 @@ public class UserSession implements Serializable
     private User substitutedUser;
     private String[] roles;
     private Locale locale;
+    private String address;
+    private String clientInfo;
 
     private Map<String, Integer>[] permissions;
     private Map<String, List<String[]>> constraints;
@@ -118,6 +120,28 @@ public class UserSession implements Serializable
      */
     public Locale getLocale() {
         return locale;
+    }
+
+    /**
+     * Client IP-address
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    /**
+     * Client application info
+     */
+    public String getClientInfo() {
+        return clientInfo;
+    }
+
+    public void setClientInfo(String clientInfo) {
+        this.clientInfo = clientInfo;
     }
 
     /**

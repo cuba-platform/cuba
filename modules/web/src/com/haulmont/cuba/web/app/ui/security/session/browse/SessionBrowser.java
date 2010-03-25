@@ -11,10 +11,12 @@
 
 package com.haulmont.cuba.web.app.ui.security.session.browse;
 
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
 import java.util.Map;
 import java.util.Set;
@@ -37,11 +39,15 @@ public class SessionBrowser extends AbstractLookup {
             public void actionPerform(Component component) {
                 Set<UserSessionEntity> set = table.getSelected();
                 for (UserSessionEntity session : set){
-                    UserSessionService uss = ServiceLocator.lookup(UserSessionService.JNDI_NAME);
-                    uss.killSession(session.getId());
+                    if (!session.getId().equals(UserSessionClient.getUserSession().getId())) {
+                        UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
+                        uss.killSession(session.getId());
+                    }
                 }
                 table.getDatasource().refresh();
             }
         });
+        com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        vTable.setAllowMultiStringCells(true);
     }
 }
