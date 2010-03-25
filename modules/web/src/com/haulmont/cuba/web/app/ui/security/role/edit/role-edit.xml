@@ -3,6 +3,7 @@
         datasource="role"
         caption="msg://caption"
         class="com.haulmont.cuba.web.app.ui.security.role.edit.RoleEditor"
+        messagesPack="com.haulmont.cuba.web.app.ui.security.role.edit"
         >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>

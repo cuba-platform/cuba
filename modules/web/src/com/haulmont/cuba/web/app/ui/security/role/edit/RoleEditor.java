@@ -1,7 +1,10 @@
 package com.haulmont.cuba.web.app.ui.security.role.edit;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -9,6 +12,7 @@ import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
@@ -85,6 +89,37 @@ public class RoleEditor extends AbstractEditor {
 
         final TableActionsHelper helper = new TableActionsHelper(this, table);
         helper.createRemoveAction(false);
+
+        initPermissionValueColumn(permissionsStorage);
+    }
+
+    protected void initPermissionValueColumn(String tableId) {
+        final Table table = getComponent(tableId);
+        MetaPropertyPath columnId = table.getDatasource().getMetaClass().getPropertyEx("value");
+        com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        vTable.addGeneratedColumn(
+                columnId,
+                new com.vaadin.ui.Table.ColumnGenerator() {
+                    public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                        Permission permission = (Permission) table.getDatasource().getItem(itemId);
+                        if (permission.getValue() == null)
+                            return null;
+                        if (permission.getType().equals(PermissionType.ENTITY_ATTR)) {
+                            if (permission.getValue() == 0)
+                                return new com.vaadin.ui.Label(getMessage("PropertyPermissionValue.DENY"));
+                            else if (permission.getValue() == 1)
+                                return new com.vaadin.ui.Label(getMessage("PropertyPermissionValue.VIEW"));
+                            else
+                                return new com.vaadin.ui.Label(getMessage("PropertyPermissionValue.MODIFY"));
+                        } else {
+                            if (permission.getValue() == 0)
+                                return new com.vaadin.ui.Label(getMessage("PermissionValue.DENY"));
+                            else
+                                return new com.vaadin.ui.Label(getMessage("PermissionValue.ALLOW"));
+                        }
+                    }
+                }
+        );
     }
 
     protected Set<PermissionConfig.Target> substract(
