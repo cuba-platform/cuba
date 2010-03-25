@@ -13,15 +13,25 @@ package com.haulmont.cuba.core.sys;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class AppContext {
+
+    public interface Listener {
+        void applicationStarted();
+    }
 
     private static ApplicationContext context;
 
     private static Map<String, String> properties = new Hashtable<String, String>();
 
     private static ThreadLocal<SecurityContext> securityContextHolder = new ThreadLocal<SecurityContext>();
+
+    private static Set<Listener> listeners = new LinkedHashSet<Listener>();
+
+    private static volatile boolean started;
 
     public static ApplicationContext getApplicationContext() {
         return context;
@@ -49,5 +59,23 @@ public class AppContext {
 
     public static void setSecurityContext(SecurityContext securityContext) {
         securityContextHolder.set(securityContext);
+    }
+
+    public static void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    public static boolean isStarted() {
+        return started;
+    }
+
+    public static void startContext() {
+        if (started)
+            return;
+
+        started = true;
+        for (Listener listener : listeners) {
+            listener.applicationStarted();
+        }
     }
 }

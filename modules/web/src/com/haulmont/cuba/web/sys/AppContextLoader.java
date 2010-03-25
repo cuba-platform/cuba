@@ -49,6 +49,8 @@ public class AppContextLoader implements ServletContextListener {
             initPersistenceConfig(sc);
             initAppContext(sc);
             initServiceLocator(sc);
+
+            AppContext.startContext();
         } catch (Exception e) {
             log.error("Error initializing application", e);
             throw new RuntimeException(e);
