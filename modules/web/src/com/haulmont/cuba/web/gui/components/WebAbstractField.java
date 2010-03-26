@@ -154,7 +154,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     public void removeValidator(com.haulmont.cuba.gui.components.Field.Validator validator) {
-        validators.remove(validators.get(validator));
+        component.removeValidator(validators.get(validator));
+        validators.remove(validator);
     }
 
     public boolean isValid() {
