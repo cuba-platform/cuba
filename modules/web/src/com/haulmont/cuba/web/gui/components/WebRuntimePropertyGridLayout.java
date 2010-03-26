@@ -340,7 +340,11 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             if (value instanceof Entity) {
                 instance.setValue("value", ((Entity) value).getId().toString());
             } else {
-                instance.setValue("value", Datatypes.getInstance().get(type).format(value));
+                if (value instanceof String) {
+                    instance.setValue("value", value);                    
+                } else {
+                    instance.setValue("value", Datatypes.getInstance().get(type).format(value));
+                }
             }
         }
     }
