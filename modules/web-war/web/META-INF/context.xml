@@ -1,7 +1,7 @@
 <Context>
 
     <Resource
-      name="jdbc/CubaDB"
+      name="jdbc/CubaDS"
       type="javax.sql.DataSource"
       maxActive="4"
       maxIdle="2"
