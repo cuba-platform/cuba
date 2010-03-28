@@ -79,6 +79,10 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
     public void onScroll(Widget widget, int scrollLeft, int scrollTop) {
         // fix headers horizontal scrolling
         tHead.setHorizontalScrollPosition(scrollLeft);
+
+        if (aggregationRow != null) {
+            aggregationRow.setHorizontalScrollPosition(scrollLeft);
+        }
     }
 
     @Override

@@ -237,6 +237,10 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         // fix headers horizontal scrolling
         tHead.setHorizontalScrollPosition(scrollLeft);
 
+        if (aggregationRow != null) {
+            aggregationRow.setHorizontalScrollPosition(scrollLeft);
+        }
+
         firstRowInViewPort = (int) Math.ceil(scrollTop
                 / (double) tBody.getRowHeight());
         // ApplicationConnection.getConsole().log(

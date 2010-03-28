@@ -2063,10 +2063,13 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         protected boolean initialized = false;
 
         protected char[] aligns;
+        protected Element wrap = DOM.createDiv();
         protected Element tr;
 
         public AggregationRow() {
             setStyleName(CLASSNAME + "-arow");
+            DOM.appendChild(getElement(), wrap);
+            DOM.setStyleAttribute(wrap, "overflow", "hidden");
         }
 
         public void updateFromUIDL(UIDL uidl) {
@@ -2160,6 +2163,16 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.appendChild(td, container);
             DOM.appendChild(tr, td);
         }
+
+        @Override
+        protected Element getContainerElement() {
+            return wrap;
+        }
+
+        public void setHorizontalScrollPosition(int scrollLeft) {
+            DOM.setElementPropertyInt(getContainerElement(), "scrollLeft", scrollLeft);
+        }
+
     }
 
     public static void setCellText(Element container, String text,
