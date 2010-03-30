@@ -356,3 +356,16 @@
 .v-table .v-table-arow {
     background-color: #fff;
 }
+
+.v-table .v-table-arow table {
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.v-table .v-table-arow-row {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
