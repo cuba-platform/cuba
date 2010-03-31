@@ -48,7 +48,7 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
             final DataService dataservice = datasource.getDataService();
 
             final Entity parentItem = datasource.getItem();
-            if (parentItem == null) return;
+//            if (parentItem == null) return;
 
             final Entity item = dataservice.<Entity>newInstance(datasource.getMetaClass());
             ((Instance) item).setValue(hierarchyProperty, parentItem);
