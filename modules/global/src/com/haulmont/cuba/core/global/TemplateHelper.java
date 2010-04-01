@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.cache.StringTemplateLoader;
@@ -28,6 +29,10 @@ public class TemplateHelper {
 
         Map<String, Object> params = new HashMap<String, Object>(parameterValues);
         params.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
+
+        for (String name : AppContext.getPropertyNames()) {
+            params.put(name.replace(".", "_"), AppContext.getProperty(name));
+        }
 
         final StringWriter writer = new StringWriter();
 
