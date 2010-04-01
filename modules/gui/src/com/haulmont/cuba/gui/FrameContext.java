@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.util.*;
 import java.util.List;
@@ -55,9 +56,8 @@ public class FrameContext implements WindowContext {
 
         Component component = frame.getComponent(property);
         while (component == null && path.length > 1) {
-            final java.util.List<String> subpath = Arrays.asList(elements).subList(0, elements.length - 1);
+            path = (String[]) ArrayUtils.subarray(path, 0, path.length - 1);
 
-            path = subpath.toArray(new String[subpath.size()]);
             component = frame.getComponent(ValuePathHelper.format(path));
         }
 
