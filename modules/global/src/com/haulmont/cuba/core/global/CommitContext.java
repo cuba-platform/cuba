@@ -25,6 +25,8 @@ public class CommitContext<Entity> implements Serializable {
 
     protected Map<Entity, View> views = new HashMap<Entity, View>();
 
+    protected boolean softDeletion = true;
+
     public CommitContext() {
     }
 
@@ -55,5 +57,13 @@ public class CommitContext<Entity> implements Serializable {
 
     public Map<Entity, View> getViews() {
         return views;
+    }
+
+    public boolean isSoftDeletion() {
+        return softDeletion;
+    }
+
+    public void setSoftDeletion(boolean softDeletion) {
+        this.softDeletion = softDeletion;
     }
 }

@@ -51,6 +51,9 @@ public class DataServiceBean implements DataService
             EntityManager em = PersistenceProvider.getEntityManager();
             checkPermissions(context);
 
+            if (!context.isSoftDeletion())
+                em.setSoftDeletion(false);
+
             // persist new
             for (Entity entity : context.getCommitInstances()) {
                 if (PersistenceHelper.isNew(entity)) {
@@ -109,14 +112,11 @@ public class DataServiceBean implements DataService
                 em.setView(context.getView());
             }
 
+            if (!context.isSoftDeletion())
+                em.setSoftDeletion(false);
+
             if (context.getId() != null) {
                 result = em.find(metaClass.getJavaClass(), context.getId());
-
-                if (em.isSoftDeletion()
-                        && result instanceof SoftDelete
-                        && ((SoftDelete) result).isDeleted()) {
-                    result = null;
-                }
             } else {
                 com.haulmont.cuba.core.Query query = createQuery(em, context);
                 try {
