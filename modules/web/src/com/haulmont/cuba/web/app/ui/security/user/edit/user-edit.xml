@@ -54,7 +54,7 @@
                             <vbox align="MIDDLE_RIGHT">
                                 <label id="confirmPasswLab" value="msg://confirmPassword"/>
                             </vbox>
-                            <textField id="confirmPassw" secret="true" width="${width}"/>
+                            <textField id="confirmPassw" secret="true" width="${width}" required="true"/>
                         </row>
                         <row>
                             <vbox align="MIDDLE_RIGHT">
