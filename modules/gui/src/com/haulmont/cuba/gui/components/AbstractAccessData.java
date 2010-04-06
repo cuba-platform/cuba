@@ -12,10 +12,13 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.List;
 
 public abstract class AbstractAccessData {
 
     protected Map<String, Object> params;
+
+    protected List<String> disabledComponents;
 
     public AbstractAccessData(Map<String, Object> params) {
         this.params = params;
@@ -27,5 +30,9 @@ public abstract class AbstractAccessData {
      * @param components all components under this AccessControl
      */
     public void visitComponent(Component component, Collection<Component> components) {
+    }
+
+    public List<String> getDisabledComponents() {
+        return disabledComponents;
     }
 }
