@@ -34,9 +34,9 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     private long timerIdSequence = 0;
 
-    private Map<String, Timer> id2Timer = new HashMap<String, Timer>();
+    private Map<String, Timer> id2Timer = new WeakHashMap<String, Timer>();
 
-    private Map<Timer, String> timer2Id = new HashMap<Timer, String>();
+    private Map<Timer, String> timer2Id = new WeakHashMap<Timer, String>();
 
     public CubaCommunicationManager(Application application, AbstractApplicationServlet applicationServlet) {
         super(application, applicationServlet);
@@ -169,9 +169,9 @@ public class CubaCommunicationManager extends CommunicationManager {
 
         final JsonPaintTarget paintTarget = new JsonPaintTarget(this, writer, false);
 
-        final Set<Timer> timers = new HashSet<Timer>(application.getApplicationTimers());
+        final Set<Timer> timers = new HashSet<Timer>(application.getAppTimers(window));
         for (final Timer timer : timers) {
-            if (repaintAll || timer.isDirty()) {
+            if (repaintAll || timer != null && timer.isDirty()) {
                 String timerId;
                 if ((timerId = timer2Id.get(timer)) == null) {
                     timerId = timerId();

@@ -194,7 +194,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     @Nullable
     protected FoldersPane createFoldersPane() {
-        return new FoldersPane(menuBar);
+        return new FoldersPane(menuBar, this);
     }
 
     /**

@@ -11,41 +11,40 @@
 package com.haulmont.cuba.web.app.folders;
 
 import com.haulmont.cuba.core.app.FoldersService;
+import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.core.entity.AbstractSearchFolder;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.Filter;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.app.UserSettingHelper;
-import com.vaadin.data.Item;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.*;
-import com.vaadin.event.ItemClickEvent;
+import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Tree;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 public class FoldersPane extends VerticalLayout {
 
@@ -67,12 +66,15 @@ public class FoldersPane extends VerticalLayout {
     protected Object appFoldersRoot;
     protected Object searchFoldersRoot;
     private Timer timer;
-    private final int DEFAULT_PANE_WIDTH = 200;
+    private static final int DEFAULT_PANE_WIDTH = 200;
     private int paneWidth;
 
-    public FoldersPane(MenuBar menuBar) {
+    protected AppWindow parentAppWindow;
+
+    public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
         messagesPack = AppConfig.getInstance().getMessagesPack();
         service = ServiceLocator.lookup(FoldersService.JNDI_NAME);
+        parentAppWindow = appWindow;
 
         String paneWidthStr = AppContext.getProperty("cuba.foldersPane.width");
         paneWidth = paneWidthStr == null ? DEFAULT_PANE_WIDTH : Integer.parseInt(paneWidthStr);
@@ -114,7 +116,7 @@ public class FoldersPane extends VerticalLayout {
                 int period = ConfigProvider.getConfig(WebConfig.class).getAppFoldersRefreshPeriodSec() * 1000;
                 timer = new Timer(period, true);
                 timer.addListener(createAppFolderUpdater());
-                App.getInstance().addTimer(timer);
+                App.getInstance().addTimer(timer, parentAppWindow);
             }
 
             Component searchFoldersPane = createSearchFoldersPane();

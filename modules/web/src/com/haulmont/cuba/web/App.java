@@ -25,6 +25,7 @@ import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.Terminal;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
@@ -67,8 +68,8 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     private LinkHandler linkHandler;
 
-    protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
-    protected Set<Timer> timers = new HashSet<Timer>();
+    protected Map<Window, WindowTimers> windowTimers = new WeakHashMap<Window, WindowTimers>();
+    protected Map<Timer, Window> timerWindow = new WeakHashMap<Timer, Window>();
 
     protected Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
@@ -208,7 +209,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
      * Get current connection object
      */
     public Connection getConnection() {
-        return connection;                       
+        return connection;
     }
 
     public WebWindowManager getWindowManager() {
@@ -248,9 +249,13 @@ public class App extends Application implements ConnectionListener, ApplicationC
                 removeWindow((Window) win);
             }
 
+            String name = GlobalUtils.generateWebWindowName();
+
             Window window = createLoginWindow();
+            window.setName(name);
             setMainWindow(window);
-            currentWindowName.set(null);
+
+            currentWindowName.set(window.getName());
 
             initExceptionHandlers(false);
         }
@@ -301,8 +306,19 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
                 return appWindow;
             } else {
+/*
                 //noinspection deprecation
                 return getMainWindow();
+*/
+                String newWindowName = GlobalUtils.generateWebWindowName();
+
+                final Window loginWindow = createLoginWindow();
+                loginWindow.setName(newWindowName);
+                addWindow(loginWindow);
+
+                loginWindow.open(new ExternalResource(loginWindow.getURL()));
+
+                return loginWindow;
             }
         }
 
@@ -423,20 +439,59 @@ public class App extends Application implements ConnectionListener, ApplicationC
         }
     }
 
+    /**
+     * Adds a timer on the application level
+     * @param timer new timer
+     */
     public void addTimer(final Timer timer) {
-        addTimer(timer, null);
+        addTimer(timer, null, getCurrentWindow());
     }
 
+    /**
+     * Adds a timer for the defined window
+     * @param timer new timer
+     * @param owner component that owns a timer
+     */
     public void addTimer(final Timer timer, com.haulmont.cuba.gui.components.Window owner) {
-        if (timers.add(timer)) {
+        addTimer(timer, owner, getCurrentWindow());
+    }
+
+    /**
+     * Do not use this method in application code
+     */
+    public void addTimer(final Timer timer, Window mainWindow) {
+        addTimer(timer, null, mainWindow);
+    }
+
+    /**
+     * Do not use this method in application code
+     */
+    public void addTimer(final Timer timer, com.haulmont.cuba.gui.components.Window owner, Window mainWindow) {
+        WindowTimers wt = windowTimers.get(mainWindow);
+        if (wt == null) {
+            wt = new WindowTimers();
+            windowTimers.put(mainWindow, wt);
+        }
+
+        if (wt.timers.add(timer))
+        {
+            timerWindow.put(timer, mainWindow);
+
             timer.addListener(new Timer.Listener() {
                 public void onTimer(Timer timer) {
                 }
 
                 public void onStopTimer(Timer timer) {
-                    timers.remove(timer);
-                    if (timer instanceof WebTimer) {
-                        idTimers.remove(((WebTimer) timer).getId());
+                    Window window = timerWindow.get(timer);
+                    if (window != null)
+                    {
+                        WindowTimers wt = windowTimers.get(window);
+                        if (wt != null) {
+                            wt.timers.remove(timer);
+                            if (timer instanceof WebTimer) {
+                                wt.idTimers.remove(((WebTimer) timer).getId());
+                            }
+                        }
                     }
                 }
             });
@@ -450,27 +505,58 @@ public class App extends Application implements ConnectionListener, ApplicationC
                     });
                 }
                 if (webTimer.getId() != null) {
-                    idTimers.put(webTimer.getId(), webTimer);
+                    wt.idTimers.put(webTimer.getId(), webTimer);
                 }
             }
         }
     }
 
     private void stopTimers() {
-        Set<Timer> timers = new HashSet<Timer>(this.timers);
+        Set<Timer> timers = new HashSet<Timer>(timerWindow.keySet());
         for (final Timer timer : timers) {
-            if (!timer.isStopped()) {
+            if (timer != null && !timer.isStopped()) {
                 timer.stopTimer();
             }
         }
     }
 
+    /**
+     * Returns a timer by id
+     * @param id timer id
+     * @return timer or <code>null</code>
+     */
     public Timer getTimer(String id) {
-        return idTimers.get(id);
+        Window currentWindow = getCurrentWindow();
+        WindowTimers wt = windowTimers.get(currentWindow);
+        if (wt != null) {
+            return wt.idTimers.get(id);
+        } else {
+            return null;
+        }
     }
 
-    public Set<Timer> getApplicationTimers() {
-        return Collections.unmodifiableSet(timers);
+    /**
+     * Do not use this method in application code
+     * @param currentWindow current window
+     * @return collection of timers that applied for the current window
+     */
+    public Collection<Timer> getAppTimers(Window currentWindow) {
+        WindowTimers wt = windowTimers.get(currentWindow);
+        if (wt != null) {
+            return Collections.unmodifiableSet(wt.timers);
+        } else {
+            return Collections.emptySet();
+        }
+    }
+
+    protected static class WindowTimers {
+        protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
+        protected Set<Timer> timers = new HashSet<Timer>();
+    }
+
+    private Window getCurrentWindow() {
+        String name = currentWindowName.get();
+        return (name == null ? getMainWindow() : getWindow(name));
     }
 
     public AppCookies getCookies() {
