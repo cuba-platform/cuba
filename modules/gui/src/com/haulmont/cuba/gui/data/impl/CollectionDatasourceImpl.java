@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
@@ -241,8 +242,14 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     public void modifyItem(T item) {
         if (data.containsKey(item.getId())) {
-            updateItem(item);
-            modified(item);
+            if (PersistenceHelper.isNew(item)) {
+                Object existingItem = data.get(item.getId());
+                InstanceUtils.copy((Instance) item, (Instance) existingItem);
+                modified((T) existingItem);
+            } else {
+                updateItem(item);
+                modified(item);
+            }
         }
     }
 
