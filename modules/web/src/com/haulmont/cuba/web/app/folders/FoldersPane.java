@@ -174,7 +174,9 @@ public class FoldersPane extends VerticalLayout {
             return null;
 
         appFoldersTree = new Tree();
-        appFoldersTree.setSizeFull();
+//        appFoldersTree.setSizeFull();
+        appFoldersTree.setHeight("94%");
+        appFoldersTree.setWidth("95%");
 
         appFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
@@ -189,7 +191,10 @@ public class FoldersPane extends VerticalLayout {
 
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new Tree();
-        searchFoldersTree.setSizeFull();
+//        searchFoldersTree.setSizeFull();
+        searchFoldersTree.setHeight("94%");
+        searchFoldersTree.setWidth("95%");
+
 
         List<SearchFolder> searchFolders = service.loadSearchFolders();
         searchFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot");
