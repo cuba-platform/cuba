@@ -249,7 +249,12 @@ public class FoldersPane extends VerticalLayout {
         String screenId = strings[0];
 
         WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(screenId);
-        Window window = App.getInstance().getWindowManager().openWindow(windowInfo, WindowManager.OpenType.NEW_TAB);
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("disableAutoRefresh", true);
+
+        Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
+                WindowManager.OpenType.NEW_TAB, params);
 
         if (strings.length > 1) {
             String filterComponentId = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), '.');

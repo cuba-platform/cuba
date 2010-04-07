@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.*;
 
@@ -201,7 +202,10 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     protected void __autoRefreshInvalid() {
         if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
-            datasource.refresh();
+            Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
+            if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+                datasource.refresh();
+            }
         }
     }
 

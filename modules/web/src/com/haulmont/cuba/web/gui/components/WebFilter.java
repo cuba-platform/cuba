@@ -14,6 +14,9 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.CommitContext;
@@ -297,6 +300,43 @@ public class WebFilter
         apply();
     }
 
+    public void loadFiltersAndApplyDefault() {
+        loadFilterEntities();
+
+        Window window = ComponentsHelper.getWindow(this);
+        UserSettingService settingService = App.getInstance().getWindowManager().getSettingService();
+        SettingsImpl settings = new SettingsImpl(window.getId(), settingService);
+
+        Element e = settings.get(getId()).element("defaultFilter");
+        if (e != null) {
+            String defIdStr =  e.attributeValue("id");
+            if (!StringUtils.isBlank(defIdStr)) {
+                UUID defaultId = null;
+                try {
+                    defaultId = UUID.fromString(defIdStr);
+                } catch (IllegalArgumentException ex) {
+                    //
+                }
+                if (defaultId != null) {
+                    Collection<FilterEntity> filters = select.getItemIds();
+                    for (FilterEntity filter : filters) {
+                        if (defaultId.equals(filter.getId())) {
+                            filter.setIsDefault(true);
+
+                            Map<String, Object> params = window.getContext().getParams();
+                            if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+                                select.setValue(filter);
+                                updateControls();
+                                apply();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void editorCommitted() {
         changingFilter = true;
         try {
@@ -466,31 +506,7 @@ public class WebFilter
     }
 
     public void applySettings(Element element) {
-        loadFilterEntities();
-
-        Element e = element.element("defaultFilter");
-        if (e != null) {
-            String defIdStr =  e.attributeValue("id");
-            if (!StringUtils.isBlank(defIdStr)) {
-                UUID defaultId = null;
-                try {
-                    defaultId = UUID.fromString(defIdStr);
-                } catch (IllegalArgumentException ex) {
-                    //
-                }
-                if (defaultId != null) {
-                    Collection<FilterEntity> filters = select.getItemIds();
-                    for (FilterEntity filter : filters) {
-                        if (defaultId.equals(filter.getId())) {
-                            filter.setIsDefault(true);
-                            select.setValue(filter);
-                            updateControls();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        // logic moved to loadFiltersAndApplyDefault()
     }
 
     public boolean saveSettings(Element element) {

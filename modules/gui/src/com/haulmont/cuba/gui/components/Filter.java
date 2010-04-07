@@ -21,4 +21,9 @@ public interface Filter
     void setDatasource(CollectionDatasource datasource);
 
     void setFilterEntity(FilterEntity filterEntity);
+
+    /**
+     * Low-level method, don't invoke from application code
+     */
+    void loadFiltersAndApplyDefault();
 }
