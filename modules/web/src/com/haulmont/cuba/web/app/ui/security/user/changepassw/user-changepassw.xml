@@ -19,7 +19,7 @@
 
     <layout>
         <vbox>
-            <grid spacing="true" width="100%" stylename="edit-area">
+            <grid margin="true" spacing="true" width="100%" stylename="edit-area">
                 <columns>
                     <column flex="1"/>
                     <column flex="1"/>

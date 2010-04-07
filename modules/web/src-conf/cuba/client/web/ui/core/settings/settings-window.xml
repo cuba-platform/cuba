@@ -19,6 +19,9 @@
                             <label value="msg://mainWindowMode"/>
                             <optionsGroup id="mainWindowMode"/>
                         </row>
+                        <row>
+                            <button id="changePassw" icon="icons/change-pass.png"/>
+                        </row>
                     </rows>
                 </grid>
             </vbox>

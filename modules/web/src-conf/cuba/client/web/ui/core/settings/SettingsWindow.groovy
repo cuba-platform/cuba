@@ -17,6 +17,9 @@ import com.haulmont.cuba.gui.components.Button
 import com.haulmont.cuba.gui.components.ActionAdapter
 import com.haulmont.cuba.web.app.UserSettingHelper
 import com.haulmont.cuba.web.AppWindow.Mode
+import com.haulmont.cuba.gui.UserSessionClient
+import com.haulmont.cuba.security.entity.User
+import com.haulmont.cuba.gui.WindowManager
 
 class SettingsWindow extends AbstractWindow {
 
@@ -35,6 +38,21 @@ class SettingsWindow extends AbstractWindow {
       modeOptions.setValue(msgTabbed)
     else
       modeOptions.setValue(msgSingle)
+
+    Button changePasswBtn = getComponent("changePassw")
+    User user = UserSessionClient.getUserSession().getUser()
+    changePasswBtn.setAction(
+            new ActionAdapter("changePassw", getMessagesPack(),
+                    [
+                            "actionPerform": {
+                              openEditor('sec$User.changePassw', user, WindowManager.OpenType.DIALOG)
+                            }
+                    ]
+            )
+    )
+    if (!user.equals(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser())) {
+      changePasswBtn.setEnabled(false)
+    }
 
 
     Button okBtn = getComponent("ok")

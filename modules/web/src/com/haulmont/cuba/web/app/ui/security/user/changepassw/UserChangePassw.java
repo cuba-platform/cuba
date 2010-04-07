@@ -41,7 +41,9 @@ public class UserChangePassw extends AbstractEditor
     public void commitAndClose() {
         String passw = passwField.getValue();
         String confPassw = confirmPasswField.getValue();
-        if (ObjectUtils.equals(passw, confPassw)) {
+        if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
+            showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
+        } else if (ObjectUtils.equals(passw, confPassw)) {
             if (StringUtils.isEmpty(passw))
                 userDs.getItem().setPassword(null);
             else
