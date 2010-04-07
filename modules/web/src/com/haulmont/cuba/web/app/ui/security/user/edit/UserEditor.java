@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.components.*;
@@ -23,9 +22,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.*;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
+import com.haulmont.cuba.web.app.NameBuilderListener;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +44,7 @@ public class UserEditor extends AbstractEditor {
 
     protected void init(Map<String, Object> params) {
         userDs = getDsContext().get("user");
+        userDs.addListener(new NameBuilderListener(this));
 
         rolesTable = getComponent("roles");
         rolesTable.addAction(new AddRoleAction());
