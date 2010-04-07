@@ -39,6 +39,7 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -536,9 +537,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             UserSession userSession = App.getInstance().getConnection().getSession();
             User oldUser = userSession.getSubstitutedUser() == null ? userSession.getUser() : userSession.getSubstitutedUser();
             if (!oldUser.equals(newUser)) {
+                String name = StringUtils.isBlank(newUser.getName()) ? newUser.getLogin() : newUser.getName();
                 App.getInstance().getWindowManager().showOptionDialog(
                         MessageProvider.getMessage(getMessagesPack(), "substUserSelectDialog.title"),
-                        MessageProvider.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", newUser.toString()),
+                        MessageProvider.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", name),
                         IFrame.MessageType.WARNING,
                         new Action[]{new ChangeSubstUserAction(substUserSelect), new DoNotChangeSubstUserAction(substUserSelect)}
                 );
