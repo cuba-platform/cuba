@@ -702,8 +702,18 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                         if (clickAction.startsWith("open:")) {
                             final com.haulmont.cuba.gui.components.IFrame frame = WebAbstractTable.this.getFrame();
                             String screenName = clickAction.substring("open:".length()).trim();
-                            frame.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
+                            final Window window = frame.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
 
+                            window.addListener(new Window.CloseListener() {
+                                public void windowClosed(String actionId) {
+                                    if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
+                                        Object item = ((Window.Editor) window).getItem();
+                                        if (item instanceof Entity) {
+                                            datasource.updateItem((Entity) item);
+                                        }
+                                    }
+                                }
+                            });
                         } else if (clickAction.startsWith("invoke:")) {
                             final com.haulmont.cuba.gui.components.IFrame frame = WebAbstractTable.this.getFrame();
                             String methodName = clickAction.substring("invoke:".length()).trim();
