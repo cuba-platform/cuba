@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PersistenceConfigProcessor;
 import com.haulmont.cuba.gui.ServiceLocator;
 import org.apache.commons.lang.StringUtils;
@@ -49,12 +50,21 @@ public class AppContextLoader implements ServletContextListener {
             initPersistenceConfig(sc);
             initAppContext(sc);
             initServiceLocator(sc);
+            initDatabase();
 
             AppContext.startContext();
         } catch (Exception e) {
             log.error("Error initializing application", e);
             throw new RuntimeException(e);
         }
+    }
+
+    private void initDatabase() {
+        if (!Boolean.valueOf(AppContext.getProperty("cuba.automaticDatabaseUpdate")))
+            return;
+
+        DbUpdater updater = (DbUpdater) AppContext.getApplicationContext().getBean(DbUpdater.NAME);
+        updater.updateDatabase();
     }
 
     private void initAppProperties(ServletContext sc) {

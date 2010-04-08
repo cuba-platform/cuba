@@ -1,10 +1,3 @@
-create table SYS_DB_UPDATE (
-    CREATE_TS timestamp default current_timestamp,
-    SCRIPT_NAME varchar(300),
-    primary key (SCRIPT_NAME)
-)^
-
-------------------------------------------------------------------------------------------------------------
 
 create table SYS_SERVER (
     ID uuid not null,

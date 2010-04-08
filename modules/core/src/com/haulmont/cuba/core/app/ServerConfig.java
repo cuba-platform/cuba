@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
@@ -29,6 +30,13 @@ public interface ServerConfig extends Config {
      */
     @Property("cuba.confDir")
     String getServerConfDir();
+
+    /**
+     * DB scripts directory.
+     * Does not end with "/"
+     */
+    @Property("cuba.dbDir")
+    String getServerDbDir();
 
     /**
      * Logs directory. Place app-specific log files here.
@@ -64,4 +72,11 @@ public interface ServerConfig extends Config {
      * Not the same as HTTP session timeout, but should have the same value.
      */
     void setUserSessionExpirationTimeoutSec(int timeout);
+
+    /**
+     * Whether the server will try to init/update database on each start
+     */
+    @Property("cuba.automaticDatabaseUpdate")
+    @DefaultBoolean(false)
+    boolean getAutomaticDatabaseUpdate();
 }

@@ -18,4 +18,6 @@ public interface PersistenceConfigMBean
     String OBJECT_NAME = "haulmont.cuba:service=PersistenceConfig";
     
     String printSoftDeleteTables();
+
+    String updateDatabase();
 }

@@ -12,23 +12,15 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
-import org.apache.commons.lang.StringEscapeUtils;
+import com.haulmont.cuba.core.sys.DbUpdater;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
 import javax.annotation.ManagedBean;
-import javax.naming.NamingException;
+import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -51,6 +43,9 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
     private Set<String> softDeleteTables = new HashSet<String>();
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    @Inject
+    private DbUpdater dbUpdater;
 
     private void initDbMetadata() {
         log.info("Initializing DB metadata");
@@ -110,6 +105,15 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
             return softDeleteTables.contains(table);
         } finally {
             lock.readLock().unlock();
+        }
+    }
+
+    public String updateDatabase() {
+        try {
+            dbUpdater.updateDatabase();
+            return "Updated";
+        } catch (Throwable e) {
+            return ExceptionUtils.getStackTrace(e);
         }
     }
 }

@@ -35,6 +35,11 @@ public class PostgresDbDialect extends DbDialect implements SequenceSupport
     }
 
     @Override
+    public String getName() {
+        return "postgres";
+    }
+
+    @Override
     public String getIdColumn() {
         return "id";
     }
@@ -52,5 +57,10 @@ public class PostgresDbDialect extends DbDialect implements SequenceSupport
     @Override
     public String getUniqueConstraintViolationPattern() {
         return "ERROR: duplicate key value violates unique constraint \"(.+)\"";
+    }
+
+    @Override
+    public String getScriptSeparator() {
+        return "^";
     }
 }
