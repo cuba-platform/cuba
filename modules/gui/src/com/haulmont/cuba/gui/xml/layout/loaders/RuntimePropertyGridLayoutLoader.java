@@ -39,7 +39,7 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
 
         loadId(component, element);
         loadVisible(component, element);
-
+        loadCaption(component, element);
         loadStyleName(component, element);
 
         final Element columnsElement = element.element("columns");

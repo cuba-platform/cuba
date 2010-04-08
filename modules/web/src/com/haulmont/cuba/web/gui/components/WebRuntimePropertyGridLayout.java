@@ -136,6 +136,9 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             int size = cds.size();
             if (size > 0) {
                 setRows((int) Math.round((double) size / (getColumns() / 2)));
+            } else {
+                setVisible(false);
+                return;
             }
 
             int row = 0;

@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 
-public interface RuntimePropertyGridLayout extends GridLayout{
+public interface RuntimePropertyGridLayout extends GridLayout, Component.HasCaption{
 
     Datasource getMainDs();
     void setMainDs(Datasource ds);
