@@ -15,12 +15,14 @@ import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 
 public class NumberAggregationHelper {
-    private final Set<Double> items;
+    private final List<Double> items;
 
     public NumberAggregationHelper() {
-        items = new HashSet<Double>();
+        items = new ArrayList<Double>();
     }
 
     public void addItem(Double newItem) {
