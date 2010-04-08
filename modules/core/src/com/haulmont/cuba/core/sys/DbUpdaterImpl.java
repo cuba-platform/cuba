@@ -45,7 +45,8 @@ public class DbUpdaterImpl implements DbUpdater {
     @Inject
     public void setConfigProvider(ConfigProvider cp) {
         String dbDirName = cp.doGetConfig(ServerConfig.class).getServerDbDir();
-        dbDir = new File(dbDirName);
+        if (dbDirName != null)
+            dbDir = new File(dbDirName);
     }
 
     public void updateDatabase() {
