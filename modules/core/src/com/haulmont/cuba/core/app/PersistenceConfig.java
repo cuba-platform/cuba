@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -115,5 +116,12 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
         } catch (Throwable e) {
             return ExceptionUtils.getStackTrace(e);
         }
+    }
+
+    public String findUpdateDatabaseScripts() {
+        List<String> list = dbUpdater.findUpdateDatabaseScripts();
+        StrBuilder sb = new StrBuilder();
+        sb.appendWithSeparators(list, "\n");
+        return sb.toString();
     }
 }

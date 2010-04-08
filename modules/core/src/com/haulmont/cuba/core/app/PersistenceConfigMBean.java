@@ -20,4 +20,6 @@ public interface PersistenceConfigMBean
     String printSoftDeleteTables();
 
     String updateDatabase();
+
+    String findUpdateDatabaseScripts();
 }

@@ -57,6 +57,25 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
+    public List<String> findUpdateDatabaseScripts() {
+        List<String> list = new ArrayList<String>();
+        if (dbInitialized()) {
+            List<File> files = getUpdateScripts();
+            Set<String> scripts = getExecutedScripts();
+            for (File file : files) {
+                String name = getScriptName(file);
+                if (!scripts.contains(name)) {
+                    list.add(file.getPath());
+                }
+            }
+        } else {
+            for (File file : getInitScripts()) {
+                list.add(file.getPath());
+            }
+        }
+        return list;
+    }
+
     private boolean dbInitialized() {
         Connection connection = null;
         try {
