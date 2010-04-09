@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -263,9 +264,13 @@ public class DbUpdaterImpl implements DbUpdater {
             File moduleDir = new File(dbDir, moduleDirName);
             File initDir = new File(moduleDir, "init");
             File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
-            File file = new File(scriptDir, "create-db.sql");
-            if (file.exists()) {
-                files.add(file);
+            if (scriptDir.exists()) {
+                File[] scriptFiles = scriptDir.listFiles(new FilenameFilter() {
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith("create-db.sql");
+                    }
+                });
+                files.addAll(Arrays.asList(scriptFiles));
             }
         }
         return files;
