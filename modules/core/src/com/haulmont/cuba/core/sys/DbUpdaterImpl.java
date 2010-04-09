@@ -127,20 +127,22 @@ public class DbUpdaterImpl implements DbUpdater {
     private List<File> getUpdateScripts() {
         List<File> files = new ArrayList<File>();
 
-        String[] moduleDirs = dbDir.list();
-        Arrays.sort(moduleDirs);
-        for (String moduleDirName : moduleDirs) {
-            File moduleDir = new File(dbDir, moduleDirName);
-            File initDir = new File(moduleDir, "update");
-            File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
-            if (scriptDir.exists()) {
-                List<File> list = new ArrayList(FileUtils.listFiles(scriptDir, null, true));
-                Collections.sort(list, new Comparator<File>() {
-                    public int compare(File f1, File f2) {
-                        return f1.getName().compareTo(f2.getName());
-                    }
-                });
-                files.addAll(list);
+        if (dbDir.exists()) {
+            String[] moduleDirs = dbDir.list();
+            Arrays.sort(moduleDirs);
+            for (String moduleDirName : moduleDirs) {
+                File moduleDir = new File(dbDir, moduleDirName);
+                File initDir = new File(moduleDir, "update");
+                File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
+                if (scriptDir.exists()) {
+                    List<File> list = new ArrayList(FileUtils.listFiles(scriptDir, null, true));
+                    Collections.sort(list, new Comparator<File>() {
+                        public int compare(File f1, File f2) {
+                            return f1.getName().compareTo(f2.getName());
+                        }
+                    });
+                    files.addAll(list);
+                }
             }
         }
         return files;
@@ -258,19 +260,21 @@ public class DbUpdaterImpl implements DbUpdater {
     private List<File> getInitScripts() {
         List<File> files = new ArrayList<File>();
 
-        String[] moduleDirs = dbDir.list();
-        Arrays.sort(moduleDirs);
-        for (String moduleDirName : moduleDirs) {
-            File moduleDir = new File(dbDir, moduleDirName);
-            File initDir = new File(moduleDir, "init");
-            File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
-            if (scriptDir.exists()) {
-                File[] scriptFiles = scriptDir.listFiles(new FilenameFilter() {
-                    public boolean accept(File dir, String name) {
-                        return name.endsWith("create-db.sql");
-                    }
-                });
-                files.addAll(Arrays.asList(scriptFiles));
+        if (!dbDir.exists()) {
+            String[] moduleDirs = dbDir.list();
+            Arrays.sort(moduleDirs);
+            for (String moduleDirName : moduleDirs) {
+                File moduleDir = new File(dbDir, moduleDirName);
+                File initDir = new File(moduleDir, "init");
+                File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
+                if (scriptDir.exists()) {
+                    File[] scriptFiles = scriptDir.listFiles(new FilenameFilter() {
+                        public boolean accept(File dir, String name) {
+                            return name.endsWith("create-db.sql");
+                        }
+                    });
+                    files.addAll(Arrays.asList(scriptFiles));
+                }
             }
         }
         return files;
