@@ -6,17 +6,40 @@
 }
 
 .v-tree-node {
-	background: transparent url(img/item-collapsed.png) no-repeat 2px 1px;
+	background: transparent url(img/item-collapsed.png) no-repeat 0px 1px;
 }
 .v-tree-node-expanded {
-	background: transparent url(img/item-expanded.png) no-repeat 2px 1px;
+	background: transparent url(img/item-expanded.png) no-repeat 0px 1px;
 }
-.v-tree-node-leaf {
-	background-image: none;
+
+.v-tree-node-children .v-tree-node {
+	padding-left: 16px;
+    background: transparent url(img/item-collapsed.png) no-repeat 16px 1px;
 }
+
+.v-tree-node-children .v-tree-node-expanded {
+	padding-left: 16px;
+    background: transparent url(img/item-expanded.png) no-repeat 16px 1px;
+}
+
+.v-tree-node-leaf.v-tree-node{
+    padding-left: 16px;
+    background: url(img/tree-line.png) no-repeat left top
+}
+
+.v-tree-node-leaf.v-tree-node.last {
+    padding-left: 16px;
+    background: url(img/tree-line-last.png) no-repeat left top
+}
+
 .v-tree-node-caption {
-	margin-left: 20px;
+	margin-left: 16px;
 }
+
+.v-tree-node-leaf .v-tree-node-caption {
+	margin-left: 2px;
+}
+
 
 .v-tree-node span {
 	padding: 0 2px;
@@ -33,7 +56,8 @@
 	cursor: pointer;
 }
 .v-tree-node-children {
-	padding-left: 16px;
+	padding-left: 0;
+    /*background: url(img/tree-line.png) repeat-y left top*/
 }
 
 
