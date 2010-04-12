@@ -821,6 +821,31 @@ public class Table
         }
     }
 
+    @Override
+    public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+        super.containerItemSetChange(event);
+
+        Object value = getValue();
+        if (value != null) {
+            if (isMultiSelect()) {
+                if (Collection.class.isAssignableFrom(value.getClass())) {
+                    Set<Object> newValue = new HashSet<Object>();
+                    Set<Object> oldValue = new HashSet<Object>((Collection) value);
+                    for (final Object v : oldValue) {
+                        if (items.containsId(v)) {
+                            newValue.add(v);
+                        }
+                    }
+                    setValue(newValue);
+                }
+            } else {
+                if (!items.containsId(value)) {
+                    setValue(null);
+                }
+            }
+        }
+    }
+
     public Map<Object, String> aggregate(Collection itemIds) {
         if (items instanceof AggregationContainer && isAggregatable()) {
             return ((AggregationContainer) items).aggregate(itemIds);
