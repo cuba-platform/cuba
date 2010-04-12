@@ -91,8 +91,9 @@ public class ManagementBean
             String password;
             SecurityContext securityContext = ServerSecurityUtils.getSecurityAssociation();
             if (securityContext == null || securityContext.getUser() == null || securityContext.getPassword() == null) {
-                name = AppContext.getProperty("cuba.jmxUserLogin");
-                password = AppContext.getProperty("cuba.jmxUserPassword");
+                ManagementBean.Credentials credintialsForLogin = getCredintialsForLogin();
+                name = credintialsForLogin.getUserName();
+                password = credintialsForLogin.getPassword();
             } else {
                 name = securityContext.getUser();
                 password = securityContext.getPassword();
@@ -108,9 +109,13 @@ public class ManagementBean
         }
     }
 
+    protected Credentials getCredintialsForLogin() {
+        return new Credentials(AppContext.getProperty("cuba.jmxUserLogin"), AppContext.getProperty("cuba.jmxUserPassword"));
+    }
+
     /**
      * Performs logout if there was previous login in this thread.<br>
-     * Should be placed into "finally" section of a try/finally block. 
+     * Should be placed into "finally" section of a try/finally block.
      */
     protected void logout() {
         try {
@@ -126,4 +131,25 @@ public class ManagementBean
             log.error("Error logging out", e);
         }
     }
+
+    public class Credentials {
+
+        private String userName;
+
+        private String password;
+
+        public Credentials(String userName, String password) {
+            this.userName = userName;
+            this.password = password;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+    }
+
 }
