@@ -62,10 +62,8 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     public void sendEmail(EmailInfo info) throws EmailException {
         if (info.getTemplatePath() != null) {
-            ResourceRepositoryAPI resourceRepository = Locator.lookup(ResourceRepositoryAPI.NAME);
-            String template = resourceRepository.getResAsString(info.getTemplatePath());
             Map map = info.getTemplateParameters() == null ? Collections.EMPTY_MAP : info.getTemplateParameters();
-            info.setBody(TemplateHelper.processTemplate(template, map));
+            info.setBody(TemplateHelper.processTemplateFromFile(info.getTemplatePath(), map));
         }
         sendEmail(info.getAddresses(), info.getCaption(), info.getBody(), info.getFrom() != null ? info.getFrom() : config.getFromAddress(), info.getAttachment());
     }
