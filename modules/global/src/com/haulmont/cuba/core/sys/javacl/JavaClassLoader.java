@@ -210,7 +210,7 @@ public class JavaClassLoader extends URLClassLoader {
     }
 
     private String buildClasspath() {
-        StringBuilder sb = new StringBuilder(System.getProperty("java.class.path") + ";");
+        StringBuilder sb = new StringBuilder(System.getProperty("java.class.path") + System.getProperty("path.separator"));
 
         String directoriesStr = AppContext.getProperty("cuba.classpath.directories");
         String[] directories = directoriesStr.split(";");
@@ -220,7 +220,7 @@ public class JavaClassLoader extends URLClassLoader {
                 File _dir = new File(directory);
                 for (File file : _dir.listFiles()) {
                     if (file.getName().endsWith(".jar")) {
-                        sb.append(file.getAbsolutePath()).append(";");
+                        sb.append(file.getAbsolutePath()).append(System.getProperty("path.separator"));
                     }
                 }
             }
