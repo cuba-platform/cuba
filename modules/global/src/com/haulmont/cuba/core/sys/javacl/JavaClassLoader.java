@@ -216,7 +216,7 @@ public class JavaClassLoader extends URLClassLoader {
         String[] directories = directoriesStr.split(";");
         for (String directory : directories) {
             if (!"".equalsIgnoreCase(directory)) {
-                sb.append(directory);
+                sb.append(directory).append(System.getProperty("path.separator"));
                 File _dir = new File(directory);
                 for (File file : _dir.listFiles()) {
                     if (file.getName().endsWith(".jar")) {
