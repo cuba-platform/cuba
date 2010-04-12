@@ -260,7 +260,7 @@ public class DbUpdaterImpl implements DbUpdater {
     private List<File> getInitScripts() {
         List<File> files = new ArrayList<File>();
 
-        if (!dbDir.exists()) {
+        if (dbDir.exists()) {
             String[] moduleDirs = dbDir.list();
             Arrays.sort(moduleDirs);
             for (String moduleDirName : moduleDirs) {
