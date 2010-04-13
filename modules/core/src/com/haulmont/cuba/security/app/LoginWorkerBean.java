@@ -108,7 +108,11 @@ public class LoginWorkerBean implements LoginWorker
             UserSession session = SecurityProvider.currentUserSession();
             UserSessionManager.getInstance().removeSession(session);
             log.info("Logged out: " + session);
-        } catch (NoUserSessionException e) {
+        }
+        catch (SecurityException e) {
+            log.warn("Couldn't logout: " + e);
+        }
+        catch (NoUserSessionException e) {
             log.warn("NoUserSessionException thrown on logout");
         }
     }
