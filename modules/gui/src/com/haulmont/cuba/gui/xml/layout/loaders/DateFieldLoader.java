@@ -30,7 +30,8 @@ public class DateFieldLoader extends AbstractFieldLoader {
 
         TemporalType tt = null;
         if (component.getMetaProperty() != null) {
-            tt = (TemporalType) component.getMetaProperty().getAnnotations().get("temporal");
+            if (component.getMetaProperty().getAnnotations() != null)
+                tt = (TemporalType) component.getMetaProperty().getAnnotations().get("temporal");
         }
 
         final String resolution = element.attributeValue("resolution");

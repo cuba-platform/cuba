@@ -379,4 +379,21 @@
 .v-pager .v-pager-editor {
     float: right;
     line-height: 18px;
-}   
+}
+
+/*marked table rows*/
+.v-table-row-marked1  .v-table-cell-content {
+    color: #F00
+}
+
+.v-table-row-marked2  .v-table-cell-content {
+    color: #00F
+}
+
+.v-table-row-marked1  .v-table-cell-content .v-button-link {
+    color: #F00;
+}
+
+.v-table-row-marked2  .v-table-cell-content .v-button-link {
+    color: #00F;
+}
