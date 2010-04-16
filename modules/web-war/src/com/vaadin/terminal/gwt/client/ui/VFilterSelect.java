@@ -446,6 +446,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                                 .sinkEvents((Element) child.cast(),
                                         (DOM.getEventsSunk((Element) child
                                                 .cast()) | Event.ONLOAD));
+                        client.addPngFix((Element) child.cast());
                     }
                     child = child.getNextSiblingElement();
                 }
@@ -474,6 +475,19 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 suggestionPopup.hide();
                 return;
             }
+
+            selecting = filtering;
+            if (!filtering) {
+                doPostFilterSelectedItemAction();
+            }
+        }
+
+        public void doPostFilterSelectedItemAction() {
+            final MenuItem item = getSelectedItem();
+            final String enteredItemValue = tb.getText();
+
+            selecting = false;
+
             // check for exact match in menu
             int p = getItems().size();
             if (p > 0) {
@@ -504,16 +518,17 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                             lastFilter.toLowerCase())) {
                 doItemAction(item, true);
             } else {
-                if (currentSuggestion != null) {
+                // currentSuggestion has key="" for nullselection
+                if (currentSuggestion != null
+                        && !currentSuggestion.key.equals("")) {
+                    // An item (not null) selected
                     String text = currentSuggestion.getReplacementString();
-                    /*
-                     * TODO? if (text.equals("")) {
-                     * addStyleDependentName(CLASSNAME_PROMPT);
-                     * tb.setText(inputPrompt); prompting = true; } else {
-                     * tb.setText(text); prompting = false;
-                     * removeStyleDependentName(CLASSNAME_PROMPT); }
-                     */
+                    tb.setText(text);
                     selectedOptionKey = currentSuggestion.key;
+                } else {
+                    // Null selected
+                    tb.setText("");
+                    selectedOptionKey = null;
                 }
             }
             suggestionPopup.hide();
@@ -580,6 +595,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     private String selectedOptionKey;
 
     private boolean filtering = false;
+    private boolean selecting = false;
+    private boolean tabPressed = false;
 
     private String lastFilter = "";
     private int lastIndex = -1; // last selected index when using arrows
@@ -591,6 +608,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     private boolean nullSelectionAllowed;
     private boolean nullSelectItem;
     private boolean enabled;
+    private boolean readonly;
 
     // shown in unfocused empty field, disappears on focus (e.g "Search here")
     private static final String CLASSNAME_PROMPT = "prompt";
@@ -680,20 +698,15 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         paintableId = uidl.getId();
         this.client = client;
 
-        boolean readonly = uidl.hasAttribute("readonly");
-        boolean disabled = uidl.hasAttribute("disabled");
-
-        if (disabled || readonly) {
-            tb.setEnabled(false);
-            enabled = false;
-        } else {
-            tb.setEnabled(true);
-            enabled = true;
-        }
-
         if (client.updateComponent(this, uidl, true)) {
             return;
         }
+
+        readonly = uidl.hasAttribute("readonly");
+        enabled = !uidl.hasAttribute("disabled");
+
+        tb.setEnabled(enabled);
+        tb.setReadOnly(readonly);
 
         // not a FocusWidget -> needs own tabindex handling
         if (uidl.hasAttribute("tabindex")) {
@@ -761,6 +774,12 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 && uidl.getStringArrayVariable("selected").length == 0) {
             // select nulled
             if (!filtering || !popupOpenerClicked) {
+                /*
+                 * client.updateComponent overwrites all styles so we must
+                 * ALWAYS set the prompting style at this point, even though we
+                 * think it has been set already...
+                 */
+                prompting = false;
                 setPromptingOn();
             }
             selectedOptionKey = null;
@@ -802,6 +821,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
                 lastIndex = -1; // reset
             }
+            if (selecting) {
+                suggestionPopup.menu.doPostFilterSelectedItemAction();
+            }
         }
 
         // Calculate minumum textarea width
@@ -829,6 +851,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     }
 
     public void onSuggestionSelected(FilterSelectSuggestion suggestion) {
+        selecting = false;
+
         currentSuggestion = suggestion;
         String newKey;
         if (suggestion.key.equals("")) {
@@ -877,7 +901,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     }
 
     public void onKeyDown(KeyDownEvent event) {
-        if (enabled) {
+        if (enabled && !readonly) {
             if (suggestionPopup.isAttached()) {
                 popupKeyDown(event);
             } else {
@@ -892,15 +916,18 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         case KeyCodes.KEY_UP:
         case KeyCodes.KEY_PAGEDOWN:
         case KeyCodes.KEY_PAGEUP:
-            if (suggestionPopup.isAttached()) {
-                break;
-            } else {
+            if (!suggestionPopup.isAttached()) {
                 // open popup as from gadget
                 filterOptions(-1, "");
                 lastFilter = "";
                 tb.selectAll();
-                break;
             }
+            break;
+        case KeyCodes.KEY_TAB:
+            if (suggestionPopup.isAttached()) {
+                filterOptions(currentPage, tb.getText());
+            }
+            break;
         }
 
     }
@@ -925,8 +952,17 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 filterOptions(currentPage - 1, lastFilter);
             }
             break;
-        case KeyCodes.KEY_ENTER:
         case KeyCodes.KEY_TAB:
+            if (suggestionPopup.isAttached()) {
+                tabPressed = true;
+                filterOptions(currentPage);
+            }
+            // onBlur() takes care of the rest
+            break;
+        case KeyCodes.KEY_ENTER:
+            if (suggestionPopup.isAttached()) {
+                filterOptions(currentPage);
+            }
             suggestionPopup.menu.doSelectedItemAction();
             break;
         }
@@ -934,7 +970,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     }
 
     public void onKeyUp(KeyUpEvent event) {
-        if (enabled) {
+        if (enabled && !readonly) {
             switch (event.getNativeKeyCode()) {
             case KeyCodes.KEY_ENTER:
             case KeyCodes.KEY_TAB:
@@ -974,7 +1010,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
      * Listener for popupopener
      */
     public void onClick(ClickEvent event) {
-        if (enabled) {
+        if (enabled && !readonly) {
             // ask suggestionPopup if it was just closed, we are using GWT
             // Popup's auto close feature
             if (!suggestionPopup.isJustClosed()) {
@@ -1019,7 +1055,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     public void onFocus(FocusEvent event) {
         focused = true;
-        if (prompting) {
+        if (prompting && !readonly) {
             setPromptingOff("");
         }
         addStyleDependentName("focus");
@@ -1027,19 +1063,26 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     public void onBlur(BlurEvent event) {
         focused = false;
-        if (!suggestionPopup.isAttached() || suggestionPopup.isJustClosed()) {
-            // typing so fast the popup was never opened, or it's just closed
-            suggestionPopup.menu.doSelectedItemAction();
-        }
-        if (selectedOptionKey == null) {
-            setPromptingOn();
+        if (!readonly) {
+            // much of the TAB handling takes place here
+            if (tabPressed) {
+                tabPressed = false;
+                suggestionPopup.menu.doSelectedItemAction();
+                suggestionPopup.hide();
+            } else if (!suggestionPopup.isAttached()
+                    || suggestionPopup.isJustClosed()) {
+                suggestionPopup.menu.doSelectedItemAction();
+            }
+            if (selectedOptionKey == null) {
+                setPromptingOn();
+            }
         }
         removeStyleDependentName("focus");
     }
 
     public void focus() {
         focused = true;
-        if (prompting) {
+        if (prompting && !readonly) {
             setPromptingOff("");
         }
         tb.setFocus(true);
