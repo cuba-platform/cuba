@@ -112,14 +112,15 @@
 }
 .v-table-row .v-table-cell,
 .v-table-row-odd .v-table-cell,
-.v-table-caption-row .v-table-cell {
+.v-table-caption-row .v-table-cell,
+.v-table-group-row .v-table-cell{
 	padding: 0;
     border-bottom:1px solid #83888c;
 }
 
-.v-table .v-table-group-row {
-    border-bottom:1px solid #83888c;
-} 
+/*.v-table .v-table-group-row {*/
+    /*border-bottom:1px solid #83888c;*/
+/*} */
 
 .v-table .v-table-caption-row {
     background-color: #c6cbcd;
