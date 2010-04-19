@@ -195,6 +195,17 @@
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="${cuba.email.smtpHost}"/>
+        <property name="username" value="${cuba.email.username}"/>
+        <property name="password" value="${cuba.email.password}"/>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">${cuba.email.authRequired}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="mailSenderPostProcessor" class="com.haulmont.cuba.core.app.JavaMailSenderPostProcessor">
+        <property name="authRequired" value="${cuba.email.authRequired}"/>
     </bean>
 
 </beans>
