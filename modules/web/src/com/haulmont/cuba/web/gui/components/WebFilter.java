@@ -45,6 +45,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.CheckBox;
+import org.apache.commons.lang.ArrayUtils;
 import org.dom4j.Element;
 import org.dom4j.Attribute;
 import org.apache.commons.lang.ObjectUtils;
@@ -307,7 +308,11 @@ public class WebFilter
         UserSettingService settingService = App.getInstance().getWindowManager().getSettingService();
         SettingsImpl settings = new SettingsImpl(window.getId(), settingService);
 
-        Element e = settings.get(getId()).element("defaultFilter");
+        String componentPath = getComponentPath();
+        String[] strings = ValuePathHelper.parse(componentPath);
+        String name = ValuePathHelper.format((String[]) ArrayUtils.subarray(strings, 1, strings.length));
+
+        Element e = settings.get(name).element("defaultFilter");
         if (e != null) {
             String defIdStr =  e.attributeValue("id");
             if (!StringUtils.isBlank(defIdStr)) {
