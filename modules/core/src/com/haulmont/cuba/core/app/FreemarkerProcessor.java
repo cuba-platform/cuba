@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import freemarker.cache.StringTemplateLoader;
+import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -20,9 +21,7 @@ import org.apache.commons.io.FileUtils;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,6 +46,10 @@ public class FreemarkerProcessor {
     }
 
     public String processTemplate(String name, Map<String, Object> params) {
+        return processTemplate(name, params, null);
+    }
+
+    public String processTemplate(String name, Map<String, Object> params, String outputCharset) {
         if (cfg == null)
             throw new IllegalStateException("Freemarker is not initialized");
 
@@ -61,13 +64,24 @@ public class FreemarkerProcessor {
                 templateLoader.putTemplate("template", templateStr);
                 configuration.setTemplateLoader(templateLoader);
                 templ = configuration.getTemplate("template");
+
+                if (outputCharset == null) outputCharset = configuration.getDefaultEncoding();
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                Writer w = new OutputStreamWriter(out, outputCharset);
+                Environment env = templ.createProcessingEnvironment(params, w);
+                env.setOutputEncoding(outputCharset);
+                env.process();
+
+                String result = new String(out.toByteArray(), outputCharset);
+                return result;
             } else {
                 templ = cfg.getTemplate(name);
+                StringWriter writer = new StringWriter();
+                templ.process(params, writer);
+                String result = writer.toString();
+                return result;
             }
-            StringWriter writer = new StringWriter();
-            templ.process(params, writer);
-            String result = writer.toString();
-            return result;
+
         } catch (TemplateException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

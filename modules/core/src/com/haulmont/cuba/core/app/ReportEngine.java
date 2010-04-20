@@ -118,7 +118,11 @@ public class ReportEngine implements ReportEngineMBean, ReportEngineAPI
     }
 
     public String processFreemarkerTemplate(String name, Map<String, Object> params) {
+        return processFreemarkerTemplate(name, params, null);
+    }
+
+    public String processFreemarkerTemplate(String name, Map<String, Object> params, String outputEncoding) {
         log.debug("Processing " + name);
-        return freemarkerProcessor.processTemplate(name, params);
+        return freemarkerProcessor.processTemplate(name, params, outputEncoding);
     }
 }

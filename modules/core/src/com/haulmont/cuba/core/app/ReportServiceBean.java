@@ -51,7 +51,11 @@ public class ReportServiceBean implements ReportService
     }
 
     public String processFreemarkerTemplate(String name, Map<String, Object> params) {
+        return processFreemarkerTemplate(name, params, null);
+    }
+
+    public String processFreemarkerTemplate(String name, Map<String, Object> params, String outputCharset) {
         ReportEngineAPI mbean = Locator.lookup(ReportEngineAPI.NAME);
-        return mbean.processFreemarkerTemplate(name, params);
+        return mbean.processFreemarkerTemplate(name, params, outputCharset);
     }
 }

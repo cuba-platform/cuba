@@ -36,4 +36,6 @@ public interface ReportService
      * @return resulting content
      */
     String processFreemarkerTemplate(String name, Map<String, Object> params);
+
+    String processFreemarkerTemplate(String name, Map<String, Object> params, String outputCharset);
 }
