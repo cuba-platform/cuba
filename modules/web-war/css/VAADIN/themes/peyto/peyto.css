@@ -187,9 +187,14 @@
 
 .v-verticallayout-folderspane {
 /*    border-right : solid 2px #8aa9d1; */
+    background: #fff;
 }
 
 .v-verticallayout-folderspane .v-tree {
     border: 0px;
     overflow: auto;
+}
+
+.v-label-folderspane-caption {
+    font-weight: bold;
 }

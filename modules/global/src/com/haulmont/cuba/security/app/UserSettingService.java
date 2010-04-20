@@ -22,10 +22,10 @@ public interface UserSettingService
     @Deprecated
     String JNDI_NAME = NAME;
 
-    /** Load settings for the current user and null client type */
+    /** Load settings for the current user and null client type. Returns null if no such setting found. */
     String loadSetting(String name);
 
-    /** Load settings for the current user */
+    /** Load settings for the current user. Returns null if no such setting found. */
     String loadSetting(ClientType clientType, String name);
 
     /** Save settings for the current user and null client type */

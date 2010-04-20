@@ -38,14 +38,43 @@ public class UserSettingHelper {
         uss.saveSetting(ClientType.WEB, "appWindowMode", mode.name());
     }
 
-    public static boolean loadFoldersVisibleState() {
-        UserSettingService uss = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
-        String s = uss.loadSetting(ClientType.WEB, "foldersVisible");
-        return Boolean.valueOf(s);
+    public static class FoldersState {
+
+        public final boolean visible;
+        public final int horizontalSplit;
+        public final int verticalSplit;
+
+        public FoldersState(boolean visible, int horizontalSplit, int verticalSplit) {
+            this.horizontalSplit = horizontalSplit;
+            this.verticalSplit = verticalSplit;
+            this.visible = visible;
+        }
     }
 
-    public static void saveFoldersVisibleState(boolean visible) {
-        UserSettingService uss = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
-        uss.saveSetting(ClientType.WEB, "foldersVisible", String.valueOf(visible));
+    public static FoldersState loadFoldersState() {
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
+        String s = uss.loadSetting(ClientType.WEB, "foldersState");
+        if (s == null)
+            return null;
+
+        String[] parts = s.split(",");
+        if (parts.length != 3)
+            return null;
+
+        try {
+            return new FoldersState(Boolean.valueOf(parts[0]), Integer.valueOf(parts[1]), Integer.valueOf(parts[2]));
+        } catch (Exception e) {
+            return null;
+        }
     }
+
+    public static void saveFoldersState(boolean visible, int horizontalSplit, int verticalSplit) {
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
+        uss.saveSetting(ClientType.WEB, "foldersState",
+                String.valueOf(visible) + ","
+                + String.valueOf(horizontalSplit) + ","
+                + String.valueOf(verticalSplit)
+        );
+    }
+
 }

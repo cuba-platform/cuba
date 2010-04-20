@@ -32,6 +32,7 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.data.Property;
@@ -76,6 +77,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected MenuBar menuBar;
     protected TabSheet tabSheet;
+    protected SplitPanel foldersSplit;
 
     protected Mode mode;
 
@@ -161,11 +163,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         middleLayout = new HorizontalLayout();
         middleLayout.setSizeFull();
 
-        foldersPane = createFoldersPane();
-
-        if (foldersPane != null)
-            middleLayout.addComponent(foldersPane);
-
         mainLayout = new VerticalLayout();
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
@@ -179,8 +176,25 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             mainLayout.setExpandRatio(tabSheet, 1);
         }
 
-        middleLayout.addComponent(mainLayout);
-        middleLayout.setExpandRatio(mainLayout, 1);
+        foldersPane = createFoldersPane();
+
+        if (foldersPane != null) {
+            foldersSplit = new WebSplitPanel();
+            foldersSplit.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
+            foldersSplit.setSplitPosition(0, UNITS_PIXELS);
+            foldersSplit.setLocked(true);
+
+            foldersSplit.addComponent(foldersPane);
+            foldersSplit.addComponent(mainLayout);
+
+            middleLayout.addComponent(foldersSplit);
+            middleLayout.setExpandRatio(foldersSplit, 1);
+
+            foldersPane.init(foldersSplit);
+        } else {
+            middleLayout.addComponent(mainLayout);
+            middleLayout.setExpandRatio(mainLayout, 1);
+        }
 
         layout.addComponent(middleLayout);
         layout.setExpandRatio(middleLayout, 1);
@@ -357,6 +371,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     private static final long serialVersionUID = 4885156177472913997L;
 
                     public void buttonClick(Button.ClickEvent event) {
+                        if (foldersPane != null) {
+                            foldersPane.savePosition();
+                        }
                         connection.logout();
                         String url = ActiveDirectoryHelper.useActiveDirectory() ? "login" : "";
                         open(new ExternalResource(App.getInstance().getURL() + url));
@@ -475,9 +492,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     public void userSubstituted(Connection connection) {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
         if (foldersPane != null) {
+            foldersPane.savePosition();
             FoldersPane oldFoldersPane = foldersPane;
             foldersPane = createFoldersPane();
-            middleLayout.replaceComponent(oldFoldersPane, foldersPane);
+            foldersPane.init(foldersSplit);
+            foldersSplit.replaceComponent(oldFoldersPane, foldersPane);
         }
     }
 

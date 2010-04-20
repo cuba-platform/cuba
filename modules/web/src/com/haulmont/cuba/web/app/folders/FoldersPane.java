@@ -31,6 +31,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingHelper;
+import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
@@ -58,6 +59,7 @@ public class FoldersPane extends VerticalLayout {
     protected Tree appFoldersTree;
     protected Tree searchFoldersTree;
 
+    protected MenuBar menuBar;
     protected MenuBar.MenuItem menuItem;
 
     protected Label appFoldersLabel;
@@ -66,22 +68,45 @@ public class FoldersPane extends VerticalLayout {
     protected Object appFoldersRoot;
     protected Object searchFoldersRoot;
     private Timer timer;
-    private static final int DEFAULT_PANE_WIDTH = 200;
-    private int paneWidth;
+
+    protected static final int DEFAULT_PANE_WIDTH = 200;
+    protected static final int DEFAULT_VERT_SPLIT_POS = 400;
+    protected int horizontalSplitPos;
+    protected int verticalSplitPos;
 
     protected AppWindow parentAppWindow;
+    protected WebSplitPanel vertSplit;
+    protected WebSplitPanel horSplit;
 
     public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
+        this.menuBar = menuBar;
         messagesPack = AppConfig.getInstance().getMessagesPack();
-        service = ServiceLocator.lookup(FoldersService.JNDI_NAME);
+        service = ServiceLocator.lookup(FoldersService.NAME);
         parentAppWindow = appWindow;
 
-        String paneWidthStr = AppContext.getProperty("cuba.foldersPane.width");
-        paneWidth = paneWidthStr == null ? DEFAULT_PANE_WIDTH : Integer.parseInt(paneWidthStr);
         setHeight(100, Sizeable.UNITS_PERCENTAGE);
         setStyleName("folderspane");
+    }
 
-        showFolders(UserSettingHelper.loadFoldersVisibleState());
+    public void init(Component parent) {
+        if (parent instanceof WebSplitPanel) {
+            horSplit = (WebSplitPanel) parent;
+        }
+
+        boolean nowVisible;
+        UserSettingHelper.FoldersState state = UserSettingHelper.loadFoldersState();
+        if (state == null) {
+            nowVisible = false;
+            String paneWidthStr = AppContext.getProperty("cuba.foldersPane.width");
+            horizontalSplitPos = paneWidthStr == null ? DEFAULT_PANE_WIDTH : Integer.parseInt(paneWidthStr);
+            verticalSplitPos = DEFAULT_VERT_SPLIT_POS;
+        } else {
+            nowVisible = state.visible;
+            horizontalSplitPos = state.horizontalSplit;
+            verticalSplitPos = state.verticalSplit;
+        }
+
+        showFolders(nowVisible);
 
         MenuBar.MenuItem firstItem = menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
         menuItem = menuBar.addItemBefore(getMenuItemCaption(),
@@ -100,18 +125,27 @@ public class FoldersPane extends VerticalLayout {
             return;
 
         if (show) {
-            setWidth(paneWidth, Sizeable.UNITS_PIXELS);
-            setMargin(true, false, true, true);
+            if (horSplit != null) {
+                horSplit.setSplitPosition(horizontalSplitPos, Sizeable.UNITS_PIXELS);
+                horSplit.setLocked(false);
+            } else {
+                setWidth(horizontalSplitPos, Sizeable.UNITS_PIXELS);
+            }
+
+            setSizeFull();
+            setMargin(false);
             setSpacing(true);
 
             Component appFoldersPane = createAppFoldersPane();
             if (appFoldersPane != null) {
+                appFoldersPane.setHeight("95%");
+                appFoldersPane.setWidth("94%");
                 if (isNeedFoldersTitle()) {
                     appFoldersLabel = new Label(MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot"));
                     appFoldersLabel.setStyleName("folderspane-caption");
-                    addComponent(appFoldersLabel);
+                } else {
+                    appFoldersLabel = null;
                 }
-                addComponent(appFoldersPane);
 
                 int period = ConfigProvider.getConfig(WebConfig.class).getAppFoldersRefreshPeriodSec() * 1000;
                 timer = new Timer(period, true);
@@ -121,12 +155,50 @@ public class FoldersPane extends VerticalLayout {
 
             Component searchFoldersPane = createSearchFoldersPane();
             if (searchFoldersPane != null) {
+                searchFoldersPane.setHeight("95%");
+                searchFoldersPane.setWidth("94%");
                 if (isNeedFoldersTitle()) {
                     searchFoldersLabel = new Label(MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot"));
                     searchFoldersLabel.setStyleName("folderspane-caption");
-                    addComponent(searchFoldersLabel);
+                } else {
+                    searchFoldersLabel = null;
                 }
-                addComponent(searchFoldersPane);
+            }
+
+            if (appFoldersPane != null && searchFoldersPane != null) {
+                vertSplit = new WebSplitPanel();
+                vertSplit.setSplitPosition(verticalSplitPos, Sizeable.UNITS_PIXELS);
+
+                VerticalLayout afLayout = new VerticalLayout();
+                afLayout.setSizeFull();
+                if (appFoldersLabel != null)
+                    addFoldersLabel(afLayout, appFoldersLabel);
+                afLayout.addComponent(appFoldersPane);
+                afLayout.setExpandRatio(appFoldersPane, 1);
+                vertSplit.setFirstComponent(afLayout);
+
+                VerticalLayout sfLayout = new VerticalLayout();
+                sfLayout.setSizeFull();
+                if (searchFoldersLabel != null)
+                    addFoldersLabel(sfLayout, searchFoldersLabel);
+                sfLayout.addComponent(searchFoldersPane);
+                sfLayout.setExpandRatio(searchFoldersPane, 1);
+                vertSplit.setSecondComponent(sfLayout);
+
+                addComponent(vertSplit);
+            } else {
+                if (appFoldersPane != null) {
+                    if (appFoldersLabel != null)
+                        addFoldersLabel(this, appFoldersLabel);
+                    addComponent(appFoldersPane);
+                    setExpandRatio(appFoldersPane, 1);
+                }
+                if (searchFoldersPane != null) {
+                    if (searchFoldersLabel != null)
+                        addFoldersLabel(this, searchFoldersLabel);
+                    addComponent(searchFoldersPane);
+                    setExpandRatio(searchFoldersPane, 1);
+                }
             }
             adjustLayout();
 
@@ -138,15 +210,43 @@ public class FoldersPane extends VerticalLayout {
                 timer.stopTimer();
 
             removeAllComponents();
-            setWidth(0, Sizeable.UNITS_PIXELS);
             setMargin(false);
+
+            savePosition();
+
+            if (horSplit != null) {
+                horSplit.setSplitPosition(0, Sizeable.UNITS_PIXELS);
+                horSplit.setLocked(true);
+            } else {
+                setWidth(0, Sizeable.UNITS_PIXELS);
+            }
 
             appFoldersTree = null;
             searchFoldersTree = null;
         }
 
         visible = show;
-        UserSettingHelper.saveFoldersVisibleState(visible);
+    }
+
+    private void addFoldersLabel(AbstractLayout layout, Label label) {
+        HorizontalLayout l = new HorizontalLayout();
+        l.setMargin(false, true, false, true);
+        l.addComponent(label);
+        layout.addComponent(l);
+    }
+
+    public void savePosition() {
+        if (visible) {
+            if (horSplit != null)
+                horizontalSplitPos = horSplit.getSplitPosition();
+            if (vertSplit != null)
+                verticalSplitPos = vertSplit.getSplitPosition();
+        }
+        UserSettingHelper.saveFoldersState(
+                visible,
+                horizontalSplitPos,
+                verticalSplitPos
+        );
     }
 
     protected Timer.Listener createAppFolderUpdater() {
@@ -161,11 +261,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected void adjustLayout() {
-        if (appFoldersTree != null)
-            setExpandRatio(appFoldersTree, 1);
-
-        if (searchFoldersTree != null)
-            setExpandRatio(searchFoldersTree, 1);
     }
 
     protected Component createAppFoldersPane() {
@@ -175,8 +270,6 @@ public class FoldersPane extends VerticalLayout {
 
         appFoldersTree = new Tree();
 //        appFoldersTree.setSizeFull();
-        appFoldersTree.setHeight("94%");
-        appFoldersTree.setWidth("95%");
 
         appFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
@@ -186,15 +279,13 @@ public class FoldersPane extends VerticalLayout {
         for (Object itemId : appFoldersTree.rootItemIds()) {
             appFoldersTree.expandItemsRecursively(itemId);
         }
+
         return appFoldersTree;
     }
 
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new Tree();
 //        searchFoldersTree.setSizeFull();
-        searchFoldersTree.setHeight("94%");
-        searchFoldersTree.setWidth("95%");
-
 
         List<SearchFolder> searchFolders = service.loadSearchFolders();
         searchFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot");

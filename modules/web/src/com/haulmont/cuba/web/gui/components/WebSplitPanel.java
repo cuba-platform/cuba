@@ -126,4 +126,8 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         this.frame = frame;
         frame.registerComponent(this);
     }
+
+    public int getSplitPosition() {
+        return pos;
+    }
 }
