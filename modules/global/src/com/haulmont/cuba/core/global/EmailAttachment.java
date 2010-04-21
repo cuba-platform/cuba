@@ -18,10 +18,16 @@ public class EmailAttachment implements Serializable
     
     private byte[] data;
     private String name;
+    private String contentId;
 
     public EmailAttachment(byte[] data, String name) {
+        this(data, name, null);
+    }
+
+    public EmailAttachment(byte[] data, String name, String contentId) {
         this.data = data;
         this.name = name;
+        this.contentId = contentId;
     }
 
     public byte[] getData() {
@@ -30,5 +36,9 @@ public class EmailAttachment implements Serializable
 
     public String getName() {
         return name;
+    }
+
+    public String getContentId() {
+        return contentId;
     }
 }

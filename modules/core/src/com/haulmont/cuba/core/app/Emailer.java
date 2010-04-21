@@ -11,7 +11,6 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.security.global.LoginException;
 
 import javax.annotation.ManagedBean;
@@ -150,7 +149,10 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                     encodedFileName = attachment.getName();
                 }
 
-                attachBodyPart.setHeader("Content-ID", "<" + encodedFileName + ">");
+                String contentId = attachment.getContentId();
+                if (contentId == null) contentId = encodedFileName;
+
+                attachBodyPart.setHeader("Content-ID", "<" + contentId + ">");
                 attachBodyPart.setHeader("Content-Type", contentType + "; charset=utf-8; name=" + encodedFileName);
                 attachBodyPart.setFileName(encodedFileName);
                 attachBodyPart.setDisposition("inline");
