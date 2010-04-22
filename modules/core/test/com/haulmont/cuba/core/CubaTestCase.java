@@ -44,7 +44,7 @@ public abstract class CubaTestCase extends TestCase
     protected void initDataSources() throws Exception {
         Class.forName("org.hsqldb.jdbcDriver");
         TestDataSource ds = new TestDataSource("jdbc:hsqldb:hsql://localhost/cubadb", "sa", "");
-        TestContext.getInstance().bind("java:comp/env/jdbc/CubaDB", ds);
+        TestContext.getInstance().bind("java:comp/env/jdbc/CubaDS", ds);
     }
 
     protected void initAppProperties() {

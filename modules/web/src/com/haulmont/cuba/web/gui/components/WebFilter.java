@@ -14,6 +14,7 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.app.UserSettingService;
@@ -345,6 +346,9 @@ public class WebFilter
     public void editorCommitted() {
         changingFilter = true;
         try {
+            select.removeItem(filterEntity);
+
+            saveFilterEntity();
             parseFilterXml();
 
             select.addItem(filterEntity);
@@ -352,7 +356,6 @@ public class WebFilter
             select.setValue(filterEntity);
 
             switchToUse();
-            saveFilterEntity();
         } finally {
             changingFilter = false;
         }
@@ -392,7 +395,8 @@ public class WebFilter
 
         DataService ds = ServiceLocator.getDataService();
         CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
-        ds.commit(ctx);
+        Map<Entity, Entity> result = ds.commit(ctx);
+        filterEntity = (FilterEntity) result.get(filterEntity);
     }
 
     private void deleteFilterEntity() {

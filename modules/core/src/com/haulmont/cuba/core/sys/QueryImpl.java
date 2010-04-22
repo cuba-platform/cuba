@@ -18,9 +18,7 @@ import com.haulmont.cuba.core.global.*;
 
 import javax.persistence.TemporalType;
 import javax.persistence.FlushModeType;
-import java.util.List;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 import java.sql.SQLException;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
@@ -38,10 +36,15 @@ public class QueryImpl implements Query
     private boolean isNative;
     private String queryString;
 
+    private List<QueryMacroHandler> macroHandlers = new ArrayList<QueryMacroHandler>();
+
     public QueryImpl(EntityManagerImpl entityManager, boolean isNative) {
         this.em = entityManager;
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
+
+        macroHandlers.add(new TimeBetweenQueryMacroHandler());
+        macroHandlers.add(new TimeTodayQueryMacroHandler());
     }
 
     private OpenJPAQuery getQuery() {
@@ -63,40 +66,63 @@ public class QueryImpl implements Query
     }
 
     private String transformQueryString() {
-        if (!em.isSoftDeletion())
-            return queryString;
+        String result = expandMacros();
 
-        OpenJPAQuery tmpQuery = emDelegate.createQuery(queryString);
+        if (!em.isSoftDeletion())
+            return result;
+
+        OpenJPAQuery tmpQuery = emDelegate.createQuery(result);
         Class cls = tmpQuery.getResultClass();
         if (cls == null
                 || !BaseEntity.class.isAssignableFrom(cls)
                 || !PersistenceHelper.isSoftDeleted(cls))
         {
-            return queryString;
+            return result;
         } else {
             String entityName = PersistenceHelper.getEntityName(cls);
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(queryString, entityName);
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(result, entityName);
             transformer.addWhere("e.deleteTs is null");
             return transformer.getResult();
+        }
+    }
+
+    private String expandMacros() {
+        String result = queryString;
+        for (QueryMacroHandler handler : macroHandlers) {
+            result = handler.expandMacro(result);
+        }
+        return result;
+    }
+
+    private void addMacroParams(OpenJPAQuery jpaQuery) {
+        for (QueryMacroHandler handler : macroHandlers) {
+            for (Map.Entry<String, Object> entry : handler.getParams().entrySet()) {
+                jpaQuery.setParameter(entry.getKey(), entry.getValue());
+            }
         }
     }
 
     public List getResultList() {
         if (!isNative && log.isTraceEnabled())
             log.trace("JPQL query result class: " + getQuery().getResultClass());
-
-        return getQuery().getResultList();
+        OpenJPAQuery jpaQuery = getQuery();
+        addMacroParams(jpaQuery);
+        return jpaQuery.getResultList();
     }
 
     public Object getSingleResult() {
         if (!isNative && log.isTraceEnabled())
             log.trace("JPQL query result class: " + getQuery().getResultClass());
 
-        return getQuery().getSingleResult();
+        OpenJPAQuery jpaQuery = getQuery();
+        addMacroParams(jpaQuery);
+        return jpaQuery.getSingleResult();
     }
 
     public int executeUpdate() {
-        return getQuery().executeUpdate();
+        OpenJPAQuery jpaQuery = getQuery();
+        addMacroParams(jpaQuery);
+        return jpaQuery.executeUpdate();
     }
 
     public Query setMaxResults(int maxResult) {
