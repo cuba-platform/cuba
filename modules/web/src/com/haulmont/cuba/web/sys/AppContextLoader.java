@@ -10,9 +10,11 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PersistenceConfigProcessor;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
@@ -47,6 +49,8 @@ public class AppContextLoader implements ServletContextListener {
             ServletContext sc = servletContextEvent.getServletContext();
 
             initAppProperties(sc);
+            MessageUtils.setMessagePack(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP));
+
             initPersistenceConfig(sc);
             initAppContext(sc);
             initServiceLocator(sc);

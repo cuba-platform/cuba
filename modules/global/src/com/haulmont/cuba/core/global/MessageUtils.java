@@ -22,6 +22,20 @@ public class MessageUtils {
      */
     public static final String MARK = "msg://";
 
+    private static String messagePack;
+
+    public static void setMessagePack(String messagePack) {
+        MessageUtils.messagePack = messagePack;
+    }
+
+    public static String getDateFormat() {
+        return MessageProvider.getMessage(messagePack, "dateFormat");
+    }
+    
+    public static String getDateTimeFormat() {
+        return MessageProvider.getMessage(messagePack, "dateTimeFormat");
+    }
+
     /**
      * Get localized message by reference provided in full format
      * @param ref reference to message in the following format: <code>msg://message_pack/message_id</code>

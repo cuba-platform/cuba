@@ -13,6 +13,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.gui.AppConfig;
@@ -22,6 +23,7 @@ import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
@@ -30,6 +32,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
@@ -116,13 +119,21 @@ public class LoginWindow extends Window
         label.setWidth("-1px");
         label.setStyleName("login-caption");
 
+        Embedded logoImage = getLogoImage(app);
+
         VerticalLayout wrap = new VerticalLayout();
         wrap.setStyleName("loginBottom");
         wrap.setMargin(false);
         wrap.setWidth(formWidth + "px");
         wrap.setHeight(formHeight + "px");
-        wrap.addComponent(label);
-        wrap.setComponentAlignment(label, Alignment.BOTTOM_CENTER);
+        if (!StringUtils.isBlank(label.getCaption()))  {
+            wrap.addComponent(label);
+            wrap.setComponentAlignment(label, Alignment.BOTTOM_CENTER);
+        }
+        if (logoImage != null) {
+            wrap.addComponent(logoImage);
+            wrap.setComponentAlignment(logoImage, Alignment.BOTTOM_CENTER);
+        }
         wrap.addComponent(form);
         centerLayout.addComponent(wrap);
 
@@ -180,6 +191,18 @@ public class LoginWindow extends Window
             setContent(mainLayout);
         }
     }
+
+    protected Embedded getLogoImage(App app) {
+        String confDirPath = AppContext.getProperty("cuba.confDir");
+        String loginLogoImagePath = AppContext.getProperty("cuba.loginLogoImagePath");
+        if (confDirPath == null || loginLogoImagePath == null)
+            return null;
+        File file = new File(confDirPath + loginLogoImagePath);
+        if (file.exists())
+            return new Embedded(null, new FileResource(file, app));
+        return null;
+    }
+
 
     protected void initUI(App app) {
         initStandartUI(app, 267, 222, 125, true);

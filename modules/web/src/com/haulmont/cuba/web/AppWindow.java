@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
@@ -37,6 +38,7 @@ import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
@@ -44,6 +46,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -338,6 +341,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         titleLayout.setMargin(false, true, false, true);
         titleLayout.setSpacing(true);
 
+        Embedded logoImage = getLogoImage();
+        if (logoImage != null) {
+            titleLayout.addComponent(logoImage);
+        }
+
         Label logoLabel = new Label(getLogoLabelCaption());
         logoLabel.setStyleName("appname");
 
@@ -422,6 +430,17 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         titleLayout.setComponentAlignment(newWindowBtn, Alignment.MIDDLE_RIGHT);
 
         return titleLayout;
+    }
+
+    protected Embedded getLogoImage() {
+        String confDirPath = AppContext.getProperty("cuba.confDir");
+        String logoImagePath = AppContext.getProperty("cuba.appLogoImagePath");
+        if (confDirPath == null || logoImagePath == null)
+            return null;
+        File file = new File(confDirPath + logoImagePath);
+        if (file.exists())
+            return new Embedded(null, new FileResource(file, App.getInstance()));
+        return null;
     }
 
     private void createMenuBarItem(MenuBar menuBar, MenuItem item) {
