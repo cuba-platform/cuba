@@ -71,6 +71,7 @@ public class LayoutLoaderConfig {
         config.register("filter", FilterLoader.class);
         config.register("accessControl", AccessControlLoader.class);
         config.register("buttonsPanel", ButtonsPanelLoader.class);
+        config.register("actionsField", ActionsFieldLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

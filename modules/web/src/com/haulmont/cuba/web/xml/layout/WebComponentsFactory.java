@@ -58,6 +58,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put("filter", WebFilter.class);
         classes.put("accessControl", WebAccessControl.class);
         classes.put("buttonsPanel", WebButtonsPanel.class);
+        classes.put("actionsField", WebActionsField.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

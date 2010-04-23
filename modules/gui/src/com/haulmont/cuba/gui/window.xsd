@@ -615,6 +615,35 @@
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
+
+                <xs:element name="actionsField">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType"/>
+                        </xs:sequence>
+
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:string" use="optional"/>
+                        <xs:attribute name="enable" type="xs:string" use="optional"/>
+                        <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                        <xs:attribute name="nullName" type="xs:string" use="optional"/>
+                        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="lookup" type="xs:boolean" use="optional" default="true"/>
+                        <xs:attribute name="open" type="xs:boolean" use="optional" default="true"/>
+
+                        <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
             </xs:choice>
         </xs:sequence>
     </xs:group>

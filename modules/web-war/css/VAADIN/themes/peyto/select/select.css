@@ -65,7 +65,7 @@
 /** Filterselect aka ComboBox styles */
 
 .v-filterselect {
-    height: 23px;
+    height: 24px;
     white-space: nowrap;
     text-align: left; /* Force default alignment */
     background: transparent url(img/bg-left-filter.png) no-repeat;
@@ -84,7 +84,7 @@
     border: none;
     height: 20px;
     margin: 0;
-    padding: 3px 0 0 0px;
+    padding: 4px 0 0 0px;
     font-size: 8pt;
 }
 
@@ -102,8 +102,8 @@
 }
 
 .v-filterselect-button {
-    width: 23px;
-    height: 21px;
+    width: 25px;
+    height: 24px;
     cursor: pointer;
     border: none;
     padding: 0;
@@ -125,7 +125,7 @@
 .v-filterselect.v-readonly,
 .v-filterselect.v-readonly .v-filterselect-button,
 .v-filterselect.v-readonly .v-filterselect-input {
-    background: transparent;
+    /*background: transparent;*/
     cursor: default;
 }
 
@@ -288,3 +288,27 @@
 	background-color: #FFE0E0;
 }
 */
+
+.v-customcomponent-actionsfield .v-filterselect.v-readonly .v-filterselect-button {
+    display: none;
+}
+
+.v-customcomponent-actionsfield .v-button-link .v-button-caption,
+.v-customcomponent-actionsfield .v-button-link .v-icon {
+    margin: 0;
+}
+
+.v-customcomponent-actionsfield .v-button{
+    height: 24px;
+    width: 25px;
+}
+
+.v-customcomponent-actionsfield.v-disabled {
+    opacity: 1;
+}
+
+.v-customcomponent-actionsfield .v-horizontallayout.v-disabled {
+    opacity: 1;
+}
+
+
