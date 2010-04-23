@@ -60,6 +60,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected final TableHead tHead;
 
+    private final FocusPanel focusPanel = new FocusPanel();
     protected final ScrollPanel bodyContainer = new ScrollPanel();
 
     protected int totalRows;
@@ -126,7 +127,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         bodyContainer.setStyleName(CLASSNAME + "-body");
         setStyleName(CLASSNAME);
         add(tHead);
-        final FocusPanel focusPanel = new FocusPanel();
         add(focusPanel);
         bodyContainer.addScrollHandler(this);
         focusPanel.add(bodyContainer);
@@ -329,7 +329,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected void updateAggregationRow(UIDL uidl) {
         if (aggregationRow == null) {
             aggregationRow = createAggregationRow(uidl);
-            insert(aggregationRow, getWidgetIndex(bodyContainer));
+            insert(aggregationRow, getWidgetIndex(focusPanel));
         }
         aggregationRow.updateFromUIDL(uidl);
     }
