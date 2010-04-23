@@ -10,27 +10,28 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Console;
 import com.vaadin.terminal.gwt.client.UIDL;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
-public class IPageTable extends Table implements Pager.PageChangeListener, ScrollListener {
+public class IPageTable extends Table implements Pager.PageChangeListener {
 
     protected IPager pager;
 
     private static Console log = ApplicationConnection.getConsole();
-
-    public IPageTable() {
-        bodyContainer.addScrollListener(this);  //todo gorodnov: fix a ScrollListeners using
-    }
 
     protected ITableBody createBody() {
         return new IPageTableBody();
@@ -76,15 +77,6 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
         }
     }
 
-    public void onScroll(Widget widget, int scrollLeft, int scrollTop) {
-        // fix headers horizontal scrolling
-        tHead.setHorizontalScrollPosition(scrollLeft);
-
-        if (aggregationRow != null) {
-            aggregationRow.setHorizontalScrollPosition(scrollLeft);
-        }
-    }
-
     @Override
     protected void setContainerHeight() {
         if (height != null && !"".equals(height)) {
@@ -98,6 +90,18 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             }
             bodyContainer.setHeight(contentH + "px");
         }
+    }
+
+    protected String pressUp(String rowKey) {
+        int index = tBody.renderedRows.indexOf(getRenderedRowByKey(rowKey));
+        if (index == -1 || index == 0) return null;
+        return ((ITableBody.ITableRow) tBody.renderedRows.get(--index)).getKey();
+    }
+
+    protected String pressDown(String rowKey) {
+        int index = tBody.renderedRows.indexOf(getRenderedRowByKey(rowKey));
+        if (index == -1 || index == tBody.renderedRows.size() - 1) return null;
+        return ((ITableBody.ITableRow) tBody.renderedRows.get(++index)).getKey();
     }
 
     protected class IPageTableBody extends ITableBody {
@@ -254,6 +258,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
         private final Panel pagesContainer = new FlowPanel();
 
         private final Vector pages = new Vector();
+        private final Map handlers = new HashMap();
 
         private Label prev;
         private Label next;
@@ -272,9 +277,9 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             pagerRoot.add(pagesContainer);
             pagerRoot.add(next);
 
-            prev.addClickListener(this);
+            handlers.put(prev, prev.addClickHandler(this));
             prev.setStyleName(CLASSNAME + "-link");
-            next.addClickListener(this);
+            handlers.put(next, next.addClickHandler(this));
             next.setStyleName(CLASSNAME + "-link");
 
             updatePages();
@@ -358,11 +363,11 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             StringBuffer styleBuf = new StringBuffer(CLASSNAME);
 
             final String[] styles = style.split(" ");
-            for (int i = 0; i < styles.length; i++) {
+            for (String style1 : styles) {
                 styleBuf.append(" ");
                 styleBuf.append(CLASSNAME);
                 styleBuf.append("-");
-                styleBuf.append(styles[i]);
+                styleBuf.append(style1);
             }
 
             DOM.setElementProperty(getElement(), "className", styleBuf.toString());
@@ -469,7 +474,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             pagesContainer.add(w);
             pages.add(w);
             if (w instanceof Label) {
-                ((Label) w).addClickListener(this);
+                handlers.put(w, ((Label) w).addClickHandler(this));
             }
         }
 
@@ -477,9 +482,8 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             if (pages.isEmpty()) return;
 
             final Vector removedPages = new Vector(pages);
-            final Iterator it = removedPages.iterator();
-            while (it.hasNext()) {
-                final Widget w = (Widget) it.next();
+            for (Object removedPage : removedPages) {
+                final Widget w = (Widget) removedPage;
                 remove(w);
             }
 
@@ -494,15 +498,18 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             if (pages.contains(w)) {
                 pagesContainer.remove(w);
                 pages.remove(w);
-                if (w instanceof Label) {
-                    ((Label) w).removeClickListener(this);
+                HandlerRegistration reg;
+                if (w instanceof Label && (reg = (HandlerRegistration) handlers.get(w)) != null) {
+                    reg.removeHandler();
+                    handlers.remove(w);
                 }
                 return true;
             }
             return false;
         }
 
-        public void onClick(Widget sender) {
+        public void onClick(ClickEvent event) {
+            Widget sender = (Widget) event.getSource();
             if (sender != null
                     && sender instanceof Label
                     && pageChangeListeners != null)
@@ -529,7 +536,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
     }
 
     class TablePageLengthEditor
-            extends Composite implements ChangeListener
+            extends Composite implements ChangeHandler
     {
         public static final String CLASSNAME = "v-pager-editor";
 
@@ -543,7 +550,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
 
             rootPanel.add(select);
 
-            select.addChangeListener(this);
+            select.addChangeHandler(this);
 
             initWidget(rootPanel);
 
@@ -582,8 +589,8 @@ public class IPageTable extends Table implements Pager.PageChangeListener, Scrol
             }
         }
 
-        public void onChange(Widget sender) {
-            if (sender != null && sender.equals(select)) {
+        public void onChange(ChangeEvent event) {
+            if (event.getSource() == select) {
                 client.updateVariable(paintableId, "pagelength", Integer.parseInt(select.getValue(select.getSelectedIndex())),
                         true);
             }

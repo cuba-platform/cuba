@@ -14,13 +14,13 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.IScrollTable;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.HashSet;
 
 public class IScrollGroupTable extends IScrollTable {
 
@@ -441,8 +441,11 @@ public class IScrollGroupTable extends IScrollTable {
                             addCell(cell.toString(), aligns[colIndex], style, colIndex, false);
 
                         } else {
-                            final Paintable cellContent = client
+                            Paintable cellContent = client
                                     .getPaintable((UIDL) cell);
+//                            if (cellContent instanceof EditableWidget) {
+//                                cellContent = new EditorWrapper(cellContent);
+//                            }
                             addCell((Widget) cellContent, aligns[colIndex], style, colIndex);
                             paintComponent(cellContent, (UIDL) cell);
                         }
@@ -548,7 +551,7 @@ public class IScrollGroupTable extends IScrollTable {
 
             @Override
             protected void moveCol(int oldIndex, int newIndex) {
-                //do noting, columns reordering will be process on server
+                //do nothing, columns reordering will be process on the server
             }
 
             @Override

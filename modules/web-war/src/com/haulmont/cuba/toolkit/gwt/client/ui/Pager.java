@@ -11,13 +11,14 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.event.dom.client.ClickHandler;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public abstract class Pager
         extends Composite
-        implements ClickListener
+        implements ClickHandler
 {
     protected PageChangeListenersCollection pageChangeListeners;
 
@@ -36,32 +37,32 @@ public abstract class Pager
 
     class PageChangeListenersCollection extends ArrayList {
         void fireFirstPage() {
-            for (final Iterator it = iterator(); it.hasNext();) {
-                ((PageChangeListener) it.next()).onFirstPage();
+            for (Object o : this) {
+                ((PageChangeListener) o).onFirstPage();
             }
         }
 
         void firePrevPage() {
-            for (final Iterator it = iterator(); it.hasNext();) {
-                ((PageChangeListener) it.next()).onPrevPage();
+            for (Object o : this) {
+                ((PageChangeListener) o).onPrevPage();
             }
         }
 
         void fireNextPage() {
-            for (final Iterator it = iterator(); it.hasNext();) {
-                ((PageChangeListener) it.next()).onNextPage();
+            for (Object o : this) {
+                ((PageChangeListener) o).onNextPage();
             }
         }
 
         void fireLastPage() {
-            for (final Iterator it = iterator(); it.hasNext();) {
-                ((PageChangeListener) it.next()).onLastPage();
+            for (Object o : this) {
+                ((PageChangeListener) o).onLastPage();
             }
         }
 
         void firePage(int page) {
-            for (final Iterator it = iterator(); it.hasNext();) {
-                ((PageChangeListener) it.next()).onPage(page);
+            for (Object o : this) {
+                ((PageChangeListener) o).onPage(page);
             }
         }
     }

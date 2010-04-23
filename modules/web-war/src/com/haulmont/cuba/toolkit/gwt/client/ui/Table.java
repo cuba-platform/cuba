@@ -10,16 +10,25 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.google.gwt.user.client.*;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Focusable;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.*;
-import com.vaadin.terminal.gwt.client.ui.*;
+import com.vaadin.terminal.gwt.client.ui.Action;
+import com.vaadin.terminal.gwt.client.ui.ActionOwner;
+import com.vaadin.terminal.gwt.client.ui.Icon;
+import com.vaadin.terminal.gwt.client.ui.TreeAction;
 
 import java.util.*;
 
-public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table {
+public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table, KeyDownHandler,
+        KeyUpHandler, ScrollHandler {
     public static final String CLASSNAME = "v-table";
 
     /**
@@ -74,7 +83,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected boolean enabled;
     protected boolean showColHeaders;
 
-    /** flag to indicate that table body has changed */
+    /**
+     * flag to indicate that table body has changed
+     */
     protected boolean isNewBody = true;
 
     protected boolean emitClickEvents;
@@ -103,13 +114,71 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected AggregationRow aggregationRow = null;
 
+    //Key down navigation
+    protected boolean navigation = true;
+    protected String selectedKey;
+    protected boolean handlingKeyDown = false;
+    protected int scrollPos = 0;
+    protected int focusWidgetIndex = -1;
+
     protected Table() {
         tHead = createHead();
         bodyContainer.setStyleName(CLASSNAME + "-body");
         setStyleName(CLASSNAME);
         add(tHead);
-        add(bodyContainer);
+        final FocusPanel focusPanel = new FocusPanel();
+        add(focusPanel);
+        bodyContainer.addScrollHandler(this);
+        focusPanel.add(bodyContainer);
+        focusPanel.addKeyDownHandler(this);
+        focusPanel.addKeyUpHandler(this);
     }
+
+    public void onKeyDown(KeyDownEvent event) {
+        if (navigation && (event.getNativeKeyCode() == KeyCodes.KEY_UP || event.getNativeKeyCode() == KeyCodes.KEY_DOWN)) {
+            ApplicationConnection.getConsole().log("Key Down event processing");
+            if (selectedKey == null) {
+                deselectAll();
+                ITableBody.ITableRow row = (ITableBody.ITableRow) tBody.renderedRows.get(0);
+                if (!row.isSelected()) {
+                    toggleSelection(row.getKey());
+                }
+            } else {
+                String key;
+                if (event.getNativeKeyCode() == KeyCodes.KEY_UP) {
+                    if ((key = pressUp(selectedKey)) != null) {
+                        deselectAll();
+                        toggleSelection(key);
+                    }
+                } else {
+                    if ((key = pressDown(selectedKey)) != null) {
+                        deselectAll();
+                        toggleSelection(key);
+                    }
+                }
+            }
+            scrollPos = bodyContainer.getScrollPosition();
+        }
+    }
+
+    public void onKeyUp(KeyUpEvent event) {
+        if (navigation && (event.getNativeKeyCode() == KeyCodes.KEY_UP || event.getNativeKeyCode() == KeyCodes.KEY_DOWN)) {
+            ApplicationConnection.getConsole().log("Key Up event processing");
+            bodyContainer.setScrollPosition(scrollPos);
+        }
+    }
+
+    public void onScroll(ScrollEvent event) {
+        int scrollLeft = bodyContainer.getElement().getScrollLeft();
+        tHead.setHorizontalScrollPosition(scrollLeft);
+        if (aggregationRow != null) {
+            aggregationRow.setHorizontalScrollPosition(scrollLeft);
+        }
+    }
+
+    protected abstract String pressUp(String rowKey);
+
+    protected abstract String pressDown(String rowKey);
 
     protected abstract ITableBody createBody();
 
@@ -542,7 +611,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             int bodyHeight;
             if (!allowMultiStingCells) {
                 bodyHeight = tBody.getRowHeight() *
-                    (totalRows < pageLength ? ((totalRows < 1) ? 1 : totalRows) : pageLength);
+                        (totalRows < pageLength ? ((totalRows < 1) ? 1 : totalRows) : pageLength);
             } else {
                 tBody.setContainerHeight();
                 bodyHeight = tBody.getContainerHeight();
@@ -724,136 +793,136 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         protected void handleCaptionEvent(Event event) {
             switch (DOM.eventGetType(event)) {
-            case Event.ONMOUSEDOWN:
-                ApplicationConnection.getConsole().log(
-                        "HeaderCaption: mouse down");
-                if (columnReordering) {
-                    dragging = true;
-                    moved = false;
-                    colIndex = getColIndexByKey(cid);
-                    DOM.setCapture(getElement());
-                    headerX = tHead.getAbsoluteLeft();
-                    ApplicationConnection
-                            .getConsole()
-                            .log(
-                                    "HeaderCaption: Caption set to capture mouse events");
-                    DOM.eventPreventDefault(event); // prevent selecting text
-                }
-                break;
-            case Event.ONMOUSEUP:
-                ApplicationConnection.getConsole()
-                        .log("HeaderCaption: mouseUP");
-                if (columnReordering) {
-                    dragging = false;
-                    DOM.releaseCapture(getElement());
+                case Event.ONMOUSEDOWN:
                     ApplicationConnection.getConsole().log(
-                            "HeaderCaption: Stopped column reordering");
-                    if (moved) {
-                        hideFloatingCopy();
-                        tHead.removeSlotFocus();
-                        if (closestSlot != colIndex
-                                && closestSlot != (colIndex + 1)) {
-                            if (closestSlot > colIndex) {
-                                reOrderColumn(cid, closestSlot - 1);
-                            } else {
-                                reOrderColumn(cid, closestSlot);
+                            "HeaderCaption: mouse down");
+                    if (columnReordering) {
+                        dragging = true;
+                        moved = false;
+                        colIndex = getColIndexByKey(cid);
+                        DOM.setCapture(getElement());
+                        headerX = tHead.getAbsoluteLeft();
+                        ApplicationConnection
+                                .getConsole()
+                                .log(
+                                        "HeaderCaption: Caption set to capture mouse events");
+                        DOM.eventPreventDefault(event); // prevent selecting text
+                    }
+                    break;
+                case Event.ONMOUSEUP:
+                    ApplicationConnection.getConsole()
+                            .log("HeaderCaption: mouseUP");
+                    if (columnReordering) {
+                        dragging = false;
+                        DOM.releaseCapture(getElement());
+                        ApplicationConnection.getConsole().log(
+                                "HeaderCaption: Stopped column reordering");
+                        if (moved) {
+                            hideFloatingCopy();
+                            tHead.removeSlotFocus();
+                            if (closestSlot != colIndex
+                                    && closestSlot != (colIndex + 1)) {
+                                if (closestSlot > colIndex) {
+                                    reOrderColumn(cid, closestSlot - 1);
+                                } else {
+                                    reOrderColumn(cid, closestSlot);
+                                }
                             }
                         }
                     }
-                }
 
-                if (!moved) {
-                    // mouse event was a click to header -> sort column
-                    if (sortable) {
-                        if (sortColumn.equals(cid)) {
-                            // just toggle order
-                            client.updateVariable(paintableId, "sortascending",
-                                    !sortAscending, true);
-                        } else {
-                            // set table scrolled by this column
-                            client.updateVariable(paintableId, "sortcolumn",
-                                    cid, true);
+                    if (!moved) {
+                        // mouse event was a click to header -> sort column
+                        if (sortable) {
+                            if (sortColumn.equals(cid)) {
+                                // just toggle order
+                                client.updateVariable(paintableId, "sortascending",
+                                        !sortAscending, true);
+                            } else {
+                                // set table scrolled by this column
+                                client.updateVariable(paintableId, "sortcolumn",
+                                        cid, true);
+                            }
+                            // get also cache columns at the same request
+                            bodyContainer.setScrollPosition(0);
                         }
-                        // get also cache columns at the same request
-                        bodyContainer.setScrollPosition(0);
+                        break;
                     }
                     break;
-                }
-                break;
-            case Event.ONMOUSEMOVE:
-                if (dragging) {
-                    ApplicationConnection.getConsole().log(
-                            "HeaderCaption: Dragging column, optimal index...");
-                    if (!moved) {
-                        createFloatingCopy();
-                        moved = true;
-                    }
-                    final int x = DOM.eventGetClientX(event)
-                            + DOM.getElementPropertyInt(tHead.hTableWrapper,
-                                    "scrollLeft");
-                    int slotX = headerX;
-                    closestSlot = colIndex;
-                    int closestDistance = -1;
-                    int start = 0;
-                    if (showRowHeaders) {
-                        start++;
-                    }
-                    final int visibleCellCount = tHead.getVisibleCellCount();
-                    for (int i = start; i <= visibleCellCount; i++) {
-                        if (i > 0) {
-                            final String colKey = getColKeyByIndex(i - 1);
-                            slotX += getColWidth(colKey);
+                case Event.ONMOUSEMOVE:
+                    if (dragging) {
+                        ApplicationConnection.getConsole().log(
+                                "HeaderCaption: Dragging column, optimal index...");
+                        if (!moved) {
+                            createFloatingCopy();
+                            moved = true;
                         }
-                        final int dist = Math.abs(x - slotX);
-                        if (closestDistance == -1 || dist < closestDistance) {
-                            closestDistance = dist;
-                            closestSlot = i;
+                        final int x = DOM.eventGetClientX(event)
+                                + DOM.getElementPropertyInt(tHead.hTableWrapper,
+                                "scrollLeft");
+                        int slotX = headerX;
+                        closestSlot = colIndex;
+                        int closestDistance = -1;
+                        int start = 0;
+                        if (showRowHeaders) {
+                            start++;
                         }
-                    }
-                    tHead.focusSlot(closestSlot);
+                        final int visibleCellCount = tHead.getVisibleCellCount();
+                        for (int i = start; i <= visibleCellCount; i++) {
+                            if (i > 0) {
+                                final String colKey = getColKeyByIndex(i - 1);
+                                slotX += getColWidth(colKey);
+                            }
+                            final int dist = Math.abs(x - slotX);
+                            if (closestDistance == -1 || dist < closestDistance) {
+                                closestDistance = dist;
+                                closestSlot = i;
+                            }
+                        }
+                        tHead.focusSlot(closestSlot);
 
-                    updateFloatingCopysPosition(DOM.eventGetClientX(event), -1);
-                    ApplicationConnection.getConsole().log("" + closestSlot);
-                }
-                break;
-            default:
-                break;
+                        updateFloatingCopysPosition(DOM.eventGetClientX(event), -1);
+                        ApplicationConnection.getConsole().log("" + closestSlot);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
         protected void onResizeEvent(Event event) {
             switch (DOM.eventGetType(event)) {
-            case Event.ONMOUSEDOWN:
-                isResizing = true;
-                DOM.setCapture(getElement());
-                dragStartX = DOM.eventGetClientX(event);
-                colIndex = getColIndexByKey(cid);
-                originalWidth = getWidth();
-                DOM.eventPreventDefault(event);
-                break;
-            case Event.ONMOUSEUP:
-                isResizing = false;
-                DOM.releaseCapture(getElement());
-                handleColResize();
-                tBody.reLayoutComponents();
-                break;
-            case Event.ONMOUSEMOVE:
-                if (isResizing) {
-                    final int deltaX = DOM.eventGetClientX(event) - dragStartX;
-                    if (deltaX == 0) {
-                        return;
-                    }
+                case Event.ONMOUSEDOWN:
+                    isResizing = true;
+                    DOM.setCapture(getElement());
+                    dragStartX = DOM.eventGetClientX(event);
+                    colIndex = getColIndexByKey(cid);
+                    originalWidth = getWidth();
+                    DOM.eventPreventDefault(event);
+                    break;
+                case Event.ONMOUSEUP:
+                    isResizing = false;
+                    DOM.releaseCapture(getElement());
+                    handleColResize();
+                    tBody.reLayoutComponents();
+                    break;
+                case Event.ONMOUSEMOVE:
+                    if (isResizing) {
+                        final int deltaX = DOM.eventGetClientX(event) - dragStartX;
+                        if (deltaX == 0) {
+                            return;
+                        }
 
-                    int newWidth = originalWidth + deltaX;
-                    if (newWidth < MINIMUM_COL_WIDTH) {
-                        newWidth = MINIMUM_COL_WIDTH;
+                        int newWidth = originalWidth + deltaX;
+                        if (newWidth < MINIMUM_COL_WIDTH) {
+                            newWidth = MINIMUM_COL_WIDTH;
+                        }
+                        updateCalculatedWidth(colIndex, newWidth);
+                        setColWidth(colIndex, newWidth);
                     }
-                    updateCalculatedWidth(colIndex, newWidth);
-                    setColWidth(colIndex, newWidth);
-                }
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -891,17 +960,17 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         public void setAlign(char c) {
             if (align != c) {
                 switch (c) {
-                case ALIGN_CENTER:
-                    DOM.setStyleAttribute(captionContainer, "textAlign",
-                            "center");
-                    break;
-                case ALIGN_RIGHT:
-                    DOM.setStyleAttribute(captionContainer, "textAlign",
-                            "right");
-                    break;
-                default:
-                    DOM.setStyleAttribute(captionContainer, "textAlign", "");
-                    break;
+                    case ALIGN_CENTER:
+                        DOM.setStyleAttribute(captionContainer, "textAlign",
+                                "center");
+                        break;
+                    case ALIGN_RIGHT:
+                        DOM.setStyleAttribute(captionContainer, "textAlign",
+                                "right");
+                        break;
+                    default:
+                        DOM.setStyleAttribute(captionContainer, "textAlign", "");
+                        break;
                 }
             }
             align = c;
@@ -915,7 +984,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     /**
      * HeaderCell that is header cell for row headers.
-     *
+     * <p/>
      * Reordering disabled and clicking on it resets sorting.
      */
     public class RowHeadersHeaderCell extends HeaderCell {
@@ -1121,11 +1190,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         /**
          * Get's HeaderCell by it's column Key.
-         *
+         * <p/>
          * Note that this returns HeaderCell even if it is currently collapsed.
          *
-         * @param cid
-         *            Column key of accessed HeaderCell
+         * @param cid Column key of accessed HeaderCell
          * @return HeaderCell
          */
         public HeaderCell getHeaderCell(String cid) {
@@ -1198,7 +1266,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     final int left = DOM.getAbsoluteLeft(columnSelector);
                     final int top = DOM.getAbsoluteTop(columnSelector)
                             + DOM.getElementPropertyInt(columnSelector,
-                                    "offsetHeight");
+                            "offsetHeight");
                     client.getContextMenu().showAt(this, left, top);
                 }
             }
@@ -1366,6 +1434,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
 
         protected int containerHeight = -1;
+
         /**
          * Fix container blocks height according to totalRows to avoid
          * "bouncing" when scrolling
@@ -1449,7 +1518,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             protected Vector childWidgets = new Vector();
             private boolean selected = false;
             private final int rowKey;
-            private List<UIDL> pendingComponentPaints;
+            private Map<Paintable, UIDL> pendingComponentPaints;
 
             protected String[] actionKeys = null;
 
@@ -1499,9 +1568,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     p.updateFromUIDL(uidl, client);
                 } else {
                     if (pendingComponentPaints == null) {
-                        pendingComponentPaints = new LinkedList<UIDL>();
+                        pendingComponentPaints = new LinkedHashMap<Paintable, UIDL>();
                     }
-                    pendingComponentPaints.add(uidl);
+                    pendingComponentPaints.put(p, uidl);
                 }
             }
 
@@ -1509,9 +1578,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             protected void onAttach() {
                 super.onAttach();
                 if (pendingComponentPaints != null) {
-                    for (UIDL uidl : pendingComponentPaints) {
-                        Paintable paintable = client.getPaintable(uidl);
-                        paintable.updateFromUIDL(uidl, client);
+                    for (final Map.Entry<Paintable, UIDL> entry : pendingComponentPaints.entrySet()) {
+                        entry.getKey().updateFromUIDL(entry.getValue(), client);
                     }
                 }
             }
@@ -1534,11 +1602,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
                     if (cell instanceof String) {
                         addCell(cell.toString(), aligns[col], style, col, false);
-
                     } else {
-                        final Paintable cellContent = client
-                                .getPaintable((UIDL) cell);
-
+                        Paintable cellContent = client.getPaintable((UIDL) cell);
+//                        if (cellContent instanceof EditableWidget) {
+//                            cellContent = new EditorWrapper(cellContent);
+//                        }
                         addCell((Widget) cellContent, aligns[col], style, col);
                         paintComponent(cellContent, (UIDL) cell);
                     }
@@ -1547,7 +1615,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
 
             public void addCell(String text, char align, String style, int col,
-                    boolean textIsHTML) {
+                                boolean textIsHTML) {
                 // String only content is optimized by not using Label widget
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
@@ -1616,7 +1684,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 return DOM.getChild(getElement(), 0).getOffsetHeight();
             }
 
-            protected void setCellWidget(Element container, Widget w, int colIndex) {
+            protected void setCellWidget(Element container, final Widget w, int colIndex) {
                 // ensure widget not attached to another element (possible tBody
                 // change)
                 w.removeFromParent();
@@ -1627,6 +1695,16 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     widgetColumns = new HashMap();
                 }
                 widgetColumns.put(w, colIndex);
+
+                if (w instanceof HasFocusHandlers) {
+                    ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
+                        public void onFocus(FocusEvent event) {
+                            if (event.getNativeEvent().getEventTarget().cast() == w.getElement()) {
+                                Table.this.focusWidgetIndex = childWidgets.indexOf(w);
+                            }
+                        }
+                    });
+                }
             }
 
             public Iterator iterator() {
@@ -1683,34 +1761,34 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
              */
             @Override
             public void onBrowserEvent(Event event) {
-//                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
-//                if (getElement() == tdOrTr
-//                        || getElement() == tdOrTr.getParentElement()) {
                 final Element targetElement = DOM.eventGetTarget(event);
                 //todo gorodnov: review this code when we will be use a multi selection
                 if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
                     return;
 
                 switch (DOM.eventGetType(event)) {
-                case Event.ONCLICK:
-                    handleClickEvent(event);
-                    handleRowClick(event);
-                    break;
-                case Event.ONDBLCLICK:
-                    handleClickEvent(event);
-                    break;
-                case Event.ONCONTEXTMENU:
-                    handleRowClick(event);
-                    showContextMenu(event);
-                    break;
-                default:
-                    break;
+                    case Event.ONCLICK:
+                        handleClickEvent(event);
+                        handleRowClick(event);
+                        break;
+                    case Event.ONDBLCLICK:
+                        handleClickEvent(event);
+                        break;
+                    case Event.ONCONTEXTMENU:
+                        handleRowClick(event);
+                        showContextMenu(event);
+                        break;
+                    default:
+                        break;
                 }
-//                }
                 super.onBrowserEvent(event);
             }
 
             protected void handleRowClick(Event event) {
+                processRowSelection();
+            }
+
+            private void processRowSelection() {
                 if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
                     if (!nullSelectionDisallowed || !isSelected()) {
                         toggleSelection();
@@ -1731,7 +1809,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     left += Window.getScrollLeft();
                     client.getContextMenu().showAt(this, left, top);
                 }
-                event.cancelBubble(true);
+                event.stopPropagation();
                 event.preventDefault();
             }
 
@@ -1741,14 +1819,27 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             public void toggleSelection() {
                 selected = !selected;
+                String key = String.valueOf(rowKey);
                 if (selected) {
                     if (selectMode == com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_SINGLE) {
                         deselectAll();
                     }
-                    selectedRowKeys.add(String.valueOf(rowKey));
+                    selectedRowKeys.add(key);
+                    if (navigation) {
+                        selectedKey = key;
+                    }
+                    if (!childWidgets.isEmpty()) {
+                        Widget w = (Widget) childWidgets.get(focusWidgetIndex > -1 ? focusWidgetIndex : 0);
+                        if (w instanceof Focusable) {
+                            ((Focusable) w).setFocus(true);
+                        }
+                    }
                     addStyleName("v-selected");
                 } else {
-                    selectedRowKeys.remove(String.valueOf(rowKey));
+                    selectedRowKeys.remove(key);
+                    if (navigation) {
+                        selectedKey = null;
+                    }
                     removeStyleName("v-selected");
                 }
             }
@@ -1762,7 +1853,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
              */
             public Action[] getActions() {
                 if (actionKeys == null) {
-                    return new Action[] {};
+                    return new Action[]{};
                 }
                 final Action[] actions = new Action[actionKeys.length];
                 for (int i = 0; i < actions.length; i++) {
@@ -1819,7 +1910,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
 
             public void replaceChildComponent(Widget oldComponent,
-                    Widget newComponent) {
+                                              Widget newComponent) {
                 com.google.gwt.dom.client.Element parentElement = oldComponent
                         .getElement().getParentElement();
                 int index = childWidgets.indexOf(oldComponent);
@@ -1864,6 +1955,13 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
         // still ensure all selects are removed from (not necessary rendered)
         selectedRowKeys.clear();
+    }
+
+    public void toggleSelection(String rowKey) {
+        final ITableBody.ITableRow row = getRenderedRowByKey(rowKey);
+        if (row != null) {
+            row.processRowSelection();
+        }
     }
 
     @Override
@@ -1967,8 +2065,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     /**
      * Helper function to build html snippet for column or row headers
      *
-     * @param uidl
-     *            possibly pwith values caption and icon
+     * @param uidl possibly pwith values caption and icon
      * @return html snippet containing possibly an icon + caption text
      */
     protected String buildCaptionHtmlSnippet(UIDL uidl) {
@@ -1976,7 +2073,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         if (uidl.hasAttribute("icon")) {
             s = "<img src=\""
                     + client.translateVaadinUri(uidl
-                            .getStringAttribute("icon"))
+                    .getStringAttribute("icon"))
                     + "\" alt=\"icon\" class=\"v-icon\">" + s;
         }
         return s;
@@ -2176,7 +2273,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     }
 
     public static void setCellText(Element container, String text,
-                                  boolean textIsHTML) {
+                                   boolean textIsHTML) {
         if (textIsHTML) {
             Tools.setInnerHTML(container, text);
         } else {
@@ -2190,13 +2287,13 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected static void setCellAlignment(Element container, char align) {
         if (align != ALIGN_LEFT) {
             switch (align) {
-            case ALIGN_CENTER:
-                DOM.setStyleAttribute(container, "textAlign", "center");
-                break;
-            case ALIGN_RIGHT:
-            default:
-                DOM.setStyleAttribute(container, "textAlign", "right");
-                break;
+                case ALIGN_CENTER:
+                    DOM.setStyleAttribute(container, "textAlign", "center");
+                    break;
+                case ALIGN_RIGHT:
+                default:
+                    DOM.setStyleAttribute(container, "textAlign", "right");
+                    break;
             }
         }
     }

@@ -16,8 +16,8 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.ScrollEvent;
-import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.user.client.*;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.UIDL;
@@ -47,8 +47,7 @@ import java.util.Iterator;
  * <p/>
  * TODO implement unregistering for child components in Cells
  */
-public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
-        implements ScrollHandler {
+public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table {
 
     /**
      * multiple of pagelength which component will cache when requesting more
@@ -130,6 +129,11 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
     }
 
     @Override
+    public void onKeyUp(KeyUpEvent event) {
+        super.onKeyUp(event);    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
     protected void sizeInit() {
         super.sizeInit();
 
@@ -164,6 +168,14 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         }
 
         initializedAndAttached = true;
+    }
+
+    protected String pressUp(String rowKey) {
+        return getBody().aboveRow(rowKey);
+    }
+
+    protected String pressDown(String rowKey) {
+        return getBody().bellowRow(rowKey);
     }
 
     /**
@@ -205,8 +217,6 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
 
     }
 
-    //todo sizeInit();
-
     @Override
     protected void onDetach() {
         rowRequestHandler.cancel();
@@ -220,7 +230,10 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
         }
     }
 
+    @Override
     public void onScroll(ScrollEvent event) {
+        ApplicationConnection.getConsole().log("Scroll event processing");
+
         int scrollLeft = bodyContainer.getElement().getScrollLeft();
         int scrollTop = bodyContainer.getScrollPosition();
         if (!initializedAndAttached) {
@@ -739,6 +752,64 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table
 
         public int getFirstRendered() {
             return firstRendered;
+        }
+
+        public String aboveRow(String rowKey) {
+            IScrollTableRow row = (IScrollTableRow) getRenderedRowByKey(rowKey);
+            int index = rowIndex(row);
+            if (index > 0) {
+                int renderIndex = renderedRows.indexOf(row);
+                row = (IScrollTableRow) renderedRows.get(--renderIndex);
+
+                int topVisibleRow = (int) Math.ceil(bodyContainer.getScrollPosition()
+                        / (double) getRowHeight());
+
+                int newRowIndex = rowIndex(row);
+                if (topVisibleRow > newRowIndex) {
+                    bodyContainer.setScrollPosition(newRowIndex * getRowHeight());
+                }
+
+                return row.getKey();
+            } else {
+                return null;
+            }
+        }
+
+        public String bellowRow(String rowKey) {
+            IScrollTableRow row = (IScrollTableRow) getRenderedRowByKey(rowKey);
+            int index = rowIndex(row);
+            if (index > -1 && index < totalRows - 1) {
+                int renderIndex = renderedRows.indexOf(row);
+                row = (IScrollTableRow) renderedRows.get(++renderIndex);
+
+                int bottomVisibleRow = (int) (
+                        (bodyContainer.getScrollPosition() + bodyContainer.getOffsetHeight() - getRowHeight())
+                                / (double) getRowHeight()
+                );
+                if (bottomVisibleRow < 0) bottomVisibleRow = 0;
+
+                if (bottomVisibleRow >= totalRows) {
+                    bodyContainer.scrollToBottom();
+                } else {
+                    int newRowIndex = rowIndex(row);
+                    if (newRowIndex > bottomVisibleRow) {
+                        bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() + getRowHeight());
+                    }
+                }
+
+                return row.getKey();
+            } else {
+                return null;
+            }
+        }
+
+        protected int rowIndex(IScrollTableRow row) {
+            if (row == null) return -1;
+            int rowIndex = renderedRows.indexOf(row);
+            if (rowIndex > -1) {
+                rowIndex += firstRendered;
+            }
+            return rowIndex;
         }
 
         public class IScrollTableRow extends ITableRow {
