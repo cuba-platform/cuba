@@ -39,6 +39,11 @@ public class ActionsFieldLoader extends AbstractFieldLoader {
             component.setCaptionProperty(captionProperty);
         }
 
+        String dropdown = element.attributeValue(ActionsField.DROPDOWN, "false");
+        if (Boolean.valueOf(dropdown)) {
+            component.enableButton(ActionsField.DROPDOWN, true);
+        }
+
         ActionsFieldHelper helper = new ActionsFieldHelper(component);
 
         String lookup = element.attributeValue(ActionsField.LOOKUP, "true");
@@ -75,20 +80,18 @@ public class ActionsFieldLoader extends AbstractFieldLoader {
     protected void loadDatasource(DatasourceComponent component, Element element) {
         super.loadDatasource(component, element);
 
-        ActionsField actionsField = (ActionsField) component;
         CollectionDatasource ds;
 
         String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
             ds = context.getDsContext().get(datasource);
-            actionsField.enableButton(ActionsField.DROPDOWN, true);
         } else {
             MetaClass metaClass = component.getMetaProperty().getRange().asClass();
             ds = new CollectionDatasourceImpl(null, new GenericDataService(false), null, metaClass, View.MINIMAL);
             ds.setQuery("select e from " + metaClass.getName() + " e where e.id is null");
             ds.refresh();
         }
-        actionsField.setOptionsDatasource(ds);
+        ((ActionsField) component).setOptionsDatasource(ds);
     }
 
     private com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
