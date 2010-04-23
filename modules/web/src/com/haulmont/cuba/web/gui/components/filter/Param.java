@@ -355,6 +355,11 @@ public class Param {
         lookup.setOptionsDatasource(ds);
         ds.initialized();
 
+        Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
+        if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+            ds.refresh();
+        }
+
         lookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 setValue(value);
