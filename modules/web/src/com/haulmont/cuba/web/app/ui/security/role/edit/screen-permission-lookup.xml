@@ -21,11 +21,12 @@
     </dsContext>
 
     <layout>
-        <vbox expand="permissions-tree" spacing="true">
-            <tree id="permissions-tree">
-                <treechildren datasource="permissions" captionProperty="caption"/>
-            </tree>
-
+        <vbox expand="split" spacing="true">
+            <split id="split" orientation="horizontal" pos="30">
+                <tree id="permissions-tree">
+                    <treechildren datasource="permissions" captionProperty="caption"/>
+                </tree>
+            </split>
             <optionsGroup id="access" multiselect="false" required="true"/>
         </vbox>
     </layout>
