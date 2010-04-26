@@ -271,13 +271,6 @@
       <item index="4" class="java.lang.String" itemvalue="ERROR" />
     </list>
   </component>
-  <component name="JavacSettings">
-    <option name="DEBUGGING_INFO" value="true" />
-    <option name="GENERATE_NO_WARNINGS" value="false" />
-    <option name="DEPRECATION" value="true" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
-    <option name="MAXIMUM_HEAP_SIZE" value="128" />
-  </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
@@ -294,14 +287,6 @@
     <option name="HEAP_SIZE" />
     <option name="LOCALE" />
     <option name="OPEN_IN_BROWSER" value="true" />
-  </component>
-  <component name="JikesSettings">
-    <option name="JIKES_PATH" value="" />
-    <option name="DEBUGGING_INFO" value="true" />
-    <option name="DEPRECATION" value="true" />
-    <option name="GENERATE_NO_WARNINGS" value="false" />
-    <option name="IS_EMACS_ERRORS_MODE" value="true" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
   <component name="Palette2">
     <group name="Swing">
@@ -432,12 +417,9 @@
       <entry facet-type="gwt">
         <default-facet-configuration>
           <configuration>
-            <setting name="additionalCompilerParameters" value="" />
             <setting name="compilerMaxHeapSize" value="128" />
-            <setting name="compilerOutputPath" value="" />
             <setting name="gwtScriptOutputStyle" value="DETAILED" />
-            <setting name="gwtSdkUrl" value="file://$PROJECT_DIR$/../../../../gwt1.7" />
-            <setting name="runGwtCompilerOnMake" value="true" />
+            <setting name="gwtSdkUrl" value="file://D:/Exchange/gwt1.7" />
           </configuration>
         </default-facet-configuration>
       </entry>
@@ -462,6 +444,22 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
+  <component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="gwt" type="GWT.ConfigurationType" factoryName="GWT Configuration">
+      <module name="web-war" />
+      <option name="VM_PARAMETERS" value="-Xms256M -Xmx512M" />
+      <option name="SHELL_PARAMETERS" value="-noserver -whitelist &quot;127.0.0.1 ^http[:][/][/]127[.]0[.]0[.]1[:]8080&quot; http://127.0.0.1:8080/cuba" />
+      <option name="RUN_PAGE" value="" />
+      <option name="CUSTOM_WEB_XML" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="1827" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
+  </component>
   <component name="ResourceManagerContainer">
     <option name="myResourceBundles">
       <value>
@@ -469,19 +467,26 @@
       </value>
     </option>
   </component>
-  <component name="RmicSettings">
-    <option name="IS_EANABLED" value="false" />
-    <option name="DEBUGGING_INFO" value="true" />
-    <option name="GENERATE_NO_WARNINGS" value="false" />
-    <option name="GENERATE_IIOP_STUBS" value="false" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value="" />
-  </component>
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://dc/cuba/branches">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://dc/cuba/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://dc/cuba/branches" />
@@ -495,6 +500,20 @@
         <entry key="$PROJECT_DIR$/modules/core">
           <value>
             <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://dc/cuba/branches">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://dc/cuba/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn://dc/cuba/branches" />
@@ -627,22 +646,31 @@
     </library>
     <library name="gwt">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-1.7.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-dev-windows-1.7.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-2.0.3.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-dev-windows-2.0.3.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-1.7.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-dev-windows-1.7.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-2.0.3.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-dev-windows-2.0.3.jar!/" />
       </SOURCES>
     </library>
     <library name="gwt-user">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../../../gwt1.7/gwt-user.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-2.0.3.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../../../../gwt1.7/gwt-user.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user-2.0.3.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="gwt-user (2)">
+      <CLASSES>
+        <root url="jar://D:/Exchange/gwt-2.0.3/gwt-user.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://D:/Exchange/gwt-2.0.3/gwt-user.jar!/" />
       </SOURCES>
     </library>
   </component>
