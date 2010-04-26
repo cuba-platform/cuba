@@ -1,5 +1,5 @@
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.gui.components.BasicEditor"
+        class="com.haulmont.cuba.web.app.ui.security.usersubst.edit.UsersubstEditor"
         messagesPack="com.haulmont.cuba.web.app.ui.security.usersubst"
         caption="msg://userSubstitution.caption"
         datasource="subst">
@@ -25,7 +25,7 @@
         <collectionDatasource id="users" class="com.haulmont.cuba.security.entity.User" view="usersubst.edit">
             <query>
                 <![CDATA[
-                select u from sec$User u where u.id <> :ds$subst.user
+                select u from sec$User u   where u.id <> :ds$subst.user
                 ]]>
             </query>
         </collectionDatasource>
@@ -47,7 +47,7 @@
                     <row>
                         <label value="msg://substUser"/>
                         <lookupField id="substUser" datasource="subst" property="substitutedUser"
-                                     required="true" optionsDatasource="users"/>
+                                     required="true" optionsDatasource="users" />
                     </row>
                     <row>
                         <label value="msg://endDate"/>

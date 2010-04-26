@@ -57,6 +57,7 @@ public class UserEditor extends AbstractEditor {
         TableActionsHelper substTableActions = new TableActionsHelper(this, substTable);
         substTableActions.createRemoveAction(false);
 
+
         setPermissionsShowAction(rolesTable, "show-screens", "sec$Target.screenPermissions.lookup", PermissionType.SCREEN);
         setPermissionsShowAction(rolesTable, "show-entities", "sec$Target.entityPermissions.lookup", PermissionType.ENTITY_OP);
         setPermissionsShowAction(rolesTable, "show-properties", "sec$Target.propertyPermissions.lookup", PermissionType.ENTITY_ATTR);
@@ -231,8 +232,20 @@ public class UserEditor extends AbstractEditor {
             final UserSubstitution substitution = new UserSubstitution();
             substitution.setUser(userDs.getItem());
 
+            final CollectionDatasource<UserSubstitution, UUID> suDs = getDsContext().get("substitutions");
+
+            Map<String, Object> params = new Hashtable();
+            if(suDs != null)
+            {
+                int i=0;
+                for(UUID u:suDs.getItemIds())
+                {
+                    params.put("id"+i,suDs.getItem(u));
+                    i++;
+                }
+            }
             openEditor("sec$UserSubstitution.edit", substitution,
-                    WindowManager.OpenType.DIALOG, usDs);
+                    WindowManager.OpenType.DIALOG,params, usDs);
         }
     }
 
@@ -243,6 +256,7 @@ public class UserEditor extends AbstractEditor {
 
         public void actionPerform(Component component) {
             final CollectionDatasource<UserSubstitution, UUID> usDs = substTable.getDatasource();
+
 
             if (usDs.getItem() != null)
                 openEditor("sec$UserSubstitution.edit", usDs.getItem(),
