@@ -584,6 +584,13 @@ public class Table
     }
 
     @Override
+    public void valueChange(Property.ValueChangeEvent event) {
+        if (event.getProperty().isReadOnly()) {
+            super.valueChange(event);
+        }
+    }
+
+    @Override
     protected void refreshRenderedCells() {
         if (getParent() == null) {
             return;
