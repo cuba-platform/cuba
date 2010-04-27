@@ -68,8 +68,10 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                         Object item = ((Window.Editor) window).getItem();
-                        if (item instanceof Entity)
+                        if (item instanceof Entity) {
                             datasource.addItem((Entity) item);
+                            fireCreateEvent((Entity) item);
+                        }
                     }
                 }
             });
