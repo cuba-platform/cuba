@@ -48,6 +48,7 @@ public interface Table
         protected Integer width;
         protected boolean collapsed;
         protected AggregationInfo aggregation;
+        protected boolean calculatable;
 
         protected Class type;
         private Element element;
@@ -114,6 +115,14 @@ public interface Table
 
         public void setAggregation(AggregationInfo aggregation) {
             this.aggregation = aggregation;
+        }
+
+        public boolean isCalculatable() {
+            return calculatable;
+        }
+
+        public void setCalculatable(boolean calculatable) {
+            this.calculatable = calculatable;
         }
 
         @Override

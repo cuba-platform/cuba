@@ -287,6 +287,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         column.setFormatter(loadFormatter(element));
 
         loadAggregation(column, element);
+        loadCalculatable(column, element);
 
         return column;
     }
@@ -299,6 +300,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             aggregation.setType(AggregationInfo.Type.valueOf(aggregationElement.attributeValue("type")));
             aggregation.setFormatter(loadFormatter(aggregationElement));
             column.setAggregation(aggregation);
+        }
+    }
+
+    private void loadCalculatable(Table.Column column, Element columnElement) {
+        String calc = columnElement.attributeValue("calculatable");
+        if (!StringUtils.isEmpty(calc) && isBoolean(calc)) {
+            column.setCalculatable(Boolean.valueOf(calc));
         }
     }
 

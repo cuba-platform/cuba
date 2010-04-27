@@ -10,7 +10,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.*;
@@ -21,9 +20,9 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -44,11 +43,11 @@ import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.DateField;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -272,6 +271,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 } else if (propertyPath.getRange().isDatatype()) {
                     if (!isLookup && !StringUtils.isEmpty(clickAction)) {
                         addGeneratedColumn(propertyPath, new CodePropertyGenerator(column));
+                    } else if (BooleanUtils.toBoolean(column.isCalculatable())) {
+                        addGeneratedColumn(propertyPath, new CalculatableColumnGenerator());
                     } else {
                         final Datatype datatype = propertyPath.getRange().asDatatype();
                         if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
@@ -643,7 +644,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         public boolean isReadOnly() {
             final Table.Column column = WebAbstractTable.this.columns.get(propertyPath);
             if (column != null) {
-                return column.isEditable() != null && !column.isEditable();
+                return !(BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable()));
             } else {
                 return super.isReadOnly();
             }
@@ -801,17 +802,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
-//        protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
-//            final Property property = source.getItem(itemId).getItemProperty(columnId);
-//            final Object value = property.getValue();
-//
-//            final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
-
-        //            checkBox.setValue(BooleanUtils.toBoolean((Boolean) value));
-//            checkBox.setEnabled(false);
-//
-//            return checkBox;
-//        }
         protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
@@ -838,6 +828,48 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-unchecked.png"));
                 return checkBoxImage;
             }
+        }
+    }
+
+    private class CalculatableColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+        private Formatter formatter;
+        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+            return generateCell((AbstractSelect) source, itemId, columnId);
+        }
+
+        public Component generateCell(TableSupport source, Object itemId, Object columnId) {
+            return generateCell((AbstractSelect) source, itemId, columnId);
+        }
+
+        protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
+            CollectionDatasource ds = WebAbstractTable.this.getDatasource();
+            MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyEx(columnId.toString());
+
+            PropertyWrapper propertyWrapper = (PropertyWrapper) source.getContainerProperty(itemId, propertyPath);
+
+            Table.Column column = WebAbstractTable.this.getColumn(columnId.toString());
+            if (column != null) {
+                formatter = column.getFormatter();
+            }
+
+            final Label label = new Label();
+            updateLabel(label, propertyWrapper);
+            label.setWidth("-1px");
+
+            //add property change listener that will update a label value
+            propertyWrapper.addListener(new Property.ValueChangeListener() {
+                public void valueChange(Property.ValueChangeEvent event) {
+                    updateLabel(label, event.getProperty());
+                }
+            });
+
+            return label;
+        }
+
+        protected void updateLabel(Label label, Property p) {
+            label.setValue(formatter != null
+                    ? formatter.format(p.getValue())
+                    : p.getValue() == null ? "" : p.getValue().toString());
         }
     }
 
