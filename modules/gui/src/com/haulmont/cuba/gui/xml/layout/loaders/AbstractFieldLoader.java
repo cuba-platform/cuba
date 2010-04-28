@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
@@ -100,7 +101,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
 
                 } else {
 
-                    final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
+                    final Class<Field.Validator> aClass = ScriptingProvider.loadClass(className);
 
 
                     if (!StringUtils.isBlank(getMessagesPack()))
