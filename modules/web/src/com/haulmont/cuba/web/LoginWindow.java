@@ -126,7 +126,7 @@ public class LoginWindow extends Window
         wrap.setMargin(false);
         wrap.setWidth(formWidth + "px");
         wrap.setHeight(formHeight + "px");
-        if (!StringUtils.isBlank(label.getCaption()))  {
+        if (label.getValue() != null && !StringUtils.isBlank((String) label.getValue()))  {
             wrap.addComponent(label);
             wrap.setComponentAlignment(label, Alignment.BOTTOM_CENTER);
         }
