@@ -14,6 +14,7 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.data.Property;
 
 public class ActionsField extends CustomField {
     private GridLayout root;
@@ -50,12 +51,17 @@ public class ActionsField extends CustomField {
     }
 
     @Override
+    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+        field.setValue(newValue);
+    }
+
+    @Override
     public void setRequired(boolean required) {
         super.setRequired(required);
         if (required) {
             field.setRequired(!required);
         }
         field.setNullSelectionAllowed(!required);
-    }
+    }        
 
 }

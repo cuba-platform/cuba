@@ -13,8 +13,11 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.toolkit.ui.ActionsField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
@@ -202,5 +205,35 @@ public class WebActionsField
         }
 
         return null;
+    }
+
+    @Override
+    public void addListener(ValueListener listener) {
+        lookupField.addListener(listener); 
+    }
+
+    @Override
+    public void removeListener(ValueListener listener) {
+        lookupField.removeListener(listener);
+    }
+
+    @Override
+    public void addValidator(Validator validator) {
+        lookupField.addValidator(validator); 
+    }
+
+    @Override
+    public void removeValidator(Validator validator) {
+        lookupField.removeValidator(validator);
+    }
+
+    @Override
+    public boolean isValid() {
+        return lookupField.isValid();
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        lookupField.validate();
     }
 }
