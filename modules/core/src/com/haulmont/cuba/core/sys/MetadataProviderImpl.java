@@ -14,7 +14,6 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.ClassMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
-import com.haulmont.chile.core.loader.ChileAnnotationsLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
@@ -27,18 +26,14 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ViewRepository;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.AnnotatedElement;
 import java.util.*;
-import java.net.URL;
-import java.net.URISyntaxException;
 
 public class MetadataProviderImpl extends MetadataProvider
 {
@@ -166,6 +161,28 @@ public class MetadataProviderImpl extends MetadataProvider
     private void initMetaClass(MetaClass metaClass) {
         for (MetaProperty property : metaClass.getOwnProperties()) {
             initMetaProperty(metaClass, property);
+        }
+
+        Collection<MetaClass> missingDescendants = new HashSet<MetaClass>(1);
+
+        findMissingDescendants(metaClass, missingDescendants);
+
+        if (!missingDescendants.isEmpty()) {
+            CollectionUtils.addAll(metaClass.getDescendants(), missingDescendants.iterator());
+
+            MetaClass ancestorMetaClass = metaClass.getAncestor();
+            while (ancestorMetaClass != null) {
+                CollectionUtils.addAll(ancestorMetaClass.getDescendants(), missingDescendants.iterator());
+                ancestorMetaClass = ancestorMetaClass.getAncestor();
+            }
+        }
+    }
+
+    private void findMissingDescendants(MetaClass ancestor, Collection<MetaClass> missingDescendants) {
+        Collection<MetaClass> descendants = ancestor.getDescendants();
+        for (Object descendant: descendants) {
+            missingDescendants.add((MetaClass) descendant);
+            findMissingDescendants((MetaClass) descendant, missingDescendants);
         }
     }
 
