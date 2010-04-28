@@ -636,8 +636,32 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {
+
+        private ValueChangeListener calcListener;
+        private static final long serialVersionUID = -7942046867909695346L;
+
         public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath) {
             super(item, propertyPath);
+        }
+
+        @Override
+        public void addListener(ValueChangeListener listener) {
+            super.addListener(listener);
+            //A listener of a calculatable property must be only one
+            if (listener instanceof CalculatablePropertyValueChangeListener) {
+                if (this.calcListener != null) {
+                    removeListener(calcListener);
+                }
+                calcListener = listener;
+            }
+        }
+
+        @Override
+        public void removeListener(ValueChangeListener listener) {
+            super.removeListener(listener);
+            if (calcListener == listener) {
+                calcListener = null;
+            }
         }
 
         @Override
@@ -832,7 +856,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     private class CalculatableColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
-        private Formatter formatter;
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
@@ -847,30 +870,43 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             PropertyWrapper propertyWrapper = (PropertyWrapper) source.getContainerProperty(itemId, propertyPath);
 
+            Formatter formatter = null;
             Table.Column column = WebAbstractTable.this.getColumn(columnId.toString());
             if (column != null) {
                 formatter = column.getFormatter();
             }
 
             final Label label = new Label();
-            updateLabel(label, propertyWrapper);
+            updateLabel(label, propertyWrapper, formatter);
             label.setWidth("-1px");
 
             //add property change listener that will update a label value
-            propertyWrapper.addListener(new Property.ValueChangeListener() {
-                public void valueChange(Property.ValueChangeEvent event) {
-                    updateLabel(label, event.getProperty());
-                }
-            });
+            propertyWrapper.addListener(new CalculatablePropertyValueChangeListener(label, formatter));
 
             return label;
         }
+    }
 
-        protected void updateLabel(Label label, Property p) {
-            label.setValue(formatter != null
-                    ? formatter.format(p.getValue())
-                    : p.getValue() == null ? "" : p.getValue().toString());
+    private static class CalculatablePropertyValueChangeListener implements Property.ValueChangeListener {
+        private Label component;
+        private Formatter formatter;
+        
+        private static final long serialVersionUID = 8041384664735759397L;
+
+        private CalculatablePropertyValueChangeListener(Label component, Formatter formatter) {
+            this.component = component;
+            this.formatter = formatter;
         }
+
+        public void valueChange(Property.ValueChangeEvent event) {
+            updateLabel(component, event.getProperty(), formatter);
+        }
+    }
+
+    protected static void updateLabel(Label label, Property p, Formatter formatter) {
+        label.setValue(formatter != null
+                ? formatter.format(p.getValue())
+                : p.getValue() == null ? "" : p.getValue().toString());
     }
 
     protected class FieldFactory extends BaseFieldFactory {
