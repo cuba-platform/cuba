@@ -62,10 +62,15 @@ public class EntityLoadInfo {
             return null;
         }
 
-        int viewDashPos;
+        int viewDashPos = -1;
         String viewName;
-        if (dashCount == 6) {
-            viewDashPos = str.lastIndexOf("-");
+        if (dashCount >= 6) {
+            int i = 0;
+            while (i < 6) {
+                viewDashPos = str.indexOf('-', viewDashPos + 1);
+                i++;
+            }
+
             viewName = str.substring(viewDashPos + 1);
         } else {
             viewDashPos = str.length();
