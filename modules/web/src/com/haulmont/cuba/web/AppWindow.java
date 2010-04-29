@@ -605,9 +605,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             for (Element element : Dom4j.elements(descriptor, "param")) {
                 String value = element.attributeValue("value");
                 EntityLoadInfo info = EntityLoadInfo.parse(value);
-                if (info == null)
-                    params.put(element.attributeValue("name"), value);
-                else
+                if (info == null) {
+                    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+                        Boolean booleanValue = Boolean.valueOf(value);
+                        params.put(element.attributeValue("name"), booleanValue);
+                    } else {
+                        params.put(element.attributeValue("name"), value);
+                    }
+                } else
                     params.put(element.attributeValue("name"), loadEntityInstance(info));
             }
             params.put("caption", caption);

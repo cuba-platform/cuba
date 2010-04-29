@@ -384,9 +384,14 @@ public abstract class WindowManager {
                 for (Element paramElement : paramElements) {
                     final String name = paramElement.attributeValue("name");
                     final String value = paramElement.attributeValue("value");
-
-                    map.put(name, value);
-                    map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + name, value);
+                    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+                        Boolean booleanValue = Boolean.valueOf(value);
+                        map.put(name, booleanValue);
+                        map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + name, booleanValue);
+                    } else {
+                        map.put(name, value);
+                        map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + name, value);
+                    }
                 }
             }
         }
