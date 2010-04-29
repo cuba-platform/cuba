@@ -27,6 +27,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     extends
@@ -191,8 +193,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                             }
                         }
                     }
-               if (value instanceof String && info.isCaseInsensitive()) {
-                        value =makeCaseInsensitive((String) value);
+                    if (value instanceof String && info.isCaseInsensitive()) {
+                        value = makeCaseInsensitive((String) value);
                     }
                     map.put(name, value);
                     break;
@@ -257,7 +259,14 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             final String paramName = info.getName();
             final String jpaParamName = info.getFlatName();
 
-            query = query.replaceAll(paramName.replaceAll("\\$", "\\\\\\$"), jpaParamName);
+            Pattern p = Pattern.compile(paramName.replace("$", "\\$") + "([^\\.])"); // not ending with "."
+            Matcher m = p.matcher(query);
+            StringBuffer sb = new StringBuffer();
+            while (m.find()) {
+                m.appendReplacement(sb, jpaParamName + "$1");
+            }
+            m.appendTail(sb);
+            query = sb.toString();
 
             Object value = parameterValues.get(paramName);
             if (value != null) {

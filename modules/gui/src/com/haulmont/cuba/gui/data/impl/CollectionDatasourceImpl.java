@@ -53,6 +53,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     };
 
+    /**
+     * This constructor is invoked by DsContextLoader, so inheritors must contain a constructor
+     * with the same signature
+     */
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
                 String id, MetaClass metaClass, String viewName)

@@ -17,6 +17,7 @@ import java.util.Collection;
 
 public interface DatasourceImplementation<T extends Entity> {
     void initialized();
+    void valid();
     void setModified(boolean modified);
     void setCommitMode(Datasource.CommitMode commitMode);
 

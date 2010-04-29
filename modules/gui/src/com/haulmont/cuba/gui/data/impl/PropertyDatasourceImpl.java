@@ -121,6 +121,9 @@ public class PropertyDatasourceImpl<T extends Entity>
     public void initialized() {
     }
 
+    public void valid() {
+    }
+
     public void commited(Map<Entity, Entity> map) {
         modified = false;
         clearCommitLists();

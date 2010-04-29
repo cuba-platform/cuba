@@ -40,13 +40,8 @@ public class DatasourceImpl<T extends Entity>
             DsContext dsContext, DataService dataservice,
                 String id, MetaClass metaClass, String viewName)
     {
-        super(id);
-        this.dsContext = dsContext;
-        this.dataservice = dataservice;
-
-        this.metaClass = metaClass;
-        this.view = StringUtils.isEmpty(viewName) ? null : MetadataProvider.getViewRepository().getView(metaClass, viewName);
-
+        this(dsContext, dataservice, id, metaClass,
+                StringUtils.isEmpty(viewName) ? null : MetadataProvider.getViewRepository().getView(metaClass, viewName));
     }
 
     public DatasourceImpl(
@@ -175,6 +170,10 @@ public class DatasourceImpl<T extends Entity>
 
     public void initialized() {
         state = State.INVALID;
+    }
+
+    public void valid() {
+        state = State.VALID;
     }
 
     public void commited(Map<Entity, Entity> map) {

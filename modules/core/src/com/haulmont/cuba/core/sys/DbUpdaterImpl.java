@@ -61,12 +61,16 @@ public class DbUpdaterImpl implements DbUpdater {
     public List<String> findUpdateDatabaseScripts() {
         List<String> list = new ArrayList<String>();
         if (dbInitialized()) {
-            List<File> files = getUpdateScripts();
-            Set<String> scripts = getExecutedScripts();
-            for (File file : files) {
-                String name = getScriptName(file);
-                if (!scripts.contains(name)) {
-                    list.add(file.getPath());
+            if (!changelogTableExists) {
+                list.add("Unable to determine required updates because SYS_DB_CHANGELOG table doesn't exist");
+            } else {
+                List<File> files = getUpdateScripts();
+                Set<String> scripts = getExecutedScripts();
+                for (File file : files) {
+                    String name = getScriptName(file);
+                    if (!scripts.contains(name)) {
+                        list.add(file.getPath());
+                    }
                 }
             }
         } else {

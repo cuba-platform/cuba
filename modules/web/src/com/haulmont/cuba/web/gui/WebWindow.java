@@ -487,7 +487,7 @@ public class WebWindow
                 this,
                 new ComponentVisitor() {
                     public void visit(Component component, String name) {
-                        if (component instanceof HasSettings) {
+                        if (component instanceof HasSettings && WebWindow.this.settings != null) {
                             log.trace("Saving settings for : " + name + " : " + component);
                             Element e = WebWindow.this.settings.get(name);
                             boolean modified = ((HasSettings) component).saveSettings(e);
