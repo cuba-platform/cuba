@@ -298,7 +298,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             final AggregationInfo aggregation = new AggregationInfo();
             aggregation.setPropertyPath(column.getId());
             aggregation.setType(AggregationInfo.Type.valueOf(aggregationElement.attributeValue("type")));
-            aggregation.setFormatter(loadFormatter(aggregationElement));
+            Formatter formatter = loadFormatter(aggregationElement);
+            aggregation.setFormatter(formatter == null ? column.getFormatter() : formatter);
             column.setAggregation(aggregation);
         }
     }
