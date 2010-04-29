@@ -68,7 +68,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             {
                 if (item instanceof Instance) {
                     final MetaClass aClass = ((Instance) item).getMetaClass();
-                    if (!aClass.equals(this.metaClass) && !isMetaClassDescendant(this.metaClass, aClass)) {
+                    if (!aClass.equals(this.metaClass) && !this.metaClass.getDescendants().contains(aClass)) {
                         throw new IllegalStateException(String.format("Invalid item metaClass"));
                     }
                 }
@@ -77,14 +77,6 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 forceItemChanged(prevItem);
             }
         }
-    }
-
-    private boolean isMetaClassDescendant(MetaClass parent, MetaClass supposedDescendant) {
-        for (MetaClass descendant : parent.getDescendants()) {
-            if (descendant.equals(supposedDescendant) || isMetaClassDescendant(descendant, supposedDescendant))
-                return true;
-        }
-        return false;
     }
 
     public String getQuery() {
