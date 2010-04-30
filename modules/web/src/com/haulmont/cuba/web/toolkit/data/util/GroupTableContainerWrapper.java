@@ -22,6 +22,7 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         implements GroupTableContainer, AggregationContainer
 {
     private boolean groupTableContainer;
+    private static final long serialVersionUID = -8995121945975463903L;
 
     public GroupTableContainerWrapper(Container toBeWrapped) {
         super(toBeWrapped);
@@ -182,9 +183,9 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         }
     }
 
-    public Map<Object, String> aggregate(Collection itemIds) {
+    public Map<Object, Object> aggregate(Context context) {
         if (container instanceof AggregationContainer) {
-            return ((AggregationContainer) container).aggregate(itemIds);
+            return ((AggregationContainer) container).aggregate(context);
         }
         throw new IllegalStateException("Wrapped container is not AggregationContainer: "
                 + container.getClass());

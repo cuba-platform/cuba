@@ -24,6 +24,8 @@ public class TreeTable
         Container.Hierarchical,
         TreeTableContainer
 {
+    private static final long serialVersionUID = 1309449736003253410L;
+
     public TreeTable() {
         setRowHeaderMode(ROW_HEADER_MODE_HIDDEN);
     }
@@ -428,7 +430,7 @@ public class TreeTable
 
         if (items instanceof AggregationContainer && isAggregatable()
                 && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {
-            paintAggregationRow(target, ((AggregationContainer) items).aggregate(items.getItemIds()));
+            paintAggregationRow(target, ((AggregationContainer) items).aggregate(new Context(items.getItemIds())));
         }
 
         // Rows

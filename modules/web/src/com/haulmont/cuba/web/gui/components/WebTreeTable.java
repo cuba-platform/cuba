@@ -71,8 +71,7 @@ public class WebTreeTable
         return hierarchyProperty;
     }
 
-    public void setDatasource(HierarchicalDatasource datasource)
-    {
+    public void setDatasource(HierarchicalDatasource datasource) {
         setDatasource((CollectionDatasource) datasource);
     }
 
@@ -250,8 +249,8 @@ public class WebTreeTable
             }
         }
 
-        public Map<Object, String> aggregate(Collection itemIds) {
-            return __aggregate(this, itemIds);
+        public Map<Object, Object> aggregate(Context context) {
+            return __aggregate(this, context);
         }
     }
 }

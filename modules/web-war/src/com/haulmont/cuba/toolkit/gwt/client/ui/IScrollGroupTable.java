@@ -443,9 +443,6 @@ public class IScrollGroupTable extends IScrollTable {
                         } else {
                             Paintable cellContent = client
                                     .getPaintable((UIDL) cell);
-//                            if (cellContent instanceof EditableWidget) {
-//                                cellContent = new EditorWrapper(cellContent);
-//                            }
                             addCell((Widget) cellContent, aligns[colIndex], style, colIndex);
                             paintComponent(cellContent, (UIDL) cell);
                         }
@@ -493,7 +490,14 @@ public class IScrollGroupTable extends IScrollTable {
                             if ("-1".equals(columnId)) {//paint cell for columns group divider
                                 addCell("", aligns[colIndex], "", colIndex, false);
                             } else if (it.hasNext()) {
-                                addCell((String) it.next(), aligns[colIndex], "", colIndex, false);
+                                final Object cell = it.next();
+                                if (cell instanceof String) {
+                                    addCell((String) cell, aligns[colIndex], "", colIndex, false);
+                                } else {
+                                    Paintable p = client.getPaintable((UIDL) cell);
+                                    addCell((Widget) p, aligns[colIndex], "", colIndex);
+                                    paintComponent(p, (UIDL) cell);
+                                }
                             }
                             colIndex++;
                         }
@@ -621,7 +625,15 @@ public class IScrollGroupTable extends IScrollTable {
                     if (uidl.hasAttribute("style-" + columnId)) {
                         style = uidl.getStringAttribute("style-" + columnId);
                     }
-                    addCell((String) it.next(), aligns[colIndex], style);
+                    final Object cell = it.next();
+                    if (cell instanceof String) {
+                        addCell((String) cell, aligns[colIndex], style);
+                    } else {
+                        Paintable p = client.getPaintable((UIDL) cell);
+                        addCell((Widget) p, aligns[colIndex], style);
+                        p.updateFromUIDL((UIDL) cell, client);
+                    }
+
                     int colWidth;
                     if ((colWidth = getColWidth(getColKeyByIndex(colIndex))) > -1) {
                         setColWidth(colIndex, colWidth);

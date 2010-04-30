@@ -130,8 +130,8 @@ public class WebTable
         }
 
         @SuppressWarnings("unchecked")
-        public Map<Object, String> aggregate(Collection itemIds) {
-            return __aggregate(this, itemIds);
+        public Map<Object, Object> aggregate(Context context) {
+            return __aggregate(this, context);
         }
     }
 
@@ -202,8 +202,8 @@ public class WebTable
         }
 
         @SuppressWarnings("unchecked")
-        public Map<Object, String> aggregate(Collection itemIds) {
-            return __aggregate(this, itemIds);
+        public Map<Object, Object> aggregate(Context context) {
+            return __aggregate(this, context);
         }
     }
 }

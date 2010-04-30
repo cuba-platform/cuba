@@ -10,9 +10,7 @@
  */
 package com.haulmont.cuba.gui.data;
 
-import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 
 import java.util.Collection;
 import java.util.List;

@@ -2161,23 +2161,21 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
     }
 
-    protected class AggregationRow extends SimplePanel {
+    protected class AggregationRow extends FlowPanel implements Container {
 
         protected boolean initialized = false;
 
         protected char[] aligns;
-        protected Element wrap = DOM.createDiv();
         protected Element tr;
 
         public AggregationRow() {
             setStyleName(CLASSNAME + "-arow");
-            DOM.appendChild(getElement(), wrap);
-            DOM.setStyleAttribute(wrap, "overflow", "hidden");
+            DOM.setStyleAttribute(getElement(), "overflow", "hidden");
         }
 
         public void updateFromUIDL(UIDL uidl) {
-            if (getContainerElement().hasChildNodes()) {
-                Tools.removeChildren(getContainerElement());
+            if (getElement().hasChildNodes()) {
+                clear();
             }
 
             aligns = tHead.getColumnAlignments();
@@ -2195,22 +2193,28 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
                 DOM.appendChild(tBody, tr);
                 DOM.appendChild(table, tBody);
-                DOM.appendChild(getContainerElement(), table);
+                DOM.appendChild(getElement(), table);
             }
 
-            initialized = getContainerElement().hasChildNodes();
+            initialized = getElement().hasChildNodes();
         }
 
         protected void paintRow(UIDL uidl) {
             int col = 0;
             for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
-                final String cell = (String) it.next();
+                final Object cell = it.next();
                 String columnId = visibleColOrder[col];
                 String style = "";
                 if (uidl.hasAttribute("style-" + columnId)) {
                     style = uidl.getStringAttribute("style-" + columnId);
                 }
-                addCell(cell, aligns[col], style);
+                if (cell instanceof String) {
+                    addCell((String) cell, aligns[col], style);
+                } else {
+                    Paintable p = client.getPaintable((UIDL) cell);
+                    addCell((Widget) p, aligns[col], style);
+                    p.updateFromUIDL((UIDL) cell, client);
+                }
 
                 final String colKey = getColKeyByIndex(col);
                 int colWidth;
@@ -2222,21 +2226,31 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
         }
 
-        public void clearRow() {
-            if (initialized) {
-                tr = null;
-                Tools.removeChildren(getContainerElement());
+        public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
+            Element container = DOM.getParent(oldComponent.getElement());
+            if (remove(oldComponent)) {
+                add(newComponent, container);
             }
-            initialized = false;
         }
 
-        public void moveCol(int oldIndex, int newIndex) {
-            if (initialized && tr != null) {
-                final Element td = DOM.getChild(tr, oldIndex);
-                DOM.removeChild(tr, td);
+        public boolean hasChildComponent(Widget component) {
+            return getChildren().contains(component);
+        }
 
-                DOM.insertChild(tr, td, newIndex);
-            }
+        public void updateCaption(Paintable component, UIDL uidl) {
+            //do nothing
+        }
+
+        public boolean requestLayout(Set<Paintable> children) {
+            return true;
+        }
+
+        public RenderSpace getAllocatedSpace(Widget child) {
+            return new RenderSpace(child.getElement().getOffsetWidth(), child.getElement().getOffsetHeight());
+        }
+
+        public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+            //do nothing
         }
 
         public void setColWidth(int colIndex, int w) {
@@ -2267,15 +2281,29 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.appendChild(tr, td);
         }
 
-        @Override
-        protected Element getContainerElement() {
-            return wrap;
+        protected void addCell(Widget widget, char align, String style) {
+            final Element td = DOM.createTD();
+            final Element container = DOM.createDiv();
+            String classNameTd = CLASSNAME + "-cell";
+            String className = CLASSNAME + "-cell-content";
+            if (style != null && !style.equals("")) {
+                classNameTd += " " + CLASSNAME + "-cell-" + style;
+                className += " " + CLASSNAME + "-cell-content-" + style;
+            }
+            DOM.setElementProperty(td, "className", classNameTd);
+            DOM.setElementProperty(container, "className", className);
+
+            add(widget, container);
+
+            setCellAlignment(container, align);
+
+            DOM.appendChild(td, container);
+            DOM.appendChild(tr, td);
         }
 
         public void setHorizontalScrollPosition(int scrollLeft) {
-            DOM.setElementPropertyInt(getContainerElement(), "scrollLeft", scrollLeft);
+            DOM.setElementPropertyInt(getElement(), "scrollLeft", scrollLeft);
         }
-
     }
 
     public static void setCellText(Element container, String text,
@@ -2303,6 +2331,4 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
         }
     }
-
-
 }

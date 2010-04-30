@@ -31,6 +31,8 @@ public class GroupTable extends Table implements GroupTableContainer {
 
     private GroupPropertyValueFormatter groupPropertyValueFormatter;
 
+    private static final long serialVersionUID = 5268301834164182870L;
+
     public GroupTable() {
         super();
     }
@@ -178,8 +180,8 @@ public class GroupTable extends Table implements GroupTableContainer {
 
         boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
                 && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
-        if (hasAggregation) {
-            paintAggregationRow(target, ((AggregationContainer) items).aggregate(allItemIds()));
+        if (reqFirstRowToPaint == -1 && hasAggregation) {
+            paintAggregationRow(target, ((AggregationContainer) items).aggregate(new Context(allItemIds())));
         }
 
         // Rows
@@ -275,7 +277,7 @@ public class GroupTable extends Table implements GroupTableContainer {
 
                     if (hasAggregation) {
                         paintGroupAggregation(target, itemId,
-                                ((AggregationContainer) items).aggregate(getGroupItemIds(itemId)));
+                                ((AggregationContainer) items).aggregate(new GroupAggregationContext(this, itemId)));
                     }
                 } else {
                     // paint none groupped cells
@@ -391,7 +393,7 @@ public class GroupTable extends Table implements GroupTableContainer {
         }
     }
 
-    protected void paintGroupAggregation(PaintTarget target, Object groupId, Map<Object, String> aggregations)
+    protected void paintGroupAggregation(PaintTarget target, Object groupId, Map<Object, Object> aggregations)
             throws PaintException {
 
         boolean paintGroupProperty = false;
@@ -418,7 +420,18 @@ public class GroupTable extends Table implements GroupTableContainer {
                             + columnIdMap.key(columnId), cellStyle + "-ag");
                 }
             }
-            target.addText(aggregations.get(columnId));
+
+            Object value = aggregations.get(columnId);
+            if (Component.class.isInstance(value)) {
+                Component c = (Component) value;
+                if (c == null) {
+                    target.addText("");
+                } else {
+                    c.paint(target);
+                }
+            } else {
+                target.addText((String) value);
+            }
         }
     }
 
@@ -817,5 +830,18 @@ public class GroupTable extends Table implements GroupTableContainer {
 
     public interface GroupPropertyValueFormatter {
         String format(Object groupId, Object value);
+    }
+
+    public static class GroupAggregationContext extends Context {
+        private Object groupId;
+
+        public GroupAggregationContext(GroupTableContainer datasource, Object groupId) {
+            super(datasource.getGroupItemIds(groupId));
+            this.groupId = groupId;
+        }
+
+        public Object getGroupId() {
+            return groupId;
+        }
     }
 }

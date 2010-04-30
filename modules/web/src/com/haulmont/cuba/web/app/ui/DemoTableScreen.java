@@ -9,16 +9,16 @@
  */
 package com.haulmont.cuba.web.app.ui;
 
-import com.haulmont.cuba.web.toolkit.ui.PagingTable;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.toolkit.ui.Table;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.ExpandLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.ComponentContainer;
 
 import java.util.*;
 
@@ -44,12 +44,11 @@ public class DemoTableScreen extends WebWindow {
 
             com.vaadin.data.Container dataSource = new ListBeanContainer(values);
 
-            PagingTable table = new PagingTable("Paging Table Example", dataSource);
+            Table table = new Table("Paging Table Example", dataSource);
             table.setPageLength(10);
             table.setHeight("300px");
             table.setWidth("700px");
             table.setItemCaptionPropertyId("id");
-            table.setShowPageLengthEditor(true);
             table.setVisibleColumns(dataSource.getContainerPropertyIds().toArray());
 
             main.addComponent(table);

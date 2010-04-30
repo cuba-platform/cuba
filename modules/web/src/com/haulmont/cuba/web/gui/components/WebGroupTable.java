@@ -30,6 +30,7 @@ import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.vaadin.data.Item;
 import com.vaadin.terminal.Resource;
+import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -38,6 +39,8 @@ import java.util.*;
 public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.GroupTable>
         implements GroupTable, Component.Wrapper
 {
+
+    protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
     public WebGroupTable() {
         component = new com.haulmont.cuba.web.toolkit.ui.GroupTable() {
@@ -57,11 +60,6 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         initComponent(component);
 
         component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
-    }
-
-    @Override
-    public void setDatasource(CollectionDatasource datasource) {
-        super.setDatasource(datasource);
     }
 
     @Override
@@ -102,8 +100,39 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         }
     }
 
+    @Override
+    protected CollectionDatasourceListener createAggregationDatasourceListener() {
+        return new GroupAggregationDatasourceListener();
+    }
+
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return new GroupTableDsWrapper(datasource, columns);
+    }
+
+    @Override
+    protected Map<Object, Object> __handleAggregationResults(AggregationContainer.Context context, Map<Object, Object> results) {
+        if (context instanceof com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext) {
+
+            com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext groupContext =
+                    (com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext) context;
+
+            for (final Map.Entry<Object, Object> entry : results.entrySet()) {
+                final Table.Column column = columns.get(entry.getKey());
+                GroupAggregationCells cells;
+                if ((cells = groupAggregationCells.get(column)) != null) {
+                    com.vaadin.ui.Label cell = cells.getCell(groupContext.getGroupId());
+                    if (cell != null) {
+                        WebComponentsHelper.setLabelText(cell, entry.getValue(), column.getFormatter());
+                        entry.setValue(cell);
+                    }
+                }
+            }
+
+            return results;
+
+        } else {
+            return super.__handleAggregationResults(context, results);
+        }
     }
 
     public void groupBy(Object[] properties) {
@@ -192,6 +221,19 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             ((GroupDatasource) datasource).groupBy(properties);
             restoreState();
             resetCachedItems();
+
+            if (aggregationCells != null) {
+                if (hasGroups()) {
+                    if (groupAggregationCells == null) {
+                        groupAggregationCells = new HashMap<Column, GroupAggregationCells>();
+                    } else {
+                        groupAggregationCells.clear();
+                    }
+                    fillGroupAggregationCells(groupAggregationCells);
+                } else {
+                    groupAggregationCells = null;
+                }
+            }
         }
 
         private void saveState() {
@@ -209,6 +251,35 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 }
             }
             expandState.clear();
+        }
+
+        private void fillGroupAggregationCells(Map<Table.Column, GroupAggregationCells> cells) {
+            final Collection roots = rootGroups();
+            for (final Object rootGroup : roots) {
+                __fillGroupAggregationCells(rootGroup, cells);
+            }
+        }
+
+        private void __fillGroupAggregationCells(Object groupId, Map<Table.Column, GroupAggregationCells> cells) {
+            final Set<Table.Column> aggregatableColumns = aggregationCells.keySet();
+
+            for (final Column column : aggregatableColumns) {
+                if (!columns.get(getGroupProperty(groupId)).equals(column)) {
+                    GroupAggregationCells groupCells = cells.get(column);
+                    if (groupCells == null) {
+                        groupCells = new GroupAggregationCells();
+                        cells.put(column, groupCells);
+                    }
+                    groupCells.addCell(groupId, createAggregationCell());
+                }
+            }
+
+            if (hasChildren(groupId)) {
+                final Collection children = getChildren(groupId);
+                for (final Object child : children) {
+                    __fillGroupAggregationCells(child, cells);
+                }
+            }
         }
 
         public Collection<?> rootGroups() {
@@ -344,8 +415,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         }
 
         @SuppressWarnings("unchecked")
-        public Map<Object, String> aggregate(Collection itemIds) {
-            return __aggregate(this, itemIds);
+        public Map<Object, Object> aggregate(Context context) {
+            return __aggregate(this, context);
         }
 
         @Override
@@ -565,5 +636,36 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         }
 
         return columns;
+    }
+
+    private class GroupAggregationCells {
+        private Map<Object, com.vaadin.ui.Label> cells = new HashMap<Object, Label>();
+
+        public void addCell(Object groupId, com.vaadin.ui.Label cell) {
+            cells.put(groupId, cell);
+        }
+
+        public com.vaadin.ui.Label getCell(Object groupId) {
+            return cells.get(groupId);
+        }
+    }
+
+    private class GroupAggregationDatasourceListener extends AggregationDatasourceListener {
+        @Override
+        public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+            super.valueChanged(source, property, prevValue, value);
+            GroupDatasource ds = (GroupDatasource) WebGroupTable.this.getDatasource();
+            Collection<GroupInfo> roots = ds.rootGroups();
+            for (final GroupInfo root : roots) {
+                recalcAggregation(root);
+            }
+        }
+
+        protected void recalcAggregation(GroupInfo groupInfo) {
+            component.aggregate(new com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext(
+                    component,
+                    groupInfo
+            ));
+        }
     }
 }

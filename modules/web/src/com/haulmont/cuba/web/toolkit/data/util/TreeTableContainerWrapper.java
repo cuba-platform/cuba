@@ -441,9 +441,9 @@ public class TreeTableContainerWrapper
         }
     }
 
-    public Map<Object, String> aggregate(Collection itemIds) {
+    public Map<Object, Object> aggregate(Context context) {
         if (container instanceof AggregationContainer) {
-            return ((AggregationContainer) container).aggregate(itemIds);
+            return ((AggregationContainer) container).aggregate(context);
         }
         throw new IllegalStateException("Wrapped container is not AggregationContainer: "
                 + container.getClass());

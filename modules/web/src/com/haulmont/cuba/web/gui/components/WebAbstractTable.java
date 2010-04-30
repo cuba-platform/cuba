@@ -23,9 +23,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -59,8 +57,7 @@ import java.util.*;
 import java.util.List;
 
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
-        extends WebAbstractList<T>
-{
+        extends WebAbstractList<T> {
 
     protected Map<MetaPropertyPath, Table.Column> columns = new HashMap<MetaPropertyPath, Table.Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
@@ -86,6 +83,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected VerticalLayout componentComposition;
 
     protected ButtonsPanel buttonsPanel;
+
+    protected Map<Table.Column, Object> aggregationCells = null;
 
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
@@ -259,7 +258,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         for (MetaPropertyPath propertyPath : properties) {
             final Table.Column column = columns.get(propertyPath);
-            if (column != null && !(editable && BooleanUtils.toBoolean(column.isEditable()))) {
+            if (column != null && !(editable && BooleanUtils.isTrue(column.isEditable()))) {
                 final String clickAction =
                         column.getXmlDescriptor() == null ?
                                 null : column.getXmlDescriptor().attributeValue("clickAction");
@@ -271,7 +270,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 } else if (propertyPath.getRange().isDatatype()) {
                     if (!isLookup && !StringUtils.isEmpty(clickAction)) {
                         addGeneratedColumn(propertyPath, new CodePropertyGenerator(column));
-                    } else if (BooleanUtils.toBoolean(column.isCalculatable())) {
+                    } else if (editable && BooleanUtils.isTrue(column.isCalculatable())) {
                         addGeneratedColumn(propertyPath, new CalculatableColumnGenerator());
                     } else {
                         final Datatype datatype = propertyPath.getRange().asDatatype();
@@ -376,10 +375,18 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             MetaClass colMetaClass = colMetaProperty.getDomain();
             if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
                     && userSession.isEntityAttrPermitted(
-                            colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW))
-            {
+                    colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
                 columnsOrder.add((MetaPropertyPath) column.getId());
             }
+            if (editable && column.getAggregation() != null
+                    && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable()))) 
+            {
+                addAggregationCell(column);
+            }
+        }
+
+        if (aggregationCells != null) {
+            getDatasource().addListener(createAggregationDatasourceListener());
         }
 
         setVisibleColumns(columnsOrder);
@@ -439,9 +446,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     public void setStyleProvider(final Table.StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
-        if (styleProvider == null) { component.setCellStyleGenerator(null); return; }
+        if (styleProvider == null) {
+            component.setCellStyleGenerator(null);
+            return;
+        }
 
-        component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator () {
+        component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
             public String getStyle(Object itemId, Object propertyId) {
                 @SuppressWarnings({"unchecked"})
                 final Entity item = datasource.getItem(itemId);
@@ -619,7 +629,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         });
     }
 
-    protected Map<Object, String> __aggregate(AggregationContainer container, Collection itemIds) {
+    protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
         final List<AggregationInfo> aggregationInfos =
                 new LinkedList<AggregationInfo>();
         for (final Object o : container.getAggregationPropertyIds()) {
@@ -629,10 +639,26 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 aggregationInfos.add(column.getAggregation());
             }
         }
-        return ((CollectionDatasource.Aggregatable) datasource).aggregate(
+        Map<Object, Object> results = ((CollectionDatasource.Aggregatable) datasource).aggregate(
                 aggregationInfos.toArray(new AggregationInfo[aggregationInfos.size()]),
-                itemIds
+                context.getItemIds()
         );
+        if (aggregationCells != null) {
+            results = __handleAggregationResults(context, results);
+        }
+        return results;
+    }
+
+    protected Map<Object, Object> __handleAggregationResults(AggregationContainer.Context context, Map<Object, Object> results) {
+        for (final Map.Entry<Object, Object> entry : results.entrySet()) {
+            final Table.Column column = columns.get(entry.getKey());
+            com.vaadin.ui.Label cell;
+            if ((cell = (com.vaadin.ui.Label) aggregationCells.get(column)) != null) {
+                WebComponentsHelper.setLabelText(cell, entry.getValue(), column.getFormatter());
+                entry.setValue(cell);
+            }
+        }
+        return results;
     }
 
     protected class TablePropertyWrapper extends PropertyWrapper {
@@ -668,7 +694,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         public boolean isReadOnly() {
             final Table.Column column = WebAbstractTable.this.columns.get(propertyPath);
             if (column != null) {
-                return !(BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable()));
+                return !editable || !(BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable()));
             } else {
                 return super.isReadOnly();
             }
@@ -877,7 +903,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
 
             final Label label = new Label();
-            updateLabel(label, propertyWrapper, formatter);
+            WebComponentsHelper.setLabelText(label, propertyWrapper.getValue(), formatter);
             label.setWidth("-1px");
 
             //add property change listener that will update a label value
@@ -890,7 +916,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     private static class CalculatablePropertyValueChangeListener implements Property.ValueChangeListener {
         private Label component;
         private Formatter formatter;
-        
+
         private static final long serialVersionUID = 8041384664735759397L;
 
         private CalculatablePropertyValueChangeListener(Label component, Formatter formatter) {
@@ -899,14 +925,42 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         public void valueChange(Property.ValueChangeEvent event) {
-            updateLabel(component, event.getProperty(), formatter);
+            WebComponentsHelper.setLabelText(component, event.getProperty().getValue(), formatter);
         }
     }
 
-    protected static void updateLabel(Label label, Property p, Formatter formatter) {
-        label.setValue(formatter != null
-                ? formatter.format(p.getValue())
-                : p.getValue() == null ? "" : p.getValue().toString());
+    protected void addAggregationCell(Table.Column column) {
+        if (aggregationCells == null) {
+            aggregationCells = new HashMap<Table.Column, Object>();
+        }
+        aggregationCells.put(column, createAggregationCell());
+    }
+
+    protected com.vaadin.ui.Label createAggregationCell() {
+        com.vaadin.ui.Label label = new Label();
+        label.setWidth("-1px");
+        label.setParent(component);
+        return label;
+    }
+
+    protected CollectionDatasourceListener createAggregationDatasourceListener() {
+        return new AggregationDatasourceListener();
+    }
+
+    protected class AggregationDatasourceListener implements CollectionDatasourceListener<Entity> {
+        public void collectionChanged(CollectionDatasource ds, Operation operation) {
+        }
+
+        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+        }
+
+        public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+        }
+
+        public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+            final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
+            component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
+        }
     }
 
     protected class FieldFactory extends BaseFieldFactory {

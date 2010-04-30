@@ -31,5 +31,17 @@ public interface AggregationContainer extends Container {
     void addContainerPropertyAggregation(Object propertyId, Type type);
     void removeContainerPropertyAggregation(Object propertyId);
 
-    Map<Object, String> aggregate(Collection itemIds);
+    Map<Object, Object> aggregate(Context context);
+
+    public class Context {
+        private final Collection itemIds;
+
+        public Context(Collection itemIds) {
+            this.itemIds = itemIds;
+        }
+
+        public Collection getItemIds() {
+            return itemIds;
+        }
+    }
 }

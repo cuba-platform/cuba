@@ -24,9 +24,8 @@ import com.vaadin.ui.Field;
 import java.io.Serializable;
 import java.util.*;
 
-public class Table
-        extends com.vaadin.ui.Table implements AggregationContainer
-{
+public class Table extends com.vaadin.ui.Table implements AggregationContainer {
+
     protected LinkedList<Object> editableColumns = null;
     protected boolean storeColWidth = false;
 
@@ -38,6 +37,8 @@ public class Table
     protected PagingProvider pagingProvider = null;
 
     protected boolean aggregatable = false;
+
+    private static final long serialVersionUID = -357615426612088982L;
 
     public enum PagingMode {
         PAGE,
@@ -293,9 +294,9 @@ public class Table
         }
         target.addAttribute("vcolorder", visibleColOrder.toArray());
 
-        if (items instanceof AggregationContainer && isAggregatable()
+        if (reqFirstRowToPaint == -1 && items instanceof AggregationContainer && isAggregatable()
                 && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {
-            paintAggregationRow(target, ((AggregationContainer) items).aggregate(items.getItemIds()));
+            paintAggregationRow(target, ((AggregationContainer) items).aggregate(new Context(items.getItemIds())));
         }
 
         // Rows
@@ -565,12 +566,13 @@ public class Table
         }
     }
 
-    protected void paintAggregationRow(PaintTarget target, Map<Object, String> aggregationValues) throws PaintException {
+    protected void paintAggregationRow(PaintTarget target, Map<Object, Object> aggregations) throws PaintException {
         target.startTag("arow");
         for (final Object columnId : visibleColumns) {
             if (columnId == null || isColumnCollapsed(columnId)) {
                 continue;
             }
+
             if (cellStyleGenerator != null) {
                 String cellStyle = cellStyleGenerator.getStyle(null, columnId);
                 if (cellStyle != null && !cellStyle.equals("")) {
@@ -578,7 +580,18 @@ public class Table
                             + columnIdMap.key(columnId), cellStyle + "-ag");
                 }
             }
-            target.addText(aggregationValues.get(columnId));
+
+            Object value = aggregations.get(columnId);
+            if (Component.class.isInstance(value)) {
+                Component c = (Component) value;
+                if (c == null) {
+                    target.addText("");
+                } else {
+                    c.paint(target);
+                }
+            } else {
+                target.addText((String) value);
+            }
         }
         target.endTag("arow");
     }
@@ -743,11 +756,8 @@ public class Table
                                 value = pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
                             } else {
                                 if (isGenerated) {
-                                    ColumnGenerator cg = (ColumnGenerator) columnGenerators
-                                            .get(colids[j]);
-                                    value = cg
-                                            .generateCell(this, id, colids[j]);
-
+                                    ColumnGenerator cg = columnGenerators.get(colids[j]);
+                                    value = cg.generateCell(this, id, colids[j]);
                                 } else if (iscomponent[j]) {
                                     value = p.getValue();
                                 } else if (p != null) {
@@ -853,15 +863,15 @@ public class Table
         }
     }
 
-    public Map<Object, String> aggregate(Collection itemIds) {
+    public Map<Object, Object> aggregate(Context context) {
         if (items instanceof AggregationContainer && isAggregatable()) {
-            return ((AggregationContainer) items).aggregate(itemIds);
+            return ((AggregationContainer) items).aggregate(context);
         }
         throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
     }
 
-    public Map<Object, String> aggregate() {
-        return aggregate(getItemIds());
+    public Map<Object, Object> aggregate() {
+        return aggregate(new Context(getItemIds()));
     }
 
     public Collection getAggregationPropertyIds() {

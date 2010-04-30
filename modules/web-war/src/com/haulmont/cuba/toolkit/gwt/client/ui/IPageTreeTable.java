@@ -69,10 +69,6 @@ public class IPageTreeTable extends IPageTable {
         protected IPageTreeTableRow createRowInstance(UIDL uidl) {
             if (isCaptionRow(uidl)) {
                 return new IPageTreeTableCaptionRow(uidl, aligns);
-/*
-            } else if (uidl.getTag().equals("atr")) {
-                return new IPageTreeTableAggregationRow(uidl, aligns);
-*/
             } else {
                 return new IPageTreeTableRow(uidl, aligns);
             }
