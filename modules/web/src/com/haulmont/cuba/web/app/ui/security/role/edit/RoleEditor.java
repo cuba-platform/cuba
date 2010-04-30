@@ -5,6 +5,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -90,15 +91,34 @@ public class RoleEditor extends AbstractEditor {
         final TableActionsHelper helper = new TableActionsHelper(this, table);
         helper.createRemoveAction(false);
 
-        initPermissionValueColumn(permissionsStorage);
+        initTableColumns(permissionsStorage);
     }
 
-    protected void initPermissionValueColumn(String tableId) {
+    protected void initTableColumns(String tableId) {
         final Table table = getComponent(tableId);
-        MetaPropertyPath columnId = table.getDatasource().getMetaClass().getPropertyEx("value");
         com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
+        MetaPropertyPath targetCol = table.getDatasource().getMetaClass().getPropertyEx("target");
         vTable.addGeneratedColumn(
-                columnId,
+                targetCol,
+                new com.vaadin.ui.Table.ColumnGenerator() {
+                    public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                        Permission permission = (Permission) table.getDatasource().getItem(itemId);
+                        if (permission.getTarget() == null)
+                            return null;
+                        if (permission.getType().equals(PermissionType.SCREEN)) {
+                            String id = permission.getTarget();
+                            String caption = MenuConfig.getMenuItemCaption(id.substring(id.indexOf(":") + 1));
+                            return new com.vaadin.ui.Label(id + " (" + caption + ")");
+                        } else {
+                            return new com.vaadin.ui.Label(permission.getTarget());
+                        }
+                    }
+                }
+        );
+
+        MetaPropertyPath valueCol = table.getDatasource().getMetaClass().getPropertyEx("value");
+        vTable.addGeneratedColumn(
+                valueCol,
                 new com.vaadin.ui.Table.ColumnGenerator() {
                     public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         Permission permission = (Permission) table.getDatasource().getItem(itemId);

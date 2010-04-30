@@ -29,13 +29,11 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
-import java.io.StringReader;
 import java.util.*;
 
 /**
@@ -138,7 +136,9 @@ public class PermissionConfig {
 
     private void walkMenu(MenuItem info, Node<Target> node) {
         String id = info.getId();
-        String caption = MenuConfig.getMenuItemCaption(id);
+        String caption = MenuConfig.getMenuItemCaption(id).replaceAll("<.+?>", "");
+        caption = StringEscapeUtils.unescapeHtml(caption);
+
         if (info.getChildren() != null && !info.getChildren().isEmpty()) {
             Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
             node.addChild(n);
@@ -146,9 +146,11 @@ public class PermissionConfig {
                 walkMenu(item, n);
             }
         } else {
-            Node<Target> n = new Node<Target>(
-                    new Target("item:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
-            node.addChild(n);
+            if (!"-".equals(info.getId())) {
+                Node<Target> n = new Node<Target>(
+                        new Target("item:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
+                node.addChild(n);
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    caption="Permission Lookup"
+    caption="msg://property-permissions"
     class="com.haulmont.cuba.web.app.ui.security.role.edit.PropertyPermissionsLookup"
     lookupComponent="permissions"
 >

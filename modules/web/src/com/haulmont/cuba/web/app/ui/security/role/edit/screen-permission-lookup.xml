@@ -1,7 +1,7 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    caption="Permission Lookup"
-    class="com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup"
+    caption="msg://screen-permissions"
+    class="com.haulmont.cuba.web.app.ui.security.role.edit.ScreenPermissionsLookup"
     lookupComponent="permissions-tree"
 >
     <metadataContext>
@@ -27,7 +27,7 @@
                     <treechildren datasource="permissions" captionProperty="caption"/>
                 </tree>
             </split>
-            <optionsGroup id="access" multiselect="false" required="true"/>
+            <optionsGroup id="access" multiselect="false" required="true" enable="false"/>
         </vbox>
     </layout>
 </window>

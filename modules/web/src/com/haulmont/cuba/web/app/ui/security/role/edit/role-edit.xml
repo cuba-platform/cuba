@@ -113,8 +113,8 @@
                         </hbox>
                         <table id="screen-permissions">
                             <columns>
-                                <column id="target"/>
-                                <column id="value"/>
+                                <column id="target" caption="msg://target"/>
+                                <column id="value" caption="msg://value"/>
                             </columns>
                             <rows datasource="screen-permissions"/>
                         </table>
@@ -130,8 +130,8 @@
                         </hbox>
                         <table id="entity-permissions">
                             <columns>
-                                <column id="target"/>
-                                <column id="value"/>
+                                <column id="target" caption="msg://target"/>
+                                <column id="value" caption="msg://value"/>
                             </columns>
                             <rows datasource="entity-permissions"/>
                         </table>
@@ -147,8 +147,8 @@
                         </hbox>
                         <table id="property-permissions">
                             <columns>
-                                <column id="target"/>
-                                <column id="value"/>
+                                <column id="target" caption="msg://target"/>
+                                <column id="value" caption="msg://value"/>
                             </columns>
                             <rows datasource="property-permissions"/>
                         </table>
@@ -164,8 +164,8 @@
                         </hbox>
                         <table id="specific-permissions">
                             <columns>
-                                <column id="target"/>
-                                <column id="value"/>
+                                <column id="target" caption="msg://target"/>
+                                <column id="value" caption="msg://value"/>
                             </columns>
                             <rows datasource="specific-permissions"/>
                         </table>
