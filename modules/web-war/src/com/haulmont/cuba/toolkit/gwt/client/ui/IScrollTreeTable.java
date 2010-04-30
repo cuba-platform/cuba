@@ -19,6 +19,18 @@ public class IScrollTreeTable
     private static int LEVEL_STEP_SIZE = 19;
 
     @Override
+    public void enableBrowserIntelligence() {
+        super.enableBrowserIntelligence();
+        ((IScrollTreeTableBody) getBody()).enableBrowserIntelligence();
+    }
+
+    @Override
+    public void disableBrowserIntelligence() {
+        super.disableBrowserIntelligence();
+        ((IScrollTreeTableBody) getBody()).disableBrowserIntelligence();
+    }
+
+    @Override
     protected IScrollTableBody createBody() {
         return new IScrollTreeTableBody();
     }
@@ -106,6 +118,18 @@ public class IScrollTreeTable
             }
         }
 
+        protected void disableBrowserIntelligence() {
+            for (final Widget o : renderedRows) {
+               ((IScrollTreeTableRow) o).disableBrowserIntelligence();
+            }
+        }
+
+        protected void enableBrowserIntelligence() {
+            for (final Widget o : renderedRows) {
+               ((IScrollTreeTableRow) o).enableBrowserIntelligence();
+            }
+        }
+
         private void applyCellWidth(IScrollTreeTableRow row,
                                       int colIndex, int w) {
             final Element cell = DOM.getChild(row.getElement(),
@@ -185,6 +209,7 @@ public class IScrollTreeTable
             private int level;
 
             protected Element groupCell = null;
+            protected Element wrapCell = null;
 
             protected IScrollTreeTableRow() {
                 super();
@@ -300,15 +325,14 @@ public class IScrollTreeTable
                 if (col == groupColIndex) {
                     int k;
                     if (groupCell != null) {
-                        Element d = DOM.createDiv();
-                        DOM.setStyleAttribute(d, "width", 9000 + "px");
+                        wrapCell = DOM.createDiv();
 
                         contentDiv = DOM.createDiv();
                         DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
-                        DOM.appendChild(d, groupCell);
-                        DOM.appendChild(d, contentDiv);
+                        DOM.appendChild(wrapCell, groupCell);
+                        DOM.appendChild(wrapCell, contentDiv);
 
-                        DOM.appendChild(container, d);
+                        DOM.appendChild(container, wrapCell);
 
                         k = getLevel();
 
@@ -325,6 +349,18 @@ public class IScrollTreeTable
                 DOM.appendChild(getElement(), td);
 
                 setCellWidget(contentDiv, w, col);
+            }
+
+            public void disableBrowserIntelligence() {
+                if (wrapCell != null) {
+                    DOM.setStyleAttribute(wrapCell, "width", 9000 + "px");
+                }
+            }
+
+            public void enableBrowserIntelligence() {
+                if (wrapCell != null) {
+                    DOM.setStyleAttribute(wrapCell, "width", "");
+                }
             }
 
             public boolean isExpanded() {

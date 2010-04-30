@@ -507,7 +507,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         final int[] widths = new int[tHead.visibleCells.size()];
 
-        tHead.enableBrowserIntelligence();
+        enableBrowserIntelligence();
         // first loop: collect natural widths
         while (headCells.hasNext()) {
             final HeaderCell hCell = (HeaderCell) headCells.next();
@@ -525,7 +525,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             i++;
         }
 
-        tHead.disableBrowserIntelligence();
+        disableBrowserIntelligence();
 
         int scrollbarWidth = Util.getNativeScrollbarSize();
 
@@ -639,6 +639,14 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         isNewBody = false;
 
         initializedAndAttached = true;
+    }
+
+    public void disableBrowserIntelligence() {
+        tHead.disableBrowserIntelligence();
+    }
+
+    public void enableBrowserIntelligence() {
+        tHead.enableBrowserIntelligence();
     }
 
     public class HeaderCell extends Widget {
@@ -1002,8 +1010,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     public class TableHead extends Panel implements ActionOwner {
 
-        private static final int WRAPPER_WIDTH = 9000;
-
         protected Vector<Widget> visibleCells = new Vector<Widget>();
 
         protected HashMap<String, HeaderCell> availableCells = new HashMap<String, HeaderCell>();
@@ -1148,7 +1154,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
 
         public void disableBrowserIntelligence() {
-            DOM.setStyleAttribute(hTableContainer, "width", WRAPPER_WIDTH
+            DOM.setStyleAttribute(hTableContainer, "width", 9000
                     + "px");
         }
 
