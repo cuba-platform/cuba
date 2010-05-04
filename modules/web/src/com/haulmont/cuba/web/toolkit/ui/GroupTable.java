@@ -106,8 +106,7 @@ public class GroupTable extends Table implements GroupTableContainer {
             // only paint selections that are currently visible in the client
             HashSet sel = new HashSet((Set) getValue());
             Collection vids = getVisibleItemIds();
-            for (Iterator it = vids.iterator(); it.hasNext();) {
-                Object id = it.next();
+            for (Object id : vids) {
                 if (sel.contains(id)) {
                     selectedKeys.add(itemIdMapper.key(id));
                 }
@@ -623,7 +622,7 @@ public class GroupTable extends Table implements GroupTableContainer {
                     }
                 }
 
-                id = ((Container.Ordered) items).nextItemId(id);
+                id = items.nextItemId(id);
 
                 filledRows++;
             }

@@ -197,6 +197,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setValidationVisible(false);
         component.setStoreColWidth(true);
         component.setStyleName("table"); //It helps us to manage a caption style
+        component.setPageLength(15);
 
         component.addActionHandler(new ActionsAdapter());
 

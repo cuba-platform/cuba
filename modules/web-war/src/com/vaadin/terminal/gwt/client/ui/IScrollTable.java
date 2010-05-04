@@ -181,11 +181,11 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
     /**
      * @param uidl     which contains row data
      * @param firstRow first row in data set
-     * @param reqRows  amount of rows in data set
+     * @param rows  amount of rows in data set
      */
-    private void updateBody(UIDL uidl, int firstRow, int reqRows) {
+    private void updateBody(UIDL uidl, int firstRow, int rows) {
         final IScrollTable.IScrollTableBody tBody = getBody();
-        if (uidl == null || reqRows < 1) {
+        if (uidl == null || rows < 1) {
             // container is empty, remove possibly existing rows
             if (firstRow < 0) {
                 while (tBody.getLastRendered() > tBody.firstRendered) {
@@ -196,7 +196,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             return;
         }
 
-        tBody.renderRows(uidl, firstRow, reqRows);
+        tBody.renderRows(uidl, firstRow, rows);
 
         final int optimalFirstRow = (int) (firstRowInViewPort - pageLength
                 * CACHE_RATE);
@@ -433,6 +433,11 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                     if (lastToBeRendered >= totalRows) {
                         lastToBeRendered = totalRows - 1;
                     }
+                    // due Safari 3.1 bug (see #2607), verify reqrows, original
+                    // problem unknown, but this should catch the issue
+                    if (reqFirstRow + reqRows - 1 > lastToBeRendered) {
+                        reqRows = lastToBeRendered - reqFirstRow;
+                    }
                 }
 
                 client.updateVariable(paintableId, "firstToBeRendered",
@@ -617,13 +622,13 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             if (reactFirstRow < 0) {
                 reactFirstRow = 0;
             }
-            if (reactLastRow > totalRows) {
+            if (reactLastRow >= totalRows) {
                 reactLastRow = totalRows - 1;
             }
             if (lastRendered < reactLastRow) {
                 // get some cache rows below visible area
                 rowRequestHandler.setReqFirstRow(lastRendered + 1);
-                rowRequestHandler.setReqRows(reactLastRow - lastRendered - 1);
+                rowRequestHandler.setReqRows(reactLastRow - lastRendered);
                 rowRequestHandler.deferRowFetch(1);
             } else if (IScrollTable.this.getBody().getFirstRendered() > reactFirstRow) {
                 /*
