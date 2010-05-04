@@ -218,12 +218,13 @@
                             <xs:element name="columns" minOccurs="1" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="column" minOccurs="1" maxOccurs="unbounded">
+                                        <xs:element name="column" minOccurs="0" maxOccurs="unbounded">
                                             <xs:complexType>
                                                 <xs:attribute name="flex" type="xs:float" use="optional"/>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
+                                    <xs:attribute name="count" type="xs:int" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="rows" minOccurs="1">

@@ -42,15 +42,25 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
 
+        int columnCount;
         final List<Element> columnElements = columnsElement.elements("column");
-        component.setColumns(columnElements.size());
-        int i = 0;
-        for (Element columnElement : columnElements) {
-            final String flex = columnElement.attributeValue("flex");
-            if (!StringUtils.isEmpty(flex)) {
-                component.setColumnExpandRatio(i, Float.parseFloat(flex));
+        if (columnElements.size() == 0) {
+            columnCount = Integer.valueOf(columnsElement.attributeValue("count"));
+            component.setColumns(columnCount);
+            for (int i = 0; i < columnCount; i++) {
+                component.setColumnExpandRatio(i, 1);
             }
-            i++;
+        } else {
+            columnCount = columnElements.size();
+            component.setColumns(columnCount);
+            int i = 0;
+            for (Element columnElement : columnElements) {
+                final String flex = columnElement.attributeValue("flex");
+                if (!StringUtils.isEmpty(flex)) {
+                    component.setColumnExpandRatio(i, Float.parseFloat(flex));
+                }
+                i++;
+            }
         }
 
         final List<Element> rowElements = rowsElement.elements("row");
@@ -90,7 +100,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             j++;
         }
 
-        spanMatrix = new boolean[columnElements.size()][rowElements.size()];
+        spanMatrix = new boolean[columnCount][rowElements.size()];
 
         int row = 0;
         for (Element rowElement : rowElements) {
