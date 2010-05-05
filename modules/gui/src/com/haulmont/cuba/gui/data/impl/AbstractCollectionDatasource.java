@@ -259,7 +259,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             final String paramName = info.getName();
             final String jpaParamName = info.getFlatName();
 
-            Pattern p = Pattern.compile(paramName.replace("$", "\\$") + "([^\\.])"); // not ending with "."
+            Pattern p = Pattern.compile(paramName.replace("$", "\\$") + "([^\\.]|$)"); // not ending with "."
             Matcher m = p.matcher(query);
             StringBuffer sb = new StringBuffer();
             while (m.find()) {
