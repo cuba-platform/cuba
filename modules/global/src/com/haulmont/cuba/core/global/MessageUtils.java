@@ -126,4 +126,8 @@ public class MessageUtils {
 
         return MARK + packageName + "/" + className + "." + property.getName();
     }
+
+    public static String getMessagePack() {
+        return messagePack;
+    }
 }

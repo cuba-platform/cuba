@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
+
 import javax.persistence.*;
 import javax.persistence.Entity;
 
@@ -48,8 +51,12 @@ public class Folder extends StandardEntity {
         this.name = name;
     }
 
+    public String getLocName() {
+        return MessageProvider.getMessage(MessageUtils.getMessagePack(), name);
+    }
+
     public String getCaption() {
-        return name;
+        return getLocName();
     }
 
     public Integer getSortOrder() {
