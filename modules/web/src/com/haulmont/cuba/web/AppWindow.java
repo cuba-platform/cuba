@@ -620,6 +620,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             }
             params.put("caption", caption);
 
+            WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
+            String openTypeStr = descriptor.attributeValue("openType");
+            if (openTypeStr != null) {
+                openType = WindowManager.OpenType.valueOf(openTypeStr);
+            }
+
             final String id = windowInfo.getId();
             if (id.endsWith(".create") || id.endsWith(".edit")) {
                 Entity entityItem;
@@ -648,13 +654,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 App.getInstance().getWindowManager().openEditor(
                         windowInfo,
                         entityItem,
-                        WindowManager.OpenType.NEW_TAB,
+                        openType,
                         params
                 );
             } else {
                 App.getInstance().getWindowManager().openWindow(
                         windowInfo,
-                        WindowManager.OpenType.NEW_TAB,
+                        openType,
                         params
                 );
             }
