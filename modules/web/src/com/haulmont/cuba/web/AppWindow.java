@@ -47,6 +47,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -317,8 +318,37 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         for (MenuItem menuItem : rootItems) {
             createMenuBarItem(menuBar, menuItem);
         }
-
+        removeExtraSeparators(menuBar);
         return menuBar;
+    }
+
+    private void removeExtraSeparators(MenuBar menuBar) {
+        for (MenuBar.MenuItem item : new ArrayList<MenuBar.MenuItem>(menuBar.getItems())) {
+            removeExtraSeparators(item);
+            if (isMenuItemEmpty(item))
+                menuBar.removeItem(item);
+        }
+    }
+
+    private void removeExtraSeparators(MenuBar.MenuItem item) {
+        if (!item.hasChildren())
+            return;
+
+        boolean done;
+        do {
+            done = true;
+            if (item.hasChildren()) {
+                List<MenuBar.MenuItem> children = new ArrayList<MenuBar.MenuItem>(item.getChildren());
+                for (int i = 0; i < children.size(); i++) {
+                    MenuBar.MenuItem child = children.get(i);
+                    removeExtraSeparators(child);
+                    if (isMenuItemEmpty(child) && (i == 0 || i == children.size() - 1 || isMenuItemEmpty(children.get(i + 1)))) {
+                        item.removeChild(child);
+                        done = false;
+                    }
+                }
+            }
+        } while (!done);
     }
 
     /*
@@ -443,6 +473,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return null;
     }
 
+    private boolean isMenuItemEmpty(MenuBar.MenuItem menuItem) {
+        return !menuItem.hasChildren() && menuItem.getCommand() == null;
+    }
+
     private void createMenuBarItem(MenuBar menuBar, MenuItem item) {
         if (!connection.isConnected()) return;
 
@@ -451,7 +485,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
 
             createSubMenu(menuItem, item, session);
-            if (!menuItem.hasChildren() && menuItem.getCommand() == null) {
+            if (isMenuItemEmpty(menuItem)) {
                 menuBar.removeItem(menuItem);
             }
         }
@@ -467,7 +501,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 } else {
                     MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
                     createSubMenu(menuItem, child, session);
-                    if (!menuItem.hasChildren() && menuItem.getCommand() == null) {
+                    if (isMenuItemEmpty(menuItem)) {
                         vItem.removeChild(menuItem);
                     }
                 }
