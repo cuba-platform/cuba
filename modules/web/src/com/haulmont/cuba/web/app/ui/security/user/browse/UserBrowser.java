@@ -52,18 +52,6 @@ public class UserBrowser extends AbstractLookup {
                 }
         );
 
-        table.addAction(
-                new AbstractAction("print")
-                {
-                    public void actionPerform(Component component) {
-                        ReportHelper.printJasperReport(
-                                "cuba/report/users",
-                                new ReportOutput(ExportFormat.HTML).setNewWindow(true)
-                        );
-                    }
-                }
-        );
-
 //        getDsContext().get("users").refresh();
     }
 }
