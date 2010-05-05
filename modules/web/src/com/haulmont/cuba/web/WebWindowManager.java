@@ -601,7 +601,7 @@ public class WebWindowManager extends WindowManager
             int maxCount = ConfigProvider.getConfig(WebConfig.class).getMaxTabCount();
             if (maxCount > 0 && maxCount <= getCurrentWindowData().tabs.size()) {
                 app.getAppWindow().showNotification(
-                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "tooManyOpenTabs.message"), 
+                        MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(),"tooManyOpenTabs.message",maxCount), 
                         com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
                 throw new SilentException();
             }
