@@ -22,32 +22,16 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -548,6 +532,20 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
     }
 
+    private class PopupOpener extends FlowPanel implements HasClickHandlers {
+        @Override
+        public void onBrowserEvent(Event event) {
+            super.onBrowserEvent(event);
+            if (client != null) {
+                client.handleTooltipEvent(event, VFilterSelect.this);
+            }
+        }
+
+        public HandlerRegistration addClickHandler(ClickHandler handler) {
+            return addDomHandler(handler, ClickEvent.getType());
+        }
+    }
+
     public static final int FILTERINGMODE_OFF = 0;
     public static final int FILTERINGMODE_STARTSWITH = 1;
     public static final int FILTERINGMODE_CONTAINS = 2;
@@ -570,15 +568,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     private final SuggestionPopup suggestionPopup = new SuggestionPopup();
 
-    private final HTML popupOpener = new HTML("") {
-        @Override
-        public void onBrowserEvent(Event event) {
-            super.onBrowserEvent(event);
-            if (client != null) {
-                client.handleTooltipEvent(event, VFilterSelect.this);
-            }
-        }
-    };
+    private final PopupOpener popupOpener = new PopupOpener();
 
     private final Image selectedItemIcon = new Image();
 
@@ -623,7 +613,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     private String width = null;
     private int textboxPadding = -1;
     private int componentPadding = -1;
-    private int suggestionPopupMinWidth = 0;
+    private int suggestionPopupMinWidth = -1;
     /*
      * Stores the last new item string to avoid double submissions. Cleared on
      * uidl updates
@@ -643,8 +633,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
         tb.sinkEvents(VTooltip.TOOLTIP_EVENTS);
         popupOpener.sinkEvents(VTooltip.TOOLTIP_EVENTS);
-        panel.add(tb);
         panel.add(popupOpener);
+        popupOpener.add(tb);
         initWidget(panel);
         setStyleName(CLASSNAME);
         tb.addKeyDownHandler(this);
@@ -652,7 +642,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         tb.setStyleName(CLASSNAME + "-input");
         tb.addFocusHandler(this);
         tb.addBlurHandler(this);
-        popupOpener.setStyleName(CLASSNAME + "-button");
+        popupOpener.setStyleName(CLASSNAME + "-wrap");
         popupOpener.addClickHandler(this);
     }
 
@@ -1010,21 +1000,22 @@ public class VFilterSelect extends Composite implements Paintable, Field,
      * Listener for popupopener
      */
     public void onClick(ClickEvent event) {
-        if (enabled && !readonly) {
-            // ask suggestionPopup if it was just closed, we are using GWT
-            // Popup's auto close feature
-            if (!suggestionPopup.isJustClosed()) {
-                filterOptions(-1, "");
-                popupOpenerClicked = true;
-                lastFilter = "";
-            } else if (selectedOptionKey == null) {
-                tb.setText(inputPrompt);
-                prompting = true;
+        if (event.getNativeEvent().getEventTarget().cast() != tb.getElement()) {
+            if (enabled && !readonly) {
+                // ask suggestionPopup if it was just closed, we are using GWT
+                // Popup's auto close feature
+                if (!suggestionPopup.isJustClosed()) {
+                    filterOptions(-1, "");
+                    popupOpenerClicked = true;
+                    lastFilter = "";
+                } else if (selectedOptionKey == null) {
+                    tb.setText(inputPrompt);
+                    prompting = true;
+                }
+                DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
+                tb.setFocus(true);
+                tb.selectAll();
             }
-            DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
-            tb.setFocus(true);
-            tb.selectAll();
-
         }
     }
 
@@ -1050,6 +1041,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         $wnd.document.body.appendChild(d);
         var w = d.offsetWidth;
         $wnd.document.body.removeChild(d);
+        d = null;
         return w;
     }-*/;
 
@@ -1107,44 +1099,27 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     }
 
     private void updateRootWidth() {
-        if (width == null) {
+        if (width == null && suggestionPopupMinWidth > -1) {
             /*
              * When the width is not specified we must specify width for root
              * div so the popupopener won't wrap to the next line and also so
              * the size of the combobox won't change over time.
              */
-            int tbWidth = Util.getRequiredWidth(tb);
             int openerWidth = Util.getRequiredWidth(popupOpener);
             int iconWidth = selectedItemIcon.isAttached() ? Util
                     .measureMarginLeft(tb.getElement())
                     - Util.measureMarginLeft(selectedItemIcon.getElement()) : 0;
 
-            int w = tbWidth + openerWidth + iconWidth;
+            int w = openerWidth + iconWidth;
             if (suggestionPopupMinWidth > w) {
                 if (!fixedTextBoxWidth) {
-                    setTextboxWidth(suggestionPopupMinWidth);
                     w = suggestionPopupMinWidth;
                 }
-            } else {
-                /*
-                 * Firefox3 has its own way of doing rendering so we need to
-                 * specify the width for the TextField to make sure it actually
-                 * is rendered as wide as FF3 says it is
-                 */
-                tb.setWidth((tbWidth - getTextboxPadding()) + "px");
             }
             super.setWidth((w) + "px");
             // Freeze the initial width, so that it won't change even if the
             // icon size changes
             width = w + "px";
-
-        } else {
-            /*
-             * When the width is specified we also want to explicitly specify
-             * widths for textbox and popupopener
-             */
-            setTextboxWidth(getMainWidth() - getComponentPadding());
-
         }
     }
 
@@ -1159,34 +1134,5 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             componentWidth = getOffsetWidth();
         }
         return componentWidth;
-    }
-
-    private void setTextboxWidth(int componentWidth) {
-        int padding = getTextboxPadding();
-        int popupOpenerWidth = Util.getRequiredWidth(popupOpener);
-        int iconWidth = selectedItemIcon.isAttached() ? Util
-                .getRequiredWidth(selectedItemIcon) : 0;
-        int textboxWidth = componentWidth - padding - popupOpenerWidth
-                - iconWidth;
-        if (textboxWidth < 0) {
-            textboxWidth = 0;
-        }
-        tb.setWidth(textboxWidth + "px");
-    }
-
-    private int getTextboxPadding() {
-        if (textboxPadding < 0) {
-            textboxPadding = Util.measureHorizontalPaddingAndBorder(tb
-                    .getElement(), 4);
-        }
-        return textboxPadding;
-    }
-
-    private int getComponentPadding() {
-        if (componentPadding < 0) {
-            componentPadding = Util.measureHorizontalPaddingAndBorder(
-                    getElement(), 3);
-        }
-        return componentPadding;
     }
 }

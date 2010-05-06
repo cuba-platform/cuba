@@ -80,12 +80,19 @@
 .v-window .v-filterselect .v-filterselect-input,
 .v-popupview-popup .v-filterselect .v-filterselect-input {
     background: transparent url(img/bg-center-filter.gif) no-repeat 1px 0;
-    float: left;
     border: none;
-    height: 20px;
+    height: 21px;
     margin: 0;
-    padding: 3px 0 0 0px;
+    padding: 0;
+    width: 100%;
     font-size: 8pt;
+}
+
+.v-ie .v-app .v-filterselect .v-filterselect-input,
+.v-ie .v-window .v-filterselect .v-filterselect-input,
+.v-ie .v-popupview-popup .v-filterselect .v-filterselect-input {
+    padding-top: 3px;
+    margin-top: -1px;
 }
 
 .v-filterselect-input:focus {
@@ -101,32 +108,37 @@
     outline: 0;
 }
 
-.v-filterselect-button {
-    width: 23px;
+/*
+ We use .v-filterselect-wrap instead of .v-filterselect-button
+*/
+.v-filterselect-wrap {
     height: 21px;
     cursor: pointer;
     border: none;
-    padding: 0;
+    padding: 0 23px 0 0 ;
     margin: 0;
-    float: right;
-    position: relative;
-    background: transparent url(img/bg-right-filter.gif);
+    background: transparent url(img/bg-right-filter.gif) no-repeat center right;
 }
 
-.v-filterselect-button:hover {
-    background-position: center left;
+.v-filterselect-wrap:hover {
+    background-position: center right;
 }
 
-.v-disabled .v-filterselect-button:hover {
-    background-position: bottom left;
+.v-disabled .v-filterselect-wrap:hover {
+    background-position: bottom right;
     cursor: default;
 }
 
 .v-filterselect.v-readonly,
-.v-filterselect.v-readonly .v-filterselect-button,
+.v-filterselect.v-readonly .v-filterselect-wrap,
 .v-filterselect.v-readonly .v-filterselect-input {
     background: transparent;
     cursor: default;
+}
+
+.v-filterselect.v-readonly .v-filterselect-wrap {
+    background: none;
+    padding: 0;
 }
 
 .v-filterselect-suggestpopup {
