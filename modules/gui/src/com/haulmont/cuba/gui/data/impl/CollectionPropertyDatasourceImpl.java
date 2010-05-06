@@ -111,9 +111,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return (T) key;
         else {
             Collection<T> collection = __getCollection();
-            for (T t : collection) {
-                if (t.getId().equals(key))
-                    return t;
+            if (collection != null) {
+                for (T t : collection) {
+                    if (t.getId().equals(key))
+                        return t;
+                }
             }
             return null;
         }
