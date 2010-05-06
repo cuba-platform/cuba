@@ -101,7 +101,7 @@ public class IScrollGroupTable extends IScrollTable {
                 String caption = buildCaptionHtmlSnippet(col);
                 HeaderCell c = getHeaderCell(cid);
                 if (c == null) {
-                    c = createHeaderCell(cid, caption);
+                    c = createHeaderCell(cid, col);
                     availableCells.put(cid, c);
                     if (initializedAndAttached) {
                         // we will need a column width recalculation
@@ -290,7 +290,7 @@ public class IScrollGroupTable extends IScrollTable {
 
     protected class GroupDividerHeaderCell extends HeaderCell {
         public GroupDividerHeaderCell() {
-            super("-1", "");
+            super("-1", null);
             setWidth(10);
             DOM.setElementProperty(td, "className", CLASSNAME
                     + "-group-div");

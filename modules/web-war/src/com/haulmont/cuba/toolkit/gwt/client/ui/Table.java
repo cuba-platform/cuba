@@ -683,11 +683,13 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         private char align = ALIGN_LEFT;
 
+        private String icon;
+
         public void setSortable(boolean b) {
             sortable = b;
         }
 
-        public HeaderCell(String colId, String headerText) {
+        public HeaderCell(String colId, UIDL uidl) {
             cid = colId;
 
             DOM.setElementProperty(colResizeWidget, "className", CLASSNAME
@@ -696,7 +698,12 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     + "px");
             DOM.sinkEvents(colResizeWidget, Event.MOUSEEVENTS);
 
-            setText(headerText);
+            if (uidl != null) {
+                setText(buildCaptionHtmlSnippet(uidl));
+                icon = client.translateVaadinUri(uidl.getStringAttribute("icon"));
+            } else {
+                setText("");
+            }
 
             DOM.appendChild(td, colResizeWidget);
 
@@ -713,6 +720,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.sinkEvents(td, Event.MOUSEEVENTS);
 
             setElement(td);
+        }
+
+        public String getIcon() {
+            return icon;
         }
 
         public void setWidth(int w) {
@@ -998,7 +1009,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     public class RowHeadersHeaderCell extends HeaderCell {
 
         RowHeadersHeaderCell() {
-            super("0", "");
+            super("0", null);
         }
 
         @Override
@@ -1073,7 +1084,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 String caption = buildCaptionHtmlSnippet(col);
                 HeaderCell c = getHeaderCell(cid);
                 if (c == null) {
-                    c = createHeaderCell(cid, caption);
+                    c = createHeaderCell(cid, col);
                     availableCells.put(cid, c);
                     if (initializedAndAttached) {
                         // we will need a column width recalculation
@@ -1113,8 +1124,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
         }
 
-        protected HeaderCell createHeaderCell(String cid, String caption) {
-            return new HeaderCell(cid, caption);
+        protected HeaderCell createHeaderCell(String cid, UIDL uidl) {
+            return new HeaderCell(cid, uidl);
         }
 
         public void enableColumn(String cid, int index) {
@@ -1286,6 +1297,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 super(Table.TableHead.this);
                 this.colKey = colKey;
                 caption = tHead.getHeaderCell(colKey).getCaption();
+                iconUrl = tHead.getHeaderCell(colKey).getIcon();
             }
 
             @Override

@@ -483,8 +483,8 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
     }
 
     public class IScrollHeaderCell extends HeaderCell {
-        public IScrollHeaderCell(String colId, String headerText) {
-            super(colId, headerText);
+        public IScrollHeaderCell(String colId, UIDL uidl) {
+            super(colId, uidl);
         }
 
         @Override
@@ -517,8 +517,8 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         }
 
         @Override
-        protected HeaderCell createHeaderCell(String cid, String caption) {
-            return new IScrollHeaderCell(cid, caption);
+        protected HeaderCell createHeaderCell(String cid, UIDL uidl) {
+            return new IScrollHeaderCell(cid, uidl);
         }
 
         @Override
