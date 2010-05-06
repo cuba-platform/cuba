@@ -34,6 +34,10 @@ public class ActionsFieldHelper {
         createLookupAction(entityName + ".browse", WindowManager.OpenType.THIS_TAB, Collections.<String, Object>emptyMap());
     }
 
+    public void createLookupAction(WindowManager.OpenType openType) {
+        createLookupAction(entityName + ".browse", openType, Collections.<String, Object>emptyMap());
+    }
+
     public void createLookupAction(String windowAlias) {
         createLookupAction(windowAlias, WindowManager.OpenType.THIS_TAB, Collections.<String, Object>emptyMap());
     }
@@ -48,6 +52,7 @@ public class ActionsFieldHelper {
                                 if (items != null && items.size() > 0) {
                                     entity = (Entity) items.iterator().next();
                                     getItem().setValue(metaProperty.getName(), entity);
+                                    component.getValue();
                                 }
                             }
                         }, openType, params);
