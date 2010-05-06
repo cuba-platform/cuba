@@ -117,7 +117,7 @@
     border: none;
     padding: 0 25px 0 0 ;
     margin: 0;
-    background: transparent url(img/bg-right-filter.png) no-repeat center right;
+    background: transparent url(img/bg-right-filter.png) no-repeat top right;
 }
 
 .v-filterselect-wrap:hover {
@@ -246,7 +246,7 @@
 
 /* Error styles (disabled by default)
    ----------------------------------
-   
+
 .v-filterselect-error {
     background-image: url(img/bg-left-filter-error.png);
 }
@@ -270,7 +270,7 @@
 
 /*  Required field styles (disabled by default)
    --------------------------------------------
-   
+
 .v-select-required .v-select-option,
 .v-select-required .v-select-select,
 .v-select-required .v-select-twincol-selections,
