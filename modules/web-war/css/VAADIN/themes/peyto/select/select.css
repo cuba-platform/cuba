@@ -135,10 +135,10 @@
     cursor: default;
 }
 
-.v-filterselect.v-readonly .v-filterselect-wrap {
+/*.v-filterselect.v-readonly .v-filterselect-wrap {
     background: none;
-    padding: 0;
-}
+    padding:0;
+}*/
 
 .v-filterselect-suggestpopup {
     border: 1px solid #8aa9d1;
@@ -300,8 +300,9 @@
 }
 */
 
-.v-customcomponent-actionsfield .v-filterselect.v-readonly .v-filterselect-button {
-    display: none;
+.v-customcomponent-actionsfield .v-filterselect.v-readonly .v-filterselect-wrap {
+    background: none;
+    padding: 0;
 }
 
 .v-customcomponent-actionsfield .v-button-link .v-button-caption,
