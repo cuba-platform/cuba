@@ -4,14 +4,18 @@
 
 .v-datefield-textfield {
 	vertical-align: top;
+    width: 100%;
 }
 
-.v-datefield-button {
+.v-datefield input[type="text"] {
+    padding: 2px 0 0 2px;
+}
+
+.v-datefield-wrap {
 	font-size: 13px;
-	width: 22px;
 	height: 22px;
-	padding: 0;
-	overflow: hidden;
+    margin: 0;
+	padding: 0 26px 0 0;
 	border: none;
 	background: transparent url(img/open-button1.png) no-repeat right 0;
 	vertical-align: top;
@@ -203,31 +207,20 @@
 	background: #ff9999;
 }
 
-.v-datefield.v-readonly .v-datefield-button {
-    display: none;
+.v-datefield.v-readonly .v-datefield-wrap {
+    background: none;
 }
 
 
 /* IE specific styles */
 
-*+html .v-datefield-button {
-	background-position: right 1px;
-	height: 23px;
-	margin: 0;
-}
-
 /* IE somehow loses generic i-disabled alpha. See #1960 */
-* html .v-disabled .v-datefield-button,
+* html .v-disabled .v-datefield-wrap,
 * html .v-disabled .v-datefield-textfield {
 	filter: alpha(opacity=30);
 }
-*+ html .v-disabled .v-datefield-button,
+*+ html .v-disabled .v-datefield-wrap,
 *+ html .v-disabled .v-datefield-textfield {
 	filter: alpha(opacity=30);
 }
 
-
-.v-datefield-calendarpanel-weekdays {
-    color: #4d7ab2;
-     font-weight: bold;
-}

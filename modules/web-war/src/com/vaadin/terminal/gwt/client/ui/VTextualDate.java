@@ -43,7 +43,7 @@ public class VTextualDate extends VDateField implements Paintable, Field,
     private static final String PARSE_ERROR_CLASSNAME = CLASSNAME
             + "-parseerror";
 
-    private final TextBox text;
+    protected final TextBox text;
 
     private String formatStr;
 

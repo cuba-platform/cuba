@@ -18,12 +18,14 @@ package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -33,7 +35,13 @@ import com.vaadin.terminal.gwt.client.UIDL;
 public class VPopupCalendar extends VTextualDate implements Paintable, Field,
         ClickHandler, CloseHandler<PopupPanel> {
 
-    private final Button calendarToggle;
+    private class CalendarToggler extends FlowPanel implements HasClickHandlers {
+        public HandlerRegistration addClickHandler(ClickHandler handler) {
+            return addDomHandler(handler, ClickEvent.getType());
+        }
+    }
+
+    private final CalendarToggler calendarToggle = new CalendarToggler();
 
     private final VCalendarPanel calendar;
 
@@ -43,9 +51,7 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
     public VPopupCalendar() {
         super();
 
-        calendarToggle = new Button();
-        calendarToggle.setStyleName(CLASSNAME + "-button");
-        calendarToggle.setText("");
+        calendarToggle.setStyleName(CLASSNAME + "-wrap");
         calendarToggle.addClickHandler(this);
         add(calendarToggle);
 
@@ -58,6 +64,7 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
         DOM.setElementProperty(calendar.getElement(), "id",
                 "PID_VAADIN_POPUPCAL");
 
+        calendarToggle.add(text);
     }
 
     @Override
@@ -70,35 +77,10 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
         if (date != null) {
             calendar.updateCalendar();
         }
-        calendarToggle.setEnabled(enabled);
-
-        handleReadonly();
-
-    }
-
-    private void handleReadonly() {
-        String currentDisplay = calendarToggle.getElement().getStyle()
-                .getProperty("display");
-        boolean currentReadonly = (currentDisplay != null && currentDisplay
-                .equals("none"));
-        if (currentReadonly != readonly) {
-            // We need to react only if the read-only status has changed
-            if (readonly) {
-                calendarToggle.getElement().getStyle().setProperty("display",
-                        "none");
-            } else {
-                calendarToggle.getElement().getStyle().setProperty("display",
-                        "");
-            }
-
-            // Force update of textfield size
-            updateWidth();
-        }
-
     }
 
     public void onClick(ClickEvent event) {
-        if (event.getSource() == calendarToggle && !open && !readonly) {
+        if (event.getNativeEvent().getEventTarget().cast() != text.getElement() && !open && !readonly && enabled) {
             open = true;
             calendar.updateCalendar();
             // clear previous values
@@ -160,12 +142,8 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
     }
 
     @Override
-    protected int getFieldExtraWidth() {
-        if (fieldExtraWidth < 0) {
-            fieldExtraWidth = super.getFieldExtraWidth();
-            fieldExtraWidth += calendarToggle.getOffsetWidth();
-        }
-        return fieldExtraWidth;
+    public void iLayout() {
+        //do not set width for the Text component
     }
 
 }

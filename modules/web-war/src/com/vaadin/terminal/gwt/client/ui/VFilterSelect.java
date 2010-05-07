@@ -1000,22 +1000,20 @@ public class VFilterSelect extends Composite implements Paintable, Field,
      * Listener for popupopener
      */
     public void onClick(ClickEvent event) {
-        if (event.getNativeEvent().getEventTarget().cast() != tb.getElement()) {
-            if (enabled && !readonly) {
-                // ask suggestionPopup if it was just closed, we are using GWT
-                // Popup's auto close feature
-                if (!suggestionPopup.isJustClosed()) {
-                    filterOptions(-1, "");
-                    popupOpenerClicked = true;
-                    lastFilter = "";
-                } else if (selectedOptionKey == null) {
-                    tb.setText(inputPrompt);
-                    prompting = true;
-                }
-                DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
-                tb.setFocus(true);
-                tb.selectAll();
+        if (event.getNativeEvent().getEventTarget().cast() != tb.getElement() && enabled && !readonly) {
+            // ask suggestionPopup if it was just closed, we are using GWT
+            // Popup's auto close feature
+            if (!suggestionPopup.isJustClosed()) {
+                filterOptions(-1, "");
+                popupOpenerClicked = true;
+                lastFilter = "";
+            } else if (selectedOptionKey == null) {
+                tb.setText(inputPrompt);
+                prompting = true;
             }
+            DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
+            tb.setFocus(true);
+            tb.selectAll();
         }
     }
 
