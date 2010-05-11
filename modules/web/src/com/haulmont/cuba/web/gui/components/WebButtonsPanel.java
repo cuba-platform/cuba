@@ -17,21 +17,29 @@ import com.haulmont.cuba.gui.components.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class WebButtonsPanel extends WebHBoxLayout
+public class WebButtonsPanel extends WebGridLayout
         implements ButtonsPanel {
 
     public WebButtonsPanel() {
         super();
         setSpacing(true);
-        setMargin(true);
+        setWidth("100%");
+        setRows(1);
+        setColumns(1);
     }
 
     public void addButton(com.haulmont.cuba.gui.components.Button actionButton) {
-        add(actionButton);
+        int buttonsCount = getButtons().size();
+        if (buttonsCount > 0) {
+            setColumnExpandRatio(buttonsCount - 1, 0);
+        }
+        setColumns(getColumns() + 1);
+        super.add(actionButton);
+        setColumnExpandRatio(buttonsCount, 1);
     }
 
     public void removeButton(com.haulmont.cuba.gui.components.Button actionButton) {
-        remove(actionButton);
+        super.remove(actionButton);
     }
 
     public Collection<com.haulmont.cuba.gui.components.Button> getButtons() {
@@ -49,8 +57,8 @@ public class WebButtonsPanel extends WebHBoxLayout
 
     @Override
     public void add(Component component) {
-        if (component instanceof com.haulmont.cuba.gui.components.Button) {
-            super.add(component);
+        if (component instanceof Button) {
+            addButton((Button) component);
         } else {
             throw new IllegalArgumentException("Component is not a button");
         }
@@ -58,8 +66,8 @@ public class WebButtonsPanel extends WebHBoxLayout
 
     @Override
     public void remove(Component component) {
-        if (component instanceof com.haulmont.cuba.gui.components.Button) {
-            super.remove(component);
+        if (component instanceof Button) {
+            removeButton((Button) component);
         } else {
             throw new IllegalArgumentException("Component is not a button");
         }

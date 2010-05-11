@@ -245,7 +245,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         setEditable(false);
 
         componentComposition = new CompositionLayout(component);
-        componentComposition.setSpacing(false);
+        componentComposition.setSpacing(true);
         componentComposition.setMargin(false);
         componentComposition.setExpandRatio(component, 1);
     }
