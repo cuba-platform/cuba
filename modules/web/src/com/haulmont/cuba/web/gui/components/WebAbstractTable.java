@@ -296,6 +296,22 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         for (final MetaPropertyPath id : propertyIds) {
             removeGeneratedColumn(id);
         }
+
+        if (isEditable()) {
+            final List<MetaPropertyPath> editableColumns = new ArrayList<MetaPropertyPath>(propertyIds.size());
+            for (final MetaPropertyPath propertyId : propertyIds) {
+                final Table.Column column = getColumn(propertyId.toString());
+                if (BooleanUtils.isTrue(column.isEditable())) {
+                    editableColumns.add(propertyId);
+                }
+            }
+            if (!editableColumns.isEmpty()) {
+                setEditableColumns(editableColumns);
+            }
+        } else {
+            setEditableColumns(Collections.<MetaPropertyPath>emptyList());
+        }
+
         createColumns(ds);
     }
 
