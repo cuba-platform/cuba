@@ -129,7 +129,7 @@ public class WebFilter
         topLayout.addComponent(applyBtn);
 
         nullActionId = MessageProvider.getMessage(MESSAGES_PACK, "nullAction");
-        createActionId = MessageProvider.getMessage(MESSAGES_PACK, "ñreateAction");
+        createActionId = MessageProvider.getMessage(MESSAGES_PACK, "createAction");
         editActionId = MessageProvider.getMessage(MESSAGES_PACK, "editAction");
         deleteActionId = MessageProvider.getMessage(MESSAGES_PACK, "removeAction");
         saveAsFolderActionId = MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderBtn");
