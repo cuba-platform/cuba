@@ -44,10 +44,6 @@ public class StandardEntity
         return version;
     }
 
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
     public Date getUpdateTs() {
         return updateTs;
     }

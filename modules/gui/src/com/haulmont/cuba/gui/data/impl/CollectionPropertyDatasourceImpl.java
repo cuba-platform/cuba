@@ -186,8 +186,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
                                                                                          
     protected Collection<T> __getCollection() {
-        final Instance item = (Instance) ds.getItem();
-        return item == null ? null : (Collection<T>) item.getValue(metaProperty.getName());
+        final Instance master = (Instance) ds.getItem();
+        return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
     }
 
     private void checkState() {
@@ -330,15 +330,26 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void commited(Map<Entity, Entity> map) {
-        Collection<T> tCollection = __getCollection();
-        if (tCollection != null) {
-            for (T item : tCollection) {
-                attachListener((Instance) item);
+        Collection<T> collection = __getCollection();
+        if (collection != null) {
+            for (T item : collection) {
+                Entity committedItem = map.get(item);
+                if (committedItem != null) {
+                    if (collection instanceof List) {
+                        List list = (List) collection;
+                        list.set(list.indexOf(item), committedItem);
+                    } else if (collection instanceof Set) {
+                        Set set = (Set) collection;
+                        set.remove(item);
+                        set.add(committedItem);
+                    }
+                    attachListener((Instance) committedItem);
+                }
             }
         }
 
-        if (map.containsKey(item)) {
-            item = (T) map.get(item);
+        if (map.containsKey(this.item)) {
+            this.item = (T) map.get(this.item);
         }
 
         modified = false;

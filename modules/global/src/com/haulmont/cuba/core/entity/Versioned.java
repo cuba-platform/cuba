@@ -16,6 +16,4 @@ package com.haulmont.cuba.core.entity;
 public interface Versioned
 {
     Integer getVersion();
-
-    void setVersion(Integer version);
 }
