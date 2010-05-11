@@ -142,7 +142,7 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
 
         public void actionPerform(Component component) {
             ExcelExporter exporter = new ExcelExporter();
-            exporter.exportTable(TableActionsHelper.this.component, display);
+            exporter.exportTable(TableActionsHelper.this.component, TableActionsHelper.this.component.getNotCollapsedColumns(), display);
         }
     }
 

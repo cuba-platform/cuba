@@ -34,6 +34,8 @@ public interface Table
     void setItemClickAction(Action action);
     Action getItemClickAction();
 
+    List<Column> getNotCollapsedColumns();
+
     void setSortable(boolean sortable);
     boolean isSortable();
 

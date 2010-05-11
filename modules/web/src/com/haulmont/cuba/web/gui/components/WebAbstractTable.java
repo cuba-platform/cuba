@@ -1093,4 +1093,15 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             return new int[0];
         }
     }
+
+    public List<Table.Column> getNotCollapsedColumns() {
+        List<Table.Column> visibleColumns = new ArrayList<Table.Column>();
+        Object[] keys = component.getVisibleColumns();
+        for (int i=0; i < keys.length; i++) {
+            if (!component.isColumnCollapsed(keys[i])) {
+                visibleColumns.add(columns.get(keys[i]));
+            }
+        }
+        return visibleColumns;
+    }
 }
