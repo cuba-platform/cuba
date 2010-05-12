@@ -250,13 +250,32 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Timer.Listener createAppFolderUpdater() {
-        return new AppFoldersUpdater();
+        return new Timer.Listener() {
+
+            public void onTimer(Timer timer) {
+                reloadAppFolders();
+            }
+
+            public void onStopTimer(Timer timer) {
+            }
+        };
     }
 
     public void refreshFolders() {
         if (visible) {
             showFolders(false);
             showFolders(true);
+        }
+    }
+
+    public void reloadAppFolders() {
+        if (appFoldersTree == null)
+            return;
+
+        List<AppFolder> folders = new ArrayList<AppFolder>(appFoldersTree.getItemIds());
+        service.reloadAppFolders(folders);
+        for (AppFolder folder : folders) {
+            appFoldersTree.setItemCaption(folder, folder.getCaption());
         }
     }
 
@@ -545,33 +564,6 @@ public class FoldersPane extends VerticalLayout {
                             new DialogAction(DialogAction.Type.NO)
                     }
             );
-        }
-    }
-
-    protected class AppFoldersUpdater implements Timer.Listener {
-        public AppFoldersUpdater() {
-        }
-
-        public void onTimer(Timer timer) {
-            if (appFoldersTree == null)
-                return;
-
-            synchronized (FoldersPane.this) {
-                appFoldersTree.removeAllItems();
-
-                List<AppFolder> appFolders = service.loadAppFolders();
-                if (!appFolders.isEmpty()) {
-                    fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
-                    for (Object itemId : appFoldersTree.rootItemIds()) {
-                        appFoldersTree.expandItemsRecursively(itemId);
-                    }
-                }
-
-                appFoldersTree.requestRepaint();
-            }
-        }
-
-        public void onStopTimer(Timer timer) {
         }
     }
 }

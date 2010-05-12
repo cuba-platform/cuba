@@ -31,4 +31,9 @@ public class SearchFolder extends AbstractSearchFolder {
     public void setUser(User user) {
         this.user = user;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

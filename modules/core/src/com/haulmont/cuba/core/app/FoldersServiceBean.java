@@ -72,6 +72,33 @@ public class FoldersServiceBean implements FoldersService {
         }
     }
 
+    public List<AppFolder> reloadAppFolders(List<AppFolder> folders) {
+        log.debug("Reloading AppFolders " + folders);
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            if (!folders.isEmpty()) {
+                Binding binding = new Binding();
+                for (AppFolder folder : folders) {
+                    try {
+                        if (!StringUtils.isBlank(folder.getQuantityScript())) {
+                            binding.setVariable("folder", folder);
+                            Number qty = ScriptingProvider.runGroovyScript(folder.getQuantityScript(), binding);
+                            folder.setQuantity(qty == null ? null : qty.intValue());
+                        }
+                    } catch (Exception e) {
+                        log.warn("Unable to evaluate AppFolder scripts", e);
+                    }
+                }
+            }
+
+            tx.commit();
+            return folders;
+        } finally {
+            tx.end();
+        }
+    }
+
     public List<SearchFolder> loadSearchFolders() {
         log.debug("Loading SearchFolders");
 

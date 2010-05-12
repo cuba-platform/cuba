@@ -24,5 +24,7 @@ public interface FoldersService {
 
     List<AppFolder> loadAppFolders();
 
+    List<AppFolder> reloadAppFolders(List<AppFolder> folders);
+
     List<SearchFolder> loadSearchFolders();
 }

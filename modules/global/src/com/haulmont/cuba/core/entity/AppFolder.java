@@ -61,4 +61,9 @@ public class AppFolder extends AbstractSearchFolder {
             return s + " (" + quantity + ")";
         }
     }
+
+    @Override
+    public String toString() {
+        return getName() + " (" + quantity + ")";
+    }
 }
