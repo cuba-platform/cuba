@@ -49,7 +49,7 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
     private String width;
 
-    private boolean needLayout;
+    protected boolean needLayout;
 
     protected int fieldExtraWidth = -1;
 

@@ -143,7 +143,9 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
 
     @Override
     public void iLayout() {
-        //do not set width for the Text component
+        if (needLayout) {
+            text.setWidth("100%");
+        }
     }
 
 }
