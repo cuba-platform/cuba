@@ -281,25 +281,7 @@ public class LoginWindow extends Window
 
     public class SubmitListener implements Button.ClickListener {
         public void buttonClick(Button.ClickEvent event) {
-            login();
-            if (rememberMe != null) {
-                App app = App.getInstance();
-                if (Boolean.TRUE.equals(rememberMe.getValue())) {
-                    if (!loginByRememberMe) {
-                        app.addCookie(COOKIE_REMEMBER_ME, String.valueOf(rememberMe));
-
-                        String login = (String) loginField.getValue();
-                        String password = (String) passwordField.getValue();
-
-                        app.addCookie(COOKIE_LOGIN, login);
-                        app.addCookie(COOKIE_PASSWORD, DigestUtils.md5Hex(password));
-                    }
-                } else {
-                    app.removeCookie(COOKIE_REMEMBER_ME);
-                    app.removeCookie(COOKIE_LOGIN);
-                    app.removeCookie(COOKIE_PASSWORD);
-                }
-            }
+            doLogin();
         }
     }
 
@@ -312,7 +294,7 @@ public class LoginWindow extends Window
 
     public void handleAction(Action action, Object sender, Object target) {
         if (sender == this) {
-            login();
+            doLogin();
         }
     }
 
@@ -338,6 +320,28 @@ public class LoginWindow extends Window
                 loginField.removeListener(loginChangeListener);
                 passwordField.removeListener(loginChangeListener);
                 loginChangeListener = null;
+            }
+        }
+    }
+
+    protected void doLogin() {
+        login();
+        if (rememberMe != null) {
+            App app = App.getInstance();
+            if (Boolean.TRUE.equals(rememberMe.getValue())) {
+                if (!loginByRememberMe) {
+                    app.addCookie(COOKIE_REMEMBER_ME, String.valueOf(rememberMe));
+
+                    String login = (String) loginField.getValue();
+                    String password = (String) passwordField.getValue();
+
+                    app.addCookie(COOKIE_LOGIN, login);
+                    app.addCookie(COOKIE_PASSWORD, DigestUtils.md5Hex(password));
+                }
+            } else {
+                app.removeCookie(COOKIE_REMEMBER_ME);
+                app.removeCookie(COOKIE_LOGIN);
+                app.removeCookie(COOKIE_PASSWORD);
             }
         }
     }
