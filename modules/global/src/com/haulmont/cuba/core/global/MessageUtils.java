@@ -9,13 +9,20 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Utility class to get localized messages by references defined in XML descriptors
  */
 public class MessageUtils {
+
+    private static Log log = LogFactory.getLog(MessageUtils.class);
 
     /**
      * Prefix pointing that the string is actually a key in a localized messages pack
@@ -28,10 +35,23 @@ public class MessageUtils {
         MessageUtils.messagePack = messagePack;
     }
 
+    /**
+     * Returns main message pack set for the application
+     */
+    public static String getMessagePack() {
+        return messagePack;
+    }
+
+    /**
+     * Returns global date format set for the application in the main message pack
+     */
     public static String getDateFormat() {
         return MessageProvider.getMessage(messagePack, "dateFormat");
     }
     
+    /**
+     * Returns global date-time format set for the application in the main message pack
+     */
     public static String getDateTimeFormat() {
         return MessageProvider.getMessage(messagePack, "dateTimeFormat");
     }
@@ -127,7 +147,45 @@ public class MessageUtils {
         return MARK + packageName + "/" + className + "." + property.getName();
     }
 
-    public static String getMessagePack() {
-        return messagePack;
+    /**
+     * Get localized value of an attribute based on {@link LocalizedValue} annotation
+     * @param attribute attribute name
+     * @param instance entity instance
+     * @return localized value or the value itself, if the value is null or the message pack can not be inferred
+     */
+    public static String getLocValue(String attribute, Instance instance) {
+        String value = instance.getValue(attribute);
+        if (value == null)
+            return null;
+
+        String mp = inferMessagePack(attribute, instance);
+        if (mp == null)
+            return value;
+        else
+            return MessageProvider.getMessage(mp, value);
+    }
+
+    /**
+     * Returns message pack inferred from {@link LocalizedValue} annotation
+     * @param attribute attribute name
+     * @param instance entity instance
+     * @return inferred message pack or null
+     */
+    public static String inferMessagePack(String attribute, Instance instance) {
+        MetaClass metaClass = instance.getMetaClass();
+        MetaProperty property = metaClass.getProperty(attribute);
+        LocalizedValue annotation = property.getAnnotatedElement().getAnnotation(LocalizedValue.class);
+        if (annotation != null) {
+            if (!StringUtils.isBlank(annotation.messagePack()))
+                return annotation.messagePack();
+            else if (!StringUtils.isBlank(annotation.messagePackExpr())) {
+                try {
+                    return instance.getValueEx(annotation.messagePackExpr());
+                } catch (Exception e) {
+                    log.error("Unable to infer message pack from expression: " + annotation.messagePackExpr(), e);
+                }
+            }
+        }
+        return null;
     }
 }

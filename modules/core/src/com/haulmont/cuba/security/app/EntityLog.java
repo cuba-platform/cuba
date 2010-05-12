@@ -12,17 +12,14 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -177,7 +174,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
                 Object value = ((Instance) entity).getValue(attr);
                 attribute.setValue(stringify(value));
                 attribute.setValueId(getValueId(value));
-                attribute.setMessagesPack(inferMessagesPack(attr, entity));
+                attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, (Instance) entity));
                 attribute.setLogItem(item);
                 em.persist(attribute);
             }
@@ -222,7 +219,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
                     Object value = ((Instance) entity).getValue(attr);
                     attribute.setValue(stringify(value));
                     attribute.setValueId(getValueId(value));
-                    attribute.setMessagesPack(inferMessagesPack(attr, entity));
+                    attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, (Instance) entity));
                     attribute.setLogItem(item);
                     em.persist(attribute);
                 }
@@ -265,7 +262,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
                 Object value = ((Instance) entity).getValue(attr);
                 attribute.setValue(stringify(value));
                 attribute.setValueId(getValueId(value));
-                attribute.setMessagesPack(inferMessagesPack(attr, entity));
+                attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, (Instance) entity));
                 attribute.setLogItem(item);
                 em.persist(attribute);
             }
@@ -292,23 +289,5 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         } else {
             return value.toString();
         }
-    }
-
-    private String inferMessagesPack(String attribute, BaseEntity entity) {
-        MetaClass metaClass = ((Instance) entity).getMetaClass();
-        MetaProperty property = metaClass.getProperty(attribute);
-        LocalizedValue annotation = property.getAnnotatedElement().getAnnotation(LocalizedValue.class);
-        if (annotation != null) {
-            if (!StringUtils.isBlank(annotation.messagePack()))
-                return annotation.messagePack();
-            else if (!StringUtils.isBlank(annotation.messagePackExpr())) {
-                try {
-                    return ((Instance) entity).getValueEx(annotation.messagePackExpr());
-                } catch (Exception e) {
-                    log.error("Unable to infer message pack from expression: " + annotation.messagePackExpr(), e);
-                }
-            }
-        }
-        return null;
     }
 }
