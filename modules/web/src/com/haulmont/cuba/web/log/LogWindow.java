@@ -37,7 +37,7 @@ public class LogWindow extends Window
         setLayout(layout);
 
         final Label label = new Label();
-        label.setContentMode(Label.CONTENT_UIDL);
+        label.setContentMode(Label.CONTENT_XHTML);
         label.setValue(writeLog());
         label.setSizeFull();
 
@@ -84,9 +84,9 @@ public class LogWindow extends Window
             sb.append(item.getMessage());
             if (item.getStacktrace() != null) {
                 sb.append(" ");
-                sb.append(item.getStacktrace().replace("\n", "<br>"));
+                sb.append(item.getStacktrace().replace("\n", "<br/>"));
             }
-            sb.append("<br>");
+            sb.append("<br/>");
         }
         return sb.toString();
     }
