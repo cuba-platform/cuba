@@ -303,6 +303,7 @@ create table SEC_ENTITY_LOG_ATTR (
     NAME varchar(50),
     VALUE varchar(1500),
     VALUE_ID uuid,    
+    MESSAGES_PACK varchar(200),
     primary key (ID)
 )^
 

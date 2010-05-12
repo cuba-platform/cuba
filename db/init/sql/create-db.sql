@@ -308,6 +308,8 @@ create table SEC_ENTITY_LOG_ATTR (
     ITEM_ID varchar(36),
     NAME varchar(50),
     VALUE varchar(1500),
+    VALUE_ID varchar(36),
+    MESSAGES_PACK varchar(200),
     primary key (ID)
 );
 

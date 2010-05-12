@@ -47,6 +47,9 @@ public class EntityLogAttr extends BaseUuidEntity {
     @Persistent
     private UUID valueId;
 
+    @Column(name = "MESSAGES_PACK", length = 200)
+    private String messagesPack;
+
     public EntityLogItem getLogItem() {
         return logItem;
     }
@@ -106,11 +109,28 @@ public class EntityLogAttr extends BaseUuidEntity {
         this.valueId = valueId;
     }
 
+    public String getMessagesPack() {
+        return messagesPack;
+    }
+
+    public void setMessagesPack(String messagesPack) {
+        this.messagesPack = messagesPack;
+    }
+
     @MetaProperty
     public String getDisplayName() {
         final String entityName = getLogItem().getEntity();
         final String message = MessageProvider.getMessage(entityName.substring(0, entityName.lastIndexOf(".")),
                 entityName.substring(entityName.lastIndexOf(".") + 1, entityName.length()) + "." + getName());
         return message == null || message.contains(getClass().getSimpleName()) ? getName() : message;
+    }
+
+    @MetaProperty
+    public String getLocValue() {
+        if (!StringUtils.isBlank(messagesPack)) {
+            return MessageProvider.getMessage(messagesPack, value);
+        } else {
+            return value;
+        }
     }
 }
