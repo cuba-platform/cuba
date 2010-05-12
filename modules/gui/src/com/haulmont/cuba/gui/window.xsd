@@ -92,10 +92,13 @@
                                 </xs:element>
                                 <xs:element name="datasource">
                                     <xs:complexType>
-                                        <xs:group ref="nestedDatasources"/>
+                                        <xs:sequence>
+                                            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
+                                            <xs:group ref="nestedDatasources"/>
+                                        </xs:sequence>
                                         <xs:attribute name="id" type="xs:string" use="required"/>
-                                        <xs:attribute name="class" type="xs:string" use="required"/>
-                                        <xs:attribute name="view" type="xs:string" use="required"/>
+                                        <xs:attribute name="class" type="xs:string" use="optional"/>
+                                        <xs:attribute name="view" type="xs:string" use="optional"/>
                                     </xs:complexType>
                                 </xs:element>
                             </xs:choice>
