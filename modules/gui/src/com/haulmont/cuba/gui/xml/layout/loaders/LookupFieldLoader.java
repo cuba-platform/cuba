@@ -43,13 +43,13 @@ public class LookupFieldLoader extends AbstractFieldLoader {
 
     @Override
     protected void loadDatasource(DatasourceComponent component, Element element) {
+        super.loadDatasource(component, element);
+
         final String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDsContext().get(datasource);
             ((LookupField) component).setOptionsDatasource((CollectionDatasource) ds);
         }
-
-        super.loadDatasource(component, element);
     }
 
     protected void loadFilterMode(LookupField component, Element element) {
