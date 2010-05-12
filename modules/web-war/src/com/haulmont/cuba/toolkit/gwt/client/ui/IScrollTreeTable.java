@@ -50,6 +50,8 @@ public class IScrollTreeTable
             super.addRowBeforeFirstRendered(row);
             if (((IScrollTreeTableRow) row).isExpanded()) {
                 row.addStyleName("v-expanded");
+            } else if (((IScrollTreeTableRow) row).hasChildren()) {
+                row.addStyleName("v-collapsed");
             }
         }
 
@@ -58,6 +60,8 @@ public class IScrollTreeTable
             super.addRow(row);
             if (((IScrollTreeTableRow) row).isExpanded()) {
                 row.addStyleName("v-expanded");
+            } else if (((IScrollTreeTableRow) row).hasChildren()) {
+                row.addStyleName("v-collapsed");
             }
         }
 
