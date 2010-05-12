@@ -332,7 +332,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void commited(Map<Entity, Entity> map) {
         Collection<T> collection = __getCollection();
         if (collection != null) {
-            for (T item : collection) {
+            for (T item : new ArrayList<T>(collection)) {
                 Entity committedItem = map.get(item);
                 if (committedItem != null) {
                     if (collection instanceof List) {
