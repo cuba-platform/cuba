@@ -42,6 +42,7 @@ import java.util.Map;
  * Specific application should inherit from this class and create appropriate
  * instance in {@link App#createLoginWindow()} method
  */
+@SuppressWarnings("serial")
 public class LoginWindow extends Window
         implements ApplicationContext.TransactionListener,
         Action.Handler, Action.Container {
@@ -78,7 +79,7 @@ public class LoginWindow extends Window
         localesSelect = new NativeSelect();
         okButton = new Button();
 
-        if (!ActiveDirectoryHelper.useActiveDirectory()) {
+        if (!ActiveDirectoryHelper.useActiveDirectory() && app.isCookiesEnabled()) {
             rememberMe = new CheckBox();
         }
 
@@ -158,7 +159,7 @@ public class LoginWindow extends Window
             formLayout.setComponentAlignment(localesSelect, Alignment.MIDDLE_CENTER);
         }
 
-        if (!ActiveDirectoryHelper.useActiveDirectory()) {
+        if (rememberMe != null) {
             rememberMe.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.rememberMe", loc));
             rememberMe.setStyleName("rememberMe");
             form.addField("rememberMe", rememberMe);
@@ -231,27 +232,6 @@ public class LoginWindow extends Window
             rememberMe.setValue(false);
             loginChangeListener = null;
         }
-
-        rememberMe.addListener(new Property.ValueChangeListener() {
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (app.isCookiesEnabled()) {
-                    Boolean rememberMe = (Boolean) event.getProperty().getValue();
-                    if (rememberMe) {
-                        app.addCookie(COOKIE_REMEMBER_ME, String.valueOf(rememberMe));
-
-                        String login = (String) loginField.getValue();
-                        String password = (String) passwordField.getValue();
-
-                        app.addCookie(COOKIE_LOGIN, login);
-                        app.addCookie(COOKIE_PASSWORD, DigestUtils.md5Hex(password));
-                    } else {
-                        app.removeCookie(COOKIE_REMEMBER_ME);
-                        app.removeCookie(COOKIE_LOGIN);
-                        app.removeCookie(COOKIE_PASSWORD);
-                    }
-                }
-            }
-        });
     }
 
     protected void initFields(App app) {
@@ -302,6 +282,24 @@ public class LoginWindow extends Window
     public class SubmitListener implements Button.ClickListener {
         public void buttonClick(Button.ClickEvent event) {
             login();
+            if (rememberMe != null) {
+                App app = App.getInstance();
+                if (Boolean.TRUE.equals(rememberMe.getValue())) {
+                    if (!loginByRememberMe) {
+                        app.addCookie(COOKIE_REMEMBER_ME, String.valueOf(rememberMe));
+
+                        String login = (String) loginField.getValue();
+                        String password = (String) passwordField.getValue();
+
+                        app.addCookie(COOKIE_LOGIN, login);
+                        app.addCookie(COOKIE_PASSWORD, DigestUtils.md5Hex(password));
+                    }
+                } else {
+                    app.removeCookie(COOKIE_REMEMBER_ME);
+                    app.removeCookie(COOKIE_LOGIN);
+                    app.removeCookie(COOKIE_PASSWORD);
+                }
+            }
         }
     }
 
