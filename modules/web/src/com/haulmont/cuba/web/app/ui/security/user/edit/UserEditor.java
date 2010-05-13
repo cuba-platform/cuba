@@ -11,18 +11,22 @@ package com.haulmont.cuba.web.app.ui.security.user.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
 import com.haulmont.cuba.web.app.NameBuilderListener;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -64,6 +68,25 @@ public class UserEditor extends AbstractEditor {
         setPermissionsShowAction(rolesTable, "show-specific", "sec$Target.specificPermissions.lookup", PermissionType.SPECIFIC);
 
         initPermissionsLookupField();
+
+        getDsContext().addListener(
+                new DsContext.CommitListener() {
+                    public void beforeCommit(CommitContext<Entity> context) {
+                    }
+
+                    public void afterCommit(CommitContext<Entity> context, Map<Entity, Entity> result) {
+                        UserSession us = UserSessionClient.getUserSession();
+                        for (Map.Entry<Entity, Entity> entry : result.entrySet()) {
+                            if (entry.getKey().equals(us.getUser())) {
+                                us.setUser((User) entry.getValue());
+                            }
+                            if (entry.getKey().equals(us.getSubstitutedUser())) {
+                                us.setSubstitutedUser((User) entry.getValue());
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     @Override

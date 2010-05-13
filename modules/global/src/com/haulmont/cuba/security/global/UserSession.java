@@ -95,10 +95,24 @@ public class UserSession implements Serializable
     }
 
     /**
+     * Don't do it
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    /**
      * Substituted user. May be null.
      */
     public User getSubstitutedUser() {
         return substitutedUser;
+    }
+
+    /**
+     * Don't do it
+     */
+    public void setSubstitutedUser(User substitutedUser) {
+        this.substitutedUser = substitutedUser;
     }
 
     /**
