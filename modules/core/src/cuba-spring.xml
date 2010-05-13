@@ -77,6 +77,14 @@
 
     <bean id="cuba_SecurityProvider" class="com.haulmont.cuba.core.sys.SecurityProviderImpl"/>
 
+    <!-- Various beans -->
+
+    <bean id="cuba_TimeBetweenQueryMacroHandler" class="com.haulmont.cuba.core.sys.TimeBetweenQueryMacroHandler"
+          scope="prototype"/>
+
+    <bean id="cuba_TimeTodayQueryMacroHandler" class="com.haulmont.cuba.core.sys.TimeTodayQueryMacroHandler"
+          scope="prototype"/>
+
     <!-- Annotation-based beans -->
 
     <context:component-scan base-package="com.haulmont.cuba"/>

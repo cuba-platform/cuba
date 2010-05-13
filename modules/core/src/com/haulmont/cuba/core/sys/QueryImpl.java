@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.sys.persistence.PostgresUUID;
@@ -43,8 +44,8 @@ public class QueryImpl implements Query
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
 
-        macroHandlers.add(new TimeBetweenQueryMacroHandler());
-        macroHandlers.add(new TimeTodayQueryMacroHandler());
+        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_TimeBetweenQueryMacroHandler"));
+        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_TimeTodayQueryMacroHandler"));
     }
 
     private OpenJPAQuery getQuery() {

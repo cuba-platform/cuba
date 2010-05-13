@@ -23,10 +23,10 @@ import java.util.regex.Pattern;
 
 public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
 
-    private static final Pattern MACRO_PATTERN = Pattern.compile("@between\\(([^\\)]+)\\)");
-    private static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([+-]*)\\s*(\\d*)");
+    protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\(([^\\)]+)\\)");
+    protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([+-]*)\\s*(\\d*)");
     
-    private static Map<String, Integer> units = new HashMap<String, Integer>();
+    protected static Map<String, Object> units = new HashMap<String, Object>();
 
     static {
         units.put("year", Calendar.YEAR);
@@ -37,8 +37,8 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
         units.put("second", Calendar.SECOND);
     }
 
-    private int count;
-    private Map<String, Object> params = new HashMap<String, Object>();
+    protected int count;
+    protected Map<String, Object> params = new HashMap<String, Object>();
 
     public String expandMacro(String queryString) {
         count = 0;
@@ -55,7 +55,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
         return params;
     }
 
-    private String doExpand(String macro) {
+    protected String doExpand(String macro) {
         count++;
         String[] args = macro.split(",");
         if (args.length != 4)
@@ -68,7 +68,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
         return String.format("(%s >= :%s and %s < :%s)", field, param1, field, param2);
     }
 
-    private String getParam(String[] args, int idx) {
+    protected String getParam(String[] args, int idx) {
         String arg = args[idx];
         String unit = args[3].trim();
 
@@ -88,14 +88,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
                 num = num * (-1);
         }
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(TimeProvider.currentTimestamp());
-//        cal.setTime(new Date());
-        int calField = getCalendarField(unit);
-        if (num != 0) {
-            cal.add(calField, num);
-        }
-        Date date = DateUtils.truncate(cal.getTime(), calField);
+        Date date = computeDate(num, unit);
 
         String paramName = args[0].replace(".", "_") + "_" + count + "_" + idx;
         params.put(paramName, date);
@@ -103,8 +96,20 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
         return paramName;
     }
 
-    private int getCalendarField(String unit) {
-        Integer calField = units.get(unit.toLowerCase());
+    protected Date computeDate(int num, String unit) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(TimeProvider.currentTimestamp());
+        int calField1 = getCalendarField(unit);
+        if (num != 0) {
+            cal.add(calField1, num);
+        }
+        int calField = calField1;
+        Date date = DateUtils.truncate(cal.getTime(), calField);
+        return date;
+    }
+
+    protected int getCalendarField(String unit) {
+        Integer calField = (Integer) units.get(unit.toLowerCase());
         if (calField == null)
             throw new RuntimeException("Invalid macro argument: " + unit);
         return calField;
