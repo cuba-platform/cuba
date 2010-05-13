@@ -34,13 +34,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.Focusable;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VTooltip;
 
 /**
  *
@@ -48,9 +43,10 @@ import com.vaadin.terminal.gwt.client.VTooltip;
  */
 public class VFilterSelect extends Composite implements Paintable, Field,
         KeyDownHandler, KeyUpHandler, ClickHandler, FocusHandler, BlurHandler,
-        Focusable {
+        Focusable, ContainerResizedListener {
 
     protected boolean fixedTextBoxWidth = false;
+    protected boolean needLayout = false;
 
     public class FilterSelectSuggestion implements Suggestion, Command {
 
@@ -443,7 +439,6 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
 
         public void doSelectedItemAction() {
-            final MenuItem item = getSelectedItem();
             final String enteredItemValue = tb.getText();
             if (nullSelectionAllowed && "".equals(enteredItemValue)) {
                 if (nullSelectItem) {
@@ -611,8 +606,6 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     // selected value has changed on the server-side. See #2119
     private boolean popupOpenerClicked;
     private String width = null;
-    private int textboxPadding = -1;
-    private int componentPadding = -1;
     private int suggestionPopupMinWidth = -1;
     /*
      * Stores the last new item string to avoid double submissions. Cleared on
@@ -1023,7 +1016,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     private native int minWidth(String captions)
     /*-{
         if(!captions || captions.length <= 0)
-                return 0;
+                return -1;
         captions = captions.split("|");
         var d = $wnd.document.createElement("div");
         var html = "";
@@ -1084,6 +1077,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             this.width = null;
         } else {
             this.width = width;
+            needLayout = true;
         }
         horizPaddingAndBorder = Util.setWidthExcludingPaddingAndBorder(this,
                 width, horizPaddingAndBorder);
@@ -1118,6 +1112,14 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             // Freeze the initial width, so that it won't change even if the
             // icon size changes
             width = w + "px";
+            needLayout = true;
+        }
+        iLayout();
+    }
+
+    public void iLayout() {
+        if (needLayout) {
+            tb.setWidth("100%");
         }
     }
 
