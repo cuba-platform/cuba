@@ -996,7 +996,7 @@ public class WebWindow
             selectButton.setIcon(new ThemeResource("icons/ok.png"));
             selectButton.addListener(new SelectAction(this));
             selectButton.setStyleName("Window-actionButton");
-            selectButton.setDebugId("selectButton");
+//            selectButton.setDebugId("selectButton");
 
             final Button cancelButton = WebComponentsHelper.createButton();
             cancelButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Cancel"));
@@ -1007,7 +1007,7 @@ public class WebWindow
             });
             cancelButton.setStyleName("Window-actionButton");
             cancelButton.setIcon(new ThemeResource("icons/cancel.png"));
-            cancelButton.setDebugId("cancelButton");
+//            cancelButton.setDebugId("cancelButton");
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);
