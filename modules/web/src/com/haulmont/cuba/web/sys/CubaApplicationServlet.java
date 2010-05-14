@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.GlobalUtils;
 import com.haulmont.cuba.web.Browser;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.App;
@@ -25,9 +26,50 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.Enumeration;
 
 public class CubaApplicationServlet extends ApplicationServlet {
     private static final long serialVersionUID = -8701539520754293569L;
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+        String contextName = request.getContextPath().substring(1);
+
+        String[] parts = requestURI.split("/");
+        boolean needRedirect = parts.length > 0 && "open".equals(parts[parts.length - 1]);
+        if (needRedirect) {
+            for (String part : parts) {
+                if (part.startsWith("win") || part.equals("UIDL")) {
+                    needRedirect = false;
+                    break;
+                }
+            }
+        }
+        if (needRedirect) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < parts.length; i++) {
+                sb.append(parts[i]);
+                if (parts[i].equals(contextName)) {
+                    sb.append("/").append(GlobalUtils.generateWebWindowName());
+                }
+                if (i < parts.length - 1)
+                    sb.append("/");
+            }
+            if (request.getParameterNames().hasMoreElements())
+                sb.append("?");
+            Enumeration parameterNames = request.getParameterNames();
+            while (parameterNames.hasMoreElements()) {
+                String param = (String) parameterNames.nextElement();
+                sb.append(param).append("=").append(request.getParameter(param));
+                if (parameterNames.hasMoreElements())
+                    sb.append("&");
+            }
+            response.sendRedirect(sb.toString());
+        } else {
+            super.service(request, response);
+        }
+    }
 
     @Override
     protected boolean isTestingMode() {

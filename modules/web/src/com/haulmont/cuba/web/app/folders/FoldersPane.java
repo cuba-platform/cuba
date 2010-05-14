@@ -250,15 +250,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Timer.Listener createAppFolderUpdater() {
-        return new Timer.Listener() {
-
-            public void onTimer(Timer timer) {
-                reloadAppFolders();
-            }
-
-            public void onStopTimer(Timer timer) {
-            }
-        };
+        return new AppFoldersUpdater();
     }
 
     public void refreshFolders() {
@@ -564,6 +556,16 @@ public class FoldersPane extends VerticalLayout {
                             new DialogAction(DialogAction.Type.NO)
                     }
             );
+        }
+    }
+
+    public class AppFoldersUpdater implements Timer.Listener {
+
+        public void onTimer(Timer timer) {
+            reloadAppFolders();
+        }
+
+        public void onStopTimer(Timer timer) {
         }
     }
 }

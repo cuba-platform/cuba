@@ -35,6 +35,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.FileOutputStream;
 
 /**
@@ -48,6 +50,8 @@ import java.io.FileOutputStream;
 public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
 {
     private static final long serialVersionUID = -3435976475534930050L;
+
+    private static final Pattern WIN_PATTERN = Pattern.compile("win([0-9]{1,4})");
 
     private Log log = LogFactory.getLog(App.class);
 
@@ -374,6 +378,34 @@ public class App extends Application implements ConnectionListener, ApplicationC
         processExternalLink(request, requestURI);
     }
 
+
+    private void setupCurrentWindowName(String requestURI) {
+        //noinspection deprecation
+        currentWindowName.set(getMainWindow() == null ? null : getMainWindow().getName());
+
+        if (connection.isConnected()) {
+            String[] parts = requestURI.split("/");
+            boolean contextFound = false;
+            for (String part : parts) {
+                if (StringUtils.isEmpty(part)) {
+                    continue;
+                }
+                if (part.equals(contextName) && !contextFound) {
+                    contextFound = true;
+                    continue;
+                }
+                if (contextFound && part.equals("UIDL")) {
+                    continue;
+                }
+                Matcher m = WIN_PATTERN.matcher(part);
+                if (m.matches()) {
+                    currentWindowName.set(part);
+                    break;
+                }
+            }
+        }
+    }
+    /*
     private void setupCurrentWindowName(String requestURI) {
         //noinspection deprecation
         currentWindowName.set(getMainWindow() == null ? null : getMainWindow().getName());
@@ -398,7 +430,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
                 break;
             }
         }
-    }
+    }*/
 
     private void processExternalLink(HttpServletRequest request, String requestURI) {
         if (requestURI.endsWith("/open") && !requestURI.contains("/UIDL/")) {
