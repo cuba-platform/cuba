@@ -93,20 +93,26 @@ public class AppContextLoader implements ServletContextListener {
         if (propsConfigName == null)
             throw new IllegalStateException(APP_PROPS_CONFIG_PARAM + " servlet context parameter not defined");
 
-        final Properties properties;
-        InputStream stream = sc.getResourceAsStream(propsConfigName);
-        try {
-            properties = new Properties();
-            properties.load(stream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                //
+        final Properties properties = new Properties();
+
+        StrTokenizer tokenizer = new StrTokenizer(propsConfigName);
+        for (String str : tokenizer.getTokenArray()) {
+            InputStream stream = sc.getResourceAsStream(str);
+            if (stream != null) {
+                try {
+                    properties.load(stream);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        //
+                    }
+                }
             }
         }
+
         StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
             @Override
             public String lookup(String key) {
