@@ -22,6 +22,8 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.ServletContext;
@@ -51,6 +53,7 @@ public class AppContextLoader implements ServletContextListener {
             initAppProperties(sc);
             MessageUtils.setMessagePack(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP));
 
+            initLog4j();
             initPersistenceConfig(sc);
             initAppContext(sc);
             initServiceLocator(sc);
@@ -60,6 +63,16 @@ public class AppContextLoader implements ServletContextListener {
         } catch (Exception e) {
             log.error("Error initializing application", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private void initLog4j() {
+        for (String name : AppContext.getPropertyNames()) {
+            if (name.startsWith("log4j.logger.")) {
+                String loggerName = name.substring(13);
+                Logger logger = Logger.getLogger(loggerName);
+                logger.setLevel(Level.toLevel(AppContext.getProperty(name)));
+            }
         }
     }
 
