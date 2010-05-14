@@ -26,13 +26,12 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 
 public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
-    extends
+        extends
         PropertyDatasourceImpl<T>
-    implements
+        implements
         CollectionDatasource<T, K>,
         CollectionDatasource.Sortable<T, K>,
-        CollectionDatasource.Aggregatable<T, K>
-{
+        CollectionDatasource.Aggregatable<T, K> {
     private T item;
     protected boolean cascadeProperty;
 
@@ -184,7 +183,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             return collection == null ? 0 : collection.size();
         }
     }
-                                                                                         
+
     protected Collection<T> __getCollection() {
         final Instance master = (Instance) ds.getItem();
         return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
@@ -284,7 +283,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         Collection<T> coll = __getCollection();
         if (coll == null)
             return false;
-        
+
         if (itemId instanceof Entity)
             return __getCollection().contains(itemId);
         else {
@@ -357,7 +356,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void forceCollectionChanged(CollectionDatasourceListener.Operation operation) {
-        for (DatasourceListener dsListener : dsListeners) {
+        for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             if (dsListener instanceof CollectionDatasourceListener) {
                 ((CollectionDatasourceListener) dsListener).collectionChanged(this, operation);
             }
