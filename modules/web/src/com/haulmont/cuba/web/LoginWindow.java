@@ -252,13 +252,13 @@ public class LoginWindow extends Window
             WebConfig config = ConfigProvider.getConfig(WebConfig.class);
 
             String defaultUser = config.getLoginDialogDefaultUser();
-            if (!StringUtils.isBlank(defaultUser))
+            if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser))
                 loginField.setValue(defaultUser);
             else
                 loginField.setValue("");
 
             String defaultPassw = config.getLoginDialogDefaultPassword();
-            if (!StringUtils.isBlank(defaultPassw))
+            if (!StringUtils.isBlank(defaultPassw) && !"<disabled>".equals(defaultPassw))
                 passwordField.setValue(defaultPassw);
             else
                 passwordField.setValue("");
