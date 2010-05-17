@@ -1,12 +1,12 @@
 /*
  * Copyright 2009 IT Mill Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -34,6 +34,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
+import com.google.gwt.dom.client.Document;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.Focusable;
 
@@ -615,6 +616,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     private boolean focused = false;
     private int horizPaddingAndBorder = 2;
 
+    private int openerWidth = -1;
+
     public VFilterSelect() {
         selectedItemIcon.setStyleName("v-icon");
         selectedItemIcon.addLoadHandler(new LoadHandler() {
@@ -810,7 +813,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
 
         // Calculate minumum textarea width
-        suggestionPopupMinWidth = minWidth(captions);
+        if (!fixedTextBoxWidth || suggestionPopupMinWidth == -1) {
+            suggestionPopupMinWidth = minWidth(captions);
+        }
 
         popupOpenerClicked = false;
 
@@ -1073,9 +1078,6 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     @Override
     public void setWidth(String width) {
-        if (this.width != null && fixedTextBoxWidth) {
-            return;
-        }
         if (width == null || width.equals("")) {
             this.width = null;
         } else {
@@ -1094,28 +1096,33 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     }
 
     private void updateRootWidth() {
-        if (width == null && suggestionPopupMinWidth > -1) {
-            /*
-             * When the width is not specified we must specify width for root
-             * div so the popupopener won't wrap to the next line and also so
-             * the size of the combobox won't change over time.
-             */
-            int openerWidth = Util.getRequiredWidth(popupOpener);
-            int iconWidth = selectedItemIcon.isAttached() ? Util
-                    .measureMarginLeft(tb.getElement())
-                    - Util.measureMarginLeft(selectedItemIcon.getElement()) : 0;
-
-            int w = openerWidth + iconWidth;
-            if (suggestionPopupMinWidth > w) {
-                w = suggestionPopupMinWidth;
+        tb.setWidth("");
+        needLayout = false;
+        if (width == null) {
+            if (suggestionPopupMinWidth > -1) {
+                int iconWidth = selectedItemIcon.isAttached() ? Util
+                        .measureMarginLeft(tb.getElement())
+                        - Util.measureMarginLeft(selectedItemIcon.getElement()) : 0;
+                int w = getOpenerWidth() + iconWidth;
+                if (suggestionPopupMinWidth > w) {
+                    w = suggestionPopupMinWidth;
+                }
+                super.setWidth(w + "px");
+                width = w + "px";
+                needLayout = true;
             }
-            super.setWidth((w) + "px");
-            // Freeze the initial width, so that it won't change even if the
-            // icon size changes
-            width = w + "px";
+        } else {
+            super.setWidth(width);
             needLayout = true;
         }
         iLayout();
+    }
+
+    private int getOpenerWidth() {
+        if (openerWidth == -1) {
+            openerWidth = popupOpener.getOffsetWidth() - tb.getOffsetWidth();
+        }
+        return openerWidth;
     }
 
     public void iLayout() {

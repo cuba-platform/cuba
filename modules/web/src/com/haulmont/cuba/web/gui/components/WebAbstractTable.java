@@ -1027,6 +1027,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             if (field instanceof TextField) {
                 ((TextField) field).setNullRepresentation("");
+                field.setWidth("100%");
             } else if (field instanceof DateField) {
                 String format = null;
 
@@ -1039,6 +1040,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (format != null) {
                     ((DateField) field).setDateFormat(format);
                 }
+            } else if (field instanceof Select) {
+                field.setWidth("100%");
             }
 
             boolean required = requiredColumns.containsKey(column);
