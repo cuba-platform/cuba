@@ -13,13 +13,16 @@ import org.dom4j.Element;
 
 public class EmailValidator extends PatternValidator {
 
+    static private String sDomen = "[a-z][a-z[0-9]\u005F\u002E\u002D]*[a-z||0-9]";
+    static private String sDomen2 = "([a-z]){2,4}";
+
     public EmailValidator(Element element, String messagesPack) {
-        super(".+@.+\\.[a-z]+");
+        super(sDomen + "@" + sDomen + "\u002E" + sDomen2);
         message = element.attributeValue("message");
         this.messagesPack = messagesPack;
     }
 
     public EmailValidator() {
-        super(".+@.+\\.[a-z]+");
+        super(sDomen + "@" + sDomen + "\u002E" + sDomen2);
     }
 }
