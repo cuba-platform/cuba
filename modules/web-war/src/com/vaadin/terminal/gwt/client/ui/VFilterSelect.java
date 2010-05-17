@@ -1073,6 +1073,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     @Override
     public void setWidth(String width) {
+        if (this.width != null && fixedTextBoxWidth) {
+            return;
+        }
         if (width == null || width.equals("")) {
             this.width = null;
         } else {
@@ -1104,9 +1107,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
             int w = openerWidth + iconWidth;
             if (suggestionPopupMinWidth > w) {
-                if (!fixedTextBoxWidth) {
-                    w = suggestionPopupMinWidth;
-                }
+                w = suggestionPopupMinWidth;
             }
             super.setWidth((w) + "px");
             // Freeze the initial width, so that it won't change even if the
