@@ -22,7 +22,6 @@ import com.vaadin.terminal.gwt.server.JsonPaintTarget;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -38,33 +37,29 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     private Map<Timer, String> timer2Id = new WeakHashMap<Timer, String>();
 
-    public CubaCommunicationManager(Application application, AbstractApplicationServlet applicationServlet) {
-        super(application, applicationServlet);
+    public CubaCommunicationManager(Application application) {
+        super(application);
     }
 
-    /**
-     * Handles UIDL request
-     *
-     * @param request
-     * @param response
-     * @throws IOException
-     * @throws ServletException
-     */
-    public void handleUidlRequest(HttpServletRequest request,
-            HttpServletResponse response,
-            AbstractApplicationServlet applicationServlet) throws IOException,
-            ServletException, InvalidUIDLSecurityKeyException {
+    @Override
+    protected void doHandleUidlRequest(Request request, Response response,
+            Callback callback, Window window) throws IOException,
+            InvalidUIDLSecurityKeyException {
 
         // repaint requested or session has timed out and new one is created
-        boolean repaintAll = (request.getParameter(GET_PARAM_REPAINT_ALL) != null)
-                || request.getSession().isNew();
+        boolean repaintAll;
+        final OutputStream out;
+
+        repaintAll = (request.getParameter(GET_PARAM_REPAINT_ALL) != null);
+        // || (request.getSession().isNew()); FIXME What the h*ll is this??
+        out = response.getOutputStream();
+
         boolean analyzeLayouts = false;
         if (repaintAll) {
             // analyzing can be done only with repaintAll
             analyzeLayouts = (request.getParameter(GET_PARAM_ANALYZE_LAYOUTS) != null);
         }
 
-        final OutputStream out = response.getOutputStream();
         final PrintWriter outWriter = new PrintWriter(new BufferedWriter(
                 new OutputStreamWriter(out, "UTF-8")));
 
@@ -74,17 +69,14 @@ public class CubaCommunicationManager extends CommunicationManager {
         synchronized (application) {
 
             // Finds the window within the application
-            Window window;
             if (application.isRunning()) {
-                window = getApplicationWindow(request, applicationServlet,
-                        application, null);
                 // Returns if no window found
                 if (window == null) {
                     // This should not happen, no windows exists but
                     // application is still open.
                     System.err
-                            .println("Warning, could not get window for application with request URI "
-                                    + request.getRequestURI());
+                            .println("Warning, could not get window for application with request ID "
+                                    + request.getRequestID());
                     return;
                 }
             } else {
@@ -96,8 +88,8 @@ public class CubaCommunicationManager extends CommunicationManager {
             processRequestedCookies(request, response);
 
             // Change all variables based on request parameters
-            if (!handleVariables(request, response, applicationServlet,
-                    application, window)) {
+            if (!handleVariables(request, response, callback, application,
+                    window)) {
 
                 // var inconsistency; the client is probably out-of-sync
                 Application.SystemMessages ci = null;
@@ -116,8 +108,8 @@ public class CubaCommunicationManager extends CommunicationManager {
                     String msg = ci.getOutOfSyncMessage();
                     String cap = ci.getOutOfSyncCaption();
                     if (msg != null || cap != null) {
-                        ((CubaApplicationServlet) applicationServlet).sendCriticalNotification(request,
-                                response, cap, msg, null, ci.getOutOfSyncURL());
+                        callback.criticalNotification(request, response, cap,
+                                msg, null, ci.getOutOfSyncURL());
                         // will reload page after this
                         return;
                     }
@@ -128,29 +120,26 @@ public class CubaCommunicationManager extends CommunicationManager {
 
             processResponsedCookies(request, response);
 
-            paintAfterVariablechanges(request, response, applicationServlet,
-                    repaintAll, outWriter, window, analyzeLayouts);
+            paintAfterVariableChanges(request, response, callback, repaintAll,
+                    outWriter, window, analyzeLayouts);
 
-            // Mark this window to be open on client
-            currentlyOpenWindowsInClient.add(window.getName());
             if (closingWindowName != null) {
                 currentlyOpenWindowsInClient.remove(closingWindowName);
                 closingWindowName = null;
             }
         }
 
-        out.flush();
-        out.close();
+        outWriter.close();
     }
 
-    protected void processRequestedCookies(HttpServletRequest request, HttpServletResponse response) {
+    protected void processRequestedCookies(Request request, Response response) {
         App app = App.getInstance();
-        app.getCookies().processRequestedCookies(request);
+        app.getCookies().processRequestedCookies((HttpServletRequest) request.getWrappedRequest());
     }
 
-    protected void processResponsedCookies(HttpServletRequest request, HttpServletResponse response) {
+    protected void processResponsedCookies(Request request, Response response) {
         App app = App.getInstance();
-        app.getCookies().processResponsedCookies(response);
+        app.getCookies().processResponsedCookies((HttpServletResponse) response.getWrappedResponse());
     }
 
     @Override
@@ -192,16 +181,13 @@ public class CubaCommunicationManager extends CommunicationManager {
     }
 
     @Override
-    protected boolean handleVariables(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AbstractApplicationServlet applicationServlet,
-            Application application2,
-            Window window
-    ) throws IOException, CommunicationManager.InvalidUIDLSecurityKeyException {
+    protected boolean handleVariables(Request request, Response response,
+            Callback callback, Application application2, Window window)
+            throws IOException, InvalidUIDLSecurityKeyException {
         boolean success = true;
+        int contentLength = request.getContentLength();
 
-        if (request.getContentLength() > 0) {
+        if (contentLength > 0) {
             String changes = readRequest(request);
 
             // Manage bursts one by one
@@ -213,26 +199,16 @@ public class CubaCommunicationManager extends CommunicationManager {
                     .equals(application2
                             .getProperty(AbstractApplicationServlet.SERVLET_PARAMETER_DISABLE_XSRF_PROTECTION))) {
                 if (bursts.length == 1 && "init".equals(bursts[0])) {
-                    // initial request, no variable changes: send key
-                    String seckey = (String) request.getSession().getAttribute(
-                            ApplicationConnection.UIDL_SECURITY_HEADER);
-                    if (seckey == null) {
-                        seckey = "" + (int) (Math.random() * 1000000);
-                    }
-                    /*
-                     * Cookie c = new Cookie(
-                     * ApplicationConnection.UIDL_SECURITY_COOKIE_NAME, uuid);
-                     * response.addCookie(c);
-                     */
-                    response.setHeader(
-                            ApplicationConnection.UIDL_SECURITY_HEADER, seckey);
-                    request.getSession().setAttribute(
-                            ApplicationConnection.UIDL_SECURITY_HEADER, seckey);
+                    // init request; don't handle any variables, key sent in
+                    // response.
+                    request.setAttribute(WRITE_SECURITY_TOKEN_FLAG, true);
                     return true;
                 } else {
-                    // check the key
+                    // ApplicationServlet has stored the security token in the
+                    // session; check that it matched the one sent in the UIDL
                     String sessId = (String) request.getSession().getAttribute(
-                            ApplicationConnection.UIDL_SECURITY_HEADER);
+                            ApplicationConnection.UIDL_SECURITY_TOKEN_ID);
+
                     if (sessId == null || !sessId.equals(bursts[0])) {
                         throw new InvalidUIDLSecurityKeyException(
                                 "Security key mismatch");
@@ -255,22 +231,24 @@ public class CubaCommunicationManager extends CommunicationManager {
                     if (i + 1 < variableRecords.length) {
                         nextVariable = variableRecords[i + 1];
                     }
-                    final VariableOwner owner = (VariableOwner) idPaintableMap
-                            .get(variable[VAR_PID]);
+                    final VariableOwner owner = getVariableOwner(variable[VAR_PID]);
                     if (owner != null && owner.isEnabled()) {
-                        Map m;
+                        // TODO this should be Map<String, Object>, but the
+                        // VariableOwner API does not guarantee the key is a
+                        // string
+                        Map<String, Object> m;
                         if (nextVariable != null
                                 && variable[VAR_PID]
                                         .equals(nextVariable[VAR_PID])) {
                             // we have more than one value changes in row for
                             // one variable owner, collect em in HashMap
-                            m = new HashMap();
+                            m = new HashMap<String, Object>();
                             m.put(variable[VAR_NAME], convertVariableValue(
                                     variable[VAR_TYPE].charAt(0),
                                     variable[VAR_VALUE]));
                         } else {
                             // use optimized single value map
-                            m = new SingleValueMap(variable[VAR_NAME],
+                            m = Collections.singletonMap(variable[VAR_NAME],
                                     convertVariableValue(variable[VAR_TYPE]
                                             .charAt(0), variable[VAR_VALUE]));
                         }
@@ -304,17 +282,19 @@ public class CubaCommunicationManager extends CommunicationManager {
                                 }
                             }
                         } catch (Exception e) {
-                            handleChangeVariablesError(application2,
-                                    (Component) owner, e, m);
+                            if (owner instanceof Component) {
+                                handleChangeVariablesError(application2,
+                                        (Component) owner, e, m);
+                            } else {
+                                // TODO DragDropService error handling
+                                throw new RuntimeException(e);
+                            }
                         }
                     } else {
                         Timer timer;
-                        if ((timer = id2Timer.get(variable[VAR_PID])) != null && !timer.isStopped())
-                        {
+                        if ((timer = id2Timer.get(variable[VAR_PID])) != null && !timer.isStopped()) {
                             fireTimer(timer);
-                        }
-                        else
-                        {
+                        } else {
                             // Handle special case where window-close is called
                             // after the window has been removed from the
                             // application or the application has closed
@@ -338,7 +318,6 @@ public class CubaCommunicationManager extends CommunicationManager {
                                 success = false;
                             }
                             System.err.println(msg);
-                            continue;
                         }
                     }
                 }
@@ -354,13 +333,10 @@ public class CubaCommunicationManager extends CommunicationManager {
                     // We will be discarding all changes
                     final PrintWriter outWriter = new PrintWriter(
                             new CharArrayWriter());
-                    try {
-                        paintAfterVariablechanges(request, response,
-                                applicationServlet, true, outWriter, window,
-                                false);
-                    } catch (ServletException e) {
-                        // We will ignore all servlet exceptions
-                    }
+
+                    paintAfterVariableChanges(request, response, callback,
+                            true, outWriter, window, false);
+
                 }
 
             }

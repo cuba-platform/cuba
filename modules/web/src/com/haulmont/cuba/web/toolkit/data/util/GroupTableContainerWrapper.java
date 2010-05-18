@@ -18,11 +18,10 @@ import com.vaadin.data.util.ContainerOrderedWrapper;
 import java.util.Collection;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class GroupTableContainerWrapper extends ContainerOrderedWrapper
-        implements GroupTableContainer, AggregationContainer
-{
+        implements GroupTableContainer, AggregationContainer {
     private boolean groupTableContainer;
-    private static final long serialVersionUID = -8995121945975463903L;
 
     public GroupTableContainerWrapper(Container toBeWrapped) {
         super(toBeWrapped);

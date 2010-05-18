@@ -18,10 +18,10 @@ package com.vaadin.terminal.gwt.client;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.ComplexPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class VCaptionWrapper extends ComplexPanel {
+public class VCaptionWrapper extends FlowPanel {
 
     public static final String CLASSNAME = "v-captionwrapper";
     protected VCaption caption;
@@ -33,7 +33,6 @@ public class VCaptionWrapper extends ComplexPanel {
 
     public VCaptionWrapper(Paintable toBeWrapped, ApplicationConnection client) {
         this.client = client;
-        setElement(DOM.createDiv());
         setStyleName(CLASSNAME);
 
         DOM.appendChild(getElement(), widgetWrapper);

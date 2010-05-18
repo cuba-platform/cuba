@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollGroupTable;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.GroupTableContainerWrapper;
@@ -21,17 +22,18 @@ import com.vaadin.terminal.KeyMapper;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
+import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Component;
 
 import java.util.*;
 
+@SuppressWarnings("serial")
+@ClientWidget(IScrollGroupTable.class)
 public class GroupTable extends Table implements GroupTableContainer {
 
     private KeyMapper groupIdMap = new KeyMapper();
 
     private GroupPropertyValueFormatter groupPropertyValueFormatter;
-
-    private static final long serialVersionUID = 5268301834164182870L;
 
     public GroupTable() {
         super();
@@ -68,6 +70,10 @@ public class GroupTable extends Table implements GroupTableContainer {
         // The tab ordering number
         if (getTabIndex() > 0) {
             target.addAttribute("tabindex", getTabIndex());
+        }
+
+        if (getDragMode() != TableDragMode.NONE) {
+            target.addAttribute("dragmode", getDragMode().ordinal());
         }
 
         // Initialize temps
@@ -184,7 +190,7 @@ public class GroupTable extends Table implements GroupTableContainer {
         }
 
         // Rows
-        final Set actionSet = new LinkedHashSet();
+        final Set<Action> actionSet = new LinkedHashSet<Action>();
         final boolean selectable = isSelectable();
         final boolean[] iscomponent = new boolean[visibleColumns.size()];
         int iscomponentIndex = 0;
@@ -340,8 +346,7 @@ public class GroupTable extends Table implements GroupTableContainer {
         if (!actionSet.isEmpty()) {
             target.addVariable(this, "action", "");
             target.startTag("actions");
-            for (final Iterator it = actionSet.iterator(); it.hasNext();) {
-                final Action a = (Action) it.next();
+            for (final Action a : actionSet) {
                 target.startTag("action");
                 if (a.getCaption() != null) {
                     target.addAttribute("caption", a.getCaption());
@@ -378,6 +383,10 @@ public class GroupTable extends Table implements GroupTableContainer {
         }
 
         paintVisibleColumns(target, colheads);
+
+        if (getDropHandler() != null) {
+            getDropHandler().getAcceptCriterion().paint(target);
+        }
     }
 
     private Collection<?> allItemIds() {
@@ -649,7 +658,7 @@ public class GroupTable extends Table implements GroupTableContainer {
     }
 
     @Override
-    protected boolean changeVariables(Map variables) {
+    protected boolean changeVariables(Map<String, Object> variables) {
         boolean clientNeedsContentRefresh = super.changeVariables(variables);
 
         boolean needsResetPageBuffer = false;
@@ -820,11 +829,6 @@ public class GroupTable extends Table implements GroupTableContainer {
 
     public void setGroupPropertyValueFormatter(GroupPropertyValueFormatter groupPropertyValueFormatter) {
         this.groupPropertyValueFormatter = groupPropertyValueFormatter;
-    }
-
-    @Override
-    public String getTag() {
-        return "grouptable";
     }
 
     public interface GroupPropertyValueFormatter {

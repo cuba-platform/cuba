@@ -32,6 +32,16 @@ public class CubaApplicationServlet extends ApplicationServlet {
     private static final long serialVersionUID = -8701539520754293569L;
 
     @Override
+    protected boolean isTestingMode() {
+        return ConfigProvider.getConfig(GlobalConfig.class).getTestMode();
+    }
+
+    @Override
+    protected WebApplicationContext getApplicationContext(HttpSession session) {
+        return CubaApplicationContext.getApplicationContext(session);
+    }
+
+    @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
         String contextName = request.getContextPath().substring(1);
@@ -72,16 +82,6 @@ public class CubaApplicationServlet extends ApplicationServlet {
     }
 
     @Override
-    protected boolean isTestingMode() {
-        return ConfigProvider.getConfig(GlobalConfig.class).getTestMode();
-    }
-
-    @Override
-    protected WebApplicationContext getApplicationContext(HttpSession session) {
-        return CubaApplicationContext.getApplicationContext(session);
-    }
-
-    @Override
     protected void writeAjaxPageHtmlHeader(HttpServletRequest request, BufferedWriter page, String title,
                                            String themeUri) throws IOException {
         page.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n");
@@ -92,7 +92,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
             page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\" />\n");
         }
         page.write("<style type=\"text/css\">"
-                + "html, body {height:100%;}</style>");
+                + "html, body {height:100%;margin:0;}</style>");
 
         // Add favicon links
         page.write("<link rel=\"shortcut icon\" type=\"image/vnd.microsoft.icon\" href=\""

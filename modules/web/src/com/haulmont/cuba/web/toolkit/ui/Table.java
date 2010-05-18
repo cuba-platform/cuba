@@ -18,12 +18,16 @@ import com.vaadin.event.Action;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.gwt.client.ui.IScrollTable;
+import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 
 import java.io.Serializable;
 import java.util.*;
 
+@SuppressWarnings("serial")
+@ClientWidget(IScrollTable.class)
 public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     protected LinkedList<Object> editableColumns = null;
@@ -37,8 +41,6 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     protected PagingProvider pagingProvider = null;
 
     protected boolean aggregatable = false;
-
-    private static final long serialVersionUID = -357615426612088982L;
 
     public enum PagingMode {
         PAGE,
@@ -92,7 +94,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     }
 
     @Override
-    protected boolean changeVariables(Map variables) {
+    protected boolean changeVariables(Map<String, Object> variables) {
 
         boolean clientNeedsContentRefresh = false;
 
@@ -185,6 +187,10 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             target.addAttribute("tabindex", getTabIndex());
         }
 
+        if (getDragMode() != TableDragMode.NONE) {
+            target.addAttribute("dragmode", getDragMode().ordinal());
+        }
+
         // Initialize temps
         final Object[] colids = getVisibleColumns();
         final int cols = colids.length;
@@ -216,7 +222,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         }
 
         // selection support
-        LinkedList selectedKeys = new LinkedList();
+        LinkedList<String> selectedKeys = new LinkedList<String>();
         if (isMultiSelect()) {
             // only paint selections that are currently visible in the client
             HashSet sel = new HashSet((Set) getValue());
@@ -300,7 +306,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         }
 
         // Rows
-        final Set actionSet = new LinkedHashSet();
+        final Set<Action> actionSet = new LinkedHashSet<Action>();
         final boolean selectable = isSelectable();
         final boolean[] iscomponent = new boolean[visibleColumns.size()];
         int iscomponentIndex = 0;
@@ -414,8 +420,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         if (!actionSet.isEmpty()) {
             target.addVariable(this, "action", "");
             target.startTag("actions");
-            for (final Iterator it = actionSet.iterator(); it.hasNext();) {
-                final Action a = (Action) it.next();
+            for (final Action a : actionSet) {
                 target.startTag("action");
                 if (a.getCaption() != null) {
                     target.addAttribute("caption", a.getCaption());
@@ -441,6 +446,10 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         paintCollapsedColumns(target);
 
         paintVisibleColumns(target, colheads);
+
+        if (getDropHandler() != null) {
+            getDropHandler().getAcceptCriterion().paint(target);
+        }
     }
 
     protected void paintCollapsedColumns(PaintTarget target) throws PaintException {

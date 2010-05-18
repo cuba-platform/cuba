@@ -13,7 +13,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -21,6 +20,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.toolkit.ui.ActionsField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
@@ -161,7 +161,7 @@ public class WebActionsField
             if (lookupButton == null) {
                 lookupButton = new WebButton();
                 lookupButton.setIcon("select/img/bg-right-lookup.png");
-                lookupButton.setStyleName(Button.STYLE_LINK);
+                lookupButton.setStyleName(BaseTheme.BUTTON_LINK);
                 component.addButton((Button) lookupButton.getComponent());
             }
             lookupButton.setVisible(enable);
@@ -169,7 +169,7 @@ public class WebActionsField
             if (openButton == null) {
                 openButton = new WebButton();
                 openButton.setIcon("select/img/bg-right-open.png");
-                openButton.setStyleName(Button.STYLE_LINK);
+                openButton.setStyleName(BaseTheme.BUTTON_LINK);
                 component.addButton((Button) openButton.getComponent());
             }
             openButton.setVisible(enable);

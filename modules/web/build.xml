@@ -17,6 +17,7 @@
 
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
+        <fileset refid="gwt-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>

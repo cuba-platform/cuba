@@ -10,19 +10,19 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Layout;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.PaintException;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class Box extends AbstractComponentContainer
-        implements Layout.SpacingHandler{
+        implements Layout.SpacingHandler {
 
     protected List<Component> components = new LinkedList<Component>();
 
@@ -30,7 +30,7 @@ public abstract class Box extends AbstractComponentContainer
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
-        if (isSpacingEnabled()) {
+        if (isSpacing()) {
             target.addAttribute("spacing", true);
         }
         if (!components.isEmpty()) {

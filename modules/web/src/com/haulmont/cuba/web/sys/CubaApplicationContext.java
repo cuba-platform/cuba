@@ -38,6 +38,6 @@ public class CubaApplicationContext extends WebApplicationContext {
     @Override
     protected CommunicationManager createCommunicationManager(Application application,
             AbstractApplicationServlet applicationServlet) {
-        return new CubaCommunicationManager(application, applicationServlet);
+        return new CubaCommunicationManager(application);
     }
 }

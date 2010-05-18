@@ -18,6 +18,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 
+@SuppressWarnings("serial")
 public class SubTitleCap extends HorizontalLayout {
 
     protected HorizontalLayout titleLayout;
@@ -27,15 +28,9 @@ public class SubTitleCap extends HorizontalLayout {
         setMargin(true);
         setSpacing(true);
         setWidth(100, Sizeable.UNITS_PERCENTAGE);
-        setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
+        setHeight(-1, Sizeable.UNITS_PIXELS);
 
         titleLayout = new HorizontalLayout();
-/*
-        titleLayout.setMargin(true);
-        titleLayout.setSpacing(true);
-*/
-
-//        titleLayout.setStyleName("saneco-subtitle-layout");
 
         final ThemeResource LOGO_SUBTITLE_ICON = new ThemeResource("icons/logo-subtitle-icon.png");
 

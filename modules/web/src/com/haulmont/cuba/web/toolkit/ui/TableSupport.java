@@ -9,15 +9,13 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.vaadin.data.Container;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Component;
-import com.vaadin.data.Container;
 
 import java.util.Collection;
 
-public abstract class TableSupport
-        extends AbstractSelect
-{
+public abstract class TableSupport extends AbstractSelect {
     protected TableSupport() {
     }
 

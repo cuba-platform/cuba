@@ -1,30 +1,21 @@
-/* 
- * Copyright 2009 IT Mill Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+/*
+@ITMillApache2LicenseForJavaFiles@
  */
 
 package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.Set;
 
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.DomEvent.Type;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
@@ -39,6 +30,42 @@ import com.vaadin.terminal.gwt.client.Util;
 public class VSplitPanel extends ComplexPanel implements Container,
         ContainerResizedListener {
     public static final String CLASSNAME = "v-splitpanel";
+
+    public static final String SPLITTER_CLICK_EVENT_IDENTIFIER = "sp_click";
+
+    private ClickEventHandler clickEventHandler = new ClickEventHandler(this,
+            SPLITTER_CLICK_EVENT_IDENTIFIER) {
+
+        @Override
+        protected <H extends EventHandler> HandlerRegistration registerHandler(
+                H handler, Type<H> type) {
+            if ((Event.getEventsSunk(splitter) & Event.getTypeInt(type
+                    .getName())) != 0) {
+                // If we are already sinking the event for the splitter we do
+                // not want to additionally sink it for the root element
+                return addHandler(handler, type);
+            } else {
+                return addDomHandler(handler, type);
+            }
+        }
+
+        @Override
+        public void onContextMenu(
+                com.google.gwt.event.dom.client.ContextMenuEvent event) {
+            Element target = event.getNativeEvent().getEventTarget().cast();
+            if (splitter.isOrHasChild(target)) {
+                super.onContextMenu(event);
+            }
+        };
+
+        @Override
+        protected void fireClick(NativeEvent event) {
+            Element target = event.getEventTarget().cast();
+            if (splitter.isOrHasChild(target)) {
+                super.fireClick(event);
+            }
+        }
+    };
 
     public static final int ORIENTATION_HORIZONTAL = 0;
 
@@ -61,6 +88,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
     private final Element splitter = DOM.createDiv();
 
     private boolean resizing;
+
+    private boolean resized = false;
 
     private int origX;
 
@@ -93,6 +122,9 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     private boolean rendering = false;
 
+    /* The current position of the split handle in either percentages or pixels */
+    private String position;
+
     public VSplitPanel() {
         this(ORIENTATION_HORIZONTAL);
     }
@@ -114,7 +146,6 @@ public class VSplitPanel extends ComplexPanel implements Container,
         setHeight(MIN_SIZE + "px");
         constructDom();
         setOrientation(orientation);
-        DOM.sinkEvents(splitter, (Event.MOUSEEVENTS));
         DOM.sinkEvents(getElement(), (Event.MOUSEEVENTS));
     }
 
@@ -170,6 +201,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             return;
         }
 
+        clickEventHandler.handleEventHandlerRegistration(client);
         if (uidl.hasAttribute("style")) {
             componentStyleNames = uidl.getStringAttribute("style").split(" ");
         } else {
@@ -180,7 +212,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
         setStylenames();
 
-        setSplitPosition(uidl.getStringAttribute("position"));
+        position = uidl.getStringAttribute("position");
+        setSplitPosition(position);
 
         final Paintable newFirstChild = client.getPaintable(uidl
                 .getChildUIDL(0));
@@ -211,6 +244,11 @@ public class VSplitPanel extends ComplexPanel implements Container,
                 }
             });
         }
+
+        // This is needed at least for cases like #3458 to take
+        // appearing/disappearing scrollbars into account.
+        client.runDescendentsLayout(this);
+
         rendering = false;
 
     }
@@ -224,14 +262,26 @@ public class VSplitPanel extends ComplexPanel implements Container,
     }
 
     private void setSplitPosition(String pos) {
+        if (pos == null) {
+            return;
+        }
+
+        // Convert percentage values to pixels
+        if (pos.indexOf("%") > 0) {
+            pos = Float.parseFloat(pos.substring(0, pos.length() - 1))
+                    / 100
+                    * (orientation == ORIENTATION_HORIZONTAL ? getOffsetWidth()
+                            : getOffsetHeight()) + "px";
+        }
+
         if (orientation == ORIENTATION_HORIZONTAL) {
             DOM.setStyleAttribute(splitter, "left", pos);
         } else {
             DOM.setStyleAttribute(splitter, "top", pos);
         }
+
         iLayout();
         client.runDescendentsLayout(this);
-
     }
 
     /*
@@ -352,6 +402,14 @@ public class VSplitPanel extends ComplexPanel implements Container,
         case Event.ONMOUSEDOWN:
             onMouseDown(event);
             break;
+        case Event.ONMOUSEOUT:
+            // Dragging curtain interferes with click events if added in
+            // mousedown so we add it only when needed i.e., if the mouse moves
+            // outside the splitter.
+            if (resizing) {
+                showDraggingCurtain();
+            }
+            break;
         case Event.ONMOUSEUP:
             if (resizing) {
                 onMouseUp(event);
@@ -360,6 +418,14 @@ public class VSplitPanel extends ComplexPanel implements Container,
         case Event.ONCLICK:
             resizing = false;
             break;
+        }
+        // Only fire click event listeners if the splitter isn't moved
+        if (!resized) {
+            super.onBrowserEvent(event);
+        } else if (DOM.eventGetType(event) == Event.ONMOUSEUP) {
+            // Reset the resized flag after a mouseup has occured so the next
+            // mousedown/mouseup can be interpreted as a click.
+            resized = false;
         }
     }
 
@@ -370,9 +436,6 @@ public class VSplitPanel extends ComplexPanel implements Container,
         final Element trg = DOM.eventGetTarget(event);
         if (trg == splitter || trg == DOM.getChild(splitter, 0)) {
             resizing = true;
-            if (BrowserInfo.get().isGecko()) {
-                showDraggingCurtain();
-            }
             DOM.setCapture(getElement());
             origX = DOM.getElementPropertyInt(splitter, "offsetLeft");
             origY = DOM.getElementPropertyInt(splitter, "offsetTop");
@@ -395,9 +458,6 @@ public class VSplitPanel extends ComplexPanel implements Container,
             onVerticalMouseMove(y);
             break;
         }
-        iLayout();
-        // TODO Check if this is needed
-        client.runDescendentsLayout(this);
 
     }
 
@@ -409,8 +469,23 @@ public class VSplitPanel extends ComplexPanel implements Container,
         if (newX + getSplitterSize() > getOffsetWidth()) {
             newX = getOffsetWidth() - getSplitterSize();
         }
-        DOM.setStyleAttribute(splitter, "left", newX + "px");
-        updateSplitPosition(newX);
+
+        if (position.indexOf("%") > 0) {
+            float pos = newX;
+            // 100% needs special handling
+            if (newX + getSplitterSize() >= getOffsetWidth()) {
+                pos = getOffsetWidth();
+            }
+            position = pos / getOffsetWidth() * 100 + "%";
+        } else {
+            position = newX + "px";
+        }
+
+        setSplitPosition(newX + "px");
+
+        if (origX != newX) {
+            resized = true;
+        }
     }
 
     private void onVerticalMouseMove(int y) {
@@ -422,17 +497,31 @@ public class VSplitPanel extends ComplexPanel implements Container,
         if (newY + getSplitterSize() > getOffsetHeight()) {
             newY = getOffsetHeight() - getSplitterSize();
         }
-        DOM.setStyleAttribute(splitter, "top", newY + "px");
-        updateSplitPosition(newY);
+
+        if (position.indexOf("%") > 0) {
+            float pos = newY;
+            // 100% needs special handling
+            if (newY + getSplitterSize() >= getOffsetHeight()) {
+                pos = getOffsetHeight();
+            }
+            position = pos / getOffsetHeight() * 100 + "%";
+        } else {
+            position = newY + "px";
+        }
+
+        setSplitPosition(newY + "px");
+
+        if (origY != newY) {
+            resized = true;
+        }
     }
 
     public void onMouseUp(Event event) {
         DOM.releaseCapture(getElement());
-        if (BrowserInfo.get().isGecko()) {
-            hideDraggingCurtain();
-        }
+        hideDraggingCurtain();
         resizing = false;
         onMouseMove(event);
+        updateSplitPositionToServer();
     }
 
     /**
@@ -440,6 +529,9 @@ public class VSplitPanel extends ComplexPanel implements Container,
      * iframe.
      */
     private void showDraggingCurtain() {
+        if (!isDraggingCurtainRequired()) {
+            return;
+        }
         if (draggingCurtain == null) {
             draggingCurtain = DOM.createDiv();
             DOM.setStyleAttribute(draggingCurtain, "position", "absolute");
@@ -449,8 +541,18 @@ public class VSplitPanel extends ComplexPanel implements Container,
             DOM.setStyleAttribute(draggingCurtain, "height", "100%");
             DOM.setStyleAttribute(draggingCurtain, "zIndex", ""
                     + VOverlay.Z_INDEX);
-            DOM.appendChild(RootPanel.getBodyElement(), draggingCurtain);
+
+            DOM.appendChild(wrapper, draggingCurtain);
         }
+    }
+
+    /**
+     * A dragging curtain is required in Gecko and Webkit.
+     *
+     * @return true if the browser requires a dragging curtain
+     */
+    private boolean isDraggingCurtainRequired() {
+        return (BrowserInfo.get().isGecko() || BrowserInfo.get().isWebkit());
     }
 
     /**
@@ -458,7 +560,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
      */
     private void hideDraggingCurtain() {
         if (draggingCurtain != null) {
-            DOM.removeChild(RootPanel.getBodyElement(), draggingCurtain);
+            DOM.removeChild(wrapper, draggingCurtain);
             draggingCurtain = null;
         }
     }
@@ -492,9 +594,9 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
         this.height = height;
         super.setHeight(height);
+
         if (!rendering && client != null) {
-            iLayout();
-            client.runDescendentsLayout(this);
+            setSplitPosition(position);
         }
     }
 
@@ -506,9 +608,9 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
         this.width = width;
         super.setWidth(width);
+
         if (!rendering && client != null) {
-            iLayout();
-            client.runDescendentsLayout(this);
+            setSplitPosition(position);
         }
     }
 
@@ -563,12 +665,16 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     /**
      * Updates the new split position back to server.
-     *
-     * @param pos
-     *            The new position of the split handle.
      */
-    private void updateSplitPosition(int pos) {
-        // We always send pixel values to server
+    private void updateSplitPositionToServer() {
+        int pos = 0;
+        if (position.indexOf("%") > 0) {
+            pos = Float.valueOf(position.substring(0, position.length() - 1))
+                    .intValue();
+        } else {
+            pos = Integer
+                    .parseInt(position.substring(0, position.length() - 2));
+        }
         client.updateVariable(id, "position", pos, immediate);
     }
 

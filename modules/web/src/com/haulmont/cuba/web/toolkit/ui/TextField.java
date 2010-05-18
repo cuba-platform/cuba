@@ -11,20 +11,23 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.event.Action;
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.event.ActionManager;
 import com.vaadin.terminal.PaintException;
-import com.haulmont.cuba.web.toolkit.utils.ActionsContainer;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.gwt.client.ui.VTextField;
+import com.vaadin.ui.ClientWidget;
 
 import java.util.Map;
 
 @SuppressWarnings("serial")
+@ClientWidget(VTextField.class)
 public class TextField extends com.vaadin.ui.TextField implements Action.Container {
 
-    protected ActionsContainer actionsContainer = null;
+    protected ActionManager actionsContainer = null;
 
     public void addActionHandler(Action.Handler actionHandler) {
         if (actionsContainer == null) {
-            actionsContainer = new ActionsContainer(this);
+            actionsContainer = new ActionManager(this);
         }
         actionsContainer.addActionHandler(actionHandler);
     }
@@ -32,9 +35,6 @@ public class TextField extends com.vaadin.ui.TextField implements Action.Contain
     public void removeActionHandler(Action.Handler actionHandler) {
         if (actionsContainer != null) {
             actionsContainer.removeActionHandler(actionHandler);
-            if (actionsContainer.getActionHandlers().isEmpty()) {
-                actionsContainer = null;
-            }
         }
     }
 
@@ -42,7 +42,7 @@ public class TextField extends com.vaadin.ui.TextField implements Action.Contain
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
         if (actionsContainer != null) {
-            actionsContainer.paintActions(target);
+            actionsContainer.paintActions(null, target);
         }
     }
 
@@ -50,7 +50,7 @@ public class TextField extends com.vaadin.ui.TextField implements Action.Contain
     public void changeVariables(Object source, Map variables) {
         super.changeVariables(source, variables);
         if (actionsContainer != null) {
-            actionsContainer.changeVariables(variables);
+            actionsContainer.handleActions(variables, this);
         }
     }
 }

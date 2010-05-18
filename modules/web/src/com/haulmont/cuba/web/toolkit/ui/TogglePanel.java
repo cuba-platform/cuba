@@ -10,13 +10,16 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.toolkit.gwt.client.ui.ITogglePanel;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.*;
 
-import java.util.Map;
 import java.lang.reflect.Method;
+import java.util.Map;
 
+@SuppressWarnings("serial")
+@ClientWidget(ITogglePanel.class)
 public class TogglePanel extends Panel {
 
     private boolean expanded = false;
@@ -63,7 +66,9 @@ public class TogglePanel extends Panel {
             target.addAttribute("collapseText", getCollapseText());
         }
 
-        paintActions(target);
+        if (actionManager != null) {
+            actionManager.paintActions(null, target);
+        }
     }
 
     @Override
@@ -181,11 +186,6 @@ public class TogglePanel extends Panel {
     public void setCollapseText(String collapseText) {
         this.collapseText = collapseText;
         requestRepaint();
-    }
-
-    @Override
-    public String getTag() {
-        return "togglepanel";
     }
 
     public void addListener(TogglePanelListener listener) {

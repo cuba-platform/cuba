@@ -1,17 +1,5 @@
-/* 
- * Copyright 2009 IT Mill Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+/*
+@ITMillApache2LicenseForJavaFiles@
  */
 
 package com.vaadin.terminal.gwt.client.ui;
@@ -21,31 +9,46 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.MouseEventDetails;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.ui.dd.DDUtil;
+import com.vaadin.terminal.gwt.client.ui.dd.VAbstractDropHandler;
+import com.vaadin.terminal.gwt.client.ui.dd.VAcceptCallback;
+import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
+import com.vaadin.terminal.gwt.client.ui.dd.VDragEvent;
+import com.vaadin.terminal.gwt.client.ui.dd.VDropHandler;
+import com.vaadin.terminal.gwt.client.ui.dd.VHasDropHandler;
+import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 
 /**
  *
  */
-public class VTree extends FlowPanel implements Paintable {
+public class VTree extends FlowPanel implements Paintable, VHasDropHandler {
 
     public static final String CLASSNAME = "v-tree";
+
+    public static final String ITEM_CLICK_EVENT_ID = "itemClick";
 
     private Set<String> selectedIds = new HashSet<String>();
     private ApplicationConnection client;
     private String paintableId;
     private boolean selectable;
     private boolean isMultiselect;
+    private String currentMouseOverKey;
 
     private final HashMap<String, TreeNode> keyToNode = new HashMap<String, TreeNode>();
 
@@ -63,9 +66,11 @@ public class VTree extends FlowPanel implements Paintable {
 
     private boolean readonly;
 
-    private boolean emitClickEvents;
-
     private boolean rendering;
+
+    private VAbstractDropHandler dropHandler;
+
+    private int dragMode;
 
     public VTree() {
         super();
@@ -118,22 +123,32 @@ public class VTree extends FlowPanel implements Paintable {
 
         disabled = uidl.getBooleanAttribute("disabled");
         readonly = uidl.getBooleanAttribute("readonly");
-        emitClickEvents = uidl.getBooleanAttribute("listenClicks");
+
+        dragMode = uidl.hasAttribute("dragMode") ? uidl
+                .getIntAttribute("dragMode") : 0;
 
         isNullSelectionAllowed = uidl.getBooleanAttribute("nullselect");
 
         clear();
-        
+
         TreeNode childTree = null;
         for (final Iterator i = uidl.getChildIterator(); i.hasNext();) {
             final UIDL childUidl = (UIDL) i.next();
             if ("actions".equals(childUidl.getTag())) {
                 updateActionMap(childUidl);
                 continue;
+            } else if ("-ac".equals(childUidl.getTag())) {
+                updateDropHandler(childUidl);
+                continue;
             }
             childTree = new TreeNode();
-            this.add(childTree);
+            if (childTree.ie6compatnode != null) {
+                this.add(childTree);
+            }
             childTree.updateFromUIDL(childUidl, client);
+            if (childTree.ie6compatnode == null) {
+                this.add(childTree);
+            }
         }
 
         if (childTree != null) {
@@ -148,6 +163,124 @@ public class VTree extends FlowPanel implements Paintable {
 
         rendering = false;
 
+    }
+
+    private void updateTreeRelatedDragData(VDragEvent drag) {
+
+        currentMouseOverKey = findCurrentMouseOverKey(drag.getElementOver());
+
+        drag.getDropDetails().put("itemIdOver", currentMouseOverKey);
+        if (currentMouseOverKey != null) {
+            TreeNode treeNode = keyToNode.get(currentMouseOverKey);
+            VerticalDropLocation detail = treeNode.getDropDetail(drag
+                    .getCurrentGwtEvent());
+            Boolean overTreeNode = null;
+            if (treeNode != null && !treeNode.isLeaf()
+                    && detail == VerticalDropLocation.MIDDLE) {
+                overTreeNode = true;
+            }
+            drag.getDropDetails().put("itemIdOverIsNode", overTreeNode);
+            drag.getDropDetails().put("detail", detail);
+        } else {
+            drag.getDropDetails().put("itemIdOverIsNode", null);
+            drag.getDropDetails().put("detail", null);
+        }
+
+    }
+
+    private String findCurrentMouseOverKey(Element elementOver) {
+        TreeNode treeNode = Util.findWidget(elementOver, TreeNode.class);
+        return treeNode == null ? null : treeNode.key;
+    }
+
+    private void updateDropHandler(UIDL childUidl) {
+        if (dropHandler == null) {
+            dropHandler = new VAbstractDropHandler() {
+
+                @Override
+                public void dragEnter(VDragEvent drag) {
+                }
+
+                @Override
+                protected void dragAccepted(final VDragEvent drag) {
+
+                }
+
+                @Override
+                public void dragOver(final VDragEvent currentDrag) {
+                    final Object oldIdOver = currentDrag.getDropDetails().get(
+                            "itemIdOver");
+                    final VerticalDropLocation oldDetail = (VerticalDropLocation) currentDrag
+                            .getDropDetails().get("detail");
+
+                    updateTreeRelatedDragData(currentDrag);
+                    final VerticalDropLocation detail = (VerticalDropLocation) currentDrag
+                            .getDropDetails().get("detail");
+                    boolean nodeHasChanged = (currentMouseOverKey != null && currentMouseOverKey != oldIdOver)
+                            || (currentMouseOverKey == null && oldIdOver != null);
+                    boolean detailHasChanded = (detail != null && detail != oldDetail)
+                            || (detail == null && oldDetail != null);
+
+                    if (nodeHasChanged || detailHasChanded) {
+                        final String newKey = currentMouseOverKey;
+                        TreeNode treeNode = keyToNode.get(oldIdOver);
+                        if (treeNode != null) {
+                            // clear old styles
+                            treeNode.emphasis(null);
+                        }
+                        if (newKey != null) {
+                            validate(new VAcceptCallback() {
+                                public void accepted(VDragEvent event) {
+                                    VerticalDropLocation curDetail = (VerticalDropLocation) event
+                                            .getDropDetails().get("detail");
+                                    if (curDetail == detail
+                                            && newKey
+                                                    .equals(currentMouseOverKey)) {
+                                        keyToNode.get(newKey).emphasis(detail);
+                                    }
+                                    /*
+                                     * Else drag is already on a different
+                                     * node-detail pair, new criteria check is
+                                     * going on
+                                     */
+                                }
+                            }, currentDrag);
+
+                        }
+                    }
+
+                }
+
+                @Override
+                public void dragLeave(VDragEvent drag) {
+                    cleanUp();
+                }
+
+                private void cleanUp() {
+                    if (currentMouseOverKey != null) {
+                        keyToNode.get(currentMouseOverKey).emphasis(null);
+                        currentMouseOverKey = null;
+                    }
+                }
+
+                @Override
+                public boolean drop(VDragEvent drag) {
+                    cleanUp();
+                    return super.drop(drag);
+                }
+
+                @Override
+                public Paintable getPaintable() {
+                    return VTree.this;
+                }
+
+                public ApplicationConnection getApplicationConnection() {
+                    return client;
+                }
+
+            };
+        }
+        dropHandler.updateAcceptRules(childUidl);
     }
 
     private void handleUpdate(UIDL uidl) {
@@ -187,19 +320,20 @@ public class VTree extends FlowPanel implements Paintable {
             selectedIds.remove(treeNode.key);
             treeNode.setSelected(false);
         }
-        client.updateVariable(paintableId, "selected", selectedIds.toArray(),
-                immediate);
+
+        client.updateVariable(paintableId, "selected", selectedIds
+                .toArray(new String[selectedIds.size()]), immediate);
     }
 
     public boolean isSelected(TreeNode treeNode) {
         return selectedIds.contains(treeNode.key);
     }
 
-    protected class TreeNode extends SimplePanel implements ActionOwner {
+    public class TreeNode extends SimplePanel implements ActionOwner {
 
         public static final String CLASSNAME = "v-tree-node";
 
-        String key;
+        public String key;
 
         private String[] actionKeys = null;
 
@@ -217,10 +351,90 @@ public class VTree extends FlowPanel implements Paintable {
 
         private Element ie6compatnode;
 
+        private Event mouseDownEvent;
+
+        private int cachedHeight = -1;
+
         public TreeNode() {
             constructDom();
-            sinkEvents(Event.ONCLICK | Event.ONDBLCLICK | Event.ONMOUSEUP
+            sinkEvents(Event.ONCLICK | Event.ONDBLCLICK | Event.MOUSEEVENTS
                     | Event.ONCONTEXTMENU);
+        }
+
+        public VerticalDropLocation getDropDetail(NativeEvent currentGwtEvent) {
+            if (cachedHeight < 0) {
+                /*
+                 * Height is cached to avoid flickering (drop hints may change
+                 * the reported offsetheight -> would change the drop detail)
+                 */
+                cachedHeight = nodeCaptionDiv.getOffsetHeight();
+            }
+            VerticalDropLocation verticalDropLocation = DDUtil
+                    .getVerticalDropLocation(nodeCaptionDiv, cachedHeight,
+                            currentGwtEvent.getClientY(), 0.15);
+            return verticalDropLocation;
+        }
+
+        protected void emphasis(VerticalDropLocation detail) {
+            String base = "v-tree-node-drag-";
+            UIObject.setStyleName(getElement(), base + "top",
+                    VerticalDropLocation.TOP == detail);
+            UIObject.setStyleName(getElement(), base + "bottom",
+                    VerticalDropLocation.BOTTOM == detail);
+            UIObject.setStyleName(getElement(), base + "center",
+                    VerticalDropLocation.MIDDLE == detail);
+            base = "v-tree-node-caption-drag-";
+            UIObject.setStyleName(nodeCaptionDiv, base + "top",
+                    VerticalDropLocation.TOP == detail);
+            UIObject.setStyleName(nodeCaptionDiv, base + "bottom",
+                    VerticalDropLocation.BOTTOM == detail);
+            UIObject.setStyleName(nodeCaptionDiv, base + "center",
+                    VerticalDropLocation.MIDDLE == detail);
+
+            // also add classname to "folder node" into which the drag is
+            // targeted
+
+            TreeNode folder = null;
+            /* Possible parent of this TreeNode will be stored here */
+            TreeNode parentFolder = getParentNode();
+
+            // TODO fix my bugs
+            if (isLeaf()) {
+                folder = parentFolder;
+                // note, parent folder may be null if this is root node => no
+                // folder target exists
+            } else {
+                if (detail == VerticalDropLocation.TOP) {
+                    folder = parentFolder;
+                } else {
+                    folder = this;
+                }
+                // ensure we remove the dragfolder classname from the previous
+                // folder node
+                setDragFolderStyleName(this, false);
+                setDragFolderStyleName(parentFolder, false);
+            }
+            if (folder != null) {
+                setDragFolderStyleName(folder, detail != null);
+            }
+
+        }
+
+        private TreeNode getParentNode() {
+            Widget parent2 = getParent().getParent();
+            if (parent2 instanceof TreeNode) {
+                return (TreeNode) parent2;
+            }
+            return null;
+        }
+
+        private void setDragFolderStyleName(TreeNode folder, boolean add) {
+            if (folder != null) {
+                UIObject.setStyleName(folder.getElement(),
+                        "v-tree-node-dragfolder", add);
+                UIObject.setStyleName(folder.nodeCaptionDiv,
+                        "v-tree-node-caption-dragfolder", add);
+            }
         }
 
         @Override
@@ -231,7 +445,12 @@ public class VTree extends FlowPanel implements Paintable {
             }
             final int type = DOM.eventGetType(event);
             final Element target = DOM.eventGetTarget(event);
-            if (emitClickEvents && target == nodeCaptionSpan
+            final boolean inCaption = target == nodeCaptionSpan
+                    || (icon != null && target == icon.getElement());
+            if (inCaption
+                    && client
+                            .hasEventListeners(VTree.this, ITEM_CLICK_EVENT_ID)
+
                     && (type == Event.ONDBLCLICK || type == Event.ONMOUSEUP)) {
                 fireClick(event);
             }
@@ -239,13 +458,49 @@ public class VTree extends FlowPanel implements Paintable {
                 if (getElement() == target || ie6compatnode == target) {
                     // state change
                     toggleState();
-                } else if (!readonly && target == nodeCaptionSpan) {
+                } else if (!readonly && inCaption) {
                     // caption click = selection change && possible click event
                     toggleSelection();
                 }
                 DOM.eventCancelBubble(event, true);
             } else if (type == Event.ONCONTEXTMENU) {
                 showContextMenu(event);
+            }
+
+            if (dragMode != 0 || dropHandler != null) {
+                if (type == Event.ONMOUSEDOWN) {
+                    if (nodeCaptionDiv.isOrHasChild(event.getTarget())) {
+                        if (dragMode > 0
+                                && event.getButton() == NativeEvent.BUTTON_LEFT) {
+                            event.preventDefault(); // prevent text selection
+                            mouseDownEvent = event;
+                        }
+                    }
+                } else if (type == Event.ONMOUSEMOVE
+                        || type == Event.ONMOUSEOUT) {
+
+                    if (mouseDownEvent != null) {
+                        // start actual drag on slight move when mouse is down
+                        VTransferable t = new VTransferable();
+                        t.setDragSource(VTree.this);
+                        t.setData("itemId", key);
+                        VDragEvent drag = VDragAndDropManager.get().startDrag(
+                                t, mouseDownEvent, true);
+
+                        drag.createDragImage(nodeCaptionDiv, true);
+                        event.stopPropagation();
+
+                        mouseDownEvent = null;
+                    }
+                } else if (type == Event.ONMOUSEUP) {
+                    mouseDownEvent = null;
+                }
+                if (type == Event.ONMOUSEOVER) {
+                    mouseDownEvent = null;
+                    currentMouseOverKey = key;
+                    event.stopPropagation();
+                }
+
             }
         }
 
@@ -273,12 +528,14 @@ public class VTree extends FlowPanel implements Paintable {
 
         protected void constructDom() {
             // workaround for a very weird IE6 issue #1245
-            ie6compatnode = DOM.createDiv();
-            setStyleName(ie6compatnode, CLASSNAME + "-ie6compatnode");
-            DOM.setInnerText(ie6compatnode, " ");
-            DOM.appendChild(getElement(), ie6compatnode);
+            if (BrowserInfo.get().isIE6()) {
+                ie6compatnode = DOM.createDiv();
+                setStyleName(ie6compatnode, CLASSNAME + "-ie6compatnode");
+                DOM.setInnerText(ie6compatnode, " ");
+                DOM.appendChild(getElement(), ie6compatnode);
 
-            DOM.sinkEvents(ie6compatnode, Event.ONCLICK);
+                DOM.sinkEvents(ie6compatnode, Event.ONCLICK);
+            }
 
             nodeCaptionDiv = DOM.createDiv();
             DOM.setElementProperty(nodeCaptionDiv, "className", CLASSNAME
@@ -315,6 +572,13 @@ public class VTree extends FlowPanel implements Paintable {
                 addStyleName(CLASSNAME + "-leaf");
             }
             addStyleName(CLASSNAME);
+            if (uidl.hasAttribute("style")) {
+                addStyleName(CLASSNAME + "-" + uidl.getStringAttribute("style"));
+                Widget.setStyleName(nodeCaptionDiv, CLASSNAME + "-caption-"
+                        + uidl.getStringAttribute("style"), true);
+                childNodeContainer.addStyleName(CLASSNAME + "-children-"
+                        + uidl.getStringAttribute("style"));
+            }
 
             if (uidl.getBooleanAttribute("expanded") && !getState()) {
                 setState(true, false);
@@ -345,6 +609,10 @@ public class VTree extends FlowPanel implements Paintable {
             if (BrowserInfo.get().isIE6() && isAttached()) {
                 fixWidth();
             }
+        }
+
+        public boolean isLeaf() {
+            return getStyleName().contains("leaf");
         }
 
         private void setState(boolean state, boolean notifyServer) {
@@ -400,8 +668,13 @@ public class VTree extends FlowPanel implements Paintable {
                     continue;
                 }
                 childTree = new TreeNode();
-                childNodeContainer.add(childTree);
+                if (ie6compatnode != null) {
+                    childNodeContainer.add(childTree);
+                }
                 childTree.updateFromUIDL(childUidl, client);
+                if (ie6compatnode == null) {
+                    childNodeContainer.add(childTree);
+                }
             }
             if (childTree != null) {
                 childTree.addStyleName("last");
@@ -482,9 +755,23 @@ public class VTree extends FlowPanel implements Paintable {
         @Override
         public void onAttach() {
             super.onAttach();
-            if (BrowserInfo.get().isIE6()) {
+            if (ie6compatnode != null) {
                 fixWidth();
             }
         }
+
+        @Override
+        protected void onDetach() {
+            super.onDetach();
+            client.getContextMenu().ensureHidden(this);
+        }
+    }
+
+    public VDropHandler getDropHandler() {
+        return dropHandler;
+    }
+
+    public TreeNode getNodeByKey(String key) {
+        return keyToNode.get(key);
     }
 }

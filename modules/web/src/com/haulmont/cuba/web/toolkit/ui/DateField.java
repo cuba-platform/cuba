@@ -11,9 +11,13 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.terminal.gwt.client.ui.VPopupCalendar;
+import com.vaadin.ui.ClientWidget;
 
 import java.util.Date;
 
+@SuppressWarnings("serial")
+@ClientWidget(VPopupCalendar.class)
 public class DateField extends com.vaadin.ui.DateField {
     public DateField() {
     }

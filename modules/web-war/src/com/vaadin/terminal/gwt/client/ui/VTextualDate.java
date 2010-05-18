@@ -1,17 +1,5 @@
-/* 
- * Copyright 2009 IT Mill Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+/*
+@ITMillApache2LicenseForJavaFiles@
  */
 
 package com.vaadin.terminal.gwt.client.ui;
@@ -31,6 +19,7 @@ import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.ClientExceptionHandler;
 import com.vaadin.terminal.gwt.client.ContainerResizedListener;
+import com.vaadin.terminal.gwt.client.EventId;
 import com.vaadin.terminal.gwt.client.Focusable;
 import com.vaadin.terminal.gwt.client.LocaleNotLoadedException;
 import com.vaadin.terminal.gwt.client.LocaleService;
@@ -53,6 +42,8 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
     protected int fieldExtraWidth = -1;
 
+    private boolean lenient;
+
     public VTextualDate() {
         super();
         text = new TextBox();
@@ -65,12 +56,22 @@ public class VTextualDate extends VDateField implements Paintable, Field,
             public void onFocus(FocusEvent event) {
                 text.addStyleName(VTextField.CLASSNAME + "-"
                         + VTextField.CLASSNAME_FOCUS);
+                if (client != null
+                        && client.hasEventListeners(VTextualDate.this,
+                                EventId.FOCUS)) {
+                    client.updateVariable(id, EventId.FOCUS, "", true);
+                }
             }
         });
         text.addBlurHandler(new BlurHandler() {
             public void onBlur(BlurEvent event) {
                 text.removeStyleName(VTextField.CLASSNAME + "-"
                         + VTextField.CLASSNAME_FOCUS);
+                if (client != null
+                        && client.hasEventListeners(VTextualDate.this,
+                                EventId.BLUR)) {
+                    client.updateVariable(id, EventId.BLUR, "", true);
+                }
             }
         });
         add(text);
@@ -78,10 +79,10 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-
         int origRes = currentResolution;
+        String oldLocale = currentLocale;
         super.updateFromUIDL(uidl, client);
-        if (origRes != currentResolution) {
+        if (origRes != currentResolution || oldLocale != currentLocale) {
             // force recreating format string
             formatStr = null;
         }
@@ -89,11 +90,20 @@ public class VTextualDate extends VDateField implements Paintable, Field,
             formatStr = uidl.getStringAttribute("format");
         }
 
+        lenient = !uidl.getBooleanAttribute("strict");
+
         buildDate();
         // not a FocusWidget -> needs own tabindex handling
         if (uidl.hasAttribute("tabindex")) {
             text.setTabIndex(uidl.getIntAttribute("tabindex"));
         }
+
+        if (readonly) {
+            text.addStyleDependentName("readonly");
+        } else {
+            text.removeStyleDependentName("readonly");
+        }
+
     }
 
     protected String getFormatString() {
@@ -155,7 +165,8 @@ public class VTextualDate extends VDateField implements Paintable, Field,
         }
 
         text.setText(dateText);
-        text.setEnabled(enabled && !readonly);
+        text.setEnabled(enabled);
+        text.setReadOnly(readonly);
 
         if (readonly) {
             text.addStyleName("v-readonly");
@@ -170,7 +181,18 @@ public class VTextualDate extends VDateField implements Paintable, Field,
             try {
                 DateTimeFormat format = DateTimeFormat
                         .getFormat(getFormatString());
-                date = format.parse(text.getText());
+                if (lenient) {
+                    date = format.parse(text.getText());
+                    if (date != null) {
+                        // if date value was leniently parsed, normalize text
+                        // presentation
+                        text.setValue(DateTimeFormat.getFormat(
+                                getFormatString()).format(date), false);
+                    }
+                } else {
+                    date = format.parseStrict(text.getText());
+                }
+
                 long stamp = date.getTime();
                 if (stamp == 0) {
                     // If date parsing fails in firefox the stamp will be 0
@@ -296,8 +318,12 @@ public class VTextualDate extends VDateField implements Paintable, Field,
      */
     protected int getFieldExtraWidth() {
         if (fieldExtraWidth < 0) {
-            text.setWidth("0px");
+            text.setWidth("0");
             fieldExtraWidth = text.getOffsetWidth();
+            if (BrowserInfo.get().isFF3()) {
+                // Firefox somehow always leaves the INPUT element 2px wide
+                fieldExtraWidth -= 2;
+            }
         }
         return fieldExtraWidth;
     }

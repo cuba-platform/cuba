@@ -1,7 +1,8 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
+import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollTreeTable;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -10,6 +11,7 @@ import com.vaadin.event.Action;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
+import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Component;
 
 import java.util.*;
@@ -18,14 +20,10 @@ import java.util.*;
  * User: Nikolay Gorodnov
  * Date: 03.06.2009
  */
-public class TreeTable
-        extends Table
-        implements
-        Container.Hierarchical,
-        TreeTableContainer
-{
-    private static final long serialVersionUID = 1309449736003253410L;
 
+@SuppressWarnings("serial")
+@ClientWidget(IScrollTreeTable.class)
+public class TreeTable extends Table implements Container.Hierarchical, TreeTableContainer {
     public TreeTable() {
         setRowHeaderMode(ROW_HEADER_MODE_HIDDEN);
     }
@@ -154,19 +152,18 @@ public class TreeTable
                 cells[CELL_KEY][i] = itemIdMapper.key(id);
                 if (headmode != ROW_HEADER_MODE_HIDDEN) {
                     switch (headmode) {
-                    case ROW_HEADER_MODE_INDEX:
-                        cells[CELL_HEADER][i] = String.valueOf(i + firstIndex
-                                + 1);
-                        break;
-                    default:
-                        cells[CELL_HEADER][i] = getItemCaption(id);
+                        case ROW_HEADER_MODE_INDEX:
+                            cells[CELL_HEADER][i] = String.valueOf(i + firstIndex
+                                    + 1);
+                            break;
+                        default:
+                            cells[CELL_HEADER][i] = getItemCaption(id);
                     }
                     cells[CELL_ICON][i] = getItemIcon(id);
                 }
 
                 if (cols > 0 && !((TreeTableContainer) items)
-                        .isCaption(id))
-                {
+                        .isCaption(id)) {
                     for (int j = 0; j < cols; j++) {
                         if (isColumnCollapsed(colids[j])) {
                             continue;
@@ -201,8 +198,7 @@ public class TreeTable
                                 value = pageBuffer[CELL_FIRSTCOL + j][indexInOldBuffer];
                             } else {
                                 if (isGenerated) {
-                                    ColumnGenerator cg = (ColumnGenerator) columnGenerators
-                                            .get(colids[j]);
+                                    ColumnGenerator cg = columnGenerators.get(colids[j]);
                                     value = cg
                                             .generateCell(this, id, colids[j]);
 
@@ -273,14 +269,13 @@ public class TreeTable
     }
 
     @Override
-    protected boolean changeVariables(Map variables) {
+    protected boolean changeVariables(Map<String, Object> variables) {
         boolean clientNeedsContentRefresh = super.changeVariables(variables);
 
         boolean needsResetPageBuffer = false;
 
         //expand selected row
-        if (variables.containsKey("expand"))
-        {
+        if (variables.containsKey("expand")) {
             String key = (String) variables.get("expand");
             Object itemId = itemIdMapper.get(key);
             setExpanded(itemId, false);
@@ -290,8 +285,7 @@ public class TreeTable
         }
 
         //collapse selected row
-        if (variables.containsKey("collapse"))
-        {
+        if (variables.containsKey("collapse")) {
             String key = (String) variables.get("collapse");
             Object itemId = itemIdMapper.get(key);
             setCollapsed(itemId, false);
@@ -314,6 +308,10 @@ public class TreeTable
         // The tab ordering number
         if (getTabIndex() > 0) {
             target.addAttribute("tabindex", getTabIndex());
+        }
+
+        if (getDragMode() != TableDragMode.NONE) {
+            target.addAttribute("dragmode", getDragMode().ordinal());
         }
 
         // Initialize temps
@@ -598,11 +596,10 @@ public class TreeTable
         paintCollapsedColumns(target);
 
         paintVisibleColumns(target, colheads);
-    }
 
-    @Override
-    public String getTag() {
-        return "treetable";
+        if (getDropHandler() != null) {
+            getDropHandler().getAcceptCriterion().paint(target);
+        }
     }
 
     public Collection getChildren(Object itemId) {
@@ -618,8 +615,7 @@ public class TreeTable
     }
 
     public boolean setParent(Object itemId, Object newParentId)
-            throws UnsupportedOperationException
-    {
+            throws UnsupportedOperationException {
         return ((Hierarchical) items).setParent(itemId, newParentId);
     }
 
@@ -628,8 +624,7 @@ public class TreeTable
     }
 
     public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed)
-            throws UnsupportedOperationException
-    {
+            throws UnsupportedOperationException {
         return ((Hierarchical) items).setChildrenAllowed(itemId, areChildrenAllowed);
     }
 
@@ -669,7 +664,7 @@ public class TreeTable
     protected void setExpanded(Object itemId, boolean rerender) {
         if (!isExpanded(itemId)) {
             ((TreeTableContainerWrapper) items).setExpanded(itemId);
-            if (rerender)  {
+            if (rerender) {
                 resetPageBuffer();
                 refreshRenderedCells();
                 requestRepaint();

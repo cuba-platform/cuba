@@ -54,7 +54,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected int selectMode = com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
 
-    protected final Set<Object> selectedRowKeys = new HashSet<Object>();
+    protected final Set<String> selectedRowKeys = new HashSet<String>();
 
     protected boolean initializedAndAttached = false;
 
@@ -118,7 +118,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     //Key down navigation
     protected boolean navigation = true;
     protected String selectedKey;
-    protected boolean handlingKeyDown = false;
     protected int scrollPos = 0;
     protected int focusWidgetIndex = -1;
 
@@ -238,10 +237,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
 
         if (uidl.hasVariable("selected")) {
-            final Set selectedKeys = uidl
+            final Set<String> selectedKeys = uidl
                     .getStringArrayVariableAsSet("selected");
             selectedRowKeys.clear();
-            for (Object selectedKey : selectedKeys) {
+            for (final String selectedKey : selectedKeys) {
                 selectedRowKeys.add(selectedKey);
             }
         }
@@ -1814,7 +1813,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         // require changes to "clickEvent" immediateness
                         // also.
                         client.updateVariable(paintableId, "selected",
-                                selectedRowKeys.toArray(), immediate);
+                                selectedRowKeys.toArray(new String[selectedRowKeys.size()]), immediate);
                     }
                 }
             }

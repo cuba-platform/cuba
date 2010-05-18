@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.web.ui;
 
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Window;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
@@ -18,9 +17,11 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.BaseTheme;
 
 import java.util.*;
 
+@SuppressWarnings("serial")
 public class WindowBreadCrumbs extends HorizontalLayout {
 
     public interface Listener {
@@ -118,7 +119,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
             Button button = new Button(window.getCaption(), new BtnClickListener());
-            button.setStyleName(Button.STYLE_LINK);
+            button.setStyleName(BaseTheme.BUTTON_LINK);
 
             btn2win.put(button, window);
 

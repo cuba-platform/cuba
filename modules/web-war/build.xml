@@ -72,41 +72,56 @@
         <build-theme themeDir="${themes.out.dir}/blacklabel" destFile="styles-include.css"/>
         <build-theme themeDir="${themes.out.dir}/peyto" destFile="styles-include.css"/>
 
+    </target>
+
+    <target name="build-module-gwt" depends="base-mod.compile-module">
         <condition property="do-build-gwt" value="true">
             <not>
                 <available file="${widgets.out.dir}"/>
             </not>
         </condition>
-
         <antcall target="build-gwt"/>
     </target>
 
+    <path id="compile-gwt-cp">
+        <pathelement location="${prod.out.dir}/global"/>
+        <pathelement location="${prod.out.dir}/core"/>
+        <pathelement location="${prod.out.dir}/gui"/>
+        <pathelement location="${prod.out.dir}/web"/>
+        <pathelement location="${prod.out.dir}/web-war"/>
+        <pathelement location="${java.src.dir}"/>
+        <pathelement location="${lib.server.dir}/vaadin-${vaadin.version}.jar"/>
+        <pathelement location="${lib.gwt.dir}/gwt-user-${gwt-user.version}.jar"/>
+        <pathelement location="${lib.gwt.dir}/gwt-dev-${gwt-dev.version}.jar"/>
+    </path>
+
     <target name="build-gwt" if="do-build-gwt">
         <echo>==> building GWT module</echo>
-        <java classname="com.google.gwt.dev.Compiler" failonerror="yes" fork="yes" maxmemory="128m">
+        <java classname="com.google.gwt.dev.Compiler" failonerror="yes" fork="yes" maxmemory="512m">
+            <classpath refid="compile-gwt-cp" />
             <arg value="-war"/>
             <arg value="${widgets.out.dir}"/>
+            <arg value="-style" />
+            <arg value="OBF" />
             <arg value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>
-            <classpath>
-                <pathelement path="${java.src.dir}"/>
-                <pathelement location="${lib.server.dir}/vaadin-${vaadin.version}.jar"/>
-                <pathelement location="${lib.gwt.dir}/gwt-user-${gwt-user.version}.jar"/>
-                <pathelement location="${lib.gwt.dir}/gwt-dev-windows-${gwt-dev-windows.version}.jar"/>
-            </classpath>
+            <jvmarg value="-Xss8M"/>
+            <jvmarg value="-XX:MaxPermSize=256M"/>
+            <jvmarg value="-Djava.awt.headless=true"/>
         </java>
     </target>
 
     <target name="run-in-hosted-mode">
-        <java failonerror="true" fork="true" classname="com.google.gwt.dev.HostedMode">
+        <java failonerror="true" fork="true" classname="com.google.gwt.dev.DevMode">
             <classpath>
                 <pathelement path="${java.src.dir}"/>
-                <pathelement path="d:/exchange/gwt1.7"/>
-                <pathelement location="d:/exchange/gwt1.7/gwt-dev-windows.jar"/>
+                <pathelement path="d:/exchange/gwt-2.0.3"/>
+                <pathelement location="d:/exchange/gwt-2.0.3/gwt-dev.jar"/>
                 <pathelement location="${lib.server.dir}/vaadin-${vaadin.version}.jar"/>
                 <pathelement location="${lib.gwt.dir}/gwt-user-${gwt-user.version}.jar"/>
-                <pathelement location="${lib.gwt.dir}/gwt-dev-windows-${gwt-dev-windows.version}.jar"/>
+                <pathelement location="${lib.gwt.dir}/gwt-dev-windows-${gwt-dev.version}.jar"/>
             </classpath>
             <jvmarg value="-Xmx256M"/>
+            <arg value="-noserver"/>
             <arg value="-startupUrl"/>
             <arg value="/cuba"/>
             <arg value="-port"/>

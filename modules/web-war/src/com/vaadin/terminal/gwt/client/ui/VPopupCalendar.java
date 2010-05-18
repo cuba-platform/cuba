@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 IT Mill Ltd.
+ * Copyright 2010 IT Mill Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -69,14 +69,25 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
 
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        boolean lastReadOnlyState = readonly;
         super.updateFromUIDL(uidl, client);
-        addStyleName(CLASSNAME + "-popupcalendar");
         popup.setStyleName(VDateField.CLASSNAME + "-popup "
                 + VDateField.CLASSNAME + "-"
                 + resolutionToString(currentResolution));
         if (date != null) {
             calendar.updateCalendar();
         }
+
+        if (lastReadOnlyState != readonly) {
+            updateWidth();
+        }
+
+    }
+
+    @Override
+    public void setStyleName(String style) {
+        // make sure the style is there before size calculation
+        super.setStyleName(style + " " + CLASSNAME + "-popupcalendar");
     }
 
     public void onClick(ClickEvent event) {
@@ -90,19 +101,36 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
                 public void setPosition(int offsetWidth, int offsetHeight) {
                     final int w = offsetWidth;
                     final int h = offsetHeight;
+                    final int browserWindowWidth = Window.getClientWidth()
+                            + Window.getScrollLeft();
+                    final int browserWindowHeight = Window.getClientHeight()
+                            + Window.getScrollTop();
                     int t = calendarToggle.getAbsoluteTop();
                     int l = calendarToggle.getAbsoluteLeft();
-                    if (l + w > Window.getClientWidth()
-                            + Window.getScrollLeft()) {
-                        l = Window.getClientWidth() + Window.getScrollLeft()
-                                - w;
+
+                    // Add a little extra space to the right to avoid
+                    // problems with IE6/IE7 scrollbars and to make it look
+                    // nicer.
+                    int extraSpace = 30;
+
+                    boolean overflowRight = false;
+                    if (l + +w + extraSpace > browserWindowWidth) {
+                        overflowRight = true;
+                        // Part of the popup is outside the browser window
+                        // (to the right)
+                        l = browserWindowWidth - w - extraSpace;
                     }
-                    if (t + h + calendarToggle.getOffsetHeight() + 30 > Window
-                            .getClientHeight()
-                            + Window.getScrollTop()) {
-                        t = Window.getClientHeight() + Window.getScrollTop()
-                                - h - calendarToggle.getOffsetHeight() - 30;
-                        l += calendarToggle.getOffsetWidth();
+
+                    if (t + h + calendarToggle.getOffsetHeight() + 30 > browserWindowHeight) {
+                        // Part of the popup is outside the browser window
+                        // (below)
+                        t = browserWindowHeight - h
+                                - calendarToggle.getOffsetHeight() - 30;
+                        if (!overflowRight) {
+                            // Show to the right of the popup button unless we
+                            // are in the lower right corner of the screen
+                            l += calendarToggle.getOffsetWidth();
+                        }
                     }
 
                     // fix size

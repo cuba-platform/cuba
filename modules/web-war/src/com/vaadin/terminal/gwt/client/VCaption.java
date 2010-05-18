@@ -1,17 +1,5 @@
 /*
- * Copyright 2009 IT Mill Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+@ITMillApache2LicenseForJavaFiles@
  */
 
 package com.vaadin.terminal.gwt.client;
@@ -52,8 +40,6 @@ public class VCaption extends HTML {
     protected static final String ATTRIBUTE_ERROR = "error";
     protected static final String ATTRIBUTE_HIDEERRORS = "hideErrors";
 
-    private boolean readonly = false;
-
     /**
      *
      * @param component
@@ -65,6 +51,11 @@ public class VCaption extends HTML {
         super();
         this.client = client;
         owner = component;
+
+        if (client != null && owner != null) {
+            setOwnerPid(getElement(), client.getPid(owner));
+        }
+
         setStyleName(CLASSNAME);
         sinkEvents(VTooltip.TOOLTIP_EVENTS);
 
@@ -80,10 +71,10 @@ public class VCaption extends HTML {
     public boolean updateCaption(UIDL uidl) {
         setVisible(!uidl.getBooleanAttribute("invisible"));
 
-        readonly = uidl.getBooleanAttribute("readonly");
-
         boolean wasPlacedAfterComponent = placedAfterComponent;
 
+        // Caption is placed after component unless there is some part which
+        // moves it above.
         placedAfterComponent = true;
 
         String style = CLASSNAME;
@@ -100,15 +91,23 @@ public class VCaption extends HTML {
 
         setStyleName(style);
 
-        if (uidl.hasAttribute(ATTRIBUTE_ICON)) {
+        boolean hasIcon = uidl.hasAttribute(ATTRIBUTE_ICON);
+        boolean hasText = uidl.hasAttribute(ATTRIBUTE_CAPTION);
+        boolean hasDescription = uidl.hasAttribute(ATTRIBUTE_DESCRIPTION);
+        boolean showRequired = uidl.getBooleanAttribute(ATTRIBUTE_REQUIRED);
+        boolean showError = uidl.hasAttribute(ATTRIBUTE_ERROR)
+                && !uidl.getBooleanAttribute(ATTRIBUTE_HIDEERRORS);
+
+        if (hasIcon) {
             if (icon == null) {
                 icon = new Icon(client);
-                icon.setWidth("0px");
-                icon.setHeight("0px");
+                icon.setWidth("0");
+                icon.setHeight("0");
 
                 DOM.insertChild(getElement(), icon.getElement(),
                         getInsertPosition(ATTRIBUTE_ICON));
             }
+            // Icon forces the caption to be above the component
             placedAfterComponent = false;
 
             iconOnloadHandled = false;
@@ -120,7 +119,11 @@ public class VCaption extends HTML {
             icon = null;
         }
 
-        if (uidl.hasAttribute(ATTRIBUTE_CAPTION)) {
+        if (hasText) {
+            // A caption text should be shown if the attribute is set
+            // If the caption is null the ATTRIBUTE_CAPTION should not be set to
+            // avoid ending up here.
+
             if (captionText == null) {
                 captionText = DOM.createDiv();
                 captionText.setClassName("v-captiontext");
@@ -131,19 +134,29 @@ public class VCaption extends HTML {
 
             // Update caption text
             String c = uidl.getStringAttribute(ATTRIBUTE_CAPTION);
-            if (c == null) {
-                c = "";
+            // A text forces the caption to be above the component.
+            placedAfterComponent = false;
+            if (c == null || c.trim().equals("")) {
+                // Not sure if c even can be null. Should not.
+
+                // This is required to ensure that the caption uses space in all
+                // browsers when it is set to the empty string. If there is an
+                // icon, error indicator or required indicator they will ensure
+                // that space is reserved.
+                if (!hasIcon && !showRequired && !showError) {
+                    captionText.setInnerHTML("&nbsp;");
+                }
             } else {
-                placedAfterComponent = false;
+                DOM.setInnerText(captionText, c);
             }
-            DOM.setInnerText(captionText, c);
+
         } else if (captionText != null) {
             // Remove existing
             DOM.removeChild(getElement(), captionText);
             captionText = null;
         }
 
-        if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)) {
+        if (hasDescription) {
             if (captionText != null) {
                 addStyleDependentName("hasdescription");
             } else {
@@ -151,8 +164,8 @@ public class VCaption extends HTML {
             }
         }
 
-        if (uidl.getBooleanAttribute(ATTRIBUTE_REQUIRED)) {
-            if (requiredFieldIndicator == null && !readonly) {
+        if (showRequired) {
+            if (requiredFieldIndicator == null) {
                 requiredFieldIndicator = DOM.createDiv();
                 requiredFieldIndicator
                         .setClassName("v-required-field-indicator");
@@ -167,9 +180,8 @@ public class VCaption extends HTML {
             requiredFieldIndicator = null;
         }
 
-        if (uidl.hasAttribute(ATTRIBUTE_ERROR)
-                && !uidl.getBooleanAttribute(ATTRIBUTE_HIDEERRORS)) {
-            if (errorIndicatorElement == null && !readonly) {
+        if (showError) {
+            if (errorIndicatorElement == null) {
                 errorIndicatorElement = DOM.createDiv();
                 DOM.setInnerHTML(errorIndicatorElement, "&nbsp;");
                 DOM.setElementProperty(errorIndicatorElement, "className",
@@ -187,8 +199,8 @@ public class VCaption extends HTML {
         if (clearElement == null) {
             clearElement = DOM.createDiv();
             DOM.setStyleAttribute(clearElement, "clear", "both");
-            DOM.setStyleAttribute(clearElement, "width", "0px");
-            DOM.setStyleAttribute(clearElement, "height", "0px");
+            DOM.setStyleAttribute(clearElement, "width", "0");
+            DOM.setStyleAttribute(clearElement, "height", "0");
             DOM.setStyleAttribute(clearElement, "overflow", "hidden");
             DOM.appendChild(getElement(), clearElement);
         }
@@ -359,26 +371,26 @@ public class VCaption extends HTML {
         int h;
 
         if (icon != null) {
-            h = icon.getOffsetHeight();
+            h = Util.getRequiredHeight(icon.getElement());
             if (h > height) {
                 height = h;
             }
         }
 
         if (captionText != null) {
-            h = captionText.getOffsetHeight();
+            h = Util.getRequiredHeight(captionText);
             if (h > height) {
                 height = h;
             }
         }
         if (requiredFieldIndicator != null) {
-            h = requiredFieldIndicator.getOffsetHeight();
+            h = Util.getRequiredHeight(requiredFieldIndicator);
             if (h > height) {
                 height = h;
             }
         }
         if (errorIndicatorElement != null) {
-            h = errorIndicatorElement.getOffsetHeight();
+            h = Util.getRequiredHeight(errorIndicatorElement);
             if (h > height) {
                 height = h;
             }
@@ -455,5 +467,19 @@ public class VCaption extends HTML {
     protected Element getTextElement() {
         return captionText;
     }
+
+    public static String getCaptionOwnerPid(Element e) {
+        return getOwnerPid(e);
+    }
+
+    private native static void setOwnerPid(Element el, String pid)
+    /*-{
+        el.vOwnerPid = pid;
+    }-*/;
+
+    public native static String getOwnerPid(Element el)
+    /*-{
+        return el.vOwnerPid;
+    }-*/;
 
 }

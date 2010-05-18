@@ -10,15 +10,18 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.gwt.client.ui.VOptionGroup;
+import com.vaadin.ui.ClientWidget;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings("serial")
+@ClientWidget(VOptionGroup.class)
 public class OptionGroup extends com.vaadin.ui.OptionGroup {
     protected Set<Object> disabledOptions = null;
 

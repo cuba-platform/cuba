@@ -18,6 +18,7 @@ import org.dom4j.Element;
 
 import java.util.*;
 
+@SuppressWarnings("serial")
 public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         implements SplitPanel, Component.HasSettings
 {
@@ -113,8 +114,8 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         Element e = element.element("position");
         if (e == null)
             e = element.addElement("position");
-        e.addAttribute("value", String.valueOf(pos));
-        e.addAttribute("unit", String.valueOf(posUnit));
+        e.addAttribute("value", String.valueOf(getSplitPosition()));
+        e.addAttribute("unit", String.valueOf(getSplitPositionUnit()));
         return true;
     }
 
@@ -125,9 +126,5 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
-    }
-
-    public int getSplitPosition() {
-        return pos;
     }
 }

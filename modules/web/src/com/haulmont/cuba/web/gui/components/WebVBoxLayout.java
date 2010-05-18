@@ -11,16 +11,15 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
+import com.vaadin.terminal.gwt.client.ui.VVerticalLayout;
+import com.vaadin.ui.ClientWidget;
 
+@SuppressWarnings("serial")
+@ClientWidget(VVerticalLayout.class)
 public class WebVBoxLayout extends WebAbstractContainer implements BoxLayout {
 
     public WebVBoxLayout() {
         setWidth("100%");
-    }
-
-    @Override
-    public String getTag() {
-        return "verticallayout";
     }
 
     public void expand(Component component, String height, String width) {

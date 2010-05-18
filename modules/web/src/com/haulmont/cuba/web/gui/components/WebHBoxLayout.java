@@ -11,13 +11,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
+import com.vaadin.terminal.gwt.client.ui.VHorizontalLayout;
+import com.vaadin.ui.ClientWidget;
 
+@SuppressWarnings("serial")
+@ClientWidget(VHorizontalLayout.class)
 public class WebHBoxLayout extends WebAbstractContainer implements BoxLayout {
-    @Override
-    public String getTag() {
-        return "horizontallayout";
-    }
-
     public void expand(Component component, String height, String width) {
         final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
         WebComponentsHelper.expand(this, expandedComponent, height, width);

@@ -1,17 +1,5 @@
 /*
- * Copyright 2009 IT Mill Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+@ITMillApache2LicenseForJavaFiles@
  */
 
 package com.vaadin.terminal.gwt.client.ui;
@@ -22,12 +10,15 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.TextBoxBase;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.EventId;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
@@ -66,6 +57,7 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
 
     private static final String CLASSNAME_PROMPT = "prompt";
     private static final String ATTR_INPUTPROMPT = "prompt";
+
     private String inputPrompt = null;
     private boolean prompting = false;
 
@@ -77,7 +69,8 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
 
     protected VTextField(Element node) {
         super(node);
-        if (BrowserInfo.get().isIE()) {
+        if (BrowserInfo.get().getIEVersion() > 0
+                && BrowserInfo.get().getIEVersion() < 8) {
             // Fixes IE margin problem (#2058)
             DOM.setStyleAttribute(node, "marginTop", "-1px");
             DOM.setStyleAttribute(node, "marginBottom", "-1px");
@@ -131,13 +124,32 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
                 : null;
         setPrompting(inputPrompt != null && focusedTextField != this
                 && (text == null || text.equals("")));
+
+        final String fieldValue;
         if (prompting) {
-            setText(inputPrompt);
+            fieldValue = inputPrompt;
             addStyleDependentName(CLASSNAME_PROMPT);
         } else {
-            setText(text);
+            fieldValue = text;
             removeStyleDependentName(CLASSNAME_PROMPT);
         }
+        if (BrowserInfo.get().isGecko()) {
+            /*
+             * Gecko is really sluggish when updating input attached to dom.
+             * Some optimizations seems to work much better in Gecko if we
+             * update the actual content lazily when the rest of the DOM has
+             * stabilized. In tests, about ten times better performance is
+             * achieved with this optimization. See for eg. #2898
+             */
+            DeferredCommand.addCommand(new Command() {
+                public void execute() {
+                    setText(fieldValue);
+                }
+            });
+        } else {
+            setText(fieldValue);
+        }
+
         valueBeforeEdit = uidl.getStringVariable("text");
 
         for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
@@ -175,12 +187,37 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
     }
 
     public void onChange(ChangeEvent event) {
+        valueChange(false);
+    }
+
+    /**
+     * Called when the field value might have changed and/or the field was
+     * blurred. These are combined so the blur event is sent in the same batch
+     * as a possible value change event (these are often connected).
+     *
+     * @param blurred
+     *            true if the field was blurred
+     */
+    public void valueChange(boolean blurred) {
         if (client != null && id != null) {
+            boolean sendBlurEvent = false;
+            boolean sendValueChange = false;
+
+            if (blurred && client.hasEventListeners(this, EventId.BLUR)) {
+                sendBlurEvent = true;
+                client.updateVariable(id, EventId.BLUR, "", false);
+            }
+
             String newText = getText();
             if (!prompting && newText != null
                     && !newText.equals(valueBeforeEdit)) {
-                client.updateVariable(id, "text", getText(), immediate);
+                sendValueChange = immediate;
+                client.updateVariable(id, "text", getText(), false);
                 valueBeforeEdit = newText;
+            }
+
+            if (sendBlurEvent || sendValueChange) {
+                client.sendPendingVariableChanges();
             }
         }
     }
@@ -198,8 +235,16 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         if (prompting) {
             setText("");
             removeStyleDependentName(CLASSNAME_PROMPT);
+            setPrompting(false);
+            if (BrowserInfo.get().isIE6()) {
+                // IE6 does not show the cursor when tabbing into the field
+                setCursorPos(0);
+            }
         }
         focusedTextField = this;
+        if (client.hasEventListeners(this, EventId.FOCUS)) {
+            client.updateVariable(client.getPid(this), EventId.FOCUS, "", true);
+        }
     }
 
     public void onBlur(BlurEvent event) {
@@ -211,7 +256,8 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
             setText(inputPrompt);
             addStyleDependentName(CLASSNAME_PROMPT);
         }
-        onChange(null);
+
+        valueChange(true);
     }
 
     private void setPrompting(boolean prompting) {

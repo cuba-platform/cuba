@@ -14,8 +14,8 @@ import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.data.Property;
 
+@SuppressWarnings("serial")
 public class ActionsField extends CustomField {
     private GridLayout root;
     private AbstractSelect field;
@@ -24,7 +24,7 @@ public class ActionsField extends CustomField {
         root = new GridLayout();
         root.setWidth("100%");
         setCompositionRoot(root);
-        
+
         this.field = field;
         field.setWidth("100%");
         root.addComponent(field);
@@ -62,6 +62,6 @@ public class ActionsField extends CustomField {
             field.setRequired(!required);
         }
         field.setNullSelectionAllowed(!required);
-    }        
+    }
 
 }

@@ -12,10 +12,10 @@ import java.util.*;
  * User: Nikolay Gorodnov
  * Date: 05.06.2009
  */
+@SuppressWarnings("serial")
 public class TreeTableContainerWrapper
         extends ContainerHierarchicalWrapper
-        implements TreeTableContainer, AggregationContainer, Container.Ordered, Container.Sortable
-{
+        implements TreeTableContainer, AggregationContainer, Container.Ordered, Container.Sortable {
     protected Set<Object> expanded = null; // Contains expanded items ids
 
     protected LinkedList<Object> inline = null; // Contains visible (including children of expanded items) items ids inline
@@ -80,8 +80,7 @@ public class TreeTableContainerWrapper
         if (containsInline(itemId)) {
             List<Object> inlineChildren;
             if (areChildrenAllowed(itemId)
-                    && (inlineChildren = getInlineChildren(itemId)) != null)
-            {
+                    && (inlineChildren = getInlineChildren(itemId)) != null) {
                 inline.removeAll(inlineChildren);
             }
             inline.remove(itemId);
@@ -112,8 +111,7 @@ public class TreeTableContainerWrapper
         }
 
         boolean b = super.setParent(itemId, newParentId);
-        if (b)
-        {
+        if (b) {
             final LinkedList<Object> inlineList = new LinkedList<Object>();
             inlineList.add(itemId);
             inlineList.addAll(getInlineChildren(itemId));
@@ -124,8 +122,7 @@ public class TreeTableContainerWrapper
 
             if (containsInline(newParentId)
                     && areChildrenAllowed(newParentId)
-                    && isExpanded(newParentId))
-            {
+                    && isExpanded(newParentId)) {
                 int lastChildInlineIndex = lastInlineIndex(newParentId);
                 if (lastChildInlineIndex > -1) {
                     inline.addAll(lastChildInlineIndex + 1, inlineList);
@@ -154,7 +151,7 @@ public class TreeTableContainerWrapper
     }
 
     public Object prevItemId(Object itemId) {
-        if (itemId == null)  {
+        if (itemId == null) {
             throw new NullPointerException("Item id cannot be NULL");
         }
         int index = inlineIndex(itemId);
@@ -259,8 +256,7 @@ public class TreeTableContainerWrapper
             throw new NullPointerException("Item id cannot be NULL");
         }
 
-        if (areChildrenAllowed(itemId))
-        {
+        if (areChildrenAllowed(itemId)) {
             if (isExpanded(itemId)) {
                 return true;
             }
@@ -284,8 +280,7 @@ public class TreeTableContainerWrapper
             throw new NullPointerException("Item id cannot be NULL");
         }
 
-        if (areChildrenAllowed(itemId))
-        {
+        if (areChildrenAllowed(itemId)) {
             if (!isExpanded(itemId)) {
                 return true;
             }
