@@ -69,7 +69,7 @@
     white-space: nowrap;
     text-align: left; /* Force default alignment */
     background: transparent url(img/bg-left-filter.png) no-repeat;
-    padding-left: 4px;
+    /*padding-left: 4px;*/
 }
 
 .v-filterselect .v-icon {
@@ -114,7 +114,7 @@
     height: 24px;
     cursor: pointer;
     border: none;
-    padding: 0 25px 0 0 ;
+    padding: 0 25px 0 4px ;
     margin: 0;
     background: transparent url(img/bg-right-filter.png) no-repeat center right;
 }
@@ -301,7 +301,7 @@
 
 .v-customcomponent-actionsfield .v-filterselect.v-readonly .v-filterselect-wrap {
     background: none;
-    padding: 0;
+    padding: 0 0 0 4px;
 }
 
 .v-customcomponent-actionsfield .v-button-link .v-button-caption,
