@@ -144,9 +144,8 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     @Override
     protected void paintAdditionalData(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AbstractApplicationServlet applicationServlet,
+            Request request,
+            Response response,
             boolean repaintAll,
             PrintWriter writer,
             Window window,
@@ -177,7 +176,6 @@ public class CubaCommunicationManager extends CommunicationManager {
         paintTarget.close();
 
         writer.print("]");
-
     }
 
     @Override

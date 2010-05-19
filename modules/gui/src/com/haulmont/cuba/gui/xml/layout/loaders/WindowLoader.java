@@ -96,32 +96,30 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
             timer.setDelay(Integer.parseInt(delay));
             timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
 
-            if (!BooleanUtils.toBoolean(element.attributeValue("global"))) {
-                addAssignTimerFrameTask(timer);
+            addAssignTimerFrameTask(timer);
 
-                final String onTimer = element.attributeValue("onTimer");
-                if (!StringUtils.isEmpty(onTimer)) {
-                    timer.addTimerListener(new Timer.TimerListener() {
-                        public void onTimer(Timer timer) {
-                            if (onTimer.startsWith("invoke:")) {
-                                String methodName = onTimer.substring("invoke:".length()).trim();
-                                Window window = timer.getFrame();
-                                try {
-                                    Method method = window.getClass().getMethod(methodName, Timer.class);
-                                    method.invoke(window, timer);
-                                } catch (Throwable e) {
-                                    throw new RuntimeException("Unable to invoke onTimer", e);
-                                }
-                            } else {
-                                throw new UnsupportedOperationException("Unsupported onTimer format: " + onTimer);
+            final String onTimer = element.attributeValue("onTimer");
+            if (!StringUtils.isEmpty(onTimer)) {
+                timer.addTimerListener(new Timer.TimerListener() {
+                    public void onTimer(Timer timer) {
+                        if (onTimer.startsWith("invoke:")) {
+                            String methodName = onTimer.substring("invoke:".length()).trim();
+                            Window window = timer.getFrame();
+                            try {
+                                Method method = window.getClass().getMethod(methodName, Timer.class);
+                                method.invoke(window, timer);
+                            } catch (Throwable e) {
+                                throw new RuntimeException("Unable to invoke onTimer", e);
                             }
+                        } else {
+                            throw new UnsupportedOperationException("Unsupported onTimer format: " + onTimer);
                         }
+                    }
 
-                        public void onStopTimer(Timer timer) {
-                            //do nothing
-                        }
-                    });
-                }
+                    public void onStopTimer(Timer timer) {
+                        //do nothing
+                    }
+                });
             }
 
             component.addTimer(timer);

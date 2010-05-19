@@ -112,10 +112,9 @@
                                 <xs:element name="timer">
                                     <xs:complexType>
                                         <xs:attribute name="id" type="xs:string" use="optional"/>
-                                        <xs:attribute name="global" type="xs:boolean" use="optional"/>
                                         <xs:attribute name="delay" type="xs:integer" use="required"/>
                                         <xs:attribute name="repeating" type="xs:boolean" use="optional"/>
-                                        <xs:attribute name="onTimer" type="xs:string" use="optional"/>
+                                        <xs:attribute name="onTimer" type="xs:string" use="optional" default="invoke:"/>
                                     </xs:complexType>
                                 </xs:element>
                             </xs:choice>
@@ -156,6 +155,7 @@
                         <xs:attribute name="align" type="align" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="margin" type="xs:string" use="optional"/>
+                        <xs:attribute name="expandable" type="xs:boolean"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="hbox">
@@ -171,6 +171,7 @@
                         <xs:attribute name="margin" type="xs:string" use="optional"/>
                         <xs:attribute name="align" type="align" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="expandable" type="xs:boolean"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="scrollbox">
