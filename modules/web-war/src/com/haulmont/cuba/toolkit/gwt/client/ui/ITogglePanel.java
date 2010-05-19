@@ -226,7 +226,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
 
     private void runHacks() {
         //Fix issue with height in Safari and Chrome
-        if (BrowserInfo.get().isSafari()) { //and Chrome too
+        if (BrowserInfo.get().isSafari() || BrowserInfo.get().isChrome()) { //and Chrome too
             if (height == null || "".equals(height)) {
                 Widget widget = widgetsPanel.getWidget(widgetsPanel.getVisibleWidget());
                 int h = widget.getOffsetHeight();
