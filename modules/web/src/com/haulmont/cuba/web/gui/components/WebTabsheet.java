@@ -107,6 +107,14 @@ public class WebTabsheet
             WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setEnabled(enabled);
         }
 
+        public boolean isVisible() {
+            return WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).isVisible();
+        }
+
+        public void setVisible(boolean visible) {
+            WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setVisible(visible);
+        }
+
         public Component getComponent() {
             return component;
         }
