@@ -29,6 +29,11 @@ import java.util.UUID;
 @Service(UserSessionService.NAME)
 public class UserSessionServiceBean implements UserSessionService
 {
+    public UserSession getUserSession(UUID sessionId) {
+        UserSession userSession = UserSessionManager.getInstance().getSession(sessionId);
+        return userSession;
+    }
+
     public void putSessionAttribute(UUID sessionId, String name, Serializable value) {
         UserSession userSession = UserSessionManager.getInstance().getSession(sessionId);
         userSession.setAttribute(name, value);

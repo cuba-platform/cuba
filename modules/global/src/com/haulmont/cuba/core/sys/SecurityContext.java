@@ -18,6 +18,10 @@ public class SecurityContext {
     private final String password;
     private final UUID sessionId;
 
+    public SecurityContext(UUID sessionId) {
+        this(null, null, sessionId);
+    }
+
     public SecurityContext(String user, String password, UUID sessionId) {
         this.user = user;
         this.sessionId = sessionId;

@@ -13,6 +13,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
+import com.haulmont.cuba.security.global.UserSession;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -27,6 +28,8 @@ public interface UserSessionService
 
     @Deprecated
     String JNDI_NAME = NAME;
+
+    UserSession getUserSession(UUID sessionId);
 
     void putSessionAttribute(UUID sessionId, String name, Serializable value);
 
