@@ -14,6 +14,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.VTabsheetPanel;
 import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
@@ -33,7 +35,7 @@ toggle position
 
 может лучше сделать DeckPanel которая будет управляться с сервера?
  */
-public class ITogglePanel extends ComplexPanel implements Container, ClickListener {
+public class ITogglePanel extends ComplexPanel implements Container, ClickHandler {
 
     protected ShortcutActionHandler shortcutHandler;
     protected RenderInformation renderInformation = new RenderInformation();
@@ -41,10 +43,10 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
     private class ToggleButtonPanel extends FlowPanel {
         private ToggleButton button;
 
-        public ToggleButtonPanel(String upText, String downText, ClickListener listener) {
+        public ToggleButtonPanel(String upText, String downText, ClickHandler clickHandler) {
             button = new ToggleButton(upText, downText);
             add(button);
-            button.addClickListener(listener);
+            button.addClickHandler(clickHandler);
             setStyleName(getStyle());
         }
 
@@ -71,7 +73,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
     protected Element captionText = DOM.createSpan();
     protected Element contentContainer = DOM.createDiv();
     protected Element toggleButtonContainer = DOM.createDiv();
-    protected Element bottomDecoration = DOM.createDiv(); //as in Panel
+    protected Element bottomDecoration = DOM.createDiv();
 
     protected ToggleButtonPanel toggleButtonPanel = null;
     protected VTabsheetPanel widgetsPanel = new VTabsheetPanel();
@@ -226,7 +228,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
 
     private void runHacks() {
         //Fix issue with height in Safari and Chrome
-        if (BrowserInfo.get().isSafari() || BrowserInfo.get().isChrome()) { //and Chrome too
+        if (BrowserInfo.get().isSafari() || BrowserInfo.get().isChrome()) {
             if (height == null || "".equals(height)) {
                 Widget widget = widgetsPanel.getWidget(widgetsPanel.getVisibleWidget());
                 int h = widget.getOffsetHeight();
@@ -321,7 +323,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickListen
         DOM.setInnerHTML(captionText, text);
     }
 
-    public void onClick(Widget sender) {
+    public void onClick(ClickEvent event) {
         if (waitingForResponse) {
             return;
         }
