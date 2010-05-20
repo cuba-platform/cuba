@@ -148,26 +148,31 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
     }
 
     public void setConfigProperty(String name, String value) {
-        if (value == null)
-            throw new IllegalArgumentException("Value can not be null");
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Config instance = getConfigInstance(name);
-            if (instance == null) {
-                instance = new Config();
-                instance.setName(name);
-                instance.setValue(value);
-                em.persist(instance);
-            }
-            else {
-                instance.setValue(value);
+            if (value != null) {
+                if (instance == null) {
+                    instance = new Config();
+                    instance.setName(name);
+                    instance.setValue(value);
+                    em.persist(instance);
+                } else {
+                    instance.setValue(value);
+                }
+            } else {
+                if (instance != null)
+                    em.remove(instance);
             }
             tx.commit();
         } finally {
             tx.end();
         }
-        cache.put(name, value);
+        if (value != null)
+            cache.put(name, value);
+        else
+            cache.remove(name);
     }
 
     private Config getConfigInstance(String name) {
