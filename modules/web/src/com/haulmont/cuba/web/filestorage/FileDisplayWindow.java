@@ -42,6 +42,12 @@ public class FileDisplayWindow extends FileWindow {
         initUI();
     }
 
+    @Override
+    protected void close() {
+        //Hack the situation when a user are refreshing the window
+        fireClose();
+    }
+
     private void initUI() {
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();

@@ -74,12 +74,14 @@ public class FileDisplay {
 
     private void show(final App application, final FileWindow window) {
         // this listener is useless, it doesn't work for closing of browser window
+/*
         window.addListener(new Window.CloseListener() {
             public void windowClose(Window.CloseEvent e) {
                 window.dispose();
                 application.removeWindow(window);
             }
         });
+*/
 
         application.addWindow(window);
         if (newWindow)
@@ -102,6 +104,7 @@ public class FileDisplay {
         for (Object obj : application.getWindows()) {
             if (obj instanceof FileWindow) {
                 window = (FileWindow) obj;
+                break;
             }
         }
         if (window != null) {
