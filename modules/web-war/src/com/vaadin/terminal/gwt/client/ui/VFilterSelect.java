@@ -744,7 +744,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             if (captions.length() > 0) {
                 captions += "|";
             }
-            captions += suggestion.getReplacementString();
+            captions += Util.escapeHTML(suggestion.getReplacementString());
         }
 
         if ((!filtering || popupOpenerClicked) && uidl.hasVariable("selected")
