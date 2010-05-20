@@ -48,4 +48,21 @@ public class AbstractLookup extends AbstractWindow implements Window.Lookup {
             throw new UnsupportedOperationException();
         }
     }
+
+    public Validator getLookupValidator() {
+        if (frame instanceof Window.Lookup) {
+            return ((Lookup) frame).getLookupValidator();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+
+    public void setLookupValidator(Validator validator) {
+        if (frame instanceof Window.Lookup) {
+            ((Lookup) frame).setLookupValidator(validator);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

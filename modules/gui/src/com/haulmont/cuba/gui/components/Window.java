@@ -120,6 +120,13 @@ public interface Window extends IFrame, Component.HasCaption, Component.ActionsH
 
         Handler getLookupHandler();
         void setLookupHandler(Handler handler);
+
+        interface Validator {
+            boolean validate();
+        }
+
+        Validator getLookupValidator();
+        void setLookupValidator(Validator validator);
     }
 
     /**

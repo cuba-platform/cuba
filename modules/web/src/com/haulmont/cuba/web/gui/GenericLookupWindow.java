@@ -20,6 +20,7 @@ import java.util.Map;
 
 public class GenericLookupWindow extends GenericBrowserWindow implements com.haulmont.cuba.gui.components.Window.Lookup {
     private Handler handler;
+    private Validator validator;
 
     @Override
     protected com.vaadin.ui.Component createLayout() {
@@ -85,5 +86,13 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
 
     public void setLookupHandler(Handler handler) {
         this.handler = handler;
+    }
+
+    public Validator getLookupValidator() {
+        return validator;
+    }
+
+    public void setLookupValidator(Validator validator) {
+        this.validator = validator;
     }
 }

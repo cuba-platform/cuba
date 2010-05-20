@@ -23,6 +23,9 @@ class SelectAction implements Button.ClickListener {
     }
 
     public void buttonClick(Button.ClickEvent event) {
+        Window.Lookup.Validator validator = window.getLookupValidator();
+        if (validator != null && !validator.validate()) return;
+        
         final com.haulmont.cuba.gui.components.Component lookupComponent = window.getLookupComponent();
 
         Collection selected;

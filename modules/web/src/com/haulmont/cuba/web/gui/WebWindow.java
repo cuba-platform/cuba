@@ -953,6 +953,8 @@ public class WebWindow
 
         private Handler handler;
 
+        private Validator validator;
+
         private Component lookupComponent;
         private VerticalLayout contaiter;
 
@@ -975,6 +977,14 @@ public class WebWindow
         @Override
         protected ComponentContainer getContainer() {
             return contaiter;
+        }
+
+        public void setLookupValidator(Validator validator) {
+            this.validator = validator;
+        }
+
+        public Validator getLookupValidator() {
+            return validator;
         }
 
         @Override
