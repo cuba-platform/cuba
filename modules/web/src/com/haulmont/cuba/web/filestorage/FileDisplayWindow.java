@@ -18,9 +18,9 @@ import com.vaadin.terminal.FileResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.VerticalLayout;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.io.File;
 
 public class FileDisplayWindow extends FileWindow {
 
@@ -45,7 +45,6 @@ public class FileDisplayWindow extends FileWindow {
     @Override
     protected void close() {
         //Hack the situation when a user are refreshing the window
-        fireClose();
     }
 
     private void initUI() {
@@ -68,7 +67,7 @@ public class FileDisplayWindow extends FileWindow {
         embedded.setType(Embedded.TYPE_BROWSER);
         mainLayout.addComponent(embedded);
 
-        setLayout(mainLayout);
+        setContent(mainLayout);
     }
 
     protected URL createURL() {
