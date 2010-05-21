@@ -22,10 +22,9 @@ import com.vaadin.terminal.gwt.server.JsonPaintTarget;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.lang.reflect.Method;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 @SuppressWarnings("serial")
@@ -39,107 +38,6 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     public CubaCommunicationManager(Application application) {
         super(application);
-    }
-
-    @Override
-    protected void doHandleUidlRequest(Request request, Response response,
-            Callback callback, Window window) throws IOException,
-            InvalidUIDLSecurityKeyException {
-
-        // repaint requested or session has timed out and new one is created
-        boolean repaintAll;
-        final OutputStream out;
-
-        repaintAll = (request.getParameter(GET_PARAM_REPAINT_ALL) != null);
-        // || (request.getSession().isNew()); FIXME What the h*ll is this??
-        out = response.getOutputStream();
-
-        boolean analyzeLayouts = false;
-        if (repaintAll) {
-            // analyzing can be done only with repaintAll
-            analyzeLayouts = (request.getParameter(GET_PARAM_ANALYZE_LAYOUTS) != null);
-        }
-
-        final PrintWriter outWriter = new PrintWriter(new BufferedWriter(
-                new OutputStreamWriter(out, "UTF-8")));
-
-        // The rest of the process is synchronized with the application
-        // in order to guarantee that no parallel variable handling is
-        // made
-        synchronized (application) {
-
-            // Finds the window within the application
-            if (application.isRunning()) {
-                // Returns if no window found
-                if (window == null) {
-                    // This should not happen, no windows exists but
-                    // application is still open.
-                    System.err
-                            .println("Warning, could not get window for application with request ID "
-                                    + request.getRequestID());
-                    return;
-                }
-            } else {
-                // application has been closed
-                endApplication(request, response, application);
-                return;
-            }
-
-            processRequestedCookies(request, response);
-
-            // Change all variables based on request parameters
-            if (!handleVariables(request, response, callback, application,
-                    window)) {
-
-                // var inconsistency; the client is probably out-of-sync
-                Application.SystemMessages ci = null;
-                try {
-                    Method m = application.getClass().getMethod(
-                            "getSystemMessages", (Class[]) null);
-                    ci = (Application.SystemMessages) m.invoke(null,
-                            (Object[]) null);
-                } catch (Exception e2) {
-                    // FIXME: Handle exception
-                    // Not critical, but something is still wrong; print
-                    // stacktrace
-                    e2.printStackTrace();
-                }
-                if (ci != null) {
-                    String msg = ci.getOutOfSyncMessage();
-                    String cap = ci.getOutOfSyncCaption();
-                    if (msg != null || cap != null) {
-                        callback.criticalNotification(request, response, cap,
-                                msg, null, ci.getOutOfSyncURL());
-                        // will reload page after this
-                        return;
-                    }
-                }
-                // No message to show, let's just repaint all.
-                repaintAll = true;
-            }
-
-            processResponsedCookies(request, response);
-
-            paintAfterVariableChanges(request, response, callback, repaintAll,
-                    outWriter, window, analyzeLayouts);
-
-            if (closingWindowName != null) {
-                currentlyOpenWindowsInClient.remove(closingWindowName);
-                closingWindowName = null;
-            }
-        }
-
-        outWriter.close();
-    }
-
-    protected void processRequestedCookies(Request request, Response response) {
-        App app = App.getInstance();
-        app.getCookies().processRequestedCookies((HttpServletRequest) request.getWrappedRequest());
-    }
-
-    protected void processResponsedCookies(Request request, Response response) {
-        App app = App.getInstance();
-        app.getCookies().processResponsedCookies((HttpServletResponse) response.getWrappedResponse());
     }
 
     @Override

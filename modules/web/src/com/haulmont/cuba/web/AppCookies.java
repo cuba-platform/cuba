@@ -14,24 +14,19 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.Map;
 
-public class AppCookies {
+public abstract class AppCookies {
     public static final int COOKIE_MAX_AGE = 31536000; //1 year (in seconds)
 
     private final Map<String, Cookie> requestedCookies;
-    private final Set<Cookie> responsedCookies;
 
     private String cookiePath = "/";
     private boolean cookiesEnabled;
 
     public AppCookies() {
         requestedCookies = new HashMap<String, Cookie>();
-        responsedCookies = new HashSet<Cookie>();
     }
 
     public String getCookieValue(String name) {
@@ -81,11 +76,9 @@ public class AppCookies {
         return requestedCookies.get(name);
     }
 
-    protected void addCookie(Cookie cookie) {
-        responsedCookies.add(cookie);
-    }
+    protected abstract void addCookie(Cookie cookie);
 
-    public void processRequestedCookies(HttpServletRequest request) {
+    public void updateCookies(HttpServletRequest request) {
         if (isCookiesEnabled()) {
             synchronized (requestedCookies) {
                 requestedCookies.clear();
@@ -95,17 +88,6 @@ public class AppCookies {
                         requestedCookies.put(cookie.getName(), cookie);
                     }
                 }
-            }
-        }
-    }
-
-    public void processResponsedCookies(HttpServletResponse response) {
-        if (isCookiesEnabled()) {
-            synchronized (responsedCookies) {
-                for (final Cookie cookie : responsedCookies) {
-                    response.addCookie(cookie);
-                }
-                responsedCookies.clear();
             }
         }
     }

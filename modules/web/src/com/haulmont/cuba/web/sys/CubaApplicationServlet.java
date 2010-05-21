@@ -116,7 +116,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
             final Application application = getApplicationClass().newInstance();
 
             // Handles requested cookies
-            ((App) application).getCookies().processRequestedCookies(request);
+            ((App) application).getCookies().updateCookies(request);
 
             return application;
         } catch (final IllegalAccessException e) {

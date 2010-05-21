@@ -27,6 +27,7 @@ import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
+import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +35,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Cookie;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,8 +50,8 @@ import java.io.FileOutputStream;
  * Specific application should inherit from this class and set derived class name
  * in <code>application</code> servlet parameter of <code>web.xml</code>
  */
-public class App extends Application implements ConnectionListener, ApplicationContext.TransactionListener
-{
+public class App extends Application
+        implements ConnectionListener, ApplicationContext.TransactionListener, HttpServletRequestListener {
     private static final long serialVersionUID = -3435976475534930050L;
 
     private static final Pattern WIN_PATTERN = Pattern.compile("win([0-9]{1,4})");
@@ -81,6 +84,7 @@ public class App extends Application implements ConnectionListener, ApplicationC
 
     private volatile String contextName;
 
+    private HttpServletResponse response;
     private AppCookies cookies;
 
     static {
@@ -93,8 +97,21 @@ public class App extends Application implements ConnectionListener, ApplicationC
         connection.addListener(this);
         windowManager = createWindowManager();
         exceptionHandlers = new ExceptionHandlers(this);
-        cookies = new AppCookies();
+        cookies = new AppCookies() {
+            protected void addCookie(Cookie cookie) {
+                response.addCookie(cookie);
+            }
+        };
         cookies.setCookiesEnabled(true);
+    }
+
+    public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
+        this.response = response;
+        cookies.updateCookies(request);
+    }
+
+    public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
+        //do nothing
     }
 
     public static Application.SystemMessages getSystemMessages() {
