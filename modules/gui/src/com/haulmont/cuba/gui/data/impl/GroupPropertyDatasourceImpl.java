@@ -4,44 +4,33 @@
  * Use is subject to license terms.
 
  * Author: Nikolay Gorodnov
- * Created: 10.01.2010 20:50:40
+ * Created: 21.05.2010 12:39:16
  *
  * $Id$
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.GroupDatasource;
+import com.haulmont.cuba.gui.data.GroupInfo;
 
 import java.util.Collection;
 import java.util.List;
 
-public class GroupDatasourceImpl<T extends Entity<K>, K>
-        extends CollectionDatasourceImpl<T, K>
+public class GroupPropertyDatasourceImpl<T extends Entity<K>, K>
+        extends CollectionPropertyDatasourceImpl<T, K> 
         implements GroupDatasource<T, K>
 {
-
-    protected GroupDelegate<T,K> groupDelegate = new GroupDelegate<T, K>(this) {
+    protected GroupDelegate<T, K> groupDelegate = new GroupDelegate<T, K>(this) {
         protected void doSort(SortInfo<MetaPropertyPath>[] sortInfo) {
-            GroupDatasourceImpl.super.doSort();
+            GroupPropertyDatasourceImpl.super.doSort();
         }
     };
 
-    public GroupDatasourceImpl(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, String viewName
-    ) {
-        super(context, dataservice, id, metaClass, viewName);
-    }
-
-    public GroupDatasourceImpl(
-            DsContext context, DataService dataservice,
-            String id, MetaClass metaClass, String viewName,
-            boolean softDeletion
-    ) {
-        super(context, dataservice, id, metaClass, viewName, softDeletion);
+    public GroupPropertyDatasourceImpl(String id, Datasource<Entity> ds, String property) {
+        super(id, ds, property);
     }
 
     public void groupBy(Object[] properties) {

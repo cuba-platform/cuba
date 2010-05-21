@@ -51,4 +51,8 @@ public class DatasourceFactoryImpl implements DatasourceFactory {
     public CollectionDatasource createCollectionDatasource(String id, Datasource ds, String property) {
         return new CollectionPropertyDatasourceImpl(id, ds, property);
     }
+
+    public GroupDatasource createGroupDatasource(String id, Datasource ds, String property) {
+        return new GroupPropertyDatasourceImpl(id, ds, property);
+    }
 }

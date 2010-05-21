@@ -29,5 +29,6 @@ public interface DatasourceFactory {
 
     Datasource createDatasource(String id, Datasource ds, String property);
     CollectionDatasource createCollectionDatasource(String id, Datasource ds, String property);
+    GroupDatasource createGroupDatasource(String id, Datasource ds, String property);
 
 }

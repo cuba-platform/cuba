@@ -248,6 +248,13 @@ public class DsContextLoader {
             final String property = ds.attributeValue("property");
             context.register(loadCollectionDatasource(ds, datasource, property));
         }
+
+        //noinspection unchecked
+        elements = element.elements("groupDatasource");
+        for (Element ds : elements) {
+            final String property = ds.attributeValue("property");
+            context.register(loadGroupDatasource(ds, datasource, property));
+        }
     }
 
     private Datasource loadDatasource(Element element, Datasource ds, String property) {
@@ -294,6 +301,39 @@ public class DsContextLoader {
             }
         } else {
             datasource = factory.createCollectionDatasource(id, ds, property);
+        }
+
+        loadDatasources(element, datasource);
+
+        return datasource;
+    }
+
+    private Datasource loadGroupDatasource(Element element, Datasource ds, String property) {
+        final String id = element.attributeValue("id");
+
+        final MetaClass metaClass = ds.getMetaClass();
+        final MetaProperty metaProperty = metaClass.getProperty(property);
+        if (metaProperty == null) {
+            throw new IllegalStateException(
+                    String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
+        }
+
+        final Element datasourceClassElement = element.element("datasourceClass");
+        GroupDatasource datasource;
+        if (datasourceClassElement != null) {
+            final String datasourceClass = datasourceClassElement.getText();
+            if (StringUtils.isEmpty(datasourceClass))
+                throw new IllegalStateException("Datasource class is not specified");
+            try {
+                final Class<GroupDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+                final Constructor<GroupDatasource> constructor =
+                        aClass.getConstructor(String.class, Datasource.class, String.class);
+                datasource = constructor.newInstance(id, ds, property);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            datasource = factory.createGroupDatasource(id, ds, property);
         }
 
         loadDatasources(element, datasource);
