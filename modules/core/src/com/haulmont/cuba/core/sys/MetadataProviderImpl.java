@@ -176,6 +176,12 @@ public class MetadataProviderImpl extends MetadataProvider
                 ancestorMetaClass = ancestorMetaClass.getAncestor();
             }
         }
+
+        MetaClass ancestorMetaClass = metaClass.getAncestor();
+        while (ancestorMetaClass != null) {
+            metaClass.getAncestors().add(ancestorMetaClass);
+            ancestorMetaClass = ancestorMetaClass.getAncestor();
+        }
     }
 
     private void findMissingDescendants(MetaClass ancestor, Collection<MetaClass> missingDescendants) {
