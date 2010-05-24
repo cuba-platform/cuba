@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -35,7 +37,10 @@ public class ParamEditor extends CustomComponent implements Condition.Listener {
                 layout.addComponent(opLab);
             }
             field = condition.getParam().createEditComponent();
-            field.setSizeFull();
+            if (field.getClass().toString().contains(WebLookupField.class.toString()))
+                field.setWidth(150, Sizeable.UNITS_PIXELS);
+            else
+                field.setSizeFull();
             layout.addComponent(field);
         }
 
