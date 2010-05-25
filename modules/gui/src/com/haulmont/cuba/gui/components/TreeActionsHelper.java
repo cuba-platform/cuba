@@ -7,6 +7,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import java.util.Map;
@@ -69,7 +70,9 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
                     if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                         Object item = ((Window.Editor) window).getItem();
                         if (item instanceof Entity) {
+                            boolean modified = datasource.isModified();
                             datasource.addItem((Entity) item);
+                            ((DatasourceImplementation) datasource).setModified(modified);
                             fireCreateEvent((Entity) item);
                         }
                     }
