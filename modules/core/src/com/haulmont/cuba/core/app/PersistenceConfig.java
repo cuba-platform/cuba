@@ -119,9 +119,13 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
     }
 
     public String findUpdateDatabaseScripts() {
-        List<String> list = dbUpdater.findUpdateDatabaseScripts();
-        StrBuilder sb = new StrBuilder();
-        sb.appendWithSeparators(list, "\n");
-        return sb.toString();
+        try {
+            List<String> list = dbUpdater.findUpdateDatabaseScripts();
+            StrBuilder sb = new StrBuilder();
+            sb.appendWithSeparators(list, "\n");
+            return sb.toString();
+        } catch (Throwable e) {
+            return ExceptionUtils.getStackTrace(e);
+        }
     }
 }
