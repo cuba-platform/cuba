@@ -314,8 +314,10 @@ public class LoginWindow extends Window
         String login = (String) loginField.getValue();
         try {
             if (ActiveDirectoryHelper.useActiveDirectory()) {
+                Locale locale = getUserLocale();
+                App.getInstance().setLocale(locale);
                 ActiveDirectoryHelper.authenticate(login, (String) passwordField.getValue(), loc);
-                connection.loginActiveDirectory(login);
+                connection.loginActiveDirectory(login, locale);
             } else {
                 String passwd = loginByRememberMe
                         ? (String) passwordField.getValue()

@@ -376,7 +376,7 @@ public class App extends Application
             String userName = request.getUserPrincipal().getName();
             log.debug("Trying to login ActiveDirectory as " + userName);
             try {
-                connection.loginActiveDirectory(userName);
+                connection.loginActiveDirectory(userName, request.getLocale());
                 principalIsWrong = false;
                 setupCurrentWindowName(requestURI);
             } catch (LoginException e) {

@@ -96,8 +96,11 @@ public class Connection
      * @param login login name
      * @throws LoginException
      */
-    public void loginActiveDirectory(String login) throws LoginException {
-        session = getLoginService().loginActiveDirectory(login, App.getInstance().getLocale());
+    public void loginActiveDirectory(String login, Locale locale) throws LoginException {
+        if (locale == null)
+            throw new IllegalArgumentException("Locale is null");
+
+        session = getLoginService().loginActiveDirectory(login, locale);
         connected = true;
         WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
