@@ -378,6 +378,7 @@ public class App extends Application
             try {
                 connection.loginActiveDirectory(userName);
                 principalIsWrong = false;
+                setupCurrentWindowName(requestURI);
             } catch (LoginException e) {
                 principalIsWrong = true;
             }
