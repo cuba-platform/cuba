@@ -138,6 +138,8 @@ public class ApplicationConnection {
     private Map<String, ApplicationTimer> applicationTimers = new HashMap<String, ApplicationTimer>();
     private List<ApplicationTimer> timersToRun = new LinkedList<ApplicationTimer>();
 
+    private Set<HasIndicator> indicators = new HashSet<HasIndicator>();
+
     public ApplicationConnection(WidgetSet widgetSet,
             ApplicationConfiguration cnf) {
         this.widgetSet = widgetSet;
@@ -642,9 +644,18 @@ public class ApplicationConnection {
         };
         // Third one kicks in at 5000ms from request start
         loadTimer3.schedule(4700);
+
+        for (HasIndicator component: indicators) {
+            component.showLoadingIndicator(true);
+        }
     }
 
     private void hideLoadingIndicator() {
+        for (HasIndicator component: indicators) {
+            component.showLoadingIndicator(false);
+        }
+        indicators.clear();
+
         if (loadTimer != null) {
             loadTimer.cancel();
             if (loadTimer2 != null) {
@@ -1499,6 +1510,13 @@ public class ApplicationConnection {
         }
         addVariableToQueue(paintableId, variableName, buf.toString(),
                 immediate, 'a');
+    }
+
+    /*
+     * Should be called BEFORE updateVariable(XXX)
+     */
+    public void indicateMyRequest(HasIndicator component) {
+        indicators.add(component);
     }
 
     /**

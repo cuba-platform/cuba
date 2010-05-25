@@ -174,7 +174,7 @@ public class WebOptionsGroup
             }
 
             setOptionsList(newOptionList);
-            setValue(selectedOptionList);
+//            setValue(selectedOptionList);  todo: [degtyarjov] was commented to provide some functionality on control screen 
         }
     }
 

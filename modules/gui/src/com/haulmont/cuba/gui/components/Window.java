@@ -9,9 +9,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.settings.Settings;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.settings.Settings;
 
 import java.util.Collection;
 
@@ -46,6 +46,11 @@ public interface Window extends IFrame, Component.HasCaption, Component.ActionsH
      * @param force if true, no confirmation dialog will be shown in any case
      */
     boolean close(String actionId, boolean force);
+
+    /*
+     * Needed by bmc
+     */
+    void closeAndRun(String actionId, Runnable runnable);
 
     /**
      * Assign a {@link Timer} component to this window.

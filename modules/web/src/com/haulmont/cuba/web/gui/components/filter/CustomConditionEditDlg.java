@@ -10,16 +10,17 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.gui.data.Datasource;
-import com.vaadin.ui.*;
-import com.vaadin.data.Property;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.QueryParserRegex;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.data.Property;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -33,6 +34,7 @@ public class CustomConditionEditDlg extends Window {
         STRING,
         DATE,
         NUMBER,
+        LONG,
         BOOLEAN,
         UUID,
         ENUM,
@@ -243,7 +245,7 @@ public class CustomConditionEditDlg extends Window {
 
             String entityParamView = (String) entityParamViewText.getValue();
             condition.setEntityParamView(entityParamView);
-            
+
             Param param = new Param(paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource());
             condition.setParam(param);
         }
@@ -259,6 +261,8 @@ public class CustomConditionEditDlg extends Window {
                 return Date.class;
             case NUMBER:
                 return Double.class;
+            case LONG:
+                return Long.class;
             case BOOLEAN:
                 return Boolean.class;
             case UUID:
@@ -374,9 +378,11 @@ public class CustomConditionEditDlg extends Window {
                         select.setValue(ParamType.DATE);
                     else if (Boolean.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.BOOLEAN);
-                    else if (Number.class.equals(param.getJavaClass()))
+                    else if (Number.class.equals(param.getJavaClass()) || Double.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.NUMBER);
-                    else if (UUID.class.equals(param.getJavaClass()))
+                    else if (Long.class.equals(param.getJavaClass())) {
+                        select.setValue(ParamType.LONG);
+                    } else if (UUID.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.UUID);
                     else
                         throw new UnsupportedOperationException("Unsupported param class: " + param.getJavaClass());

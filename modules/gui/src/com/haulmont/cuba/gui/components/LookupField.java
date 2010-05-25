@@ -31,4 +31,6 @@ public interface LookupField extends OptionsField {
     public interface NewOptionHandler {
         void addNewOption(String caption);
     }
+
+    void disablePaging();
 }

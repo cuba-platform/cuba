@@ -92,19 +92,27 @@
     background: url('images/login-form-bg-key.png') no-repeat top center;
 }
 
+.v-verticallayout-loginBottom2fields {
+    background: url('images/login-form-bg.png') no-repeat top center;
+}
+
+.v-verticallayout-loginBottom2fields .v-textfield-password-field,
 .v-verticallayout-loginBottom .v-textfield-password-field {
     border: #a0a1a3 ridge 1px;
 }
 
+.v-verticallayout-loginBottom2fields .v-textfield-login-field,
 .v-verticallayout-loginBottom .v-textfield-login-field {
     border: #a0a1a3 ridge 1px;
 }
 
+.v-verticallayout-loginBottom2fields .v-caption,
 .v-verticallayout-loginBottom .v-caption {
     color: white;
     font-family: arial, sans-serif;
 }
 
+.v-verticallayout-loginBottom2fields .v-label-login-caption,
 .v-verticallayout-loginBottom .v-label-login-caption {
     color: white;
     font-weight: bold;
@@ -148,6 +156,14 @@
     font-weight: bold;
 }
 
+/* for group box */
+.v-panel-h2 .v-panel-caption-h2 {
+    font-family: tahoma, sans-serif;
+    font-size: 14px;
+    color: #fff;
+    font-weight: bold;
+}
+
 /*
  *  e.g. text labels for fields
  *  at popup dialog editors
@@ -163,4 +179,28 @@
 
 .rememberMe {
     color: #fff;
+}
+
+/*
+ * text field with indicator
+ */
+.v-textfield-i-indicator,
+.v-textfield-i-indicator-active {
+    width: 24px;
+    height: 24px;
+    float: right;
+    position: relative;
+}
+
+.v-textfield-i-indicator {
+    background: transparent;
+}
+
+.v-textfield-i-indicator-active {
+    background: url(images/loader2.gif) top left no-repeat;
+}
+
+.v-table-focuspanel {
+    outline: none;
+    
 }

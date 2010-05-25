@@ -9,7 +9,10 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.MetadataHelper;
@@ -388,11 +391,13 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
-        @SuppressWarnings({"unchecked"})
-        List<T> list = new LinkedList<T>(__getCollection());
-        Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
-        __getCollection().clear();
-        __getCollection().addAll(list);
+        if (__getCollection() != null) {
+            @SuppressWarnings({"unchecked"})
+            List<T> list = new LinkedList<T>(__getCollection());
+            Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
+            __getCollection().clear();
+            __getCollection().addAll(list);
+        }
     }
 
     public K firstItemId() {

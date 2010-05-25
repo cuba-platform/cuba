@@ -175,6 +175,10 @@ public class WebLookupField
         this.newOptionHandler = newItemHandler;
     }
 
+    public void disablePaging() {
+        component.disablePaging();
+    }
+
     private class DsWrapper extends CollectionDsWrapper {
 
         public DsWrapper(CollectionDatasource datasource) {

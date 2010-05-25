@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.core.sys.javacl;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.io.FileUtils;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,9 +26,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JavaClassLoader extends URLClassLoader {
-
     private static class TimestampClass {
         Class clazz;
         Date timestamp;
@@ -59,13 +60,17 @@ public class JavaClassLoader extends URLClassLoader {
         }
     }
 
+    private static final String IMPORT_PATTERN = "import .+?;";
+
     private Log log = LogFactory.getLog(JavaClassLoader.class);
 
-    protected CharSequenceCompiler compiler;
+    protected String classPath;
 
     private String rootDir;
 
     private final Map<String, TimestampClass> compiled = new ConcurrentHashMap<String, TimestampClass>();
+
+    private Map<String, Boolean> importedClasses = new ConcurrentHashMap<String, Boolean>();
 
     private final static JavaClassLoader jcl = new JavaClassLoader(
             Thread.currentThread().getContextClassLoader(),
@@ -79,10 +84,7 @@ public class JavaClassLoader extends URLClassLoader {
     private JavaClassLoader(ClassLoader parent, String rootDir) {
         super(new URL[0], parent);
         this.rootDir = rootDir;
-        compiler = new CharSequenceCompiler(
-                Thread.currentThread().getContextClassLoader(),
-                Arrays.asList("-g", "-classpath", buildClasspath())
-        );
+        classPath = buildClasspath();
     }
 
     private TimestampClass getTimestampClass(String name) {
@@ -115,10 +117,8 @@ public class JavaClassLoader extends URLClassLoader {
         return classes;
     }
 
-    private Map<String, Boolean> importedClasses = new ConcurrentHashMap<String, Boolean>();
-    
     private boolean validSource(String className) {
-        Boolean valid = importedClasses.get(className);
+        Boolean valid = importedClasses.get(className);   // todo change, incorrect
         if (valid != null)
             return valid;
 
@@ -129,6 +129,13 @@ public class JavaClassLoader extends URLClassLoader {
         return valid;
     }
 
+    private boolean validDirectory(String dirName) {
+        String path = dirName.replace('.', '/');
+        File dir = new File(rootDir + "/" + path);
+        return dir.exists();
+    }
+
+
     //todo: draft of cyclic classloader. reimplement.
     private Map<String, CharSequence> collectDependentClasses(Map<String, CharSequence> loaded) {
         List<String> loadedNames = new ArrayList<String>();
@@ -136,13 +143,13 @@ public class JavaClassLoader extends URLClassLoader {
         for (String className : loadedNames) {
             CharSequence src = loaded.get(className);
             List<String> imports = getImports(src);
+            imports.addAll(getAllClassesFromPackage(className.substring(0, className.lastIndexOf('.'))));//all src from current package
             for (String importedClassName : imports) {
                 if (!loaded.containsKey(importedClassName)) {
                     loaded.put(importedClassName, getSourceString(importedClassName));
                     collectDependentClasses(loaded);
                 }
             }
-
         }
         return loaded;
     }
@@ -150,22 +157,22 @@ public class JavaClassLoader extends URLClassLoader {
     private List<String> getImports(CharSequence src) {
         List<String> importedClassNames = new ArrayList<String>();
 
-        String[] dependence = src.toString().split("import");
-        if (dependence.length > 1) {
-            for (int i = 1, length = dependence.length - 1; i < length; i++) {
-                String dependentClassName = dependence[i].trim().replaceAll(";", "");
-                if (validSource(dependentClassName)) {
-                    importedClassNames.add(dependentClassName);
-                }
-            }
-            String last = dependence[dependence.length - 1];
-            int importsEnd = last.indexOf(";");
-            String lastDependentClassName = last.substring(0, importsEnd).trim();
-            if (validSource(lastDependentClassName)) {
-                importedClassNames.add(lastDependentClassName);
-            }
+        List<String> dependencies = getMatchedStrings(src, IMPORT_PATTERN);
+        for (String currentDependence : dependencies) {
+            String dependenceName = currentDependence.replaceAll("import", "").replaceAll(";", "").trim();
+            addDependence(importedClassNames, dependenceName);
         }
         return importedClassNames;
+    }
+
+    private void addDependence(List<String> importedClassNames, String dependentClassName) {
+        if (dependentClassName.endsWith(".*")) {
+            String packageName = dependentClassName.replace(".*", "");
+            if (validDirectory(packageName))
+                importedClassNames.addAll(getAllClassesFromPackage(packageName));
+        } else if (validSource(dependentClassName)) {
+            importedClassNames.add(dependentClassName);
+        }
     }
 
     public Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
@@ -198,11 +205,19 @@ public class JavaClassLoader extends URLClassLoader {
             HashMap<String, CharSequence> sources = new HashMap<String, CharSequence>();
             sources.put(name, src);
 
+            CharSequenceCompiler compiler = new CharSequenceCompiler(
+                    Thread.currentThread().getContextClassLoader(),
+                    Arrays.asList("-classpath", classPath, "-g")
+            );
+
             Map compiledClasses = compiler.compile(collectDependentClasses(sources), errs);
 
-            clazz = (Class) compiledClasses.get(name);
-            setTimestampClass(name, new TimestampClass(clazz, new Date(srcFile.lastModified())));
+            for (Object className : compiledClasses.keySet()) {
+                Class _clazz = (Class) compiledClasses.get(className);
+                setTimestampClass(className.toString(), new TimestampClass(_clazz, com.haulmont.cuba.core.global.TimeProvider.currentTimestamp()));
+            }
 
+            clazz = (Class) compiledClasses.get(name);
             return clazz;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -234,6 +249,19 @@ public class JavaClassLoader extends URLClassLoader {
         return srcFile;
     }
 
+    private List<String> getAllClassesFromPackage(String packageName) {
+        String path = packageName.replace(".", "/");
+        File srcDir = new File(rootDir + "/" + path);
+        String[] fileNames = srcDir.list();
+        List<String> classNames = new ArrayList<String>();
+        for (String fileName : fileNames) {
+            if (fileName.endsWith(".java")) {
+                classNames.add(packageName + "." + fileName.replace(".java", ""));
+            }
+        }
+        return classNames;
+    }
+
     private String getSourceString(String name) {
         try {
             return FileUtils.readFileToString(getSourceFile(name));
@@ -241,5 +269,15 @@ public class JavaClassLoader extends URLClassLoader {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private List<String> getMatchedStrings(CharSequence source, String pattern) {
+        ArrayList<String> result = new ArrayList<String>();
+        Pattern importPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = importPattern.matcher(source);
+        while (matcher.find()) {
+            result.add(matcher.group());
+        }
+        return result;
     }
 }

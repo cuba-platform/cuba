@@ -31,4 +31,8 @@ public class FilterSelect extends Select {
     public void setFixedTextBoxWidth(boolean fixedTextBoxWidth) {
         this.fixedTextBoxWidth = fixedTextBoxWidth;
     }
+
+    public void disablePaging() {
+        this.pageLength = 200;
+    }
 }

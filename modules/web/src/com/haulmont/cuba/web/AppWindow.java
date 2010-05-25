@@ -313,10 +313,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
 
+        final UserSession session = connection.getSession();
         final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
         List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
-            createMenuBarItem(menuBar, menuItem);
+            if (menuItem.isPermitted(session)) {
+                createMenuBarItem(menuBar, menuItem);
+            }
         }
         removeExtraSeparators(menuBar);
         return menuBar;
@@ -420,6 +423,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         );
         logoutBtn.setStyleName("white-border");
         logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
+        //logoutBtn.setIcon(new ThemeResource("images/logout.png"));
 
         Button viewLogBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "viewLogBtn"),
                 new Button.ClickListener() {
@@ -433,6 +437,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         );
         viewLogBtn.setStyleName("white-border");
         viewLogBtn.setIcon(new ThemeResource("images/show-log.gif"));
+        //viewLogBtn.setIcon(new ThemeResource("images/showlog.png"));
 
         Button newWindowBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "newWindowBtn"),
                 new Button.ClickListener() {
@@ -499,10 +504,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                         vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
                     }
                 } else {
-                    MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
-                    createSubMenu(menuItem, child, session);
-                    if (isMenuItemEmpty(menuItem)) {
-                        vItem.removeChild(menuItem);
+                    if (child.isPermitted(session)) {
+                        MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
+                        createSubMenu(menuItem, child, session);
+                        if (isMenuItemEmpty(menuItem)) {
+                            vItem.removeChild(menuItem);
+                        }
                     }
                 }
             }

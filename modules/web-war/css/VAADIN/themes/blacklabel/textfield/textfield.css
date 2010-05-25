@@ -1,4 +1,5 @@
-.v-textfield {
+.v-textfield,
+.v-textfield-i .v-textfield-i-input {
 	background: #fff url(img/bg.png) repeat-x;
 	padding: 2px;
 	/*border: 1px solid #b6b6b6;*/
@@ -10,6 +11,15 @@
 	font-size: 13px;
 	height: 18px;
 	text-align: left /* Force default alignment */
+}
+
+.v-textfield-i .v-textfield-i-input {
+    float: left;
+}
+
+.v-textfield-i {
+    height: 24px;
+    text-align: left; /* Force default alignment */
 }
 
 /*.v-datefield-textfield {*/
@@ -30,17 +40,20 @@
 }
 
 .v-textfield:focus,
-.v-textarea:focus {
+.v-textarea:focus,
+.v-textfield-i-input:focus {
     outline: 0;
 }
 
 .v-textfield-focus,
-.v-textarea-focus {
+.v-textarea-focus,
+.v-textfield-focus .v-textfield-input {
     outline: 0;
 }
 
 .v-textfield.v-readonly,
-.v-textarea.v-readonly {
+.v-textarea.v-readonly,
+.v-textfield-i.v-readonly .v-textfield-i-input {
 	background: transparent;
 	color: #222;
 	border: #808080 1px solid;

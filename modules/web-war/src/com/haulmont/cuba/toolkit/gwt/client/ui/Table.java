@@ -131,6 +131,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         focusPanel.add(bodyContainer);
         focusPanel.addKeyDownHandler(this);
         focusPanel.addKeyUpHandler(this);
+        DOM.setElementProperty(focusPanel.getElement(), "className", CLASSNAME + "-focuspanel");        
     }
 
     public void onKeyDown(KeyDownEvent event) {
@@ -1046,6 +1047,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             DOM.setElementProperty(hTableContainer, "className", CLASSNAME
                     + "-header-container");
+
+            DOM.setElementProperty(table, "className", CLASSNAME
+                    + "-header-internal");
 
             DOM.appendChild(table, headerTableBody);
             DOM.appendChild(headerTableBody, tr);

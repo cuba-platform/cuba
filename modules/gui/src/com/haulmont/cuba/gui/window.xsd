@@ -142,6 +142,22 @@
     <xs:group name="layout">
         <xs:sequence>
             <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="htmlbox">
+                    <xs:complexType>
+                        <xs:group ref="layoutOrComponent"/>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="expand" type="xs:string" use="optional"/>
+                        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="align" type="align" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="margin" type="xs:string" use="optional"/>
+                        <xs:attribute name="template" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="vbox">
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>
@@ -200,7 +216,7 @@
                 </xs:element>
                 <xs:element name="tabsheet">
                     <xs:complexType>
-                        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
                             <xs:element name="tab">
                                 <xs:complexType>
                                     <xs:group ref="layoutOrComponent"/>
@@ -253,6 +269,7 @@
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="expandable" type="xs:boolean" use="optional"/>
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
@@ -301,6 +318,7 @@
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="expandLayout" type="xs:string" use="optional"/>
@@ -431,6 +449,7 @@
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
 
+                        <xs:attribute name="maxLength" type="xs:int" use="optional"/>
                         <xs:attribute name="cols" type="xs:int" use="optional"/>
                         <xs:attribute name="rows" type="xs:int" use="optional"/>
                         <xs:attribute name="secret" type="xs:boolean" use="optional"/>
@@ -760,8 +779,9 @@
     </xs:complexType>
 
     <xs:complexType name="formatterType">
-        <xs:attribute name="class" type="xs:string" use="required"/>
+        <xs:attribute name="class" type="xs:string" use="optional"/>
         <xs:attribute name="format" type="xs:string" use="optional"/>
+        <xs:attribute name="type" type="columnFormatterType" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="buttonsPanelType">
@@ -859,6 +879,13 @@
             <xs:enumeration value="long"/>
             <xs:enumeration value="string"/>
             <xs:enumeration value="uuid"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="columnFormatterType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DATE"/>
+            <xs:enumeration value="DATETIME"/>
         </xs:restriction>
     </xs:simpleType>
 

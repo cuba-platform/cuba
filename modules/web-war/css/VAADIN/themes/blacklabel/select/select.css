@@ -68,7 +68,7 @@
     height: 23px;
     white-space: nowrap;
     text-align: left; /* Force default alignment */
-    background: transparent url(img/bg-left-filter.gif) no-repeat;
+    background: transparent url(img/bg-left-filter-wide.gif) no-repeat;
     padding-left: 4px;
 }
 

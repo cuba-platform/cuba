@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -46,7 +47,7 @@ public class LayoutLoader {
     public static Document parseDescriptor(InputStream stream, Map<String, Object> params) {
         if (stream == null)
             throw new IllegalArgumentException("Input stream is null");
-        
+
         Document document;
         try {
             String template = IOUtils.toString(stream);
@@ -108,11 +109,8 @@ public class LayoutLoader {
     }
 
     public Component loadComponent(InputStream stream, Component parent, Map<String, Object> params) {
-        if (params == null || params.isEmpty()) {
-            return loadComponent(stream, parent);
-        }
         try {
-            Document doc = parseDescriptor(stream, params);
+            Document doc = parseDescriptor(stream, params == null ? Collections.<String, Object>emptyMap() : params);
             Element element = doc.getRootElement();
 
             return loadComponent(element, parent);

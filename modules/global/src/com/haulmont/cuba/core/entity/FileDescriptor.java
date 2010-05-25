@@ -10,13 +10,16 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Table;
 import java.util.Date;
 
 @javax.persistence.Entity(name = "core$FileDescriptor")
 @Table(name = "SYS_FILE")
+@NamePattern("%s (%s)|name,createDate")
 public class FileDescriptor extends StandardEntity {
 
     @Column(name = "NAME", length = 500)

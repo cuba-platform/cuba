@@ -10,7 +10,6 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
@@ -47,11 +46,17 @@ public abstract class WindowManager {
      * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}
      */
     public enum OpenType {
-        /** In new tab for TABBED mode, replace current screen for SINGLE mode */
+        /**
+         * In new tab for TABBED mode, replace current screen for SINGLE mode
+         */
         NEW_TAB,
-        /** On top of the current conversation stack */
+        /**
+         * On top of the current conversation stack
+         */
         THIS_TAB,
-        /** In modal dialog */
+        /**
+         * In modal dialog
+         */
         DIALOG
     }
 
@@ -88,7 +93,7 @@ public abstract class WindowManager {
                 throw new RuntimeException("Bad template path: " + templatePath);
             }
         }
-        
+
         Document document = LayoutLoader.parseDescriptor(stream, params);
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, params);
         Element element = processor.getResultRoot();
@@ -189,7 +194,7 @@ public abstract class WindowManager {
     @SuppressWarnings({"UnusedDeclaration"})
     protected DataService createDataservice(String dataserviceClass, Element element) {
         DataService dataService;
-        
+
         final Class<Object> aClass = ReflectionHelper.getClass(dataserviceClass);
         try {
             dataService = (DataService) aClass.newInstance();
@@ -218,8 +223,28 @@ public abstract class WindowManager {
         return window;
     }
 
-    public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params)
-    {
+    protected Window createWindow(WindowInfo windowInfo) {
+        final Runnable window;
+        try {
+            window = (Runnable) windowInfo.getScreenClass().newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            ReflectionHelper.invokeMethod(window, "run");
+        } catch (NoSuchMethodException e) {
+            // Do nothing
+        }
+        return null;
+    }
+
+    public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
+        return (T) openWindow(windowInfo, openType, params, WindowParameters.EMPTY);
+    }
+
+    public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
         checkCanOpenWindow(windowInfo, openType, params);
 
         params = createParametersMap(windowInfo, params);
@@ -230,9 +255,9 @@ public abstract class WindowManager {
             window.setId(windowInfo.getId());
 
             String caption = loadCaption(window, params);
-            showWindow(window, caption, openType);
+            showWindow(window, caption, openType, windowParameters);
 
-            return (T)window;
+            return (T) window;
         } else {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null)
@@ -276,26 +301,34 @@ public abstract class WindowManager {
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
-                                           Datasource parentDs)
-    {
+                                           Datasource parentDs) {
         //noinspection unchecked
-        return (T)openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap(), parentDs);
+        return (T) openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap(), parentDs);
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType) {
         //noinspection unchecked
-        return (T)openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
+        return (T) openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
+    }
+
+    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
+        return (T) openEditor(windowInfo, item, openType, params, null, windowParameters);
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
         //noinspection unchecked
-        return (T)openEditor(windowInfo, item, openType, params, null);
+        return (T) openEditor(windowInfo, item, openType, params, WindowParameters.EMPTY);
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
                                            OpenType openType, Map<String, Object> params,
-                                           Datasource parentDs)
-    {
+                                           Datasource parentDs) {
+        return (T) openEditor(windowInfo, item, openType, params, parentDs, WindowParameters.EMPTY);
+    }
+
+    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
+                                           OpenType openType, Map<String, Object> params,
+                                           Datasource parentDs, WindowParameters windowParameters) {
         checkCanOpenWindow(windowInfo, openType, params);
 
         params = createParametersMap(windowInfo, params);
@@ -322,7 +355,7 @@ public abstract class WindowManager {
         ((Window.Editor) window).setItem(item);
 
         String caption = loadCaption(window, params);
-        showWindow(window, caption, openType);
+        showWindow(window, caption, openType, windowParameters);
 
         //noinspection unchecked
         return (T) window;
@@ -330,8 +363,7 @@ public abstract class WindowManager {
 
     public <T extends Window> T openLookup(
             WindowInfo windowInfo, Window.Lookup.Handler handler,
-                OpenType openType, Map<String, Object> params)
-    {
+            OpenType openType, Map<String, Object> params) {
         checkCanOpenWindow(windowInfo, openType, params);
 
         params = createParametersMap(windowInfo, params);
@@ -408,15 +440,17 @@ public abstract class WindowManager {
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, OpenType openType) {
         //noinspection unchecked
-        return (T)openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
+        return (T) openWindow(windowInfo, openType, Collections.<String, Object>emptyMap());
     }
 
     public <T extends Window> T openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler, OpenType openType) {
         //noinspection unchecked
-        return (T)openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
+        return (T) openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
     }
 
     protected abstract void showWindow(Window window, String caption, OpenType openType);
+
+    protected abstract void showWindow(Window window, String caption, OpenType openType, WindowParameters windowParameters);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -452,5 +486,6 @@ public abstract class WindowManager {
     public abstract void showNotification(String caption, IFrame.NotificationType type);
     public abstract void showNotification(String caption, String description, IFrame.NotificationType type);
     public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
+
     public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
 }

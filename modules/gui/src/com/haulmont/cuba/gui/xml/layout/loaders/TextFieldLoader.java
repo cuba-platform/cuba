@@ -11,11 +11,12 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextField;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class TextFieldLoader extends AbstractFieldLoader {
     public TextFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -28,6 +29,7 @@ public class TextFieldLoader extends AbstractFieldLoader {
 
         final String cols = element.attributeValue("cols");
         final String rows = element.attributeValue("rows");
+        final String maxLength = element.attributeValue("maxLength");
 
         loadStyleName(component, element);
 
@@ -36,6 +38,9 @@ public class TextFieldLoader extends AbstractFieldLoader {
         }
         if (!StringUtils.isEmpty(rows)) {
             component.setRows(Integer.valueOf(rows));
+        }
+        if (!StringUtils.isEmpty(maxLength)) {
+            component.setMaxLength(Integer.valueOf(maxLength));
         }
 
         String secret = element.attributeValue("secret");

@@ -12,7 +12,6 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
@@ -21,7 +20,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
@@ -33,7 +31,10 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class Param {
 
@@ -60,8 +61,7 @@ public class Param {
     }
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
-                 MetaProperty property)
-    {
+                 MetaProperty property) {
         this.name = name;
         if (javaClass != null) {
             this.javaClass = javaClass;
@@ -287,6 +287,8 @@ public class Param {
                         throw new RuntimeException(e);
                     }
                     setValue(v);
+                } else if (value instanceof String && StringUtils.isBlank((String) value)) {
+                    setValue(null);
                 } else
                     throw new IllegalStateException("Invalid value: " + value);
             }
@@ -376,7 +378,7 @@ public class Param {
         for (Object obj : javaClass.getEnumConstants()) {
             options.put(MessageProvider.getMessage((Enum) obj), obj);
         }
-        
+
         WebLookupField lookup = new WebLookupField();
         lookup.setOptionsMap(options);
 

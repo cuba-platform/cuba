@@ -12,12 +12,12 @@ package com.haulmont.cuba.gui.config;
 
 import org.dom4j.Element;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 
 /**
  * Screen information object
  */
-public class WindowInfo
-{
+public class WindowInfo {
     private String id;
     private Element descriptor;
     private Class screenClass;
@@ -48,7 +48,7 @@ public class WindowInfo
         if (screenClass == null) {
             String className = descriptor.attributeValue("class");
             if (className != null)
-                screenClass = ReflectionHelper.getClass(className);
+                screenClass = ScriptingProvider.loadClass(className);
         }
 
         return screenClass;

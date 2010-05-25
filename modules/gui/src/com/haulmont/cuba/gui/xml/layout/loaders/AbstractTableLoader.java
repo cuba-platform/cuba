@@ -13,18 +13,19 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class AbstractTableLoader<T extends Table> extends ComponentLoader {
@@ -314,7 +315,16 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     protected Formatter loadFormatter(Element element) {
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
-            final String className = formatterElement.attributeValue("class");
+            final String formatterType = formatterElement.attributeValue("type");
+            final String className;
+            if (formatterType != null) {
+                Table.Column.FormatterType ftype = Table.Column.FormatterType.valueOf(formatterType);
+                className = ftype.getFormatterClass().getName();
+            }
+            else {
+                className = formatterElement.attributeValue("class");
+            }
+
             final Class<Formatter> aClass = ScriptingProvider.loadClass(className);
             try {
                 final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);

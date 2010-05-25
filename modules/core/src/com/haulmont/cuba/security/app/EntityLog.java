@@ -30,14 +30,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * EntityLog MBean implementation.
- * <p>
+ * <p/>
  * Allows to log entity lifecycle events: create, modify, delete.<br>
  * Configured by {@link com.haulmont.cuba.security.entity.LoggedEntity} and {@link com.haulmont.cuba.security.entity.LoggedAttribute} entities.
- * See also {@link com.haulmont.cuba.security.app.EntityLogConfig} configuration parameters. 
+ * See also {@link com.haulmont.cuba.security.app.EntityLogConfig} configuration parameters.
  */
 @ManagedBean(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogMBean, EntityLogAPI {
-    
+
     private Log log = LogFactory.getLog(EntityLog.class);
 
     private volatile boolean loaded;
@@ -114,9 +114,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         Transaction tx = Locator.getTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery(
-                    "select distinct e from sec$LoggedEntity e join fetch e.attributes " +
-                            "where e.auto = true or e.manual = true");
+            Query q = em.createQuery("select e from sec$LoggedEntity e where e.auto = true or e.manual = true");
             q.setView(null);
             List<LoggedEntity> list = q.getResultList();
             for (LoggedEntity loggedEntity : list) {

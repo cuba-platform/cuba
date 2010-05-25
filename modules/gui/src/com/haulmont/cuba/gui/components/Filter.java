@@ -15,15 +15,21 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 
 public interface Filter
         extends Component.Container, Component.BelongToFrame,
-            Component.HasXmlDescriptor, Component.HasSettings
-{
+        Component.HasXmlDescriptor, Component.HasSettings {
     CollectionDatasource getDatasource();
+
     void setDatasource(CollectionDatasource datasource);
 
     void setFilterEntity(FilterEntity filterEntity);
+
+    void apply();
 
     /**
      * Low-level method, don't invoke from application code
      */
     void loadFiltersAndApplyDefault();
+
+    void setUseMaxResults(boolean useMaxResults);
+
+    boolean getUseMaxResults();
 }

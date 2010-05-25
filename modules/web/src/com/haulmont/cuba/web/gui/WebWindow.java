@@ -170,6 +170,12 @@ public class WebWindow
         return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params);
     }
 
+    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
+        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params, windowParameters);
+    }
+
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
         final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -186,6 +192,12 @@ public class WebWindow
         final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
+    }
+
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
+        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params, windowParameters);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {

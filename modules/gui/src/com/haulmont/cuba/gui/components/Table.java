@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.formatters.DateFormatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
@@ -154,6 +155,21 @@ public interface Table
         @Override
         public String toString() {
             return id == null ? super.toString() : id.toString();
+        }
+
+        public enum FormatterType {
+            DATE(DateFormatter.class),
+            DATETIME(DateFormatter.class);
+
+            private Class formatterClass;
+
+            private FormatterType(Class formatterClass) {
+                this.formatterClass = formatterClass;
+            }
+
+            public Class getFormatterClass() {
+                return formatterClass;
+            }
         }
     }
 

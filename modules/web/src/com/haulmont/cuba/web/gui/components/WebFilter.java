@@ -14,6 +14,8 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
@@ -46,6 +48,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.TextField;
 import org.apache.commons.lang.ArrayUtils;
 import org.dom4j.Element;
 import org.dom4j.Attribute;
@@ -59,11 +62,14 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.ParseException;
 
 public class WebFilter
         extends WebAbstractComponent<VerticalLayout> implements Filter
 {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.web.gui.components.filter";
+
+    private static final int MAX_DEFAULT = 50;
 
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
@@ -87,6 +93,12 @@ public class WebFilter
     private boolean changingFilter;
     private boolean editing;
     private FoldersPane foldersPane;
+
+    private boolean useMaxResults;
+
+    private Label maxResultsLabel;
+    private TextField maxResultsField;
+    private HorizontalLayout maxResultsPanel;
 
     public WebFilter() {
         component = new VerticalLayout();
@@ -165,10 +177,27 @@ public class WebFilter
 
         component.addComponent(topLayout);
 
+        createMaxResultsLayout();
+        component.addComponent(maxResultsPanel);
+
         createParamsLayout();
         component.addComponent(paramsLayout);
 
         updateControls();
+    }
+
+    private void createMaxResultsLayout() {
+        maxResultsPanel = new HorizontalLayout();
+        maxResultsPanel.setSpacing(true);
+        maxResultsPanel.setMargin(true, false, false, false);
+        maxResultsPanel.setVisible(false);
+
+        maxResultsLabel = new Label(MessageProvider.getMessage(MESSAGES_PACK, "filter.maxResults"));
+        maxResultsPanel.addComponent(maxResultsLabel);
+
+        maxResultsField = new TextField();
+        maxResultsField.setWidth("50px");
+        maxResultsPanel.addComponent(maxResultsField);
     }
 
     private void fillActions() {
@@ -188,7 +217,42 @@ public class WebFilter
             actions.addItem(saveAsFolderActionId);
     }
 
-    private void apply() {
+    public void apply() {
+        applyDatasourceFilter();
+
+        int maxSize = MAX_DEFAULT;
+        if (useMaxResults) {
+            Datatype intType = Datatypes.getInstance().get("int");
+            try {
+                String strValue = (String) maxResultsField.getValue();
+                if (StringUtils.isEmpty(strValue)) {
+                    strValue = String.valueOf(MAX_DEFAULT);
+                    maxResultsField.setValue(strValue);
+                }
+                int value = (Integer) intType.parse(strValue);
+                if (value >= 0) {
+                    maxSize = value;
+                }
+            }
+            catch (ParseException e) {
+            }
+        } else {
+            maxSize = 0;
+        }
+        datasource.setMaxResults(maxSize);
+
+        datasource.refresh();
+
+        if (useMaxResults) {
+            int size = datasource.size();
+            if (datasource.getMaxResults() != 0 && size >= maxSize) {
+                String message = String.format(MessageProvider.getMessage(MESSAGES_PACK, "messages.tooManyResults"), maxSize);
+                App.getInstance().getAppWindow().showNotification(message, com.vaadin.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE);
+            }
+        }
+    }
+
+    private void applyDatasourceFilter() {
         if (filterEntity != null) {
             Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
             QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
@@ -202,8 +266,6 @@ public class WebFilter
         } else {
             datasource.setQueryFilter(dsQueryFilter);
         }
-
-        datasource.refresh();
     }
 
     private void createFilterEntity() {
@@ -343,6 +405,15 @@ public class WebFilter
         }
     }
 
+    public void setUseMaxResults(boolean useMaxResults) {
+        this.useMaxResults = useMaxResults;
+        maxResultsPanel.setVisible(useMaxResults);
+    }
+
+    public boolean getUseMaxResults() {
+        return useMaxResults;
+    }
+
     public void editorCommitted() {
         changingFilter = true;
         try {
@@ -364,7 +435,7 @@ public class WebFilter
     public void editorCancelled() {
         if (filterEntity.getXml() == null)
             filterEntity = null;
-        
+
         switchToUse();
     }
 
@@ -435,12 +506,14 @@ public class WebFilter
         updateControls();
         component.removeComponent(editLayout);
         createParamsLayout();
+        component.addComponent(maxResultsPanel);
         component.addComponent(paramsLayout);
     }
 
     private void switchToEdit() {
         editing = true;
         updateControls();
+        component.removeComponent(maxResultsPanel);
         component.removeComponent(paramsLayout);
         createEditLayout();
         component.addComponent(editLayout);

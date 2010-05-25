@@ -50,7 +50,12 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyEx(property);
-        metaProperty = metaPropertyPath.getMetaProperty();
+        try {
+            metaProperty = metaPropertyPath.getMetaProperty();
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+            throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
+        }
 
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));

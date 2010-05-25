@@ -9,5 +9,5 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface ScrollBoxLayout extends Layout {
+public interface ScrollBoxLayout extends Layout, Component.BelongToFrame {
 }

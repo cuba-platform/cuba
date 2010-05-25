@@ -9,13 +9,16 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.xml.layout.*;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
 
@@ -35,13 +38,22 @@ public class DateFieldLoader extends AbstractFieldLoader {
         }
 
         final String resolution = element.attributeValue("resolution");
+        String dateFormat = element.attributeValue("dateFormat");
         if (!StringUtils.isEmpty(resolution)) {
-            component.setResolution(DateField.Resolution.valueOf(resolution));
+            DateField.Resolution res = DateField.Resolution.valueOf(resolution);
+            component.setResolution(res);
+            if (dateFormat == null) {
+                if (res == DateField.Resolution.DAY) {
+                    dateFormat = "msg://dateFormat";
+                }
+                else if (res == DateField.Resolution.MIN) {
+                    dateFormat = "msg://dateTimeFormat";                        
+                }
+            }
         } else if (tt == TemporalType.DATE) {
             component.setResolution(DateField.Resolution.DAY);
         }
 
-        String dateFormat = element.attributeValue("dateFormat");
         if (!StringUtils.isEmpty(dateFormat)) {
                if (dateFormat.startsWith("msg://")) {
                 dateFormat = MessageProvider.getMessage(

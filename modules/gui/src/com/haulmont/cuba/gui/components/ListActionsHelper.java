@@ -1,22 +1,19 @@
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.PropertyDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaClass;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.Collections;
-import java.util.ArrayList;
+import java.util.*;
 
-abstract class ListActionsHelper<T extends List> {
+public abstract class ListActionsHelper<T extends List> {
     protected IFrame frame;
     protected T component;
     protected UserSession userSession;
@@ -70,11 +67,28 @@ abstract class ListActionsHelper<T extends List> {
     }
 
     public Action createEditAction(final WindowManager.OpenType openType) {
-        return createEditAction(openType, Collections.EMPTY_MAP);
+        return createEditAction(openType, (ValueProvider) null);
     }
 
-    public Action createEditAction(final WindowManager.OpenType openType, Map<String, Object> params) {
-        final AbstractAction action = new EditAction("edit", openType, params);
+    public Action createEditAction(final WindowManager.OpenType openType, final Map<String, Object> params) {
+        ValueProvider vp = new ValueProvider() {
+
+            public Map<String, Object> getValues() {
+                return Collections.EMPTY_MAP;
+            }
+
+            public Map<String, Object> getParameters() {
+                return params;
+            }
+        };
+        final AbstractAction action = new EditAction("edit", openType, vp);
+        ListActionsHelper.this.component.addAction(action);
+
+        return action;
+    }
+
+    public Action createEditAction(final WindowManager.OpenType openType, ValueProvider valueProvider) {
+        final AbstractAction action = new EditAction("edit", openType, valueProvider);
         ListActionsHelper.this.component.addAction(action);
 
         return action;
@@ -82,6 +96,12 @@ abstract class ListActionsHelper<T extends List> {
 
     public Action createRefreshAction() {
         Action action = new RefreshAction();
+        component.addAction(action);
+        return action;
+    }
+
+    public Action createRefreshAction(ValueProvider valueProvider) {
+        Action action = new RefreshAction(valueProvider);
         component.addAction(action);
         return action;
     }
@@ -132,6 +152,12 @@ abstract class ListActionsHelper<T extends List> {
         return createAddAction(handler, openType, params, null);
     }
 
+    public Action createAddAction(String windowAlias, final Window.Lookup.Handler handler, final WindowManager.OpenType openType, final Map<String, Object> params) {
+        AddAction addAction = (AddAction) createAddAction(handler, openType, params, null);
+        addAction.setWindow(windowAlias);
+        return addAction;
+    }
+
     public Action createAddAction(final Window.Lookup.Handler handler, final WindowManager.OpenType openType,
                                   final Map<String, Object> params, final String captionKey) {
         return createAddAction(handler, openType, params, captionKey, null);
@@ -175,18 +201,17 @@ abstract class ListActionsHelper<T extends List> {
     protected class EditAction extends AbstractAction {
         private final WindowManager.OpenType openType;
 
-        private Map<String, Object> params;
+        private ValueProvider valueProvider;
 
         public EditAction(String id, WindowManager.OpenType openType) {
             super(id);
             this.openType = openType;
-            this.params = Collections.EMPTY_MAP;
         }
 
-        public EditAction(String id, WindowManager.OpenType openType, Map<String, Object> params) {
+        public EditAction(String id, WindowManager.OpenType openType, ValueProvider valueProvider) {
             super(id);
             this.openType = openType;
-            this.params = params;
+            this.valueProvider = valueProvider;
         }
 
         public String getCaption() {
@@ -212,6 +237,12 @@ abstract class ListActionsHelper<T extends List> {
                 }
                 final Datasource pDs = parentDs;
 
+                Map<String, Object> params;
+                if (valueProvider != null) {
+                    params = valueProvider.getParameters();
+                } else {
+                    params = new HashMap<String, Object>();
+                }
                 final Window window = frame.openEditor(windowID, datasource.getItem(), openType, params, parentDs);
 
                 window.addListener(new Window.CloseListener() {
@@ -233,13 +264,23 @@ abstract class ListActionsHelper<T extends List> {
 
     public static interface Listener {
         void entityCreated(Entity entity);
+
         void entityEdited(Entity entity);
+
         void entityRemoved(Set<Entity> entity);
     }
 
     private class RefreshAction extends AbstractAction {
+
+        private ValueProvider valueProvider;
+
         public RefreshAction() {
+            this(null);
+        }
+
+        private RefreshAction(ValueProvider valueProvider) {
             super("refresh");
+            this.valueProvider = valueProvider;
         }
 
         public String getCaption() {
@@ -248,7 +289,12 @@ abstract class ListActionsHelper<T extends List> {
         }
 
         public void actionPerform(Component component) {
-            ListActionsHelper.this.component.getDatasource().refresh();
+            CollectionDatasource datasource = ListActionsHelper.this.component.getDatasource();
+            if (valueProvider != null) {
+                datasource.refresh(valueProvider.getParameters());
+            } else {
+                datasource.refresh();
+            }
         }
     }
 
@@ -298,8 +344,6 @@ abstract class ListActionsHelper<T extends List> {
                                     ds.removeItem((Entity) item);
                                 }
 
-                                fireRemoveEvent(selected);
-
                                 if (autocommit) {
                                     try {
                                         ds.commit();
@@ -308,6 +352,7 @@ abstract class ListActionsHelper<T extends List> {
                                         throw e;
                                     }
                                 }
+                                fireRemoveEvent(selected);
                             }
                         }, new AbstractAction("cancel") {
                             public String getCaption() {
@@ -377,7 +422,7 @@ abstract class ListActionsHelper<T extends List> {
         private final Window.Lookup.Handler handler;
         private final WindowManager.OpenType openType;
         private final Map<String, Object> params;
-        private String windowId; 
+        private String windowId;
 
         public AddAction(String captionKey, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params, String windowId) {
             super("add");
@@ -386,6 +431,10 @@ abstract class ListActionsHelper<T extends List> {
             this.openType = openType;
             this.params = params;
             this.windowId = windowId;
+        }
+
+        public void setWindow(String window) {
+            this.windowId = window;
         }
 
         public String getCaption() {

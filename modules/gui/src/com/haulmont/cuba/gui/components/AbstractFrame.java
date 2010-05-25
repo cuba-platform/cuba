@@ -9,16 +9,17 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.WindowContext;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParameters;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.WindowContext;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Collection;
 
 public class AbstractFrame implements IFrame, Component.Wrapper {
     protected IFrame frame;
@@ -105,7 +106,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     public <T extends Component> T getOwnComponent(String id) {
-        return frame.<T>getOwnComponent(id); 
+        return frame.<T>getOwnComponent(id);
     }
 
     public <T extends Component> T getComponent(String id) {
@@ -168,7 +169,11 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.<T>openWindow(windowAlias, openType, params);
+        return frame.<T>openWindow(windowAlias, openType, params, WindowParameters.EMPTY);
+    }
+
+    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
+        return frame.<T>openWindow(windowAlias, openType, params, windowParameters);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
@@ -183,6 +188,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return frame.<T>openEditor(windowAlias, item, openType, params);
     }
 
+    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
+        return frame.<T>openEditor(windowAlias, item, openType, params, windowParameters);
+    }
+
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         return frame.<T>openEditor(windowAlias, item, openType, Collections.<String, Object>emptyMap(), parentDs);
     }
@@ -193,8 +202,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
 
     public <T extends Window> T openLookup(
             String windowAlias, Window.Lookup.Handler handler,
-                WindowManager.OpenType openType, Map<String, Object> params)
-    {
+            WindowManager.OpenType openType, Map<String, Object> params) {
         return frame.<T>openLookup(windowAlias, handler, openType, params);
     }
 
@@ -238,6 +246,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         }
     }
 
+    public void closeAndRun(String actionId, Runnable runnable) {
+        if (frame instanceof Window) {
+            ((Window) frame).closeAndRun(actionId, runnable);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     public <A extends IFrame> A getFrame() {
         return (A) this.frame.getFrame();
     }
@@ -249,7 +265,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     public String getStyleName() {
-        return styleName;  
+        return styleName;
     }
 
     public void setStyleName(String styleName) {

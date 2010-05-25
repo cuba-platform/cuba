@@ -360,6 +360,11 @@ input.v-modified,
 	cursor: default;
 }
 
+.v-table .v-checkbox.v-disabled input[type="checkbox"] {
+    opacity: 0.9;
+    filter: Alpha(opacity = 90);
+}
+
 .v-label .v-label-undef-w
 {
     float: left;

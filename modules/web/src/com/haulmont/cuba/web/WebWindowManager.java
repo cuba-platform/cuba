@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParameters;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
@@ -24,7 +25,6 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
@@ -38,8 +38,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-public class WebWindowManager extends WindowManager
-{
+public class WebWindowManager extends WindowManager {
     protected static class WindowData {
         protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
         protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
@@ -134,11 +133,15 @@ public class WebWindowManager extends WindowManager
 
     protected void fireListeners(Window window, boolean anyOpenWindowExist) {
         for (WindowCloseListener wcl : listeners) {
-            wcl.onWindowClose(window,  anyOpenWindowExist);
+            wcl.onWindowClose(window, anyOpenWindowExist);
         }
     }
 
     public void showWindow(final Window window, final String caption, OpenType type) {
+        showWindow(window, caption, type, WindowParameters.EMPTY);
+    }
+
+    public void showWindow(final Window window, final String caption, OpenType type, WindowParameters windowParameters) {
         AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
 
@@ -152,14 +155,14 @@ public class WebWindowManager extends WindowManager
                         WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
                         if (oldBreadCrumbs != null) {
                             Window oldWindow = oldBreadCrumbs.getCurrentWindow();
-                            WebWindow webWindow;
+                            /*WebWindow webWindow;
                             if (oldWindow instanceof Window.Wrapper) {
                                 webWindow = ((Window.Wrapper) oldWindow).getWrappedWindow();
                             } else {
                                 webWindow = (WebWindow) oldWindow;
-                            }
+                            }*/
 
-                            webWindow.closeAndRun("mainMenu", new Runnable() {
+                            oldWindow/*webWindow*/.closeAndRun("mainMenu", new Runnable() {
                                 public void run() {
                                     showWindow(window, caption, OpenType.NEW_TAB);
                                 }
@@ -176,7 +179,7 @@ public class WebWindowManager extends WindowManager
                 break;
 
             case DIALOG:
-                component = showWindowDialog(window, caption, appWindow);
+                component = showWindowDialog(window, caption, appWindow, windowParameters);
                 break;
 
             default:
@@ -216,21 +219,21 @@ public class WebWindowManager extends WindowManager
     protected Component showWindowNewTab(final Window window, final String caption, AppWindow appWindow) {
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
         breadCrumbs.addListener(
-                new WindowBreadCrumbs.Listener()
-                {
+                new WindowBreadCrumbs.Listener() {
                     public void windowClick(final Window window) {
                         Runnable op = new Runnable() {
                             public void run() {
                                 Window currentWindow = breadCrumbs.getCurrentWindow();
 
                                 if (currentWindow != null && window != currentWindow) {
-                                    WebWindow webWindow;
+                                    /*WebWindow webWindow;
                                     if (currentWindow instanceof Window.Wrapper) {
                                         webWindow = ((Window.Wrapper) currentWindow).getWrappedWindow();
                                     } else {
                                         webWindow = (WebWindow) currentWindow;
                                     }
-                                    webWindow.closeAndRun("close", this);
+                                    webWindow.closeAndRun("close", this);*/
+                                    currentWindow.closeAndRun("close", this);
                                 }
                             }
                         };
@@ -314,7 +317,7 @@ public class WebWindowManager extends WindowManager
         return layout;
     }
 
-    protected Component showWindowDialog(final Window window, String caption, AppWindow appWindow) {
+    protected Component showWindowDialog(final Window window, String caption, AppWindow appWindow, WindowParameters windowParameters) {
         removeWindowsWithName(window.getId());
 
         final com.vaadin.ui.Window win = createDialogWindow(window);
@@ -334,8 +337,10 @@ public class WebWindowManager extends WindowManager
                 window.close("close", true);
             }
         });
-
-        win.setWidth(600, Sizeable.UNITS_PIXELS);
+        if (windowParameters != null && !WindowParameters.EMPTY.equals(windowParameters) && windowParameters.getParameter("width") != null && windowParameters.getParameter("width") instanceof Float)
+            win.setWidth((Float) windowParameters.getParameter("width"), Sizeable.UNITS_PIXELS);
+        else
+            win.setWidth(600, Sizeable.UNITS_PIXELS);
 //        win.setResizable(false);
         win.setModal(true);
 
@@ -369,7 +374,7 @@ public class WebWindowManager extends WindowManager
     }
 
     public void closeAll() {
-        List<Map.Entry<Window,WindowOpenMode>> entries = new ArrayList(getWindowOpenMode().entrySet());
+        List<Map.Entry<Window, WindowOpenMode>> entries = new ArrayList(getWindowOpenMode().entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
             closeWindow(entries.get(i).getKey(), entries.get(i).getValue());
         }
@@ -416,7 +421,8 @@ public class WebWindowManager extends WindowManager
                 final VerticalLayout layout = (VerticalLayout) openMode.getData();
 
                 final WindowBreadCrumbs breadCrumbs = getTabs().get(layout);
-                if (breadCrumbs == null) throw new IllegalStateException("Unable to close screen: breadCrumbs not found");
+                if (breadCrumbs == null)
+                    throw new IllegalStateException("Unable to close screen: breadCrumbs not found");
 
                 breadCrumbs.removeWindow();
                 Window currentWindow = breadCrumbs.getCurrentWindow();
@@ -488,8 +494,7 @@ public class WebWindowManager extends WindowManager
 
     @Override
     public void showOptionDialog(String title, String message,
-                                 IFrame.MessageType messageType, Action[] actions)
-    {
+                                 IFrame.MessageType messageType, Action[] actions) {
         removeWindowsWithName("cuba-option-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
@@ -568,12 +573,10 @@ public class WebWindowManager extends WindowManager
         final AppWindow appWindow = App.getInstance().getAppWindow();
         final AppWindow.Mode viewMode = appWindow.getMode();
 
-        if (viewMode == AppWindow.Mode.SINGLE) 
-        {
+        if (viewMode == AppWindow.Mode.SINGLE) {
             final Layout mainLayout = appWindow.getMainLayout();
             layout = (Layout) mainLayout.getComponentIterator().next();
-        }
-        else {
+        } else {
             layout = (Layout) appWindow.getTabSheet().getSelectedTab();
         }
 

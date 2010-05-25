@@ -10,13 +10,19 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.text.ParseException;
+import java.util.Collection;
 
 public class WebTextField
     extends
@@ -27,6 +33,8 @@ public class WebTextField
     private Log log = LogFactory.getLog(WebTextField.class);
 
     private Datatype datatype;
+
+    protected Formatter formatter;
 
     public WebTextField() {
         this.component = new com.haulmont.cuba.web.toolkit.ui.TextField();
@@ -108,4 +116,39 @@ public class WebTextField
             component.setMaxLength(len);
         }
     }
+
+    @Override
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
+            private static final long serialVersionUID = -5672549961402055473L;
+
+            @Override
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new PropertyWrapper(item, propertyPath) {
+                    private static final long serialVersionUID = -6484626348078235396L;
+
+                    @Override
+                    public String toString() {
+                        if (formatter != null) {
+                            Object value = getValue();
+                            if (value instanceof Instance)
+                                value = ((Instance) value).getInstanceName();
+                            return formatter.format(value);
+                        } else {
+                            return super.toString();
+                        }
+                    }
+                };
+            }
+        };
+    }
+
+    public Formatter getFormatter() {
+        return formatter;
+    }
+
+    public void setFormatter(Formatter formatter) {
+        this.formatter = formatter;
+    }
+
 }

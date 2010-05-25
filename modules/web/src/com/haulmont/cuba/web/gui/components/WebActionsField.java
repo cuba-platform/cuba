@@ -236,4 +236,7 @@ public class WebActionsField
     public void validate() throws ValidationException {
         lookupField.validate();
     }
+    
+    public void disablePaging() {
+    }    
 }

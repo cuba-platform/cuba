@@ -57,8 +57,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         setRequired(metaProperty.isMandatory());
 
         if (metaProperty.getRange().isEnum()) {
-            final Enumeration enumiration = metaProperty.getRange().asEnumeration();
-            final Class<Enum> javaClass = enumiration.getJavaClass();
+            final Enumeration enumeration = metaProperty.getRange().asEnumeration();
+            final Class<Enum> javaClass = enumeration.getJavaClass();
 
             optionsList = Arrays.asList(javaClass.getEnumConstants());
             component.setContainerDataSource(new EnumerationContainer(optionsList));
@@ -67,15 +67,38 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     }
 
     public void setOptionsMap(Map<String, Object> options) {
-        List opts = new ArrayList();
-        for (String key : options.keySet()) {
-            Object itemId = options.get(key);
-            component.setItemCaption(itemId, key);
-            opts.add(itemId);
+        if (metaProperty == null) {
+            List opts = new ArrayList();
+            for (String key : options.keySet()) {
+                Object itemId = options.get(key);
+                component.setItemCaption(itemId, key);
+                opts.add(itemId);
+            }
+            component.setContainerDataSource(new ObjectContainer(opts));
+            component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
+            this.optionsMap = options;
         }
-        component.setContainerDataSource(new ObjectContainer(opts));
-        component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
-        this.optionsMap = options;
+        else {
+            if (metaProperty.getRange().isEnum()) {
+                List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());
+                List opts = new ArrayList();
+
+                for (String key : options.keySet()) {
+                    Object itemId = options.get(key);
+                    component.setItemCaption(itemId, key);
+                    if (!constants.contains(itemId)) {
+                        throw new UnsupportedOperationException(itemId + " is not of class of meta property" + metaProperty);
+                    }
+                    opts.add(itemId);
+                }
+                this.optionsList = opts;
+                component.setContainerDataSource(new EnumerationContainer(opts));
+                setCaptionMode(CaptionMode.ITEM);
+            }
+            else {
+                throw new UnsupportedOperationException();
+            }
+        }
     }
 
     public void setOptionsList(List optionsList) {

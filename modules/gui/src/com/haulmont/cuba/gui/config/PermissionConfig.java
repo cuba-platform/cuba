@@ -140,7 +140,7 @@ public class PermissionConfig {
         caption = StringEscapeUtils.unescapeHtml(caption);
 
         if (info.getChildren() != null && !info.getChildren().isEmpty()) {
-            Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
+            Node<Target> n = new Node<Target>(new Target("category:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
             node.addChild(n);
             for (MenuItem item : info.getChildren()) {
                 walkMenu(item, n);

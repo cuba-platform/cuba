@@ -11,7 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 
-public interface TextField extends Field {
+public interface TextField extends Field, Component.HasFomatter {
     int getRows();
     void setRows(int rows);
 

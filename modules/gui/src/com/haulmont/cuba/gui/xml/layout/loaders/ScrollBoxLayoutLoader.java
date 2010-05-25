@@ -9,9 +9,10 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.dom4j.Element;
 
 public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
@@ -37,6 +38,8 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
 
         loadHeight(component, element);
         loadWidth(component, element);
+
+        assignFrame(component);
 
         return component;
     }
