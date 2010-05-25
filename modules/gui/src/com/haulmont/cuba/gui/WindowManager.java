@@ -232,11 +232,7 @@ public abstract class WindowManager {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        try {
-            ReflectionHelper.invokeMethod(window, "run");
-        } catch (NoSuchMethodException e) {
-            // Do nothing
-        }
+        window.run();
         return null;
     }
 
@@ -259,17 +255,12 @@ public abstract class WindowManager {
 
             return (T) window;
         } else {
+            // todo degtyarjov to make it work nicely and for many cases
             Class screenClass = windowInfo.getScreenClass();
-            if (screenClass != null)
-            {
+            if (screenClass != null) {
                 //noinspection unchecked
-                Window window = createWindow(windowInfo, params);
-                window.setId(windowInfo.getId());
-
-                String caption = loadCaption(window, params);
-                showWindow(window, caption, openType);
-
-                return (T)window;
+                createWindow(windowInfo);
+                return null;
             } else
                 return null;
         }
@@ -484,7 +475,9 @@ public abstract class WindowManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public abstract void showNotification(String caption, IFrame.NotificationType type);
+
     public abstract void showNotification(String caption, String description, IFrame.NotificationType type);
+
     public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
 
     public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
