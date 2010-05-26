@@ -11,10 +11,7 @@ package com.haulmont.cuba.web.app.ui.security.user.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -27,6 +24,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
 import com.haulmont.cuba.web.app.NameBuilderListener;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -41,12 +39,24 @@ public class UserEditor extends AbstractEditor {
     private Datasource<User> userDs;
     private Table rolesTable;
     private Table substTable;
+    protected TextField passwField;
+    protected TextField confirmPasswField;
 
     public UserEditor(Window frame) {
         super(frame);
     }                                                                                                  
 
     protected void init(Map<String, Object> params) {
+        passwField = getComponent("passw");
+        confirmPasswField = getComponent("confirmPassw");
+
+        if (passwField != null && confirmPasswField != null 
+                && ConfigProvider.getConfig(WebConfig.class).getUseActiveDirectory())
+        {
+            passwField.setRequired(false);
+            confirmPasswField.setRequired(false);
+        }
+
         userDs = getDsContext().get("user");
         userDs.addListener(new NameBuilderListener(this));
 
@@ -171,9 +181,6 @@ public class UserEditor extends AbstractEditor {
     private boolean _commit() {
         boolean isNew = PersistenceHelper.isNew(userDs.getItem());
         if (isNew) {
-            TextField passwField = getComponent("passw");
-            TextField confirmPasswField = getComponent("confirmPassw");
-
             String passw = passwField.getValue();
             String confPassw = confirmPasswField.getValue();
             if (ObjectUtils.equals(passw, confPassw)) {
