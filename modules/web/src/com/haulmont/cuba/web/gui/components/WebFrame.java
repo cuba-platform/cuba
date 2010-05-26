@@ -15,13 +15,19 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParameters;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.toolkit.gwt.client.ui.VVerticalActionsLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.ClientWidget;
+import com.vaadin.event.*;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.PaintException;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -31,12 +37,14 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 @SuppressWarnings("serial")
+@ClientWidget(VVerticalActionsLayout.class)
 public class WebFrame extends WebVBoxLayout
         implements
             IFrame,
             WrappedFrame,
             com.haulmont.cuba.gui.components.Component.HasXmlDescriptor,
-            Layout.AlignmentHandler
+            Layout.AlignmentHandler,
+            com.vaadin.event.Action.Container
 {
     private String messagePack;
     private WindowContext context;
@@ -47,6 +55,8 @@ public class WebFrame extends WebVBoxLayout
 
     protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents =
             new WeakHashMap<String, com.haulmont.cuba.gui.components.Component>();
+
+    private ActionManager actionManager;
 
     public WebFrame() {
         super();
@@ -220,5 +230,38 @@ public class WebFrame extends WebVBoxLayout
 
     public void setXmlDescriptor(Element element) {
         this.element = element;
+    }
+
+    public void addActionHandler(com.vaadin.event.Action.Handler actionHandler) {
+        getActionManager().addActionHandler(actionHandler);
+    }
+
+    public void removeActionHandler(com.vaadin.event.Action.Handler actionHandler) {
+        if (actionManager != null) {
+            actionManager.removeActionHandler(actionHandler);
+        }
+    }
+
+    protected ActionManager getActionManager() {
+        if (actionManager == null) {
+            actionManager = new ActionManager(this);
+        }
+        return actionManager;
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        super.paintContent(target);
+        if (actionManager != null) {
+            actionManager.paintActions(null, target);
+        }
+    }
+
+    @Override
+    public void changeVariables(Object source, Map variables) {
+        super.changeVariables(source, variables);
+        if (actionManager != null) {
+            actionManager.handleActions(variables, this);
+        }
     }
 }
