@@ -51,7 +51,7 @@ public class LoginWindow extends Window
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
-    protected Connection connection;
+    private Connection connection;
 
     protected TextField loginField;
     protected TextField passwordField;
@@ -65,15 +65,8 @@ public class LoginWindow extends Window
 
     protected Button okButton;
 
-    protected boolean useLocaleSelection;
-
     public LoginWindow(App app, Connection connection) {
-        this(app, connection, true);
-    }
-
-    public LoginWindow(App app, Connection connection, boolean useLocaleSelection) {
         super();
-        this.useLocaleSelection = useLocaleSelection;
         loc = app.getLocale();
         locales = ConfigProvider.getConfig(WebConfig.class).getAvailableLocales();
 
@@ -130,7 +123,7 @@ public class LoginWindow extends Window
         Embedded logoImage = getLogoImage(app);
 
         VerticalLayout wrap = new VerticalLayout();
-        wrap.setStyleName(useLocaleSelection ? "loginBottom" : "loginBottom2fields");
+        wrap.setStyleName("loginBottom");
         wrap.setMargin(false);
         wrap.setWidth(formWidth + "px");
         wrap.setHeight(formHeight + "px");
@@ -158,7 +151,7 @@ public class LoginWindow extends Window
         form.addField("passwordField", passwordField);
         formLayout.setComponentAlignment(passwordField, Alignment.MIDDLE_CENTER);
 
-        if (useLocaleSelection) {
+        if (localesSelectVisible) {
             localesSelect.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
             localesSelect.setWidth(fieldWidth + "px");
             localesSelect.setNullSelectionAllowed(false);
@@ -248,13 +241,8 @@ public class LoginWindow extends Window
             if (entry.getValue().getLanguage().equals(loc.getLanguage()))
                 selected = entry.getKey();
         }
-        if (useLocaleSelection) {
-            if (selected == null)
-                selected = locales.keySet().iterator().next();
-        }
-        else {
-            selected = "English";
-        }
+        if (selected == null)
+            selected = locales.keySet().iterator().next();
         localesSelect.setValue(selected);
 
         if (ActiveDirectoryHelper.useActiveDirectory()) {
