@@ -126,28 +126,6 @@ public class JavaClassLoader extends URLClassLoader {
         compiled.remove(name);
     }
 
-    @Deprecated
-    private Map<String, CharSequence> collectDependentClasses(String name, String src) {
-        Map<String, CharSequence> classes = new HashMap<String, CharSequence>();
-        classes.put(name, src);
-        String[] dependence = src.split("import");
-        if (dependence.length > 1) {
-            for (int i = 1, length = dependence.length - 1; i < length; i++) {
-                String className = dependence[i].trim().replaceAll(";", "");
-                if (validSource(className))
-                    classes.put(className, getSourceString(className));
-            }
-            String last = dependence[dependence.length - 1];
-            int importsEnd = last.indexOf(";");
-            String lastDependent = last.substring(0, importsEnd).trim();
-            if (validSource(lastDependent)) {
-                String lastDependentSource = getSourceString(lastDependent);
-                classes.put(lastDependent, lastDependentSource);
-            }
-        }
-        return classes;
-    }
-
     private boolean validSource(String className) {
         Boolean valid = importedClasses.get(className);//todo change, incorrect
         if (valid != null)
@@ -182,6 +160,12 @@ public class JavaClassLoader extends URLClassLoader {
             }
         }
         return loaded;
+    }
+
+    private Map<String, CharSequence> collectDependentClasses(String name, CharSequence src) throws ClassNotFoundException {
+        HashMap<String, CharSequence> sources = new HashMap<String, CharSequence>();
+        sources.put(name, src);
+        return collectDependentClasses(sources);
     }
 
     private List<String> getImports(CharSequence src) {
@@ -226,17 +210,18 @@ public class JavaClassLoader extends URLClassLoader {
             String src = FileUtils.readFileToString(getSourceFile(name));
             final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<JavaFileObject>();
 
-            HashMap<String, CharSequence> sources = new HashMap<String, CharSequence>();
-            sources.put(name, src);
-
             CharSequenceCompiler compiler = new CharSequenceCompiler(
                     dcl,
                     Arrays.asList("-classpath", classPath, "-g")
             );
 
-
-            Map<String, CharSequence> sourcesToCompilation = collectDependentClasses(sources);
+            Map<String, CharSequence> sourcesToCompilation = collectDependentClasses(name, src);
             removeTimestampClass(name);//before recompilation we removes old class instance
+            for (String dependentClassName : sourcesToCompilation.keySet()) {
+                if (compilationNeeded(dependentClassName)) {
+                    removeTimestampClass(dependentClassName);
+                }
+            }
 
             Map compiledClasses = compiler.compile(sourcesToCompilation, errs);
 
