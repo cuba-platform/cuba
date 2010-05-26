@@ -23,15 +23,18 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.FetchPlan;
 
-import java.lang.reflect.Field;
 import java.util.Set;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class ViewHelper
 {
+    private static Log log = LogFactory.getLog(ViewHelper.class);
+
     public static void setView(FetchPlan fetchPlan, View view) {
         if (fetchPlan == null)
             throw new IllegalArgumentException("FetchPlan is null");
@@ -115,6 +118,7 @@ public class ViewHelper
             return;
         visited.add(instance);
 
+        log.trace("Fetching instance " + instance);
         for (ViewProperty property : view.getProperties()) {
             Object value = instance.getValue(property.getName());
             View propertyView = property.getView();
@@ -126,8 +130,10 @@ public class ViewHelper
                     }
                 } else if (value instanceof Instance) {
                     if (PersistenceHelper.isDetached(value)) {
+                        log.trace("Object " + value + " is detached, loading it");
                         EntityManager em = PersistenceProvider.getEntityManager();
-                        value = em.merge((Entity) value);
+                        Entity entity = (Entity) value;
+                        value = em.find(entity.getClass(), entity.getId());
                         instance.setValue(property.getName(), value);
                     }
                     __fetchInstance((Instance) value, propertyView, visited);
