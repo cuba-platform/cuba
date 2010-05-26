@@ -57,25 +57,14 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             if (item == null)
                 return Collections.emptyList();
 
-            List<Entity<K>> entities = new ArrayList<Entity<K>>();
+            List<K> res = new ArrayList<K>();
 
             Collection<K> ids = getItemIds();
             for (K id : ids) {
                 Entity<K> currentItem = getItem(id);
                 Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
                 if (parentItem != null && parentItem.equals(item))
-                    entities.add(currentItem);
-            }
-
-            if (sortInfos != null && sortInfos.length > 0) {
-                MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-                Order order = sortInfos[0].getOrder();
-                Collections.sort(entities, new EntityComparator(propertyPath, Order.ASC.equals(order)));
-            }
-
-            List<K> res = new ArrayList<K>();
-            for (Entity<K> entity : entities) {
-                res.add(entity.getId());
+                    res.add(currentItem.getId());
             }
 
             return res;
@@ -100,7 +89,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
         Collection<K> ids = getItemIds();
 
         if (hierarchyPropertyName != null) {
-            Set<K> result = new HashSet<K>();
+            Set<K> result = new LinkedHashSet<K>();
             for (K id : ids) {
                 Entity<K> item = getItem(id);
                 Object value = ((Instance) item).getValue(hierarchyPropertyName);
@@ -108,7 +97,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             }
             return result;
         } else {
-            return new HashSet<K>(ids);
+            return new LinkedHashSet<K>(ids);
         }
     }
 
