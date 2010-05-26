@@ -85,8 +85,8 @@ public class WebFrame extends WebVBoxLayout
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             T result = (T) allComponents.get(id);
-            if (result == null) {
-                result = (T) super.getComponent(id);
+            if (result == null && getFrame() != null) {
+                result = getFrame().<T>getComponent(id);
             }
             return result;
         } else {
