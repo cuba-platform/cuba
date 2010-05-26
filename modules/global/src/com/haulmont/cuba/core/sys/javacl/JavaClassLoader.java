@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaClassLoader extends URLClassLoader {
+    private final String PATH_SEPARATOR = System.getProperty("path.separator");
+
     private static class TimestampClass {
         Class clazz;
         Date timestamp;
@@ -60,6 +62,28 @@ public class JavaClassLoader extends URLClassLoader {
         }
     }
 
+    private static class DummyClassLoader extends ClassLoader {
+        Map<String, TimestampClass> compiled;
+
+        private DummyClassLoader(ClassLoader parent, Map<String, TimestampClass> compiled) {
+            super(parent);
+            this.compiled = compiled;
+        }
+
+        @Override
+        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            Class clazz = null;
+            try {
+                return super.loadClass(name, resolve);
+            } catch (ClassNotFoundException e) {
+                //do nothing
+            }
+            TimestampClass tsClass = compiled.get(name);
+            if (tsClass != null) return tsClass.clazz;
+            throw new ClassNotFoundException();
+        }
+    }
+
     private static final String IMPORT_PATTERN = "import .+?;";
 
     private Log log = LogFactory.getLog(JavaClassLoader.class);
@@ -69,6 +93,8 @@ public class JavaClassLoader extends URLClassLoader {
     private String rootDir;
 
     private final Map<String, TimestampClass> compiled = new ConcurrentHashMap<String, TimestampClass>();
+
+    private DummyClassLoader dcl;
 
     private Map<String, Boolean> importedClasses = new ConcurrentHashMap<String, Boolean>();
 
@@ -83,6 +109,7 @@ public class JavaClassLoader extends URLClassLoader {
 
     private JavaClassLoader(ClassLoader parent, String rootDir) {
         super(new URL[0], parent);
+        dcl = new DummyClassLoader(parent, compiled);
         this.rootDir = rootDir;
         classPath = buildClasspath();
     }
@@ -93,6 +120,10 @@ public class JavaClassLoader extends URLClassLoader {
 
     private void setTimestampClass(String name, TimestampClass clazz) {
         compiled.put(name, clazz);
+    }
+
+    private void removeTimestampClass(String name) {
+        compiled.remove(name);
     }
 
     @Deprecated
@@ -118,7 +149,7 @@ public class JavaClassLoader extends URLClassLoader {
     }
 
     private boolean validSource(String className) {
-        Boolean valid = importedClasses.get(className);   // todo change, incorrect
+        Boolean valid = importedClasses.get(className);//todo change, incorrect
         if (valid != null)
             return valid;
 
@@ -135,9 +166,8 @@ public class JavaClassLoader extends URLClassLoader {
         return dir.exists();
     }
 
-
-    //todo: draft of cyclic classloader. reimplement.
-    private Map<String, CharSequence> collectDependentClasses(Map<String, CharSequence> loaded) {
+    //todo: uneffective loading. recursive collect dependencies for all loaded instead of 1
+    private Map<String, CharSequence> collectDependentClasses(Map<String, CharSequence> loaded) throws ClassNotFoundException {
         List<String> loadedNames = new ArrayList<String>();
         loadedNames.addAll(loaded.keySet());
         for (String className : loadedNames) {
@@ -186,31 +216,29 @@ public class JavaClassLoader extends URLClassLoader {
         if (clazz != null)
             return clazz;
 
-        File srcFile = getSourceFile(name);
-        if (!srcFile.exists())
-            throw new ClassNotFoundException("Java source for " + name + " not found");
-
-        TimestampClass timeStampClazz = getTimestampClass(name);
-        if (timeStampClazz != null) {
-            if (!FileUtils.isFileNewer(srcFile, timeStampClazz.timestamp))
-                return timeStampClazz.clazz;
+        if (!compilationNeeded(name)) {
+            return getTimestampClass(name).clazz;
         }
 
         try {
             log.debug("Compiling " + name);
 
-            String src = FileUtils.readFileToString(srcFile);
+            String src = FileUtils.readFileToString(getSourceFile(name));
             final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<JavaFileObject>();
 
             HashMap<String, CharSequence> sources = new HashMap<String, CharSequence>();
             sources.put(name, src);
 
             CharSequenceCompiler compiler = new CharSequenceCompiler(
-                    Thread.currentThread().getContextClassLoader(),
+                    dcl,
                     Arrays.asList("-classpath", classPath, "-g")
             );
 
-            Map compiledClasses = compiler.compile(collectDependentClasses(sources), errs);
+
+            Map<String, CharSequence> sourcesToCompilation = collectDependentClasses(sources);
+            removeTimestampClass(name);//before recompilation we removes old class instance
+
+            Map compiledClasses = compiler.compile(sourcesToCompilation, errs);
 
             for (Object className : compiledClasses.keySet()) {
                 Class _clazz = (Class) compiledClasses.get(className);
@@ -225,17 +253,17 @@ public class JavaClassLoader extends URLClassLoader {
     }
 
     private String buildClasspath() {
-        StringBuilder sb = new StringBuilder(System.getProperty("java.class.path") + System.getProperty("path.separator"));
+        StringBuilder sb = new StringBuilder(System.getProperty("java.class.path") + PATH_SEPARATOR);
 
         String directoriesStr = AppContext.getProperty("cuba.classpath.directories");
         String[] directories = directoriesStr.split(";");
         for (String directory : directories) {
             if (!"".equalsIgnoreCase(directory)) {
-                sb.append(directory).append(System.getProperty("path.separator"));
+                sb.append(directory).append(PATH_SEPARATOR);
                 File _dir = new File(directory);
                 for (File file : _dir.listFiles()) {
                     if (file.getName().endsWith(".jar")) {
-                        sb.append(file.getAbsolutePath()).append(System.getProperty("path.separator"));
+                        sb.append(file.getAbsolutePath()).append(PATH_SEPARATOR);
                     }
                 }
             }
@@ -279,5 +307,16 @@ public class JavaClassLoader extends URLClassLoader {
             result.add(matcher.group());
         }
         return result;
+    }
+
+    private boolean compilationNeeded(String name) throws ClassNotFoundException {
+        File srcFile = getSourceFile(name);
+        if (!srcFile.exists()) throw new ClassNotFoundException("Java source for " + name + " not found");
+        TimestampClass timeStampClazz = getTimestampClass(name);
+        if (timeStampClazz != null) {
+            if (!FileUtils.isFileNewer(srcFile, timeStampClazz.timestamp))
+                return false;
+        }
+        return true;
     }
 }
