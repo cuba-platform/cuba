@@ -51,7 +51,7 @@ public class LoginWindow extends Window
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
-    private Connection connection;
+    protected Connection connection;
 
     protected TextField loginField;
     protected TextField passwordField;
