@@ -746,7 +746,7 @@ public class ApplicationConnection {
 
         final String templateName = resources.getAsString(key);
 
-        final String templateUri = getThemeUri() + "/layouts/" + templateName + ".html";
+        final String templateUri = getThemeUri() + "/layouts/" + templateName + ".html?" + System.currentTimeMillis();
 
         final RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, templateUri);
         rb.setHeader("Content-Type", "text/plain;charset=utf-8");

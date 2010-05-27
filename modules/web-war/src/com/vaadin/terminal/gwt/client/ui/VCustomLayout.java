@@ -110,6 +110,8 @@ public class VCustomLayout extends ComplexPanel implements Paintable,
                     + " found");
         }
 
+        DOM.setStyleAttribute(elem, "display", "");
+
         // Get previous widget
         final Widget previous = locationToWidget.get(location);
         // NOP if given widget already exists in this location
@@ -281,6 +283,8 @@ public class VCustomLayout extends ComplexPanel implements Paintable,
             FloatSize fs = new FloatSize(x, y);
 
             locationToExtraSize.put(location, fs);
+
+            DOM.setStyleAttribute(elem, "display", "none");
 
         } else {
             final int len = DOM.getChildCount(elem);
