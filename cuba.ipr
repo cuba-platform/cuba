@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
+<project relativePaths="true" version="4">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
     <buildFile url="file://$PROJECT_DIR$/build.xml">
@@ -106,9 +106,11 @@
         </ADDITIONAL_INDENT_OPTIONS>
       </value>
     </option>
+    <option name="USE_PER_PROJECT_SETTINGS" value="false" />
   </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
+    <option name="DEPLOY_AFTER_MAKE" value="0" />
     <excludeFromCompile>
       <directory url="file://$PROJECT_DIR$/modules/global/src/com/haulmont/cuba/core/entity" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/modules/global/src/com/haulmont/cuba/security/entity" includeSubdirectories="true" />
@@ -128,7 +130,6 @@
       <entry name="?*.dtd" />
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
-    <annotationProcessing enabled="false" useClasspath="true" />
   </component>
   <component name="CopyrightManager" default="">
     <module2copyright />
@@ -184,14 +185,17 @@
   </component>
   <component name="IdProvider" IDEtalkID="99EE4594F0AAAC224547C8FE93321E41" />
   <component name="InspectionProjectProfileManager">
+    <option name="PROJECT_PROFILE" value="Project Default" />
+    <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
+    <scopes />
     <profiles>
       <profile version="1.0" is_locked="false">
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
-        <inspection_tool class="AntDuplicateImportedTargetsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="AntDuplicateImportedTargetsInspection" level="WARNING" enabled="false" />
         <inspection_tool class="EmptyWebServiceClass" level="WARNING" enabled="false" />
         <inspection_tool class="ImplicitlyExposedWebServiceMethods" level="INFO" enabled="false" />
-        <inspection_tool class="JavaDoc" enabled="false" level="WARNING" enabled_by_default="false">
+        <inspection_tool class="JavaDoc" level="WARNING" enabled="false">
           <option name="TOP_LEVEL_CLASS_OPTIONS">
             <value>
               <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
@@ -218,23 +222,22 @@
           </option>
           <option name="IGNORE_DEPRECATED" value="false" />
           <option name="IGNORE_JAVADOC_PERIOD" value="true" />
-          <option name="IGNORE_DUPLICATED_THROWS" value="false" />
           <option name="myAdditionalJavadocTags" value="" />
         </inspection_tool>
         <inspection_tool class="JpaQlInspection" level="ERROR" enabled="false" />
         <inspection_tool class="NonJaxWsWebServices" level="WARNING" enabled="false" />
-        <inspection_tool class="NonSerializableObjectBoundToHttpSession" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="NonSerializableObjectPassedToObjectStream" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="NonSerializableWithSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="NonSerializableWithSerializationMethods" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="NonSerializableObjectBoundToHttpSession" level="WARNING" enabled="true" />
+        <inspection_tool class="NonSerializableObjectPassedToObjectStream" level="WARNING" enabled="true" />
+        <inspection_tool class="NonSerializableWithSerialVersionUIDField" level="WARNING" enabled="true" />
+        <inspection_tool class="NonSerializableWithSerializationMethods" level="WARNING" enabled="true" />
         <inspection_tool class="OneWayWebMethod" level="ERROR" enabled="false" />
-        <inspection_tool class="ReadObjectAndWriteObjectPrivate" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="ReadResolveAndWriteReplaceProtected" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="SerialVersionUIDNotStaticFinal" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="SerializableHasSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true">
+        <inspection_tool class="ReadObjectAndWriteObjectPrivate" level="WARNING" enabled="true" />
+        <inspection_tool class="ReadResolveAndWriteReplaceProtected" level="WARNING" enabled="true" />
+        <inspection_tool class="SerialVersionUIDNotStaticFinal" level="WARNING" enabled="true" />
+        <inspection_tool class="SerializableHasSerialVersionUIDField" level="WARNING" enabled="true">
           <option name="superClassString" value="java.awt.Component" />
         </inspection_tool>
-        <inspection_tool class="SerializableInnerClassHasSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true">
+        <inspection_tool class="SerializableInnerClassHasSerialVersionUIDField" level="WARNING" enabled="true">
           <option name="superClassString" value="java.awt.Component" />
         </inspection_tool>
         <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
@@ -242,18 +245,15 @@
           <option name="processLiterals" value="true" />
           <option name="processComments" value="true" />
         </inspection_tool>
-        <inspection_tool class="TransientFieldNotInitialized" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="UNCHECKED_WARNING" enabled="false" level="WARNING" enabled_by_default="false" />
-        <inspection_tool class="UnnecessaryLocalVariable" enabled="true" level="WARNING" enabled_by_default="true">
+        <inspection_tool class="TransientFieldNotInitialized" level="WARNING" enabled="true" />
+        <inspection_tool class="UNCHECKED_WARNING" level="WARNING" enabled="false" />
+        <inspection_tool class="UnnecessaryLocalVariable" level="WARNING" enabled="true">
           <option name="m_ignoreImmediatelyReturnedVariables" value="true" />
           <option name="m_ignoreAnnotatedVariables" value="false" />
         </inspection_tool>
         <inspection_tool class="ValidExternallyBoundObject" level="ERROR" enabled="false" />
       </profile>
     </profiles>
-    <option name="PROJECT_PROFILE" value="Project Default" />
-    <option name="USE_PROJECT_PROFILE" value="true" />
-    <version value="1.0" />
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="SERVER PROBLEM" />
       <item index="1" class="java.lang.String" itemvalue="INFO" />
@@ -416,6 +416,7 @@
       </entry>
     </default-configurations>
   </component>
+  <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectKey">
     <option name="state" value="svn://dc/platform/cuba/trunk/cuba.ipr" />
   </component>
@@ -551,6 +552,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/jdbc/postgresql-8.3-603.jdbc4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/springframework.context.support-3.0.0.RELEASE.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.3.1-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/dashlayout-0.1.5-beta.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -560,6 +562,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.jdbc-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.context.support-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.3.1-patch1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/dashlayout-0.1.5-beta.jar!/" />
       </SOURCES>
     </library>
     <library name="common">

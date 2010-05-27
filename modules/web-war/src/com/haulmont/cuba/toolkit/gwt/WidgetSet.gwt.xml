@@ -1,4 +1,6 @@
 <module>
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
+    <inherits name="com.vaadin.incubator.dashlayout.DashLayoutWidgetSet" />
+    
     <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet" />
 </module>

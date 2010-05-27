@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.util.Collection;
 
-public interface ButtonsPanel extends GridLayout {
+public interface ButtonsPanel extends BoxLayout {
     void addButton(Button actionButton);
 
     void removeButton(Button actionButton);

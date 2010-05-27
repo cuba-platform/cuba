@@ -80,7 +80,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators =
             new LinkedHashSet<com.haulmont.cuba.gui.components.Field.Validator>();
 
-    protected VerticalLayout componentComposition;
+    protected CompositionLayout componentComposition;
 
     protected ButtonsPanel buttonsPanel;
 
