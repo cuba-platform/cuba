@@ -45,7 +45,7 @@ public abstract class AggregatableDelegate<K> {
             } else {
                 MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
                 final Range range = propertyPath.getRange();
-                if (range.isDatatype()) {
+                if (range.isDatatype() && aggregationInfo.getType() != AggregationInfo.Type.COUNT) {
                     formattedValue = Datatypes.getInstance().get(aggregation.getJavaClass()).format(value);
                 } else {
                     formattedValue = value.toString();

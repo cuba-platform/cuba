@@ -84,7 +84,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public Collection<Window> getOpenWindows() {
-        return new ArrayList(getWindowOpenMode().keySet());
+        return new ArrayList<Window>(getWindowOpenMode().keySet());
     }
 
     protected static class WindowOpenMode {
@@ -267,7 +267,17 @@ public class WebWindowManager extends WindowManager {
         if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
             TabSheet tabSheet = appWindow.getTabSheet();
             layout.setMargin(true);
-            tabSheet.addTab(layout, caption, null);
+            TabSheet.Tab newTab = tabSheet.addTab(layout, caption, null);
+            newTab.setClosable(true);
+            ((AppWindow.AppTabSheet) tabSheet).setTabCloseHandler(
+                    layout,
+                    new AppWindow.AppTabSheet.TabCloseHandler() {
+                        public void onClose(TabSheet tabSheet, Component tabContent) {
+                            WindowBreadCrumbs breadCrumbs = getTabs().get(tabContent);
+                            Window windowToClose = breadCrumbs.getCurrentWindow();
+                            windowToClose.close("close");
+                        }
+                    });
             tabSheet.setSelectedTab(layout);
         } else {
             layout.addStyleName("single");
@@ -308,7 +318,8 @@ public class WebWindowManager extends WindowManager {
 
         if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
             TabSheet tabSheet = appWindow.getTabSheet();
-            tabSheet.setTabCaption(layout, caption);
+            TabSheet.Tab tab = tabSheet.getTab(layout);
+            tab.setCaption(caption);
             tabSheet.requestRepaintAll();
         } else {
             appWindow.getMainLayout().requestRepaintAll();
@@ -330,7 +341,7 @@ public class WebWindowManager extends WindowManager {
         outerLayout.addComponent(layout);
         outerLayout.setExpandRatio(layout, 1);
 
-        win.setLayout(outerLayout);
+        win.setContent(outerLayout);
 
         win.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {

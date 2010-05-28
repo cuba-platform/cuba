@@ -467,3 +467,15 @@
 *+html .v-tabsheet-deco-light {
 	height: 0;
 }
+
+.v-tabsheet-caption-close {
+    cursor: pointer;
+    width: 19px;
+    height: 24px;
+    background: transparent url(../icons/remove.png) no-repeat center left;
+    text-indent: 100px;
+    overflow: hidden;
+    font-size: 20px;
+    float: right;
+    margin: -4px -4px 0 0;
+}

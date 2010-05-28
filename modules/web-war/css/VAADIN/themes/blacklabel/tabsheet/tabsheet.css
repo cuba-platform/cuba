@@ -162,7 +162,7 @@
 
 .v-tabsheet-tabitem-selected .v-caption {
 	background: none;
-	margin: 0 -1px 0 0px;
+	margin: 0 -1px 0 0;
 	padding: 3px 10px 5px 10px;
 	overflow: visible;
 }
@@ -224,4 +224,16 @@
 	margin-top: -2px;
 	padding-top: 2px;
     /* todo fix progress indicator */
+}
+
+.v-tabsheet-caption-close {
+    cursor: pointer;
+    width: 13px;
+    height: 24px;
+    background: transparent url(../icons/remove.png) no-repeat center left;
+    text-indent: 100px;
+    overflow: hidden;
+    font-size: 20px;
+    float: right;
+    margin: -4px -4px 0 0;
 }

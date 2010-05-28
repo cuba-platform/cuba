@@ -1,2 +1,6 @@
 @import "styles-include.css";
 @import "blacklabel.css";
+
+#v-dashlayout-details {
+    letter-spacing: 5px;
+}

@@ -47,10 +47,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Main application window.
@@ -173,7 +170,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         mainLayout.setSizeFull();
 
         if (Mode.TABBED.equals(mode)) {
-            tabSheet = new TabSheet();
+            tabSheet = new AppTabSheet();
             tabSheet.setSizeFull();
 
             mainLayout.addComponent(tabSheet);
@@ -714,6 +711,41 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 ctx.setView(info.getViewName());
             Entity entity = ds.load(ctx);
             return entity;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    public static class AppTabSheet extends TabSheet {
+
+        private Map<Component, TabCloseHandler> closeHandlers = null;
+
+        public AppTabSheet() {
+            setCloseHandler(new CloseHandler() {
+                public void onTabClose(TabSheet tabsheet, Component tabContent) {
+                    if (closeHandlers != null) {
+                        TabCloseHandler closeHandler = closeHandlers.get(tabContent);
+                        if (closeHandler != null) {
+                            closeHandler.onClose(AppTabSheet.this, tabContent);
+
+                            closeHandlers.remove(tabContent);
+                            if (closeHandlers.isEmpty()) {
+                                closeHandlers = null;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        public void setTabCloseHandler(Component tabContent, TabCloseHandler closeHandler) {
+            if (closeHandlers == null) {
+                closeHandlers = new LinkedHashMap<Component, TabCloseHandler>();
+            }
+            closeHandlers.put(tabContent, closeHandler);
+        }
+
+        public interface TabCloseHandler {
+            void onClose(TabSheet tabSheet, Component tabContent);
         }
 
     }
