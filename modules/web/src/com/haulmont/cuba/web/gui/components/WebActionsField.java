@@ -39,7 +39,6 @@ public class WebActionsField
 
     public WebActionsField() {
         lookupField = new WebLookupField();
-        lookupField.setEditable(false);
         this.component = new ActionsField((AbstractSelect) lookupField.getComponent());
         component.setImmediate(true);
     }
@@ -155,9 +154,13 @@ public class WebActionsField
     }
 
     public void enableButton(String buttonId, boolean enable) {
-        if (isEditable() && DROPDOWN.equals(buttonId)) {
-            lookupField.setEditable(enable);
-        } else if (isEditable() && LOOKUP.equals(buttonId)) {
+        if (DROPDOWN.equals(buttonId)) {
+            if (enable) {
+                component.addStyleName("dropdown");
+            } else {
+                component.removeStyleName("dropdown");
+            }
+        } else if (LOOKUP.equals(buttonId)) {
             if (lookupButton == null) {
                 lookupButton = new WebButton();
                 lookupButton.setIcon("select/img/bg-right-lookup.png");
@@ -179,7 +182,7 @@ public class WebActionsField
     public void addAction(Action action) {
         if (action == null || action.getId() == null) {
             return;
-        }                
+        }
 
         if (action.getId().equals(LOOKUP) && lookupButton != null) {
             lookupButton.setAction(action);
@@ -209,7 +212,7 @@ public class WebActionsField
 
     @Override
     public void addListener(ValueListener listener) {
-        lookupField.addListener(listener); 
+        lookupField.addListener(listener);
     }
 
     @Override
@@ -219,7 +222,7 @@ public class WebActionsField
 
     @Override
     public void addValidator(Validator validator) {
-        lookupField.addValidator(validator); 
+        lookupField.addValidator(validator);
     }
 
     @Override
@@ -236,7 +239,7 @@ public class WebActionsField
     public void validate() throws ValidationException {
         lookupField.validate();
     }
-    
+
     public void disablePaging() {
-    }    
+    }
 }
