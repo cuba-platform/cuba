@@ -251,7 +251,8 @@ public abstract class WindowManager {
             window.setId(windowInfo.getId());
 
             String caption = loadCaption(window, params);
-            showWindow(window, caption, openType, windowParameters);
+            String description = loadDescription(window, params);
+            showWindow(window, caption, description, openType, windowParameters);
 
             return (T) window;
         } else {
@@ -289,6 +290,15 @@ public abstract class WindowManager {
         window.setCaption(caption);
 
         return caption;
+    }
+
+    protected String loadDescription(Window window, Map<String, Object> params) {
+        String description = (String) params.get("param$description");
+        if (!StringUtils.isEmpty(description)) {
+            return TemplateHelper.processTemplate(description, params);
+        } else {
+            return null;
+        }
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
@@ -442,6 +452,8 @@ public abstract class WindowManager {
     protected abstract void showWindow(Window window, String caption, OpenType openType);
 
     protected abstract void showWindow(Window window, String caption, OpenType openType, WindowParameters windowParameters);
+
+    protected abstract void showWindow(Window window, String caption, String description, OpenType openType, WindowParameters windowParameters);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

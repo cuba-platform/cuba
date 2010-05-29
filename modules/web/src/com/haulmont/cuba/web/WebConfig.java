@@ -77,4 +77,7 @@ public interface WebConfig extends Config
 
     @DefaultInt(180)
     int getAppFoldersRefreshPeriodSec();
+
+    @DefaultInt(25)
+    int getMainTabCaptionLength();
 }

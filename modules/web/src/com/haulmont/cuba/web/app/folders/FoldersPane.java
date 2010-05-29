@@ -36,9 +36,9 @@ import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Tree;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -47,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class FoldersPane extends VerticalLayout {
 
     private Log log = LogFactory.getLog(FoldersPane.class);
@@ -354,6 +355,7 @@ public class FoldersPane extends VerticalLayout {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("disableAutoRefresh", true);
+        params.put("description", MessageProvider.getMessage(messagesPack, folder.getName()));
 
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
                 WindowManager.OpenType.NEW_TAB, params);
