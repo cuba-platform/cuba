@@ -71,20 +71,12 @@ public class ScriptingProviderImpl extends ScriptingProvider {
         if (gse == null) {
             synchronized (this) {
                 if (gse == null) {
-                    final String rootPath = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir() + "/";
-                    gse = new GroovyScriptEngine(new ResourceConnector() {
-                        public URLConnection getResourceConnection(String resourceName) throws ResourceException {
-                            try {
-                                final URL resource = getClass().getResource(resourceName);
-                                if (resource != null) return resource.openConnection();
-
-                                final URL fileURL = new File(rootPath + resourceName).toURI().toURL();
-                                return fileURL.openConnection();
-                            } catch (IOException e) {
-                                throw new ResourceException(e);
-                            }
-                        }
-                    });
+                    final String rootPath = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir();
+                    try {
+                        gse = new GroovyScriptEngine(rootPath);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
