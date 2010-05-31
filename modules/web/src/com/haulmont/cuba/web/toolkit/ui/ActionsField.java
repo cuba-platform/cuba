@@ -51,11 +51,6 @@ public class ActionsField extends CustomField {
     }
 
     @Override
-    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-        field.setValue(newValue);
-    }
-
-    @Override
     public void setRequired(boolean required) {
         super.setRequired(required);
         if (required) {

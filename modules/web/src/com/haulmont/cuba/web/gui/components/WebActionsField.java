@@ -149,6 +149,16 @@ public class WebActionsField
         }
     }
 
+    @Override
+    public void setValue(Object value) {
+        lookupField.setValue(value);
+    }
+
+    @Override
+    public <T> T getValue() {
+        return (T) lookupField.getValue();
+    }
+
     public void addButton(com.haulmont.cuba.gui.components.Button button) {
         component.addButton((Button) WebComponentsHelper.unwrap(button));
     }
