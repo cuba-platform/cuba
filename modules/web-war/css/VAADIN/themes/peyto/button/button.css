@@ -23,6 +23,7 @@
     -moz-box-sizing: border-box;
     -ms-box-sizing: border-box;
     box-sizing: border-box;
+    outline: 0;
 }
 
 .v-ie6 .v-button {

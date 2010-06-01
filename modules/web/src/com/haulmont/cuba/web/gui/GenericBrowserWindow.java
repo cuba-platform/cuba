@@ -11,29 +11,34 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.FrameContext;
+import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.TableActionsHelper;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
-import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.MetadataHelper;
-import com.haulmont.cuba.gui.components.TableActionsHelper;
-import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebTable;
-import com.haulmont.cuba.web.gui.components.WebButton;
-import com.vaadin.ui.*;
-
-import java.util.Map;
-import java.util.Collection;
-
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Collection;
+import java.util.Map;
 
 public class GenericBrowserWindow extends WebWindow
 {
@@ -42,7 +47,7 @@ public class GenericBrowserWindow extends WebWindow
 
     @Override
     protected Component createLayout() {
-        final VerticalLayout layout = new VerticalLayout();
+        final VerticalLayout layout = new VerticalActionsLayout();
 
         table = createTable();
         actionsToolbar = createActionsToolbar(table);

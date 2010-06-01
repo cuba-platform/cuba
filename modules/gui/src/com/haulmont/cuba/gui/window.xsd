@@ -121,6 +121,21 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="shortcuts" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                                <xs:element name="shortcut">
+                                    <xs:complexType>
+                                        <xs:attribute name="code" type="xs:string" use="required"/>
+                                        <xs:attribute name="action" type="xs:string" use="optional"/>
+                                        <xs:attribute name="invoke" type="xs:string" use="optional"/>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:choice>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="layout" minOccurs="1" maxOccurs="1">
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>

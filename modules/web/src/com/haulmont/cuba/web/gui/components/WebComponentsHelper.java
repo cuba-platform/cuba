@@ -11,6 +11,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.Table;
@@ -314,6 +315,15 @@ public class WebComponentsHelper {
                 ? "" : String.class.isInstance(value)
                         ? (String) value : formatter != null
                                 ? formatter.format(value) : value.toString()
+        );
+    }
+
+    public static com.vaadin.event.ShortcutAction createShortcutAction(ShortcutAction action) {
+        ShortcutAction.KeyCombination keyCombination = action.getKeyCombination();
+        return new com.vaadin.event.ShortcutAction(
+                action.getCaption(),
+                keyCombination.getKey().getCode(),
+                ShortcutAction.Modifier.codes(keyCombination.getModifiers())
         );
     }
 }

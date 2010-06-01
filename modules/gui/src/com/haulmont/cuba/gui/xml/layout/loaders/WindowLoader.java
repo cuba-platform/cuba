@@ -9,13 +9,11 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -44,6 +42,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         loadSubComponentsAndExpand(window, layoutElement);
 
         loadTimers(factory, window, element);
+
+        loadShortcuts(window, element);
 
         return window;
     }
@@ -128,6 +128,64 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
     }
 
+    private void loadShortcuts(Window component, Element element) throws InstantiationException {
+        Element shortcutsElement = element.element("shortcuts");
+        if (shortcutsElement != null) {
+            final List<Element> shortcutElements = shortcutsElement.elements("shortcut");
+            for (final Element shortcutElement : shortcutElements) {
+                loadShortcut(component, shortcutElement);
+            }
+        }
+    }
+
+    private void loadShortcut(final Window component, Element element) throws InstantiationException {
+        final String keyCode = element.attributeValue("code");
+        if (StringUtils.isEmpty(keyCode)) {
+            throw new InstantiationException("Shortcut must contains \"code\" attribute");
+        }
+
+        final ShortcutAction.KeyCombination combination = keyCombination(keyCode);
+
+        final String actionName = element.attributeValue("action");
+        if (!StringUtils.isEmpty(actionName)) {
+            context.addLazyTask(new LazyTask() {
+                public void execute(Context context, final IFrame frame) {
+                    component.addAction(new AbstractShortcutAction(keyCode, combination) {
+                        public void actionPerform(Component component) {
+                            //todo
+                            final Action action = ComponentsHelper.findAction(actionName, frame);
+                            if (action == null) {
+                                throw new IllegalArgumentException(String.format("Can't find action '%s'", actionName));
+                            }
+                            action.actionPerform(component);
+                        }
+                    });
+                }
+            });
+        } else {
+            final String methodName = element.attributeValue("invoke");
+            if (!StringUtils.isEmpty(methodName)) {
+                context.addLazyTask(new LazyTask() {
+                    public void execute(Context context, final IFrame frame) {
+                        component.addAction(new AbstractShortcutAction(keyCode, combination) {
+                            public void actionPerform(Component component) {
+                                Window window = (Window) frame;
+                                try {
+                                    Method method = window.getClass().getMethod(methodName);
+                                    method.invoke(window);
+                                } catch (Throwable e) {
+                                    throw new RuntimeException(String.format("Unable to invoke method '%s'", methodName), e);
+                                }
+                            }
+                        });
+                    }
+                });
+            } else {
+                throw new InstantiationException("Shortcut must contains \"action\" or \"invoke\" attribute");
+            }
+        }
+    }
+
     private void addAssignTimerFrameTask(final Timer timer) {
         context.addLazyTask(new LazyTask() {
             public void execute(Context context, IFrame frame) {
@@ -135,4 +193,39 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
             }
         });
     }
+
+    private ShortcutAction.KeyCombination keyCombination(String keyString) {
+        if (keyString == null) return null;
+        keyString = keyString.toUpperCase();
+
+        ShortcutAction.Key key = null;
+        ShortcutAction.Modifier[] modifiers = null;
+
+        if (keyString.indexOf("-") > -1) {
+            String[] keys = keyString.split("-", -1);
+
+            int modifiersCnt = keys.length;
+
+            try {
+                key = ShortcutAction.Key.valueOf(keys[modifiersCnt - 1]);
+                --modifiersCnt;
+            } catch (IllegalArgumentException e) {
+                //ignore
+            }
+            modifiers = new ShortcutAction.Modifier[modifiersCnt];
+            for (int i = 0; i < modifiersCnt; i++) {
+                modifiers[i] = ShortcutAction.Modifier.valueOf(keys[i]);
+            }
+        } else {
+            try {
+                key = ShortcutAction.Key.valueOf(keyString);
+            } catch (IllegalArgumentException e) {
+                modifiers = new ShortcutAction.Modifier[] {
+                        ShortcutAction.Modifier.valueOf(keyString)
+                };
+            }
+        }
+        return new ShortcutAction.KeyCombination(key, modifiers);
+    }
+
 }

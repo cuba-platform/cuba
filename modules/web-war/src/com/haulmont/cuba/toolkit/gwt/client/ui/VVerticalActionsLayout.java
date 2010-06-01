@@ -12,6 +12,8 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.impl.FocusImpl;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
@@ -21,9 +23,15 @@ public class VVerticalActionsLayout extends VVerticalLayout {
 
     protected ShortcutActionHandler shortcutHandler;
 
+    static final FocusImpl impl = FocusImpl.getFocusImplForPanel();
+
     public VVerticalActionsLayout() {
         super();
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
+    }
+
+    protected Element createElement() {
+        return impl.createFocusable();
     }
 
     @Override

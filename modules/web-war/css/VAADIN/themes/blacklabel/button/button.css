@@ -23,6 +23,7 @@
     -moz-box-sizing: border-box;
     -ms-box-sizing: border-box;
     box-sizing: border-box;
+    outline: 0;
 }
 
 .v-ie6 .v-button {
@@ -98,7 +99,7 @@ padding: 0;
 }
 
 /* Inset Safari focus outline a bit */
-.v-sa .v-button-link:focus{
+.v-button-link:focus{
 outline-offset: -3px;
 }
 

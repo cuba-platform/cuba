@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -38,6 +40,7 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractTable;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Validator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
@@ -91,16 +94,29 @@ public class WebWindow
 
     private Window wrapper;
 
+    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
+    protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
+
     public WebWindow() {
         component = createLayout();
+        ((com.vaadin.event.Action.Container) component).addActionHandler(new com.vaadin.event.Action.Handler() {
+            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                final Set<com.vaadin.event.Action> keys = actions.keySet();
+                return keys.toArray(new com.vaadin.event.Action[keys.size()]);
+            }
+
+            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+                Action act = actions.get(action);
+                if (act != null && act.isEnabled()) {
+                    act.actionPerform(WebWindow.this);
+                }
+            }
+        });
     }
 
     protected com.vaadin.ui.Component createLayout() {
-        VerticalLayout layout = new VerticalLayout();
-
-//        layout.setMargin(true);
+        VerticalLayout layout = new VerticalActionsLayout();
         layout.setSizeFull();
-
         return layout;
     }
 
@@ -137,19 +153,20 @@ public class WebWindow
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder =
-            new LinkedList<com.haulmont.cuba.gui.components.Action>();
-
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
+        if (action instanceof ShortcutAction) {
+            actions.put(WebComponentsHelper.createShortcutAction((ShortcutAction) action), action);
+        }
         actionsOrder.add(action);
     }
 
     public void removeAction(com.haulmont.cuba.gui.components.Action action) {
         actionsOrder.remove(action);
+        actions.inverse().remove(action);
     }
 
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
-        return actionsOrder;
+        return Collections.unmodifiableCollection(actionsOrder);
     }
 
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
@@ -647,13 +664,6 @@ public class WebWindow
         }
 
         @Override
-        protected com.vaadin.ui.Component createLayout() {
-            VerticalLayout layout = new VerticalLayout();
-            layout.setSizeFull();
-            return layout;
-        }
-
-        @Override
         public Window wrapBy(Class<Window> aClass) {
             final Window.Editor window = (Window.Editor) super.wrapBy(aClass);
             final Component commitAndCloseButton = WebComponentsHelper.findComponent(window, WINDOW_COMMIT_AND_CLOSE);
@@ -1001,7 +1011,7 @@ public class WebWindow
 
         @Override
         protected com.vaadin.ui.Component createLayout() {
-            final VerticalLayout form = new VerticalLayout();
+            final VerticalLayout form = new VerticalActionsLayout();
 
             contaiter = new VerticalLayout();
 

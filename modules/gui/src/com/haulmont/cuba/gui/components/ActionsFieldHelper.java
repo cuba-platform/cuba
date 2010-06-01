@@ -48,7 +48,7 @@ public class ActionsFieldHelper {
                 component.getFrame().openLookup(windowAlias,
                         new Window.Lookup.Handler() {
                             public void handleLookup(Collection items) {
-                                Entity entity = null;
+                                Entity entity;
                                 if (items != null && items.size() > 0) {
                                     entity = (Entity) items.iterator().next();
                                     getItem().setValue(metaProperty.getName(), entity);

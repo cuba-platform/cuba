@@ -13,16 +13,17 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Item;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
@@ -51,7 +52,7 @@ public class GenericEditorWindow
 
     @Override
     protected Component createLayout() {
-        VerticalLayout layout = new VerticalLayout();
+        VerticalLayout layout = new VerticalActionsLayout();
 
         form = new Form();
 

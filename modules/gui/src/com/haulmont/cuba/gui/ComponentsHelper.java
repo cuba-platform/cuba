@@ -10,9 +10,9 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.*;
+
+import java.util.Arrays;
 
 /**
  * Utility class to work for GenericUI components
@@ -62,5 +62,30 @@ public abstract class ComponentsHelper {
             frame = frame.getFrame();
         }
         return null;
+    }
+
+    public static Action findAction(String actionName, IFrame frame) {
+        final String[] elements = ValuePathHelper.parse(actionName);
+        if (elements.length > 1) {
+            final String id = elements[elements.length - 1];
+
+            final java.util.List<String> subList = Arrays.asList(elements).subList(0, elements.length - 1);
+            String[] subPath = subList.toArray(new String[]{});
+            final Component component = frame.getComponent(ValuePathHelper.format(subPath));
+            if (component != null) {
+                if (component instanceof Component.ActionsHolder) {
+                    return ((Component.ActionsHolder) component).getAction(id);
+                } else {
+                    throw new IllegalStateException(String.format("Component '%s' have no actions", subList));
+                }
+            } else {
+                throw new IllegalStateException(String.format("Can't find component '%s'", subList));
+            }
+        } else if (elements.length == 1) {
+            final String id = elements[0];
+            return ((Window) frame).getAction(id);
+        } else {
+            throw new IllegalStateException();
+        }
     }
 }
