@@ -259,17 +259,19 @@ public class WebWindowManager extends WindowManager {
             TabSheet tabSheet = appWindow.getTabSheet();
             layout.setMargin(true);
             TabSheet.Tab newTab = tabSheet.addTab(layout, formatTabCaption(caption, description), null);
-            newTab.setClosable(true);
             newTab.setDescription(formatTabDescription(caption, description));
-            ((AppWindow.AppTabSheet) tabSheet).setTabCloseHandler(
-                    layout,
-                    new AppWindow.AppTabSheet.TabCloseHandler() {
-                        public void onClose(TabSheet tabSheet, Component tabContent) {
-                            WindowBreadCrumbs breadCrumbs = getTabs().get(tabContent);
-                            Window windowToClose = breadCrumbs.getCurrentWindow();
-                            windowToClose.close("close");
-                        }
-                    });
+            if (tabSheet instanceof AppWindow.AppTabSheet) {
+                newTab.setClosable(true);
+                ((AppWindow.AppTabSheet) tabSheet).setTabCloseHandler(
+                        layout,
+                        new AppWindow.AppTabSheet.TabCloseHandler() {
+                            public void onClose(TabSheet tabSheet, Component tabContent) {
+                                WindowBreadCrumbs breadCrumbs = getTabs().get(tabContent);
+                                Runnable closeTask = new TabCloseTask(breadCrumbs);
+                                closeTask.run();
+                            }
+                        });
+            }
             tabSheet.setSelectedTab(layout);
         } else {
             layout.addStyleName("single");
@@ -282,6 +284,21 @@ public class WebWindowManager extends WindowManager {
         }
 
         return layout;
+    }
+
+    public class TabCloseTask implements Runnable {
+        private final WindowBreadCrumbs breadCrumbs;
+
+        public TabCloseTask(WindowBreadCrumbs breadCrumbs) {
+            this.breadCrumbs = breadCrumbs;
+        }
+
+        public void run() {
+            Window windowToClose = breadCrumbs.getCurrentWindow();
+            if (windowToClose != null) {
+                windowToClose.closeAndRun("close", new TabCloseTask(breadCrumbs));
+            }
+        }
     }
 
     protected String formatTabCaption(final String caption, final String description) {
@@ -432,8 +449,10 @@ public class WebWindowManager extends WindowManager {
                 }
 
                 WindowBreadCrumbs windowBreadCrumbs = getTabs().get(layout);
-                if (windowBreadCrumbs != null)
+                if (windowBreadCrumbs != null) {
                     windowBreadCrumbs.clearListeners();
+                    windowBreadCrumbs.removeWindow();
+                }
 
                 getTabs().remove(layout);
                 fireListeners(window, getTabs().size() != 0);

@@ -726,15 +726,21 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                         TabCloseHandler closeHandler = closeHandlers.get(tabContent);
                         if (closeHandler != null) {
                             closeHandler.onClose(AppTabSheet.this, tabContent);
-
-                            closeHandlers.remove(tabContent);
-                            if (closeHandlers.isEmpty()) {
-                                closeHandlers = null;
-                            }
                         }
                     }
                 }
             });
+        }
+
+        @Override
+        public void removeComponent(Component c) {
+            super.removeComponent(c);
+            if (c != null && closeHandlers != null) {
+                closeHandlers.remove(c);
+                if (closeHandlers.isEmpty()) {
+                    closeHandlers = null;
+                }
+            }
         }
 
         public void setTabCloseHandler(Component tabContent, TabCloseHandler closeHandler) {
@@ -747,6 +753,5 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         public interface TabCloseHandler {
             void onClose(TabSheet tabSheet, Component tabContent);
         }
-
     }
 }
