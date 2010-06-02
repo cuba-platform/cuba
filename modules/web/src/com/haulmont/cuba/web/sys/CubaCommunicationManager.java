@@ -32,9 +32,9 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     private long timerIdSequence = 0;
 
-    private Map<String, Timer> id2Timer = new WeakHashMap<String, Timer>();
+    private Map<String, Timer> id2Timer = new HashMap<String, Timer>();
 
-    private Map<Timer, String> timer2Id = new WeakHashMap<Timer, String>();
+    private Map<Timer, String> timer2Id = new HashMap<Timer, String>();
 
     public CubaCommunicationManager(Application application) {
         super(application);

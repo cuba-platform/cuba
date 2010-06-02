@@ -17,11 +17,12 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-public class AbstractFrame implements IFrame, Component.Wrapper {
+public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
     protected IFrame frame;
     private String styleName;
 

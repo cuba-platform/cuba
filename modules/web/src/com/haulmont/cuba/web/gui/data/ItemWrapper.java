@@ -24,10 +24,13 @@ import com.vaadin.data.Property;
 import java.util.*;
 
 public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
+
     private Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<MetaPropertyPath, PropertyWrapper>();
     private List<PropertySetChangeListener> listeners = new ArrayList<PropertySetChangeListener>();
 
     protected Object item;
+
+    private static final long serialVersionUID = -7298696379571470141L;
 
     public ItemWrapper(Object item, MetaClass metaClass) {
         this(item, MetadataHelper.getPropertyPaths(metaClass));

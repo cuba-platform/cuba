@@ -41,7 +41,8 @@ public class SimpleLookup extends AbstractLookup {
     }
 
     private LookupConfig lookupConfig;
-    private Log log = LogFactory.getLog(SimpleLookup.class);
+
+    private static Log log = LogFactory.getLog(SimpleLookup.class);
 
     @Override
     protected void init(Map<String, Object> params) {

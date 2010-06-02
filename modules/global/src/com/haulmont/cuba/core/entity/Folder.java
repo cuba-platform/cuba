@@ -27,13 +27,13 @@ public class Folder extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
-    private Folder parent;
+    protected Folder parent;
 
     @Column(name = "NAME", length = 100)
-    private String name;
+    protected String name;
 
     @Column(name = "SORT_ORDER")
-    private Integer sortOrder;
+    protected Integer sortOrder;
 
     public Folder getParent() {
         return parent;

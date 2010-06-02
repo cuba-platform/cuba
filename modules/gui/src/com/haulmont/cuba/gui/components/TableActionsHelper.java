@@ -30,6 +30,9 @@ import java.util.HashMap;
 import java.util.Collections;
 
 public class TableActionsHelper extends ListActionsHelper<Table>{
+
+    private static final long serialVersionUID = -8710627236049217204L;
+
     public TableActionsHelper(IFrame frame, Table table) {
         super(frame, table);
     }

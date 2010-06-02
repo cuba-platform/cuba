@@ -17,11 +17,15 @@ import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Window;
 
+import java.io.Serializable;
+
 /**
  * Allows to show exported data in web browser or download it
  */
-public class WebExportDisplay implements ExportDisplay
+public class WebExportDisplay implements ExportDisplay, Serializable
 {
+    private static final long serialVersionUID = -5284064787054836702L;
+
     private boolean newWindow;
     private boolean attachment;
 

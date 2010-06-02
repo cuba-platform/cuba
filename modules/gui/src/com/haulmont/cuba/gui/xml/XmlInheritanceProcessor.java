@@ -24,7 +24,7 @@ import java.util.*;
 
 public class XmlInheritanceProcessor {
 
-    private Log log = LogFactory.getLog(XmlInheritanceProcessor.class);
+    private static Log log = LogFactory.getLog(XmlInheritanceProcessor.class);
 
     private Document document;
     private Namespace extNs;

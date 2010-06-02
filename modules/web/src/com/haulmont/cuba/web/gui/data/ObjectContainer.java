@@ -15,6 +15,8 @@ import com.vaadin.data.Property;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +25,7 @@ import java.util.List;
 
 public class ObjectContainer implements com.vaadin.data.Container {
 
-    private Log log = LogFactory.getLog(getClass());
+    private transient Log log = LogFactory.getLog(getClass());
 
     private static List<String> methodsName = new ArrayList<String>();
 
@@ -36,6 +38,11 @@ public class ObjectContainer implements com.vaadin.data.Container {
 
     public ObjectContainer(List values) {
         this.values = values;
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        log = LogFactory.getLog(getClass());
+        in.defaultReadObject();
     }
 
     public Item getItem(Object itemId) {

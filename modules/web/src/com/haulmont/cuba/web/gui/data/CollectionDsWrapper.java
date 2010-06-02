@@ -63,7 +63,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         if (properties == null) {
             createProperties(view, metaClass);
         } else {
-            this.properties = properties;
+            this.properties.addAll(properties);
         }
 
         datasource.addListener(createDatasourceListener());

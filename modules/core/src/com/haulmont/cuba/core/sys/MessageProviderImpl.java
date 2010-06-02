@@ -40,7 +40,10 @@ public class MessageProviderImpl extends MessageProvider
     }
 
     protected String __getMessage(Class caller, String key) {
-        return __getMessage(caller, key, SecurityProvider.currentUserSession().getLocale());
+        Locale loc = SecurityProvider.checkCurrentUserSession() ?
+                SecurityProvider.currentUserSession().getLocale() :
+                Locale.getDefault();
+        return __getMessage(caller, key, loc);
     }
 
     protected String __getMessage(Class caller, String key, Locale locale) {
@@ -48,7 +51,10 @@ public class MessageProviderImpl extends MessageProvider
     }
 
     protected String __getMessage(Enum caller) {
-        return __getMessage(caller, SecurityProvider.currentUserSession().getLocale());
+        Locale loc = SecurityProvider.checkCurrentUserSession() ?
+                SecurityProvider.currentUserSession().getLocale() :
+                Locale.getDefault();
+        return __getMessage(caller, loc);
     }
 
     protected String __getMessage(Enum caller, Locale locale) {
@@ -65,7 +71,10 @@ public class MessageProviderImpl extends MessageProvider
     }
 
     protected String __getMessage(String pack, String key) {
-        return __getMessage(pack, key, SecurityProvider.currentUserSession().getLocale());
+        Locale loc = SecurityProvider.checkCurrentUserSession() ?
+                SecurityProvider.currentUserSession().getLocale() :
+                Locale.getDefault();
+        return __getMessage(pack, key, loc);
     }
 
     protected String __getMessage(String pack, String key, Locale locale) {

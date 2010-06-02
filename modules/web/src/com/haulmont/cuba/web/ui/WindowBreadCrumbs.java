@@ -19,12 +19,13 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.BaseTheme;
 
+import java.io.Serializable;
 import java.util.*;
 
 @SuppressWarnings("serial")
 public class WindowBreadCrumbs extends HorizontalLayout {
 
-    public interface Listener {
+    public interface Listener extends Serializable {
         void windowClick(Window window);
     }
 

@@ -37,7 +37,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
 
-    private Log log = LogFactory.getLog(AbstractFieldLoader.class);
+    private static Log log = LogFactory.getLog(AbstractFieldLoader.class);
 
     public AbstractFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context);

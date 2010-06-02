@@ -37,10 +37,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
 public class WebWindowManager extends WindowManager {
-    protected static class WindowData {
+
+    private static final long serialVersionUID = -1212999019760516097L;
+
+    protected static class WindowData implements Serializable {
+        private static final long serialVersionUID = -3919777239558187362L;
+
         protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
         protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
     }
@@ -49,11 +55,11 @@ public class WebWindowManager extends WindowManager {
 
     protected List<WindowCloseListener> listeners = new ArrayList<WindowCloseListener>();
 
-    private Map<AppWindow, WindowData> appWindowMap = new WeakHashMap<AppWindow, WindowData>();
+    private Map<AppWindow, WindowData> appWindowMap = new HashMap<AppWindow, WindowData>();
 
     protected Map<String, Integer> debugIds = new HashMap<String, Integer>();
 
-    private Log log = LogFactory.getLog(WebWindowManager.class);
+    private static Log log = LogFactory.getLog(WebWindowManager.class);
 
     public WebWindowManager(App app) {
         this.app = app;
@@ -88,7 +94,10 @@ public class WebWindowManager extends WindowManager {
         return new ArrayList<Window>(getWindowOpenMode().keySet());
     }
 
-    protected static class WindowOpenMode {
+    protected static class WindowOpenMode implements Serializable {
+
+        private static final long serialVersionUID = 2475930997468013484L;
+
         protected Window window;
         protected OpenType openType;
         protected Object data;
@@ -665,7 +674,7 @@ public class WebWindowManager extends WindowManager {
         return id + "." + count;
     }
 
-    public interface WindowCloseListener {
+    public interface WindowCloseListener extends Serializable {
         void onWindowClose(Window window, boolean anyOpenWindowExist);
     }
 }

@@ -10,7 +10,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public class AggregationInfo<P> {
+import java.io.Serializable;
+
+public class AggregationInfo<P> implements Serializable {
 
     public enum Type {
         SUM,

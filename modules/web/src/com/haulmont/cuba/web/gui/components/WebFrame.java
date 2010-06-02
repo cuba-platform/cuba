@@ -31,10 +31,8 @@ import com.vaadin.terminal.PaintException;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 @SuppressWarnings("serial")
 @ClientWidget(VVerticalActionsLayout.class)
@@ -53,8 +51,7 @@ public class WebFrame extends WebVBoxLayout
 
     private IFrame wrapper;
 
-    protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents =
-            new WeakHashMap<String, com.haulmont.cuba.gui.components.Component>();
+    protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<String, Component>();
 
     private ActionManager actionManager;
 

@@ -25,7 +25,7 @@ import java.util.List;
 
 public class FilterParser {
 
-    private Log log = LogFactory.getLog(FilterParser.class);
+    private static Log log = LogFactory.getLog(FilterParser.class);
 
     private List<Condition> conditions;
     private String xml;

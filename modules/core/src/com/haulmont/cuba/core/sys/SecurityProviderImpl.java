@@ -18,6 +18,17 @@ import java.util.UUID;
 
 public class SecurityProviderImpl extends SecurityProvider
 {
+    @Override
+    protected boolean __checkCurrentUserSession() {
+        UUID sessionId = ServerSecurityUtils.getSessionId();
+        if (sessionId == null)
+            return false;
+
+        UserSession userSession = UserSessionManager.getInstance().findSession(sessionId);
+        return userSession != null;
+    }
+
+    @Override
     protected UserSession __currentUserSession() {
         UUID sessionId = ServerSecurityUtils.getSessionId();
         if (sessionId == null)

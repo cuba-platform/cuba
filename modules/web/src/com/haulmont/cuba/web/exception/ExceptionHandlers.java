@@ -13,19 +13,22 @@ package com.haulmont.cuba.web.exception;
 import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.Terminal;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 /**
  * Provides extensible exception handling functionality.
  * See also {@link App#initExceptionHandlers(boolean)} 
  */
-public class ExceptionHandlers
+public class ExceptionHandlers implements Serializable
 {
     private LinkedList<ExceptionHandler> handlers = new LinkedList<ExceptionHandler>();
 
     private App app;
 
     private ExceptionHandler defaultHandler;
+
+    private static final long serialVersionUID = 1458946417299293127L;
 
     public ExceptionHandlers(App app) {
         this.app = app;

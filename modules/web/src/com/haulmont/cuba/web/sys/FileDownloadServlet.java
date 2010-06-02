@@ -39,7 +39,7 @@ import java.util.UUID;
 
 public class FileDownloadServlet extends HttpServlet {
 
-    private Log log = LogFactory.getLog(FileDownloadServlet.class);
+    private static Log log = LogFactory.getLog(FileDownloadServlet.class);
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {

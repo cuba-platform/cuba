@@ -36,6 +36,8 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
 
     private List<ValueChangeListener> listeners = new ArrayList<ValueChangeListener>();
 
+    private static final long serialVersionUID = 5863216328152195113L;
+
     public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;
         this.propertyPath = propertyPath;

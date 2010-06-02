@@ -11,9 +11,11 @@ import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 
+import java.io.Serializable;
 import java.util.*;
 
-public abstract class ListActionsHelper<T extends List> {
+public abstract class ListActionsHelper<T extends List> implements Serializable {
+
     protected IFrame frame;
     protected T component;
     protected UserSession userSession;
@@ -262,7 +264,7 @@ public abstract class ListActionsHelper<T extends List> {
         }
     }
 
-    public static interface Listener {
+    public static interface Listener extends Serializable {
         void entityCreated(Entity entity);
 
         void entityEdited(Entity entity);

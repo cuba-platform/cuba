@@ -11,10 +11,11 @@ package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LayoutLoaderConfig {
+public class LayoutLoaderConfig implements Serializable {
     private Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> loaders =
             new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
 
@@ -25,6 +26,8 @@ public class LayoutLoaderConfig {
 
     private static Map<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>> customLoaders =
             new HashMap<String, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader>>();
+
+    private static final long serialVersionUID = 7649042802592427312L;
 
     static {
         windowLoaders.register("window", WindowLoader.class);

@@ -34,13 +34,14 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.List;
 
 /**
  * GenericUI class intended for creating and opening application screens.
  */
-public abstract class WindowManager {
+public abstract class WindowManager implements Serializable {
 
     /**
      * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}
@@ -60,8 +61,8 @@ public abstract class WindowManager {
         DIALOG
     }
 
-    private DataService defaultDataService;
-    private UserSettingService settingService;
+    private transient DataService defaultDataService;
+    private transient UserSettingService settingService;
 
     public synchronized DataService getDefaultDataService() {
         if (defaultDataService == null) {

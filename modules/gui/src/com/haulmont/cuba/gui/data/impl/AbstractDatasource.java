@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.apache.commons.logging.Log;
@@ -26,7 +27,7 @@ public abstract class AbstractDatasource<T extends Entity>
     implements
         Datasource<T>, DatasourceImplementation<T>
 {
-    private Log log = LogFactory.getLog(AbstractDatasource.class);
+    private static Log log = LogFactory.getLog(AbstractDatasource.class);
 
     protected String id;
     protected boolean modified;
@@ -143,7 +144,10 @@ public abstract class AbstractDatasource<T extends Entity>
         }
     }
 
-    protected class ItemListener implements ValueListener {
+    protected class ItemListener implements ValueListener, Serializable {
+
+        private static final long serialVersionUID = 358102907204482975L;
+
         public void propertyChanged(Object item, String property, Object prevValue, Object value) {
             log.trace("propertyChanged: item=" + item + ", property=" + property + ", value=" + value + ", prevValue=" + prevValue);
 

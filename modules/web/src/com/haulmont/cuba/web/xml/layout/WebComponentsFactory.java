@@ -16,12 +16,15 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.gui.components.*;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.HashMap;
 
-public class WebComponentsFactory implements ComponentsFactory {
+public class WebComponentsFactory implements ComponentsFactory, Serializable {
 
     private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<?extends Component>>();
+
+    private static final long serialVersionUID = -409350376523747015L;
 
     static {
         classes.put("window", WebWindow.class);

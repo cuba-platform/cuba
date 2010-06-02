@@ -36,7 +36,7 @@ public class WindowConfig
 {
     protected Map<String, WindowInfo> screens = new HashMap<String, WindowInfo>();
 
-    private Log log = LogFactory.getLog(WindowConfig.class);
+    private static Log log = LogFactory.getLog(WindowConfig.class);
 
     public void loadConfig(String xml) {
         SAXReader reader = new SAXReader();

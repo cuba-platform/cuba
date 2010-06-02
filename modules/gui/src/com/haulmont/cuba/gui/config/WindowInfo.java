@@ -14,10 +14,15 @@ import org.dom4j.Element;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 
+import java.io.Serializable;
+
 /**
  * Screen information object
  */
-public class WindowInfo {
+public class WindowInfo implements Serializable {
+
+    private static final long serialVersionUID = 3603246673959004216L;
+
     private String id;
     private Element descriptor;
     private Class screenClass;

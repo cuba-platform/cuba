@@ -13,11 +13,12 @@ package com.haulmont.cuba.web.toolkit;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.PaintException;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Timer {
+public class Timer implements Serializable {
     private int delay;
     private boolean repeating;
 
@@ -26,6 +27,8 @@ public class Timer {
     private List<Listener> listeners = null;
 
     private boolean dirty = true;
+
+    private static final long serialVersionUID = 4107100044402066199L;
 
     public Timer(int delay, boolean repeating) {
         if (delay < 500)  {
@@ -108,7 +111,7 @@ public class Timer {
         return dirty;
     }
 
-    public interface Listener {
+    public interface Listener extends Serializable {
         void onTimer(Timer timer);
 
         void onStopTimer(Timer timer);

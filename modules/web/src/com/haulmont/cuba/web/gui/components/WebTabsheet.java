@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.vaadin.ui.TabSheet;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.dom4j.Element;
@@ -74,7 +75,10 @@ public class WebTabsheet
         return WebComponentsHelper.getComponents(this);
     }
 
-    protected class Tab implements com.haulmont.cuba.gui.components.Tabsheet.Tab {
+    protected class Tab implements com.haulmont.cuba.gui.components.Tabsheet.Tab, Serializable {
+
+        private static final long serialVersionUID = 1997701316402872620L;
+
         private String name;
         private Component component;
 

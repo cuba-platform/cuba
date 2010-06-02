@@ -14,6 +14,9 @@ import java.util.Map;
 import java.util.Collections;
 
 public class TreeActionsHelper extends ListActionsHelper<Tree>{
+
+    private static final long serialVersionUID = 1841229918439188174L;
+
     public TreeActionsHelper(IFrame frame, Tree tree) {
         super(frame, tree);
     }

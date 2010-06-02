@@ -36,6 +36,8 @@ public class DatasourceImpl<T extends Entity>
     protected State state = State.NOT_INITIALIZED;
     protected T item;
 
+    private static final long serialVersionUID = -3022228782833455835L;
+
     public DatasourceImpl(
             DsContext dsContext, DataService dataservice,
                 String id, MetaClass metaClass, String viewName)

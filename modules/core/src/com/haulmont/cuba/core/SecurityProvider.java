@@ -37,6 +37,13 @@ public abstract class SecurityProvider
     }
 
     /**
+     * Check if current user session is valid
+     */
+    public static boolean checkCurrentUserSession() {
+        return getInstance().__checkCurrentUserSession();
+    }
+
+    /**
      * Current (logged in) user identifier
      */
     public static UUID currentUserId() {
@@ -75,6 +82,8 @@ public abstract class SecurityProvider
     public static void applyConstraints(Query query, String entityName) {
         getInstance().__applyConstraints(query, entityName);
     }
+
+    protected abstract boolean __checkCurrentUserSession();
 
     protected abstract UserSession __currentUserSession();
 

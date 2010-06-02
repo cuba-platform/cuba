@@ -59,18 +59,21 @@ import java.util.*;
 import java.util.List;
 
 public class WebWindow
-        implements
-        Window,
-        Component.Wrapper,
-        Component.HasXmlDescriptor,
-        WrappedWindow {
+        implements 
+            Window,
+            Component.Wrapper,
+            Component.HasXmlDescriptor,
+            WrappedWindow 
+{
+    private static final long serialVersionUID = -686695761338837334L;
+
     private String id;
     private String debugId;
 
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
     protected Collection<Component> ownComponents = new HashSet<Component>();
 
-    protected Map<String, Component> allComponents = new WeakHashMap<String, Component>();
+    protected Map<String, Component> allComponents = new HashMap<String, Component>();
 
     private String messagePack;
 
@@ -88,7 +91,7 @@ public class WebWindow
 
     private boolean forceClose;
 
-    private Log log = LogFactory.getLog(WebWindow.class);
+    private static Log log = LogFactory.getLog(WebWindow.class);
 
     private Runnable doAfterClose;
 

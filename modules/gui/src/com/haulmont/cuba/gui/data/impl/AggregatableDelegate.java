@@ -15,22 +15,20 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.datatypes.Datatypes;
 
+import java.io.Serializable;
 import java.util.*;
 
-public abstract class AggregatableDelegate<K> {
-    protected AggregationInfo<MetaPropertyPath>[] aggregationInfos;
+public abstract class AggregatableDelegate<K> implements Serializable {
 
     public Map<Object, String> aggregate(AggregationInfo<MetaPropertyPath>[] aggregationInfos, Collection<K> itemIds) {
         if (aggregationInfos == null || aggregationInfos.length == 0) {
             throw new NullPointerException("Aggregation must be executed at least by one field");
         }
 
-        this.aggregationInfos = aggregationInfos;
-
-        return doAggregation(itemIds);
+        return doAggregation(itemIds, aggregationInfos);
     }
 
-    protected Map<Object, String> doAggregation(Collection<K> itemIds) {
+    protected Map<Object, String> doAggregation(Collection<K> itemIds, AggregationInfo<MetaPropertyPath>[] aggregationInfos) {
         final Map<Object, String> aggregationResults = new HashMap<Object, String>();
         for (final AggregationInfo<MetaPropertyPath> aggregationInfo : aggregationInfos) {
 

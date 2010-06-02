@@ -37,6 +37,9 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Cookie;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +59,7 @@ public class App extends Application
 
     private static final Pattern WIN_PATTERN = Pattern.compile("win([0-9]{1,4})");
 
-    private Log log = LogFactory.getLog(App.class);
+    private static Log log = LogFactory.getLog(App.class);
 
     public static final String THEME_NAME = "blacklabel";
 
@@ -69,22 +72,23 @@ public class App extends Application
 
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
 
-    private ThreadLocal<String> currentWindowName = new ThreadLocal<String>();
+    private transient ThreadLocal<String> currentWindowName = new ThreadLocal<String>();
 
     private boolean principalIsWrong;
 
     private LinkHandler linkHandler;
 
-    protected Map<Window, WindowTimers> windowTimers = new WeakHashMap<Window, WindowTimers>();
-    protected Map<Timer, Window> timerWindow = new WeakHashMap<Timer, Window>();
+    protected Map<Window, WindowTimers> windowTimers = new HashMap<Window, WindowTimers>();
+    protected Map<Timer, Window> timerWindow = new HashMap<Timer, Window>();
 
-    protected Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
+    protected transient Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
     private static volatile boolean viewsDeployed;
 
     private volatile String contextName;
 
-    private HttpServletResponse response;
+    private transient HttpServletResponse response;
+    
     private AppCookies cookies;
 
     static {
@@ -103,6 +107,12 @@ public class App extends Application
             }
         };
         cookies.setCookiesEnabled(true);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        currentWindowName = new ThreadLocal<String>();
+        requestStartTimes = new WeakHashMap<Object, Long>();
+        in.defaultReadObject();
     }
 
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
@@ -484,6 +494,11 @@ public class App extends Application
 
         WebSecurityUtils.clearSecurityAssociation();
 
+        // kick session replication
+        HttpServletRequest request = (HttpServletRequest) transactionData;
+        Object attribute = request.getSession().getAttribute("com.vaadin.terminal.gwt.server.WebApplicationContext");
+        request.getSession().setAttribute("com.vaadin.terminal.gwt.server.WebApplicationContext", attribute);
+
         if (log.isTraceEnabled()) {
             log.trace("requestEnd: [@" + Integer.toHexString(System.identityHashCode(transactionData)) + "]");
         }
@@ -599,7 +614,9 @@ public class App extends Application
         }
     }
 
-    protected static class WindowTimers {
+    protected static class WindowTimers implements Serializable {
+        private static final long serialVersionUID = 2038659815683284376L;
+        
         protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
         protected Set<Timer> timers = new HashSet<Timer>();
     }

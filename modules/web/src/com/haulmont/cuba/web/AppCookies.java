@@ -14,19 +14,27 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AppCookies {
+public abstract class AppCookies implements Serializable {
     public static final int COOKIE_MAX_AGE = 31536000; //1 year (in seconds)
 
-    private final Map<String, Cookie> requestedCookies;
+    private transient Map<String, Cookie> requestedCookies;
 
     private String cookiePath = "/";
     private boolean cookiesEnabled;
 
     public AppCookies() {
         requestedCookies = new HashMap<String, Cookie>();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        requestedCookies = new HashMap<String, Cookie>();
+        in.defaultReadObject();
     }
 
     public String getCookieValue(String name) {

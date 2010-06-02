@@ -21,6 +21,9 @@ import java.util.*;
 import java.util.List;
 
 public class FrameContext implements WindowContext {
+
+    private static final long serialVersionUID = -6616685746440637906L;
+
     private final IFrame frame;
     private Map<String, Object> params;
 

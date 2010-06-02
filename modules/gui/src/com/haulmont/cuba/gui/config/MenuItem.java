@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.config;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -24,8 +25,10 @@ import com.haulmont.cuba.core.global.ClientType;
 /**
  * Main menu item descriptor
  */
-public class MenuItem
+public class MenuItem implements Serializable
 {
+    private static final long serialVersionUID = -8504408057097836101L;
+
     private MenuItem parent;
     private List<MenuItem> children = new ArrayList<MenuItem>();
 

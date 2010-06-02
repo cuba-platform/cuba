@@ -10,7 +10,9 @@
  */
 package com.haulmont.cuba.gui.xml;
 
-public class ParameterInfo {
+import java.io.Serializable;
+
+public class ParameterInfo implements Serializable {
 
     public enum Type {
         DATASOURCE("ds"),

@@ -47,6 +47,7 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -56,6 +57,8 @@ import java.util.*;
  * instance in {@link com.haulmont.cuba.web.App#createAppWindow()} method
  */
 public class AppWindow extends Window implements UserSubstitutionListener {
+    
+    private static final long serialVersionUID = 7269808125566032433L;
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -750,7 +753,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             closeHandlers.put(tabContent, closeHandler);
         }
 
-        public interface TabCloseHandler {
+        public interface TabCloseHandler extends Serializable {
             void onClose(TabSheet tabSheet, Component tabContent);
         }
     }

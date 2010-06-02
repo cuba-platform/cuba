@@ -19,10 +19,10 @@ public abstract class AbstractSearchFolder extends Folder {
     private static final long serialVersionUID = -2234453892776090930L;
 
     @Column(name = "FILTER_COMPONENT")
-    private String filterComponentId;
+    protected String filterComponentId;
 
     @Column(name = "FILTER_XML")
-    private String filterXml;
+    protected String filterXml;
 
     public String getFilterComponentId() {
         return filterComponentId;

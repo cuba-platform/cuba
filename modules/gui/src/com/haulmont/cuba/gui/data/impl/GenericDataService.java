@@ -18,21 +18,27 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.*;
 
 import com.haulmont.cuba.gui.data.DataService;
 import org.apache.openjpa.util.Proxy;
 
-public class GenericDataService implements DataService {
+public class GenericDataService implements DataService, Serializable {
 
-    protected com.haulmont.cuba.core.app.DataService service;
-
-    public GenericDataService(DataService service) {
-        this.service = service;
-    }
+    private static final long serialVersionUID = -2688273748125419411L;
+    
+    protected transient com.haulmont.cuba.core.app.DataService service;
 
     public GenericDataService(boolean remoteCalls) {
         this.service = ServiceLocator.getDataService();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        this.service = ServiceLocator.getDataService();
+        in.defaultReadObject();
     }
 
     public <A extends Entity> A newInstance(MetaClass metaClass) {

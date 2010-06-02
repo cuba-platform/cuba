@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class LinkHandler {
 
-    private Log log = LogFactory.getLog(LinkHandler.class);
+    private static Log log = LogFactory.getLog(LinkHandler.class);
     private App app;
     private Map<String, String> requestParams;
 

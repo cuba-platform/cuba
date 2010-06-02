@@ -13,13 +13,14 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.entity.Entity;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * Root of datasources abstraction layer. Contains one entity instance.
  * @param <T> type of entity this datasource is working with
  */
-public interface Datasource<T extends Entity> {
+public interface Datasource<T extends Entity> extends Serializable {
 
     /** Datasource ID as defined in XML descriptor */
     String getId();

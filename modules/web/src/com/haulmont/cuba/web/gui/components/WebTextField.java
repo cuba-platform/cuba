@@ -30,7 +30,7 @@ public class WebTextField
     implements
         TextField, Component.Wrapper {
 
-    private Log log = LogFactory.getLog(WebTextField.class);
+    private static Log log = LogFactory.getLog(WebTextField.class);
 
     private Datatype datatype;
 

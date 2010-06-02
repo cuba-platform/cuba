@@ -13,6 +13,8 @@ package com.haulmont.cuba.gui;
 import com.haulmont.cuba.core.app.DataService;
 
 import javax.naming.Context;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /**
  * Locator of middleware services for use on presentation layer
@@ -23,8 +25,8 @@ public abstract class ServiceLocator
 
     private static ServiceLocator instance;
 
-    protected Context jndiContext;
-    protected DataService dataService;
+    protected transient Context jndiContext;
+    protected transient DataService dataService;
 
     public static void setImplClass(Class implClass) {
         ServiceLocator.implClass = implClass;

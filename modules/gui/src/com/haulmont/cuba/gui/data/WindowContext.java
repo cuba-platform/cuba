@@ -9,12 +9,13 @@
  */
 package com.haulmont.cuba.gui.data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Provides access to window parameters and component values
  */
-public interface WindowContext {
+public interface WindowContext extends Serializable {
 
     /**
      * External parameters passed to the window on opening.

@@ -36,7 +36,7 @@ public class LazyLoadingTableScreen extends WebWindow
 {
     private Table table;
 
-    private Log log = LogFactory.getLog(LazyLoadingTableScreen.class);
+    private static Log log = LogFactory.getLog(LazyLoadingTableScreen.class);
 
     private static String QUERY = "select s from core$Server s";
 

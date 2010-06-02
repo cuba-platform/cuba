@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.formatters.DateFormatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
+import java.io.Serializable;
 import java.util.List;
 
 public interface Table
@@ -43,7 +44,10 @@ public interface Table
     void setAggregatable(boolean aggregatable);
     boolean isAggregatable();
 
-    public class Column implements HasXmlDescriptor, HasCaption, HasFomatter {
+    public class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
+
+        private static final long serialVersionUID = -8462478820056909896L;
+
         protected Object id;
         protected String caption;
         protected boolean editable;

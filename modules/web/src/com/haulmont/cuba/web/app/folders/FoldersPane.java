@@ -44,16 +44,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.*;
 import java.util.List;
 
 @SuppressWarnings("serial")
 public class FoldersPane extends VerticalLayout {
 
-    private Log log = LogFactory.getLog(FoldersPane.class);
+    private static Log log = LogFactory.getLog(FoldersPane.class);
 
     protected String messagesPack;
-    protected FoldersService service;
 
     protected boolean visible;
 
@@ -82,7 +83,6 @@ public class FoldersPane extends VerticalLayout {
     public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
         this.menuBar = menuBar;
         messagesPack = AppConfig.getInstance().getMessagesPack();
-        service = ServiceLocator.lookup(FoldersService.NAME);
         parentAppWindow = appWindow;
 
         setHeight(100, Sizeable.UNITS_PERCENTAGE);
@@ -266,6 +266,7 @@ public class FoldersPane extends VerticalLayout {
             return;
 
         List<AppFolder> folders = new ArrayList<AppFolder>(appFoldersTree.getItemIds());
+        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         service.reloadAppFolders(folders);
         for (AppFolder folder : folders) {
             appFoldersTree.setItemCaption(folder, folder.getCaption());
@@ -276,6 +277,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Component createAppFoldersPane() {
+        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         List<AppFolder> appFolders = service.loadAppFolders();
         if (appFolders.isEmpty())
             return null;
@@ -299,6 +301,7 @@ public class FoldersPane extends VerticalLayout {
         searchFoldersTree = new Tree();
 //        searchFoldersTree.setSizeFull();
 
+        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         List<SearchFolder> searchFolders = service.loadSearchFolders();
         searchFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot");
         searchFoldersTree.addListener(new FolderClickListener());

@@ -16,6 +16,8 @@ public class EmailValidator extends PatternValidator {
     static private String sDomen = "[a-z][a-z[0-9]\u005F\u002E\u002D]*[a-z||0-9]";
     static private String sDomen2 = "([a-z]){2,4}";
 
+    private static final long serialVersionUID = -4082731133028995753L;
+
     public EmailValidator(Element element, String messagesPack) {
         super(sDomen + "@" + sDomen + "\u002E" + sDomen2);
         message = element.attributeValue("message");

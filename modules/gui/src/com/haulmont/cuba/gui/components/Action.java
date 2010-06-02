@@ -9,10 +9,12 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import java.io.Serializable;
+
 /**
  * A named listener to UI events
  */
-public interface Action {
+public interface Action extends Serializable {
     String getId();
     String getCaption();
 

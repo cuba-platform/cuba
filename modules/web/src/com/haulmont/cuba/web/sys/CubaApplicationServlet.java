@@ -19,13 +19,14 @@ import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.gwt.server.ApplicationServlet;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.Application;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Enumeration;
 
 public class CubaApplicationServlet extends ApplicationServlet {
@@ -45,6 +46,10 @@ public class CubaApplicationServlet extends ApplicationServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
         String contextName = request.getContextPath().substring(1);
+
+        if (request.getParameter("testSS") != null) {
+            testSessionSerialization(request.getSession());
+        }
 
         String[] parts = requestURI.split("/");
         boolean needRedirect = parts.length > 0 && "open".equals(parts[parts.length - 1]);
@@ -78,6 +83,34 @@ public class CubaApplicationServlet extends ApplicationServlet {
             response.sendRedirect(sb.toString());
         } else {
             super.service(request, response);
+        }
+    }
+
+    private void testSessionSerialization(HttpSession session) {
+        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
+        String fileName = tempDir + "/" + DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHmmssSSS") + ".ser";
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
+        try {
+            fos = new FileOutputStream(fileName);
+            oos = new ObjectOutputStream(fos);
+
+            Enumeration names = session.getAttributeNames();
+            while (names.hasMoreElements()) {
+                Object value = session.getAttribute((String) names.nextElement());
+                oos.writeObject(value);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (oos != null) oos.close();
+                if (fos != null) fos.close();
+            } catch (IOException e) {
+                //
+            }
         }
     }
 

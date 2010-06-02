@@ -13,12 +13,13 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.settings.Settings;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * Represents an independent window
  */
-public interface Window extends IFrame, Component.HasCaption, Component.ActionsHolder {
+public interface Window extends Serializable, IFrame, Component.HasCaption, Component.ActionsHolder {
 
     /** Standard actionId passed to {@link CloseListener}s after succesful commit */
     String COMMIT_ACTION_ID = "commit";
@@ -118,7 +119,7 @@ public interface Window extends IFrame, Component.HasCaption, Component.ActionsH
         /**
          * Interface implemented by invoking code to receive selected entities
          */
-        interface Handler {
+        interface Handler extends Serializable {
             /** Invoked on selection and contains selected entities */
             void handleLookup(Collection items);
         }
@@ -137,7 +138,7 @@ public interface Window extends IFrame, Component.HasCaption, Component.ActionsH
     /**
      * Listener to window closing event
      */
-    interface CloseListener {
+    interface CloseListener extends Serializable {
         /**
          * Invoked after window was closed
          * @param actionId ID of action caused window to close

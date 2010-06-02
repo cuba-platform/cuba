@@ -16,6 +16,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public abstract class FileWindow extends ReportOutputWindow {
 
@@ -23,7 +25,7 @@ public abstract class FileWindow extends ReportOutputWindow {
 
     protected File f;
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected transient Log log = LogFactory.getLog(getClass());
 
     public FileWindow(String windowName, FileDescriptor fd) {
         super(windowName);
@@ -33,5 +35,10 @@ public abstract class FileWindow extends ReportOutputWindow {
     protected FileWindow(String caption, File f) {
         super(caption);
         this.f = f;
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        log = LogFactory.getLog(getClass());
+        in.defaultReadObject();
     }
 }

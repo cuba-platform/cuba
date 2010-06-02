@@ -25,7 +25,7 @@ import java.util.Locale;
 
 public class NoUserSessionHandler extends AbstractExceptionHandler<NoUserSessionException> {
 
-    private Log log = LogFactory.getLog(NoUserSessionHandler.class);
+    private static Log log = LogFactory.getLog(NoUserSessionHandler.class);
     private Locale locale;
 
     public NoUserSessionHandler() {

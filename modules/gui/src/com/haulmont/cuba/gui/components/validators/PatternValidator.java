@@ -22,6 +22,8 @@ public class PatternValidator implements Field.Validator {
     protected String message;
     protected String messagesPack;
 
+    private static final long serialVersionUID = -3580324801456392253L;
+
     public PatternValidator(Element element, String messagesPack) {
         this(element.attributeValue("pattern"));
         message = element.attributeValue("message");

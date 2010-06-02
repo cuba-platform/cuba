@@ -15,10 +15,12 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
 
     protected DsContext dsContext;
     protected IFrame frame;
-    protected Binding binding;
+    protected transient Binding binding;
 
     protected List<ComponentLoader.LazyTask> lazyTasks = new ArrayList<ComponentLoader.LazyTask>();
     protected Map<String, Object> parameters;
+    
+    private static final long serialVersionUID = 5925275133830025528L;
 
     public ComponentLoaderContext(DsContext dsContext, Map<String, Object> parameters) {
         this.dsContext = dsContext;

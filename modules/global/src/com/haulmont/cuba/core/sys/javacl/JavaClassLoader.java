@@ -86,7 +86,7 @@ public class JavaClassLoader extends URLClassLoader {
 
     private static final String IMPORT_PATTERN = "import .+?;";
 
-    private Log log = LogFactory.getLog(JavaClassLoader.class);
+    private static Log log = LogFactory.getLog(JavaClassLoader.class);
 
     protected String classPath;
 

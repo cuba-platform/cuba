@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 import org.dom4j.Element;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -46,7 +47,7 @@ public interface Tabsheet
         void setVisible(boolean visible);
     }
 
-    interface TabChangeListener {
+    interface TabChangeListener extends Serializable {
         void tabChanged(Tab newTab);
     }
 }

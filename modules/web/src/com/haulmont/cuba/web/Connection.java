@@ -19,6 +19,7 @@ import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.apache.commons.logging.Log;
@@ -28,15 +29,17 @@ import org.apache.commons.logging.LogFactory;
  * Connection to the middleware.
  * <br>Can be obtained via {@link com.haulmont.cuba.web.App#getConnection()} method.
  */
-public class Connection
+public class Connection implements Serializable
 {
-    private Log log = LogFactory.getLog(Connection.class);
+    private static Log log = LogFactory.getLog(Connection.class);
 
-    private Map<ConnectionListener, Object> connListeners = new WeakHashMap<ConnectionListener, Object>();
-    private Map<UserSubstitutionListener, Object> usListeners = new WeakHashMap<UserSubstitutionListener, Object>();
+    private Map<ConnectionListener, Object> connListeners = new HashMap<ConnectionListener, Object>();
+    private Map<UserSubstitutionListener, Object> usListeners = new HashMap<UserSubstitutionListener, Object>();
 
     private boolean connected;
     private UserSession session;
+
+    private static final long serialVersionUID = 3687127630079762741L;
 
     /**
      * True if the web application is succesfully logged in to middleware and a user session exists.

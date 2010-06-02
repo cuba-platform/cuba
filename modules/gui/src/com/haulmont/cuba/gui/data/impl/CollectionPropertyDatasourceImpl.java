@@ -38,7 +38,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     private T item;
     protected boolean cascadeProperty;
 
-    private Log log = LogFactory.getLog(CollectionPropertyDatasourceImpl.class);
+    private static Log log = LogFactory.getLog(CollectionPropertyDatasourceImpl.class);
 
     protected SortInfo<MetaPropertyPath>[] sortInfos;
 

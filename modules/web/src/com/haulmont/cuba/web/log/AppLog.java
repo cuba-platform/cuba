@@ -15,22 +15,31 @@ import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.URIHandler;
 import com.vaadin.terminal.VariableOwner;
 import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-public class AppLog
+public class AppLog implements Serializable
 {
-    private LinkedList<LogItem> items = new LinkedList<LogItem>();
+    private transient LinkedList<LogItem> items = new LinkedList<LogItem>();
 
     private int capacity = 100;
 
-    private Log log = LogFactory.getLog(AppLog.class);
+    private static Log log = LogFactory.getLog(AppLog.class);
+
+    private static final long serialVersionUID = 4968369834741256953L;
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        items = new LinkedList<LogItem>();
+        in.defaultReadObject();
+    }
 
     public void log(LogItem item) {
         String msg = item.getMessage() + "\n" + item.getStacktrace();

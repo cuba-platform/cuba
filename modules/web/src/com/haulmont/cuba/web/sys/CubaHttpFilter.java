@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class CubaHttpFilter extends HttpSecurityService implements Filter
 {
-    private Log log = LogFactory.getLog(CubaHttpFilter.class);
+    private static Log log = LogFactory.getLog(CubaHttpFilter.class);
 
     public void init(FilterConfig filterConfig) throws ServletException {
         Map<String, String> properties = new HashMap<String, String>();

@@ -13,14 +13,16 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 
-public interface DsContextImplementation extends DsContext{
+import java.io.Serializable;
+
+public interface DsContextImplementation extends DsContext {
 
     void setParent(DsContext parentDsContext);
 
     void register(Datasource datasource);
     void registerListener(ParameterInfo item, Datasource datasource);
 
-    public interface LazyTask {
+    public interface LazyTask extends Serializable {
         void execute(DsContext context);
     }
 

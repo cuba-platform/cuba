@@ -19,6 +19,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,11 +33,13 @@ import com.haulmont.cuba.core.global.MessageProvider;
  * GenericUI class holding information about main menu structure.
  * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getMenuConfig()}
  */
-public class MenuConfig
+public class MenuConfig implements Serializable
 {
-    private Log log = LogFactory.getLog(MenuConfig.class);
+    private static Log log = LogFactory.getLog(MenuConfig.class);
     
     private List<MenuItem> rootItems = new ArrayList<MenuItem>();
+
+    private static final long serialVersionUID = 6791874036524436320L;
 
     /**
      * Localized menu item caption

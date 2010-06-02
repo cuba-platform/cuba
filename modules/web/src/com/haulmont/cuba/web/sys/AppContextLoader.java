@@ -10,7 +10,9 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.chile.core.model.utils.MetadataUtils;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.PersistenceConfigProcessor;
@@ -44,7 +46,7 @@ public class AppContextLoader implements ServletContextListener {
 
     public static final String PERSISTENCE_CONFIG_NAME_PARAM = "persistenceConfigName";
 
-    private Log log = LogFactory.getLog(AppContextLoader.class);
+    private static Log log = LogFactory.getLog(AppContextLoader.class);
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
@@ -57,6 +59,7 @@ public class AppContextLoader implements ServletContextListener {
             initPersistenceConfig(sc);
             initAppContext(sc);
             initServiceLocator(sc);
+            initMetadata();
             initDatabase();
 
             AppContext.startContext();
@@ -74,6 +77,10 @@ public class AppContextLoader implements ServletContextListener {
                 logger.setLevel(Level.toLevel(AppContext.getProperty(name)));
             }
         }
+    }
+
+    private void initMetadata() {
+        MetadataUtils.setSerializationSupportSession(MetadataProvider.getSession());
     }
 
     private void initDatabase() {

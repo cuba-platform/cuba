@@ -23,7 +23,7 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         extends AbstractTreeDatasource<T, K>
         implements TreeTableDatasource<T, K>
 {
-    private Log log = LogFactory.getLog(AbstractTreeTableDatasource.class);
+    private static Log log = LogFactory.getLog(AbstractTreeTableDatasource.class);
 
     private class TreeTableNodeComparator<T extends Entity> implements Comparator<Node<T>> {
         private final EntityComparator<T> entityComparator;

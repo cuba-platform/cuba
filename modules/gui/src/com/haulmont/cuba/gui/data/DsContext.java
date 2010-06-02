@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.CommitContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.List;
@@ -69,7 +70,7 @@ public interface DsContext {
      * <br>Can be used to augment CommitContext with entities which must be committed in the
      * same transaction as datasources content.
      */
-    public interface CommitListener {
+    public interface CommitListener extends Serializable {
         /**
          * Invoked before sending data to the middleware
          */

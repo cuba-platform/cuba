@@ -13,10 +13,12 @@ package com.haulmont.cuba.web.exception;
 import com.vaadin.terminal.Terminal;
 import com.haulmont.cuba.web.App;
 
+import java.io.Serializable;
+
 /**
  * Interface implemented by unhandled exception handler in WebUI
  */
-public interface ExceptionHandler
+public interface ExceptionHandler extends Serializable
 {
     boolean handle(Terminal.ErrorEvent event, App app);
 }
