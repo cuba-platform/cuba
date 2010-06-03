@@ -22,11 +22,10 @@ import java.util.Map;
 public class ActionsFieldHelper {
     private ActionsField component;
     private String entityName;
-    private MetaProperty metaProperty;
 
     public ActionsFieldHelper(ActionsField component) {
         this.component = component;
-        metaProperty = component.getMetaProperty();
+        MetaProperty metaProperty = component.getMetaProperty();
         entityName = metaProperty.getRange().asClass().getName();
     }
 
@@ -48,11 +47,8 @@ public class ActionsFieldHelper {
                 component.getFrame().openLookup(windowAlias,
                         new Window.Lookup.Handler() {
                             public void handleLookup(Collection items) {
-                                Entity entity;
                                 if (items != null && items.size() > 0) {
-                                    entity = (Entity) items.iterator().next();
-                                    getItem().setValue(metaProperty.getName(), entity);
-                                    component.getValue();
+                                    component.setValue(items.iterator().next());
                                 }
                             }
                         }, openType, params);
@@ -69,9 +65,15 @@ public class ActionsFieldHelper {
     public void createOpenAction() {
         Action action = new AbstractAction(ActionsField.OPEN) {
             public void actionPerform(Component componend) {
-                Entity entity = getItem().getValue(metaProperty.getName());
+                Entity entity = component.getValue();
                 if (entity != null) {
-                    component.getFrame().openEditor(((Instance)entity).getMetaClass().getName() + ".edit", entity, WindowManager.OpenType.THIS_TAB);
+                    String windowAlias = ((Instance) entity).getMetaClass().getName() + ".edit";
+                    final Window.Editor editor = component.getFrame().openEditor(windowAlias, entity, WindowManager.OpenType.THIS_TAB);
+                    editor.addListener(new Window.CloseListener() {
+                        public void windowClosed(String actionId) {
+                            component.getOptionsDatasource().updateItem(editor.getItem());
+                        }
+                    });
                 }
             }
 
@@ -81,10 +83,6 @@ public class ActionsFieldHelper {
             }
         };
         component.addAction(action);
-    }
-
-    private Instance getItem() {
-        return (Instance) component.getDatasource().getItem();
     }
 
 }
