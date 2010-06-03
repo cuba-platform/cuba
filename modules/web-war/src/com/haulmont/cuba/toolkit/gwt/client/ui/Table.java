@@ -850,7 +850,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         }
                     }
 
-                    if (!moved) {
+                    if (!moved && event.getButton() == Event.BUTTON_LEFT) {
                         // mouse event was a click to header -> sort column
                         if (sortable) {
                             if (sortColumn.equals(cid)) {
