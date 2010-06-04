@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -43,6 +44,10 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
             throws InstantiationException, IllegalAccessException
     {
+        final Map<String,Object> params = context.getParams();
+        XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
+        element = processor.getResultRoot();
+
         ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
         IFrame component = factory.createComponent("iframe");
@@ -51,7 +56,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         final Element dsContextElement = element.element("dsContext");
         final DsContext dsContext;
-        final Map<String,Object> params = context.getParams();
 
         if (dsContextElement != null) {
             final DsContextLoader contextLoader =
