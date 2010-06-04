@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.toolkit.ui.ActionsField;
+import com.haulmont.cuba.core.entity.Entity;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.BaseTheme;
@@ -151,6 +152,11 @@ public class WebActionsField
 
     @Override
     public void setValue(Object value) {
+        CollectionDatasource optionsDatasource = lookupField.getOptionsDatasource();
+        if (value != null && value instanceof Entity && optionsDatasource != null &&
+                !optionsDatasource.containsItem(((Entity) value).getId())) {
+            optionsDatasource.addItem((Entity) value);
+        }
         lookupField.setValue(value);
     }
 
