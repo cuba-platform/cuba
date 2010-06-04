@@ -10,7 +10,9 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -18,7 +20,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.toolkit.ui.ActionsField;
-import com.haulmont.cuba.core.entity.Entity;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.BaseTheme;
@@ -162,6 +163,10 @@ public class WebActionsField
 
     @Override
     public <T> T getValue() {
+        if (getDatasource() != null) {
+            Instance instance = (Instance) getDatasource().getItem();
+            return instance == null ? null : (T) instance.getValue(getMetaProperty().getName());
+        }
         return (T) lookupField.getValue();
     }
 
