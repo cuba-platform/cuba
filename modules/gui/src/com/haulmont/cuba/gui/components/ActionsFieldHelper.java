@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -75,7 +76,13 @@ public class ActionsFieldHelper {
                     final Window.Editor editor = component.getFrame().openEditor(windowAlias, entity, openType);
                     editor.addListener(new Window.CloseListener() {
                         public void windowClosed(String actionId) {
-                            component.getOptionsDatasource().updateItem(editor.getItem());
+                            CollectionDatasource optionsDatasource = component.getOptionsDatasource();
+                            Entity item = editor.getItem();
+                            if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
+                                optionsDatasource.updateItem(item);
+                            } else {
+                                component.setValue(item);
+                            }
                         }
                     });
                 }
