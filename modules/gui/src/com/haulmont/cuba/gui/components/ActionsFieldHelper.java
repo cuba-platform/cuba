@@ -63,12 +63,16 @@ public class ActionsFieldHelper {
     }
 
     public void createOpenAction() {
+        createOpenAction(WindowManager.OpenType.THIS_TAB);
+    }
+
+    public void createOpenAction(final WindowManager.OpenType openType) {
         Action action = new AbstractAction(ActionsField.OPEN) {
             public void actionPerform(Component componend) {
                 Entity entity = component.getValue();
                 if (entity != null) {
                     String windowAlias = ((Instance) entity).getMetaClass().getName() + ".edit";
-                    final Window.Editor editor = component.getFrame().openEditor(windowAlias, entity, WindowManager.OpenType.THIS_TAB);
+                    final Window.Editor editor = component.getFrame().openEditor(windowAlias, entity, openType);
                     editor.addListener(new Window.CloseListener() {
                         public void windowClosed(String actionId) {
                             component.getOptionsDatasource().updateItem(editor.getItem());
