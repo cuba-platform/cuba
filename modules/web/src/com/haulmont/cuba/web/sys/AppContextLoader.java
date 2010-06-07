@@ -63,6 +63,7 @@ public class AppContextLoader implements ServletContextListener {
             initDatabase();
 
             AppContext.startContext();
+            log.info("AppContext initialized");
         } catch (Exception e) {
             log.error("Error initializing application", e);
             throw new RuntimeException(e);
@@ -178,6 +179,7 @@ public class AppContextLoader implements ServletContextListener {
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        AppContext.stopContext();
         AppContext.setApplicationContext(null);
     }
 }

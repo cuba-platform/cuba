@@ -26,6 +26,7 @@ import org.dom4j.io.SAXReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedList;
@@ -37,11 +38,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ViewRepository
 {
+    public interface Listener {
+        void viewStored(View view);
+    }
 
     private List<String> readFileNames = new LinkedList<String>();
 
     private Map<MetaClass, Map<String, View>> storage =
             new ConcurrentHashMap<MetaClass, Map<String, View>>();
+
+    private List<Listener> listeners = new ArrayList<Listener>();
 
     public View getView(Class<? extends Entity> entityClass, String name) {
         MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
@@ -84,7 +90,7 @@ public class ViewRepository
         } else
             throw new UnsupportedOperationException("Unsupported default view: " + name);
 
-        storeView(metaClass, view);
+        storeView(metaClass, view, true);
         return view;
     }
 
@@ -161,7 +167,7 @@ public class ViewRepository
             view = new View(metaClass.getJavaClass(), viewName);
         }
         loadView(rootElem, viewElem, view);
-        storeView(metaClass, view);
+        storeView(metaClass, view, true);
 
         return view;
     }
@@ -240,7 +246,7 @@ public class ViewRepository
         }
     }
 
-    private void storeView(MetaClass metaClass, View view) {
+    public void storeView(MetaClass metaClass, View view, boolean distribute) {
         Map<String, View> views = storage.get(metaClass);
         if (views == null) {
             views = new ConcurrentHashMap<String, View>();
@@ -248,5 +254,23 @@ public class ViewRepository
 
         views.put(view.getName(), view);
         storage.put(metaClass, views);
+
+        if (distribute) {
+            for (Listener listener : listeners) {
+                listener.viewStored(view);
+            }
+        }
+    }
+
+    public List<View> getAll() {
+        List<View> list = new ArrayList<View>();
+        for (Map<String, View> viewMap : storage.values()) {
+            list.addAll(viewMap.values());
+        }
+        return list;
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
     }
 }

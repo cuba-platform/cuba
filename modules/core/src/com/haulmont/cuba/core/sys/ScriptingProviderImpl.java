@@ -10,23 +10,20 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.app.ClusterListener;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 import groovy.util.GroovyScriptEngine;
-import groovy.util.ResourceConnector;
-import groovy.util.ResourceException;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.*;
 import java.util.*;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
@@ -49,22 +46,48 @@ public class ScriptingProviderImpl extends ScriptingProvider {
 
     private Map<Layer, GenericKeyedObjectPool> pools = new HashMap<Layer, GenericKeyedObjectPool>();
 
-    public ScriptingProviderImpl(ConfigProvider configProvider) {
+    private ClusterManagerAPI clusterManager;
+
+    public ScriptingProviderImpl(ConfigProvider configProvider, ClusterManagerAPI clusterManager) {
+        this.clusterManager = clusterManager;
+        this.clusterManager.addListener(ScriptingSettings.class, new ScriptingSettingsDistributor());
+
         GlobalConfig config = configProvider.doGetConfig(GlobalConfig.class);
         doAddGroovyClassPath(config.getConfDir());
     }
 
+//    public void setClusterManager(ClusterManagerAPI clusterManager) {
+//        this.clusterManager = clusterManager;
+//        this.clusterManager.addListener(ScriptingSettings.class, new ScriptingSettingsDistributor());
+//    }
+//
     public void doAddGroovyClassPath(String path) {
-        groovyClassPath = groovyClassPath + File.pathSeparator + path;
+        internalAddGroovyClassPath(path, true);
+    }
+
+    private void internalAddGroovyClassPath(String path, boolean distribute) {
+        if (!groovyClassPath.contains(File.pathSeparator + path)) {
+            groovyClassPath = groovyClassPath + File.pathSeparator + path;
+            if (distribute)
+                clusterManager.send(new ScriptingSettings(null, null, path));
+        }
     }
 
     public synchronized void doAddGroovyEvaluatorImport(Layer layer, String className) {
+        internalAddGroovyEvaluatorImport(layer, className, true);
+    }
+
+    private void internalAddGroovyEvaluatorImport(Layer layer, String className, boolean distribute) {
         Set<String> list = imports.get(layer);
         if (list == null) {
             list = new HashSet<String>();
             imports.put(layer, list);
         }
-        list.add(className);
+        if (!list.contains(className)) {
+            list.add(className);
+            if (distribute)
+                clusterManager.send(new ScriptingSettings(layer, className, null));
+        }
     }
 
     public GroovyScriptEngine doGetGroovyScriptEngine() {
@@ -154,5 +177,75 @@ public class ScriptingProviderImpl extends ScriptingProvider {
             pools.put(layer, pool);
         }
         return pool;
+    }
+
+    private static class ScriptingSettings implements Serializable {
+
+        private Layer importLayer;
+        private String importClassName;
+        private String classPath;
+
+        private static final long serialVersionUID = -2146330970539251455L;
+
+        private ScriptingSettings(Layer importLayer, String importClassName, String classPath) {
+            this.classPath = classPath;
+            this.importClassName = importClassName;
+            this.importLayer = importLayer;
+        }
+    }
+
+    private class ScriptingSettingsDistributor implements ClusterListener<ScriptingSettings> {
+
+        public void receive(ScriptingSettings message) {
+            if (message.importLayer != null && message.importClassName != null)
+                internalAddGroovyEvaluatorImport(message.importLayer, message.importClassName, false);
+
+            if (message.classPath != null)
+                internalAddGroovyClassPath(message.classPath, false);
+        }
+
+        public byte[] getState() {
+            List<ScriptingSettings> list = new ArrayList<ScriptingSettings>();
+
+            String[] strings = groovyClassPath.split(File.pathSeparator);
+            for (String path : strings) {
+                list.add(new ScriptingSettings(null, null, path));
+            }
+
+            for (Map.Entry<Layer, Set<String>> entry : imports.entrySet()) {
+                for (String className : entry.getValue()) {
+                    list.add(new ScriptingSettings(entry.getKey(), className, null));
+                }
+            }
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            try {
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(list);
+            } catch (IOException e) {
+                log.error("Error serializing ScriptingSettings", e);
+                return new byte[0];
+            }
+            return bos.toByteArray();
+        }
+
+        public void setState(byte[] state) {
+            if (state == null || state.length == 0)
+                return;
+
+            List<ScriptingSettings> list;
+            ByteArrayInputStream bis = new ByteArrayInputStream(state);
+            try {
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                list = (List<ScriptingSettings>) ois.readObject();
+            } catch (Exception e) {
+                log.error("Error deserializing ScriptingSettings", e);
+                return;
+            }
+
+            for (ScriptingSettings ss : list) {
+                receive(ss);
+            }
+        }
     }
 }

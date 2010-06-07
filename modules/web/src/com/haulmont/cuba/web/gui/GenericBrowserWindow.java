@@ -184,7 +184,7 @@ public class GenericBrowserWindow extends WebWindow
     }
 
     protected DsContextImpl createDsContext(MetaClass metaClass, View view, Map<String, Object> params) {
-        final GenericDataService dataservice = new GenericDataService(false);
+        final GenericDataService dataservice = new GenericDataService();
         final DsContextImpl context = new DsContextImpl(dataservice);
 
         context.setWindowContext(new FrameContext(this, params));

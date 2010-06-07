@@ -1,7 +1,7 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="cuba.client.web.ui.core.settings.SettingsWindow"
-        messagesPack="cuba.client.web.ui.core.settings"
+        class="com.haulmont.cuba.web.app.ui.core.settings.SettingsWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.core.settings"
         >
 
     <dsContext/>

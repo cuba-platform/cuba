@@ -1,7 +1,7 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="cuba.client.web.ui.core.locking.LockBrowser"
-        messagesPack="cuba.client.web.ui.core.locking"
+        class="com.haulmont.cuba.web.app.ui.core.locking.LockBrowser"
+        messagesPack="com.haulmont.cuba.web.app.ui.core.locking"
         caption="msg://caption"
         >
 
@@ -26,7 +26,7 @@
                 </buttonsPanel>
                 <columns>
                     <column id="entityName" caption="msg://entityName">
-                        <formatter class="cuba.client.web.ui.core.locking.LockNameFormatter"/>
+                        <formatter class="com.haulmont.cuba.web.app.ui.core.locking.LockNameFormatter"/>
                     </column>
                     <column id="entityId" caption="msg://entityId"/>
                     <column id="user.login" caption="msg://user"/>

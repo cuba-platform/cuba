@@ -87,7 +87,7 @@ public class ActionsFieldLoader extends AbstractFieldLoader {
             ds = context.getDsContext().get(datasource);
         } else {
             MetaClass metaClass = component.getMetaProperty().getRange().asClass();
-            ds = new CollectionDatasourceImpl(null, new GenericDataService(false), null, metaClass, View.MINIMAL);
+            ds = new CollectionDatasourceImpl(null, new GenericDataService(), null, metaClass, View.MINIMAL);
             ds.setQuery("select e from " + metaClass.getName() + " e where e.id is null");
             ds.refresh();
         }

@@ -38,7 +38,7 @@ public abstract class FileWindow extends ReportOutputWindow {
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        log = LogFactory.getLog(getClass());
         in.defaultReadObject();
+        log = LogFactory.getLog(getClass());
     }
 }

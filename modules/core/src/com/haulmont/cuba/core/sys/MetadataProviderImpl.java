@@ -20,17 +20,22 @@ import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.jpa.loader.JPAAnnotationsLoader;
 import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.app.ClusterListener;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.AnnotatedElement;
 import java.util.*;
@@ -38,7 +43,21 @@ import java.util.*;
 public class MetadataProviderImpl extends MetadataProvider
 {
     private volatile Session session;
-    private ViewRepository viewRepository;
+
+    private volatile ViewRepository viewRepository;
+
+    private ClusterManagerAPI clusterManager;
+
+    private ViewDistributor viewDistributor;
+
+    private static Log log = LogFactory.getLog(MetadataProviderImpl.class);
+
+    public void setClusterManager(ClusterManagerAPI clusterManager) {
+        this.viewDistributor = new ViewDistributor();
+
+        this.clusterManager = clusterManager;
+        this.clusterManager.addListener(View.class, viewDistributor);
+    }
 
     protected Session __getSession() {
         if (session == null) {
@@ -51,9 +70,14 @@ public class MetadataProviderImpl extends MetadataProvider
         return session;
     }
 
-    protected synchronized ViewRepository __getViewRepository() {
+    protected ViewRepository __getViewRepository() {
         if (viewRepository == null) {
-            viewRepository = new ViewRepository();
+            synchronized (this) {
+                if (viewRepository == null) {
+                    viewRepository = new ViewRepository();
+                    viewRepository.addListener(viewDistributor);
+                }
+            }
         }
 
         return viewRepository;
@@ -214,6 +238,53 @@ public class MetadataProviderImpl extends MetadataProvider
             MetaProperty[] properties = (MetaProperty[]) metaAnnotations.get(OnDeleteInverse.class.getName());
             properties = (MetaProperty[]) ArrayUtils.add(properties, metaProperty);
             metaAnnotations.put(OnDeleteInverse.class.getName(), properties);
+        }
+    }
+
+    public class ViewDistributor implements ViewRepository.Listener, ClusterListener<View> {
+
+        public void viewStored(View view) {
+            clusterManager.send(view);
+        }
+
+        public void receive(View message) {
+            MetaClass metaClass = getSession().getClass(message.getEntityClass());
+            getViewRepository().storeView(metaClass, message, false);
+        }
+
+        public byte[] getState() {
+            List<View> list = getViewRepository().getAll();
+            if (list.size() == 0)
+                return new byte[0];
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            try {
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(list);
+            } catch (IOException e) {
+                log.error("Error serializing views", e);
+                return new byte[0];
+            }
+            return bos.toByteArray();
+        }
+
+        public void setState(byte[] state) {
+            if (state == null || state.length == 0)
+                return;
+
+            List<View> list;
+            ByteArrayInputStream bis = new ByteArrayInputStream(state);
+            try {
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                list = (List<View>) ois.readObject();
+            } catch (Exception e) {
+                log.error("Error deserializing views", e);
+                return;
+            }
+
+            for (View view : list) {
+                receive(view);
+            }
         }
     }
 }

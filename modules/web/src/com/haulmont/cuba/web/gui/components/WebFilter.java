@@ -368,8 +368,7 @@ public class WebFilter
         loadFilterEntities();
 
         Window window = ComponentsHelper.getWindow(this);
-        UserSettingService settingService = App.getInstance().getWindowManager().getSettingService();
-        SettingsImpl settings = new SettingsImpl(window.getId(), settingService);
+        SettingsImpl settings = new SettingsImpl(window.getId());
 
         String componentPath = getComponentPath();
         String[] strings = ValuePathHelper.parse(componentPath);

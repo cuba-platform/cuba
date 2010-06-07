@@ -33,8 +33,8 @@ public abstract class AppCookies implements Serializable {
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        requestedCookies = new HashMap<String, Cookie>();
         in.defaultReadObject();
+        requestedCookies = new HashMap<String, Cookie>();
     }
 
     public String getCookieValue(String name) {

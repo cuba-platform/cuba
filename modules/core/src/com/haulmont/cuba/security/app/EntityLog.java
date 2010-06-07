@@ -111,11 +111,11 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         log.debug("Loading entities");
         entitiesManual = new HashMap<String, Set<String>>();
         entitiesAuto = new HashMap<String, Set<String>>();
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Query q = em.createQuery("select e from sec$LoggedEntity e where e.auto = true or e.manual = true");
-            q.setView(null);
+//            q.setView(null);
             List<LoggedEntity> list = q.getResultList();
             for (LoggedEntity loggedEntity : list) {
                 if (loggedEntity.getName() == null) {

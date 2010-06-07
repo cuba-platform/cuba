@@ -37,8 +37,8 @@ public class AppLog implements Serializable
     private static final long serialVersionUID = 4968369834741256953L;
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        items = new LinkedList<LogItem>();
         in.defaultReadObject();
+        items = new LinkedList<LogItem>();
     }
 
     public void log(LogItem item) {

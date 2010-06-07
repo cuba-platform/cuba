@@ -62,7 +62,7 @@ public class SimpleLookup extends AbstractLookup {
         if (metaClass == null)
             throw new RuntimeException("Can't find MetaClass for " + entityName);
 
-        CollectionDatasource datasource = new CollectionDatasourceImpl(getDsContext(), new GenericDataService(false),
+        CollectionDatasource datasource = new CollectionDatasourceImpl(getDsContext(), new GenericDataService(),
                 metaClass.getName(), metaClass, view);
 
         if (query != null)

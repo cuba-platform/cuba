@@ -32,19 +32,20 @@ public class SettingsImpl implements Settings, Serializable {
 
     private static final long serialVersionUID = 3938766157133492378L;
 
-    public SettingsImpl(String name, UserSettingService service) {
+    public SettingsImpl(String name) {
         this.name = name;
-        this.service = service;
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        service = ServiceLocator.lookup(UserSettingService.NAME);
+    private UserSettingService getService() {
+        if (service == null) {
+            service = ServiceLocator.lookup(UserSettingService.NAME);
+        }
+        return service;
     }
 
     private void checkLoaded() {
         if (root == null) {
-            String xml = service.loadSetting(AppConfig.getInstance().getClientType(), name);
+            String xml = getService().loadSetting(AppConfig.getInstance().getClientType(), name);
             if (StringUtils.isBlank(xml)) {
                 root = DocumentHelper.createDocument().addElement("settings");
             } else {
@@ -83,7 +84,7 @@ public class SettingsImpl implements Settings, Serializable {
     public void commit() {
         if (modified && root != null) {
             String xml = Dom4j.writeDocument(root.getDocument(), true);
-            service.saveSetting(AppConfig.getInstance().getClientType(), name, xml);
+            getService().saveSetting(AppConfig.getInstance().getClientType(), name, xml);
             modified = false;
         }
     }

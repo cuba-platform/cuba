@@ -34,9 +34,7 @@
             template="/com/haulmont/cuba/web/app/ui/security/group/lookup/group-lookup.xml"/>
 
     <screen id="sec$Role.browse"
-            template="cuba/client/web/ui/security/role/role-browse.xml"/>
-    <!--<screen id="sec$Role.browse"-->
-            <!--template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>-->
+            template="/com/haulmont/cuba/web/app/ui/security/role/browse/role-browse.xml"/>
     <screen id="sec$Role.edit"
             template="/com/haulmont/cuba/web/app/ui/security/role/edit/role-edit.xml"/>
 
@@ -59,12 +57,12 @@
             template="/com/haulmont/cuba/web/app/ui/security/constraint/edit/constraint-edit.xml"/>
 
     <screen id="settings"
-            template="cuba/client/web/ui/core/settings/settings-window.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml"/>
 
     <screen id="core$SimpleLookup"
             template="/com/haulmont/cuba/web/app/ui/core/lookup/simple-lookup.xml"/>
 
     <screen id="core$LockInfo.browse"
-            template="cuba/client/web/ui/core/locking/lock-browse.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/core/locking/lock-browse.xml"/>
 
 </screen-config>

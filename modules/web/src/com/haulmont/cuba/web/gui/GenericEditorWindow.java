@@ -47,7 +47,7 @@ public class GenericEditorWindow
     private Form form;
 
     public GenericEditorWindow() {
-        dataservice = new GenericDataService(false);
+        dataservice = new GenericDataService();
     }
 
     @Override

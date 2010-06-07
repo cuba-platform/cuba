@@ -56,6 +56,6 @@ public class LockInfo extends AbstractNotPersistentEntity {
 
     @Override
     public String toString() {
-        return "user=" + user + ", since=" + since;
+        return entityName + "/" + entityId + ", user=" + user + ", since=" + since;
     }
 }

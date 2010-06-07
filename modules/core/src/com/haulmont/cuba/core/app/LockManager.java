@@ -19,11 +19,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ManagedBean(LockManagerAPI.NAME)
-public class LockManager implements LockManagerAPI, LockManagerMBean {
+public class LockManager implements LockManagerAPI, LockManagerMBean, ClusterListener<LockInfo> {
 
     private static class LockKey {
         
@@ -62,6 +64,14 @@ public class LockManager implements LockManagerAPI, LockManagerMBean {
 
     private Map<LockKey, LockInfo> locks = new ConcurrentHashMap<LockKey, LockInfo>();
 
+    private ClusterManagerAPI clusterManager;
+
+    @Inject
+    public void setClusterManager(ClusterManagerAPI clusterManager) {
+        this.clusterManager = clusterManager;
+        this.clusterManager.addListener(LockInfo.class, this);
+    }
+
     private Map<String, LockDescriptor> getConfig() {
         if (config == null) {
             synchronized (this) {
@@ -90,7 +100,7 @@ public class LockManager implements LockManagerAPI, LockManagerMBean {
 
         LockInfo lockInfo = locks.get(key);
         if (lockInfo != null) {
-            log.debug("Already locked: " + name + "/" + id + " : " + lockInfo);
+            log.debug("Already locked: " + lockInfo);
             return lockInfo;
         }
 
@@ -99,15 +109,22 @@ public class LockManager implements LockManagerAPI, LockManagerMBean {
             return new LockNotSupported();
         }
 
-        locks.put(key, new LockInfo(SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser(), name, id));
+        lockInfo = new LockInfo(SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser(), name, id);
+        locks.put(key, lockInfo);
         log.debug("Locked " + name + "/" + id);
+
+        clusterManager.send(lockInfo);
+
         return null;
     }
 
     public void unlock(String name, String id) {
         LockInfo lockInfo = locks.remove(new LockKey(name, id));
-        if (lockInfo != null)
+        if (lockInfo != null) {
             log.debug("Unlocked " + name + "/" + id);
+
+            clusterManager.send(new LockInfo(null, name, id));
+        }
     }
 
     public LockInfo getLockInfo(String name, String id) {
@@ -150,8 +167,7 @@ public class LockManager implements LockManagerAPI, LockManagerMBean {
     public String showLocks() {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<LockKey, LockInfo> entry : locks.entrySet()) {
-            sb.append(entry.getKey().name).append("/").append(entry.getKey().id)
-                    .append(" - ").append(entry.getValue()).append("\n");
+            sb.append(entry.getValue()).append("\n");
         }
         return sb.toString();
     }
@@ -160,4 +176,48 @@ public class LockManager implements LockManagerAPI, LockManagerMBean {
         config = null;
     }
 
+    public void receive(LockInfo message) {
+        LockKey key = new LockKey(message.getEntityName(), message.getEntityId());
+        if (message.getUser() != null) {
+            LockInfo lockInfo = locks.get(key);
+            if (lockInfo == null || lockInfo.getSince().before(message.getSince())) {
+                locks.put(key, message);
+            }
+        } else {
+            locks.remove(key);
+        }
+    }
+
+    public byte[] getState() {
+        List<LockInfo> list = new ArrayList<LockInfo>(locks.values());
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(list);
+        } catch (IOException e) {
+            log.error("Error serializing LockInfo list", e);
+            return new byte[0];
+        }
+        return bos.toByteArray();
+    }
+
+    public void setState(byte[] state) {
+        if (state == null || state.length == 0)
+            return;
+
+        List<LockInfo> list;
+        ByteArrayInputStream bis = new ByteArrayInputStream(state);
+        try {
+            ObjectInputStream ois = new ObjectInputStream(bis);
+            list = (List<LockInfo>) ois.readObject();
+        } catch (Exception e) {
+            log.error("Error deserializing LockInfo list", e);
+            return;
+        }
+
+        for (LockInfo lockInfo : list) {
+            receive(lockInfo);
+        }
+    }
 }

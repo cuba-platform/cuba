@@ -342,7 +342,7 @@ public class Param {
     private AbstractField createEntityLookup() {
         MetaClass metaClass = MetadataProvider.getSession().getClass(javaClass);
         CollectionDatasourceImpl ds = new CollectionDatasourceImpl(datasource.getDsContext(),
-                new GenericDataService(false), "ds", metaClass, entityView);
+                new GenericDataService(), "ds", metaClass, entityView);
 
         if (entityWhere != null) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(

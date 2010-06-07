@@ -18,8 +18,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -30,17 +28,6 @@ public class GenericDataService implements DataService, Serializable {
 
     private static final long serialVersionUID = -2688273748125419411L;
     
-    protected transient com.haulmont.cuba.core.app.DataService service;
-
-    public GenericDataService(boolean remoteCalls) {
-        this.service = ServiceLocator.getDataService();
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        this.service = ServiceLocator.getDataService();
-        in.defaultReadObject();
-    }
-
     public <A extends Entity> A newInstance(MetaClass metaClass) {
         try {
             final Class aClass = metaClass.getJavaClass();
@@ -93,12 +80,12 @@ public class GenericDataService implements DataService, Serializable {
     }
 
     public DbDialect getDbDialect() {
-        return service.getDbDialect();
+        return ServiceLocator.getDataService().getDbDialect();
     }
 
     public Map<Entity, Entity> commit(CommitContext<Entity> context) {
         try {
-            Map<Entity, Entity> result = service.commit(context);
+            Map<Entity, Entity> result = ServiceLocator.getDataService().commit(context);
             return result;
         } catch (RuntimeException e) {
             for (Entity entity : context.getCommitInstances()) {
@@ -112,11 +99,11 @@ public class GenericDataService implements DataService, Serializable {
     }
 
     public <A extends Entity> A load(LoadContext context) {
-        return service.<A>load(context);
+        return ServiceLocator.getDataService().<A>load(context);
     }
 
     public <A extends Entity> List<A> loadList(LoadContext context) {
-        return service.<A>loadList(context);
+        return ServiceLocator.getDataService().<A>loadList(context);
     }
 
     private static class RefiningPropertyVisitor implements PropertyVisitor {

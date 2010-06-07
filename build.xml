@@ -74,6 +74,8 @@
         <ext:install-lib name="springframework.transaction" version="${springframework.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="springframework.context.support" version="${springframework.version}" toDir="${lib.server.dir}"/>
 
+        <ext:install-lib name="jgroups" version="${jgroups.version}" toDir="${lib.server.dir}"/>
+
         <ext:install-lib name="servlet-api" version="${servlet-api.version}" toDir="${lib.server.dir}"/>
 
         <!-- jdbc -->

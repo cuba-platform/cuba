@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.core.app.ClusterListener;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -18,9 +20,9 @@ import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.app.Heartbeat;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.Serializable;
 
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
@@ -36,13 +38,13 @@ import javax.inject.Inject;
  */
 @ManagedBean(UserSessionsAPI.NAME)
 public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbeat.Listener {
-    
+
     private static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
 
         private final UserSession session;
         private final long since;
-        private volatile long lastUsedTs;
+        private volatile long lastUsedTs; // set to 0 when propagating removal to cluster
 
         private UserSessionInfo(UserSession session) {
             this.session = session;
@@ -62,6 +64,8 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
 
     private volatile int expirationTimeout = 1800;
 
+    private ClusterManagerAPI clusterManager;
+
     public UserSessions() {
         AppContext.setProperty("cuba.logUserName", "true");
     }
@@ -77,12 +81,78 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
         heartbeat.addListener(this, 10);
     }
 
+    @Inject
+    public void setClusterManager(ClusterManagerAPI clusterManager) {
+        this.clusterManager = clusterManager;
+        this.clusterManager.addListener(
+                UserSessionInfo.class,
+                new ClusterListener<UserSessionInfo>() {
+
+                    public void receive(UserSessionInfo message) {
+                        UUID id = message.session.getId();
+                        if (message.lastUsedTs == 0) {
+                            cache.remove(id);
+                        } else {
+                            UserSessionInfo usi = cache.get(id);
+                            if (usi == null || usi.lastUsedTs < message.lastUsedTs) {
+                                cache.put(id, message);
+                            }
+                        }
+                    }
+
+                    public byte[] getState() {
+                        if (cache.isEmpty())
+                            return new byte[0];
+
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        try {
+                            ObjectOutputStream oos = new ObjectOutputStream(bos);
+                            oos.writeInt(cache.size());
+                            for (UserSessionInfo usi : cache.values()) {
+                                oos.writeObject(usi);
+                            }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        return bos.toByteArray();
+                    }
+
+                    public void setState(byte[] state) {
+                        if (state == null || state.length == 0)
+                            return;
+
+                        ByteArrayInputStream bis = new ByteArrayInputStream(state);
+                        try {
+                            ObjectInputStream ois = new ObjectInputStream(bis);
+                            int size = ois.readInt();
+                            for (int i = 0; i < size; i++) {
+                                UserSessionInfo usi = (UserSessionInfo) ois.readObject();
+                                receive(usi);
+                            }
+                        } catch (IOException e) {
+                            log.error("Error receiving state", e);
+                        } catch (ClassNotFoundException e) {
+                            log.error("Error receiving state", e);
+                        }
+                    }
+                }
+        );
+    }
+
     public void add(UserSession session) {
-        cache.put(session.getId(), new UserSessionInfo(session));
+        UserSessionInfo usi = new UserSessionInfo(session);
+        cache.put(session.getId(), usi);
+
+        clusterManager.send(usi);
     }
 
     public void remove(UserSession session) {
-        cache.remove(session.getId());
+        UserSessionInfo usi = cache.remove(session.getId());
+
+        if (usi != null) {
+            usi.lastUsedTs = 0;
+            clusterManager.send(usi);
+        }
     }
 
     public UserSession get(UUID id) {
@@ -144,9 +214,12 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
         log.trace("Processing eviction");
         long now = TimeProvider.currentTimestamp().getTime();
         for (Iterator<UserSessionInfo> it = cache.values().iterator(); it.hasNext();) {
-            UserSessionInfo info = it.next();
-            if (now > (info.lastUsedTs + expirationTimeout * 1000)) {
+            UserSessionInfo usi = it.next();
+            if (now > (usi.lastUsedTs + expirationTimeout * 1000)) {
                 it.remove();
+
+                usi.lastUsedTs = 0;
+                clusterManager.send(usi);
             }
         }
     }

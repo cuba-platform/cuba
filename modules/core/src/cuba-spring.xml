@@ -54,10 +54,13 @@
 
     <bean id="cuba_MessageProvider" class="com.haulmont.cuba.core.sys.MessageProviderImpl"/>
 
-    <bean id="cuba_MetadataProvider" class="com.haulmont.cuba.core.sys.MetadataProviderImpl"/>
+    <bean id="cuba_MetadataProvider" class="com.haulmont.cuba.core.sys.MetadataProviderImpl">
+        <property name="clusterManager" ref="cuba_ClusterManager"/>
+    </bean>
 
     <bean id="cuba_ScriptingProvider" class="com.haulmont.cuba.core.sys.ScriptingProviderImpl">
         <constructor-arg index="0" ref="cuba_ConfigProvider"/>
+        <constructor-arg index="1" ref="cuba_ClusterManager"/>
     </bean>
 
     <bean id="cuba_TimeProvider" class="com.haulmont.cuba.core.sys.TimeProviderImpl"/>
@@ -108,6 +111,7 @@
                 <entry key="${cuba.webContextName}.cuba:service=FileStorage" value-ref="cuba_FileStorage"/>
                 <entry key="${cuba.webContextName}.cuba:service=LockManager" value-ref="cuba_LockManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=CachingFacade" value-ref="cuba_CachingFacade"/>
+                <entry key="${cuba.webContextName}.cuba:service=ClusterManager" value-ref="cuba_ClusterManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=CubaDeployer" value-ref="cuba_CubaDeployer"/>
             </map>
         </property>
@@ -128,6 +132,7 @@
                         <entry key="cuba_FileStorage" value="com.haulmont.cuba.core.app.FileStorageMBean"/>
                         <entry key="cuba_LockManager" value="com.haulmont.cuba.core.app.LockManagerMBean"/>
                         <entry key="cuba_CachingFacade" value="com.haulmont.cuba.core.app.CachingFacadeMBean"/>
+                        <entry key="cuba_ClusterManager" value="com.haulmont.cuba.core.app.ClusterManagerMBean"/>
                         <entry key="cuba_CubaDeployer" value="com.haulmont.cuba.core.app.CubaDeployerMBean"/>
                     </map>
                 </property>

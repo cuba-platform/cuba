@@ -21,6 +21,7 @@ public class AppContext {
 
     public interface Listener {
         void applicationStarted();
+        void applicationStopped();
     }
 
     private static ApplicationContext context;
@@ -76,6 +77,16 @@ public class AppContext {
         started = true;
         for (Listener listener : listeners) {
             listener.applicationStarted();
+        }
+    }
+
+    public static void stopContext() {
+        if (!started)
+            return;
+
+        started = false;
+        for (Listener listener : listeners) {
+            listener.applicationStopped();
         }
     }
 }

@@ -22,9 +22,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
+import java.io.Serializable;
+
 public class LinkColumnHelper {
 
-    public interface Handler {
+    public interface Handler extends Serializable {
         void onClick(Entity entity);
     }
 

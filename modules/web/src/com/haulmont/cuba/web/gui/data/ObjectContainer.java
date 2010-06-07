@@ -41,8 +41,8 @@ public class ObjectContainer implements com.vaadin.data.Container {
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        log = LogFactory.getLog(getClass());
         in.defaultReadObject();
+        log = LogFactory.getLog(getClass());
     }
 
     public Item getItem(Object itemId) {

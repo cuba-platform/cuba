@@ -86,7 +86,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected DataService createDefaultDataService() {
-        return new GenericDataService(false);
+        return new GenericDataService();
     }
 
     @Override
@@ -202,7 +202,7 @@ public class WebWindowManager extends WindowManager {
             getWindowOpenMode().put(window, openMode);
         }
 
-        window.applySettings(new SettingsImpl(window.getId(), getSettingService()));
+        window.applySettings(new SettingsImpl(window.getId()));
     }
 
     protected Layout createNewWinLayout(Window window, Component... components) {

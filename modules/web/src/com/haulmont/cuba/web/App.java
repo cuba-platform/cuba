@@ -110,9 +110,9 @@ public class App extends Application
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
         currentWindowName = new ThreadLocal<String>();
         requestStartTimes = new WeakHashMap<Object, Long>();
-        in.defaultReadObject();
     }
 
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
