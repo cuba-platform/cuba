@@ -139,7 +139,7 @@ input.v-modified,
 	border: none;
 	border-top: 1px solid #fffef5;
 	border-bottom: 1px solid #fbf8d9;
-	overflow: auto;
+	overflow: /*auto*/hidden;
 }
 
 .v-tooltip .v-errormessage {
