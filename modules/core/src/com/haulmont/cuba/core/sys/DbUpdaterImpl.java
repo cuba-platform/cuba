@@ -14,6 +14,7 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.sys.DbUpdater;
@@ -41,6 +42,8 @@ public class DbUpdaterImpl implements DbUpdater {
 
     protected File dbDir;
 
+    private ClusterManagerAPI clusterManager;
+
     private Log log = LogFactory.getLog(DbUpdaterImpl.class);
 
     @Inject
@@ -50,7 +53,17 @@ public class DbUpdaterImpl implements DbUpdater {
             dbDir = new File(dbDirName);
     }
 
+    @Inject
+    public void setClusterManager(ClusterManagerAPI clusterManager) {
+        this.clusterManager = clusterManager;
+    }
+
     public void updateDatabase() {
+        if (!clusterManager.isMaster()) {
+            log.info("Not a master node, exiting");
+            return;
+        }
+
         if (dbInitialized()) {
             doUpdate();
         } else {
