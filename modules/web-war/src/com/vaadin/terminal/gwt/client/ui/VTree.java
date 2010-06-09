@@ -4,35 +4,19 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.MouseEventDetails;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.ui.dd.DDUtil;
-import com.vaadin.terminal.gwt.client.ui.dd.VAbstractDropHandler;
-import com.vaadin.terminal.gwt.client.ui.dd.VAcceptCallback;
-import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
-import com.vaadin.terminal.gwt.client.ui.dd.VDragEvent;
-import com.vaadin.terminal.gwt.client.ui.dd.VDropHandler;
-import com.vaadin.terminal.gwt.client.ui.dd.VHasDropHandler;
-import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
-import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
+import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.dd.*;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  *
@@ -71,6 +55,8 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler {
     private VAbstractDropHandler dropHandler;
 
     private int dragMode;
+
+    private boolean doubleClickMode = false;
 
     public VTree() {
         super();
@@ -123,6 +109,8 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler {
 
         disabled = uidl.getBooleanAttribute("disabled");
         readonly = uidl.getBooleanAttribute("readonly");
+
+        doubleClickMode = uidl.getBooleanAttribute("doubleClickMode");
 
         dragMode = uidl.hasAttribute("dragMode") ? uidl
                 .getIntAttribute("dragMode") : 0;
@@ -355,6 +343,8 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler {
 
         private int cachedHeight = -1;
 
+        private boolean blocked = false;
+
         public TreeNode() {
             constructDom();
             sinkEvents(Event.ONCLICK | Event.ONDBLCLICK | Event.MOUSEEVENTS
@@ -451,8 +441,21 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler {
                     && client
                             .hasEventListeners(VTree.this, ITEM_CLICK_EVENT_ID)
 
-                    && (type == Event.ONDBLCLICK || type == Event.ONMOUSEUP)) {
-                fireClick(event);
+                    && (type == Event.ONDBLCLICK || type == Event.ONMOUSEUP) && !blocked) {
+
+                if (!doubleClickMode && type == Event.ONMOUSEUP) {
+                    fireClick(event);
+                    blocked = true;
+                    Timer t = new Timer() {
+                        @Override
+                        public void run() {
+                            blocked = false;
+                        }
+                    };
+                    t.schedule(1500);
+                } else if (doubleClickMode && type == Event.ONDBLCLICK) {
+                    fireClick(event);
+                }
             }
             if (type == Event.ONCLICK) {
                 if (getElement() == target || ie6compatnode == target) {

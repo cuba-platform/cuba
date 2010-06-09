@@ -44,10 +44,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.*;
 import java.util.List;
+
+import com.haulmont.cuba.web.toolkit.Timer;
 
 @SuppressWarnings("serial")
 public class FoldersPane extends VerticalLayout {
@@ -58,8 +58,8 @@ public class FoldersPane extends VerticalLayout {
 
     protected boolean visible;
 
-    protected Tree appFoldersTree;
-    protected Tree searchFoldersTree;
+    protected com.haulmont.cuba.web.toolkit.ui.Tree appFoldersTree;
+    protected com.haulmont.cuba.web.toolkit.ui.Tree searchFoldersTree;
 
     protected MenuBar menuBar;
     protected MenuBar.MenuItem menuItem;
@@ -282,8 +282,8 @@ public class FoldersPane extends VerticalLayout {
         if (appFolders.isEmpty())
             return null;
 
-        appFoldersTree = new Tree();
-//        appFoldersTree.setSizeFull();
+        appFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
+        appFoldersTree.setDoubleClickMode(true);
 
         appFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
@@ -298,8 +298,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Component createSearchFoldersPane() {
-        searchFoldersTree = new Tree();
-//        searchFoldersTree.setSizeFull();
+        searchFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
+        searchFoldersTree.setDoubleClickMode(true);
 
         FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         List<SearchFolder> searchFolders = service.loadSearchFolders();

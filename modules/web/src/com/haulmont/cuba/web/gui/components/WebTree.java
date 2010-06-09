@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class WebTree
     extends
-        WebAbstractList<com.vaadin.ui.Tree>
+        WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tree>
     implements
         Tree, Component.Wrapper
 {
@@ -33,7 +33,7 @@ public class WebTree
     private String captionProperty;
 
     public WebTree() {
-        component = new com.vaadin.ui.Tree();
+        component = new com.haulmont.cuba.web.toolkit.ui.Tree();
         component.setMultiSelect(false);
         component.setImmediate(true);
 
