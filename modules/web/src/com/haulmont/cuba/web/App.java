@@ -257,7 +257,13 @@ public class App extends Application
 
             stopTimers();
 
-            String name = GlobalUtils.generateWebWindowName();
+            for (Object win : new ArrayList(getWindows())) {
+                if (win instanceof AppWindow)
+                    removeWindow((Window) win);
+            }
+
+            String name = createWindowName(true);
+
             Window window = getWindow(name);
 
             setMainWindow(window);
@@ -277,10 +283,11 @@ public class App extends Application
             stopTimers();
 
             for (Object win : new ArrayList(getWindows())) {
-                removeWindow((Window) win);
+                if (win instanceof LoginWindow)
+                    removeWindow((Window) win);
             }
 
-            String name = GlobalUtils.generateWebWindowName();
+            String name = createWindowName(false);
 
             Window window = createLoginWindow();
             window.setName(name);
@@ -290,6 +297,13 @@ public class App extends Application
 
             initExceptionHandlers(false);
         }
+    }
+
+    private String createWindowName(boolean main) {
+        String name = main ? AppContext.getProperty("cuba.web.mainWindowName") : AppContext.getProperty("cuba.web.loginWindowName");
+        if (StringUtils.isBlank(name))
+            name = GlobalUtils.generateWebWindowName();
+        return name;
     }
 
     public void userSubstituted(Connection connection) {
@@ -326,7 +340,7 @@ public class App extends Application
         Window window = super.getWindow(name);
 
         // it does not exist yet, create it.
-        if (window == null/* && name.startsWith("window")*/) {
+        if (window == null) {
             if (connection.isConnected()) {
 
                 final AppWindow appWindow = createAppWindow();
@@ -337,11 +351,7 @@ public class App extends Application
 
                 return appWindow;
             } else {
-/*
-                //noinspection deprecation
-                return getMainWindow();
-*/
-                String newWindowName = GlobalUtils.generateWebWindowName();
+                String newWindowName = createWindowName(false);
 
                 final Window loginWindow = createLoginWindow();
                 loginWindow.setName(newWindowName);
@@ -493,11 +503,6 @@ public class App extends Application
         }
 
         WebSecurityUtils.clearSecurityAssociation();
-
-        // kick session replication
-        HttpServletRequest request = (HttpServletRequest) transactionData;
-        Object attribute = request.getSession().getAttribute("com.vaadin.terminal.gwt.server.WebApplicationContext");
-        request.getSession().setAttribute("com.vaadin.terminal.gwt.server.WebApplicationContext", attribute);
 
         if (log.isTraceEnabled()) {
             log.trace("requestEnd: [@" + Integer.toHexString(System.identityHashCode(transactionData)) + "]");

@@ -27,10 +27,13 @@ import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LinkHandler {
+public class LinkHandler implements Serializable {
+
+    private static final long serialVersionUID = 3067643567208120222L;
 
     private static Log log = LogFactory.getLog(LinkHandler.class);
     private App app;

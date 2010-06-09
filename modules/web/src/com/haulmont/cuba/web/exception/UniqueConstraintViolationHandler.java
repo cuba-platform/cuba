@@ -45,14 +45,18 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler
 
     public boolean handle(Terminal.ErrorEvent event, App app) {
         Throwable t = event.getThrowable();
-        while (t != null) {
-            if (t.getMessage() != null && t.getMessage().contains(getMarker())) {
-                doHandle(t, app);
-                return true;
+        try {
+            while (t != null) {
+                if (t.getMessage() != null && t.getMessage().contains(getMarker())) {
+                    doHandle(t, app);
+                    return true;
+                }
+                t = t.getCause();
             }
-            t = t.getCause();
+            return false;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     private void doHandle(Throwable throwable, App app) {

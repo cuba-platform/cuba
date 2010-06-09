@@ -424,6 +424,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         logoutBtn.setStyleName("white-border");
         logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
         //logoutBtn.setIcon(new ThemeResource("images/logout.png"));
+        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode())
+            logoutBtn.setDebugId("logoutBtn");
 
         Button viewLogBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "viewLogBtn"),
                 new Button.ClickListener() {
