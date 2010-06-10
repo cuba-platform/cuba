@@ -62,6 +62,59 @@ public class QueryTransformerRegexTest extends TestCase
 
     }
 
+    public void testAliasPlaceholder() {
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par",
+                "sec$GroupHierarchy");
+
+        transformer.addWhere("{E}.createdBy = :par1 and a.updatedBy = :par2");
+        String res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
+                    " and h.updatedBy = :par2",
+                res);
+
+        ////////////////////////////////////
+
+        transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par",
+                "sec$GroupHierarchy");
+
+        transformer.addWhere("{E}.createdBy = :par1 and {E}.updatedBy = :par2");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
+                    " and h.updatedBy = :par2",
+                res);
+
+        ////////////////////////////////////
+
+        transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h where h.group = :par",
+                "sec$GroupHierarchy");
+
+        transformer.addJoinAndWhere("join h.parent.constraints c", "{E}.createdBy = :par1 and {E}.updatedBy = :par2 and c.createTs = :par3");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
+                    " and h.updatedBy = :par2 and c.createTs = :par3",
+                res);
+
+        ////////////////////////////////////
+
+        transformer = new QueryTransformerRegex(
+                "select c from sec$GroupHierarchy h where h.group = :par",
+                "sec$GroupHierarchy");
+
+        transformer.addJoinAndWhere("join {E}.parent.constraints c", "{E}.createdBy = :par1 and {E}.updatedBy = :par2 and c.createTs = :par3");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and h.createdBy = :par1" +
+                    " and h.updatedBy = :par2 and c.createTs = :par3",
+                res);
+    }
+
+
     public void testInvalidEntity() {
         QueryTransformerRegex transformer = new QueryTransformerRegex(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +

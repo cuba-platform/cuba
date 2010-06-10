@@ -62,6 +62,12 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
         buffer.insert(insertPos, sb);
 
+        // replace ALIAS_PLACEHOLDER
+        int idx;
+        while ((idx = buffer.indexOf(ALIAS_PLACEHOLDER)) >= 0) {
+            buffer.replace(idx, idx + ALIAS_PLACEHOLDER.length(), alias);
+        }
+
         Matcher paramMatcher = PARAM_PATTERN.matcher(where);
         while (paramMatcher.find()) {
             addedParams.add(paramMatcher.group(1));
@@ -190,6 +196,12 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
             while (paramMatcher.find()) {
                 addedParams.add(paramMatcher.group(1));
             }
+        }
+
+        // replace ALIAS_PLACEHOLDER
+        int idx;
+        while ((idx = buffer.indexOf(ALIAS_PLACEHOLDER)) >= 0) {
+            buffer.replace(idx, idx + ALIAS_PLACEHOLDER.length(), alias);
         }
     }
 

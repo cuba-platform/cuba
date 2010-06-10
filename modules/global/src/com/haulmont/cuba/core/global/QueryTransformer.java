@@ -17,6 +17,9 @@ import java.util.Set;
  */
 public interface QueryTransformer
 {
+    /** Main entity alias placeholder  */
+    String ALIAS_PLACEHOLDER = "{E}";
+
     /** Adds 'where' clause replacing entity alias */
     void addWhere(String where);
 
