@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,14 +47,19 @@ public class CubaHttpFilter extends HttpSecurityService implements Filter
         }
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
+    {
         request.setCharacterEncoding("UTF-8");
 
         if (ActiveDirectoryHelper.useActiveDirectory()) {
-            super.doFilter(request, response, chain);
-        }
-        else {
+            String requestURI = ((HttpServletRequest) request).getRequestURI();
+            if (!requestURI.endsWith("/"))
+                requestURI = requestURI + "/";
+            if (!requestURI.contains("/ws/"))
+                super.doFilter(request, response, chain);
+            else
+                chain.doFilter(request, response);
+        } else {
             chain.doFilter(request, response);
         }
     }
