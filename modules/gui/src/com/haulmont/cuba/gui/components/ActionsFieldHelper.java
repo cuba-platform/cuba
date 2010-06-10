@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -76,12 +77,18 @@ public class ActionsFieldHelper {
                     final Window.Editor editor = component.getFrame().openEditor(windowAlias, entity, openType);
                     editor.addListener(new Window.CloseListener() {
                         public void windowClosed(String actionId) {
-                            CollectionDatasource optionsDatasource = component.getOptionsDatasource();
-                            Entity item = editor.getItem();
-                            if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
-                                optionsDatasource.updateItem(item);
-                            } else {
+                            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                                Entity item = editor.getItem();
+
+                                CollectionDatasource optionsDatasource = component.getOptionsDatasource();
+                                if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
+                                    optionsDatasource.updateItem(item);
+                                }
+
+                                boolean modified  = component.getDatasource().isModified();
+                                component.setValue(null);
                                 component.setValue(item);
+                                ((DatasourceImplementation) component.getDatasource()).setModified(modified);
                             }
                         }
                     });
