@@ -260,6 +260,7 @@ public class ApplicationConnection {
             }
             app.@com.vaadin.terminal.gwt.client.ApplicationConnection::forceLayout()();
         }
+        $wnd.jQuery($doc.body).disableTextSelect();
     }-*/;
 
     /**
