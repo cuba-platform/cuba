@@ -283,7 +283,6 @@ public class FoldersPane extends VerticalLayout {
             return null;
 
         appFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
-        appFoldersTree.setDoubleClickMode(true);
 
         appFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
@@ -299,7 +298,6 @@ public class FoldersPane extends VerticalLayout {
 
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
-        searchFoldersTree.setDoubleClickMode(true);
 
         FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         List<SearchFolder> searchFolders = service.loadSearchFolders();
