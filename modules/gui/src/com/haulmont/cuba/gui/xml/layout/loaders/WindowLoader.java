@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.xml.layout.loaders.util.ComponentLoaderHelper;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -195,37 +196,12 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     private ShortcutAction.KeyCombination keyCombination(String keyString) {
-        if (keyString == null) return null;
-        keyString = keyString.toUpperCase();
-
-        ShortcutAction.Key key = null;
-        ShortcutAction.Modifier[] modifiers = null;
-
-        if (keyString.indexOf("-") > -1) {
-            String[] keys = keyString.split("-", -1);
-
-            int modifiersCnt = keys.length;
-
-            try {
-                key = ShortcutAction.Key.valueOf(keys[modifiersCnt - 1]);
-                --modifiersCnt;
-            } catch (IllegalArgumentException e) {
-                //ignore
-            }
-            modifiers = new ShortcutAction.Modifier[modifiersCnt];
-            for (int i = 0; i < modifiersCnt; i++) {
-                modifiers[i] = ShortcutAction.Modifier.valueOf(keys[i]);
-            }
-        } else {
-            try {
-                key = ShortcutAction.Key.valueOf(keyString);
-            } catch (IllegalArgumentException e) {
-                modifiers = new ShortcutAction.Modifier[] {
-                        ShortcutAction.Modifier.valueOf(keyString)
-                };
-            }
+        try {
+            return ComponentLoaderHelper.keyCombination(keyString);
         }
-        return new ShortcutAction.KeyCombination(key, modifiers);
+        catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
 }

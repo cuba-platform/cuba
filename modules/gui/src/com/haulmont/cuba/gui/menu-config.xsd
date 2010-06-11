@@ -14,8 +14,10 @@
     <xs:complexType name="menuType" mixed="true">
         <xs:sequence>
             <xs:element type="itemType" name="item" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="menuType" name="menu" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
+        <xs:attribute type="xs:string" name="shortcut" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="itemType" mixed="true">
@@ -23,6 +25,7 @@
             <xs:element type="paramType" name="param" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
+        <xs:attribute type="xs:string" name="shortcut" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="paramType">

@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
 
 public class VMenuBar extends Widget implements Paintable,
         CloseHandler<PopupPanel> {
@@ -131,7 +132,7 @@ public class VMenuBar extends Widget implements Paintable,
             }
             itemHTML.append(moreItemUIDL.getStringAttribute("text"));
 
-            moreItem = new CustomMenuItem(itemHTML.toString(), emptyCommand);
+            moreItem = new CustomMenuItem(itemHTML.toString(), emptyCommand, "");
         }
 
         UIDL uidlItems = uidl.getChildUIDL(1);
@@ -146,6 +147,7 @@ public class VMenuBar extends Widget implements Paintable,
 
             String itemText = item.getStringAttribute("text");
             final int itemId = item.getIntAttribute("id");
+            String shortcut = item.getStringAttribute("shortcut");
 
             boolean itemHasCommand = item.getBooleanAttribute("command");
 
@@ -177,7 +179,7 @@ public class VMenuBar extends Widget implements Paintable,
                 };
             }
 
-            currentItem = currentMenu.addItem(itemHTML.toString(), cmd);
+            currentItem = currentMenu.addItem(itemHTML.toString(), cmd, shortcut);
 
             if (item.hasAttribute("stylename")) {
                 currentItem.addStyleName(item.getStringAttribute("stylename"));
@@ -315,8 +317,8 @@ public class VMenuBar extends Widget implements Paintable,
      *            items command
      * @return the item created
      */
-    public CustomMenuItem addItem(String html, Command cmd) {
-        CustomMenuItem item = new CustomMenuItem(html, cmd);
+    public CustomMenuItem addItem(String html, Command cmd, String shortcut) {
+        CustomMenuItem item = new CustomMenuItem(html, cmd, shortcut);
         addItem(item);
         return item;
     }
@@ -327,7 +329,20 @@ public class VMenuBar extends Widget implements Paintable,
      * @param item
      */
     public void addItem(CustomMenuItem item) {
-        DOM.appendChild(getNewChildElement(), item.getElement());
+        Element row = getNewChildElement();
+        DOM.appendChild(row, item.getElement());
+
+        if (subMenu) {
+            Element sc = DOM.createTD();
+            sc.addClassName("menuitem-shortcut");
+            if (item.getShortcut() != null) {
+                DOM.setInnerHTML(sc, Util.escapeHTML(item.getShortcut()));
+            }
+            DOM.appendChild(row, sc);
+
+            item.setShortcutElement(sc);
+        }
+
         item.setParentMenu(this);
         item.setSelected(false);
         items.add(item);
@@ -361,7 +376,8 @@ public class VMenuBar extends Widget implements Paintable,
         CustomMenuItem targetItem = null;
         for (int i = 0; i < items.size(); i++) {
             CustomMenuItem item = items.get(i);
-            if (DOM.isOrHasChild(item.getElement(), targetElement)) {
+            if (DOM.isOrHasChild(item.getElement(), targetElement)
+                    || item.getShortcutElement() != null && DOM.isOrHasChild(item.getShortcutElement(), targetElement)) {
                 targetItem = item;
             }
         }
@@ -604,13 +620,20 @@ public class VMenuBar extends Widget implements Paintable,
         protected Command command = null;
         protected VMenuBar subMenu = null;
         protected VMenuBar parentMenu = null;
+        protected String shortcut = null;
 
-        public CustomMenuItem(String html, Command cmd) {
+        private Element shortcutElement = null;
+
+        private static final String shortcutClassSel = "menuitem-shortcut-selected";
+
+        public CustomMenuItem(String html, Command cmd, String shortcut) {
             setElement(DOM.createTD());
 
             setHTML(html);
             setCommand(cmd);
             setSelected(false);
+
+            this.shortcut = shortcut;
 
             addStyleName("menuitem");
         }
@@ -618,8 +641,14 @@ public class VMenuBar extends Widget implements Paintable,
         public void setSelected(boolean selected) {
             if (selected) {
                 addStyleDependentName("selected");
+                if (shortcutElement != null) {
+                    shortcutElement.addClassName(shortcutClassSel);
+                }
             } else {
                 removeStyleDependentName("selected");
+                if (shortcutElement != null) {
+                    shortcutElement.removeClassName(shortcutClassSel);
+                }
             }
         }
 
@@ -667,6 +696,22 @@ public class VMenuBar extends Widget implements Paintable,
         public void setText(String text) {
             setHTML(text);
 
+        }
+
+        public String getShortcut() {
+            return shortcut;
+        }
+
+        public void setShortcut(String shortcut) {
+            this.shortcut = shortcut;
+        }
+
+        public Element getShortcutElement() {
+            return shortcutElement;
+        }
+
+        public void setShortcutElement(Element shortcutElement) {
+            this.shortcutElement = shortcutElement;
         }
     }
 

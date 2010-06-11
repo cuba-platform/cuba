@@ -38,7 +38,7 @@ public class ScreenPermissionsLookup extends PermissionsLookup {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                         PermissionConfig.Target target = (PermissionConfig.Target) item;
-                        boolean enable = target != null && target.getId().startsWith("item:");
+                        boolean enable = target != null/* && target.getId().startsWith("item:")*/;
                         access.setEnabled(enable);
                     }
                 }

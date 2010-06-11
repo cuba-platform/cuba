@@ -36,6 +36,7 @@ import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.FileResource;
@@ -44,6 +45,7 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import com.haulmont.cuba.web.toolkit.ui.MenuBar;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -79,7 +81,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected Connection connection;
 
-    protected MenuBar menuBar;
+    protected com.haulmont.cuba.web.toolkit.ui.MenuBar menuBar;
     protected TabSheet tabSheet;
     protected SplitPanel foldersSplit;
 
@@ -307,8 +309,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     /**
      * Can be overridden in descendant to create an app-specific menu bar
      */
-    protected MenuBar createMenuBar() {
-        menuBar = new MenuBar();
+    protected com.haulmont.cuba.web.toolkit.ui.MenuBar createMenuBar() {
+        menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
             App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
@@ -480,6 +482,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return null;
     }
 
+    private void createShortcut(MenuItem item, MenuBar.MenuItem menuItem) {
+        if (item.getShortcut() != null) {
+            MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
+            this.addAction(shortcut);
+            menuBar.setShortcut(menuItem, item.getShortcut());
+        }
+    }
+
     private boolean isMenuItemEmpty(MenuBar.MenuItem menuItem) {
         return !menuItem.hasChildren() && menuItem.getCommand() == null;
     }
@@ -490,7 +500,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         final UserSession session = connection.getSession();
         if (item.isPermitted(session)) {
             MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
-
+            createShortcut(item, menuItem);
             createSubMenu(menuItem, item, session);
             if (isMenuItemEmpty(menuItem)) {
                 menuBar.removeItem(menuItem);
@@ -503,11 +513,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             for (MenuItem child : item.getChildren()) {
                 if (child.getChildren().isEmpty()) {
                     if (child.isPermitted(session)) {
-                        vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
+                        MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
+                        createShortcut(child, menuItem);
                     }
                 } else {
                     if (child.isPermitted(session)) {
                         MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
+                        createShortcut(child, menuItem);
                         createSubMenu(menuItem, child, session);
                         if (isMenuItemEmpty(menuItem)) {
                             vItem.removeChild(menuItem);

@@ -11,6 +11,8 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.xml.layout.loaders.util.ComponentLoaderHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,6 +93,7 @@ public class MenuConfig implements Serializable
                 menuItem = new MenuItem(parentItem, id);
                 menuItem.setDescriptor(element);
 
+                loadShortcut(menuItem, element);
                 loadMenuItems(element, menuItem);
 
                 if (menuItem.getChildren().isEmpty()) {
@@ -102,6 +105,7 @@ public class MenuConfig implements Serializable
                 if (!StringUtils.isBlank(id)) {
                     menuItem = new MenuItem(parentItem, id);
                     menuItem.setDescriptor(element);
+                    loadShortcut(menuItem, element);
                 }
             } else {
                 log.warn(String.format("Unknown tag '%s' in menu-config", element.getName()));
@@ -113,6 +117,21 @@ public class MenuConfig implements Serializable
             else {
                 rootItems.add(menuItem);
             }
+        }
+    }
+
+    private void loadShortcut(MenuItem menuItem, Element element) {
+        String shortcut = element.attributeValue("shortcut");
+        if (shortcut == null || shortcut.isEmpty()) {
+            return;
+        }
+
+        try {
+            ShortcutAction.KeyCombination keyCombination = ComponentLoaderHelper.keyCombination(shortcut);
+            menuItem.setShortcut(keyCombination);
+        }
+        catch (IllegalArgumentException e) {
+            log.warn("Invalid menu shortcut value: '" + shortcut + "'");
         }
     }
 }

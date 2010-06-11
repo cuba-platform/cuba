@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import com.haulmont.cuba.gui.components.ShortcutAction;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
@@ -17,10 +18,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.core.global.ClientType;
 
 /**
  * Main menu item descriptor
@@ -34,6 +33,8 @@ public class MenuItem implements Serializable
 
     private String id;
     private Element descriptor;
+
+    private ShortcutAction.KeyCombination shortcut;
 
     public MenuItem(MenuItem parent, String id) {
         this.parent = parent;
@@ -72,5 +73,13 @@ public class MenuItem implements Serializable
         } else {
             return session.isScreenPermitted(AppConfig.getInstance().getClientType(), id);
         }
+    }
+
+    public ShortcutAction.KeyCombination getShortcut() {
+        return shortcut;
+    }
+
+    public void setShortcut(ShortcutAction.KeyCombination shortcut) {
+        this.shortcut = shortcut;
     }
 }

@@ -35,6 +35,10 @@
     background: #fff url(img/submenu-bg.gif) repeat-y;
 }
 
+.v-menubar-submenu table {
+    border-collapse: collapse;
+}
+
 .v-menubar-submenu .menuitem {
     cursor: pointer;
     padding-left: 10px;
@@ -43,6 +47,13 @@
     color: #002d96;
 }
 
+.v-menubar-submenu .menuitem-shortcut-selected,
 .v-menubar-submenu .menuitem-selected {
     background-color: #DCE3EB;
+}
+
+.v-menubar-submenu .menuitem-shortcut,
+.v-menubar-submenu .menuitem-shortcut-selected {
+    padding-right: 5px;
+    padding-left: 0;
 }
