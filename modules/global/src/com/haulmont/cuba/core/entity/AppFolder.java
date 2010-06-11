@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
+
 import javax.persistence.Entity;
 import javax.persistence.*;
 
@@ -52,9 +55,13 @@ public class AppFolder extends AbstractSearchFolder {
         this.quantity = quantity;
     }
 
+    public String getLocName() {
+        return MessageProvider.getMessage(MessageUtils.getMessagePack(), name);
+    }
+
     @Override
     public String getCaption() {
-        String s = super.getCaption();
+        String s = getLocName();
         if (quantity == null) {
             return s;
         } else {

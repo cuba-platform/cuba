@@ -140,10 +140,7 @@ public class FilterEditor {
 
         layout.addComponent(topGrid);
 
-        HorizontalLayout mainLayout = new HorizontalLayout();
-        mainLayout.setSpacing(true);
-        initTable(mainLayout);
-        layout.addComponent(mainLayout);
+        initTable(layout);
 
         layout.addComponent(bottomGrid);
 

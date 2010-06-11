@@ -8,6 +8,7 @@
                     <permission id="cuba.gui.filter.global"/>
                     <permission id="cuba.gui.filter.customConditions"/>
                 </category>
+                <permission id="cuba.gui.searchFolder.global"/>
             </category>
         </category>
         

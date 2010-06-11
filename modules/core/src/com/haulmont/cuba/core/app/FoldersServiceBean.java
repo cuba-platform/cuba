@@ -105,7 +105,9 @@ public class FoldersServiceBean implements FoldersService {
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select f from sec$SearchFolder f where f.user.id = ?1 order by f.sortOrder, f.name");
+            Query q = em.createQuery("select f from sec$SearchFolder f left join fetch f.user " +
+                    "where (f.user.id = ?1 or f.user is null) " +
+                    "order by f.sortOrder, f.name");
             q.setParameter(1, SecurityProvider.currentOrSubstitutedUserId());
             List<SearchFolder> list = q.getResultList();
             // fetch parents

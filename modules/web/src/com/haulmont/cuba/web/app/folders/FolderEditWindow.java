@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web.app.folders;
 
+import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.*;
 import com.vaadin.terminal.Sizeable;
@@ -19,6 +21,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class FolderEditWindow extends Window {
     private TextField nameField;
     private Select parentSelect;
     private TextField sortOrderField;
+    private CheckBox globalCb;
     private Runnable commitHandler;
 
     public FolderEditWindow(boolean adding, Folder folder, Runnable commitHandler) {
@@ -68,6 +72,13 @@ public class FolderEditWindow extends Window {
         sortOrderField.setValue(folder.getSortOrder() == null ? "" : folder.getSortOrder());
         layout.addComponent(sortOrderField);
 
+        if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
+                && folder instanceof SearchFolder)
+        {
+            globalCb = new CheckBox(getMessage("folders.folderEditWindow.global"));
+            globalCb.setValue(((SearchFolder) folder).getUser() == null);
+            layout.addComponent(globalCb);
+        }
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setMargin(true, false, false, false);
@@ -97,7 +108,14 @@ public class FolderEditWindow extends Window {
                 if (parent instanceof Folder)
                     FolderEditWindow.this.folder.setParent((Folder) parent);
                 else
-                    FolderEditWindow.this.folder.setParent(null);    
+                    FolderEditWindow.this.folder.setParent(null);
+
+                if (globalCb != null) {
+                    if (BooleanUtils.isTrue((Boolean) globalCb.getValue()))
+                        ((SearchFolder) FolderEditWindow.this.folder).setUser(null);
+                    else
+                        ((SearchFolder) FolderEditWindow.this.folder).setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                }
 
                 FolderEditWindow.this.commitHandler.run();
 
