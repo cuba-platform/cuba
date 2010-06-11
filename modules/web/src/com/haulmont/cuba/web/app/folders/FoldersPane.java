@@ -390,10 +390,6 @@ public class FoldersPane extends VerticalLayout {
         return true;
     }
 
-    protected boolean isDoubleClickOpenMode() {
-        return false;
-    }
-
     public void saveFolder(Folder folder) {
         CommitContext commitContext = new CommitContext(Collections.singleton(folder));
         ServiceLocator.getDataService().commit(commitContext);
@@ -402,6 +398,14 @@ public class FoldersPane extends VerticalLayout {
     protected void removeFolder(Folder folder) {
         CommitContext commitContext = new CommitContext(Collections.emptySet(), Collections.singleton(folder));
         ServiceLocator.getDataService().commit(commitContext);
+    }
+
+    public com.haulmont.cuba.web.toolkit.ui.Tree getSearchFoldersTree() {
+        return searchFoldersTree;
+    }
+
+    public com.haulmont.cuba.web.toolkit.ui.Tree getAppFoldersTree() {
+        return appFoldersTree;
     }
 
     public Collection<SearchFolder> getSearchFolders() {
@@ -419,18 +423,15 @@ public class FoldersPane extends VerticalLayout {
         }
 
         public void itemClick(ItemClickEvent event) {
-            if (isDoubleClickOpenMode() && !event.isDoubleClick())
-                return;
-
             if (event.getItemId() instanceof AbstractSearchFolder
                     && !StringUtils.isBlank(((AbstractSearchFolder) event.getItemId()).getFilterComponentId())) {
-                if (event.getButton() == ItemClickEvent.BUTTON_LEFT)
-                    openFolder((AbstractSearchFolder) event.getItemId());
-                else if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
+                if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
                     if (appFoldersTree.containsId(event.getItemId()))
                         appFoldersTree.select(event.getItemId());
                     else if (searchFoldersTree.containsId(event.getItemId()))
                         searchFoldersTree.select(event.getItemId());
+                } else {
+                    openFolder((AbstractSearchFolder) event.getItemId());
                 }
             }
         }
