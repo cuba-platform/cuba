@@ -74,7 +74,7 @@ public class WebWindowManager extends WindowManager {
         return data;
     }
 
-    private Map<Layout, WindowBreadCrumbs> getTabs() {
+    protected Map<Layout, WindowBreadCrumbs> getTabs() {
         return getCurrentWindowData().tabs;
     }
 
