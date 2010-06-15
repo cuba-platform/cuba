@@ -62,4 +62,13 @@ public class ToolsImpl {
          return (e && e.tagName.toUpperCase() == "INPUT" && e.type == "checkbox");
     }-*/;
 
+    
+    public native void textSelectionEnable(Element el, boolean b) /*-{
+        if (b) {
+            $wnd.jQuery(el).enableTextSelect();
+        } else {
+            $wnd.jQuery(el).disableTextSelect();
+        }
+    }-*/;
+
 }

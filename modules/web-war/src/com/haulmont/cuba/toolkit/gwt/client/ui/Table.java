@@ -1661,6 +1661,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
+
+                Tools.textSelectionEnable(td, false);
             }
 
             public void addCell(Widget w, char align, String style, int col) {
@@ -2294,6 +2296,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             DOM.appendChild(td, container);
             DOM.appendChild(tr, td);
+
+            Tools.textSelectionEnable(td, false);
         }
 
         protected void addCell(Widget widget, char align, String style) {

@@ -18,6 +18,8 @@ package com.vaadin.terminal.gwt.client.ui.layout;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
 import com.vaadin.terminal.gwt.client.RenderInformation.Size;
@@ -206,6 +208,15 @@ public class ChildComponentContainer extends Panel {
          * The exception seems to be complex components (Tree and Table) on
          * Opera (#3444).
          */
+
+        if (!(widget instanceof Container) && !(widget instanceof TextSelectionManager)) {
+            Tools.textSelectionEnable(widget.getElement(), false);
+        } else if (widget instanceof TextSelectionManager) {
+            if (!((TextSelectionManager) widget).allowTextSelection()) {
+                Tools.textSelectionEnable(widget.getElement(), false);
+            }
+        }
+
         if (fixedWidth < 0 && BrowserInfo.get().isOpera()) {
             setUnlimitedContainerWidth();
         }

@@ -16,6 +16,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.TextBoxBase;
+import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.EventId;
@@ -33,7 +34,7 @@ import java.util.Iterator;
  *
  */
 public class VTextField extends TextBoxBase implements Paintable, Field,
-        ChangeHandler, FocusHandler, BlurHandler {
+        ChangeHandler, FocusHandler, BlurHandler, TextSelectionManager {
 
     /**
      * The input node CSS classname.
@@ -354,4 +355,7 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         }
     }
 
+    public boolean allowTextSelection() {
+        return true;
+    }
 }

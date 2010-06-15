@@ -27,6 +27,8 @@ import com.google.gwt.user.client.impl.HTTPRequestImpl;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
 import com.vaadin.terminal.gwt.client.RenderInformation.Size;
 import com.vaadin.terminal.gwt.client.ui.Field;
@@ -260,7 +262,6 @@ public class ApplicationConnection {
             }
             app.@com.vaadin.terminal.gwt.client.ApplicationConnection::forceLayout()();
         }
-        $wnd.jQuery($doc.body).disableTextSelect();
     }-*/;
 
     /**
@@ -848,6 +849,15 @@ public class ApplicationConnection {
                 final Paintable paintable = getPaintable(uidl.getId());
                 if (paintable != null) {
                     paintable.updateFromUIDL(uidl, this);
+
+                    if (!(paintable instanceof Container) && !(paintable instanceof TextSelectionManager)) {
+                        Tools.textSelectionEnable(((Widget) paintable).getElement(), false);
+                    } else if (paintable instanceof TextSelectionManager) {
+                        if (!((TextSelectionManager) paintable).allowTextSelection()) {
+                            Tools.textSelectionEnable(((Widget) paintable).getElement(), false);
+                        }
+                    }
+
                     // paintable may have changed during render to another
                     // implementation, use the new one for updated widgets map
                     updatedWidgets.add(idToPaintableDetail.get(uidl.getId())

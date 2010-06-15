@@ -14,6 +14,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.IScrollTable;
@@ -551,6 +552,8 @@ public class IScrollGroupTable extends IScrollTable {
 
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
+
+                Tools.textSelectionEnable(td, false);
             }
 
             @Override

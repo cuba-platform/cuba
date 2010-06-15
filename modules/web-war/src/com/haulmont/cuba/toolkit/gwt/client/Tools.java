@@ -52,4 +52,8 @@ public class Tools {
     public static boolean isCheckbox(Element elem) {
         return impl.isCheckbox(elem);
     }
+
+    public static void textSelectionEnable(Element el, boolean b) {
+        impl.textSelectionEnable(el, b);
+    }
 }
