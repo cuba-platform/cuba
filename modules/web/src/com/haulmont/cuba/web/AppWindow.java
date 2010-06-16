@@ -388,13 +388,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         titleLayout.setExpandRatio(logoLabel, 1);
         titleLayout.setComponentAlignment(logoLabel, Alignment.MIDDLE_LEFT);
 
-        HorizontalLayout loginLayout = new HorizontalLayout();
-        loginLayout.setMargin(false, true, false, false);
-        loginLayout.setSpacing(true);
         Label userLabel = new Label(MessageProvider.getMessage(getMessagesPack(), "loggedInLabel"));
         userLabel.setStyleName("select-label");
-
-        loginLayout.addComponent(userLabel);
+        userLabel.setSizeUndefined();
 
         final NativeSelect substUserSelect = new NativeSelect();
         substUserSelect.setNullSelectionAllowed(false);
@@ -405,9 +401,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         UserSession us = App.getInstance().getConnection().getSession();
         substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
         substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
-
-        loginLayout.addComponent(substUserSelect);
-
 
         Button logoutBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
                 new Button.ClickListener() {
@@ -456,8 +449,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         newWindowBtn.setStyleName("white-border");
         newWindowBtn.setIcon(new ThemeResource("images/clean.gif"));
 
-        titleLayout.addComponent(loginLayout);
-        titleLayout.setComponentAlignment(loginLayout, Alignment.MIDDLE_RIGHT);
+        titleLayout.addComponent(userLabel);
+        titleLayout.setComponentAlignment(userLabel, Alignment.MIDDLE_RIGHT);
+
+        titleLayout.addComponent(substUserSelect);
+        titleLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
 
         titleLayout.addComponent(logoutBtn);
         titleLayout.setComponentAlignment(logoutBtn, Alignment.MIDDLE_RIGHT);
