@@ -65,11 +65,10 @@
 /** Filterselect aka ComboBox styles */
 
 .v-filterselect {
-    height: 23px;
+    height: 21px;
     white-space: nowrap;
     text-align: left; /* Force default alignment */
-    background: transparent url(img/bg-left-filter-wide.gif) no-repeat;
-    padding-left: 4px;
+    background: #fff url(img/bg-left-filter-wide.gif) no-repeat;
 }
 
 .v-filterselect .v-icon {
@@ -114,7 +113,7 @@
     height: 21px;
     cursor: pointer;
     border: none;
-    padding: 0 23px 0 0 ;
+    padding: 0 23px 0 4px ;
     margin: 0;
     background: transparent url(img/bg-right-filter.gif) no-repeat center right;
 }
