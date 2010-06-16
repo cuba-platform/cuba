@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -72,6 +73,11 @@ public class ActionsFieldHelper {
         Action action = new AbstractAction(ActionsField.OPEN) {
             public void actionPerform(Component componend) {
                 Entity entity = component.getValue();
+                
+                if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
+                    return;
+                }
+
                 if (entity != null) {
                     String windowAlias = ((Instance) entity).getMetaClass().getName() + ".edit";
                     final Window.Editor editor = component.getFrame().openEditor(windowAlias, entity, openType);
