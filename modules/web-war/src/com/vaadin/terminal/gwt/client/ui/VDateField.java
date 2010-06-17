@@ -8,7 +8,6 @@ import java.util.Date;
 
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.ClientExceptionHandler;
 import com.vaadin.terminal.gwt.client.DateTimeService;
@@ -17,7 +16,7 @@ import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VTooltip;
 
-public class VDateField extends FlowPanel implements Paintable, Field, TextSelectionManager {
+public class VDateField extends FlowPanel implements Paintable, Field {
 
     public static final String CLASSNAME = "v-datefield";
 
@@ -75,10 +74,6 @@ public class VDateField extends FlowPanel implements Paintable, Field, TextSelec
         setStyleName(CLASSNAME);
         dts = new DateTimeService();
         sinkEvents(VTooltip.TOOLTIP_EVENTS);
-    }
-
-    public boolean allowTextSelection() {
-        return true;
     }
 
     @Override

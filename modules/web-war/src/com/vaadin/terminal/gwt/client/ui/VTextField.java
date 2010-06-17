@@ -34,7 +34,7 @@ import java.util.Iterator;
  *
  */
 public class VTextField extends TextBoxBase implements Paintable, Field,
-        ChangeHandler, FocusHandler, BlurHandler, TextSelectionManager {
+        ChangeHandler, FocusHandler, BlurHandler {
 
     /**
      * The input node CSS classname.
@@ -353,9 +353,5 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         } else {
             super.setWidth(width);
         }
-    }
-
-    public boolean allowTextSelection() {
-        return true;
     }
 }

@@ -24,7 +24,6 @@ import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
-import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.Focusable;
 
@@ -36,7 +35,7 @@ import java.util.*;
  */
 public class VFilterSelect extends Composite implements Paintable, Field,
         KeyDownHandler, KeyUpHandler, ClickHandler, FocusHandler, BlurHandler,
-        Focusable, ContainerResizedListener, TextSelectionManager {
+        Focusable, ContainerResizedListener {
 
     protected boolean fixedTextBoxWidth = false;
     protected boolean needLayout = false;
@@ -632,10 +631,6 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         tb.addBlurHandler(this);
         popupOpener.setStyleName(CLASSNAME + "-wrap");
         popupOpener.addClickHandler(this);
-    }
-
-    public boolean allowTextSelection() {
-        return true;
     }
 
     public boolean hasNextPage() {

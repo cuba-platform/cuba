@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.dd.*;
 
@@ -21,7 +22,7 @@ import java.util.Set;
 /**
  *
  */
-public class VTree extends FlowPanel implements Paintable, VHasDropHandler {
+public class VTree extends FlowPanel implements Paintable, VHasDropHandler, TextSelectionManager {
 
     public static final String CLASSNAME = "v-tree";
 
@@ -776,5 +777,9 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler {
 
     public TreeNode getNodeByKey(String key) {
         return keyToNode.get(key);
+    }
+
+    public boolean allowTextSelection() {
+        return false;
     }
 }

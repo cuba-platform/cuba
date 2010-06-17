@@ -12,7 +12,7 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
-import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
+import com.haulmont.cuba.toolkit.gwt.client.HasIndicator;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.Field;
 import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
@@ -20,7 +20,7 @@ import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
 import java.util.Iterator;
 
 public class VIndicatedTextField extends Composite implements Paintable, Field,
-        ChangeHandler, FocusHandler, BlurHandler, HasIndicator, TextSelectionManager {
+        ChangeHandler, FocusHandler, BlurHandler, HasIndicator {
 
     /**
      * The input node CSS classname.
@@ -390,10 +390,6 @@ public class VIndicatedTextField extends Composite implements Paintable, Field,
             componentWidth = getOffsetWidth();
         }
         return componentWidth;
-    }
-
-    public boolean allowTextSelection() {
-        return true;
     }
 }
 

@@ -7,7 +7,7 @@
  * Created: 21.04.2010 16:18:05
  * $Id$
  */
-package com.vaadin.terminal.gwt.client;
+package com.haulmont.cuba.toolkit.gwt.client;
 
 public interface HasIndicator {
     void showLoadingIndicator(boolean show);

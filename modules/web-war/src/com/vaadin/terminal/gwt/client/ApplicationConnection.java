@@ -27,6 +27,7 @@ import com.google.gwt.user.client.impl.HTTPRequestImpl;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.toolkit.gwt.client.HasIndicator;
 import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
@@ -850,12 +851,9 @@ public class ApplicationConnection {
                 if (paintable != null) {
                     paintable.updateFromUIDL(uidl, this);
 
-                    if (!(paintable instanceof Container) && !(paintable instanceof TextSelectionManager)) {
-                        Tools.textSelectionEnable(((Widget) paintable).getElement(), false);
-                    } else if (paintable instanceof TextSelectionManager) {
-                        if (!((TextSelectionManager) paintable).allowTextSelection()) {
-                            Tools.textSelectionEnable(((Widget) paintable).getElement(), false);
-                        }
+                    if (paintable instanceof TextSelectionManager) {
+                        Tools.textSelectionEnable(((Widget) paintable).getElement(),
+                                ((TextSelectionManager) paintable).allowTextSelection());
                     }
 
                     // paintable may have changed during render to another

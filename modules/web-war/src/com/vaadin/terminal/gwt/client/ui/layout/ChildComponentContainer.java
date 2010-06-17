@@ -192,30 +192,26 @@ public class ChildComponentContainer extends Panel {
 
     }
 
-    public void renderChild(UIDL childUIDL, ApplicationConnection client,
-            int fixedWidth) {
-        /*
-         * Must remove width specification from container before rendering to
-         * allow components to grow in horizontal direction.
-         *
-         * For fixed width layouts we specify the width directly so that height
-         * is automatically calculated correctly (e.g. for Labels).
-         */
-        /*
-         * This should no longer be needed (after #2563) as all components are
-         * such that they can be rendered inside a 0x0 DIV.
-         *
-         * The exception seems to be complex components (Tree and Table) on
-         * Opera (#3444).
-         */
+    public void renderChild(UIDL childUIDL, ApplicationConnection client, int fixedWidth) {
 
-        if (!(widget instanceof Container) && !(widget instanceof TextSelectionManager)) {
-            Tools.textSelectionEnable(widget.getElement(), false);
-        } else if (widget instanceof TextSelectionManager) {
-            if (!((TextSelectionManager) widget).allowTextSelection()) {
-                Tools.textSelectionEnable(widget.getElement(), false);
-            }
+        if (widget instanceof TextSelectionManager) {
+            Tools.textSelectionEnable((widget).getElement(), ((TextSelectionManager) widget).allowTextSelection());
         }
+
+        /*
+        * Must remove width specification from container before rendering to
+        * allow components to grow in horizontal direction.
+        *
+        * For fixed width layouts we specify the width directly so that height
+        * is automatically calculated correctly (e.g. for Labels).
+        */
+        /*
+        * This should no longer be needed (after #2563) as all components are
+        * such that they can be rendered inside a 0x0 DIV.
+        *
+        * The exception seems to be complex components (Tree and Table) on
+        * Opera (#3444).
+        */
 
         if (fixedWidth < 0 && BrowserInfo.get().isOpera()) {
             setUnlimitedContainerWidth();
