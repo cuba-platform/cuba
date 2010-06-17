@@ -20,6 +20,10 @@
                             <optionsGroup id="mainWindowMode"/>
                         </row>
                         <row>
+                            <label value="msg://theme"/>
+                            <lookupField id="mainWindowTheme" required="true"/>
+                        </row>
+                        <row>
                             <button id="changePassw" icon="icons/change-pass.png"/>
                         </row>
                     </rows>

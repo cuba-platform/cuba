@@ -80,4 +80,8 @@ public interface WebConfig extends Config
 
     @DefaultInt(25)
     int getMainTabCaptionLength();
+
+    @Default("peyto")
+    String getAppWindowTheme();
+
 }

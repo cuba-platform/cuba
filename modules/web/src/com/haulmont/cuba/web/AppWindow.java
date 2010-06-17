@@ -288,6 +288,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      * Can be overridden in descendant to init an app-specific layout
      */
     protected void postInitLayout() {
+        String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
+        if (themeName == null) themeName = App.THEME_NAME;
+        themeName = UserSettingHelper.loadAppWindowTheme() == null ? themeName : UserSettingHelper.loadAppWindowTheme();
+        setTheme(themeName);
     }
 
     /**

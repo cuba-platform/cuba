@@ -38,6 +38,21 @@ public class UserSettingHelper {
         uss.saveSetting(ClientType.WEB, "appWindowMode", mode.name());
     }
 
+    public static String loadAppWindowTheme() {
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
+        String s = uss.loadSetting(ClientType.WEB, "appWindowTheme");
+        if (s != null) {
+            return s;
+        }
+        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        return webConfig.getAppWindowTheme();
+    }
+
+    public static void saveAppWindowTheme(String theme) {
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
+        uss.saveSetting(ClientType.WEB, "appWindowTheme", theme);
+    }
+
     public static class FoldersState {
 
         public final boolean visible;
