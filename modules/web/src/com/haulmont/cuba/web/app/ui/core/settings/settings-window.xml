@@ -20,7 +20,7 @@
                             <optionsGroup id="mainWindowMode"/>
                         </row>
                         <row>
-                            <label value="msg://theme"/>
+                            <label value="msg://mainWindowTheme"/>
                             <lookupField id="mainWindowTheme" required="true"/>
                         </row>
                         <row>
