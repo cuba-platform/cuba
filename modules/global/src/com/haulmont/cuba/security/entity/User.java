@@ -52,7 +52,7 @@ public class User extends StandardEntity
     @Column(name = "MIDDLE_NAME", length = 100)
     private String middleName;
 
-    @Column(name = "POSITION", length = 100)
+    @Column(name = "POSITION_", length = 100)
     private String position;
 
     @Column(name = "EMAIL", length = 100)

@@ -10,6 +10,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.PersistenceConfigProcessor;
 import com.haulmont.cuba.testsupport.TestContext;
 import com.haulmont.cuba.testsupport.TestDataSource;
 import com.haulmont.cuba.testsupport.TestTransactionManager;
@@ -25,26 +26,52 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 public abstract class CubaTestCase extends TestCase
 {
     private Log log = LogFactory.getLog(CubaTestCase.class);
 
+    protected static boolean initialized;
+
     protected void setUp() throws Exception {
         super.setUp();
-        System.setProperty("cuba.unitTestMode", "true");
+        if (!initialized) {
+            System.setProperty("cuba.unitTestMode", "true");
 
-        initDataSources();
-        initAppProperties();
-        initAppContext();
-        initTxManager();
+            initDataSources();
+            initPersistenceConfig();
+            initAppProperties();
+            initAppContext();
+            initTxManager();
+
+            initialized = true;
+        }
     }
 
     protected void initDataSources() throws Exception {
         Class.forName("org.hsqldb.jdbcDriver");
         TestDataSource ds = new TestDataSource("jdbc:hsqldb:hsql://localhost/cubadb", "sa", "");
         TestContext.getInstance().bind("java:comp/env/jdbc/CubaDS", ds);
+    }
+
+    protected void initPersistenceConfig() {
+        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
+        processor.setSourceFiles(getPersistenceSourceFiles());
+
+        File currentDir = new File(System.getProperty("user.dir"));
+        processor.setOutputFile(currentDir + "/modules/core/test/persistence.xml");
+
+        processor.create();
+    }
+
+    protected List<String> getPersistenceSourceFiles() {
+        List<String> list = new ArrayList<String>();
+        list.add("cuba-persistence.xml");
+        return list;
     }
 
     protected void initAppProperties() {

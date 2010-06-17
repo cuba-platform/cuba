@@ -138,7 +138,7 @@ create table SEC_USER (
     FIRST_NAME varchar(255),
     LAST_NAME varchar(255),
     MIDDLE_NAME varchar(255),
-    "POSITION" varchar(255),    
+    POSITION_ varchar(255),
     EMAIL varchar(100),
     ACTIVE smallint,
     GROUP_ID varchar(36),
