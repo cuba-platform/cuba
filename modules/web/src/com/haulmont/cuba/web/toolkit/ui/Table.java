@@ -33,7 +33,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     protected LinkedList<Object> editableColumns = null;
     protected boolean storeColWidth = false;
 
-    protected PagingMode pagingMode;
+    protected PagingMode pagingMode = PagingMode.SCROLLING;
 
     protected int currentPage = 1;
     protected int pagesCount = -1;
@@ -603,6 +603,16 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             }
         }
         target.endTag("arow");
+    }
+
+    @Override
+    public Object addItem(Object[] cells, Object itemId) throws UnsupportedOperationException {
+        itemId = super.addItem(cells, itemId);
+
+        resetPageBuffer();
+        refreshRenderedCells();
+
+        return itemId;
     }
 
     @Override

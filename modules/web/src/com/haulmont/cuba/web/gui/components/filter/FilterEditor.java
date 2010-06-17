@@ -10,28 +10,27 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.gui.components.ValuePathHelper;
-import com.haulmont.cuba.security.entity.FilterEntity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebFilter;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.vaadin.ui.*;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.security.entity.FilterEntity;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.vaadin.data.Property;
+import com.vaadin.ui.*;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.text.StrBuilder;
-import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.BooleanUtils;
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 public class FilterEditor {
@@ -184,7 +183,7 @@ public class FilterEditor {
     }
 
     private void initTable(AbstractLayout layout) {
-        table = new Table();
+        table = new com.haulmont.cuba.web.toolkit.ui.Table();
         table.setImmediate(true);
         table.setSelectable(false);
         table.setPageLength(0);

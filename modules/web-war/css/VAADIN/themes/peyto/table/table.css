@@ -1,6 +1,5 @@
 .v-table {
-	overflow: hidden;
-	text-align: left /* Force default alignment */
+	text-align: left;
 }
 
 .v-table.table-inline .v-table-header-wrap {

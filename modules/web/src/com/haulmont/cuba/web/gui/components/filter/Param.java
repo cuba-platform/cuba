@@ -231,7 +231,7 @@ public class Param {
     }
 
     private AbstractField createTextField() {
-        final AbstractField field = new TextField();
+        final AbstractField field = new com.haulmont.cuba.web.toolkit.ui.TextField();
         ((TextField) field).setNullRepresentation("");
 
         field.addListener(new Property.ValueChangeListener() {
