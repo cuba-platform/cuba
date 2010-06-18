@@ -37,12 +37,7 @@ public class ParamEditor extends CustomComponent implements Condition.Listener {
                 layout.addComponent(opLab);
             }
             field = condition.getParam().createEditComponent();
-            if (field instanceof com.vaadin.ui.Select) {
-                //todo gorodnov: remove a width definition when a lookup feild will be fixed
-                field.setWidth(150, Sizeable.UNITS_PIXELS);
-            } else {
-                field.setWidth("100%");
-            }
+            field.setWidth("100%");
             layout.addComponent(field);
         }
 
@@ -54,12 +49,7 @@ public class ParamEditor extends CustomComponent implements Condition.Listener {
             layout.removeComponent(field);
         }
         field = condition.getParam().createEditComponent();
-        if (field instanceof com.vaadin.ui.Select) {
-            //todo gorodnov: remove a width definition when a lookup feild will be fixed
-            field.setWidth(150, Sizeable.UNITS_PIXELS);
-        } else {
-            field.setWidth("100%");
-        }
+        field.setWidth("100%");
         layout.addComponent(field);
     }
 
