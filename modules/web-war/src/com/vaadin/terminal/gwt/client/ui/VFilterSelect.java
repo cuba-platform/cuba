@@ -29,16 +29,9 @@ import com.vaadin.terminal.gwt.client.Focusable;
 
 import java.util.*;
 
-/**
- *
- * TODO needs major refactoring (to be extensible etc)
- */
 public class VFilterSelect extends Composite implements Paintable, Field,
         KeyDownHandler, KeyUpHandler, ClickHandler, FocusHandler, BlurHandler,
         Focusable, ContainerResizedListener {
-
-    protected boolean fixedTextBoxWidth = false;
-    protected boolean needLayout = false;
 
     public class FilterSelectSuggestion implements Suggestion, Command {
 
@@ -536,6 +529,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     public static final int FILTERINGMODE_OFF = 0;
     public static final int FILTERINGMODE_STARTSWITH = 1;
     public static final int FILTERINGMODE_CONTAINS = 2;
+
+    protected boolean fixedTextBoxWidth = false;
 
     private static final String CLASSNAME = "v-filterselect";
 
@@ -1073,7 +1068,6 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             this.width = null;
         } else {
             this.width = width;
-            needLayout = true;
         }
         horizPaddingAndBorder = Util.setWidthExcludingPaddingAndBorder(this,
                 width, horizPaddingAndBorder);
@@ -1088,23 +1082,18 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     private void updateRootWidth() {
         tb.setWidth("");
-        needLayout = false;
         if (width == null) {
             if (suggestionPopupMinWidth > -1) {
                 int iconWidth = selectedItemIcon.isAttached() ? Util
                         .measureMarginLeft(tb.getElement())
                         - Util.measureMarginLeft(selectedItemIcon.getElement()) : 0;
-                int w = getOpenerWidth() + iconWidth;
-                if (suggestionPopupMinWidth > w) {
-                    w = suggestionPopupMinWidth;
-                }
-                super.setWidth(w + "px");
-                width = w + "px";
-                needLayout = true;
+                width = getOpenerWidth() + iconWidth + suggestionPopupMinWidth + "px";
+                super.setWidth(width);
+            } else {
+                super.setWidth(getElement().getOffsetWidth() + "px");
             }
         } else {
             super.setWidth(width);
-            needLayout = true;
         }
         iLayout();
     }
@@ -1117,9 +1106,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     }
 
     public void iLayout() {
-        if (needLayout) {
-            tb.setWidth("100%");
-        }
+        tb.setWidth("100%");
     }
 
     private int getMainWidth() {
