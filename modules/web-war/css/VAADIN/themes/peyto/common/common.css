@@ -282,7 +282,7 @@ input.v-modified,
 
 .v-app input[type="text"],
 .v-app input[type="password"] {
-    padding: 4px 2px 0 4px;
+    padding: 2px 2px 2px 4px;
 }
 
 /* Fix for liferay. #2384 */

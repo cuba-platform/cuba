@@ -7,12 +7,12 @@
 }
 
 .v-datefield input[type="text"] {
-    padding: 2px 0 0 2px;
+    padding: 2px 0 2px 2px;
 }
 
 .v-datefield-wrap {
 	font-size: 13px;
-	height: 22px;
+	height: 24px;
     margin: 0;
 	padding: 0 26px 0 0;
 	border: none;

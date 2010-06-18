@@ -78,7 +78,7 @@
 .v-app .v-filterselect .v-filterselect-input,
 .v-window .v-filterselect .v-filterselect-input,
 .v-popupview-popup .v-filterselect .v-filterselect-input {
-    background: transparent url(img/bg-center-filter.gif) no-repeat 1px 0;
+    background: transparent url(img/bg-center-filter.gif) no-repeat right top;
     border: none;
     height: 21px;
     margin: 0;
@@ -113,7 +113,7 @@
     height: 21px;
     cursor: pointer;
     border: none;
-    padding: 0 23px 0 4px ;
+    padding: 0 25px 0 4px ;
     margin: 0;
     background: transparent url(img/bg-right-filter.gif) no-repeat center right;
 }
@@ -306,7 +306,7 @@
 }
 
 .v-customcomponent-dropdown .v-filterselect .v-filterselect-wrap {
-    background: transparent url(img/bg-right-filter.png) no-repeat center right;
+    background: transparent url(img/bg-right-filter.gif) no-repeat center right;
     padding: 0 25px 0 4px;
 }
 

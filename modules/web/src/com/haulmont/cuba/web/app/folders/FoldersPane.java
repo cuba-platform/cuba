@@ -139,8 +139,8 @@ public class FoldersPane extends VerticalLayout {
 
             Component appFoldersPane = createAppFoldersPane();
             if (appFoldersPane != null) {
-                appFoldersPane.setHeight("95%");
-                appFoldersPane.setWidth("94%");
+                appFoldersPane.setHeight("100%");
+                appFoldersPane.setWidth("100%");
                 if (isNeedFoldersTitle()) {
                     appFoldersLabel = new Label(MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot"));
                     appFoldersLabel.setStyleName("folderspane-caption");
@@ -156,8 +156,8 @@ public class FoldersPane extends VerticalLayout {
 
             Component searchFoldersPane = createSearchFoldersPane();
             if (searchFoldersPane != null) {
-                searchFoldersPane.setHeight("95%");
-                searchFoldersPane.setWidth("94%");
+                searchFoldersPane.setHeight("100%");
+                searchFoldersPane.setWidth("100%");
                 if (isNeedFoldersTitle()) {
                     searchFoldersLabel = new Label(MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot"));
                     searchFoldersLabel.setStyleName("folderspane-caption");
