@@ -61,7 +61,7 @@ public class LoginWindow extends Window
 
     protected CheckBox rememberMe;
     protected boolean loginByRememberMe = false;
-    private Property.ValueChangeListener loginChangeListener;
+    protected Property.ValueChangeListener loginChangeListener;
 
     protected Button okButton;
 
