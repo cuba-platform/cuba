@@ -63,7 +63,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
     protected boolean editable;
-    protected boolean sortable;
+    protected boolean sortable = true;
     protected Action itemClickAction;
 
     protected Table.StyleProvider styleProvider;
@@ -520,16 +520,18 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             component.setVisibleColumns(newColumns.toArray());
 
-            //apply sorting
-            String sortProp = columnsElem.attributeValue("sortProperty");
-            if (!StringUtils.isEmpty(sortProp)) {
-                MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyEx(sortProp);
-                if (newColumns.contains(sortProperty)) {
-                    boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
+            if (isSortable()) {
+                //apply sorting
+                String sortProp = columnsElem.attributeValue("sortProperty");
+                if (!StringUtils.isEmpty(sortProp)) {
+                    MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyEx(sortProp);
+                    if (newColumns.contains(sortProperty)) {
+                        boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
 
-                    component.setSortContainerPropertyId(null);
-                    component.setSortAscending(sortAscending);
-                    component.setSortContainerPropertyId(sortProperty);
+                        component.setSortContainerPropertyId(null);
+                        component.setSortAscending(sortAscending);
+                        component.setSortContainerPropertyId(sortProperty);
+                    }
                 }
             }
         }
