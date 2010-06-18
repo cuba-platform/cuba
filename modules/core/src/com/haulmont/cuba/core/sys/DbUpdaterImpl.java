@@ -256,7 +256,15 @@ public class DbUpdaterImpl implements DbUpdater {
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();
             try {
-                runner.update(sql);
+                if (sql.trim().toLowerCase().startsWith("select")) {
+                    runner.query(sql, new ResultSetHandler<Object>() {
+                        public Object handle(ResultSet rs) throws SQLException {
+                            return null;
+                        }
+                    });
+                } else {
+                    runner.update(sql);
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

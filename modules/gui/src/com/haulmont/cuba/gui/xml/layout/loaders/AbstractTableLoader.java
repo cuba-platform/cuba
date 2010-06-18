@@ -55,6 +55,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadHeight(component, element);
         loadWidth(component, element);
 
+        loadSortable(component, element);
         loadExpandable(component, element);
         loadAggregatable(component, element);
 
