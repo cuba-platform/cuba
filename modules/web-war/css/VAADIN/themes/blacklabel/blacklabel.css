@@ -202,7 +202,10 @@
 
 .v-table-focuspanel {
     outline: none;
-    
+}
+
+.v-app .v-label-folderspane-caption {
+    color: #FFFFFF;
 }
 
 .popupmenu.v-dashlayout{
