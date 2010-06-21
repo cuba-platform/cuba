@@ -156,7 +156,7 @@
 
 .v-tabsheet-tabitem .v-caption {
 	height: 20px;
-	padding: 3px 15px 5px 15px;
+	padding: 3px 6px 5px 4px;
 }
 
 .v-tabsheet-tabitem .v-caption .v-captiontext,
@@ -169,7 +169,7 @@
 .v-tabsheet-tabitem-selected .v-caption {
 	background: none;
 	margin: 0 -1px 0 0px;
-	padding: 3px 10px 5px 10px;
+	padding: 3px 4px 5px 2px;
 	overflow: visible;
 }
 
