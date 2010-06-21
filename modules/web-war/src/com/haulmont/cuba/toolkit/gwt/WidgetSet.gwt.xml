@@ -1,6 +1,7 @@
 <module>
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
     <inherits name="com.vaadin.incubator.dashlayout.DashLayoutWidgetSet" />
+    <inherits name="org.vaadin.hene.popupbutton.PopupbuttonWidgetset" />
 
     <script src="js/jquery-1.4.2.min.js"/>
     <script src="js/jquery.disable.text.select.pack.js"/>

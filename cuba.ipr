@@ -551,8 +551,9 @@
         <root url="jar://$PROJECT_DIR$/../lib/jdbc/postgresql-8.3-603.jdbc4.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/springframework.context.support-3.0.0.RELEASE.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.3.1-patch1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/dashlayout-0.1.5-beta.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/jgroups-2.8.1.GA.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/popupbutton-0.9.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/dashlayout-0.1.5-beta.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -562,8 +563,9 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.jdbc-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/springframework.context.support-3.0.0.RELEASE-src.zip!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/vaadin-6.3.1-patch1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/dashlayout-0.1.5-beta.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/src/jgroups-2.8.1.GA-src.zip!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/popupbutton-0.9.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/dashlayout-0.1.5-beta.jar!/" />
       </SOURCES>
     </library>
     <library name="common">

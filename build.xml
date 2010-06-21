@@ -68,6 +68,7 @@
         <ext:install-lib name="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
         <ext:install-lib name="gwt-dev" version="${gwt-dev.version}" toDir="${lib.gwt.dir}"/>
         <ext:install-lib name="dashlayout" version="${dashlayout.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="popupbutton" version="${popupbutton.version}" toDir="${lib.server.dir}"/>
 
         <ext:install-lib name="springframework.jdbc" version="${springframework.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="springframework.orm" version="${springframework.version}" toDir="${lib.server.dir}"/>
