@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.vaadin.incubator.dashlayout.ui.VerDashLayout;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -54,6 +53,14 @@ public class WebPopupButton
         component.setCaption(caption);
     }
 
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
+
     public Action getAction() {
         return null;
     }
@@ -84,9 +91,9 @@ public class WebPopupButton
     }
 
     public void removePopupComponent() {
-        vPopupComponent = null;
         popupComponent = null;
-        this.component.removeComponent(WebComponentsHelper.unwrap(popupComponent));
+        this.component.removeComponent(vPopupComponent);
+        vPopupComponent = null;
     }
 
     public Component getPopupComponent() {
