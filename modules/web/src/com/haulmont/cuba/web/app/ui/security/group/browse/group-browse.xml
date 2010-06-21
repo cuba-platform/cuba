@@ -4,10 +4,6 @@
     class="com.haulmont.cuba.web.app.ui.security.group.browse.GroupBrowser"
     caption="msg://browser.caption"
 >
-    <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
-    </metadataContext>
-
     <dsContext>
         <hierarchicalDatasource
             id="groups"

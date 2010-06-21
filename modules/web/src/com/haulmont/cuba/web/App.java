@@ -57,7 +57,9 @@ public class App extends Application
         implements ConnectionListener, ApplicationContext.TransactionListener, HttpServletRequestListener {
     private static final long serialVersionUID = -3435976475534930050L;
 
-    private static final Pattern WIN_PATTERN = Pattern.compile("win([0-9]{1,4})");
+    public static final Pattern WIN_PATTERN = Pattern.compile("win([0-9]{1,4})");
+
+//    private static final Pattern BAD_WIN_PATTERN = Pattern.compile("win([0-9]{1,4})_.+");
 
     private static Log log = LogFactory.getLog(App.class);
 
@@ -341,6 +343,11 @@ public class App extends Application
 
         // it does not exist yet, create it.
         if (window == null) {
+//            Matcher m = BAD_WIN_PATTERN.matcher(name);
+//            if (m.matches()) {
+//                throw new RuntimeException("Bad window name: " + name);
+//            }
+
             if (connection.isConnected()) {
 
                 final AppWindow appWindow = createAppWindow();
@@ -351,13 +358,9 @@ public class App extends Application
 
                 return appWindow;
             } else {
-                String newWindowName = createWindowName(false);
-
                 final Window loginWindow = createLoginWindow();
-                loginWindow.setName(newWindowName);
+                loginWindow.setName(name);
                 addWindow(loginWindow);
-
-                loginWindow.open(new ExternalResource(loginWindow.getURL()));
 
                 return loginWindow;
             }
@@ -391,7 +394,7 @@ public class App extends Application
                 && request.getUserPrincipal() != null
                 && !principalIsWrong
                 && ActiveDirectoryHelper.useActiveDirectory()
-                && !(requestURI.endsWith("/login") || requestURI.endsWith("/UIDL/")))
+                && !(requestURI.endsWith("/login") || requestURI.contains("/UIDL/")))
         {
             String userName = request.getUserPrincipal().getName();
             log.debug("Trying to login ActiveDirectory as " + userName);

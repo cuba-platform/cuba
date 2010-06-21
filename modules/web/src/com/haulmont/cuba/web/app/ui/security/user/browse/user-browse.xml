@@ -5,12 +5,6 @@
         caption="msg://caption"
         messagesPack="com.haulmont.cuba.web.app.ui.security.user.browse"
         >
-
-    <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
-    </metadataContext>
-
     <dsContext>
         <collectionDatasource
                 id="users"

@@ -4,10 +4,6 @@
         caption="msg://editor.caption"
         datasource="group"
         >
-    <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
-    </metadataContext>
-
     <dsContext>
         <datasource id="group" class="com.haulmont.cuba.security.entity.Group" view="group.browse"/>
     </dsContext>

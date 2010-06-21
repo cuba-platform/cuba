@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.*;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
 
 public class CubaApplicationServlet extends ApplicationServlet {
     private static final long serialVersionUID = -8701539520754293569L;
@@ -52,10 +53,12 @@ public class CubaApplicationServlet extends ApplicationServlet {
         }
 
         String[] parts = requestURI.split("/");
-        boolean needRedirect = parts.length > 0 && "open".equals(parts[parts.length - 1]);
+        String lastPart = parts[parts.length - 1];
+        boolean needRedirect = parts.length > 0 && (contextName.equals(lastPart) || "open".equals(lastPart) || "login".equals(lastPart));
         if (needRedirect) {
             for (String part : parts) {
-                if (part.startsWith("win") || part.equals("UIDL")) {
+                Matcher m = App.WIN_PATTERN.matcher(part);
+                if (part.equals("UIDL") || part.equals("VAADIN") || m.matches()) {
                     needRedirect = false;
                     break;
                 }
