@@ -75,6 +75,7 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("accessControl", AccessControlLoader.class);
         config.register("buttonsPanel", ButtonsPanelLoader.class);
         config.register("actionsField", ActionsFieldLoader.class);
+        config.register("popupButton", PopupButtonLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

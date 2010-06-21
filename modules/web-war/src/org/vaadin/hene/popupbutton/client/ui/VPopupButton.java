@@ -8,6 +8,10 @@ import java.util.Set;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
@@ -46,6 +50,8 @@ public class VPopupButton extends VButton implements Container,
 
 	private boolean popupVisible = false;
 
+    private boolean autoClose = false;
+
 	public VPopupButton() {
 		super();
 		DivElement e = Document.get().createDivElement();
@@ -60,6 +66,7 @@ public class VPopupButton extends VButton implements Container,
 		super.updateFromUIDL(uidl, client);
 		addStyleName(CLASSNAME);
 
+        autoClose = uidl.getBooleanVariable("autoClose");
 		popupVisible = uidl.getBooleanVariable("popupVisible");
 		if (popupVisible) {
 			UIDL popupUIDL = uidl.getChildUIDL(0);
@@ -124,7 +131,7 @@ public class VPopupButton extends VButton implements Container,
 	    }
 	}-*/;
 
-	private class LayoutPopup extends VOverlay {
+	private class LayoutPopup extends VOverlay implements HasClickHandlers {
 
 		public static final String CLASSNAME = VPopupButton.CLASSNAME
 				+ "-popup";
@@ -136,9 +143,19 @@ public class VPopupButton extends VButton implements Container,
 		public LayoutPopup() {
 			super(false, false, true);
 			setStyleName(CLASSNAME);
+            this.sinkEvents(Event.ONMOUSEDOWN);
+
+            addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    if (autoClose && getWidget().getElement().cast() != event.getNativeEvent().getEventTarget()) {
+                        hidePopup();
+                        updateState(false, true);
+                    }
+                }
+            });
 		}
 
-		public void updateFromUIDL(final UIDL uidl) {
+        public void updateFromUIDL(final UIDL uidl) {
 			if (Util.isCached(uidl.getChildUIDL(0))) {
 				return;
 			}
@@ -298,7 +315,11 @@ public class VPopupButton extends VButton implements Container,
 		public void updateShadowSizeAndPosition() {
 			super.updateShadowSizeAndPosition();
 		}
-	}
+
+        public HandlerRegistration addClickHandler(ClickHandler handler) {
+            return addDomHandler(handler, ClickEvent.getType());
+        }
+    }
 
 	public RenderSpace getAllocatedSpace(Widget child) {
 		Size popupExtra = calculatePopupExtra();

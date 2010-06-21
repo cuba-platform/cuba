@@ -40,7 +40,9 @@ public class PopupButton extends Button implements ComponentContainer {
 
 	private boolean popupVisible = false;
 
-	public PopupButton(String caption) {
+    private boolean autoClose = true;
+
+    public PopupButton(String caption) {
 		super(caption);
 	}
 
@@ -52,6 +54,7 @@ public class PopupButton extends Button implements ComponentContainer {
 	@Override
 	public void paintContent(PaintTarget target) throws PaintException {
 		super.paintContent(target);
+        target.addVariable(this, "autoClose", autoClose);
 		target.addVariable(this, "popupVisible", popupVisible);
 		if (popupVisible) {
 			if (component == null) {
@@ -273,4 +276,12 @@ public class PopupButton extends Button implements ComponentContainer {
 		addComponent(component);
 	}
 
+    public void setAutoClose(boolean autoClose) {
+        this.autoClose = autoClose;
+        requestRepaint();
+    }
+
+    public boolean isAutoClose() {
+        return autoClose;
+    }
 }

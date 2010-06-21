@@ -198,3 +198,50 @@
 .v-label-folderspane-caption {
     font-weight: bold;
 }
+
+.popupmenu.v-dashlayout{
+	margin: 0;
+    padding : 5px;
+    border: solid 1px #8aa9d1;
+}
+
+.popupmenu .v-button.v-button-link
+{
+    height: 18px;
+    width: 100%;
+}
+
+.popupmenu .v-button:hover .v-button-caption {
+    color: #fff;
+}
+
+.popupmenu .v-button-caption, .popupmenu .v-disabled.v-button:hover .v-button-caption
+{
+    color: #4d7ab2;
+    text-decoration: none;
+}
+
+.popupmenu .v-button:hover,
+.popupmenu .v-button:active,
+.popupmenu .v-button.v-pressed .v-button-wrap,
+.popupmenu .v-button:hover .v-button-wrap,
+.popupmenu .v-button:active .v-button-wrap,
+.popupmenu .v-button.v-pressed .v-button-wrap
+{
+    background-color: #4d7ab2;
+}
+
+.popupmenu .v-disabled.v-button,
+.popupmenu .v-disabled.v-button:hover,
+.popupmenu .v-disabled.v-button .v-button-wrap
+{
+    background: transparent none;
+}
+
+.popupmenu .v-button:focus .v-button-caption {
+    outline: none;
+}
+
+.v-button.v-popupbutton .v-menu-indicator {
+	background: transparent url(../../themes/peyto/common/img/sprites.png) no-repeat -5px -10px;
+}

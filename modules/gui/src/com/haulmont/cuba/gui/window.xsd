@@ -398,7 +398,17 @@
             <xs:choice minOccurs="1" maxOccurs="unbounded">
                 <xs:element name="button" type="buttonType" />
 
-                <xs:element name="buttonsPanel" type="buttonsPanelType" />
+                <xs:element name="popupButton">
+                    <xs:complexType>
+                        <xs:extension base="buttonType">
+                            <xs:choice minOccurs="1" maxOccurs="1">
+                                <xs:group ref="component"/>
+                                <xs:group ref="layout"/>
+                            </xs:choice>
+                        </xs:extension>
+                        <xs:attribute name="menuWidth" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
 
                 <xs:element name="label">
                     <xs:complexType>

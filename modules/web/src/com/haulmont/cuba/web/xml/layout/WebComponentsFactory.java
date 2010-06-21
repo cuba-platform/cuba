@@ -62,6 +62,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("accessControl", WebAccessControl.class);
         classes.put("buttonsPanel", WebButtonsPanel.class);
         classes.put("actionsField", WebActionsField.class);
+        classes.put("popupButton", WebPopupButton.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

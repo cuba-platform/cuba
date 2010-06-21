@@ -19,7 +19,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        final Button component = factory.createComponent("button");
+        final Button component = factory.createComponent(element.getName());
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
