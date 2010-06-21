@@ -79,7 +79,7 @@ public class GroupTable extends Table implements GroupTableContainer {
         // Initialize temps
         final Object[] colids = getVisibleColumns();
         final int cols = colids.length;
-        final int first = getCurrentPageFirstItemIndex();
+        int first = getCurrentPageFirstItemIndex();
         int total = size();
         final int pagelen = getPageLength();
         final int colHeadMode = getColumnHeaderMode();
@@ -784,7 +784,9 @@ public class GroupTable extends Table implements GroupTableContainer {
     }
 
     protected void expand(Object id, boolean rerender) {
+        final int pageIndex = getCurrentPageFirstItemIndex();
         ((GroupTableContainer) items).expand(id);
+        setCurrentPageFirstItemIndex(pageIndex, false);
         if (rerender) {
             resetPageBuffer();
             refreshRenderedCells();
@@ -797,14 +799,18 @@ public class GroupTable extends Table implements GroupTableContainer {
     }
 
     public void expandAll() {
+        final int pageIndex = getCurrentPageFirstItemIndex();
         ((GroupTableContainer) items).expandAll();
+        setCurrentPageFirstItemIndex(pageIndex, false);
         resetPageBuffer();
         refreshRenderedCells();
         requestRepaint();
     }
 
     public void collapseAll() {
+        final int pageIndex = getCurrentPageFirstItemIndex();
         ((GroupTableContainer) items).collapseAll();
+        setCurrentPageFirstItemIndex(pageIndex, false);
         resetPageBuffer();
         refreshRenderedCells();
         requestRepaint();
@@ -815,7 +821,9 @@ public class GroupTable extends Table implements GroupTableContainer {
     }
 
     protected void collapse(Object id, boolean rerender) {
+        final int pageIndex = getCurrentPageFirstItemIndex();
         ((GroupTableContainer) items).collapse(id);
+        setCurrentPageFirstItemIndex(pageIndex, false);
         if (rerender) {
             resetPageBuffer();
             refreshRenderedCells();
