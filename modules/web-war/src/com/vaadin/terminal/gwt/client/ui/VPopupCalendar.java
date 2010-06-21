@@ -28,9 +28,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.*;
 
 public class VPopupCalendar extends VTextualDate implements Paintable, Field,
         ClickHandler, CloseHandler<PopupPanel> {
@@ -157,6 +155,19 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
                 }
             };
             t.schedule(100);
+        }
+    }
+
+    @Override
+    public void setWidth(String newWidth) {
+        super.setWidth(newWidth);
+        if ("".equals(newWidth)) {
+            Util.setFloat(getElement(), "left");
+            text.setWidth("");
+            int w = getOffsetWidth();
+            super.setWidth(w + "px");
+            Util.setFloat(getElement(), "");
+            width = null;
         }
     }
 

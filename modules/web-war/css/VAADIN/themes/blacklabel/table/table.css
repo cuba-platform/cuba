@@ -154,6 +154,8 @@
 .v-table-cell .v-table-cell-content {
     white-space: nowrap;
     overflow: hidden;
+    position: relative;
+    zoom: 1;
 }
 
 .v-table-cell-wrap .v-table-cell-content {
@@ -194,16 +196,14 @@
     color: #000;
 }
 
-.v-table-cell-content .v-textfield,
-.v-table-cell-content .v-datefield {
+.v-table-cell-content .v-textfield {
 	width: 97%; /* approximate */
 }
 
-/* ...but not for datefield textarea */
 .v-table-cell-content .v-datefield .v-textfield {
 	width: auto;
-
 }
+
 /* datefield button is too high for table cell */
 .v-table-cell-content .v-datefield-button {
 	height: 25px;

@@ -36,7 +36,7 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
     private String formatStr;
 
-    private String width;
+    protected String width;
 
     protected boolean needLayout;
 
@@ -293,9 +293,7 @@ public class VTextualDate extends VDateField implements Paintable, Field,
             width = newWidth;
             super.setWidth(width);
             iLayout();
-            if (newWidth.indexOf("%") < 0) {
-                needLayout = false;
-            }
+            needLayout = false;
         } else {
             if ("".equals(newWidth) && width != null && !"".equals(width)) {
                 if (BrowserInfo.get().isIE6()) {
