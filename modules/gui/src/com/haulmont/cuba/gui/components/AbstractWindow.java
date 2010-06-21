@@ -83,6 +83,22 @@ public class AbstractWindow extends AbstractFrame
         }
     }
 
+    public String getDescription() {
+        if (frame instanceof Window) {
+            return ((Window) frame).getDescription();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public void setDescription(String description) {
+        if (frame instanceof Window) {
+            ((Window) frame).setDescription(description);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     protected void init(Map<String, Object> params) {
 
     }

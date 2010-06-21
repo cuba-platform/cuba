@@ -130,6 +130,9 @@ public interface Component {
     interface HasCaption {
         String getCaption();
         void setCaption(String caption);
+
+        String getDescription();
+        void setDescription(String description);
     }
 
     /**

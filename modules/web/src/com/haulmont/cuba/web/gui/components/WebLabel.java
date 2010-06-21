@@ -53,6 +53,14 @@ public class WebLabel
         component.setCaption(caption);
     }
 
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
+
     public Datasource getDatasource() {
         return datasource;
     }

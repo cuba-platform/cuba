@@ -76,6 +76,13 @@ public interface Table
             this.caption = caption;
         }
 
+        public String getDescription() {
+            return null;
+        }
+
+        public void setDescription(String description) {
+        }
+
         public Boolean isEditable() {
             return editable;
         }

@@ -80,6 +80,14 @@ public class WebToggleBoxLayout
         component.setCaption(caption);
     }
 
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
+
     public void add(Component component) {
         throw new UnsupportedOperationException();
     }

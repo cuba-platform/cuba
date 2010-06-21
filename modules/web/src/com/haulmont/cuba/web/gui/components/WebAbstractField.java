@@ -95,6 +95,14 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         component.setCaption(caption);
     }
 
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
+
     public boolean isEditable() {
         return !component.isReadOnly();
     }

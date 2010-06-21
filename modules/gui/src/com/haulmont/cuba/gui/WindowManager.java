@@ -294,12 +294,20 @@ public abstract class WindowManager implements Serializable {
     }
 
     protected String loadDescription(Window window, Map<String, Object> params) {
-        String description = (String) params.get("param$description");
+        String description = window.getDescription();
         if (!StringUtils.isEmpty(description)) {
             return TemplateHelper.processTemplate(description, params);
         } else {
-            return null;
+            description = (String) params.get("param$description");
+            if (StringUtils.isEmpty(description)) {
+                description = null;
+            } else {
+                description = TemplateHelper.processTemplate(description, params);
+            }
         }
+        window.setDescription(description);
+
+        return description;
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType,
@@ -356,8 +364,9 @@ public abstract class WindowManager implements Serializable {
         ((Window.Editor) window).setParentDs(parentDs);
         ((Window.Editor) window).setItem(item);
 
-        String caption = loadCaption(window, params);
-        showWindow(window, caption, openType, windowParameters);
+        final String caption = loadCaption(window, params);
+        final String description = loadDescription(window, params);
+        showWindow(window, caption, description, openType, windowParameters);
 
         //noinspection unchecked
         return (T) window;
@@ -397,8 +406,9 @@ public abstract class WindowManager implements Serializable {
         window.setId(windowInfo.getId());
         ((Window.Lookup) window).setLookupHandler(handler);
 
-        String caption = loadCaption(window, params);
-        showWindow(window, caption, openType);
+        final String caption = loadCaption(window, params);
+        final String description = loadDescription(window, params);
+        showWindow(window, caption, description, openType);
 
         //noinspection unchecked
         return (T) window;
@@ -451,6 +461,8 @@ public abstract class WindowManager implements Serializable {
     }
 
     protected abstract void showWindow(Window window, String caption, OpenType openType);
+
+    protected abstract void showWindow(Window window, String caption, String description, OpenType openType);
 
     protected abstract void showWindow(Window window, String caption, OpenType openType, WindowParameters windowParameters);
 

@@ -84,6 +84,7 @@ public class WebWindow
     private WindowContext context;
 
     private String caption;
+    private String description;
 
     private List<CloseListener> listeners = new ArrayList<CloseListener>();
 
@@ -548,6 +549,14 @@ public class WebWindow
 
     public void setCaption(String caption) {
         this.caption = caption;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public <A extends IFrame> A getFrame() {

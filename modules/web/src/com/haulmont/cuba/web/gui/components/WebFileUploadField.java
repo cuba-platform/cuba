@@ -11,11 +11,9 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.app.UIComponentsConfig;
-import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.vaadin.ui.Upload;
 
 import java.io.ByteArrayOutputStream;
@@ -141,5 +139,13 @@ public class WebFileUploadField
 
     public void setCaption(String caption) {
         component.setCaption(caption);
+    }
+
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    public void setDescription(String description) {
+        component.setDescription(description);
     }
 }

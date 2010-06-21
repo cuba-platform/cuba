@@ -51,6 +51,14 @@ public class WebButton
         component.setCaption(caption);
     }
 
+    public String getDescription() {
+        return component.getDescription();
+    }
+
+    public void setDescription(String description) {
+        component.setDescription(description);
+    }
+
     public Action getAction() {
         return action;
     }

@@ -151,6 +151,10 @@ public class WebWindowManager extends WindowManager {
         showWindow(window, caption, type, WindowParameters.EMPTY);
     }
 
+    protected void showWindow(Window window, String caption, String description, OpenType type) {
+        showWindow(window, caption, description, type, WindowParameters.EMPTY);
+    }
+
     public void showWindow(final Window window, final String caption, OpenType type, WindowParameters windowParameters) {
         showWindow(window, caption, null, type, windowParameters);
     }
@@ -486,7 +490,9 @@ public class WebWindowManager extends WindowManager {
 
                 if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
                     TabSheet tabSheet = app.getAppWindow().getTabSheet();
-                    tabSheet.setTabCaption(layout, currentWindow.getCaption());
+                    TabSheet.Tab tab = tabSheet.getTab(layout);
+                    tab.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
+                    tab.setDescription(formatTabDescription(currentWindow.getCaption(), currentWindow.getDescription()));
                     tabSheet.requestRepaintAll();
                 }
                 fireListeners(window, getTabs().size() != 0);
