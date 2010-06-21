@@ -149,6 +149,16 @@ public class WebActionsField
         if (lookupButton != null) {
             lookupButton.setVisible(editable);
         }
+        if (editable && lookupButton != null) {
+            lookupButton.setIcon("select/img/bg-right-lookup.png");
+        } else {
+            lookupButton.setIcon("select/img/bg-right-lookup-readonly.png");
+        }
+        if (editable && openButton != null) {
+            openButton.setIcon("select/img/bg-right-open.png");
+        } else {
+            openButton.setIcon("select/img/bg-right-open-readonly.png");
+        }
     }
 
     @Override
@@ -174,6 +184,8 @@ public class WebActionsField
         component.addButton((Button) WebComponentsHelper.unwrap(button));
     }
 
+
+
     public void enableButton(String buttonId, boolean enable) {
         if (DROPDOWN.equals(buttonId)) {
             if (enable) {
@@ -184,7 +196,11 @@ public class WebActionsField
         } else if (LOOKUP.equals(buttonId)) {
             if (lookupButton == null) {
                 lookupButton = new WebButton();
-                lookupButton.setIcon("select/img/bg-right-lookup.png");
+                if (lookupField.isEditable()) {
+                    lookupButton.setIcon("select/img/bg-right-lookup.png");
+                } else {
+                    lookupButton.setIcon("select/img/bg-right-lookup-readonly.png");
+                }
                 lookupButton.setStyleName(BaseTheme.BUTTON_LINK);
                 component.addButton((Button) lookupButton.getComponent());
             }
@@ -192,7 +208,11 @@ public class WebActionsField
         } else if (OPEN.equals(buttonId)) {
             if (openButton == null) {
                 openButton = new WebButton();
-                openButton.setIcon("select/img/bg-right-open.png");
+                if (lookupField.isEditable()) {
+                    openButton.setIcon("select/img/bg-right-open.png");
+                } else {
+                    openButton.setIcon("select/img/bg-right-open-readonly.png");
+                }
                 openButton.setStyleName(BaseTheme.BUTTON_LINK);
                 component.addButton((Button) openButton.getComponent());
             }

@@ -71,6 +71,13 @@
     background: #fff url(img/bg-left-filter-wide.gif) no-repeat;
 }
 
+.v-filterselect.v-readonly {
+    height: 21px;
+    white-space: nowrap;
+    text-align: left; /* Force default alignment */
+    background: transparent url(img/bg-left-filter-wide-readonly.gif) no-repeat;
+}
+
 .v-filterselect .v-icon {
     float: left;
 }
@@ -79,6 +86,17 @@
 .v-window .v-filterselect .v-filterselect-input,
 .v-popupview-popup .v-filterselect .v-filterselect-input {
     background: transparent url(img/bg-center-filter.gif) no-repeat right top;
+    border: none;
+    height: 21px;
+    margin: 0;
+    padding: 0;
+    font-size: 8pt;
+}
+
+.v-app .v-filterselect.v-readonly .v-filterselect-input,
+.v-window .v-filterselect.v-readonly .v-filterselect-input,
+.v-popupview-popup .v-filterselect.v-readonly .v-filterselect-input {
+    background: transparent url(img/bg-center-filter-readonly.gif) no-repeat right top;
     border: none;
     height: 21px;
     margin: 0;
@@ -127,12 +145,12 @@
     cursor: default;
 }
 
-.v-filterselect.v-readonly,
+/*.v-filterselect.v-readonly,
 .v-filterselect.v-readonly .v-filterselect-wrap,
 .v-filterselect.v-readonly .v-filterselect-input {
     background: transparent;
     cursor: default;
-}
+}*/
 
 .v-filterselect.v-readonly .v-filterselect-wrap {
     background: none;
