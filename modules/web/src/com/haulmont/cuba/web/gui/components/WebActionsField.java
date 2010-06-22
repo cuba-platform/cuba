@@ -152,12 +152,16 @@ public class WebActionsField
         if (editable && lookupButton != null) {
             lookupButton.setIcon("select/img/bg-right-lookup.png");
         } else {
-            lookupButton.setIcon("select/img/bg-right-lookup-readonly.png");
+            if (lookupButton != null) {
+                lookupButton.setIcon("select/img/bg-right-lookup-readonly.png");
+            }
         }
         if (editable && openButton != null) {
             openButton.setIcon("select/img/bg-right-open.png");
         } else {
-            openButton.setIcon("select/img/bg-right-open-readonly.png");
+            if (openButton != null) {
+                openButton.setIcon("select/img/bg-right-open-readonly.png");
+            }
         }
     }
 
