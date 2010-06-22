@@ -90,18 +90,22 @@ public class FolderEditWindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 FolderEditWindow.this.folder.setName((String) nameField.getValue());
 
-                String sortOrderStr = (String)sortOrderField.getValue();
-                if (sortOrderStr == null || "".equals(sortOrderStr)) {
+                if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     FolderEditWindow.this.folder.setSortOrder(null);
                 } else {
-                    try {
-                        int sortOrder = Integer.parseInt(sortOrderStr);
-                        FolderEditWindow.this.folder.setSortOrder(sortOrder);
-                    } catch (NumberFormatException e) {
-                        String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
-                        showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
-                        return;
-                    }
+                    Object value = sortOrderField.getValue();
+                    int sortOrder;
+                    if (value instanceof Integer)
+                        sortOrder = (Integer) value;
+                    else
+                        try {
+                            sortOrder = Integer.parseInt((String) value);
+                        } catch (NumberFormatException e) {
+                            String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
+                            showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
+                            return;
+                        }
+                    FolderEditWindow.this.folder.setSortOrder(sortOrder);
                 }
 
                 Object parent = parentSelect.getValue();
