@@ -124,7 +124,11 @@ public class VUpload extends FormPanel implements Paintable,
         setImmediate(uidl.getBooleanAttribute("immediate"));
         this.client = client;
         paintableId = uidl.getId();
-        setAction(client.getAppUri());
+        if (uidl.hasAttribute("action")) {
+            setAction(uidl.getStringAttribute("action"));
+        } else {
+            setAction(client.getAppUri());
+        }
         submitButton.setText(uidl.getStringAttribute("buttoncaption"));
         fu.setName(paintableId + "_file");
 

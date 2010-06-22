@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
-import com.vaadin.ui.Upload;
+import com.haulmont.cuba.web.toolkit.ui.Upload;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -44,6 +44,7 @@ public class WebFileUploadField
                 return outputStream;
             }
         });
+        component.setAction("");
 
         component.addListener(new Upload.StartedListener() {
             public void uploadStarted(Upload.StartedEvent event) {
