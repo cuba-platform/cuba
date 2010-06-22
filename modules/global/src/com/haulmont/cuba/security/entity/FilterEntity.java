@@ -10,13 +10,12 @@
  */
 package com.haulmont.cuba.security.entity;
 
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import java.util.List;
 
 @Entity(name = "sec$Filter")
 @Table(name = "SEC_FILTER")
@@ -40,7 +39,7 @@ public class FilterEntity extends StandardEntity {
     private Boolean isDefault;
 
     @Transient
-    private Boolean isTemporary;
+    private AbstractSearchFolder folder;
 
     public String getComponentId() {
         return componentId;
@@ -82,11 +81,11 @@ public class FilterEntity extends StandardEntity {
         isDefault = aDefault;
     }
 
-    public Boolean getIsTemporary() {
-        return isTemporary;
+    public AbstractSearchFolder getFolder() {
+        return folder;
     }
 
-    public void setIsTemporary(Boolean temporary) {
-        isTemporary = temporary;
+    public void setFolder(AbstractSearchFolder folder) {
+        this.folder = folder;
     }
 }

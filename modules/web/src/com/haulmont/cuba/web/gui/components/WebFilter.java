@@ -16,10 +16,10 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.CommitContext;
@@ -91,6 +91,7 @@ public class WebFilter
     private CheckBox defaultCb;
 
     private boolean changingFilter;
+    private boolean applyingDefault;
     private boolean editing;
     private FoldersPane foldersPane;
 
@@ -99,6 +100,8 @@ public class WebFilter
     private Label maxResultsLabel;
     private TextField maxResultsField;
     private HorizontalLayout maxResultsPanel;
+
+    private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
 
     public WebFilter() {
         component = new VerticalLayout();
@@ -115,20 +118,7 @@ public class WebFilter
         select.setStyleName("generic-filter-select");
         select.setNullSelectionAllowed(true);
         select.setImmediate(true);
-        select.addListener(new Property.ValueChangeListener() {
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (changingFilter)
-                    return;
-
-                filterEntity = (FilterEntity) select.getValue();
-                parseFilterXml();
-
-                updateControls();
-                component.removeComponent(paramsLayout);
-                createParamsLayout();
-                component.addComponent(paramsLayout);
-            }
-        });
+        select.addListener(new SelectListener());
         topLayout.addComponent(select);
 
         applyBtn = WebComponentsHelper.createButton("icons/search.png");
@@ -204,16 +194,23 @@ public class WebFilter
         actions.removeAllItems();
         actions.addItem(nullActionId);
 
-        if (!editing)
-            actions.addItem(createActionId);
+        if (editing)
+            return;
 
+        actions.addItem(createActionId);
 
-        if (filterEntity != null && !editing && checkGlobalFilterPermission()) {
-            actions.addItem(editActionId);
-            actions.addItem(deleteActionId);
+        if (filterEntity == null)
+            return;
+
+        if (checkGlobalFilterPermission()) {
+            if (filterEntity.getFolder() == null || filterEntity.getFolder() instanceof SearchFolder)
+                actions.addItem(editActionId);
+
+            if (filterEntity.getFolder() == null)
+                actions.addItem(deleteActionId);
         }
 
-        if (foldersPane != null && filterEntity != null && !editing)
+        if (foldersPane != null && filterEntity.getFolder() == null)
             actions.addItem(saveAsFolderActionId);
     }
 
@@ -350,7 +347,7 @@ public class WebFilter
             parseFilterXml();
 
             select.addItem(filterEntity);
-            select.setItemCaption(filterEntity, InstanceUtils.getInstanceName((Instance) filterEntity));
+            select.setItemCaption(filterEntity, getCurrentFilterCaption());
             select.setValue(filterEntity);
 
             updateControls();
@@ -392,9 +389,15 @@ public class WebFilter
 
                             Map<String, Object> params = window.getContext().getParams();
                             if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
-                                select.setValue(filter);
-                                updateControls();
-                                apply();
+                                applyingDefault = true;
+                                try {
+                                    select.setValue(filter);
+                                    updateControls();
+                                    apply();
+                                    window.setDescription(filterEntity.getName());
+                                } finally {
+                                    applyingDefault = false;
+                                }
                             }
                             break;
                         }
@@ -422,13 +425,22 @@ public class WebFilter
             parseFilterXml();
 
             select.addItem(filterEntity);
-            select.setItemCaption(filterEntity, InstanceUtils.getInstanceName((Instance) filterEntity));
+            select.setItemCaption(filterEntity, getCurrentFilterCaption());
             select.setValue(filterEntity);
 
             switchToUse();
         } finally {
             changingFilter = false;
         }
+    }
+
+    private String getCurrentFilterCaption() {
+        String name = InstanceUtils.getInstanceName((Instance) filterEntity);
+        AbstractSearchFolder folder = filterEntity.getFolder();
+        if (folder != null) {
+            name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
+        }
+        return name;
     }
 
     public void editorCancelled() {
@@ -460,13 +472,18 @@ public class WebFilter
     }
 
     private void saveFilterEntity() {
-        if (BooleanUtils.isTrue(filterEntity.getIsTemporary()))
-            return;
+        if (filterEntity.getFolder() == null) {
+            DataService ds = ServiceLocator.getDataService();
+            CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
+            Map<Entity, Entity> result = ds.commit(ctx);
+            filterEntity = (FilterEntity) result.get(filterEntity);
 
-        DataService ds = ServiceLocator.getDataService();
-        CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
-        Map<Entity, Entity> result = ds.commit(ctx);
-        filterEntity = (FilterEntity) result.get(filterEntity);
+        } else if (filterEntity.getFolder() instanceof SearchFolder) {
+            filterEntity.getFolder().setName(filterEntity.getName());
+            filterEntity.getFolder().setFilterXml(filterEntity.getXml());
+            SearchFolder folder = saveFolder((SearchFolder) filterEntity.getFolder());
+            filterEntity.setFolder(folder);
+        }
     }
 
     private void deleteFilterEntity() {
@@ -474,7 +491,6 @@ public class WebFilter
         CommitContext ctx = new CommitContext();
         ctx.setRemoveInstances(Collections.singletonList(filterEntity));
         ds.commit(ctx);
-        filterEntity = null;
     }
 
     private void createEditLayout() {
@@ -524,7 +540,7 @@ public class WebFilter
         select.setEnabled(!editing);
         applyBtn.setEnabled(!editing);
 
-        defaultCb.setEnabled(filterEntity != null && !editing);
+        defaultCb.setEnabled(filterEntity != null && !editing && filterEntity.getFolder() == null);
         if (filterEntity != null && !editing)
             defaultCb.setValue(isTrue(filterEntity.getIsDefault()));
         else
@@ -535,7 +551,7 @@ public class WebFilter
         if (filterEntity == null || filterEntity.getUser() != null)
             return true;
         else
-            return UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.global");
+            return UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
     }
 
     public void add(Component component) {
@@ -625,46 +641,55 @@ public class WebFilter
         folder.setName(filterEntity.getName());
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(filterEntity.getXml());
-        folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+        if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+            folder.setUser(filterEntity.getUser());
+        else
+            folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
 
         final FolderEditWindow window = new FolderEditWindow(false, folder,
                 new Runnable() {
                     public void run() {
+                        SearchFolder savedFolder = saveFolder(folder);
+                        filterEntity.setFolder(savedFolder);
+                        if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+                            deleteFilterEntity();
+                        select.setItemCaption(filterEntity, getCurrentFilterCaption());
+
                         // search for existing folders with the same name
-                        boolean found = false;
-                        Collection<SearchFolder> folders = foldersPane.getSearchFolders();
-                        for (final SearchFolder existingFolder : folders) {
-                            if (ObjectUtils.equals(existingFolder.getName(), folder.getName())) {
-                                found = true;
-                                App.getInstance().getWindowManager().showOptionDialog(
-                                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dialogs.Confirmation"),
-                                        MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderConfirmUpdate"),
-                                        IFrame.MessageType.CONFIRMATION,
-                                        new Action[] {
-                                                new DialogAction(DialogAction.Type.YES) {
-                                                    @Override
-                                                    public void actionPerform(Component component) {
-                                                        // update existing folder
-                                                        existingFolder.setFilterComponentId(folder.getFilterComponentId());
-                                                        existingFolder.setFilterXml(folder.getFilterXml());
-                                                        saveFolder(existingFolder);
-                                                    }
-                                                },
-                                                new DialogAction(DialogAction.Type.NO) {
-                                                    @Override
-                                                    public void actionPerform(Component component) {
-                                                        // create new folder
-                                                        saveFolder(folder);
-                                                    }
-                                                }
-                                        }
-                                );
-                            }
-                        }
-                        if (!found) {
+//                        boolean found = false;
+//                        Collection<SearchFolder> folders = foldersPane.getSearchFolders();
+//                        for (final SearchFolder existingFolder : folders) {
+//                            if (ObjectUtils.equals(existingFolder.getName(), folder.getName())) {
+//                                found = true;
+//                                App.getInstance().getWindowManager().showOptionDialog(
+//                                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dialogs.Confirmation"),
+//                                        MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderConfirmUpdate"),
+//                                        IFrame.MessageType.CONFIRMATION,
+//                                        new Action[] {
+//                                                new DialogAction(DialogAction.Type.YES) {
+//                                                    @Override
+//                                                    public void actionPerform(Component component) {
+//                                                        // update existing folder
+//                                                        existingFolder.setFilterComponentId(folder.getFilterComponentId());
+//                                                        existingFolder.setFilterXml(folder.getFilterXml());
+//                                                        saveFolder(existingFolder);
+//                                                    }
+//                                                },
+//                                                new DialogAction(DialogAction.Type.NO) {
+//                                                    @Override
+//                                                    public void actionPerform(Component component) {
+//                                                        // create new folder
+//                                                        saveFolder(folder);
+//                                                    }
+//                                                }
+//                                        }
+//                                );
+//                            }
+//                        }
+//                        if (!found) {
                             // create new folder
-                            saveFolder(folder);
-                        }
+//                            saveFolder(folder);
+//                        }
                     }
                 }
         );
@@ -677,9 +702,10 @@ public class WebFilter
         App.getInstance().getAppWindow().addWindow(window);
     }
 
-    private void saveFolder(SearchFolder folder) {
-        foldersPane.saveFolder(folder);
+    private SearchFolder saveFolder(SearchFolder folder) {
+        SearchFolder savedFolder = (SearchFolder) foldersPane.saveFolder(folder);
         foldersPane.refreshFolders();
+        return savedFolder;
     }
 
     private void delete() {
@@ -692,6 +718,7 @@ public class WebFilter
                             @Override
                             public void actionPerform(Component component) {
                                 deleteFilterEntity();
+                                filterEntity = null;
                                 select.removeItem(select.getValue());
                                 if (!select.getItemIds().isEmpty()) {
                                     select.select(select.getItemIds().iterator().next());
@@ -703,6 +730,30 @@ public class WebFilter
                         new DialogAction(DialogAction.Type.NO)
                 }
         );
+    }
+
+
+    private class SelectListener implements Property.ValueChangeListener {
+
+        public void valueChange(Property.ValueChangeEvent event) {
+            if (changingFilter)
+                return;
+
+            filterEntity = (FilterEntity) select.getValue();
+            parseFilterXml();
+
+            updateControls();
+            component.removeComponent(paramsLayout);
+            createParamsLayout();
+            component.addComponent(paramsLayout);
+
+            if (!applyingDefault) {
+                Window window = ComponentsHelper.getWindow(WebFilter.this);
+                String descr = filterEntity == null ? null : filterEntity.getName();
+                window.setDescription(descr);
+                App.getInstance().getWindowManager().setCurrentWindowCaption(window.getCaption(), descr);
+            }
+        }
     }
 
     private class ActionsListener implements Property.ValueChangeListener {

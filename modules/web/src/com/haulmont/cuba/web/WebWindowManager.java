@@ -314,6 +314,13 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
+    public void setCurrentWindowCaption(String caption, String description) {
+        TabSheet tabSheet = app.getAppWindow().getTabSheet();
+        com.vaadin.ui.Component tabContent = tabSheet.getSelectedTab();
+        TabSheet.Tab tab = tabSheet.getTab(tabContent);
+        tab.setCaption(formatTabCaption(caption, description));
+    }
+
     protected String formatTabCaption(final String caption, final String description) {
         String s = formatTabDescription(caption, description);
         int maxLength = ConfigProvider.getConfig(WebConfig.class).getMainTabCaptionLength();

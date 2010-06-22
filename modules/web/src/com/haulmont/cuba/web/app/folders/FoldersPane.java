@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.app.folders;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.ConfigProvider;
@@ -368,7 +369,7 @@ public class FoldersPane extends VerticalLayout {
             Filter filterComponent = window.getComponent(filterComponentId);
 
             FilterEntity filterEntity = new FilterEntity();
-            filterEntity.setIsTemporary(true);
+            filterEntity.setFolder(folder);
             filterEntity.setComponentId(folder.getFilterComponentId());
             if (folder instanceof AppFolder)
                 filterEntity.setName(((AppFolder) folder).getLocName());
@@ -392,9 +393,10 @@ public class FoldersPane extends VerticalLayout {
         return true;
     }
 
-    public void saveFolder(Folder folder) {
+    public Folder saveFolder(Folder folder) {
         CommitContext commitContext = new CommitContext(Collections.singleton(folder));
-        ServiceLocator.getDataService().commit(commitContext);
+        Map<Entity, Entity> res = ServiceLocator.getDataService().commit(commitContext);
+        return (Folder) res.get(folder);
     }
 
     protected void removeFolder(Folder folder) {
