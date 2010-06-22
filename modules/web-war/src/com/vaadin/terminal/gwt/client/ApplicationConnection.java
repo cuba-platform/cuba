@@ -32,12 +32,10 @@ import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
 import com.vaadin.terminal.gwt.client.RenderInformation.Size;
-import com.vaadin.terminal.gwt.client.ui.Field;
-import com.vaadin.terminal.gwt.client.ui.VContextMenu;
-import com.vaadin.terminal.gwt.client.ui.VNotification;
-import com.vaadin.terminal.gwt.client.ui.VView;
+import com.vaadin.terminal.gwt.client.ui.*;
 import com.vaadin.terminal.gwt.client.ui.VNotification.HideEvent;
 import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
+import com.vaadin.terminal.gwt.client.ui.layout.ChildComponentContainer;
 import com.vaadin.terminal.gwt.server.AbstractCommunicationManager;
 
 /**
@@ -1609,6 +1607,14 @@ public class ApplicationConnection {
                     parent.updateCaption((Paintable) component, uidl);
                 }
 
+            }
+        }
+
+        if (component.getParent() != null && component.getParent() instanceof ChildComponentContainer) {
+            component.getParent().setVisible(visible);
+            final Container parentContainer = Util.getLayout(component);
+            if (parentContainer != null && parentContainer instanceof VOrderedLayout) {
+                ((VOrderedLayout) parentContainer).updateContainerMargins();
             }
         }
 

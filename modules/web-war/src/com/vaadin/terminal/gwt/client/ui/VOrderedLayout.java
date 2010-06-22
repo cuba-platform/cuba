@@ -133,6 +133,12 @@ public class VOrderedLayout extends CellBasedLayout {
 
             addOrMoveChild(childComponentContainer, pos++);
 
+            if (childUIDL.hasAttribute("invisible") && childComponentContainer.isVisible()) {
+                childComponentContainer.setVisible(false);
+            } else if (!(childUIDL.hasAttribute("invisible") || childComponentContainer.isVisible())) {
+                childComponentContainer.setVisible(true);
+            }
+
             /*
              * Components which are to be expanded in the same orientation as
              * the layout are rendered later when it is clear how much space
@@ -668,8 +674,8 @@ public class VOrderedLayout extends CellBasedLayout {
      * Updates the spacing between components. Needs to be done only when
      * components are added/removed.
      */
-    private void updateContainerMargins() {
-        ChildComponentContainer firstChildComponent = getFirstChildComponentContainer();
+    public void updateContainerMargins() {
+        ChildComponentContainer firstChildComponent = getVisibleFirstChildComponentContainer();
         if (firstChildComponent != null) {
             firstChildComponent.setMarginLeft(0);
             firstChildComponent.setMarginTop(0);
@@ -680,13 +686,28 @@ public class VOrderedLayout extends CellBasedLayout {
                     continue;
                 }
 
-                if (isHorizontal()) {
-                    childComponent.setMarginLeft(activeSpacing.hSpacing);
-                } else {
-                    childComponent.setMarginTop(activeSpacing.vSpacing);
+                if (childComponent.isVisible()) {
+                    if (isHorizontal()) {
+                        childComponent.setMarginLeft(activeSpacing.hSpacing);
+                    } else {
+                        childComponent.setMarginTop(activeSpacing.vSpacing);
+                    }
                 }
             }
         }
+    }
+
+    private ChildComponentContainer getVisibleFirstChildComponentContainer() {
+        int size = getChildren().size();
+        if (size < 1) {
+            return null;
+        }
+        for (final Widget child : getChildren()) {
+            if (child.isVisible()) {
+                return (ChildComponentContainer) child;
+            }
+        }
+        return null;
     }
 
     private boolean isHorizontal() {
