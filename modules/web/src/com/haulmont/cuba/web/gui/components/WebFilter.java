@@ -18,6 +18,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -35,6 +36,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.App;
@@ -68,8 +70,6 @@ public class WebFilter
         extends WebAbstractComponent<VerticalLayout> implements Filter
 {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.web.gui.components.filter";
-
-    private static final int MAX_DEFAULT = 50;
 
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
@@ -217,6 +217,8 @@ public class WebFilter
     public void apply() {
         applyDatasourceFilter();
 
+        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        final int MAX_DEFAULT = webConfig.getBrowserMaxResults();
         int maxSize = MAX_DEFAULT;
         if (useMaxResults) {
             Datatype intType = Datatypes.getInstance().get("int");

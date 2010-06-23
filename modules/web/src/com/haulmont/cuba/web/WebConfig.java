@@ -84,4 +84,7 @@ public interface WebConfig extends Config
     @Default("peyto")
     String getAppWindowTheme();
 
+    @DefaultInt(100)
+    int getBrowserMaxResults();
+
 }
