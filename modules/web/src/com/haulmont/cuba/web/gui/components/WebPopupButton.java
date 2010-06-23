@@ -132,8 +132,8 @@ public class WebPopupButton
             vButton.setSizeFull();
             vButton.setStyleName(com.vaadin.ui.Button.STYLE_LINK);
 
+            vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);
-            ((com.vaadin.ui.Layout) vPopupComponent).requestRepaintAll();
             component.setAutoClose(true);
             actionOrder.add(action);
         }
@@ -141,6 +141,7 @@ public class WebPopupButton
 
     public void removeAction(Action action) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
+            vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(WebComponentsHelper.unwrap((Component) action.getOwner()));
         }
     }

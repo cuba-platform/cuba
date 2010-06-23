@@ -219,6 +219,7 @@
 {
     height: 18px;
     width: 100%;
+    padding-right: 10px;
 }
 
 .popupmenu .v-button:hover .v-button-caption {

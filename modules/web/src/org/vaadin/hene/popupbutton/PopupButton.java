@@ -61,6 +61,7 @@ public class PopupButton extends Button implements ComponentContainer {
 				throw new IllegalStateException(
 						"component cannot be null. Use addComponent to set the component.");
 			}
+            component.setVisible(true);
 			target.startTag("component");
 			component.paint(target);
 			target.endTag("component");
