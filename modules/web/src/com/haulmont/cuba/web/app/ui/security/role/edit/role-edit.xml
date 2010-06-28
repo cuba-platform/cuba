@@ -6,8 +6,8 @@
         messagesPack="com.haulmont.cuba.web.app.ui.security.role.edit"
         >
     <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/user/user.views.xml"/>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/security/group/group.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/web/app.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/role/role.views.xml"/>
     </metadataContext>
 
