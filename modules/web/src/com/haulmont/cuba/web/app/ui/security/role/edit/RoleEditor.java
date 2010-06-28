@@ -1,6 +1,7 @@
 package com.haulmont.cuba.web.app.ui.security.role.edit;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
@@ -32,7 +33,9 @@ public class RoleEditor extends AbstractEditor {
                 "sec$Target.screenPermissions.lookup",
                 "screen-permissions",
                 PermissionType.SCREEN);
-
+        if(!PersistenceHelper.isNew((Role)params.get("item"))){
+            getComponent("name").setEnabled(false);
+        }
         Tabsheet tabsheet = getComponent("permissions-types");
         tabsheet.addListener(new Tabsheet.TabChangeListener() {
             public void tabChanged(Tabsheet.Tab newTab) {
