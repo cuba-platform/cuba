@@ -10,21 +10,28 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
+import com.vaadin.external.org.apache.commons.fileupload.*;
 import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.UploadStream;
 import com.vaadin.terminal.VariableOwner;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 import com.vaadin.terminal.gwt.server.CommunicationManager;
 import com.vaadin.terminal.gwt.server.JsonPaintTarget;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.Upload;
 import com.vaadin.ui.Window;
+import org.apache.commons.lang.StringUtils;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 @SuppressWarnings("serial")
@@ -238,6 +245,148 @@ public class CubaCommunicationManager extends CommunicationManager {
             }
         }
         return success;
+    }
+
+    @Override
+    protected void doHandleFileUpload(Request request, Response response) throws IOException, FileUploadException {
+
+        // Create a new file upload handler
+        final FileUpload upload = createFileUpload();
+
+        final UploadProgressListener pl = new UploadProgressListener();
+
+        upload.setProgressListener(pl);
+
+        // Parse the request
+        FileItemIterator iter;
+
+        try {
+            iter = getUploadItemIterator(upload, request);
+            /*
+             * ATM this loop is run only once as we are uploading one file per
+             * request.
+             */
+            while (iter.hasNext()) {
+                final FileItemStream item = iter.next();
+                final String name = item.getFieldName();
+                // Should report only the filename even if the browser sends the
+                // path
+                final String filename = removePath(item.getName());
+                final String mimeType = item.getContentType();
+                final InputStream stream = item.openStream();
+                if (item.isFormField()) {
+                    // ignored, upload requests contains only files
+                } else {
+                    final UploadStream upstream = new UploadStream() {
+
+                        public String getContentName() {
+                            return filename;
+                        }
+
+                        public String getContentType() {
+                            return mimeType;
+                        }
+
+                        public InputStream getStream() {
+                            return stream;
+                        }
+
+                        public String getStreamName() {
+                            return "stream";
+                        }
+
+                    };
+
+                    if (name.startsWith("XHRFILE")) {
+                        String[] split = item.getFieldName().substring(7)
+                                .split("\\.");
+                        DragAndDropWrapper ddw = (DragAndDropWrapper) idPaintableMap
+                                .get(split[0]);
+
+                        try {
+                            ddw.receiveFile(upstream, split[1]);
+                        } catch (Upload.UploadException e) {
+                            synchronized (application) {
+                                handleChangeVariablesError(application, ddw, e,
+                                        new HashMap<String, Object>());
+                            }
+                        }
+
+                    } else {
+
+                        int separatorPos = name.lastIndexOf("_");
+                        final String pid = name.substring(0, separatorPos);
+                        final Upload uploadComponent = (Upload) idPaintableMap
+                                .get(pid);
+                        if (uploadComponent == null) {
+                            throw new FileUploadException(
+                                    "Upload component not found");
+                        }
+                        if (uploadComponent.isReadOnly()) {
+                            throw new FileUploadException(
+                                    "Warning: ignored file upload because upload component is set as read-only");
+                        }
+                        synchronized (application) {
+                            // put upload component into receiving state
+                            uploadComponent.startUpload();
+
+                            // tell UploadProgressListener which component is
+                            // receiving
+                            // file
+                            pl.setUpload(uploadComponent);
+
+                            try {
+                                uploadComponent.receiveUpload(upstream);
+                            } catch (Upload.UploadException e) {
+                                // error happened while receiving file. Handle the
+                                // error in the same manner as it would have
+                                // happened in
+                                // variable change.
+                                handleChangeVariablesError(application,
+                                        uploadComponent, e,
+                                        new HashMap<String, Object>());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (final FileUploadException e) {
+            if (e instanceof FileUploadBase.SizeLimitExceededException) {
+                String message = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "upload.fileTooBig.message");
+                if (!StringUtils.isEmpty(message)) {
+                    App.getInstance().getAppWindow().showNotification(
+                            message,
+                            com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE
+                    );
+                }
+            }
+
+            sendUploadFailed(request, response);
+
+            throw e;
+        }
+
+        sendUploadResponse(request, response);
+    }
+
+    protected void sendUploadFailed(Request request, Response response) throws IOException {
+        response.setContentType("text/html");
+        final OutputStream out = response.getOutputStream();
+        final PrintWriter outWriter = new PrintWriter(new BufferedWriter(
+                new OutputStreamWriter(out, "UTF-8")));
+        outWriter.print("<html><body>download failed</body></html>");
+        outWriter.flush();
+        out.close();
+    }
+
+    @Override
+    protected FileUpload createFileUpload() {
+        UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
+        final Integer maxUploadSizeMb = config.getMaxUploadSizeMb();
+
+        FileUpload fileUpload = super.createFileUpload();
+        fileUpload.setSizeMax(maxUploadSizeMb * 1048576);
+        return fileUpload;
     }
 
     private String timerId() {

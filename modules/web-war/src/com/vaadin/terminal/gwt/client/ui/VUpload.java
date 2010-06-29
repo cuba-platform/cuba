@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
@@ -125,7 +126,8 @@ public class VUpload extends FormPanel implements Paintable,
         this.client = client;
         paintableId = uidl.getId();
         if (uidl.hasAttribute("action")) {
-            setAction(uidl.getStringAttribute("action"));
+            String action = uidl.getStringAttribute("action");
+            setAction("".equals(action) ? "#" : action);
         } else {
             setAction(client.getAppUri());
         }

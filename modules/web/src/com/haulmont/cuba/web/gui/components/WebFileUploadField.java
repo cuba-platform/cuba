@@ -9,11 +9,9 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
 
 import java.io.ByteArrayOutputStream;
@@ -33,9 +31,6 @@ public class WebFileUploadField
     private List<Listener> listeners = new ArrayList<Listener>();
 
     public WebFileUploadField() {
-        UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
-        final Integer maxUploadSizeMb = config.getMaxUploadSizeMb();
-
         String caption = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "Upload");
         component = new Upload(caption, new Upload.Receiver() {
             public OutputStream receiveUpload(String filename, String MIMEType) {
@@ -82,9 +77,6 @@ public class WebFileUploadField
         });
         component.addListener(new Upload.ProgressListener() {
             public void updateProgress(long readBytes, long contentLength) {
-                if (readBytes > maxUploadSizeMb * 1000000) {
-                    throw new RuntimeException("File is too big");
-                }
                 for (Listener listener : listeners) {
                     listener.updateProgress(readBytes, contentLength);
                 }

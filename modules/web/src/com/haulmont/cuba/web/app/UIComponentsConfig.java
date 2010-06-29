@@ -25,6 +25,7 @@ public interface UIComponentsConfig extends Config
 {
     @DefaultInteger(20)
     Integer getMaxUploadSizeMb();
+    void setMaxUploadSizeMb(Integer maxUploadSizeMb);
 
     String getResourcesRoot();
 }
