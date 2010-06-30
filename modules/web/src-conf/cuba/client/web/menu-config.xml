@@ -8,4 +8,5 @@
         <item id="core$LockInfo.browse"/>
     </menu>
     <menu id="settings"/>
+    <menu id="feedback"/>
 </menu-config>

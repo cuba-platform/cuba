@@ -44,6 +44,13 @@ public interface GlobalConfig extends Config {
     String getLogDir();
 
     /**
+     * Support e-mail. All feedback mails will be sent on this address.
+     */
+    @Property("cuba.supportEmail")
+    @DefaultString("cubasupport@haulmont.com")
+    String getSupportEmail();
+
+    /**
      * Temporary files directory. Place app-specific temp files under this directory.
      * Does not end with "/"
      */
