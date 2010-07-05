@@ -25,11 +25,13 @@ import java.util.Map;
 public class ActionsFieldHelper {
     private ActionsField component;
     private String entityName;
+    private String defaultQuery = "select e from %s e where e.id is null";
 
     public ActionsFieldHelper(ActionsField component) {
         this.component = component;
         MetaProperty metaProperty = component.getMetaProperty();
         entityName = metaProperty.getRange().asClass().getName();
+        defaultQuery = String.format(defaultQuery, entityName);
     }
 
     public void createLookupAction() {
@@ -47,7 +49,7 @@ public class ActionsFieldHelper {
     public void createLookupAction(final String windowAlias, final WindowManager.OpenType openType, final Map<String, Object> params) {
         Action action = new AbstractAction(ActionsField.LOOKUP) {
             public void actionPerform(Component componend) {
-                component.getFrame().openLookup(windowAlias,
+                Window window = component.getFrame().openLookup(windowAlias,
                         new Window.Lookup.Handler() {
                             public void handleLookup(Collection items) {
                                 if (items != null && items.size() > 0) {
@@ -55,6 +57,15 @@ public class ActionsFieldHelper {
                                 }
                             }
                         }, openType, params);
+
+                window.addListener(new Window.CloseListener() {
+                    public void windowClosed(String actionId) {
+                        CollectionDatasource ds = component.getOptionsDatasource();
+                        if (ds != null && !defaultQuery.equals(ds.getQuery())) {
+                            ds.refresh();
+                        }
+                    }
+                });
             }
 
             @Override
