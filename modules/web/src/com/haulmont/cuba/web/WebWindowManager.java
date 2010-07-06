@@ -61,6 +61,21 @@ public class WebWindowManager extends WindowManager {
 
     private static Log log = LogFactory.getLog(WebWindowManager.class);
 
+    private String baseModalWindowCaption = "";
+
+    private Stack<ModalContentWithCaption> modalWindowStack = new Stack<ModalContentWithCaption>();
+
+    private static class ModalContentWithCaption implements Serializable{
+        String caption;
+        ComponentContainer componentContainer;
+        private static final long serialVersionUID = -1389415942614781757L;
+
+        private ModalContentWithCaption(String caption, ComponentContainer componentContainer) {
+            this.caption = caption;
+            this.componentContainer = componentContainer;
+        }
+    }
+
     public WebWindowManager(App app) {
         this.app = app;
     }
@@ -382,8 +397,38 @@ public class WebWindowManager extends WindowManager {
     protected Component showWindowDialog(final Window window, final String caption, final String description, AppWindow appWindow, WindowParameters windowParameters) {
         removeWindowsWithName(window.getId());
 
-        final com.vaadin.ui.Window win = createDialogWindow(window);
-        win.setName(window.getId());
+        com.vaadin.ui.Window win = null;
+
+        com.vaadin.ui.Window mainWindow = app.getAppWindow();
+        for (com.vaadin.ui.Window childWindow: mainWindow.getChildWindows()) {
+            if (childWindow.isModal() && !childWindow.isClosable()) {
+                win = childWindow;
+                break;
+            }
+        }
+
+        if (win == null) {
+            win = createDialogWindow(window);
+            baseModalWindowCaption = win.getCaption();
+            win.setName(window.getId());
+        } else {
+            modalWindowStack.push(new ModalContentWithCaption(win.getCaption(), win.getContent()));
+            win.setCaption(modalWindowStack.peek().caption + " - " + window.getCaption());
+            final com.vaadin.ui.Window finalWin = win;
+            window.addListener(new Window.CloseListener() {
+
+                public void windowClosed(String actionId) {
+                    if (!modalWindowStack.isEmpty()) {
+                        ModalContentWithCaption modalContentWithCaption = modalWindowStack.pop();
+                        finalWin.setContent(modalContentWithCaption.componentContainer);
+                        finalWin.setCaption(modalContentWithCaption.caption);
+                        finalWin.center();
+                    }
+                }
+            });
+        }
+
+//        win.setName(window.getId());
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
@@ -406,7 +451,9 @@ public class WebWindowManager extends WindowManager {
 //        win.setResizable(false);
         win.setModal(true);
 
-        App.getInstance().getAppWindow().addWindow(win);
+        if (!app.getAppWindow().getChildWindows().contains(win)) {
+            app.getAppWindow().addWindow(win);
+        }
         win.center();
 
         return win;
@@ -457,8 +504,10 @@ public class WebWindowManager extends WindowManager {
         switch (openMode.openType) {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
-                App.getInstance().getAppWindow().removeWindow(win);
-                fireListeners(window, getTabs().size() != 0);
+                if (modalWindowStack.isEmpty()) {
+                    App.getInstance().getAppWindow().removeWindow(win);
+                    fireListeners(window, getTabs().size() != 0);
+                }
                 break;
             }
             case NEW_TAB: {
@@ -670,7 +719,7 @@ public class WebWindowManager extends WindowManager {
             int maxCount = ConfigProvider.getConfig(WebConfig.class).getMaxTabCount();
             if (maxCount > 0 && maxCount <= getCurrentWindowData().tabs.size()) {
                 app.getAppWindow().showNotification(
-                        MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(),"tooManyOpenTabs.message",maxCount), 
+                        MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(),"tooManyOpenTabs.message",maxCount),
                         com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
                 throw new SilentException();
             }
