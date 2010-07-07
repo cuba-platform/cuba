@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Tabsheet;
+import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
@@ -268,8 +269,11 @@ public class WebTabsheet
                             new ComponentVisitor() {
                                 public void visit(Component component, String name) {
                                     if (component instanceof HasSettings) {
-                                        Element e = window.getSettings().get(name);
-                                        ((HasSettings) component).applySettings(e);
+                                        Settings settings = window.getSettings();
+                                        if (settings != null) {
+                                            Element e = settings.get(name);
+                                            ((HasSettings) component).applySettings(e);
+                                        }
                                     }
                                 }
                             }
