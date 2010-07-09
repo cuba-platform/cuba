@@ -154,7 +154,7 @@
 
 .v-filterselect.v-readonly .v-filterselect-wrap {
     background: none;
-    padding: 0;
+    padding: 0 0 0 4px;
 }
 
 .v-filterselect-suggestpopup {

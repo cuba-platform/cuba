@@ -68,7 +68,7 @@
     height: 24px;
     white-space: nowrap;
     text-align: left; /* Force default alignment */
-    background: transparent url(img/bg-left-filter.png) no-repeat;
+    background: #fff url(img/bg-left-filter.png) no-repeat;
     /*padding-left: 4px;*/
 }
 
@@ -79,7 +79,7 @@
 .v-app .v-filterselect .v-filterselect-input,
 .v-window .v-filterselect .v-filterselect-input,
 .v-popupview-popup .v-filterselect .v-filterselect-input {
-    background: transparent url(img/bg-center-filter.png) no-repeat right top;
+    background: #fff url(img/bg-center-filter.png) no-repeat right top;
     border: none;
     height: 24px;
     margin: 0;
@@ -134,10 +134,16 @@
     cursor: default;
 }
 
-/*.v-filterselect.v-readonly .v-filterselect-wrap {
+.v-filterselect.v-readonly,
+.v-filterselect.v-readonly .v-filterselect-wrap,
+.v-filterselect.v-readonly .v-filterselect-input {
+    background-color: transparent;
+}
+
+.v-filterselect.v-readonly .v-filterselect-wrap {
     background: none;
-    padding:0;
-}*/
+    padding: 0 0 0 4px;
+}
 
 .v-filterselect-suggestpopup {
     border: 1px solid #8aa9d1;
@@ -319,6 +325,11 @@
     height: 24px;
     width: 25px;
     outline: none;
+    background-color: #FFF;
+}
+
+.v-customcomponent-actionsfield.v-readonly .v-button {
+    background-color: transparent;
 }
 
 .v-customcomponent-actionsfield.v-disabled {
