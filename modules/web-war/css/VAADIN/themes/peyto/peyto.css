@@ -115,6 +115,7 @@
     color: #000;
     font-family: arial, sans-serif;
     padding-right: 5px;
+    float: none;
 }
 
 .v-verticallayout-loginBottom .v-label-login-caption {
