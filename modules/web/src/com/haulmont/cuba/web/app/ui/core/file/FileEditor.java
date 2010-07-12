@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.app.ui.core.file;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.core.global.PersistenceHelper;
@@ -71,7 +72,6 @@ public class FileEditor extends AbstractEditor {
                     extLabel.setValue(FileDownloadHelper.getFileExt(uploadField.getFileName()));
                     sizeLab.setValue(uploadField.getBytes().length);
                     createDateLab.setValue(TimeProvider.currentTimestamp());
-                    saveFile();
                     okBtn.setEnabled(true);
                 }
 
@@ -84,6 +84,12 @@ public class FileEditor extends AbstractEditor {
         } else {
             uploadField.setEnabled(false);
         }
+    }
+
+    @Override
+    public void commitAndClose() {
+        saveFile();
+        super.commitAndClose();
     }
 
     private void saveFile() {
