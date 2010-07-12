@@ -21,12 +21,12 @@ import java.util.Collection;
 
 public class WebCheckBox
     extends
-        WebAbstractField<com.vaadin.ui.CheckBox>
+        WebAbstractField<com.haulmont.cuba.web.toolkit.ui.CheckBox>
     implements
         CheckBox, Component.Wrapper {
 
     public WebCheckBox() {
-        this.component = new com.vaadin.ui.CheckBox();
+        this.component = new com.haulmont.cuba.web.toolkit.ui.CheckBox();
         attachListener(component);
         component.setImmediate(true);
     }

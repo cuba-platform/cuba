@@ -15,8 +15,8 @@ public class ToolsImpl {
 
     public native int parseSize(String s) /*-{
          try {
-            var result = /^(\d+)(%|px|em|ex|in|cm|mm|pt|pc)$/.testexec(s);
-            return parseInt(result[0]);
+            var result = /^(\d+)(%|px|em|ex|in|cm|mm|pt|pc)$/.exec(s);
+            return parseInt(result[1]);
          } catch (e) {
             return -1;
          }

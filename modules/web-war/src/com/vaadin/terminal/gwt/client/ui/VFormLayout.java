@@ -18,9 +18,7 @@ package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.*;
@@ -39,7 +37,7 @@ public class VFormLayout extends SimplePanel implements Container {
     private ApplicationConnection client;
     private VFormLayoutTable table;
 
-    private String width = "";
+    private String width = null;
     private String height = "";
 
     private boolean rendering = false;
@@ -53,12 +51,10 @@ public class VFormLayout extends SimplePanel implements Container {
 
     public class VFormLayoutTable extends FlexTable {
 
-        private static final int COLUMN_CAPTION = 0;
-        private static final int COLUMN_ERRORFLAG = 1;
-        private static final int COLUMN_WIDGET = 2;
+        public static final int COLUMN_CAPTION = 0;
+        public static final int COLUMN_WIDGET = 1;
 
-        private HashMap<Paintable, Caption> componentToCaption = new HashMap<Paintable, Caption>();
-        private HashMap<Paintable, ErrorFlag> componentToError = new HashMap<Paintable, ErrorFlag>();
+        private HashMap<Paintable, VCaptionWrapper> componentToCaption = new HashMap<Paintable, VCaptionWrapper>();
 
         public VFormLayoutTable() {
             DOM.setElementProperty(getElement(), "cellPadding", "0");
@@ -88,15 +84,12 @@ public class VFormLayout extends SimplePanel implements Container {
                 prepareCell(i, 1);
                 final UIDL childUidl = (UIDL) it.next();
                 final Paintable p = client.getPaintable(childUidl);
-                Caption caption = componentToCaption.get(p);
+                VCaptionWrapper caption = componentToCaption.get(p);
                 if (caption == null) {
-                    caption = new Caption(p, client);
+                    caption = new VCaptionWrapper(p, client);
                     componentToCaption.put(p, caption);
-                }
-                ErrorFlag error = componentToError.get(p);
-                if (error == null) {
-                    error = new ErrorFlag();
-                    componentToError.put(p, error);
+                } else {
+                    caption.setWidth("");
                 }
                 prepareCell(i, COLUMN_WIDGET);
                 final Paintable oldComponent = (Paintable) getWidget(i,
@@ -107,17 +100,12 @@ public class VFormLayout extends SimplePanel implements Container {
                     client.unregisterPaintable(oldComponent);
                     setWidget(i, COLUMN_WIDGET, (Widget) p);
                 }
+
                 getCellFormatter().setStyleName(i, COLUMN_WIDGET,
                         CLASSNAME + "-contentcell");
                 getCellFormatter().setStyleName(i, COLUMN_CAPTION,
                         CLASSNAME + "-captioncell");
                 setWidget(i, COLUMN_CAPTION, caption);
-
-                setContentWidth(i);
-
-                getCellFormatter().setStyleName(i, COLUMN_ERRORFLAG,
-                        CLASSNAME + "-errorcell");
-                setWidget(i, COLUMN_ERRORFLAG, error);
 
                 p.updateFromUIDL(childUidl, client);
 
@@ -149,6 +137,7 @@ public class VFormLayout extends SimplePanel implements Container {
             }
         }
 
+/*
         public void setContentWidths() {
             for (int row = 0; row < getRowCount(); row++) {
                 setContentWidth(row);
@@ -162,6 +151,7 @@ public class VFormLayout extends SimplePanel implements Container {
             }
             getCellFormatter().setWidth(row, COLUMN_WIDGET, width);
         }
+*/
 
         public void replaceChildComponent(Widget oldComponent,
                 Widget newComponent) {
@@ -169,17 +159,10 @@ public class VFormLayout extends SimplePanel implements Container {
             for (i = 0; i < getRowCount(); i++) {
                 Widget candidate = getWidget(i, COLUMN_WIDGET);
                 if (oldComponent == candidate) {
-                    final Caption newCap = new Caption(
+                    final VCaptionWrapper newCap = new VCaptionWrapper(
                             (Paintable) newComponent, client);
                     componentToCaption.put((Paintable) newComponent, newCap);
-                    ErrorFlag error = componentToError.get(newComponent);
-                    if (error == null) {
-                        error = new ErrorFlag();
-                        componentToError.put((Paintable) newComponent, error);
-                    }
-
                     setWidget(i, COLUMN_CAPTION, newCap);
-                    setWidget(i, COLUMN_ERRORFLAG, error);
                     setWidget(i, COLUMN_WIDGET, newComponent);
                     break;
                 }
@@ -192,29 +175,18 @@ public class VFormLayout extends SimplePanel implements Container {
         }
 
         public void updateCaption(Paintable component, UIDL uidl) {
-            final Caption c = componentToCaption.get(component);
+            final VCaptionWrapper c = componentToCaption.get(component);
             if (c != null) {
                 c.updateCaption(uidl);
             }
-            final ErrorFlag e = componentToError.get(component);
-            if (e != null) {
-                e.updateFromUIDL(uidl, component);
-            }
-
         }
 
         public int getAllocatedWidth(Widget child, int availableWidth) {
-            Caption caption = componentToCaption.get(child);
-            ErrorFlag error = componentToError.get(child);
+            VCaptionWrapper caption = componentToCaption.get(child);
             int width = availableWidth;
-
             if (caption != null) {
                 width -= DOM.getParent(caption.getElement()).getOffsetWidth();
             }
-            if (error != null) {
-                width -= DOM.getParent(error.getElement()).getOffsetWidth();
-            }
-
             return width;
         }
 
@@ -231,6 +203,11 @@ public class VFormLayout extends SimplePanel implements Container {
         }
 
         table.updateFromUIDL(uidl, client);
+
+        if (!isDynamicWidth()) {
+            table.getColumnFormatter().setWidth(VFormLayoutTable.COLUMN_WIDGET,
+                    "100%");
+        }
 
         rendering = false;
     }
@@ -251,6 +228,7 @@ public class VFormLayout extends SimplePanel implements Container {
         table.updateCaption(component, uidl);
     }
 
+/*
     public class Caption extends HTML {
 
         public static final String CLASSNAME = "v-caption";
@@ -265,13 +243,15 @@ public class VFormLayout extends SimplePanel implements Container {
 
         private final ApplicationConnection client;
 
-        /**
+        */
+/**
          *
          * @param component
          *            optional owner of caption. If not set, getOwner will
          *            return null
          * @param client
-         */
+         *//*
+
         public Caption(Paintable component, ApplicationConnection client) {
             super();
             this.client = client;
@@ -360,11 +340,13 @@ public class VFormLayout extends SimplePanel implements Container {
 
         }
 
-        /**
+        */
+/**
          * Returns Paintable for which this Caption belongs to.
          *
          * @return owner Widget
-         */
+         *//*
+
         public Paintable getOwner() {
             return owner;
         }
@@ -416,14 +398,10 @@ public class VFormLayout extends SimplePanel implements Container {
         }
 
     }
+*/
 
     public boolean requestLayout(Set<Paintable> child) {
-        if (height.equals("") || width.equals("")) {
-            // A dynamic size might change due to children changes
-            return false;
-        }
-
-        return true;
+        return !(height.equals("") || width.equals(""));
     }
 
     public RenderSpace getAllocatedSpace(Widget child) {
@@ -431,8 +409,7 @@ public class VFormLayout extends SimplePanel implements Container {
         int height = 0;
 
         if (!this.width.equals("")) {
-            int availableWidth = getOffsetWidth();
-            width = table.getAllocatedWidth(child, availableWidth);
+            width = table.getAllocatedWidth(child, getOffsetWidth());
         }
 
         return new RenderSpace(width, height, false);
@@ -450,15 +427,16 @@ public class VFormLayout extends SimplePanel implements Container {
 
     @Override
     public void setWidth(String width) {
-        if (this.width.equals(width)) {
+        if (width.equals(this.width)) {
             return;
         }
 
         this.width = width;
         super.setWidth(width);
 
+        table.getColumnFormatter().setWidth(VFormLayoutTable.COLUMN_WIDGET, "");
+
         if (!rendering) {
-            table.setContentWidths();
             if (height.equals("")) {
                 // Width might affect height
                 Util.updateRelativeChildrenAndSendSizeUpdateEvent(client, this);

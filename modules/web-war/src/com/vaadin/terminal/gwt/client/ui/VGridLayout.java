@@ -41,17 +41,18 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
 
     private final AbsolutePanel canvas = new AbsolutePanel();
 
-    private ApplicationConnection client;
+    protected ApplicationConnection client;
 
     protected HashMap<Widget, ChildComponentContainer> widgetToComponentContainer = new HashMap<Widget, ChildComponentContainer>();
 
-    private HashMap<Paintable, Cell> paintableToCell = new HashMap<Paintable, Cell>();
+    protected HashMap<Paintable, Cell> paintableToCell = new HashMap<Paintable, Cell>();
 
-    private int spacingPixelsHorizontal;
-    private int spacingPixelsVertical;
+    protected int spacingPixelsHorizontal;
+    protected int spacingPixelsVertical;
 
-    private int[] columnWidths;
-    private int[] rowHeights;
+    protected int[] columnWidths;
+    protected int[] rowHeights;
+    protected int[] captionWidths;
 
     private String height;
 
@@ -118,6 +119,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
 
         columnWidths = new int[cols];
         rowHeights = new int[rows];
+        captionWidths = new int[cols];
 
         if (cells == null) {
             cells = new Cell[cols][rows];
@@ -830,12 +832,17 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         return cell.getAllocatedSpace();
     }
 
-    private Cell[][] cells;
+    protected ChildComponentContainer createComponentContainer(Paintable paintable) {
+        return new ChildComponentContainer((Widget) paintable,
+                        CellBasedLayout.ORIENTATION_VERTICAL);
+    }
+
+    protected Cell[][] cells;
 
     /**
      * Private helper class.
      */
-    private class Cell {
+    protected class Cell {
         private boolean relHeight = false;
         private boolean relWidth = false;
         private boolean widthCanAffectHeight = false;
@@ -874,7 +881,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         /**
          * @return total of spanned cols
          */
-        private int getAvailableWidth() {
+        protected int getAvailableWidth() {
             int width = columnWidths[col];
             for (int i = 1; i < colspan; i++) {
                 width += spacingPixelsHorizontal + columnWidths[col + i];
@@ -885,7 +892,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         /**
          * @return total of spanned rows
          */
-        private int getAvailableHeight() {
+        protected int getAvailableHeight() {
             int height = rowHeights[row];
             for (int i = 1; i < rowspan; i++) {
                 height += spacingPixelsVertical + rowHeights[row + i];
@@ -933,7 +940,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
             }
         }
 
-        protected boolean hasRelativeWidth() {
+        public boolean hasRelativeWidth() {
             return relWidth;
         }
 
@@ -948,8 +955,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                     cc.setWidth("");
                     cc.setHeight("");
                 } else {
-                    cc = new ChildComponentContainer((Widget) paintable,
-                            CellBasedLayout.ORIENTATION_VERTICAL);
+                    cc = createComponentContainer(paintable);
                     widgetToComponentContainer.put((Widget) paintable, cc);
                     paintableToCell.put(paintable, this);
                     cc.setWidth("");
@@ -968,15 +974,15 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
             return childUidl;
         }
 
-        final int row;
-        final int col;
-        int colspan = 1;
-        int rowspan = 1;
-        UIDL childUidl;
-        int alignment;
+        protected final int row;
+        protected final int col;
+        protected int colspan = 1;
+        protected int rowspan = 1;
+        protected UIDL childUidl;
+        protected int alignment;
         // may be null after setUidl() if content has vanished or changed, set
         // in render()
-        ChildComponentContainer cc;
+        public ChildComponentContainer cc;
 
         public void setUidl(UIDL c) {
             // Set cell width
@@ -1039,6 +1045,14 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                 }
             }
         }
+
+        public int getRow() {
+            return row;
+        }
+
+        public int getCol() {
+            return col;
+        }
     }
 
     private Cell getCell(UIDL c) {
@@ -1046,12 +1060,16 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         int col = c.getIntAttribute("x");
         Cell cell = cells[col][row];
         if (cell == null) {
-            cell = new Cell(c);
+            cell = createCell(c);
             cells[col][row] = cell;
         } else {
             cell.setUidl(c);
         }
         return cell;
+    }
+
+    protected Cell createCell(UIDL c) {
+        return new Cell(c);
     }
 
     /**

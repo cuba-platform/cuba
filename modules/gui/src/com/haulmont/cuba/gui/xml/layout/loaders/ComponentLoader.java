@@ -9,17 +9,17 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.GroovyHelper;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -110,6 +110,15 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (!StringUtils.isEmpty(caption)) {
             caption = loadResourceString(caption);
             component.setCaption(caption);
+        }
+    }
+
+    protected void loadDescription(Component.HasCaption component, Element element) {
+        String description = element.attributeValue("description");
+
+        if (!StringUtils.isEmpty(description)) {
+            description = loadResourceString(description);
+            component.setDescription(description);
         }
     }
 
@@ -224,7 +233,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (isBoolean(expression)) {
             value = Boolean.valueOf(expression);
         } else {
-            value = GroovyHelper.evaluate(expression, context.getBinding());
+            value = ScriptingProvider.evaluateGroovy(
+                    ScriptingProvider.Layer.GUI, expression, context.getBinding());
         }
         return value;
     }

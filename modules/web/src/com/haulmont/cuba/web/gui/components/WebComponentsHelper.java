@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.Table;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.FileResource;
@@ -325,5 +326,15 @@ public class WebComponentsHelper {
                 keyCombination.getKey().getCode(),
                 ShortcutAction.Modifier.codes(keyCombination.getModifiers())
         );
+    }
+
+    public static int convertFieldGroupCaptionAlignment(FieldGroup.FieldCaptionAlignment captionAlignment) {
+        switch (captionAlignment) {
+            case TOP:
+                return FieldGroupLayout.CAPTION_ALIGN_TOP;
+            case LEFT:
+            default:
+                return FieldGroupLayout.CAPTION_ALIGN_LEFT;
+        }
     }
 }

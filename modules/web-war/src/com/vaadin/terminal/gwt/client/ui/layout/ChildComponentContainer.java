@@ -34,18 +34,18 @@ public class ChildComponentContainer extends Panel {
      * Size of the container DIV excluding any margins and also excluding the
      * expansion amount (containerExpansion)
      */
-    private Size contSize = new Size(0, 0);
+    protected Size contSize = new Size(0, 0);
 
     /**
      * Size of the widget inside the container DIV
      */
-    private Size widgetSize = new Size(0, 0);
+    protected Size widgetSize = new Size(0, 0);
     /**
      * Size of the caption
      */
-    private int captionRequiredWidth = 0;
-    private int captionWidth = 0;
-    private int captionHeight = 0;
+    protected int captionRequiredWidth = 0;
+    protected int captionWidth = 0;
+    protected int captionHeight = 0;
 
     /**
      *
@@ -58,24 +58,24 @@ public class ChildComponentContainer extends Panel {
     private int containerMarginLeft = 0;
     private int containerMarginTop = 0;
 
-    AlignmentInfo alignment = AlignmentInfo.TOP_LEFT;
+    protected AlignmentInfo alignment = AlignmentInfo.TOP_LEFT;
 
-    private int alignmentLeftOffsetForWidget = 0;
-    private int alignmentLeftOffsetForCaption = 0;
+    protected int alignmentLeftOffsetForWidget = 0;
+    protected int alignmentLeftOffsetForCaption = 0;
     /**
      * Top offset for implementing alignment. Top offset is set to the container
      * DIV as it otherwise would have to be set to either the Caption or the
      * Widget depending on whether there is a caption and where the caption is
      * located.
      */
-    private int alignmentTopOffset = 0;
+    protected int alignmentTopOffset = 0;
 
     // private Margins alignmentOffset = new Margins(0, 0, 0, 0);
-    private VCaption caption = null;
-    private DivElement containerDIV;
-    private DivElement widgetDIV;
-    private Widget widget;
-    private FloatSize relativeSize = null;
+    protected VCaption caption = null;
+    protected DivElement containerDIV;
+    protected DivElement widgetDIV;
+    protected Widget widget;
+    protected FloatSize relativeSize = null;
 
     public ChildComponentContainer(Widget widget, int orientation) {
         super();
@@ -363,7 +363,7 @@ public class ChildComponentContainer extends Panel {
         return top;
     }
 
-    private void calculateHorizontalAlignment(int emptySpace) {
+    protected void calculateHorizontalAlignment(int emptySpace) {
         alignmentLeftOffsetForCaption = 0;
         alignmentLeftOffsetForWidget = 0;
 
@@ -495,7 +495,7 @@ public class ChildComponentContainer extends Panel {
 
     }
 
-    private void setCaption(VCaption newCaption) {
+    protected void setCaption(VCaption newCaption) {
         // Validate
         // if (newCaption == caption) {
         // return;

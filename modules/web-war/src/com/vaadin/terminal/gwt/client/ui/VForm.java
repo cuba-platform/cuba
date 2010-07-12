@@ -38,23 +38,23 @@ public class VForm extends ComplexPanel implements Container, KeyDownHandler {
 
     public static final String CLASSNAME = "v-form";
 
-    private Container lo;
-    private Element legend = DOM.createLegend();
-    private Element caption = DOM.createSpan();
-    private Element errorIndicatorElement = DOM.createDiv();
-    private Element desc = DOM.createDiv();
-    private Icon icon;
+    protected Container lo;
+    protected Element legend = DOM.createLegend();
+    protected Element caption = DOM.createSpan();
+    protected Element errorIndicatorElement = DOM.createDiv();
+    protected Element desc = DOM.createDiv();
+    protected Icon icon;
     private VErrorMessage errorMessage = new VErrorMessage();
 
-    private Element fieldContainer = DOM.createDiv();
+    protected Element fieldContainer = DOM.createDiv();
 
-    private Element footerContainer = DOM.createDiv();
+    protected Element footerContainer = DOM.createDiv();
 
-    private Element fieldSet = DOM.createFieldSet();
+    protected Element fieldSet = DOM.createFieldSet();
 
-    private Container footer;
+    protected Container footer;
 
-    private ApplicationConnection client;
+    protected  ApplicationConnection client;
 
     private RenderInformation renderInformation = new RenderInformation();
 
@@ -62,7 +62,7 @@ public class VForm extends ComplexPanel implements Container, KeyDownHandler {
 
     private boolean rendering = false;
 
-    ShortcutActionHandler shortcutHandler;
+    protected ShortcutActionHandler shortcutHandler;
 
     private HandlerRegistration keyDownRegistration;
 
@@ -76,7 +76,7 @@ public class VForm extends ComplexPanel implements Container, KeyDownHandler {
                 "v-errorindicator");
         DOM.setStyleAttribute(errorIndicatorElement, "display", "none");
         DOM.setInnerText(errorIndicatorElement, " "); // needed for IE
-        DOM.setElementProperty(desc, "className", "v-form-description");
+        DOM.setElementProperty(desc, "className", CLASSNAME + "-description");
         DOM.appendChild(fieldSet, desc);
         DOM.appendChild(fieldSet, fieldContainer);
         errorMessage.setVisible(false);
@@ -95,6 +95,80 @@ public class VForm extends ComplexPanel implements Container, KeyDownHandler {
             return;
         }
 
+        renderDOM(uidl, client);
+
+        updateSize();
+        // TODO Check if this is needed
+        client.runDescendentsLayout(this);
+        renderFooter(uidl, client);
+
+
+        renderContent(uidl, client);
+
+        // We may have actions attached
+        if (uidl.getChildCount() > 1) {
+            UIDL childUidl = uidl.getChildByTagName("actions");
+            if (childUidl != null) {
+                if (shortcutHandler == null) {
+                    shortcutHandler = new ShortcutActionHandler(id, client);
+                    keyDownRegistration = addDomHandler(this, KeyDownEvent
+                            .getType());
+                }
+                shortcutHandler.updateActionMap(childUidl);
+            }
+        } else if (shortcutHandler != null) {
+            keyDownRegistration.removeHandler();
+            shortcutHandler = null;
+            keyDownRegistration = null;
+        }
+
+        rendering = false;
+    }
+
+    protected void renderContent(UIDL uidl, ApplicationConnection client) {
+        final UIDL layoutUidl = uidl.getChildUIDL(0);
+        Container newLo = (Container) client.getPaintable(layoutUidl);
+        if (lo == null) {
+            lo = newLo;
+            add((Widget) lo, fieldContainer);
+        } else if (lo != newLo) {
+            client.unregisterPaintable(lo);
+            remove((Widget) lo);
+            lo = newLo;
+            add((Widget) lo, fieldContainer);
+        }
+        lo.updateFromUIDL(layoutUidl, client);
+    }
+
+    protected void renderFooter(UIDL uidl, ApplicationConnection client) {
+        // first render footer so it will be easier to handle relative height of
+        // main layout
+        if (uidl.getChildCount() > 1
+                && !uidl.getChildUIDL(1).getTag().equals("actions")) {
+            // render footer
+            Container newFooter = (Container) client.getPaintable(uidl
+                    .getChildUIDL(1));
+            if (footer == null) {
+                add((Widget) newFooter, footerContainer);
+                footer = newFooter;
+            } else if (newFooter != footer) {
+                remove((Widget) footer);
+                client.unregisterPaintable(footer);
+                add((Widget) newFooter, footerContainer);
+            }
+            footer = newFooter;
+            footer.updateFromUIDL(uidl.getChildUIDL(1), client);
+            updateSize();
+        } else {
+            if (footer != null) {
+                remove((Widget) footer);
+                client.unregisterPaintable(footer);
+                updateSize();
+            }
+        }
+    }
+
+    protected void renderDOM(UIDL uidl, ApplicationConnection client) {
         boolean legendEmpty = true;
         if (uidl.hasAttribute("caption")) {
             DOM.setInnerText(caption, uidl.getStringAttribute("caption"));
@@ -131,71 +205,11 @@ public class VForm extends ComplexPanel implements Container, KeyDownHandler {
 
         if (uidl.hasAttribute("description")) {
             DOM.setInnerHTML(desc, uidl.getStringAttribute("description"));
+            removeStyleDependentName("nodescription");
         } else {
             DOM.setInnerHTML(desc, "");
+            addStyleDependentName("nodescription");
         }
-
-        updateSize();
-        // TODO Check if this is needed
-        client.runDescendentsLayout(this);
-
-        // first render footer so it will be easier to handle relative height of
-        // main layout
-        if (uidl.getChildCount() > 1
-                && !uidl.getChildUIDL(1).getTag().equals("actions")) {
-            // render footer
-            Container newFooter = (Container) client.getPaintable(uidl
-                    .getChildUIDL(1));
-            if (footer == null) {
-                add((Widget) newFooter, footerContainer);
-                footer = newFooter;
-            } else if (newFooter != footer) {
-                remove((Widget) footer);
-                client.unregisterPaintable(footer);
-                add((Widget) newFooter, footerContainer);
-            }
-            footer = newFooter;
-            footer.updateFromUIDL(uidl.getChildUIDL(1), client);
-            updateSize();
-        } else {
-            if (footer != null) {
-                remove((Widget) footer);
-                client.unregisterPaintable(footer);
-                updateSize();
-            }
-        }
-
-        final UIDL layoutUidl = uidl.getChildUIDL(0);
-        Container newLo = (Container) client.getPaintable(layoutUidl);
-        if (lo == null) {
-            lo = newLo;
-            add((Widget) lo, fieldContainer);
-        } else if (lo != newLo) {
-            client.unregisterPaintable(lo);
-            remove((Widget) lo);
-            lo = newLo;
-            add((Widget) lo, fieldContainer);
-        }
-        lo.updateFromUIDL(layoutUidl, client);
-
-        // We may have actions attached
-        if (uidl.getChildCount() > 1) {
-            UIDL childUidl = uidl.getChildByTagName("actions");
-            if (childUidl != null) {
-                if (shortcutHandler == null) {
-                    shortcutHandler = new ShortcutActionHandler(id, client);
-                    keyDownRegistration = addDomHandler(this, KeyDownEvent
-                            .getType());
-                }
-                shortcutHandler.updateActionMap(childUidl);
-            }
-        } else if (shortcutHandler != null) {
-            keyDownRegistration.removeHandler();
-            shortcutHandler = null;
-            keyDownRegistration = null;
-        }
-
-        rendering = false;
     }
 
     public void updateSize() {

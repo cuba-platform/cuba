@@ -73,8 +73,10 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
         this.client = client;
         id = uidl.getId();
 
+        boolean manageCaption = uidl.getBooleanAttribute("manageCaption");
+
         // Ensure correct implementation
-        if (client.updateComponent(this, uidl, false)) {
+        if (client.updateComponent(this, uidl, manageCaption)) {
             return;
         }
 
@@ -115,7 +117,9 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
         }
 
         // Set text
-        setText(uidl.getStringAttribute("caption"));
+        if (!manageCaption) {
+            setText(uidl.getStringAttribute("caption"));
+        }
         setValue(uidl.getBooleanVariable("state"));
         immediate = uidl.getBooleanAttribute("immediate");
     }

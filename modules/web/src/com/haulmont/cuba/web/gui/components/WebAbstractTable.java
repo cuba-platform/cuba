@@ -12,7 +12,10 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -21,14 +24,13 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -37,15 +39,12 @@ import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -982,106 +981,43 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    protected class FieldFactory extends BaseFieldFactory {
+    protected class FieldFactory extends AbstractFieldFactory {
         @Override
-        public com.vaadin.ui.Field createField(Class type, com.vaadin.ui.Component uiContext) {
-            return super.createField(type, uiContext);
+        protected Datasource getDatasource() {
+            return datasource;
         }
 
         @Override
-        public com.vaadin.ui.Field createField(Property property, com.vaadin.ui.Component uiContext) {
-            return super.createField(property, uiContext);
+        protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, MetaPropertyPath propertyPath) {
+            return WebAbstractTable.this.getOptionsDatasource(metaClass, columns.get(propertyPath));
         }
 
         @Override
-        public com.vaadin.ui.Field createField(Item item, Object propertyId, com.vaadin.ui.Component uiContext) {
-            return super.createField(item, propertyId, uiContext);
+        protected Collection<Field.Validator> getValidators(MetaPropertyPath propertyPath) {
+            return validatorsMap.get(columns.get(propertyPath));
         }
 
         @Override
-        public com.vaadin.ui.Field createField(com.vaadin.data.Container container, Object itemId, Object propertyId, com.vaadin.ui.Component uiContext) {
-            final com.vaadin.ui.Field field;
-            MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
-            final Table.Column column = columns.get(propertyPath);
-            final Range range = propertyPath.getRange();
-            if (range != null) {
-                if (range.isClass()) {
-                    final WebLookupField lookupField = new WebLookupField();
-                    final CollectionDatasource optionsDatasource = getOptionsDatasource(range.asClass(), column);
-                    lookupField.setOptionsDatasource(optionsDatasource);
+        protected boolean required(MetaPropertyPath propertyPath) {
+            return requiredColumns.containsKey(columns.get(propertyPath));
+        }
 
-                    field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
-                } else if (range.isEnum()) {
-                    final WebLookupField lookupField = new WebLookupField();
-                    if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
+        @Override
+        protected String requiredMessage(MetaPropertyPath propertyPath) {
+            return requiredColumns.get(columns.get(propertyPath));
+        }
 
-                    lookupField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
-                    lookupField.setOptionsList(range.asEnumeration().getValues());
+        @Override
+        protected Formatter getFormatter(MetaPropertyPath propertyPath) {
+            Table.Column column = columns.get(propertyPath);
+            return column.getFormatter();
+        }
 
-                    field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
-                } else {
-                    field = super.createField(container, itemId, propertyId, uiContext);
-                }
-            } else {
-                field = super.createField(container, itemId, propertyId, uiContext);
-            }
-            ((com.vaadin.ui.AbstractField) field).setImmediate(true);
-
-            if (field instanceof TextField) {
-                ((TextField) field).setNullRepresentation("");
-                field.setWidth("100%");
-            } else if (field instanceof DateField) {
-                String format = null;
-
-                Formatter formatter = column.getFormatter();
-                if (formatter != null) {
-                    Element formatterElement = column.getXmlDescriptor().element("formatter");
-                    format = formatterElement.attributeValue("format");
-                }
-
-                if (format != null) {
-                    ((DateField) field).setDateFormat(format);
-                }
-            } else if (field instanceof Select) {
-                field.setWidth("100%");
-            }
-
-            boolean required = requiredColumns.containsKey(column);
-            field.setRequired(required);
-            if (required)
-                field.setRequiredError(requiredColumns.get(column));
-
-            Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);
-            if (validators != null) {
-                for (final com.haulmont.cuba.gui.components.Field.Validator validator : validators) {
-
-                    if (field instanceof com.vaadin.ui.AbstractField) {
-
-                        field.addValidator(new Validator() {
-                            public void validate(Object value) throws InvalidValueException {
-                                if ((!field.isRequired() && value == null))
-                                    return;
-                                try {
-                                    validator.validate(value);
-                                } catch (ValidationException e) {
-                                    throw new InvalidValueException(e.getMessage());
-                                }
-                            }
-
-                            public boolean isValid(Object value) {
-                                try {
-                                    validate(value);
-                                    return true;
-                                } catch (InvalidValueException e) {
-                                    return false;
-                                }
-                            }
-                        });
-                        ((com.vaadin.ui.AbstractField) field).setValidationVisible(false);
-                    }
-                }
-            }
-            return field;
+        @Override
+        protected String getFormat(MetaPropertyPath propertyPath) {
+            Table.Column column = columns.get(propertyPath);
+            Element formatterElement = column.getXmlDescriptor().element("formatter");
+            return formatterElement.attributeValue("format");
         }
     }
 

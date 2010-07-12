@@ -106,10 +106,12 @@
     border: #a0a1a3 ridge 1px;
 }
 
-.v-verticallayout-loginBottom2fields .v-caption,
-.v-verticallayout-loginBottom .v-caption {
+.v-verticallayout-loginBottom2fields .v-captiontext,
+.v-verticallayout-loginBottom .v-captiontext {
     color: white;
     font-family: arial, sans-serif;
+    float: right;
+    padding-right: 5px;
 }
 
 .v-verticallayout-loginBottom2fields .v-label-login-caption,

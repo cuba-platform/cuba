@@ -86,6 +86,17 @@ public class MetadataHelper {
         return res;
     }
 
+    public static Collection<MetaPropertyPath> getViewPropertyPaths(View view, MetaClass metaClass) {
+        List<MetaPropertyPath> propertyPaths = new ArrayList<MetaPropertyPath>(metaClass.getProperties().size());
+        for (final MetaProperty metaProperty : metaClass.getProperties()) {
+            final MetaPropertyPath metaPropertyPath = new MetaPropertyPath(metaClass, metaProperty);
+            if (viewContainsProperty(view, metaPropertyPath)) {
+                propertyPaths.add(metaPropertyPath);
+            }
+        }
+        return propertyPaths;
+    }
+
     public static Collection<MetaPropertyPath> toPropertyPaths(Collection<MetaProperty> properties) {
         List<MetaPropertyPath> res = new ArrayList<MetaPropertyPath>();
         for (MetaProperty metaProperty : properties) {

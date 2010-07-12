@@ -80,6 +80,10 @@ fieldset {
 	font-weight: bold;
 }
 
+.v-form-nodescription .v-form-description {
+    height: 0;
+}
+
 /*
 .v-formlayout-captioncell .v-caption .v-required-field-indicator {
 	float: none;

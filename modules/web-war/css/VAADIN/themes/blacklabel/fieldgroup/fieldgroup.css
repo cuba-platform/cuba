@@ -1,0 +1,21 @@
+.v-form .v-form-caption {
+    clear: both;
+    overflow: hidden;
+    padding-bottom: 5px;
+}
+
+.v-form-nocaption .v-form-caption {
+    padding-bottom: 0;
+}
+
+.v-form .v-form-caption div {
+    float: left;
+    width: 20px;
+    height: 15px;
+    background: transparent url(img/expand.gif) no-repeat center center;
+    cursor: pointer;
+}
+
+.v-form .expanded div {
+    background: transparent url(img/collapse.gif) no-repeat center center;
+}
