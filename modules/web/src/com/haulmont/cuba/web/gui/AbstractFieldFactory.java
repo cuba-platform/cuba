@@ -120,6 +120,9 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             field = super.createField(container, itemId, propertyId, uiContext);
         }
 
+        field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
+                propertyPath.toString()));
+
         initField(field, propertyPath, false);
 
         return field;
