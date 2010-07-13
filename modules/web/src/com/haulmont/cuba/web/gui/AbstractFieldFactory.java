@@ -48,19 +48,16 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             if (range != null) {
                 if (range.isClass()) {
                     final CollectionDatasource optionsDatasource = getOptionsDatasource(range.asClass(), propertyPath);
-//                    if (optionsDatasource != null) {
+                    if (optionsDatasource != null) {
                         final WebLookupField lookupField = new WebLookupField();
                         lookupField.setOptionsDatasource(optionsDatasource);
 
                         field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
-/*
                     } else {
                         final WebPickerField pickerField = new WebPickerField();
-//                        pickerField.setMetaClass(range.asClass());
-//                        pickerField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
+                        pickerField.setMetaClass(range.asClass());
                         field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(pickerField);
-*/
-//                    }
+                    }
                 } else if (range.isEnum()) {
                     final WebLookupField lookupField = new WebLookupField();
                     if (propertyPath.get().length > 1) throw new UnsupportedOperationException();

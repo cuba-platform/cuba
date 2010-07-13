@@ -1,4 +1,3 @@
-
 .pickerfield .v-textfield {
     padding: 0;
 }
@@ -8,12 +7,24 @@
     line-height: 18px;
 }
 
-.pickerfield .v-button-link {
-    padding: 0 5px;
+.pickerfield .v-button-caption {
+    margin: 0;
+}
+
+.pickerfield .v-icon {
+    margin: 0;
 }
 
 .pickerfield .v-readonly.v-textfield,
 .pickerfield .v-textfield-readonly {
     border: 1px solid #b6b6b6;
     overflow: hidden;
+}
+
+.pickerfield {
+    background-color: #fff;
+}
+
+.pickerfield.v-readonly {
+    background-color: transparent;
 }

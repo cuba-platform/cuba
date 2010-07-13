@@ -11,23 +11,32 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.*;
-import com.vaadin.ui.TextField;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
-import org.apache.commons.lang.ObjectUtils;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.BaseTheme;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class WebPickerField
         extends
@@ -35,32 +44,59 @@ public class WebPickerField
         implements
             PickerField, Component.Wrapper
 {
+    private static final long serialVersionUID = -938974178359790495L;
+    
     private CaptionMode captionMode = CaptionMode.ITEM;
     private String captionProperty;
 
     protected Object value;
-    protected DsListener dsListener;
+
     private MetaClass metaClass;
 
     public WebPickerField() {
-        dsListener = new DsListener();
-        component = new PickerFieldComponent(new Button.ClickListener() {
+        component = new PickerFieldComponent();
+        component.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                final MetaClass metaClass = getMetaClass();
+                if (isEditable()) {
+                    final MetaClass metaClass = getMetaClass();
 
-                final com.haulmont.cuba.gui.components.IFrame frame = getFrame();
-                frame.openLookup(metaClass.getName() + ".lookup", new Window.Lookup.Handler() {
-                    public void handleLookup(Collection items) {
-                        if (!items.isEmpty()) {
-                            final Object item = items.iterator().next();
-                            // TODO (abramov) reload id needed
-                            setValue(item);
+                    WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+                    String windowAlias = metaClass.getName() + ".lookup";
+                    WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+
+                    WindowManager wm = App.getInstance().getWindowManager();
+                    wm.openLookup(windowInfo, new Window.Lookup.Handler() {
+                        public void handleLookup(Collection items) {
+                            if (!items.isEmpty()) {
+                                final Object item = items.iterator().next();
+                                __setValue(item);
+                            }
                         }
-                    }
-                }, WindowManager.OpenType.THIS_TAB);
+                    }, WindowManager.OpenType.THIS_TAB);
+                }
             }
         });
         component.setImmediate(true);
+    }
+
+    private void __setValue(Object newValue) {
+        if (component.getPropertyDataSource() != null) {
+            setValue(newValue);
+        } else {
+            value = newValue;
+            ItemWrapper wrapper = new ItemWrapper(newValue, metaClass) {
+                @Override
+                public String toString() {
+                    if (CaptionMode.PROPERTY.equals(captionMode)) {
+                        return String.valueOf(getValue() == null ? ""
+                                : ((Instance) getValue()).getValue(captionProperty));
+                    } else {
+                        return super.toString();
+                    }
+                }
+            };
+            setValue(wrapper);
+        }
     }
 
     public MetaClass getMetaClass() {
@@ -80,45 +116,50 @@ public class WebPickerField
 
     @Override
     public <T> T getValue() {
-        if (datasource != null) {
-            final Entity item = datasource.getItem();
-            return ((Instance) item).<T>getValue(metaProperty.getName());
+        if (component.getPropertyDataSource() != null) {
+            return (T) super.getValue();
         } else {
             return (T) value;
         }
     }
 
     @Override
-    public void setValue(Object value) {
-        this.value = value;
-        component.setValue(getItemCaption(value));
-        if (datasource != null) {
-            final Entity item = datasource.getItem();
-            ((Instance) item).setValue(metaProperty.getName(), value);
-        }
-    }
-
-    @Override
     public void setDatasource(Datasource datasource, String property) {
-        if (this.datasource != null) this.datasource.removeListener(dsListener);
-
         this.datasource = datasource;
 
         MetaClass metaClass = datasource.getMetaClass();
         this.metaProperty = metaClass.getProperty(property);
+        if (metaProperty == null) {
+            throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
+        }
+
+        final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath));
+        final Property itemProperty = wrapper.getItemProperty(propertyPath);
+
+        component.setPropertyDataSource(itemProperty);
 
         setRequired(metaProperty.isMandatory());
+        
         this.metaClass = metaProperty.getRange().asClass();
-
-        this.datasource.addListener(dsListener);
     }
 
-    protected String getItemCaption(Object value) {
-        if (CaptionMode.PROPERTY.equals(captionMode)) {
-            return String.valueOf(value == null ? "" : ((Instance) value).getValue(captionProperty));
-        } else {
-            return String.valueOf(value);
-        }
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
+            @Override
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new PropertyWrapper(item, propertyPath) {
+                    @Override
+                    public String toString() {
+                        if (CaptionMode.PROPERTY.equals(captionMode)) {
+                            return String.valueOf(getValue() == null ? "" : ((Instance) getValue()).getValue(captionProperty));
+                        } else {
+                            return String.valueOf(getValue());
+                        }
+                    }
+                };
+            }
+        };
     }
 
     public CaptionMode getCaptionMode() {
@@ -153,7 +194,7 @@ public class WebPickerField
         component.setClearButtonIcon(new ThemeResource(iconName));
     }
 
-    public static class PickerFieldComponent extends CustomComponent implements com.vaadin.ui.Field {
+    public class PickerFieldComponent extends CustomComponent implements com.vaadin.ui.Field {
 
         public static final int DEFAULT_WIDTH = 250;
 
@@ -164,18 +205,38 @@ public class WebPickerField
         protected String buttonIcon;
         protected String clearButtonIcon;
 
-        public PickerFieldComponent(Button.ClickListener listener) {
-            field = new TextField();
+        protected boolean required;
+        protected String requiredError;
+
+        public PickerFieldComponent() {
+            field = new TextField() {
+                @Override
+                public boolean isRequired() {
+                    return PickerFieldComponent.this.required;
+                }
+
+                @Override
+                public String getRequiredError() {
+                    return PickerFieldComponent.this.requiredError; 
+                }
+            };
             field.setReadOnly(true);
             field.setWidth("100%");
             field.setNullRepresentation("");
 
-            pickerButton = new Button("...", listener);
-            clearButton = new Button("Clear", new Button.ClickListener() {
+            pickerButton = new Button();
+            pickerButton.addStyleName("pickButton");
+
+            clearButton = new Button("", new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
-                    setValue(null);
+                    if (isEditable()) {
+                        __setValue(null);
+                    }
                 }
             });
+            clearButton.addStyleName("clearButton");
+
+            updateIcons();
 
             final HorizontalLayout container = new HorizontalLayout();
             container.setWidth("100%");
@@ -188,6 +249,50 @@ public class WebPickerField
             setCompositionRoot(container);
             setStyleName("pickerfield");
             setWidth(DEFAULT_WIDTH + "px");
+        }
+
+        @Override
+        public void paintContent(PaintTarget target) throws PaintException {
+            paintCommonContent(target);
+            super.paintContent(target);
+        }
+
+        protected void paintCommonContent(PaintTarget target) throws PaintException {
+            // If the field is modified, but not committed, set modified attribute
+            if (isModified()) {
+                target.addAttribute("modified", true);
+            }
+
+            // Adds the required attribute
+            if (!isReadOnly() && isRequired()) {
+                target.addAttribute("required", true);
+            }
+
+            // Hide the error indicator if needed
+            if (isRequired() && getValue() == null && getComponentError() == null
+                    && getErrorMessage() != null) {
+                target.addAttribute("hideErrors", true);
+            }
+        }
+
+        private void updateIcons() {
+            if (isReadOnly()) {
+                setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn-readonly.png"));
+                setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn-readonly.png"));
+            } else {
+                setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn.png"));
+                setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn.png"));
+            }
+        }
+
+        @Override
+        public void setReadOnly(boolean readOnly) {
+            super.setReadOnly(readOnly);
+            updateIcons();
+        }
+
+        public void addListener(Button.ClickListener listener) {
+            pickerButton.addListener(listener);
         }
 
         public boolean isInvalidCommitted() {
@@ -301,19 +406,21 @@ public class WebPickerField
         }
 
         public boolean isRequired() {
-            return field.isRequired();
+            return required;
         }
 
         public void setRequired(boolean required) {
-            field.setRequired(required);
+            this.required = required;
+            requestRepaint();
         }
 
         public void setRequiredError(String requiredMessage) {
-            field.setRequiredError(requiredMessage);
+            this.requiredError = requiredMessage;
+            requestRepaint();
         }
 
         public String getRequiredError() {
-            return field.getRequiredError();
+            return requiredError;
         }
 
         public void setPickerButtonCaption(String caption) {
@@ -333,8 +440,13 @@ public class WebPickerField
         }
 
         public void setPickerButtonIcon(Resource icon) {
-            pickerButton.setIcon(icon);
-            pickerButton.setStyleName("link");
+            if (icon != null) {
+                pickerButton.setIcon(icon);
+                pickerButton.addStyleName(BaseTheme.BUTTON_LINK);
+            } else {
+                pickerButton.setIcon(null);
+                pickerButton.removeStyleName(BaseTheme.BUTTON_LINK);
+            }
         }
 
         public Resource getPickerButtonIcon() {
@@ -342,29 +454,17 @@ public class WebPickerField
         }
 
         public void setClearButtonIcon(Resource icon) {
-            clearButton.setIcon(icon);
-            clearButton.setStyleName("link");
+            if (icon != null) {
+                clearButton.setIcon(icon);
+                clearButton.addStyleName(BaseTheme.BUTTON_LINK);
+            } else {
+                clearButton.setIcon(null);
+                clearButton.removeStyleName(BaseTheme.BUTTON_LINK);
+            }
         }
 
         public Resource getClearButtonIcon() {
             return clearButton.getIcon();
-        }
-    }
-
-    protected class DsListener implements DatasourceListener<Entity> {
-        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-            value = item == null ? null : ((Instance) item).getValue(metaProperty.getName());
-            component.setValue(getItemCaption(value));
-        }
-
-        public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {}
-
-        public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-            if (ObjectUtils.equals(property, WebPickerField.this.metaProperty.getName()) &&
-                    ObjectUtils.equals(datasource.getItem(), source)) {
-                value = source == null ? null : ((Instance) source).getValue(property);
-                component.setValue(getItemCaption(value));
-            }
         }
     }
 }

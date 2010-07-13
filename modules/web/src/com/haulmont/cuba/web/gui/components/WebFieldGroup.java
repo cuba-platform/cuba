@@ -19,10 +19,8 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -521,6 +519,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
                 return optDs;
             } else {
+/*
                 CollectionDatasource optDs = optionsDatasources.get(metaClass);
                 if (optDs != null) return optDs;
 
@@ -535,6 +534,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 optionsDatasources.put(metaClass, optDs);
 
                 return optDs;
+*/
+                return null;
             }
         }
 
