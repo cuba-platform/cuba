@@ -12,7 +12,7 @@
     white-space: nowrap;
     margin: 0;
     height: 25px;
-    padding: 0 0 0 2px;
+    padding: 0 0 0 5px;
     color: inherit;
     line-height: normal;
     -khtml-user-select: none;
@@ -37,7 +37,7 @@
 .v-button-wrap {
     height: 20px;
     background: transparent url(img/button.png) no-repeat right top;
-    padding: 4px 15px 1px 9px;
+    padding: 4px 5px 1px 0px;
     display: block;
 }
 

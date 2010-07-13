@@ -55,6 +55,10 @@ public class WebWindowManager extends WindowManager {
 
     protected List<WindowCloseListener> listeners = new ArrayList<WindowCloseListener>();
 
+    protected List<ShowStartupLayoutListener> showStartupLayoutListeners = new ArrayList<ShowStartupLayoutListener>();
+
+    protected List<CloseStartupLayoutListener> closeStartupLayoutListeners = new ArrayList<CloseStartupLayoutListener>();
+
     private Map<AppWindow, WindowData> appWindowMap = new HashMap<AppWindow, WindowData>();
 
     protected Map<String, Integer> debugIds = new HashMap<String, Integer>();
@@ -76,8 +80,14 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    public WebWindowManager(App app) {
+    public WebWindowManager(final App app) {
         this.app = app;
+        app.getConnection().addListener(new UserSubstitutionListener() {
+            public void userSubstituted(Connection connection) {
+                closeStartupScreen(app.getAppWindow());
+                showStartupScreen(app.getAppWindow());
+            }
+        });
     }
 
     private WindowData getCurrentWindowData() {
@@ -162,6 +172,42 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
+    public void addShowStartupLayoutListener(ShowStartupLayoutListener showStartupLayoutListener) {
+        if (!showStartupLayoutListeners.contains(showStartupLayoutListener)) showStartupLayoutListeners.add(showStartupLayoutListener);
+    }
+
+    public void removeShowStartupLayoutListener(ShowStartupLayoutListener showStartupLayoutListener) {
+        showStartupLayoutListeners.remove(showStartupLayoutListener);
+    }
+
+    public void removeAllShowStartupLayoutListeners() {
+        showStartupLayoutListeners.clear();
+    }
+
+    protected void fireShowStartupLayoutListeners() {
+        for (ShowStartupLayoutListener showStartupLayoutListener : showStartupLayoutListeners) {
+            showStartupLayoutListener.onShowStartupLayout();
+        }
+    }
+
+    public void addCloseStartupLayoutListener(CloseStartupLayoutListener closeStartupLayoutListener) {
+        if (!closeStartupLayoutListeners.contains(closeStartupLayoutListener)) closeStartupLayoutListeners.add(closeStartupLayoutListener);
+    }
+
+    public void removeCloseStartupLayoutListener(CloseStartupLayoutListener closeStartupLayoutListener) {
+        closeStartupLayoutListeners.remove(closeStartupLayoutListener);
+    }
+
+    public void removeAllCloseStartupLayoutListener() {
+        closeStartupLayoutListeners.clear();
+    }
+
+    protected void fireCloseStartupLayoutListeners() {
+        for (CloseStartupLayoutListener closeStartupLayoutListener : closeStartupLayoutListeners) {
+            closeStartupLayoutListener.onCloseStartupLayout();
+        }
+    }
+
     public void showWindow(final Window window, final String caption, OpenType type) {
         showWindow(window, caption, type, WindowParameters.EMPTY);
     }
@@ -177,10 +223,11 @@ public class WebWindowManager extends WindowManager {
     public void showWindow(final Window window, final String caption, final String description, OpenType type, WindowParameters windowParameters) {
         AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
-
         Component component;
+
         switch (type) {
             case NEW_TAB:
+                closeStartupScreen(appWindow);
                 if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
                     VerticalLayout mainLayout = appWindow.getMainLayout();
                     if (mainLayout.getComponentIterator().hasNext()) {
@@ -197,10 +244,12 @@ public class WebWindowManager extends WindowManager {
                         }
                     }
                 }
+                
                 component = showWindowNewTab(window, caption, description, appWindow);
                 break;
 
             case THIS_TAB:
+                closeStartupScreen(appWindow);
                 component = showWindowThisTab(window, caption, description, appWindow);
                 break;
 
@@ -222,6 +271,28 @@ public class WebWindowManager extends WindowManager {
         }
 
         window.applySettings(new SettingsImpl(window.getId()));
+    }
+
+    private void closeStartupScreen(AppWindow appWindow) {
+        fireCloseStartupLayoutListeners();
+        if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+            TabSheet tabSheet = appWindow.getTabSheet();
+            if (tabSheet == null) {
+                VerticalLayout mainLayout = appWindow.getMainLayout();
+                mainLayout.removeAllComponents();
+                tabSheet = new AppWindow.AppTabSheet();
+                tabSheet.setSizeFull();
+                mainLayout.addComponent(tabSheet);
+                mainLayout.setExpandRatio(tabSheet, 1);
+                appWindow.setTabSheet(tabSheet);
+            }
+        } else {
+            if (getTabs().size() == 0) {
+                VerticalLayout mainLayout = appWindow.getMainLayout();
+                mainLayout.removeAllComponents();
+            }
+        }
+        appWindow.unInitStartupLayout();
     }
 
     protected Layout createNewWinLayout(Window window, Component... components) {
@@ -528,6 +599,7 @@ public class WebWindowManager extends WindowManager {
 
                 getTabs().remove(layout);
                 fireListeners(window, getTabs().size() != 0);
+                showStartupScreen(appWindow);
                 break;
             }
             case THIS_TAB: {
@@ -555,11 +627,21 @@ public class WebWindowManager extends WindowManager {
                     tabSheet.requestRepaintAll();
                 }
                 fireListeners(window, getTabs().size() != 0);
+                showStartupScreen(appWindow);
                 break;
             }
             default: {
                 throw new UnsupportedOperationException();
             }
+        }
+    }
+
+    private void showStartupScreen(AppWindow appWindow) {
+        if (getTabs().size() == 0) {
+            appWindow.getMainLayout().removeAllComponents();
+            appWindow.setTabSheet(null);
+            appWindow.initStartupLayout();
+            fireShowStartupLayoutListeners();
         }
     }
 
@@ -742,4 +824,13 @@ public class WebWindowManager extends WindowManager {
     public interface WindowCloseListener extends Serializable {
         void onWindowClose(Window window, boolean anyOpenWindowExist);
     }
+
+    public interface ShowStartupLayoutListener extends Serializable {
+        void onShowStartupLayout();
+    }
+
+    public interface CloseStartupLayoutListener extends Serializable {
+        void onCloseStartupLayout();
+    }
+
 }

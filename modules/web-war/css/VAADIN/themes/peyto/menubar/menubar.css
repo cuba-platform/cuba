@@ -1,9 +1,9 @@
 .v-menubar {
-    padding-top: 4px;
+    padding-top: 3px;
 }
 
 .v-ie .v-menubar {
-    padding-top: 2px;
+    padding-top: 0px;
 }
 
 .v-menubar table {

@@ -51,6 +51,13 @@ public interface GlobalConfig extends Config {
     String getSupportEmail();
 
     /**
+     * System ID. Use for identification. (Support emails)
+     */
+    @Property("cuba.systemId")
+    @DefaultString("CUBA")
+    String getSystemID();
+
+    /**
      * Temporary files directory. Place app-specific temp files under this directory.
      * Does not end with "/"
      */

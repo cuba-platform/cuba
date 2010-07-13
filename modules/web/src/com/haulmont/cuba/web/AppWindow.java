@@ -132,6 +132,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         initLayout();
         setContent(rootLayout);
         postInitLayout();
+        initStartupLayout();
     }
 
     /**
@@ -173,14 +174,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
         mainLayout.setSizeFull();
-
-        if (Mode.TABBED.equals(mode)) {
-            tabSheet = new AppTabSheet();
-            tabSheet.setSizeFull();
-
-            mainLayout.addComponent(tabSheet);
-            mainLayout.setExpandRatio(tabSheet, 1);
-        }
 
         foldersPane = createFoldersPane();
 
@@ -234,6 +227,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return tabSheet;
     }
 
+    public void setTabSheet(TabSheet tabSheet) {
+        this.tabSheet = tabSheet;
+    }
+
     public MenuBar getMenuBar() {
         return menuBar;
     }
@@ -282,6 +279,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      * Can be overridden in descendant to init an app-specific layout
      */
     protected void initLayout() {
+    }
+
+    /* Draw startup screen layout */
+    protected void initStartupLayout() {
+    }
+
+    /*  */
+    protected void unInitStartupLayout() {
     }
 
     /**

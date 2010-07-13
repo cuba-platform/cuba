@@ -36,7 +36,9 @@ import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -111,15 +113,20 @@ public class FoldersPane extends VerticalLayout {
         showFolders(nowVisible);
 
         MenuBar.MenuItem firstItem = menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
-        menuItem = menuBar.addItemBefore(getMenuItemCaption(),
+        
+        menuItem = menuBar.addItemBefore("",
                 null,
                 new MenuBar.Command() {
                     public void menuSelected(MenuBar.MenuItem selectedItem) {
                         showFolders(!visible);
-                        menuItem.setText(getMenuItemCaption());
+                        menuItem.setIcon(getMenuItemIcon());
                     }
                 },
                 firstItem);
+
+        menuItem.setIcon(getMenuItemIcon());
+        menuBar.setStyleName("folders-pane");
+
     }
 
     private synchronized void showFolders(boolean show) {
@@ -344,6 +351,14 @@ public class FoldersPane extends VerticalLayout {
 
     protected String getMenuItemCaption() {
         return MessageProvider.getMessage(messagesPack, visible ? "folders.hideFolders" : "folders.showFolders");
+    }
+
+    protected Resource getMenuItemIcon() {
+        if (visible) {
+            return new ThemeResource("icons/folders_pane_icon_active.png");
+        } else {
+            return new ThemeResource("icons/folders_pane_icon.png");
+        }
     }
 
     protected void openFolder(AbstractSearchFolder folder) {

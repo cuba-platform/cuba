@@ -244,3 +244,15 @@
 .v-button.v-popupbutton .v-menu-indicator {
 	background: transparent url(../../themes/peyto/common/img/sprites.png) no-repeat -5px -10px;
 }
+
+.v-panel.dummy-split .v-panel-content {
+    background: transparent;
+    background-image: url("../../themes/peyto/splitpanel/img/split-hor-bg.png");
+    background-repeat: repeat-y;
+    background-position: top left;
+}
+
+.v-menubar-folders-pane tr > td.menuitem:first-child,
+.v-menubar-folders-pane tr > td.menuitem-selected:first-child {
+    background-color: transparent;    
+}
