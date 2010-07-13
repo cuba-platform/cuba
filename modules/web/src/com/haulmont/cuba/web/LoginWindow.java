@@ -29,6 +29,7 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -337,7 +338,7 @@ public class LoginWindow extends Window
                     String login = (String) loginField.getValue();
                     String password = (String) passwordField.getValue();
 
-                    app.addCookie(COOKIE_LOGIN, login);
+                    app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(login));
                     app.addCookie(COOKIE_PASSWORD, DigestUtils.md5Hex(password));
                 }
             } else {
