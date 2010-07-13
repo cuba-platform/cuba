@@ -14,13 +14,7 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -319,6 +313,65 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
                             .getIntAttribute("position");
                     final int delay = notification.getIntAttribute("delay");
                     new VNotification(delay).show(html, position, style);
+                }
+            } else if (tag == "richNotifications") {
+                for (final Iterator it = childUidl.getChildIterator(); it
+                        .hasNext();) {
+                    final UIDL notification = (UIDL) it.next();
+
+                    String html = "";
+                    if (notification.hasAttribute("icon")) {
+                        final String parsedUri = client
+                                .translateVaadinUri(notification
+                                        .getStringAttribute("icon"));
+                        html += "<img src=\"" + parsedUri + "\" />";
+                    }
+                    if (notification.hasAttribute("caption")) {
+                        html += "<h1>"
+                                + notification.getStringAttribute("caption")
+                                + "</h1>";
+                    }
+                    if (notification.hasAttribute("message")) {
+                        html += "<p>"
+                                + notification.getStringAttribute("message")
+                                + "</p>";
+                    }
+
+                    final String style = notification.hasAttribute("style") ? notification
+                            .getStringAttribute("style")
+                            : null;
+                    final int position = notification
+                            .getIntAttribute("position");
+                    final int delay = notification.getIntAttribute("delay");
+                    boolean autoFade = notification.hasAttribute("autoFade");
+
+                    Widget panelWidget = null;
+                    UIDL panelUIDL = null;
+                    for (final Iterator<Object> itc = notification.getChildIterator(); itc.hasNext();) {
+                        final UIDL childUIDL = (UIDL) itc.next();
+                        final Paintable child = client.getPaintable(childUIDL);
+                        panelWidget = (Widget) child;
+                        panelUIDL = childUIDL;
+                        //((Paintable) panelWidget).updateFromUIDL(panelUIDL, client);
+                    }
+
+                    VNotification tip = new VNotification(delay);
+                    if (panelWidget != null) {
+                        tip.show(panelWidget, position, style);
+                        ((Paintable) panelWidget).updateFromUIDL(panelUIDL, client);
+                        final Paintable pw = (Paintable) panelWidget;
+                        tip.addEventListener(new VNotification.EventListener() {
+                            public void notificationHidden(VNotification.HideEvent event) {
+                                connection.updateVariable(id, "notificationHidden", pw, true);
+                            }
+                        });
+                    }
+                    else {
+                        tip.show(html, position, style);
+                    }
+                    if (autoFade) {
+                        tip.startDelay();
+                    }
                 }
             } else {
                 // subwindows

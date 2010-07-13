@@ -37,11 +37,9 @@ import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
+import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.FileResource;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -86,6 +84,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     protected SplitPanel foldersSplit;
 
     protected Mode mode;
+
+    protected LinkedList<RichNotification> richNotifications;
 
     /**
      * Very root layout of the window. Contains all other layouts
@@ -584,6 +584,67 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected String getMessagesPack() {
         return AppConfig.getInstance().getMessagesPack();
+    }
+
+    public void showRichNotification(RichNotification notification) {
+        if (richNotifications == null) {
+            richNotifications = new LinkedList<RichNotification>();
+        }
+        if (notification.getLayout() != null) {
+            notification.getLayout().setParent(this);
+        }
+        richNotifications.add(notification);
+        requestRepaint();
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        super.paintContent(target);
+
+        // Paint richNotifications
+        if (richNotifications != null) {
+            target.startTag("richNotifications");
+            for (final Iterator<RichNotification> it = richNotifications.iterator(); it
+                    .hasNext();) {
+                final RichNotification n = it.next();
+                
+                target.startTag("richNotification");
+                if (n.getCaption() != null) {
+                    target.addAttribute("caption", n.getCaption());
+                }
+                if (n.getDescription() != null) {
+                    target.addAttribute("message", n.getDescription());
+                }
+                if (n.getIcon() != null) {
+                    target.addAttribute("icon", n.getIcon());
+                }
+                if (n.isAutoFade()) {
+                    target.addAttribute("autoFade", true);
+                }
+                target.addAttribute("position", n.getPosition());
+                target.addAttribute("delay", n.getDelayMsec());
+                if (n.getStyleName() != null) {
+                    target.addAttribute("style", n.getStyleName());
+                }
+                if (n.getLayout() != null) {
+                    n.getLayout().paint(target);
+                }
+                target.endTag("richNotification");
+            }
+            target.endTag("richNotifications");
+
+            richNotifications = null;
+        }
+    }
+
+    @Override
+    public void changeVariables(Object source, Map variables) {
+        super.changeVariables(source, variables);
+        final Object target = variables.get("notificationHidden");
+        if (target != null) {
+            com.vaadin.ui.Component component = (com.vaadin.ui.Component) target;
+            component.setParent(null);
+        }
     }
 
     private class ChangeSubstUserAction extends AbstractAction {
