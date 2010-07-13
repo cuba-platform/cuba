@@ -34,6 +34,8 @@ public class FileEditor extends AbstractEditor {
     private Label createDateLab;
     private FileUploadField uploadField;
 
+    private boolean needSave;
+
     public FileEditor(IFrame frame) {
         super(frame);
     }
@@ -73,6 +75,8 @@ public class FileEditor extends AbstractEditor {
                     sizeLab.setValue(uploadField.getBytes().length);
                     createDateLab.setValue(TimeProvider.currentTimestamp());
                     okBtn.setEnabled(true);
+
+                    needSave = true;
                 }
 
                 public void uploadFailed(Event event) {
@@ -88,7 +92,9 @@ public class FileEditor extends AbstractEditor {
 
     @Override
     public void commitAndClose() {
-        saveFile();
+        if (needSave) {
+            saveFile();
+        }
         super.commitAndClose();
     }
 
