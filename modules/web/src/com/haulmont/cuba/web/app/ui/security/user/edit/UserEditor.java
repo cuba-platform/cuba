@@ -51,7 +51,7 @@ public class UserEditor extends AbstractEditor {
     protected void init(Map<String, Object> params) {
 
         userDs = getDsContext().get("user");
-        userDs.addListener(new NameBuilderListener(this));
+        userDs.addListener(new NameBuilderListener((FieldGroup) getComponent("fields")));
 
         rolesTable = getComponent("roles");
         rolesTable.addAction(new AddRoleAction());

@@ -11,35 +11,47 @@
 package com.haulmont.cuba.web.app;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.ui.Field;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
 import java.util.Locale;
 
 public class NameBuilderListener extends DsListenerAdapter {
-    private TextField displayedNameField;
-    private TextField firstNameField;
-    private TextField lastNameField;
-    private TextField middleNameField;
+    private Field displayedNameField;
+    private Field firstNameField;
+    private Field lastNameField;
+    private Field middleNameField;
 
     public NameBuilderListener(Window window) {
-        displayedNameField = window.getComponent("name");
-        firstNameField = window.getComponent("firstName");
-        lastNameField = window.getComponent("lastName");
-        middleNameField = window.getComponent("middleName");
+        displayedNameField = (Field) WebComponentsHelper.unwrap(window.getComponent("name"));
+        firstNameField = (Field) WebComponentsHelper.unwrap(window.getComponent("firstName"));
+        lastNameField = (Field) WebComponentsHelper.unwrap(window.getComponent("lastName"));
+        middleNameField = (Field) WebComponentsHelper.unwrap(window.getComponent("middleName"));
+    }
+
+    public NameBuilderListener(FieldGroup fieldGroup) {
+        com.haulmont.cuba.web.toolkit.ui.FieldGroup component =
+                (com.haulmont.cuba.web.toolkit.ui.FieldGroup) WebComponentsHelper.unwrap(fieldGroup);
+        displayedNameField = component.getField("name");
+        firstNameField = component.getField("firstName");
+        lastNameField = component.getField("lastName");
+        middleNameField = component.getField("middleName");
     }
 
     @Override
     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
         if (!Arrays.asList("firstName", "lastName", "middleName").contains(property)) return;
 
-        String firstName = firstNameField.getValue();
-        String lastName = lastNameField.getValue();
-        String middleName = middleNameField.getValue();
+        String firstName = (String) firstNameField.getValue();
+        String lastName = (String) lastNameField.getValue();
+        String middleName = (String) middleNameField.getValue();
 
         String displayedName;
 
