@@ -33,8 +33,8 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
 
     void addValidator(Field field, com.haulmont.cuba.gui.components.Field.Validator validator);
 
-    boolean isSwitchable();
-    void setSwitchable(boolean switchable);
+    boolean isCollapsable();
+    void setCollapsable(boolean collapsable);
 
     boolean isExpanded();
     void setExpanded(boolean expanded);
@@ -52,13 +52,19 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
 
     void addCustomField(Field field, CustomFieldGenerator fieldGenerator);
 
+    void addListener(ExpandListener listener);
+    void removeListener(ExpandListener listener);
+
+    void addListener(CollapseListener listener);
+    void removeListener(CollapseListener listener);
+
     enum FieldCaptionAlignment {
         LEFT,
         TOP
     }
 
     public class Field implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
-        private Object id;
+        private String id;
         private String caption;
         private String description;
         private Formatter formatter;
@@ -72,11 +78,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
         
         private static final long serialVersionUID = -148321034678616282L;
 
-        public Field(Object id) {
+        public Field(String id) {
             this.id = id;
         }
 
-        public Object getId() {
+        public String getId() {
             return id;
         }
 

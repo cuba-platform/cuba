@@ -42,7 +42,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     
     private static final long serialVersionUID = 768889467060419241L;
 
-    private Map<MetaPropertyPath, Field> fields = new LinkedHashMap<MetaPropertyPath, Field>();
+    private Map<String, Field> fields = new LinkedHashMap<String, Field>();
     private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
     private Map<Integer, List<Field>> columnFields = new HashMap<Integer, List<Field>>();
 
@@ -71,9 +71,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 if (fieldConf != null) {
                     int col = fieldsColumn.get(fieldConf);
                     List<Field> colFields = columnFields.get(col);
-                    super.addField(propertyId, field, col, colFields.indexOf(fieldConf));
+                    super.addField(propertyId.toString(), field, col, colFields.indexOf(fieldConf));
                 } else {
-                    super.addField(propertyId, field, 0);
+                    super.addField(propertyId.toString(), field, 0);
                 }
             }
 
@@ -94,8 +94,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     public Field getField(String id) {
-        for (final Map.Entry<MetaPropertyPath, Field> entry : fields.entrySet()) {
-            if (entry.getKey().toString().equals(id)) {
+        for (final Map.Entry<String, Field> entry : fields.entrySet()) {
+            if (entry.getKey().equals(id)) {
                 return entry.getValue();
             }
         }
@@ -103,7 +103,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     public void addField(Field field) {
-        fields.put((MetaPropertyPath) field.getId(), field);
+        fields.put(field.getId(), field);
     }
 
     public void addField(Field field, int col) {
@@ -158,27 +158,42 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 } else {
                     ds = datasource;
                 }
-                Component c = fieldGenerator.generateField(ds, propertyId);
-                com.vaadin.ui.Field f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
 
-                if (f.getPropertyDataSource() == null) {
-                    if (field.getDatasource() != null) {
-                        final ItemWrapper dsWrapper = createDatasourceWrapper(field.getDatasource(),
-                                Collections.<MetaPropertyPath>singleton((MetaPropertyPath) field.getId()));
-                        f.setPropertyDataSource(dsWrapper.getItemProperty(propertyId));
-                    } else {
-                        f.setPropertyDataSource(itemWrapper.getItemProperty(propertyId));
-                    }
+                Component c;
+                com.vaadin.ui.Field f;
+
+                String id = (String) propertyId;
+                if (ds.getMetaClass().getProperty(id) != null) {
+                   c = fieldGenerator.generateField(ds, propertyId);
+                   f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
+
+                   if (f.getPropertyDataSource() == null) {
+                       MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyEx(id);
+                       if (field.getDatasource() != null) {
+                           final ItemWrapper dsWrapper = createDatasourceWrapper(ds,
+                                   Collections.<MetaPropertyPath>singleton(propertyPath));
+                           f.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
+                       } else {
+                           f.setPropertyDataSource(itemWrapper.getItemProperty(propertyPath));
+                       }
+                   }
+                } else {
+                    c = fieldGenerator.generateField(null, null);
+                    f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
                 }
 
                 if (f.getCaption() == null) {
                     if (field.getCaption() != null) {
                         f.setCaption(field.getCaption());
-                    } else {
-                        MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
+                    } else if (ds.getMetaClass().getProperty(id) != null) {
+                        MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyEx(id);
                         f.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
-                                propertyPath.toString()));
+                                id));
                     }
+                }
+
+                if (f.getWidth() == -1f && field.getWidth() != null) {
+                    f.setWidth(field.getWidth());
                 }
 
                 return f;
@@ -191,7 +206,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         component.setCols(cols);
 
-        Collection<MetaPropertyPath> fields;
+        Collection<MetaPropertyPath> fields = null;
         if (this.fields.isEmpty() && datasource != null) {//collects fields by entity view
             fields = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
 
@@ -205,12 +220,15 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             component.setRows(fields.size());
 
         } else {
-            fields = new ArrayList<MetaPropertyPath>(this.fields.keySet());
-
-            for (final MetaPropertyPath propertyPath : new ArrayList<MetaPropertyPath>(fields)) {
-                final Field field = getField(propertyPath.toString());
-                if (field.getDatasource() != null) {
-                    fields.remove(propertyPath);
+            if (datasource != null) {
+                final List<String> fieldIds = new ArrayList<String>(this.fields.keySet());
+                fields = new ArrayList<MetaPropertyPath>();
+                for (final String id : fieldIds) {
+                    final Field field = getField(id);
+                    if (field.getDatasource() == null && datasource.getMetaClass().getProperty(field.getId()) != null) {
+                        MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyEx(field.getId());
+                        fields.add(propertyPath);
+                    }
                 }
             }
 
@@ -220,11 +238,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         if (datasource != null) {
             itemWrapper = createDatasourceWrapper(datasource, fields);
 
-            //Removes custom fields from the list. We shouldn't to create components for custom fields
-            for (MetaPropertyPath propertyPath : new ArrayList<MetaPropertyPath>(fields)) {
-                final Field field = getField(propertyPath.toString());
-                if (field.isCustom()) {
-                    fields.remove(propertyPath);
+            if (!this.fields.isEmpty()) {
+                //Removes custom fields from the list. We shouldn't to create components for custom fields
+                for (MetaPropertyPath propertyPath : new ArrayList<MetaPropertyPath>(fields)) {
+                    final Field field = getField(propertyPath.toString());
+                    if (field.isCustom()) {
+                        fields.remove(propertyPath);
+                    }
                 }
             }
 
@@ -233,15 +253,16 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             component.setItemDataSource(null, null);
         }
 
-        for (final MetaPropertyPath propertyPath : this.fields.keySet()) {
-            final Field fieldConf = getField(propertyPath.toString());
+        for (final String id : this.fields.keySet()) {
+            final Field fieldConf = getField(id);
             if (!fieldConf.isCustom()) {
                 com.vaadin.ui.Field field;
                 if (datasource != null && fieldConf.getDatasource() == null) {
-                    field = component.getField(propertyPath);
+                    field = component.getField(id);
                 } else if (fieldConf.getDatasource() != null) {
+                    MetaPropertyPath propertyPath = fieldConf.getDatasource().getMetaClass().getPropertyEx(fieldConf.getId());
                     final ItemWrapper dsWrapper = createDatasourceWrapper(fieldConf.getDatasource(),
-                            Collections.<MetaPropertyPath>singleton((MetaPropertyPath) fieldConf.getId()));
+                            Collections.<MetaPropertyPath>singleton(propertyPath));
 
                     field = fieldFactory.createField(dsWrapper, fieldConf.getId(), component);
 
@@ -310,12 +331,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         component.setExpanded(expanded);
     }
 
-    public boolean isSwitchable() {
-        return component.isSwitchable();
+    public boolean isCollapsable() {
+        return component.isCollapsable();
     }
 
-    public void setSwitchable(boolean switchable) {
-        component.setSwitchable(switchable);
+    public void setCollapsable(boolean collapsable) {
+        component.setCollapsable(collapsable);
     }
 
     public String getCaption() {
@@ -378,7 +399,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 return new PropertyWrapper(item, propertyPath) {
                     @Override
                     public boolean isReadOnly() {
-                        Field field = fields.get(propertyPath);
+                        Field field = fields.get(propertyPath.toString());
                         return !isEditable(field);
                     }
                 };
@@ -493,7 +514,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, MetaPropertyPath propertyPath) {
-            final Field field = fields.get(propertyPath);
+            final Field field = fields.get(propertyPath.toString());
 
             Datasource ds = datasource;
 

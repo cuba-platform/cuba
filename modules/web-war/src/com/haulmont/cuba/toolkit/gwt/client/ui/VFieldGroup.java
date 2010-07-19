@@ -24,7 +24,7 @@ public class VFieldGroup extends VForm {
     protected Element captionWrapper = DOM.createDiv();
     protected Element expander = DOM.createDiv();
     protected boolean expanded;
-    protected boolean switchable;
+    protected boolean collapsable;
 
     public VFieldGroup() {
         super();
@@ -55,8 +55,8 @@ public class VFieldGroup extends VForm {
     }
 
     protected void renderDOM(UIDL uidl, ApplicationConnection client) {
-        switchable = uidl.getBooleanAttribute("switchable");
-        if (switchable) {
+        collapsable = uidl.getBooleanAttribute("collapsable");
+        if (collapsable) {
             DOM.setStyleAttribute(expander, "display", "");
         } else {
             DOM.setStyleAttribute(expander, "display", "none");
@@ -71,7 +71,7 @@ public class VFieldGroup extends VForm {
     public void onBrowserEvent(Event event) {
         if (DOM.eventGetType(event) == Event.ONCLICK && DOM.eventGetTarget(event) == expander) {
             toggleExpand();
-            if (switchable) {
+            if (collapsable) {
                 if (expanded) {
                     client.updateVariable(id, "expand", true, true);
                 } else {

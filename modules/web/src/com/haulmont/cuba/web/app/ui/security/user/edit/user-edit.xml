@@ -26,97 +26,28 @@
     <#assign width=250>
     <layout>
         <vbox expand="split" spacing="true">
-            <hbox spacing="true" margin="true" width="100%" stylename="edit-area">
-                <grid id="leftGrid" spacing="true" expandable="false">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://login"/>
-                            </vbox>
-                            <textField id="login" datasource="user" property="login" width="${width}" required="true"/>
-                        </row>
-                        <row visible="PersistenceHelper.isNew(param_item)">
-                            <vbox align="MIDDLE_RIGHT">
-                                <label id="passwLab" value="msg://password"/>
-                            </vbox>
-                            <textField id="passw" secret="true" width="${width}" required="true"/>
-                        </row>
-                        <row visible="PersistenceHelper.isNew(param_item)">
-                            <vbox align="MIDDLE_RIGHT">
-                                <label id="confirmPasswLab" value="msg://confirmPassword"/>
-                            </vbox>
-                            <textField id="confirmPassw" secret="true" width="${width}" required="true"/>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://name"/>
-                            </vbox>
-                            <textField id="name" datasource="user" property="name" width="${width}"/>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://email"/>
-                            </vbox>
-                            <textField id="email" datasource="user" property="email" width="${width}">
-                                <validator
-                                        class="com.haulmont.cuba.gui.components.validators.EmailValidator"
-                                        message="msg://email.alert"/>
-                            </textField>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://group"/>
-                            </vbox>
-                            <lookupField id="group" datasource="user" property="group" captionProperty="name"
-                                         optionsDatasource="groups" width="${width}"/>
-                        </row>
-                    </rows>
-                </grid>
-                <grid id="rightGrid" spacing="true" expandable="false">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://lastName"/>
-                            </vbox>
-                            <textField id="lastName" datasource="user" property="lastName" width="${width}"/>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://firstName"/>
-                            </vbox>
-                            <textField id="firstName" datasource="user" property="firstName" width="${width}"/>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://middleName"/>
-                            </vbox>
-                            <textField id="middleName" datasource="user" property="middleName" width="${width}"/>
-                        </row>
-                        <row>
-                            <vbox align="MIDDLE_RIGHT">
-                                <label value="msg://position"/>
-                            </vbox>
-                            <textField id="position" datasource="user" property="position" width="${width}"/>
-                        </row>
-                    </rows>
-                </grid>
-                <hbox spacing="true">
-                    <label value="msg://active"/>
-                    <checkBox id="active" datasource="user" property="active"/>
-                </hbox>
-                <hbox align="TOP_RIGHT" spacing="true">
-                    <label value="msg://permissions"/>
-                    <lookupField id="permissionsLookupField"/>
-                </hbox>
-            </hbox>
+            <vbox spacing="true" margin="true"  stylename="edit-area" width="100%">
+                <fieldGroup id="fields" width="100%" datasource="user" collapsable="false">
+                    <column flex="1" width="250px">
+                        <field id="login" required="true"/>
+                        <field id="passw" custom="true" visible="PersistenceHelper.isNew(param_item)" caption="msg://password"/>
+                        <field id="confirmPassw" custom="true" visible="PersistenceHelper.isNew(param_item)" caption="msg://confirmPassword"/>
+                        <field id="name"/>
+                        <field id="email">
+                            <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"/>
+                        </field>
+                        <field id="group" required="true"/>
+                        <field id="active"/>
+                    </column>
+                    <column flex="3" width="250px">
+                        <field id="lastName"/>
+                        <field id="firstName" />
+                        <field id="middleName"/>
+                        <field id="position"/>
+                        <field id="permissionsLookupField" caption="msg://permissions" custom="true"/>
+                    </column>
+                </fieldGroup>
+            </vbox>
 
             <split id="split" orientation="horizontal" pos="50">
                 <vbox id="roles-panel" expand="roles" spacing="true" margin="false;true;false;true">

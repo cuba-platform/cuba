@@ -12,21 +12,23 @@ package com.haulmont.cuba.web.app.ui.security.user.edit;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
 import com.haulmont.cuba.web.app.NameBuilderListener;
+import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
+import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.gui.components.WebTextField;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,15 +49,6 @@ public class UserEditor extends AbstractEditor {
     }                                                                                                  
 
     protected void init(Map<String, Object> params) {
-        passwField = getComponent("passw");
-        confirmPasswField = getComponent("confirmPassw");
-
-        if (passwField != null && confirmPasswField != null 
-                && ConfigProvider.getConfig(WebConfig.class).getUseActiveDirectory())
-        {
-            passwField.setRequired(false);
-            confirmPasswField.setRequired(false);
-        }
 
         userDs = getDsContext().get("user");
         userDs.addListener(new NameBuilderListener(this));
@@ -77,7 +70,7 @@ public class UserEditor extends AbstractEditor {
         setPermissionsShowAction(rolesTable, "show-properties", "sec$Target.propertyPermissions.lookup", PermissionType.ENTITY_ATTR);
         setPermissionsShowAction(rolesTable, "show-specific", "sec$Target.specificPermissions.lookup", PermissionType.SPECIFIC);
 
-        initPermissionsLookupField();
+        initCustomFields();
 
         getDsContext().addListener(
                 new DsContext.CommitListener() {
@@ -121,25 +114,57 @@ public class UserEditor extends AbstractEditor {
         }
     }
 
-    private void initPermissionsLookupField() {
-        final LookupField permissionsLookupField = getComponent("permissionsLookupField");
+    private void initCustomFields() {
+        final FieldGroup fields = getComponent("fields");
 
-        java.util.Map<String, Object> optionsMap = new HashMap<String, Object>();
+        FieldGroup.Field f = fields.getField("permissionsLookupField");
+        fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+            public Component generateField(Datasource datasource, Object propertyId) {
+                final LookupField lookupField = new WebLookupField();
 
-        optionsMap.put(MessageProvider.getMessage(UserEditor.class, "screens"), "show-screens");
-        optionsMap.put(MessageProvider.getMessage(UserEditor.class, "entities"), "show-entities");
-        optionsMap.put(MessageProvider.getMessage(UserEditor.class, "properties"), "show-properties");
-        optionsMap.put(MessageProvider.getMessage(UserEditor.class, "specific"), "show-specific");
+                java.util.Map<String, Object> optionsMap = new HashMap<String, Object>();
 
-        permissionsLookupField.setOptionsMap(optionsMap);
+                optionsMap.put(MessageProvider.getMessage(UserEditor.class, "screens"), "show-screens");
+                optionsMap.put(MessageProvider.getMessage(UserEditor.class, "entities"), "show-entities");
+                optionsMap.put(MessageProvider.getMessage(UserEditor.class, "properties"), "show-properties");
+                optionsMap.put(MessageProvider.getMessage(UserEditor.class, "specific"), "show-specific");
 
-        permissionsLookupField.addListener(new ValueListener() {
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (value == null) return;
-                rolesTable.getAction((String)value).actionPerform(rolesTable);
-                permissionsLookupField.setValue(null);
+                lookupField.setOptionsMap(optionsMap);
+
+                lookupField.addListener(new ValueListener() {
+                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                        if (value == null) return;
+                        rolesTable.getAction((String)value).actionPerform(rolesTable);
+                        lookupField.setValue(null);
+                    }
+                });
+                return lookupField;
             }
         });
+
+        f = fields.getField("passw");
+        if (f != null) {
+            fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+                public Component generateField(Datasource datasource, Object propertyId) {
+                    passwField = new WebTextField();
+                    passwField.setSecret(true);
+                    passwField.setRequired(!ConfigProvider.getConfig(WebConfig.class).getUseActiveDirectory());
+                    return passwField;
+                }
+            });
+        }
+
+        f = fields.getField("confirmPassw");
+        if (f != null) {
+            fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+                public Component generateField(Datasource datasource, Object propertyId) {
+                    confirmPasswField = new WebTextField();
+                    confirmPasswField.setSecret(true);
+                    confirmPasswField.setRequired(!ConfigProvider.getConfig(WebConfig.class).getUseActiveDirectory());
+                    return confirmPasswField;
+                }
+            });
+        }
     }
 
 

@@ -123,7 +123,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     protected List<FieldGroup.Field> loadFields(FieldGroup component, Element element, Datasource ds) {
-        final List<Element> fieldElements = element.elements("property");
+        final List<Element> fieldElements = element.elements("field");
         if (!fieldElements.isEmpty()) {
             return loadFields(component, fieldElements, ds);
         }
@@ -156,12 +156,25 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             ds = datasource;
         }
 
-        final MetaClass metaClass = ds.getMetaClass();
-        final MetaPropertyPath metaPropertyPath = metaClass.getPropertyEx(id);
-        if (metaPropertyPath == null)
-            throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'", id, metaClass.getName()));
+        boolean customField = false;
+        String custom = element.attributeValue("custom");
+        if (!StringUtils.isEmpty(custom)) {
+            customField = BooleanUtils.toBoolean(custom);
+        }
 
-        final FieldGroup.Field field = new FieldGroup.Field(metaPropertyPath);
+        MetaPropertyPath metaPropertyPath = null;
+
+        final MetaClass metaClass = ds.getMetaClass();
+        if (metaClass.getProperty(id) == null) {
+            if (!customField) {
+                throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
+                        id, metaClass.getName()));
+            }
+        } else {
+            metaPropertyPath = metaClass.getPropertyEx(id);
+        }
+
+        final FieldGroup.Field field = new FieldGroup.Field(id);
 
         if (datasource != null) {
             field.setDatasource(datasource);
@@ -171,7 +184,9 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         loadDescription(field, element);
 
         field.setXmlDescriptor(element);
-        field.setType(metaPropertyPath.getRangeJavaClass());
+        if (metaPropertyPath != null) {
+            field.setType(metaPropertyPath.getRangeJavaClass());
+        }
 
         field.setFormatter(loadFormatter(element));
 
@@ -180,10 +195,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             field.setWidth(width);
         }
 
-        String custom = element.attributeValue("custom");
-        if (!StringUtils.isEmpty(custom)) {
-            field.setCustom(BooleanUtils.toBoolean(custom));
-        }
+        field.setCustom(customField);
 
         return field;
     }
@@ -239,9 +251,9 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     private void loadSwitchable(FieldGroup component, Element element) {
-        String switchable = element.attributeValue("switchable");
+        String switchable = element.attributeValue("collapsable");
         if (!StringUtils.isEmpty(switchable)) {
-            component.setSwitchable(BooleanUtils.toBoolean(switchable));
+            component.setCollapsable(BooleanUtils.toBoolean(switchable));
         }
     }
 }

@@ -455,14 +455,7 @@
                 <xs:element name="textField">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="validator" minOccurs="0" maxOccurs="unbounded">
-                                <xs:complexType>
-                                    <xs:attribute name="class" type="xs:string" use="optional"/>
-                                    <xs:attribute name="message" type="xs:string" use="optional"/>
-                                    <xs:attribute name="script" type="xs:string" use="optional"/>
-                                    <xs:attribute name="onlyPositive" type="xs:boolean" use="optional"/>
-                                </xs:complexType>
-                            </xs:element>
+                            <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType" />
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
@@ -694,9 +687,48 @@
                         <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="fieldGroup">
+                    <xs:complexType>
+                        <xs:choice maxOccurs="unbounded">
+                            <xs:element name="field" type="fieldGroupType"/>
+                            <xs:element name="column">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="field" minOccurs="1" maxOccurs="unbounded" type="fieldGroupType"/>
+                                    </xs:sequence>
+                                    <xs:attribute name="width" type="xs:string" use="optional"/>
+                                    <xs:attribute name="flex" type="xs:string" use="optional"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="collapsable" type="xs:string" use="optional"/>
+                        <xs:attribute name="expandable" type="xs:string" use="optional"/>
+                        <xs:attribute name="editable" type="xs:string" use="optional"/>
+                        <xs:attribute name="enable" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+                    </xs:complexType>
+                </xs:element>
             </xs:choice>
         </xs:sequence>
     </xs:group>
+
+    <xs:complexType name="fieldGroupType">
+        <xs:sequence>
+            <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
+            <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="required" type="xs:string" use="optional"/>
+        <xs:attribute name="visible" type="xs:string" use="optional"/>
+        <xs:attribute name="width" type="xs:string" use="optional"/>
+        <xs:attribute name="custom" type="xs:string" use="optional"/>
+        <xs:attribute name="caption" type="xs:string" use="optional"/>
+        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+    </xs:complexType>
 
     <xs:group name="layoutOrComponent">
         <xs:sequence>
@@ -807,6 +839,13 @@
         <xs:attribute name="class" type="xs:string" use="optional"/>
         <xs:attribute name="format" type="xs:string" use="optional"/>
         <xs:attribute name="type" type="columnFormatterType" use="optional"/>
+    </xs:complexType>
+    
+    <xs:complexType name="validatorType">
+        <xs:attribute name="class" type="xs:string" use="optional"/>
+        <xs:attribute name="message" type="xs:string" use="optional"/>
+        <xs:attribute name="script" type="xs:string" use="optional"/>
+        <xs:attribute name="onlyPositive" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="buttonsPanelType">

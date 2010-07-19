@@ -26,7 +26,7 @@ import java.util.Map;
 public class FieldGroup extends Form {
 
     private boolean expanded = true;
-    private boolean switchable;
+    private boolean collapsable;
 
     private int currentX = 0;
     private int currentY = 0;
@@ -44,23 +44,23 @@ public class FieldGroup extends Form {
     }
 
     public boolean isExpanded() {
-        return !switchable || expanded;
+        return !collapsable || expanded;
     }
 
     public void setExpanded(boolean expanded) {
-        if (switchable) {
+        if (collapsable) {
             this.expanded = expanded;
             getLayout().setVisible(expanded);
             requestRepaint();
         }
     }
 
-    public boolean isSwitchable() {
-        return switchable;
+    public boolean isCollapsable() {
+        return collapsable;
     }
 
-    public void setSwitchable(boolean switchable) {
-        this.switchable = switchable;
+    public void setCollapsable(boolean collapsable) {
+        this.collapsable = collapsable;
         if (!expanded) {
             setExpanded(true);
         }
@@ -69,7 +69,7 @@ public class FieldGroup extends Form {
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        target.addAttribute("switchable", isSwitchable());
+        target.addAttribute("collapsable", isCollapsable());
         target.addAttribute("expanded", isExpanded());
     }
 
@@ -77,7 +77,7 @@ public class FieldGroup extends Form {
     public void changeVariables(Object source, Map<String, Object> variables) {
         super.changeVariables(source, variables);
 
-        if (isSwitchable()) {
+        if (isCollapsable()) {
             if (variables.containsKey("expand")) {
                 setExpanded(true);
                 getLayout().requestRepaintAll();
