@@ -60,10 +60,10 @@ public class VFieldGroup extends VForm {
         collapsable = uidl.getBooleanAttribute("collapsable");
         if (collapsable) {
             DOM.setStyleAttribute(expander, "display", "");
-            addStyleDependentName("collapsable");
+            removeStyleDependentName("nocollapsable");
         } else {
+            addStyleDependentName("nocollapsable");
             DOM.setStyleAttribute(expander, "display", "none");
-            removeStyleDependentName("collapsable");
         }
         if (uidl.getBooleanAttribute("expanded") != expanded) {
             toggleExpand();

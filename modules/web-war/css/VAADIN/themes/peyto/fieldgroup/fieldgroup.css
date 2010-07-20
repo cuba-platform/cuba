@@ -3,11 +3,11 @@
     overflow: hidden;
 }
 
-.v-form.v-fieldgroup.v-form-collapsable fieldset {
+.v-form.v-fieldgroup fieldset {
     border-top: 1px solid #babfc0;
 }
 
-.v-form.v-fieldgroup.v-form-nocaption fieldset {
+.v-form.v-fieldgroup.v-form-nocollapsable.v-form-nocaption fieldset {
     border-top: none;
 }
 
