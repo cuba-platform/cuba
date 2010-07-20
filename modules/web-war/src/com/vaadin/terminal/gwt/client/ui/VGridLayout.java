@@ -39,7 +39,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
 
     private DivElement margin = Document.get().createDivElement();
 
-    private final AbsolutePanel canvas = new AbsolutePanel();
+    protected final AbsolutePanel canvas = new AbsolutePanel();
 
     protected ApplicationConnection client;
 
@@ -54,17 +54,17 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
     protected int[] rowHeights;
     protected int[] captionWidths;
 
-    private String height;
+    protected String height;
 
-    private String width;
+    protected String width;
 
-    private int[] colExpandRatioArray;
+    protected int[] colExpandRatioArray;
 
     private int[] rowExpandRatioArray;
 
-    private int[] minColumnWidths;
+    protected int[] minColumnWidths;
 
-    private int[] minRowHeights;
+    protected int[] minRowHeights;
 
     private boolean rendering;
 
@@ -366,7 +366,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         }
     }
 
-    private void expandColumns() {
+    protected void expandColumns() {
         if (!"".equals(width)) {
             int usedSpace = minColumnWidths[0];
             for (int i = 1; i < minColumnWidths.length; i++) {
@@ -393,7 +393,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         }
     }
 
-    private void layoutCells() {
+    protected void layoutCells() {
         int x = 0;
         int y = 0;
         for (int i = 0; i < cells.length; i++) {
@@ -574,7 +574,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
     private LinkedList<SpanList> colSpans = new LinkedList<SpanList>();
     private LinkedList<SpanList> rowSpans = new LinkedList<SpanList>();
 
-    private int marginTopAndBottom;
+    protected int marginTopAndBottom;
 
     private class SpanList {
         final int span;

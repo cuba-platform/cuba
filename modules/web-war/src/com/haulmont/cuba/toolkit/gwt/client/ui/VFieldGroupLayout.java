@@ -62,6 +62,43 @@ public class VFieldGroupLayout extends VGridLayout {
         }
     }
 
+    @Override
+    protected void expandColumns() {
+        if (!"".equals(width)) {
+            int usedSpace = minColumnWidths[0];
+            for (int i = 1; i < minColumnWidths.length; i++) {
+                usedSpace += spacingPixelsHorizontal + minColumnWidths[i];
+            }
+            canvas.setWidth("");
+            int availableSpace = canvas.getOffsetWidth();
+            int excessSpace = availableSpace - usedSpace;
+            int distributed = 0;
+            if (excessSpace > 0) {
+                for (int i = 0; i < columnWidths.length; i++) {
+                    int ew = excessSpace * colExpandRatioArray[i] / 1000;
+                    columnWidths[i] = minColumnWidths[i] + ew;
+                    distributed += ew;
+                }
+                excessSpace -= distributed;
+                int c = 0;
+                while (excessSpace > 0) {
+                    columnWidths[c % columnWidths.length]++;
+                    excessSpace--;
+                    c++;
+                }
+            }
+
+            if (!verticalCaption) {
+                for (int i = 0; i < minColumnWidths.length; i++) {
+                    int w = minColumnWidths[i] + captionWidths[i] + spacingPixelsHorizontal;
+                    if (columnWidths[i] < w) {
+                        columnWidths[i] = w;
+                    }
+                }
+            }
+        }
+    }
+
     private class FieldGroupComponentContainer extends ChildComponentContainer {
         protected FieldGroupComponentContainer(Widget widget, int orientation) {
             super(widget, orientation);
