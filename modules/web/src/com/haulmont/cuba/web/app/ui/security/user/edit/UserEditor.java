@@ -43,6 +43,7 @@ public class UserEditor extends AbstractEditor {
     private Table substTable;
     protected TextField passwField;
     protected TextField confirmPasswField;
+    protected LookupField languageLookup;
 
     public UserEditor(Window frame) {
         super(frame);
@@ -95,8 +96,11 @@ public class UserEditor extends AbstractEditor {
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
-        if (PersistenceHelper.isNew(item))
+        if (PersistenceHelper.isNew(item)) {
             addDefaultRoles();
+
+            languageLookup.setValue(UserSessionClient.getUserSession().getLocale().getLanguage());
+        }
     }
 
     private void addDefaultRoles() {
@@ -124,10 +128,10 @@ public class UserEditor extends AbstractEditor {
 
                 java.util.Map<String, Object> optionsMap = new HashMap<String, Object>();
 
-                optionsMap.put(MessageProvider.getMessage(UserEditor.class, "screens"), "show-screens");
-                optionsMap.put(MessageProvider.getMessage(UserEditor.class, "entities"), "show-entities");
-                optionsMap.put(MessageProvider.getMessage(UserEditor.class, "properties"), "show-properties");
-                optionsMap.put(MessageProvider.getMessage(UserEditor.class, "specific"), "show-specific");
+                optionsMap.put(getMessage("screens"), "show-screens");
+                optionsMap.put(getMessage("entities"), "show-entities");
+                optionsMap.put(getMessage("properties"), "show-properties");
+                optionsMap.put(getMessage("specific"), "show-specific");
 
                 lookupField.setOptionsMap(optionsMap);
 
@@ -165,6 +169,22 @@ public class UserEditor extends AbstractEditor {
                 }
             });
         }
+
+        f = fields.getField("language");
+        fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+            public Component generateField(Datasource datasource, Object propertyId) {
+                languageLookup = new WebLookupField();
+
+                Map<String, Locale> locales = ConfigProvider.getConfig(WebConfig.class).getAvailableLocales();
+                TreeMap<String, Object> options = new TreeMap<String, Object>();
+                for (Map.Entry<String, Locale> entry : locales.entrySet()) {
+                    options.put(entry.getKey(), entry.getValue().getLanguage());
+                }
+                languageLookup.setOptionsMap(options);
+
+                return languageLookup;
+            }
+        });
     }
 
 

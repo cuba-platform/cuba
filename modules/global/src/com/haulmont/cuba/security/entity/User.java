@@ -58,6 +58,9 @@ public class User extends StandardEntity
     @Column(name = "EMAIL", length = 100)
     private String email;
 
+    @Column(name = "LANGUAGE_", length = 10)
+    private String language;
+
     @Column(name = "ACTIVE")
     private Boolean active = true;
 
@@ -136,6 +139,14 @@ public class User extends StandardEntity
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public String getFirstName() {

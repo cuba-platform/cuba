@@ -134,6 +134,7 @@ create table SEC_USER (
     MIDDLE_NAME varchar(255),
     POSITION_ varchar(255),
     EMAIL varchar(100),
+    LANGUAGE_ varchar(20),
     ACTIVE boolean,
     GROUP_ID uuid,
     DEFAULT_SUBSTITUTED_USER_ID uuid,

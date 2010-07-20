@@ -140,6 +140,7 @@ create table SEC_USER (
     MIDDLE_NAME varchar(255),
     POSITION_ varchar(255),
     EMAIL varchar(100),
+    LANGUAGE_ varchar(20),
     ACTIVE smallint,
     GROUP_ID varchar(36),
     DEFAULT_SUBSTITUTED_USER_ID varchar(36),
