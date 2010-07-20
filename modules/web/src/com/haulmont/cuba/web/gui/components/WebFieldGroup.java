@@ -49,7 +49,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     private Set<Field> readOnlyFields = new HashSet<Field>();
 
     private Datasource<Entity> datasource;
-    protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
 
     private String caption;
     private String description;
