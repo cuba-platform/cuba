@@ -35,6 +35,8 @@ public class VFieldGroup extends VForm {
         DOM.setElementProperty(captionWrapper, "className", CLASSNAME + "-caption");
 
         DOM.sinkEvents(expander, Event.ONCLICK);
+
+        addStyleName("v-fieldgroup");
     }
 
     protected void renderContent(UIDL uidl, ApplicationConnection client) {
@@ -58,8 +60,10 @@ public class VFieldGroup extends VForm {
         collapsable = uidl.getBooleanAttribute("collapsable");
         if (collapsable) {
             DOM.setStyleAttribute(expander, "display", "");
+            addStyleDependentName("collapsable");
         } else {
             DOM.setStyleAttribute(expander, "display", "none");
+            removeStyleDependentName("collapsable");
         }
         if (uidl.getBooleanAttribute("expanded") != expanded) {
             toggleExpand();

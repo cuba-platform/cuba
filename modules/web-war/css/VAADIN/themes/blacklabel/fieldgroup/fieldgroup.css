@@ -1,21 +1,24 @@
-.v-form .v-form-caption {
+.v-form.v-fieldgroup .v-form-caption {
     clear: both;
     overflow: hidden;
-    padding-bottom: 5px;
 }
 
-.v-form-nocaption .v-form-caption {
-    padding-bottom: 0;
+.v-form.v-fieldgroup.v-form-collapsable fieldset {
+    border-top: 1px solid #fff;
 }
 
-.v-form .v-form-caption div {
+.v-form.v-fieldgroup.v-form-nocaption fieldset {
+    border-top: none;
+}
+
+.v-form.v-fieldgroup .v-form-caption div {
     float: left;
-    width: 20px;
+    width: 17px;
     height: 15px;
-    background: transparent url(img/expand.gif) no-repeat center center;
+    background: transparent url(img/expand.gif) no-repeat center left;
     cursor: pointer;
 }
 
-.v-form .expanded div {
-    background: transparent url(img/collapse.gif) no-repeat center center;
+.v-form.v-fieldgroup .expanded div {
+    background: transparent url(img/collapse.gif) no-repeat center left;
 }

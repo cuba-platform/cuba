@@ -69,7 +69,6 @@ fieldset {
 
 .v-form fieldset {
 	border: none;
-	/*border-top: 0 solid #babfc0;*/
     margin: 0;
     padding: 0;
 }
