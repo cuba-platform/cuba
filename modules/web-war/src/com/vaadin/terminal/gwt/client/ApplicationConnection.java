@@ -1652,8 +1652,8 @@ public class ApplicationConnection {
         }
 
         StringBuffer styleBuf = new StringBuffer();
-        final String primaryName = component.getStyleName();
-        styleBuf.append(primaryName);
+        final String primaryName = component.getStylePrimaryName();
+        styleBuf.append(component.getStyleName());
 
         // first disabling and read-only status
         if (!enabled) {
