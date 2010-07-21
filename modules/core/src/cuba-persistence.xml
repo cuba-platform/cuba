@@ -29,15 +29,23 @@
         <class>com.haulmont.cuba.security.entity.FilterEntity</class>
         <class>com.haulmont.cuba.security.entity.SearchFolder</class>
 
+        <class>com.haulmont.cuba.report.DataSet</class>
+        <class>com.haulmont.cuba.report.BandDefinition</class>
+        <class>com.haulmont.cuba.report.Report</class>
+        <class>com.haulmont.cuba.report.ReportInputParameter</class>
+        <class>com.haulmont.cuba.report.ReportScreen</class>
+
         <properties>
             <property name="openjpa.Log" value="log4j"/>
             <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72"/>
-            <property name="openjpa.jdbc.DBDictionary" value="com.haulmont.cuba.core.sys.persistence.CubaHSQLDictionary(SimulateLocking=true)"/>
+            <property name="openjpa.jdbc.DBDictionary" value="com.haulmont.cuba.core.sys.persistence.CubaPostgresDictionary(SimulateLocking=true)"/>
             <property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
             <property name="openjpa.DetachState" value="loaded(DetachedStateField=true, DetachedStateManager=true)"/>
             <property name="openjpa.IgnoreChanges" value="true"/>
             <property name="openjpa.jdbc.MappingDefaults"
-                      value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidStringValueHandler'"/>
+                      value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidPostgresValueHandler'"/>
+            <property name="openjpa.jdbc.SubclassFetchMode" value="none"/>
+            <property name="openjpa.jdbc.SubclassFetchMode" value="none"/>
             <property name="openjpa.jdbc.SubclassFetchMode" value="none"/>
         </properties>
     </persistence-unit>

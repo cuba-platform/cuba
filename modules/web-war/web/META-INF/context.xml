@@ -6,10 +6,10 @@
       maxActive="4"
       maxIdle="2"
       maxWait="5000"
-      driverClassName="org.hsqldb.jdbcDriver"
-      username="sa"
-      password=""
-      url="jdbc:hsqldb:hsql://localhost/cubadb"/>
+      driverClassName="org.postgresql.Driver"
+      username="root"
+      password="root"
+      url="jdbc:postgresql://localhost/cubadb"/>
 
     <!-- Switch off session serialization -->
     <Manager className="org.apache.catalina.session.PersistentManager" debug="0" distributable="false"

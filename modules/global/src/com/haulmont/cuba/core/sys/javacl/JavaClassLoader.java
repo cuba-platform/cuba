@@ -30,7 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaClassLoader extends URLClassLoader {
-    private final String PATH_SEPARATOR = System.getProperty("path.separator");
+    private static final String PATH_SEPARATOR = System.getProperty("path.separator");
+    private static final String IMPORT_PATTERN = "import .+?;";
 
     private static class TimestampClass {
         Class clazz;
@@ -80,11 +81,9 @@ public class JavaClassLoader extends URLClassLoader {
             }
             TimestampClass tsClass = compiled.get(name);
             if (tsClass != null) return tsClass.clazz;
-            throw new ClassNotFoundException();
+            throw new ClassNotFoundException(name);
         }
     }
-
-    private static final String IMPORT_PATTERN = "import .+?;";
 
     private static Log log = LogFactory.getLog(JavaClassLoader.class);
 
@@ -122,7 +121,8 @@ public class JavaClassLoader extends URLClassLoader {
         compiled.put(name, clazz);
     }
 
-    private void removeTimestampClass(String name) {
+    private void removeTimestampClass(String name, Map<String, TimestampClass> removed) {
+        removed.put(name, compiled.get(name));
         compiled.remove(name);
     }
 
@@ -203,7 +203,7 @@ public class JavaClassLoader extends URLClassLoader {
         if (!compilationNeeded(name)) {
             return getTimestampClass(name).clazz;
         }
-
+        Map<String, TimestampClass> removed = new HashMap<String, TimestampClass>();
         try {
             log.debug("Compiling " + name);
 
@@ -216,10 +216,10 @@ public class JavaClassLoader extends URLClassLoader {
             );
 
             Map<String, CharSequence> sourcesToCompilation = collectDependentClasses(name, src);
-            removeTimestampClass(name);//before recompilation we removes old class instance
+            removeTimestampClass(name, removed);//before recompilation we removes old class instance
             for (String dependentClassName : sourcesToCompilation.keySet()) {
                 if (compilationNeeded(dependentClassName)) {
-                    removeTimestampClass(dependentClassName);
+                    removeTimestampClass(dependentClassName, removed);
                 }
             }
 
@@ -233,6 +233,7 @@ public class JavaClassLoader extends URLClassLoader {
             clazz = (Class) compiledClasses.get(name);
             return clazz;
         } catch (Exception e) {
+            compiled.putAll(removed);//return removed class back if compilation fails
             throw new RuntimeException(e);
         }
     }
@@ -303,5 +304,9 @@ public class JavaClassLoader extends URLClassLoader {
                 return false;
         }
         return true;
+    }
+
+    public void clearCache() {
+        compiled.clear();
     }
 }

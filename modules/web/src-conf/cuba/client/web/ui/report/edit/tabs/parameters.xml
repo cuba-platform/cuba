@@ -1,0 +1,22 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
+    <#assign width = 200>
+    <#assign treeHeight = 400>
+    <#assign treeWidth = 500>
+    <layout expandLayout="false">
+        <vbox margin="true" spacing="true" expand="inputParametersTable" stylename="edit-area">
+            <hbox spacing="true" margin="true">
+                <button id="createParameter"/>
+                 <button action="inputParametersTable.edit" caption="msg://parametersFrame.editParameter"/>
+                <button action="inputParametersTable.remove" caption="msg://parametersFrame.removeParameter"/>
+            </hbox>
+            <table id="inputParametersTable" editable="true" width="60%">
+                <columns>
+                    <column id="name" caption="msg://parameters.name" editable="true"/>
+                    <column id="alias" caption="msg://parameters.alias" editable="true"/>
+                    <column id="type" caption="msg://parameters.type" editable="true"/>
+                </columns>
+                <rows datasource="parametersDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

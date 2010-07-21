@@ -89,6 +89,17 @@
         <ext:install-lib name="commons-beanutils" version="${commons-beanutils.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="poi" version="${poi.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib name="iText" version="${iText.version}" toDir="${lib.common.dir}"/>
+
+        <!--Open Office-->
+        <ext:install-lib name="bootstrapconnector" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="unoil" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="jurt" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="juh" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="ridl" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+
+        <!--XStream-->
+        <ext:install-lib name="xstream" version="${xstream.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="xpp3" version="${xpp3.version}" toDir="${lib.server.dir}"/>
 	</target>
 	
 	<target name="compile">

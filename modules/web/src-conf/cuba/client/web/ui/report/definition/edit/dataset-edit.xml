@@ -1,0 +1,53 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.report.definition.edit.DatasetEditor"
+        datasource="dataSetDs"
+        caption="msg://dataSetEditor"
+        messagesPack="cuba.client.web.ui.report"
+        >
+
+
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/report/report.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <datasource
+                id="dataSetDs"
+                class="com.haulmont.cuba.report.DataSet"
+                view="report.edit">
+        </datasource>
+
+    </dsContext>
+    <#assign width = 400>
+    <layout expand="windowActions">
+
+        <vbox margin="true" stylename="edit-area">
+            <grid spacing="true" expandable="false">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://dataSet.name"/>
+                        <textField id="name" datasource="dataSetDs" property="name"
+                                   width="${width}" required="true"/>
+                    </row>
+                    <row>
+                        <label value="msg://dataSet.type"/>
+                        <lookupField id="type" datasource="dataSetDs" property="type"
+                                     width="${width}" required="true"/>
+                    </row>
+                    <row>
+                        <label id="dataSet_text" value="msg://dataSet.text"/>
+                        <textField id="text" datasource="dataSetDs" property="text"
+                                   width="${width}" rows="25" cols="75"/>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

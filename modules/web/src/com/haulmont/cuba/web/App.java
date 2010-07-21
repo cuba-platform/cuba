@@ -63,7 +63,7 @@ public class App extends Application
 
     private static Log log = LogFactory.getLog(App.class);
 
-    public static final String THEME_NAME = "blacklabel";
+    public static final String THEME_NAME = "peyto";
 
     protected Connection connection;
     private WebWindowManager windowManager;

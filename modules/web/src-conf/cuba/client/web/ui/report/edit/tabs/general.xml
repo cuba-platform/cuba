@@ -1,0 +1,77 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
+    <#assign width = 200>
+    <#assign treeHeight = 400>
+    <#assign treeWidth = 650>
+    <layout expand="split" expandLayout="true">
+        <split orientation="horizontal" id="split">
+            <vbox margin="true" stylename="edit-area">
+                <grid spacing="true" expandable="false">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://report.generalParameters" stylename="h2"/>
+                        </row>
+                        <row>
+                            <label value="msg://report.name"/>
+                            <textField id="name" datasource="reportDs" property="name"
+                                       width="${width}" required="true"/>
+                        </row>
+                        <row>
+                            <label value="msg://report.reportType"/>
+                            <lookupField id="reportType" datasource="reportDs" property="reportType"
+                                      width="${width}" required="true"/>
+                        </row>
+                        <row>
+                            <label value="msg://report.reportOutputType"/>
+                            <lookupField id="reportOutputType" datasource="reportDs" property="reportOutputType"
+                                         width="${width}" required="true"/>
+                        </row>
+                        <row>
+                            <label value="msg://report.template"/>
+                            <hbox spacing="true">
+                                <button id="templatePath" stylename="link"/>
+                                <upload id="uploadTemplate" width="${treeWidth}"/>
+                            </hbox>
+
+                        </row>
+                        <row>
+                            <label value="msg://report.isCustom"/>
+                            <checkBox id="isCustom" datasource="reportDs" property="isCustom"
+                                      width="${width}"/>
+                        </row>
+                        <row>
+                            <label value="msg://report.customClass"/>
+                            <textField id="customClass" datasource="reportDs" property="customClass"
+                                       width="${width}"/>
+                        </row>
+                    </rows>
+                </grid>
+            </vbox>
+
+            <vbox expand="scroll" spacing="true" height="${treeHeight}" width="${treeWidth}" stylename="edit-area"
+                  margin="true">
+                <label value="msg://report.bands" stylename="h2"/>
+
+                <hbox spacing="true" margin="true">
+                    <button id="createBandDefinition"/>
+                    <button id="editBandDefinition"/>
+                    <button id="removeBandDefinition"/>
+                    <button id="up"/>
+                    <button id="down"/>
+                </hbox>
+
+                <scrollbox id="scroll" height="${treeHeight}" width="${treeWidth}">
+                    <vbox id="vbox" height="${treeHeight}" width="${treeWidth}">
+                        <tree id="serviceTree">
+                            <treechildren datasource="treeDs" captionProperty="name"/>
+                        </tree>
+                    </vbox>
+                </scrollbox>
+            </vbox>
+        </split>
+    </layout>
+</window>

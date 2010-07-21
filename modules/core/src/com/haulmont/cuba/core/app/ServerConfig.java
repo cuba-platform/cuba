@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
+import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 /**
  * Common server configuration parameters
@@ -79,4 +80,13 @@ public interface ServerConfig extends Config {
     @Property("cuba.automaticDatabaseUpdate")
     @DefaultBoolean(false)
     boolean getAutomaticDatabaseUpdate();
+
+    /**
+     * returns path to installed Open Office 
+     */
+    @Property("cuba.reporting.openoffice.path")
+    String getOpenOfficePath();
+
+
+
 }

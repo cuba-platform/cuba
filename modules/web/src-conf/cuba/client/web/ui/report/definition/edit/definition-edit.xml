@@ -1,0 +1,71 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.report.definition.edit.BandDefinitionEditor"
+        datasource="bandDefinitionDs"
+        caption="msg://bandDefinitionEditor"
+        messagesPack="cuba.client.web.ui.report"
+        >
+
+
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/report/report.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <datasource
+                id="bandDefinitionDs"
+                class="com.haulmont.cuba.report.BandDefinition"
+                view="report.edit">
+        </datasource>
+        <collectionDatasource id="dataSetsDs" class="com.haulmont.cuba.report.DataSet" view="report.edit">
+            <query>
+                select d from report$DataSet d where d.bandDefinition.id = :ds$bandDefinitionDs
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <#assign width = 400>
+    <layout expand="windowActions">
+
+        <vbox margin="true" stylename="edit-area" spacing="true">
+            <grid spacing="true" expandable="false">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://definition.name"/>
+                        <textField id="name" datasource="bandDefinitionDs" property="name"
+                                   width="${width}" required="true"/>
+                    </row>
+
+                    <row>
+                        <label value="msg://definition.orientation"/>
+                        <lookupField id="orientation" datasource="bandDefinitionDs" property="orientation"
+                                   width="${width}" required="true"/>
+                    </row>
+                </rows>
+            </grid>
+
+            <vbox spacing="true" margin="true">
+                <label value="msg://definition.datasets" stylename="h2"/>
+
+                <hbox margin="true" spacing="true">
+                    <button action="dataSets.create"/>
+                    <button action="dataSets.edit"/>
+                    <button action="dataSets.remove"/>
+                </hbox>
+                <table id="dataSets" editable="true" width="75%">
+                    <columns>
+                        <column id="name" caption="msg://dataSet.name"/>
+                        <column id="type" caption="msg://dataSet.type"/>
+                        <column id="text" caption="msg://dataSet.text"/>
+                    </columns>
+                    <rows datasource="dataSetsDs"/>
+                </table>
+            </vbox>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

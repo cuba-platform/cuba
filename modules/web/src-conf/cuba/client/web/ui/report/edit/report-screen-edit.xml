@@ -1,0 +1,38 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.report.edit.ReportScreenEditor"
+        datasource="reportScreenDs"
+        caption="msg://ReportScreenEditor"
+        >
+
+
+    <metadataContext>
+    </metadataContext>
+
+    <dsContext>
+        <datasource
+                id="reportScreenDs"
+                class="com.haulmont.cuba.report.ReportScreen"
+                view="_local">
+        </datasource>
+    </dsContext>
+    <#assign width = 400>
+    <layout expand="windowActions">
+        <vbox margin="true" stylename="edit-area">
+            <grid spacing="true" expandable="false">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://screens.screenId"/>
+                        <lookupField id="screenId" width="${width}"/>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

@@ -13,12 +13,14 @@ package com.haulmont.cuba.gui.export;
 /**
  * Format of data exported by {@link ExportDisplay}
  */
-public enum ExportFormat
-{
+public enum ExportFormat {
     HTML("text/html", "html"),
     PDF("application/pdf", "pdf"),
     XLS("application/vnd.ms-excel", "xls"),
-    RTF("application/rtf", "rtf");
+    RTF("application/rtf", "rtf"),
+    DOC("application/doc", "doc"),
+    XML("text/xml", "xml"),
+    ZIP("application/zip", "zip");
 
     private String contentType;
     private String fileExt;

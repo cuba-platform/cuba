@@ -54,7 +54,7 @@ public abstract class ScriptingProvider {
         return (T) getInstance().doRunGroovyScript(name, binding);
     }
 
-    public static <T> T runGroovyScript(String name,  Map<String, Object> context) {
+    public static <T> T runGroovyScript(String name, Map<String, Object> context) {
         Binding binding = createBinding(context);
         return (T) getInstance().doRunGroovyScript(name, binding);
     }
@@ -73,6 +73,7 @@ public abstract class ScriptingProvider {
 
     public static void clearCache() {
         getInstance().doGetGroovyClassLoader().clearCache();
+        JavaClassLoader.getInstance().clearCache();
     }
 
     public <T> T doRunGroovyScript(String name, Binding binding) {

@@ -1,0 +1,19 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.report.browse.CommonLookupController"
+        messagesPack="cuba.client.web.ui.report"
+        caption="msg://lookup"
+        >
+
+
+    <metadataContext>
+    </metadataContext>
+
+    <dsContext></dsContext>
+
+    <layout expandLayout="true" expand="vbox">
+        <vbox id="vbox" expand="table">
+
+        </vbox>
+    </layout>
+</window>

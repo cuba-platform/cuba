@@ -277,13 +277,18 @@ public class WebActionsField
 
     @Override
     public boolean isValid() {
-        return lookupField.isValid();
+        return component.isValid();
     }
 
     @Override
     public void validate() throws ValidationException {
-        lookupField.validate();
+        component.validate();
     }
+
+    public WebLookupField getLookupField() {
+        return lookupField;
+    }
+
 
     public void disablePaging() {
     }

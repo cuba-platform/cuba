@@ -70,4 +70,35 @@
     <screen id="core$LockInfo.browse"
             template="/com/haulmont/cuba/web/app/ui/core/locking/lock-browse.xml"/>
 
+    <!-- report screens-->
+    <screen id="report$Report.browse"
+            template="/cuba/client/web/ui/report/browse/report-browse.xml"/>
+
+    <screen id="report$Report.edit"
+            template="/cuba/client/web/ui/report/edit/report-edit.xml"/>
+
+    <screen id="report$Report.fileUploadDialog"
+            template="cuba\client\web\ui\report\fileuploaddialog\file-upload-dialog.xml"/>
+
+    <screen id="report$Report.run"
+            template="/cuba/client/web/ui/report/run/report-run.xml"/>
+
+    <screen id="report$BandDefinition.edit"
+            template="/cuba/client/web/ui/report/definition/edit/definition-edit.xml"/>
+
+    <screen id="report$DataSet.edit"
+            template="/cuba/client/web/ui/report/definition/edit/dataset-edit.xml"/>
+
+    <screen id="report$inputParameters"
+            template="/cuba/client/web/ui/report/browse/input-parameters.xml"/>
+
+    <screen id="report$commonLookup"
+            template="/cuba/client/web/ui/report/browse/common-lookup.xml"/>
+
+    <screen id="report$ReportInputParameter.edit"
+            template="/cuba/client/web/ui/report/edit/parameter-edit.xml"/>
+
+    <screen id="report$ReportScreen.edit"
+            template="/cuba/client/web/ui/report/edit/report-screen-edit.xml"/>
+
 </screen-config>

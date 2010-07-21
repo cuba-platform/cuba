@@ -9,4 +9,8 @@
     </menu>
     <menu id="settings"/>
     <menu id="feedback"/>
+    <menu id="reports">
+        <item id="report$Report.browse"/>
+        <item id="report$Report.run"/>
+    </menu>
 </menu-config>

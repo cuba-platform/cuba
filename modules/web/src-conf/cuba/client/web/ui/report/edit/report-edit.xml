@@ -1,0 +1,43 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.report.edit.ReportEditor"
+        messagesPack="cuba.client.web.ui.report"
+        datasource="reportDs"
+        caption="msg://reportEditor"
+        >
+
+
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/web/app/ui/report/report.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <datasource
+                id="reportDs"
+                class="com.haulmont.cuba.report.Report"
+                view="report.edit">
+            <collectionDatasource id="parametersDs" property="inputParameters"/>
+            <collectionDatasource id="rolesDs" property="roles"/>
+            <collectionDatasource id="reportScreensDs" property="reportScreens"/>
+        </datasource>
+        <collectionDatasource id='bandDefinitionDs' class='com.haulmont.cuba.report.BandDefinition' view='_minimal'/>
+
+        <hierarchicalDatasource id="treeDs" class="com.haulmont.cuba.report.BandDefinition" view="report.edit">
+            <datasourceClass>cuba.client.web.ui.report.BandDefinitionsDatasource</datasourceClass>
+        </hierarchicalDatasource>
+    </dsContext>
+    <layout expand="tabsheet">
+        <tabsheet id="tabsheet">
+            <tab id="generalTab" caption="msg://generalTab">
+                <iframe src="/cuba/client/web/ui/report/edit/tabs/general.xml" id="generalFrame"/>
+            </tab>
+            <tab id="parametersTab" caption="msg://parametersTab">
+                <iframe src="/cuba/client/web/ui/report/edit/tabs/parameters.xml" id="parametersFrame"/>
+            </tab>
+            <tab id="securityTab" caption="msg://securityTab">
+                <iframe src="/cuba/client/web/ui/report/edit/tabs/security.xml" id="securityFrame"/>
+            </tab>
+        </tabsheet>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>
