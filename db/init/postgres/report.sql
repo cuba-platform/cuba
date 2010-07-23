@@ -91,7 +91,7 @@ CREATE TABLE report_data_set
 create table REPORT_REPORTS_ROLES (
 REPORT_ID  uuid not null,
 ROLE_ID  uuid not null
-)
+);
 
 alter table REPORT_REPORTS_ROLES add constraint FK_REPORT_REPORTS_ROLES_TO_REPORT
 foreign key (REPORT_ID) references REPORT_REPORT(ID);
