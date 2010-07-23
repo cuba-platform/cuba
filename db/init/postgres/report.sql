@@ -1,3 +1,25 @@
+
+CREATE TABLE report_band_definition
+(
+  id uuid NOT NULL,
+  create_ts timestamp without time zone,
+  created_by character varying(50),
+  "version" integer,
+  update_ts timestamp without time zone,
+  updated_by character varying(50),
+  delete_ts timestamp without time zone,
+  deleted_by character varying(50),
+  query character varying(255),
+  parent_definition_id uuid,
+  "name" character varying(255),
+  orientation integer DEFAULT 0,
+  "position" integer DEFAULT 0,
+  CONSTRAINT report_band_definition_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_report_band_definition_to_report_band_definition FOREIGN KEY (parent_definition_id)
+      REFERENCES report_band_definition (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
 CREATE TABLE report_report
 (
   id uuid NOT NULL,
@@ -19,27 +41,6 @@ CREATE TABLE report_report
   report_type integer,
   CONSTRAINT report_report_pkey PRIMARY KEY (id),
   CONSTRAINT fk_report_report_to_report_band_definition FOREIGN KEY (root_definition_id)
-      REFERENCES report_band_definition (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-
-CREATE TABLE report_band_definition
-(
-  id uuid NOT NULL,
-  create_ts timestamp without time zone,
-  created_by character varying(50),
-  "version" integer,
-  update_ts timestamp without time zone,
-  updated_by character varying(50),
-  delete_ts timestamp without time zone,
-  deleted_by character varying(50),
-  query character varying(255),
-  parent_definition_id uuid,
-  "name" character varying(255),
-  orientation integer DEFAULT 0,
-  "position" integer DEFAULT 0,
-  CONSTRAINT report_band_definition_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_report_band_definition_to_report_band_definition FOREIGN KEY (parent_definition_id)
       REFERENCES report_band_definition (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 );
