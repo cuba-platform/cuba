@@ -1,17 +1,29 @@
-.v-form.v-fieldgroup .v-form-caption {
+.v-fieldgroup fieldset {
+    border-top: 1px solid #babfc0;
+    margin: 0;
+    padding: 0;
+}
+
+.v-fieldgroup legend {
+	margin: 0;
+	padding: 0 4px 0.3em 4px;
+	font-weight: bold;
+}
+
+.v-fieldgroup.v-fieldgroup-nodescription .v-form-description {
+    height: 0;
+}
+
+.v-fieldgroup .v-form-caption {
     clear: both;
     overflow: hidden;
 }
 
-.v-form.v-fieldgroup fieldset {
-    border-top: 1px solid #babfc0;
-}
-
-.v-form.v-fieldgroup.v-form-nocollapsable.v-form-nocaption fieldset {
+.v-fieldgroup.v-fieldgroup-nocollapsable.v-fieldgroup-nocaption fieldset {
     border-top: none;
 }
 
-.v-form.v-fieldgroup .v-form-caption div {
+.v-fieldgroup .v-form-caption div {
     float: left;
     width: 17px;
     height: 15px;
@@ -19,6 +31,6 @@
     cursor: pointer;
 }
 
-.v-form.v-fieldgroup .expanded div {
+.v-fieldgroup .expanded div {
     background: transparent url(img/collapse.png) no-repeat center left;
 }
