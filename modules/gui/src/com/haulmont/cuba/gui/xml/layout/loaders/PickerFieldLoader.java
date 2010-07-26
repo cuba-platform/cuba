@@ -31,9 +31,13 @@ public class PickerFieldLoader extends AbstractFieldLoader{
         }
 
         final String metaClass = element.attributeValue("metaClass");
-
         if (!StringUtils.isEmpty(metaClass)) {
             component.setMetaClass(MetadataProvider.getSession().getClass(metaClass));
+        }
+
+        final String lookupScreen = element.attributeValue("lookupScreen");
+        if (!StringUtils.isEmpty(lookupScreen)) {
+            component.setLookupScreen(lookupScreen);
         }
 
         String caption = element.attributeValue("pickerCaption");

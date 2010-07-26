@@ -78,6 +78,7 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("popupButton", PopupButtonLoader.class);
 
         config.register("fieldGroup", FieldGroupLoader.class);
+        config.register("tokenList", TokenListLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

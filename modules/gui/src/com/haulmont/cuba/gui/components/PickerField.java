@@ -21,6 +21,9 @@ public interface PickerField extends Field {
     MetaClass getMetaClass();
     void setMetaClass(MetaClass metaClass);
 
+    String getLookupScreen();
+    void setLookupScreen(String lookupScreen);
+
     void setPickerButtonCaption(String caption);
 
     void setPickerButtonIcon(String iconName);

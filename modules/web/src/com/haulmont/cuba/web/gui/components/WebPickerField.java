@@ -53,15 +53,20 @@ public class WebPickerField
 
     private MetaClass metaClass;
 
+    private String lookupScreen;
+
     public WebPickerField() {
         component = new PickerFieldComponent();
         component.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 if (isEditable()) {
-                    final MetaClass metaClass = getMetaClass();
+                    String windowAlias = getLookupScreen();
+                    if (windowAlias == null) {
+                        final MetaClass metaClass = getMetaClass();
+                        windowAlias = metaClass.getName() + ".lookup";
+                    }
 
                     WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-                    String windowAlias = metaClass.getName() + ".lookup";
                     WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
                     WindowManager wm = App.getInstance().getWindowManager();
@@ -112,6 +117,14 @@ public class WebPickerField
         final Datasource ds = getDatasource();
         if (ds != null) throw new IllegalStateException("Datasource is not null");
         this.metaClass = metaClass;
+    }
+
+    public String getLookupScreen() {
+        return lookupScreen;
+    }
+
+    public void setLookupScreen(String lookupScreen) {
+        this.lookupScreen = lookupScreen;
     }
 
     @Override

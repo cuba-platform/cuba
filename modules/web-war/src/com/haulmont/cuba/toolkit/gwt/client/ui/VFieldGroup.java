@@ -36,7 +36,7 @@ public class VFieldGroup extends VForm {
 
         DOM.sinkEvents(expander, Event.ONCLICK);
 
-        addStyleName("v-fieldgroup");
+        setStyleName("v-fieldgroup");
     }
 
     protected void renderContent(UIDL uidl, ApplicationConnection client) {
