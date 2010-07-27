@@ -81,7 +81,7 @@ public abstract class AbstractDbDataLoader implements DataLoader {
         for (Map.Entry<String, Object> entry : currentParams.entrySet()) {//replaces ${alias} marks with ? and remembers their positions
             String alias = "${" + entry.getKey() + "}";
             String regexp = "\\$\\{" + entry.getKey() + "\\}";
-            String deleteRegexp = "(?i)(and)?(or)? ?[\\w|\\d|\\.|\\_]+ ?= ?\\$\\{" + entry.getKey() + "\\}";//todo: another regexp to remove parameter
+            String deleteRegexp = "(?i)(and)?(or)? ?[\\w|\\d|\\.|\\_]+ ?[=|(>=)|(<=)|(like)] ?\\$\\{" + entry.getKey() + "\\}";//todo: another regexp to remove parameter
 
             if (entry.getValue() == null) {
                 query = query.replaceAll(deleteRegexp, "");
