@@ -13,22 +13,26 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CustomField;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
 import com.haulmont.cuba.web.toolkit.ui.TokenListLabel;
-import com.vaadin.data.Property;
 import com.vaadin.terminal.KeyMapper;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.*;
 
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImpl> implements TokenList {
 
@@ -58,12 +62,18 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
     private boolean editable;
 
+    private boolean simple;
+
+    private boolean multiselect;
+
     public WebTokenList() {
         button = new WebButton();
         button.setCaption("Add");
         actionsField = new WebActionsField();
         actionsField.enableButton(ActionsField.DROPDOWN, true);
         component = new TokenListImpl();
+
+        setMultiSelect(false);
     }
 
     public CollectionDatasource getDatasource() {
@@ -193,6 +203,15 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
         this.lookupScreen = lookupScreen;
     }
 
+    public boolean isMultiSelect() {
+        return multiselect;
+    }
+
+    public void setMultiSelect(boolean multiselect) {
+        this.multiselect = multiselect;
+        actionsField.setMultiSelect(multiselect);
+    }
+
     public String getAddButtonCaption() {
         return button.getCaption();
     }
@@ -256,6 +275,14 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
         this.editable = editable;
     }
 
+    public boolean isSimple() {
+        return simple;
+    }
+
+    public void setSimple(boolean simple) {
+        this.simple = simple;
+    }
+
     protected String instanceCaption(Instance instance) {
         if (instance == null) { return ""; }
         if (instance.getMetaClass().getPropertyEx(captionProperty) != null) {
@@ -293,8 +320,6 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             setCompositionRoot(root);
 
             setStyleName("token-list");
-
-            initField();
         }
 
         protected void initField() {
@@ -302,30 +327,73 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             layout.setSpacing(true);
             layout.setWidth("100%");
 
-            actionsField.setWidth("100%");
-            Component lookupComponent = WebComponentsHelper.unwrap(actionsField);
-            lookupComponent.setWidth("100%");
+            if (!isSimple()) {
+                actionsField.setWidth("100%");
+                Component lookupComponent = WebComponentsHelper.unwrap(actionsField);
+                lookupComponent.setWidth("100%");
 
-            layout.addComponent(lookupComponent);
-            layout.setExpandRatio(lookupComponent, 1);
+                layout.addComponent(lookupComponent);
+                layout.setExpandRatio(lookupComponent, 1);
+            }
 
             button.setStyleName("add-btn");
 
             Button wrappedButton = (Button) WebComponentsHelper.unwrap(button);
-            wrappedButton.addListener(new Button.ClickListener() {
-                public void buttonClick(Button.ClickEvent event) {
-                    if (isEditable()) {
-                        final Entity newItem = actionsField.getValue();
-                        if (newItem == null) return;
-                        if (itemChangeHandler != null) {
-                            itemChangeHandler.addItem(newItem);
-                        } else {
-                            datasource.addItem(newItem);
+            if (!isSimple()) {
+                wrappedButton.addListener(new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent event) {
+                        if (isEditable()) {
+                            final Entity newItem = actionsField.getValue();
+                            if (newItem == null) return;
+                            if (itemChangeHandler != null) {
+                                itemChangeHandler.addItem(newItem);
+                            } else {
+                                datasource.addItem(newItem);
+                            }
+                            actionsField.setValue(null);
                         }
-                        actionsField.setValue(null);
                     }
-                }
-            });
+                });
+            } else {
+                wrappedButton.addListener(new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent event) {
+
+                        String windowAlias;
+                        if (getLookupScreen() != null) {
+                            windowAlias = getLookupScreen();
+                        } else if (getOptionsDatasource() != null) {
+                            windowAlias = getOptionsDatasource().getMetaClass().getName() + ".browse";
+                        } else {
+                            windowAlias = getDatasource().getMetaClass().getName() + ".browse";
+                        }
+
+                        WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+                        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("windowOpener", WebTokenList.this.<IFrame>getFrame().getId());
+                        if (isMultiSelect()) {
+                            params.put("multiSelect", "true");
+                        }
+
+                        WindowManager wm = App.getInstance().getWindowManager();
+                        wm.openLookup(windowInfo, new Window.Lookup.Handler() {
+                            public void handleLookup(Collection items) {
+                                if (isEditable()) {
+                                    if (items == null || items.isEmpty()) return;
+                                    for (final Object item : items) {
+                                        if (itemChangeHandler != null) {
+                                            itemChangeHandler.addItem(item);
+                                        } else {
+                                            datasource.addItem((Entity) item);
+                                        }
+                                    }
+                                }
+                            }
+                        }, WindowManager.OpenType.THIS_TAB, params);
+                    }
+                });
+            }
             layout.addComponent(wrappedButton);
 
             editor = layout;
@@ -335,11 +403,13 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             if (inline) {
                 addStyleName("inline");
             }
+
+            if (editor == null) {
+                initField();
+            }
+
             if (editor != null) {
                 root.removeComponent(editor);
-            }
-            if (editor == null) {
-                throw new IllegalStateException();
             }
 
             if (isEditable()) {

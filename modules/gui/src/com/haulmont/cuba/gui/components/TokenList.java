@@ -50,10 +50,11 @@ public interface TokenList extends Component, Component.BelongToFrame,
     String getLookupScreen();
     void setLookupScreen(String lookupScreen);
 
-/*
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);
-*/
+
+    boolean isSimple();
+    void setSimple(boolean simple);
 
     Position getPosition();
     void setPosition(Position position);

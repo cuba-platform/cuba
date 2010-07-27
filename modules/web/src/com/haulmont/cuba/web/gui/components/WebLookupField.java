@@ -71,6 +71,16 @@ public class WebLookupField
         });
     }
 
+    @Override
+    public boolean isMultiSelect() {
+        return false;
+    }
+
+    @Override
+    public void setMultiSelect(boolean multiselect) {
+        // Don't support multiselection for Lookup
+    }
+
     protected Object getKeyFromValue(Object value) {
         if (value instanceof Enum) {
             return value;

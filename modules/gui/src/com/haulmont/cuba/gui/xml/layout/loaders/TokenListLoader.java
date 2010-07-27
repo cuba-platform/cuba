@@ -21,6 +21,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+@SuppressWarnings("serial")
 public class TokenListLoader extends AbstractFieldLoader {
     public TokenListLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
@@ -91,6 +92,11 @@ public class TokenListLoader extends AbstractFieldLoader {
             }
         }
 
+        String multiSelect = lookupElement.attributeValue("multiselect");
+        if (!StringUtils.isEmpty(multiSelect)) {
+            component.setMultiSelect(BooleanUtils.toBoolean(multiSelect));
+        }
+
         loadFilterMode(component, lookupElement);
 
         Element buttonElement = element.element("button");
@@ -105,6 +111,11 @@ public class TokenListLoader extends AbstractFieldLoader {
             if (!StringUtils.isEmpty(icon)) {
                 component.setAddButtonIcon(loadResourceString(icon));
             }
+        }
+
+        String simple = element.attributeValue("simple");
+        if (!StringUtils.isEmpty(simple)) {
+            component.setSimple(BooleanUtils.toBoolean(simple));
         }
         
         assignFrame(component);
