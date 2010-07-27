@@ -59,7 +59,8 @@ public abstract class AbstractDbDataLoader implements DataLoader {
                     outputParameters.put(parametersNames.get(i), value);
                 }
             } else {
-                outputParameters.put(parametersNames.get(0), _resultRecord);
+                outputParameters.put(parametersNames.get(0), (_resultRecord instanceof PGobject) ? UUID.fromString(((PGobject) _resultRecord).getValue())
+                                                                                                   : _resultRecord);//todo: do we need to support another postgres objects?
             }
             outputData.add(outputParameters);
         }
