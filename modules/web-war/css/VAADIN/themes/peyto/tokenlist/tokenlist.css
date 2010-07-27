@@ -29,6 +29,16 @@
     float: left;
 }
 
+.token-list .token-list-label.noedit {
+    background-image: none;
+    padding-right: 5px;
+}
+
+.token-list .token-list-label.noedit .content {
+    margin-right: 0;
+}
+
+
 /* fix css for IE */
 .v-ie .token-list.inline .token-list-label .content {
     overflow: visible;

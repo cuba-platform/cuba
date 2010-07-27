@@ -56,6 +56,8 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
     private boolean lookup;
 
+    private boolean editable;
+
     public WebTokenList() {
         button = new WebButton();
         button.setCaption("Add");
@@ -246,6 +248,14 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
     public void setDescription(String description) {
     }
 
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
     protected String instanceCaption(Instance instance) {
         if (instance == null) { return ""; }
         if (instance.getMetaClass().getPropertyEx(captionProperty) != null) {
@@ -263,8 +273,8 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
         private Component editor;
 
-        private Map<Instance, Component> itemComponents = new HashMap<Instance, Component>();
-        private Map<Component, Instance> componentItems = new HashMap<Component, Instance>();
+        private Map<Instance, TokenListLabel> itemComponents = new HashMap<Instance, TokenListLabel>();
+        private Map<TokenListLabel, Instance> componentItems = new HashMap<TokenListLabel, Instance>();
         private KeyMapper componentsMapper = new KeyMapper();
 
         public TokenListImpl() {
@@ -304,14 +314,16 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             Button wrappedButton = (Button) WebComponentsHelper.unwrap(button);
             wrappedButton.addListener(new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
-                    final Entity newItem = actionsField.getValue();
-                    if (newItem == null) return;
-                    if (itemChangeHandler != null) {
-                        itemChangeHandler.addItem(newItem);
-                    } else {
-                        datasource.addItem(newItem);
+                    if (isEditable()) {
+                        final Entity newItem = actionsField.getValue();
+                        if (newItem == null) return;
+                        if (itemChangeHandler != null) {
+                            itemChangeHandler.addItem(newItem);
+                        } else {
+                            datasource.addItem(newItem);
+                        }
+                        actionsField.setValue(null);
                     }
-                    actionsField.setValue(null);
                 }
             });
             layout.addComponent(wrappedButton);
@@ -329,26 +341,30 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             if (editor == null) {
                 throw new IllegalStateException();
             }
-            if (position == Position.TOP) {
-                root.addComponentAsFirst(editor);
-            } else {
-                root.addComponent(editor);
+
+            if (isEditable()) {
+                if (position == Position.TOP) {
+                    root.addComponentAsFirst(editor);
+                } else {
+                    root.addComponent(editor);
+                }
             }
 
             container.removeAllComponents();
 
             for (final Object itemId : datasource.getItemIds()) {
                 final Instance item = (Instance) datasource.getItem(itemId);
-                Component f = itemComponents.get(item);
+                TokenListLabel f = itemComponents.get(item);
                 if (f == null) {
                     f = createToken();
                     itemComponents.put(item, f);
                     componentItems.put(f, item);
                 }
+                f.setEditable(isEditable());
                 if (captionProperty != null) {
-                    ((Property) f).setValue(instanceCaption(item));
+                    f.setValue(instanceCaption(item));
                 } else {
-                    ((Property) f).setValue(item);
+                    f.setValue(item);
                 }
                 container.addComponent(f);
             }
@@ -356,18 +372,20 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             requestRepaint();
         }
 
-        protected Component createToken() {
+        protected TokenListLabel createToken() {
             final TokenListLabel label = new TokenListLabel();
             String key = componentsMapper.key(label);
             label.setKey(key);
             label.addListener(new TokenListLabel.RemoveTokenListener() {
                 public void removeToken(TokenListLabel source) {
-                    Instance item = componentItems.get(source);
-                    if (item != null) {
-                        datasource.removeItem((Entity) item);
+                    if (isEditable()) {
+                        Instance item = componentItems.get(source);
+                        if (item != null) {
+                            datasource.removeItem((Entity) item);
 
-                        itemComponents.remove(item);
-                        componentItems.remove(source);
+                            itemComponents.remove(item);
+                            componentItems.remove(source);
+                        }
                     }
                 }
             });

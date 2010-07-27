@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import java.util.Map;
 
 public interface TokenList extends Component, Component.BelongToFrame,
-        Component.Expandable, Component.HasCaption {
+        Component.Expandable, Component.HasCaption, Component.Editable {
 
     String getCaptionProperty();
     void setCaptionProperty(String captionProperty);

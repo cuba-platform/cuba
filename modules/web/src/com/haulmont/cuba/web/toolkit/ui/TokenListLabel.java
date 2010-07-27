@@ -28,9 +28,12 @@ public class TokenListLabel extends Label {
 
     private List<RemoveTokenListener> listeners;
 
+    private boolean editable;
+
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         target.addAttribute("key", key);
+        target.addAttribute("editable", editable);
         super.paintContent(target);
     }
 
@@ -78,5 +81,13 @@ public class TokenListLabel extends Label {
 
     public String getKey() {
         return key;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }
