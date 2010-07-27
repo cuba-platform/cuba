@@ -38,6 +38,8 @@ public class LookupFieldLoader extends AbstractFieldLoader {
             component.setNullOption(nullName);
         }
 
+        loadFilterMode(component, element);
+
         return component;
     }
 

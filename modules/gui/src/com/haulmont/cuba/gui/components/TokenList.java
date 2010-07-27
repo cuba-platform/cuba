@@ -10,8 +10,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+
+import java.util.Map;
 
 public interface TokenList extends Component, Component.BelongToFrame,
         Component.Expandable, Component.HasCaption {
@@ -19,29 +20,43 @@ public interface TokenList extends Component, Component.BelongToFrame,
     String getCaptionProperty();
     void setCaptionProperty(String captionProperty);
 
-    String getOptionsCaptionProperty();
-    void setOptionsCaptionProperty(String captionProperty);
-
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);
 
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 
-    CollectionDatasource getOptionsDatasource();
-    void setOptionsDatasource(CollectionDatasource optionsDatasource);
+    LookupField.FilterMode getFilterMode();
+    void setFilterMode(LookupField.FilterMode mode);
 
-    MetaClass getMetaClass();
-    void setMetaClass(MetaClass metaClass);
+    String getOptionsCaptionProperty();
+    void setOptionsCaptionProperty(String captionProperty);
+
+    CaptionMode getOptionsCaptionMode();
+    void setOptionsCaptionMode(CaptionMode captionMode);
+
+    CollectionDatasource getOptionsDatasource();
+    void setOptionsDatasource(CollectionDatasource datasource);
+
+    java.util.List getOptionsList();
+    void setOptionsList(java.util.List optionsList);
+
+    Map<String, Object> getOptionsMap();
+    void setOptionsMap(Map<String, Object> map);
+
+    boolean isLookup();
+    void setLookup(boolean lookup);
 
     String getLookupScreen();
     void setLookupScreen(String lookupScreen);
 
+/*
+    boolean isMultiSelect();
+    void setMultiSelect(boolean multiselect);
+*/
+
     Position getPosition();
     void setPosition(Position position);
-
-    Type getType();
-    void setType(Type type);
 
     boolean isInline();
     void setInline(boolean inline);
@@ -62,9 +77,5 @@ public interface TokenList extends Component, Component.BelongToFrame,
 
     enum Position {
         TOP, BOTTOM
-    }
-
-    enum Type {
-        PICKER, LOOKUP
     }
 }

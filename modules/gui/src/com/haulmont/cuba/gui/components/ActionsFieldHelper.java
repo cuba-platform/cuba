@@ -11,7 +11,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.gui.WindowManager;
@@ -24,22 +24,27 @@ import java.util.Map;
 
 public class ActionsFieldHelper {
     private ActionsField component;
-    private String entityName;
-    private String defaultQuery = "select e from %s e where e.id is null";
+    private MetaClass metaClass;
+    private String defaultQuery;
 
     public ActionsFieldHelper(ActionsField component) {
+        this(component, component.getMetaProperty().getRange().asClass());
+    }
+
+    public ActionsFieldHelper(ActionsField component, MetaClass metaClass) {
         this.component = component;
-        MetaProperty metaProperty = component.getMetaProperty();
-        entityName = metaProperty.getRange().asClass().getName();
-        defaultQuery = String.format(defaultQuery, entityName);
+        this.metaClass = metaClass;
+        if (metaClass != null) {
+            defaultQuery = String.format("select e from %s e where e.id is null", metaClass.getName());
+        }
     }
 
     public void createLookupAction() {
-        createLookupAction(entityName + ".browse", WindowManager.OpenType.THIS_TAB, Collections.<String, Object>emptyMap());
+        createLookupAction(metaClass.getName() + ".browse", WindowManager.OpenType.THIS_TAB, Collections.<String, Object>emptyMap());
     }
 
     public void createLookupAction(WindowManager.OpenType openType) {
-        createLookupAction(entityName + ".browse", openType, Collections.<String, Object>emptyMap());
+        createLookupAction(metaClass.getName() + ".browse", openType, Collections.<String, Object>emptyMap());
     }
 
     public void createLookupAction(String windowAlias) {

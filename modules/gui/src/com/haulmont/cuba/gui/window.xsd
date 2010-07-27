@@ -717,23 +717,36 @@
                 </xs:element>
                 <xs:element name="tokenList">
                     <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="lookup" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+                                    <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                                    <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
+                                    <xs:attribute name="lookup" type="xs:string" use="optional"/>
+                                    <xs:attribute name="filterMode" type="xs:string" use="optional"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="button" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="caption" type="xs:string" use="required" default="msg://"/>
+                                    <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="editable" type="xs:string" use="optional"/>
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
-                        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
                         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
-                        <xs:attribute name="optionsCaptionProperty" type="xs:string" use="optional"/>
-                        <xs:attribute name="type" type="tokenListType" use="optional"/>
                         <xs:attribute name="position" type="tokenListPosition" use="optional"/>
                         <xs:attribute name="inline" type="xs:string" use="optional"/>
-                        <xs:attribute name="buttonCaption" type="xs:string" use="optional"/>
-                        <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
             </xs:choice>

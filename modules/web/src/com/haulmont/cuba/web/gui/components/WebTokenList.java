@@ -13,21 +13,18 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.TokenList;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CustomField;
-import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
 import com.haulmont.cuba.web.toolkit.ui.TokenListLabel;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.terminal.KeyMapper;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,28 +34,33 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
     private static final long serialVersionUID = -6490244006772570832L;
 
-    private MetaClass metaClass;
-
     private CollectionDatasource datasource;
 
-    private CollectionDatasource optionsDatasource;
     private String captionProperty;
-    private String optionsCaptionProperty;
 
     private CaptionMode captionMode;
 
     private Position position = Position.TOP;
 
-    private Type type = Type.LOOKUP;
-
     private ItemChangeHandler itemChangeHandler;
 
-    private String caption;
     private boolean inline;
 
+    private WebButton button;
+    private WebActionsField actionsField;
+
+    private ActionsFieldHelper actionsHelper;
+
+    private MetaClass metaClass;
     private String lookupScreen;
 
+    private boolean lookup;
+
     public WebTokenList() {
+        button = new WebButton();
+        button.setCaption("Add");
+        actionsField = new WebActionsField();
+        actionsField.enableButton(ActionsField.DROPDOWN, true);
         component = new TokenListImpl();
     }
 
@@ -69,10 +71,18 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
 
-        metaClass = datasource.getMetaClass();
-
         datasource.addListener(new CollectionDatasourceListener() {
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                if (actionsHelper == null) {
+                    actionsHelper = new ActionsFieldHelper(actionsField, metaClass);
+                    if (isLookup()) {
+                        if (getLookupScreen() != null) {
+                            actionsHelper.createLookupAction(getLookupScreen());
+                        } else {
+                            actionsHelper.createLookupAction();
+                        }
+                    }
+                }
                 component.refreshComponent();
             }
 
@@ -87,28 +97,18 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
         });
     }
 
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+        actionsField.setFrame(frame);
+    }
+
     public String getCaptionProperty() {
         return captionProperty;
     }
 
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
-
-        if (optionsCaptionProperty == null && optionsDatasource != null) {
-            component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
-        }
-    }
-
-    public String getOptionsCaptionProperty() {
-        return optionsCaptionProperty;
-    }
-
-    public void setOptionsCaptionProperty(String captionProperty) {
-        optionsCaptionProperty = captionProperty;
-
-        if (optionsDatasource != null) {
-            component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
-        }
     }
 
     public CaptionMode getCaptionMode() {
@@ -117,40 +117,70 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
     public void setCaptionMode(CaptionMode captionMode) {
         this.captionMode = captionMode;
-        switch (captionMode) {
-            case ITEM: {
-                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
-                break;
-            }
-            case PROPERTY: {
-                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
-                break;
-            }
-            default: {
-                throw new UnsupportedOperationException();
-            }
-        }
+    }
+
+    public LookupField.FilterMode getFilterMode() {
+        return actionsField.getFilterMode();
+    }
+
+    public void setFilterMode(LookupField.FilterMode mode) {
+        actionsField.setFilterMode(mode);
+    }
+
+    public String getOptionsCaptionProperty() {
+        return actionsField.getCaptionProperty();
+    }
+
+    public void setOptionsCaptionProperty(String captionProperty) {
+        actionsField.setCaptionProperty(captionProperty);
+    }
+
+    public CaptionMode getOptionsCaptionMode() {
+        return actionsField.getCaptionMode();
+    }
+
+    public void setOptionsCaptionMode(CaptionMode captionMode) {
+        actionsField.setCaptionMode(captionMode);
     }
 
     public CollectionDatasource getOptionsDatasource() {
-        return optionsDatasource;
+        return actionsField.getOptionsDatasource();
     }
 
-    public void setOptionsDatasource(CollectionDatasource optionsDatasource) {
-        this.optionsDatasource = optionsDatasource;
-        component.setContainerDataSource(new CollectionDsWrapper(optionsDatasource, true));
-
-        if (optionsCaptionProperty != null) {
-            component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(optionsCaptionProperty));
+    public void setOptionsDatasource(CollectionDatasource datasource) {
+        actionsField.setOptionsDatasource(datasource);
+        if (datasource != null) {
+            metaClass = datasource.getMetaClass();
         }
     }
 
-    public MetaClass getMetaClass() {
-        return metaClass;
+    public List getOptionsList() {
+        return actionsField.getOptionsList();
     }
 
-    public void setMetaClass(MetaClass metaClass) {
-        this.metaClass = metaClass;
+    public void setOptionsList(List optionsList) {
+        actionsField.setOptionsList(optionsList);
+    }
+
+    public Map<String, Object> getOptionsMap() {
+        return actionsField.getOptionsMap();
+    }
+
+    public void setOptionsMap(Map<String, Object> map) {
+        actionsField.setOptionsMap(map);
+    }
+
+    public boolean isLookup() {
+        return lookup;
+    }
+
+    public void setLookup(boolean lookup) {
+        this.lookup = lookup;
+        actionsField.enableButton(ActionsField.DROPDOWN, !lookup);
+        actionsField.enableButton(ActionsField.LOOKUP, lookup);
+        if (getOptionsDatasource() != null) {
+            metaClass = getOptionsDatasource().getMetaClass();
+        }
     }
 
     public String getLookupScreen() {
@@ -159,6 +189,22 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
     public void setLookupScreen(String lookupScreen) {
         this.lookupScreen = lookupScreen;
+    }
+
+    public String getAddButtonCaption() {
+        return button.getCaption();
+    }
+
+    public void setAddButtonCaption(String caption) {
+        button.setCaption(caption);
+    }
+
+    public String getAddButtonIcon() {
+        return button.getIcon();
+    }
+
+    public void setAddButtonIcon(String icon) {
+        button.setIcon(icon);
     }
 
     public ItemChangeHandler getItemChangeHandler() {
@@ -177,44 +223,20 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
         this.position = position;
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
     public boolean isInline() {
-        return inline;  //To change body of implemented methods use File | Settings | File Templates.
+        return inline;
     }
 
     public void setInline(boolean inline) {
         this.inline = inline;
     }
 
-    public String getAddButtonCaption() {
-        return component.getButtonCaption();
-    }
-
-    public void setAddButtonCaption(String caption) {
-        component.setButtonCaption(caption);
-    }
-
-    public String getAddButtonIcon() {
-        return component.getButtonIcon();
-    }
-
-    public void setAddButtonIcon(String icon) {
-        component.setButtonIcon(icon);
-    }
-
     public String getCaption() {
-        return caption;
+        return component.getCaption();
     }
 
     public void setCaption(String caption) {
-        this.caption = caption;
+        component.setCaption(caption);
     }
 
     public String getDescription() {
@@ -233,25 +255,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
                 captionProperty));
     }
 
-    protected <T> T getValueFromKey(Object key) {
-        if (key == null) return null;
-        if (key instanceof Enum) { return (T) key; }
-
-        T v;
-        if (optionsDatasource != null) {
-            if (Datasource.State.INVALID.equals(optionsDatasource.getState())) {
-                optionsDatasource.refresh();
-            }
-            v = (T) optionsDatasource.getItem(key);
-        } else {
-            v = (T) key;
-        }
-
-        return v;
-    }
-
-    public class TokenListImpl extends CustomField
-            implements com.vaadin.data.Container.Viewer, com.vaadin.data.Container.Editor {
+    public class TokenListImpl extends CustomField {
 
         private VerticalLayout root;
 
@@ -259,17 +263,9 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
         private Component editor;
 
-        private com.vaadin.data.Container items;
-
-        private Object itemCaptionPropertyId;
-        private int itemCaptionMode;
-
         private Map<Instance, Component> itemComponents = new HashMap<Instance, Component>();
         private Map<Component, Instance> componentItems = new HashMap<Component, Instance>();
         private KeyMapper componentsMapper = new KeyMapper();
-
-        private String buttonCaption;
-        private String buttonIcon;
 
         public TokenListImpl() {
             root = new VerticalLayout();
@@ -287,6 +283,40 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             setCompositionRoot(root);
 
             setStyleName("token-list");
+
+            initField();
+        }
+
+        protected void initField() {
+            final HorizontalLayout layout = new HorizontalLayout();
+            layout.setSpacing(true);
+            layout.setWidth("100%");
+
+            actionsField.setWidth("100%");
+            Component lookupComponent = WebComponentsHelper.unwrap(actionsField);
+            lookupComponent.setWidth("100%");
+
+            layout.addComponent(lookupComponent);
+            layout.setExpandRatio(lookupComponent, 1);
+
+            button.setStyleName("add-btn");
+
+            Button wrappedButton = (Button) WebComponentsHelper.unwrap(button);
+            wrappedButton.addListener(new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent event) {
+                    final Entity newItem = actionsField.getValue();
+                    if (newItem == null) return;
+                    if (itemChangeHandler != null) {
+                        itemChangeHandler.addItem(newItem);
+                    } else {
+                        datasource.addItem(newItem);
+                    }
+                    actionsField.setValue(null);
+                }
+            });
+            layout.addComponent(wrappedButton);
+
+            editor = layout;
         }
 
         public void refreshComponent() {
@@ -296,7 +326,6 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             if (editor != null) {
                 root.removeComponent(editor);
             }
-            editor = createTokenEditor();
             if (editor == null) {
                 throw new IllegalStateException();
             }
@@ -312,7 +341,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
                 final Instance item = (Instance) datasource.getItem(itemId);
                 Component f = itemComponents.get(item);
                 if (f == null) {
-                    f = createTokenViewer();
+                    f = createToken();
                     itemComponents.put(item, f);
                     componentItems.put(f, item);
                 }
@@ -327,37 +356,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             requestRepaint();
         }
 
-        public void setContainerDataSource(com.vaadin.data.Container newDataSource) {
-            if (newDataSource == null) {
-                newDataSource = new IndexedContainer();
-            }
-
-            if (items != newDataSource) {
-                items = newDataSource;
-            }
-        }
-
-        public com.vaadin.data.Container getContainerDataSource() {
-            return items;
-        }
-
-        public void setItemCaptionPropertyId(Object propertyId) {
-            itemCaptionPropertyId = propertyId;
-        }
-
-        public Object getItemCaptionPropertyId() {
-            return itemCaptionPropertyId;
-        }
-
-        public int getItemCaptionMode() {
-            return itemCaptionMode;
-        }
-
-        public void setItemCaptionMode(int itemCaptionMode) {
-            this.itemCaptionMode = itemCaptionMode;
-        }
-
-        protected Component createTokenViewer() {
+        protected Component createToken() {
             final TokenListLabel label = new TokenListLabel();
             String key = componentsMapper.key(label);
             label.setKey(key);
@@ -375,104 +374,9 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             return label;
         }
 
-        protected Component createTokenEditor() {
-            final Field component;
-            final Button.ClickListener listener;
-            switch (type) {
-                case PICKER:
-                    final WebPickerField pickerField = new WebPickerField();
-                    pickerField.setMetaClass(metaClass);
-                    pickerField.setLookupScreen(lookupScreen);
-                    pickerField.setWidth("100%");
-                    
-                    component = (Field) WebComponentsHelper.unwrap(pickerField);
-
-                    listener = new Button.ClickListener() {
-                        public void buttonClick(Button.ClickEvent event) {
-                            final Entity newItem = pickerField.getValue();
-                            if (newItem == null) return;
-                            if (itemChangeHandler != null) {
-                                itemChangeHandler.addItem(newItem);
-                            } else {
-                                datasource.addItem(newItem);
-                            }
-                            pickerField.setValue(null);
-                        }
-                    };
-
-                    break;
-                case LOOKUP:
-                    final WebLookupField lookupField = new WebLookupField();
-                    final FilterSelect filterSelect = (FilterSelect) WebComponentsHelper.unwrap(lookupField);
-                    filterSelect.setContainerDataSource(items);
-                    filterSelect.setWidth("100%");
-                    filterSelect.setItemCaptionMode(itemCaptionMode);
-                    if (itemCaptionPropertyId != null) {
-                        filterSelect.setItemCaptionPropertyId(itemCaptionPropertyId);
-                    }
-
-                    component = filterSelect;
-
-                    listener = new Button.ClickListener() {
-                        public void buttonClick(Button.ClickEvent event) {
-                            final Entity newItem = getValueFromKey(component.getValue());
-                            if (newItem == null) return;
-                            if (itemChangeHandler != null) {
-                                itemChangeHandler.addItem(newItem);
-                            } else {
-                                datasource.addItem(newItem);
-                            }
-                            component.setValue(null);
-                        }
-                    };
-
-                    break;
-                default:
-                    throw new IllegalArgumentException();
-            }
-
-            final HorizontalLayout layout = new HorizontalLayout();
-            layout.setSpacing(true);
-            layout.setWidth("100%");
-
-            final Button button = new Button(buttonCaption == null ? "Add" : buttonCaption);
-            button.setStyleName("add-btn");
-            if (buttonIcon != null) {
-                button.setIcon(new ThemeResource(buttonIcon));
-            }
-            button.addListener(listener);
-
-            layout.addComponent(component);
-            layout.setExpandRatio(component, 1);
-
-            layout.addComponent(button);
-
-            component.setCaption(caption);
-            
-            return layout;
-        }
-
         @Override
         public Class<?> getType() {
             return List.class;
-        }
-
-        public String getButtonCaption() {
-            return buttonCaption;
-        }
-
-        public void setButtonCaption(String buttonCaption) {
-            this.buttonCaption = buttonCaption;
-            refreshComponent();
-        }
-
-        public String getButtonIcon() {
-            return buttonIcon;
-        }
-
-        public void setButtonIcon(String buttonIcon) {
-            this.buttonIcon = buttonIcon;
-            refreshComponent();
         }
     }
 
