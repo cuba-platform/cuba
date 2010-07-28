@@ -52,12 +52,12 @@ public class Report extends StandardEntity {
     @OnDelete(value = DeletePolicy.CASCADE)
     private FileDescriptor templateFileDescriptor;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
     @OnDelete(value = DeletePolicy.CASCADE)
     @Aggregation
     private List<ReportInputParameter> inputParameters;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
     @OnDelete(value = DeletePolicy.CASCADE)
     @Aggregation
     private List<ReportScreen> reportScreens;
