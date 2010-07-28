@@ -213,7 +213,7 @@ public class ImportExportHelper {
             if (PersistenceHelper.isNew(report)) {
                 em.persist(report);
             } else {
-                em.merge(report);
+                em.merge(report);//todo: don't do merge but remove report and persisit a new one
             }
             tx.commit();
         } finally {
