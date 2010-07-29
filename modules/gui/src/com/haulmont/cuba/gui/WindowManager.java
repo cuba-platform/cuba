@@ -207,33 +207,30 @@ public abstract class WindowManager implements Serializable {
     }
 
     protected Window createWindow(WindowInfo windowInfo, Map params) {
-        final Window window;
+        final Object windowObject;
         try {
-            window = (Window) windowInfo.getScreenClass().newInstance();
+            windowObject = windowInfo.getScreenClass().newInstance();
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        window.setId(windowInfo.getId());
-        try {
-            ReflectionHelper.invokeMethod(window, "init", params);
-        } catch (NoSuchMethodException e) {
-            // Do nothing
-        }
-        return window;
-    }
 
-    protected Window createWindow(WindowInfo windowInfo) {
-        final Runnable window;
-        try {
-            window = (Runnable) windowInfo.getScreenClass().newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+        if (windowObject instanceof Runnable) {
+            ((Runnable) windowObject).run();
         }
-        window.run();
+
+        if (windowObject instanceof Window) {
+            Window window = (Window) windowObject;
+            window.setId(windowInfo.getId());
+            try {
+                ReflectionHelper.invokeMethod(windowObject, "init", params);
+            } catch (NoSuchMethodException e) {
+                // Do nothing
+            }
+            return window;
+        }
+
         return null;
     }
 
@@ -257,14 +254,20 @@ public abstract class WindowManager implements Serializable {
 
             return (T) window;
         } else {
-            // todo degtyarjov to make it work nicely and for many cases
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null) {
                 //noinspection unchecked
-                createWindow(windowInfo);
-                return null;
-            } else
-                return null;
+                Window window = createWindow(windowInfo, params);
+                if (window != null) {
+                    window.setId(windowInfo.getId());
+
+                    String caption = loadCaption(window, params);
+                    showWindow(window, caption, openType);
+
+                    return (T)window;
+                }
+            }
+            return null;
         }
     }
 
