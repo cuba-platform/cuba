@@ -568,6 +568,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             if (c == null) {
                 target.addText("");
             } else {
+                c.requestRepaint();
                 c.paint(target);
             }
         } else {
