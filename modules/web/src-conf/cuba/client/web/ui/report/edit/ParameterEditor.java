@@ -18,6 +18,8 @@ import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.report.ParameterType;
 import com.haulmont.cuba.report.ReportInputParameter;
 
@@ -29,6 +31,7 @@ public class ParameterEditor extends AbstractEditor {
     }
 
     private ReportInputParameter parameter;
+    private LookupField metaClass;
     private LookupField screen;
     private CheckBox fromBrowser;
     private HashMap<String, String> metaNamesToClassNames = new HashMap<String, String>();
@@ -38,16 +41,19 @@ public class ParameterEditor extends AbstractEditor {
     public void setItem(Entity item) {
         super.setItem(item);
         parameter = (ReportInputParameter) getItem();
-        boolean isEntity = ParameterType.ENTITY.equals(parameter.getType());
+        boolean isEntity = ParameterType.ENTITY.equals(parameter.getType()) || ParameterType.ENTITY_LIST.equals(parameter.getType());
+        metaClass.setEnabled(isEntity);
         screen.setEnabled(isEntity);
         fromBrowser.setEnabled(isEntity);
-        screen.setValue(metaNamesToClassNames.get(parameter.getScreen()));
+        metaClass.setValue(metaNamesToClassNames.get(parameter.getEntityMetaClass()));
+        screen.setValue(parameter.getScreen());
     }
 
     @Override
     protected void init(Map<String, Object> params) {
         super.init(params);
         LookupField type = getComponent("type");
+        metaClass = getComponent("metaClass");
         screen = getComponent("screen");
         fromBrowser = getComponent("getFromBrowser");
 
@@ -58,13 +64,11 @@ public class ParameterEditor extends AbstractEditor {
             classNamesToMetaNames.put(clazz.getJavaClass().getSimpleName(), clazz.getName());
         }
         lst.addAll(classNamesToMetaNames.keySet());
-
-        screen.setOptionsList(lst);
-
-        screen.addListener(new ValueListener() {
+        metaClass.setOptionsList(lst);
+        metaClass.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 String metaClassName = value != null ? classNamesToMetaNames.get(value.toString()) : null;
-                parameter.setScreen(metaClassName);
+                parameter.setEntityMetaClass(metaClassName);
                 if (metaClassName != null) {
                     MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
                     parameter.setClassName(metaClass.getJavaClass().getCanonicalName());
@@ -73,9 +77,22 @@ public class ParameterEditor extends AbstractEditor {
             }
         });
 
+        Collection<WindowInfo> windowInfoCollection = AppConfig.getInstance().getWindowConfig().getWindows();
+        lst = new ArrayList();
+        for (WindowInfo windowInfo : windowInfoCollection) {
+            lst.add(windowInfo.getId());
+        }
+        screen.setOptionsList(lst);
+        screen.addListener(new ValueListener() {
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                parameter.setScreen(value != null ? value.toString() : null);
+            }
+        });
+
         type.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 boolean isEntity = ParameterType.ENTITY.equals(value) || ParameterType.ENTITY_LIST.equals(value);
+                metaClass.setEnabled(isEntity);
                 screen.setEnabled(isEntity);
                 fromBrowser.setEnabled(isEntity);
             }

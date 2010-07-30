@@ -191,7 +191,7 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
     }
 
     private void createGetMetaclassMethod() {
-        // public Clazz getMetaClass()
+        // public Clazz getEntityMetaClass()
         BCMethod method = _pc.declareMethod("getMetaClass", MetaClass.class, new Class[]{});
         method.makePublic();
 

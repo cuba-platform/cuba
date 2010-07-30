@@ -142,7 +142,7 @@ public class InputParametersController extends AbstractWindow {
     private def createLookupField = {Boolean isMulti, ReportInputParameter parameter ->
         final WebActionsField waf = new WebActionsField()
 
-        final com.haulmont.chile.core.model.MetaClass entityMetaClass = MetadataProvider.getSession().getClass(parameter.screen)
+        final com.haulmont.chile.core.model.MetaClass entityMetaClass = MetadataProvider.getSession().getClass(parameter.entityMetaClass)
         Class clazz = entityMetaClass.getJavaClass();
 
         if (linkedEntity && clazz && clazz.isAssignableFrom(linkedEntity.getClass())) {
@@ -165,8 +165,14 @@ public class InputParametersController extends AbstractWindow {
                             }
                     ] as Handler
                     //todo: use also custom browser
-                    Window w = openLookup('report$commonLookup', handler, WindowManager.OpenType.DIALOG, (Map<String, Object>) ['class': entityMetaClass])
-                    w.setHeight("400px")
+                    String alias = parameter.screen
+                    if (alias && !"".equals(alias)) {
+                        Window w = openLookup(alias, handler, WindowManager.OpenType.DIALOG, [:])
+                        w.setHeight("400px")
+                    } else {
+                        Window w = openLookup('report$commonLookup', handler, WindowManager.OpenType.DIALOG, (Map<String, Object>) ['class': entityMetaClass])
+                        w.setHeight("400px")
+                    }
                 }
         ]
 

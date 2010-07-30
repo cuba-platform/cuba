@@ -35,6 +35,9 @@ public class ReportInputParameter extends StandardEntity {
     @Column(name = "POSITION")
     private Integer position;
 
+    @Column(name = "META_CLASS")
+    private String entityMetaClass;
+
     @Column(name = "SCREEN")
     private String screen;
 
@@ -79,12 +82,12 @@ public class ReportInputParameter extends StandardEntity {
         this.alias = alias;
     }
 
-    public String getScreen() {
-        return screen;
+    public String getEntityMetaClass() {
+        return entityMetaClass;
     }
 
-    public void setScreen(String screen) {
-        this.screen = screen;
+    public void setEntityMetaClass(String entityMetaClass) {
+        this.entityMetaClass = entityMetaClass;
     }
 
     public String getClassName() {
@@ -117,5 +120,13 @@ public class ReportInputParameter extends StandardEntity {
 
     public void setPosition(Integer position) {
         this.position = position;
+    }
+
+    public String getScreen() {
+        return screen;
+    }
+
+    public void setScreen(String screen) {
+        this.screen = screen;
     }
 }

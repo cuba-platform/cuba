@@ -54,9 +54,15 @@
                     </row>
 
                     <row>
+                        <label value="msg://parameters.metaClass"/>
+                        <lookupField id="metaClass" width="${width}"/>
+                    </row>
+
+                    <row>
                         <label value="msg://parameters.screen"/>
                         <lookupField id="screen" width="${width}"/>
                     </row>
+
                     <row>
                         <label value="msg://parameters.className"/>
                         <textField id="className" datasource="parameterDs" property="className" required="true"
