@@ -45,6 +45,10 @@ import com.haulmont.cuba.core.app.FileStorageService
 import com.haulmont.cuba.core.global.FileStorageException
 import com.haulmont.cuba.gui.ServiceLocator
 import com.haulmont.cuba.gui.components.ValueProvider
+import com.haulmont.cuba.gui.data.CollectionDatasource.Sortable
+import com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.SortInfo
+import com.haulmont.chile.core.model.MetaPropertyPath
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper
 
 public class ReportEditor extends AbstractEditor {
 
@@ -91,22 +95,70 @@ public class ReportEditor extends AbstractEditor {
     }
 
     private def initParameters() {
-        Button createInputParameterButton = getComponent('parametersFrame.createParameter')
+        com.haulmont.chile.core.model.MetaClass metaClass = MetadataProvider.getSession().getClass(ReportInputParameter.class);
+        MetaPropertyPath mpp = new MetaPropertyPath(metaClass, metaClass.getProperty("position"));
+
         final CollectionDatasource parametersDs = getDsContext().get('parametersDs')
-        def createParameter = [
-                actionPerform: {Component component ->
-                    ReportInputParameter parameter = new ReportInputParameter()
-                    Report report = (Report) getItem()
-                    parameter.report = report
-                    parametersDs.addItem(parameter)
-                }
-        ]
-        createInputParameterButton.action = new ActionAdapter(getMessage('parametersFrame.createParameter'), createParameter)
 
         Table parametersTable = getComponent('parametersFrame.inputParametersTable')
         TableActionsHelper paramHelper = new TableActionsHelper(this, parametersTable)
+        paramHelper.createCreateAction([getValues: {['position': parametersDs.itemIds.size(),'report':report]}, getParameters: {[:]}] as ValueProvider)
         paramHelper.createRemoveAction(false)
         paramHelper.createEditAction()
+
+        Button upButton = getComponent('parametersFrame.up')
+        Button downButton = getComponent('parametersFrame.down')
+
+        def up = [
+                actionPerform: {Component component ->
+                    ReportInputParameter parameter = (ReportInputParameter) parametersDs.getItem()
+                    if (parameter) {
+                        List parametersList = report.getInputParameters()
+                        int index = parameter.position
+                        if (index > 0) {
+                            ReportInputParameter previousParameter = null
+                            for (ReportInputParameter _param: parametersList) {
+                                if (_param.position == index - 1) {
+                                    previousParameter = _param;
+                                    break;
+                                }
+                            }
+                            if (previousParameter) {
+                                parameter.position = parameter.position - 1
+                                previousParameter.position = previousParameter.position + 1
+                                parametersTable.sortBy(mpp, true)
+                            }
+                        }
+                    }
+                }
+        ]
+
+        def down = [
+                actionPerform: {Component component ->
+                    ReportInputParameter parameter = (ReportInputParameter) parametersDs.getItem()
+                    if (parameter) {
+                        List parametersList = report.getInputParameters()
+                        int index = parameter.position
+                        if (index < parametersDs.itemIds.size() - 1) {
+                            ReportInputParameter nextParameter = null
+                            for (ReportInputParameter _param: parametersList) {
+                                if (_param.position == index + 1) {
+                                    nextParameter = _param;
+                                    break;
+                                }
+                            }
+                            if (nextParameter) {
+                                parameter.position = parameter.position + 1
+                                nextParameter.position = nextParameter.position - 1
+                                parametersTable.sortBy(mpp, true)
+                            }
+                        }
+                    }
+                }
+        ]
+
+        upButton.action = new ActionAdapter(getMessage('generalFrame.up'), up)
+        downButton.action = new ActionAdapter(getMessage('generalFrame.down'), down)
     }
 
     private def initRoles() {

@@ -32,6 +32,9 @@ public class ReportInputParameter extends StandardEntity {
     @Column(name = "ALIAS")
     private String alias;
 
+    @Column(name = "POSITION")
+    private Integer position;
+
     @Column(name = "SCREEN")
     private String screen;
 
@@ -106,5 +109,13 @@ public class ReportInputParameter extends StandardEntity {
 
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }

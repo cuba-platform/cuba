@@ -55,6 +55,7 @@ public class Report extends StandardEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
     @OnDelete(value = DeletePolicy.CASCADE)
     @Aggregation
+    @OrderBy("position")
     private List<ReportInputParameter> inputParameters;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
