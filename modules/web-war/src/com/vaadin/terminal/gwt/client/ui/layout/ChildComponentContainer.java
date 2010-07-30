@@ -77,6 +77,8 @@ public class ChildComponentContainer extends Panel {
     protected Widget widget;
     protected FloatSize relativeSize = null;
 
+    private int orientation;
+
     public ChildComponentContainer(Widget widget, int orientation) {
         super();
 
@@ -190,6 +192,7 @@ public class ChildComponentContainer extends Panel {
         // Clear old alignments
         clearAlignments();
 
+        this.orientation = orientation;
     }
 
     public void renderChild(UIDL childUIDL, ApplicationConnection client, int fixedWidth) {
@@ -232,8 +235,11 @@ public class ChildComponentContainer extends Panel {
          * Widget wrapper includes margin which the widget offsetWidth/Height
          * does not include
          */
-        int w = Util.getRequiredWidth(widgetDIV);
-        int h = Util.getRequiredHeight(widgetDIV);
+
+        int w = orientation == CellBasedLayout.ORIENTATION_HORIZONTAL
+                ? widget.getOffsetWidth() : Util.getRequiredWidth(widgetDIV);
+        int h = orientation == CellBasedLayout.ORIENTATION_HORIZONTAL
+                ? widget.getOffsetHeight() :Util.getRequiredHeight(widgetDIV);
 
         widgetSize.setWidth(w);
         widgetSize.setHeight(h);
