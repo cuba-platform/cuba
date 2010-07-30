@@ -44,6 +44,8 @@ public interface Table
     void setAggregatable(boolean aggregatable);
     boolean isAggregatable();
 
+    void sortBy(Object propertyId, boolean ascending);
+
     public class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
 
         private static final long serialVersionUID = -8462478820056909896L;

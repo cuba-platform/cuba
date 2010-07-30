@@ -145,6 +145,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         this.sortable = sortable;
     }
 
+    public void sortBy(Object propertyId, boolean ascending) {
+        if (isSortable()) {
+            component.setSortAscending(ascending);
+            component.setSortContainerPropertyId(propertyId);
+        }
+    }
+
     public boolean isAggregatable() {
         return component.isAggregatable();
     }
