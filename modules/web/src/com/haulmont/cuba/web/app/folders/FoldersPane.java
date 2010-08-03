@@ -292,6 +292,12 @@ public class FoldersPane extends VerticalLayout {
 
         appFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
         appFoldersTree.setDoubleClickMode(true);
+        appFoldersTree.setItemStyleGenerator(new Tree.ItemStyleGenerator(){
+            public String getStyle(Object itemId) {
+                Folder folder =((Folder)itemId);
+                return folder != null? folder.getItemStyle() :"";
+            }
+        });
 
         appFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);

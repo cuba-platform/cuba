@@ -32,6 +32,9 @@ public class Folder extends StandardEntity {
     @Column(name = "SORT_ORDER")
     protected Integer sortOrder;
 
+    @Transient
+    protected String itemStyle = null;
+
     public Folder getParent() {
         return parent;
     }
@@ -58,5 +61,13 @@ public class Folder extends StandardEntity {
 
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public String getItemStyle(){
+        return itemStyle;
+    }
+
+    public void setItemStyle(String itemStyle){
+        this.itemStyle = itemStyle;
     }
 }

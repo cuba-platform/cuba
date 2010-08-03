@@ -286,7 +286,8 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
     protected String instanceCaption(Instance instance) {
         if (instance == null) { return ""; }
         if (instance.getMetaClass().getPropertyEx(captionProperty) != null) {
-            return instance.getValueEx(captionProperty).toString();
+            Object o = instance.getValueEx(captionProperty);
+            return o != null ? o.toString() : " ";
         }
         throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'",
                 captionProperty));

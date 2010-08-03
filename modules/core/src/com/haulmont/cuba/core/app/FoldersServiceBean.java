@@ -51,8 +51,11 @@ public class FoldersServiceBean implements FoldersService {
                                 continue;
                         }
                         if (!StringUtils.isBlank(folder.getQuantityScript())) {
+                            String variable = "style";
                             binding.setVariable("folder", folder);
+                            binding.setVariable(variable, null);
                             Number qty = ScriptingProvider.runGroovyScript(folder.getQuantityScript(), binding);
+                            folder.setItemStyle((String)binding.getVariable(variable));
                             folder.setQuantity(qty == null ? null : qty.intValue());
                         }
                     } catch (Exception e) {
@@ -82,8 +85,11 @@ public class FoldersServiceBean implements FoldersService {
                 for (AppFolder folder : folders) {
                     try {
                         if (!StringUtils.isBlank(folder.getQuantityScript())) {
+                            String variable = "style";
                             binding.setVariable("folder", folder);
+                            binding.setVariable(variable, null);
                             Number qty = ScriptingProvider.runGroovyScript(folder.getQuantityScript(), binding);
+                            folder.setItemStyle((String)binding.getVariable(variable));
                             folder.setQuantity(qty == null ? null : qty.intValue());
                         }
                     } catch (Exception e) {
