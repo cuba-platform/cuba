@@ -50,23 +50,10 @@ public class FileDownloadServlet extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        App app = getExistingApplication(request, response);
-        if (app == null || !app.getConnection().isConnected()) {
-            error(response);
-            return;
-        }
 
-        UUID sessionId;
-        try {
-            sessionId = UUID.fromString(request.getParameter("s"));
-        } catch (Exception e) {
+        UserSession userSession = getSession(request, response);
+        if (userSession == null) {
             error(response);
-            return;
-        }
-        UserSession userSession = app.getConnection().getSession();
-        if (!sessionId.equals(userSession.getId())) {
-            error(response);
-            return;
         }
 
         WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
@@ -116,6 +103,25 @@ public class FileDownloadServlet extends HttpServlet {
         } finally {
             WebSecurityUtils.clearSecurityAssociation();
         }
+    }
+
+    protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) {
+        App app = getExistingApplication(request, response);
+        if (app == null || !app.getConnection().isConnected()) {
+            return null;
+        }
+
+        UUID sessionId;
+        try {
+            sessionId = UUID.fromString(request.getParameter("s"));
+        } catch (Exception e) {
+            return null;
+        }
+        UserSession userSession = app.getConnection().getSession();
+        if (!sessionId.equals(userSession.getId())) {
+            return null;
+        }
+        return userSession;
     }
 
     protected String getContentType(FileDescriptor fd) {
