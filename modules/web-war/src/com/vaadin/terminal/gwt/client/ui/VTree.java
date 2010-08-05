@@ -28,14 +28,14 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
     public static final String ITEM_CLICK_EVENT_ID = "itemClick";
 
-    private Set<String> selectedIds = new HashSet<String>();
-    private ApplicationConnection client;
-    private String paintableId;
-    private boolean selectable;
-    private boolean isMultiselect;
-    private String currentMouseOverKey;
+    protected Set<String> selectedIds = new HashSet<String>();
+    protected ApplicationConnection client;
+    protected String paintableId;
+    protected boolean selectable;
+    protected boolean isMultiselect;
+    protected String currentMouseOverKey;
 
-    private final HashMap<String, TreeNode> keyToNode = new HashMap<String, TreeNode>();
+    protected final HashMap<String, TreeNode> keyToNode = new HashMap<String, TreeNode>();
 
     /**
      * This map contains captions and icon urls for actions like: * "33_c" ->
@@ -64,7 +64,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
         setStyleName(CLASSNAME);
     }
 
-    private void updateActionMap(UIDL c) {
+    protected void updateActionMap(UIDL c) {
         final Iterator it = c.getChildIterator();
         while (it.hasNext()) {
             final UIDL action = (UIDL) it.next();
@@ -130,7 +130,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                 updateDropHandler(childUidl);
                 continue;
             }
-            childTree = new TreeNode();
+            childTree = createTreeNode(childUidl);
             if (childTree.ie6compatnode != null) {
                 this.add(childTree);
             }
@@ -152,6 +152,10 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
         rendering = false;
 
+    }
+
+    protected TreeNode createTreeNode(UIDL childUidl) {
+        return new TreeNode();
     }
 
     private void updateTreeRelatedDragData(VDragEvent drag) {
@@ -324,21 +328,21 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
         public String key;
 
-        private String[] actionKeys = null;
+        protected String[] actionKeys = null;
 
-        private boolean childrenLoaded;
+        protected boolean childrenLoaded;
 
-        private Element nodeCaptionDiv;
+        protected Element nodeCaptionDiv;
 
         protected Element nodeCaptionSpan;
 
-        private FlowPanel childNodeContainer;
+        protected FlowPanel childNodeContainer;
 
         private boolean open;
 
-        private Icon icon;
+        protected Icon icon;
 
-        private Element ie6compatnode;
+        protected Element ie6compatnode;
 
         private Event mouseDownEvent;
 
@@ -619,7 +623,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
             return getStyleName().contains("leaf");
         }
 
-        private void setState(boolean state, boolean notifyServer) {
+        protected void setState(boolean state, boolean notifyServer) {
             if (open == state) {
                 return;
             }
@@ -650,15 +654,15 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
             }
         }
 
-        private boolean getState() {
+        protected boolean getState() {
             return open;
         }
 
-        private void setText(String text) {
+        protected void setText(String text) {
             DOM.setInnerText(nodeCaptionSpan, text);
         }
 
-        private void renderChildNodes(Iterator i) {
+        protected void renderChildNodes(Iterator i) {
             childNodeContainer.clear();
             childNodeContainer.setVisible(true);
 
@@ -671,7 +675,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                     updateActionMap(childUidl);
                     continue;
                 }
-                childTree = new TreeNode();
+                childTree = createTreeNode(childUidl);
                 if (ie6compatnode != null) {
                     childNodeContainer.add(childTree);
                 }
@@ -747,7 +751,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
          * We need to fix the width of TreeNodes so that the float in
          * ie6compatNode does not wrap (see ticket #1245)
          */
-        private void fixWidth() {
+        protected void fixWidth() {
             nodeCaptionDiv.getStyle().setProperty("styleFloat", "left");
             nodeCaptionDiv.getStyle().setProperty("display", "inline");
             nodeCaptionDiv.getStyle().setProperty("marginLeft", "0");

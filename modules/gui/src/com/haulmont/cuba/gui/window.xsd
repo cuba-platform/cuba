@@ -754,6 +754,18 @@
                         <xs:attribute name="simple" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="widgetsTree">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="items" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="datasource" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
             </xs:choice>
         </xs:sequence>
     </xs:group>

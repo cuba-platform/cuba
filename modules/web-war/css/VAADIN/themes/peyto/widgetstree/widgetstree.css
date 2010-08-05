@@ -1,0 +1,85 @@
+.widgets-tree {
+    text-align: left;
+    background: #fff;
+}
+
+.widgets-tree .v-tree-node, .widgets-tree .v-tree-node-expanded {
+    background-image: none;
+}
+
+.widgets-tree .v-tree-node-children .v-tree-node,
+.widgets-tree .v-tree-node-children .v-tree-node-expanded {
+    padding-left: 16px;
+    background-image: none;
+}
+
+.widgets-tree .v-tree-node-leaf.v-tree-node,
+.widgets-tree .v-tree-node-leaf.v-tree-node.last {
+    padding-left: 16px;
+    background-image: none;
+}
+
+.widgets-tree .v-tree-node-widget {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #d3d3d3;
+    webkit-border-radius: 4px;
+    -khtml-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.widgets-tree .v-tree-node-caption {
+    margin-left: 16px;
+}
+
+.widgets-tree .v-tree-node-leaf .v-tree-node-caption {
+    margin-left: 2px;
+}
+
+.widgets-tree .v-tree-node .v-tree-node-caption span {
+    padding: 0 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 9pt;
+    color: #000;
+}
+
+.widgets-tree .v-tree-node-nocaption .v-tree-node-caption {
+    display: none;
+}
+
+.widgets-tree .v-tree-node-selected .v-tree-node-caption span {
+    background: #5daee8;
+    color: #000;
+    padding: 0 2px;
+    cursor: pointer;
+}
+
+.widgets-tree .v-tree-node-children {
+    padding-left: 0;
+}
+
+/* ie6compatnode is hidden from non ie6 browsers, for ie6
+* uses weird hack to sink all events properly
+*/
+.widgets-tree .v-tree-node-ie6compatnode {
+    display: none;
+}
+
+/* IMPORTANT keep the offsetWidth of this element the same as the margin-left of i-tree-node-caption */
+.v-ie6 .widgets-tree .v-tree-node-ie6compatnode {
+    display: inline;
+    float: left;
+    background: orange;
+    margin: 0;
+    width: 14px;
+    height: 10px;
+    padding: 1px;
+    filter: Alpha(opacity = 0);
+}
+
+.v-ie6 .widgets-tree .v-tree-node,
+.v-ie6 .widgets-tree .v-tree-node-children {
+    clear: left;
+}
