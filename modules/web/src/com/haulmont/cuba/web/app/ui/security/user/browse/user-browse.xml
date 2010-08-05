@@ -30,13 +30,13 @@
                 </filter>
             </vbox>
             <vbox id="table-panel" expand="users" spacing="true">
-                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <buttonsPanel align="MIDDLE_LEFT">
                     <button action="users.create" icon="icons/create.png"/>
                     <button action="users.edit" icon="icons/edit.png"/>
                     <button action="users.remove" icon="icons/remove.png"/>
                     <button action="users.changePassw" icon="icons/change-pass.png"/>
                     <button action="users.excel" icon="icons/excel.png"/>
-                </hbox>
+                </buttonsPanel>
                 <table id="users" editable="false">
                     <columns>
                         <column id="login" caption="msg://login" clickAction="open:sec$User.edit"/>

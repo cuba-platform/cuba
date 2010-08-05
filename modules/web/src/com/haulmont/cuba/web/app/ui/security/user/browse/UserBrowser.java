@@ -52,6 +52,10 @@ public class UserBrowser extends AbstractLookup {
                 }
         );
 
+        String multiSelect = (String)params.get("multiselect");
+        if ("true".equals(multiSelect)) {
+            table.setMultiSelect(true);
+        }
 //        getDsContext().get("users").refresh();
     }
 }
