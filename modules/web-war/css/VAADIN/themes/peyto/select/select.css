@@ -44,6 +44,7 @@
 
 .v-select-twincol-buttons .v-select-twincol-deco {
     clear: both;
+    padding: 3px;
 }
 
 .v-select-twincol .v-textfield {
@@ -55,11 +56,6 @@
 .v-select-twincol .v-button {
     display: block;
     float: left;
-}
-
-.v-select-twincol-buttons .v-button {
-    display: inline;
-    float: none;
 }
 
 /** Filterselect aka ComboBox styles */
@@ -92,6 +88,12 @@
 .v-ie .v-popupview-popup .v-filterselect .v-filterselect-input {
     padding-top: 4px;
     margin-top: -1px;
+}
+
+.v-ie8 .v-app .v-filterselect .v-filterselect-input,
+.v-ie8 .v-window .v-filterselect .v-filterselect-input,
+.v-ie8 .v-popupview-popup .v-filterselect .v-filterselect-input {
+    margin-top: 0;
 }
 
 .v-filterselect-input:focus {

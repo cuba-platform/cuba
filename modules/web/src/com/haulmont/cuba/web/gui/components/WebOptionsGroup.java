@@ -86,19 +86,6 @@ public class WebOptionsGroup
         return t;
     }
 
-    @SuppressWarnings({"unchecked"})
-    protected <T> T wrapAsCollection(Object o) {
-        if (isMultiSelect()) {
-            if (o != null) {
-                return (T) Collections.singleton(o);
-            } else {
-                return (T) Collections.emptySet();
-            }
-        } else {
-            return (T) o;
-        }
-    }
-
     @Override
     public void setValue(Object value) {
         // TODO (abramov) need to be changed

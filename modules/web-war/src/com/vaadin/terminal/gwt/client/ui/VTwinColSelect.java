@@ -1,12 +1,12 @@
 /*
  * Copyright 2010 IT Mill Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -110,7 +110,7 @@ public class VTwinColSelect extends VOptionGroupBase {
         if (cols >= 0) {
             options.setWidth(cols + "em");
             selections.setWidth(cols + "em");
-            buttons.setWidth("3.5em");
+//            buttons.setWidth("3.5em");
             optionsContainer.setWidth((2 * cols + 4) + "em");
         }
         if (getRows() > 0) {
@@ -236,9 +236,11 @@ public class VTwinColSelect extends VOptionGroupBase {
 
     private void setRelativeInternalWidths() {
         DOM.setStyleAttribute(getElement(), "position", "relative");
-        buttons.setWidth("15%");
-        options.setWidth("42%");
-        selections.setWidth("42%");
+        int buttonsWidth = buttons.getOffsetWidth();
+        int w = (getOffsetWidth() - buttonsWidth) / 2;
+        if (w < 0) { w = 0; }
+        options.setWidth(w + "px");
+        selections.setWidth(w + "px");
         widthSet = true;
     }
 
