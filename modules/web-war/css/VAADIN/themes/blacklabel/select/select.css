@@ -44,6 +44,7 @@
 
 .v-select-twincol-buttons .v-select-twincol-deco {
     clear: both;
+    padding: 3px;
 }
 
 .v-select-twincol .v-textfield {
@@ -55,11 +56,6 @@
 .v-select-twincol .v-button {
     display: block;
     float: left;
-}
-
-.v-select-twincol-buttons .v-button {
-    display: inline;
-    float: none;
 }
 
 /** Filterselect aka ComboBox styles */
