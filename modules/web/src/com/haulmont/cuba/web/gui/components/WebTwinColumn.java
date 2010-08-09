@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.TwinColSelect;
 
 import java.util.Collection;
@@ -50,6 +51,7 @@ public class WebTwinColumn
         };
         attachListener(component);
         component.setImmediate(true);
+        component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
         component.setMultiSelect(true);
     }
 
