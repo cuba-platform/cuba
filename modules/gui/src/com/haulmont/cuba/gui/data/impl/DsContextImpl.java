@@ -192,7 +192,10 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
     protected Map<Datasource, Datasource> dependencies = new HashMap<Datasource, Datasource>();
 
     public void registerDependency(final Datasource datasource, final Datasource dependFrom, final String propertyName) {
-        if (dependencies.containsKey(datasource)) throw new UnsupportedOperationException();
+        Datasource ds = dependencies.get(datasource);
+        if (ds != null)
+            if (ds.equals(dependFrom)) return;
+            else throw new UnsupportedOperationException("Datasource couldn't depend from two different sources");
 
         final DatasourceListener listener = new CollectionDatasourceListener<Entity>() {
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
