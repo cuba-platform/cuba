@@ -16,8 +16,6 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.OptionElement;
 import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,9 +29,11 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.ValueMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandler {
 
@@ -69,6 +69,13 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
             assert getSelectElement().getOptions().getLength() > index;
             OptionElement option = getSelectElement().getOptions().getItem(index);
             option.getStyle().setProperty(name, value);
+        }
+
+        public void setOptionClassName(int index, String className) {
+            assert index > -1;
+            assert getSelectElement().getOptions().getLength() > index;
+            OptionElement option = getSelectElement().getOptions().getItem(index);
+            option.setClassName(className);
         }
 
         private SelectElement getSelectElement() {
@@ -133,15 +140,15 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
             if (optionUidl.hasAttribute("selected")) {
                 selections.addItem(optionUidl.getStringAttribute("caption"),
                         key);
-                if (optionUidl.hasAttribute("styles")) {
-                    addOptionStyles(selections, selectedOptions, optionUidl.getMapAttribute("styles"));
+                if (optionUidl.hasAttribute("style")) {
+                    selections.setOptionClassName(selectedOptions, optionUidl.getStringAttribute("style"));
                 }
                 selectedOptions++;
             } else {
                 options.addItem(optionUidl.getStringAttribute("caption"),
                         key);
-                if (optionUidl.hasAttribute("styles")) {
-                    addOptionStyles(options, availableOptions, optionUidl.getMapAttribute("styles"));
+                if (optionUidl.hasAttribute("style")) {
+                    options.setOptionClassName(availableOptions, optionUidl.getStringAttribute("style"));
                 }
                 availableOptions++;
             }
@@ -164,14 +171,6 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
             options.setVisibleItemCount(getRows());
             selections.setVisibleItemCount(getRows());
 
-        }
-    }
-
-    private void addOptionStyles(TwinColListBox listBox, int option, ValueMap styles) {
-        final Set<String> keys = styles.getKeySet();
-        for (final String key : keys) {
-            final String value = styles.getString(key);
-            listBox.addOptionStyle(option, key, value);
         }
     }
 
@@ -247,8 +246,8 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
                 final String value = selections.getValue(selectionIndex);
                 options.addItem(text, value);
                 UIDL optionUidl = optionsUidl.get(value);
-                if (optionUidl.hasAttribute("styles")) {
-                    addOptionStyles(options, options.getItemCount() - 1, optionUidl.getMapAttribute("styles"));
+                if (optionUidl.hasAttribute("style")) {
+                    options.setOptionClassName(options.getItemCount() - 1, optionUidl.getStringAttribute("style"));
                 }
                 options.setItemSelected(options.getItemCount() - 1, true);
                 selections.removeItem(selectionIndex);
@@ -271,8 +270,8 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
                 final String value = options.getValue(optionIndex);
                 selections.addItem(text, value);
                 UIDL optionUidl = optionsUidl.get(value);
-                if (optionUidl.hasAttribute("styles")) {
-                    addOptionStyles(selections, selections.getItemCount() - 1, optionUidl.getMapAttribute("styles"));
+                if (optionUidl.hasAttribute("style")) {
+                    selections.setOptionClassName(selections.getItemCount() - 1, optionUidl.getStringAttribute("style"));
                 }
                 selections.setItemSelected(selections.getItemCount() - 1,
                         true);

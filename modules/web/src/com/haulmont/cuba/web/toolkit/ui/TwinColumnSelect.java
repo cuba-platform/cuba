@@ -16,8 +16,6 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.TwinColSelect;
 
-import java.util.Map;
-
 @SuppressWarnings("serial")
 public class TwinColumnSelect extends TwinColSelect {
 
@@ -34,12 +32,13 @@ public class TwinColumnSelect extends TwinColSelect {
             target.addAttribute("nullselection", true);
         }
         target.addAttribute("key", key);
-        if (isSelected(id) && keyIndex < selectedKeys.length) {
+        final boolean selected = isSelected(id) && keyIndex < selectedKeys.length;
+        if (selected) {
             target.addAttribute("selected", true);
             selectedKeys[keyIndex++] = key;
         }
         if (styleGenerator != null) {
-            target.addAttribute("styles", styleGenerator.generateStyles(this, id));
+            target.addAttribute("style", styleGenerator.generateStyle(this, id, selected));
         }
         target.endTag("so");
         return keyIndex;
@@ -55,7 +54,7 @@ public class TwinColumnSelect extends TwinColSelect {
     }
 
     public interface OptionStyleGenerator {
-        Map<String, String> generateStyles(AbstractSelect source, Object itemId);
+        String generateStyle(AbstractSelect source, Object itemId, boolean selected);
     }
 
 }
