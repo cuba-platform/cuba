@@ -17,6 +17,10 @@
 package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -27,7 +31,7 @@ import com.vaadin.terminal.gwt.client.UIDL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class VTwinColSelect extends VOptionGroupBase {
+public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandler {
 
     private static final String CLASSNAME = "v-select-twincol";
 
@@ -35,9 +39,9 @@ public class VTwinColSelect extends VOptionGroupBase {
 
     private static final int DEFAULT_COLUMN_COUNT = 10;
 
-    private final ListBox options;
+    private final TwinColListBox options;
 
-    private final ListBox selections;
+    private final TwinColListBox selections;
 
     private final VButton add;
 
@@ -49,12 +53,23 @@ public class VTwinColSelect extends VOptionGroupBase {
 
     private boolean widthSet = false;
 
+    private class TwinColListBox extends ListBox implements HasDoubleClickHandlers {
+        public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
+            return addDomHandler(handler, DoubleClickEvent.getType());
+        }
+    }
+
     public VTwinColSelect() {
         super(CLASSNAME);
-        options = new ListBox();
+
+        options = new TwinColListBox();
         options.addClickHandler(this);
-        selections = new ListBox();
+        options.addDoubleClickHandler(this);
+
+        selections = new TwinColListBox();
         selections.addClickHandler(this);
+        selections.addDoubleClickHandler(this);
+
         options.setVisibleItemCount(VISIBLE_COUNT);
         selections.setVisibleItemCount(VISIBLE_COUNT);
         options.setStyleName(CLASSNAME + "-options");
@@ -154,59 +169,77 @@ public class VTwinColSelect extends VOptionGroupBase {
         return selectedIndexes;
     }
 
+    public void onDoubleClick(DoubleClickEvent event) {
+        if (event.getSource() == options) {
+            unselectAllItems(selections);
+            selectItems();
+        } else if (event.getSource() == selections) {
+            unselectAllItems(options);
+            unselectItems();
+        }
+    }
+
     @Override
     public void onClick(ClickEvent event) {
         super.onClick(event);
         if (event.getSource() == add) {
-            final boolean[] sel = getItemsToAdd();
-            for (int i = 0; i < sel.length; i++) {
-                if (sel[i]) {
-                    final int optionIndex = i
-                            - (sel.length - options.getItemCount());
-                    selectedKeys.add(options.getValue(optionIndex));
-
-                    // Move selection to another column
-                    final String text = options.getItemText(optionIndex);
-                    final String value = options.getValue(optionIndex);
-                    selections.addItem(text, value);
-                    selections.setItemSelected(selections.getItemCount() - 1,
-                            true);
-                    options.removeItem(optionIndex);
-                }
-            }
-            client.updateVariable(id, "selected", selectedKeys
-                    .toArray(new String[selectedKeys.size()]), isImmediate());
-
+            selectItems();
         } else if (event.getSource() == remove) {
-            final boolean[] sel = getItemsToRemove();
-            for (int i = 0; i < sel.length; i++) {
-                if (sel[i]) {
-                    final int selectionIndex = i
-                            - (sel.length - selections.getItemCount());
-                    selectedKeys.remove(selections.getValue(selectionIndex));
-
-                    // Move selection to another column
-                    final String text = selections.getItemText(selectionIndex);
-                    final String value = selections.getValue(selectionIndex);
-                    options.addItem(text, value);
-                    options.setItemSelected(options.getItemCount() - 1, true);
-                    selections.removeItem(selectionIndex);
-                }
-            }
-            client.updateVariable(id, "selected", selectedKeys
-                    .toArray(new String[selectedKeys.size()]), isImmediate());
+            unselectItems();
         } else if (event.getSource() == options) {
             // unselect all in other list, to avoid mistakes (i.e wrong button)
-            final int c = selections.getItemCount();
-            for (int i = 0; i < c; i++) {
-                selections.setItemSelected(i, false);
-            }
+            unselectAllItems(selections);
         } else if (event.getSource() == selections) {
             // unselect all in other list, to avoid mistakes (i.e wrong button)
-            final int c = options.getItemCount();
-            for (int i = 0; i < c; i++) {
-                options.setItemSelected(i, false);
+            unselectAllItems(options);
+        }
+    }
+
+    private void unselectItems() {
+        final boolean[] sel = getItemsToRemove();
+        for (int i = 0; i < sel.length; i++) {
+            if (sel[i]) {
+                final int selectionIndex = i
+                        - (sel.length - selections.getItemCount());
+                selectedKeys.remove(selections.getValue(selectionIndex));
+
+                // Move selection to another column
+                final String text = selections.getItemText(selectionIndex);
+                final String value = selections.getValue(selectionIndex);
+                options.addItem(text, value);
+                options.setItemSelected(options.getItemCount() - 1, true);
+                selections.removeItem(selectionIndex);
             }
+        }
+        client.updateVariable(id, "selected", selectedKeys
+                .toArray(new String[selectedKeys.size()]), isImmediate());
+    }
+
+    private void selectItems() {
+        final boolean[] sel = getItemsToAdd();
+        for (int i = 0; i < sel.length; i++) {
+            if (sel[i]) {
+                final int optionIndex = i
+                        - (sel.length - options.getItemCount());
+                selectedKeys.add(options.getValue(optionIndex));
+
+                // Move selection to another column
+                final String text = options.getItemText(optionIndex);
+                final String value = options.getValue(optionIndex);
+                selections.addItem(text, value);
+                selections.setItemSelected(selections.getItemCount() - 1,
+                        true);
+                options.removeItem(optionIndex);
+            }
+        }
+        client.updateVariable(id, "selected", selectedKeys
+                .toArray(new String[selectedKeys.size()]), isImmediate());
+    }
+
+    private void unselectAllItems(ListBox list) {
+        final int c = list.getItemCount();
+        for (int i = 0; i < c; i++) {
+            list.setItemSelected(i, false);
         }
     }
 
