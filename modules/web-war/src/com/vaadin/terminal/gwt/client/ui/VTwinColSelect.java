@@ -16,6 +16,10 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.OptionElement;
+import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
@@ -27,9 +31,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.ValueMap;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandler {
 
@@ -53,9 +57,22 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
 
     private boolean widthSet = false;
 
+    private Map<String, UIDL> optionsUidl;
+
     private class TwinColListBox extends ListBox implements HasDoubleClickHandlers {
         public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
             return addDomHandler(handler, DoubleClickEvent.getType());
+        }
+
+        public void addOptionStyle(int index, String name, String value) {
+            assert index > -1;
+            assert getSelectElement().getOptions().getLength() > index;
+            OptionElement option = getSelectElement().getOptions().getItem(index);
+            option.getStyle().setProperty(name, value);
+        }
+
+        private SelectElement getSelectElement() {
+            return getElement().cast();
         }
     }
 
@@ -104,14 +121,29 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
         remove.setEnabled(enabled);
         options.clear();
         selections.clear();
+        int selectedOptions = 0;
+        int availableOptions = 0;
+
+        optionsUidl = new HashMap<String, UIDL>(uidl.getChildCount());
+
         for (final Iterator i = uidl.getChildIterator(); i.hasNext();) {
             final UIDL optionUidl = (UIDL) i.next();
+            final String key = optionUidl.getStringAttribute("key");
+            optionsUidl.put(key, optionUidl);
             if (optionUidl.hasAttribute("selected")) {
                 selections.addItem(optionUidl.getStringAttribute("caption"),
-                        optionUidl.getStringAttribute("key"));
+                        key);
+                if (optionUidl.hasAttribute("styles")) {
+                    addOptionStyles(selections, selectedOptions, optionUidl.getMapAttribute("styles"));
+                }
+                selectedOptions++;
             } else {
                 options.addItem(optionUidl.getStringAttribute("caption"),
-                        optionUidl.getStringAttribute("key"));
+                        key);
+                if (optionUidl.hasAttribute("styles")) {
+                    addOptionStyles(options, availableOptions, optionUidl.getMapAttribute("styles"));
+                }
+                availableOptions++;
             }
         }
 
@@ -133,7 +165,14 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
             selections.setVisibleItemCount(getRows());
 
         }
+    }
 
+    private void addOptionStyles(TwinColListBox listBox, int option, ValueMap styles) {
+        final Set<String> keys = styles.getKeySet();
+        for (final String key : keys) {
+            final String value = styles.getString(key);
+            listBox.addOptionStyle(option, key, value);
+        }
     }
 
     @Override
@@ -207,6 +246,10 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
                 final String text = selections.getItemText(selectionIndex);
                 final String value = selections.getValue(selectionIndex);
                 options.addItem(text, value);
+                UIDL optionUidl = optionsUidl.get(value);
+                if (optionUidl.hasAttribute("styles")) {
+                    addOptionStyles(options, options.getItemCount() - 1, optionUidl.getMapAttribute("styles"));
+                }
                 options.setItemSelected(options.getItemCount() - 1, true);
                 selections.removeItem(selectionIndex);
             }
@@ -227,6 +270,10 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
                 final String text = options.getItemText(optionIndex);
                 final String value = options.getValue(optionIndex);
                 selections.addItem(text, value);
+                UIDL optionUidl = optionsUidl.get(value);
+                if (optionUidl.hasAttribute("styles")) {
+                    addOptionStyles(selections, selections.getItemCount() - 1, optionUidl.getMapAttribute("styles"));
+                }
                 selections.setItemSelected(selections.getItemCount() - 1,
                         true);
                 options.removeItem(optionIndex);

@@ -13,9 +13,9 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TwinColumn;
+import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.TwinColSelect;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class WebTwinColumn
         extends
-            WebAbstractOptionsField<TwinColSelect>
+            WebAbstractOptionsField<TwinColumnSelect>
         implements
             TwinColumn, Component.Wrapper
 {
@@ -33,7 +33,7 @@ public class WebTwinColumn
     private static final long serialVersionUID = 9028516889145414298L;
 
     public WebTwinColumn() {
-        component = new TwinColSelect() {
+        component = new TwinColumnSelect() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
