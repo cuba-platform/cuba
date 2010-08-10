@@ -32,6 +32,8 @@ public class WidgetsTreeLoader extends TreeLoader {
         loadId(component, element);
         loadVisible(component, element);
 
+        loadWidth(component, element);
+
         loadStyleName(component, element);
 
         Element itemsElem = element.element("items");
