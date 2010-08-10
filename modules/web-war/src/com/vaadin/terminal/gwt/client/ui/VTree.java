@@ -131,13 +131,8 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                 continue;
             }
             childTree = createTreeNode(childUidl);
-            if (childTree.ie6compatnode != null) {
-                this.add(childTree);
-            }
+            this.add(childTree);
             childTree.updateFromUIDL(childUidl, client);
-            if (childTree.ie6compatnode == null) {
-                this.add(childTree);
-            }
         }
 
         if (childTree != null) {
@@ -676,13 +671,8 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                     continue;
                 }
                 childTree = createTreeNode(childUidl);
-                if (ie6compatnode != null) {
-                    childNodeContainer.add(childTree);
-                }
+                childNodeContainer.add(childTree);
                 childTree.updateFromUIDL(childUidl, client);
-                if (ie6compatnode == null) {
-                    childNodeContainer.add(childTree);
-                }
             }
             if (childTree != null) {
                 childTree.addStyleName("last");

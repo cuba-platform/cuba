@@ -48,10 +48,7 @@ public class VWidgetsTree extends VTree {
         private boolean dynWidth;
         private boolean dynHeight;
 
-        private UIDL widgetUidl;
-
         WidgetTreeNode(UIDL uidl) {
-            widgetUidl = uidl;
             setStyleName(CLASSNAME);
             if (!uidl.hasAttribute("caption")) {
                 addStyleName(CLASSNAME + "-nocaption");
@@ -112,13 +109,8 @@ public class VWidgetsTree extends VTree {
                     continue;
                 }
                 childTree = createTreeNode(childUidl);
-                if (ie6compatnode != null) {
-                    childNodeContainer.add(childTree);
-                }
+                childNodeContainer.add(childTree);
                 childTree.updateFromUIDL(childUidl, client);
-                if (ie6compatnode == null) {
-                    childNodeContainer.add(childTree);
-                }
             }
             if (childTree != null) {
                 childTree.addStyleName("last");
@@ -134,12 +126,6 @@ public class VWidgetsTree extends VTree {
             if (isAttached()) {
                 updateWidgetSize(uidl);
             }
-        }
-
-        @Override
-        public void onAttach() {
-            super.onAttach();
-            updateWidgetSize(widgetUidl);
         }
 
         private void updateWidgetSize(UIDL uidl) {

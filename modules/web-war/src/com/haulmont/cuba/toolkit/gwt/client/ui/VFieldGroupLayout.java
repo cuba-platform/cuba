@@ -35,8 +35,8 @@ public class VFieldGroupLayout extends VGridLayout {
         super.updateFromUIDL(uidl, client);
 
         if (cells != null) {
-            for (final VGridLayout.Cell[] cell1 : cells) {
-                for (final Cell cell : cell1) {
+            for (final VGridLayout.Cell[] cells : this.cells) {
+                for (final Cell cell : cells) {
                     if (cell != null
                             && cell.cc != null
                             && (cell.hasRelativeHeight() || cell
