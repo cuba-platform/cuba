@@ -35,53 +35,53 @@ public class VPanel extends SimplePanel implements Container {
     public static final String CLICK_EVENT_IDENTIFIER = "click";
     public static final String CLASSNAME = "v-panel";
 
-    ApplicationConnection client;
+    protected ApplicationConnection client;
 
-    String id;
+    protected String id;
 
-    private final Element captionNode = DOM.createDiv();
+    protected Element captionNode;
 
-    private final Element captionText = DOM.createSpan();
+    protected Element captionText;
 
-    private Icon icon;
+    protected Icon icon;
 
-    private final Element bottomDecoration = DOM.createDiv();
+    protected Element bottomDecoration;
 
-    private final Element contentNode = DOM.createDiv();
+    protected Element contentNode;
 
-    private Element errorIndicatorElement;
+    protected Element errorIndicatorElement;
 
-    private String height;
+    protected String height;
 
-    private Paintable layout;
+    protected Paintable layout;
 
-    ShortcutActionHandler shortcutHandler;
+    protected ShortcutActionHandler shortcutHandler;
 
-    private String width = "";
+    protected String width = "";
 
-    private Element geckoCaptionMeter;
+    protected Element geckoCaptionMeter;
 
-    private int scrollTop;
+    protected int scrollTop;
 
-    private int scrollLeft;
+    protected int scrollLeft;
 
-    private RenderInformation renderInformation = new RenderInformation();
+    protected RenderInformation renderInformation = new RenderInformation();
 
-    private int borderPaddingHorizontal = -1;
+    protected int borderPaddingHorizontal = -1;
 
-    private int borderPaddingVertical = -1;
+    protected int borderPaddingVertical = -1;
 
-    private int captionPaddingHorizontal = -1;
+    protected int captionPaddingHorizontal = -1;
 
-    private int captionMarginLeft = -1;
+    protected int captionMarginLeft = -1;
 
-    private boolean rendering;
+    protected boolean rendering;
 
-    private int contentMarginLeft = -1;
+    protected int contentMarginLeft = -1;
 
-    private String previousStyleName;
+    protected String previousStyleName;
 
-    private ClickEventHandler clickEventHandler = new ClickEventHandler(this,
+    protected ClickEventHandler clickEventHandler = new ClickEventHandler(this,
             CLICK_EVENT_IDENTIFIER) {
 
         @Override
@@ -93,7 +93,17 @@ public class VPanel extends SimplePanel implements Container {
 
     public VPanel() {
         super();
+        constructDOM();
+    }
+
+    protected void constructDOM() {
         DivElement captionWrap = Document.get().createDivElement();
+
+        captionNode = DOM.createDiv();
+        captionText = DOM.createSpan();
+        bottomDecoration = DOM.createDiv();
+        contentNode = DOM.createDiv();
+
         captionWrap.appendChild(captionNode);
         captionNode.appendChild(captionText);
 
@@ -110,7 +120,6 @@ public class VPanel extends SimplePanel implements Container {
         DOM.sinkEvents(contentNode, Event.ONSCROLL);
         contentNode.getStyle().setProperty("position", "relative");
         getElement().getStyle().setProperty("overflow", "hidden");
-
     }
 
     @Override
@@ -118,55 +127,16 @@ public class VPanel extends SimplePanel implements Container {
         return contentNode;
     }
 
-    private void setCaption(String text) {
+    protected void setCaption(String text) {
         DOM.setInnerHTML(captionText, text);
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         rendering = true;
         if (!uidl.hasAttribute("cached")) {
-
-            // Handle caption displaying and style names, prior generics.
-            // Affects size
-            // calculations
-
-            // Restore default stylenames
-            contentNode.setClassName(CLASSNAME + "-content");
-            bottomDecoration.setClassName(CLASSNAME + "-deco");
-            captionNode.setClassName(CLASSNAME + "-caption");
-            boolean hasCaption = false;
-            if (uidl.hasAttribute("caption")
-                    && !uidl.getStringAttribute("caption").equals("")) {
-                setCaption(uidl.getStringAttribute("caption"));
-                hasCaption = true;
-            } else {
-                setCaption("");
-                captionNode.setClassName(CLASSNAME + "-nocaption");
-            }
-
-            // Add proper stylenames for all elements. This way we can prevent
-            // unwanted CSS selector inheritance.
-            if (uidl.hasAttribute("style")) {
-                final String[] styles = uidl.getStringAttribute("style").split(
-                        " ");
-                final String captionBaseClass = CLASSNAME
-                        + (hasCaption ? "-caption" : "-nocaption");
-                final String contentBaseClass = CLASSNAME + "-content";
-                final String decoBaseClass = CLASSNAME + "-deco";
-                String captionClass = captionBaseClass;
-                String contentClass = contentBaseClass;
-                String decoClass = decoBaseClass;
-                for (int i = 0; i < styles.length; i++) {
-                    captionClass += " " + captionBaseClass + "-" + styles[i];
-                    contentClass += " " + contentBaseClass + "-" + styles[i];
-                    decoClass += " " + decoBaseClass + "-" + styles[i];
-                }
-                captionNode.setClassName(captionClass);
-                contentNode.setClassName(contentClass);
-                bottomDecoration.setClassName(decoClass);
-
-            }
+            renderDOM(uidl);
         }
+
         // Ensure correct implementation
         if (client.updateComponent(this, uidl, false)) {
             rendering = false;
@@ -182,17 +152,7 @@ public class VPanel extends SimplePanel implements Container {
 
         handleError(uidl);
 
-        // Render content
-        final UIDL layoutUidl = uidl.getChildUIDL(0);
-        final Paintable newLayout = client.getPaintable(layoutUidl);
-        if (newLayout != layout) {
-            if (layout != null) {
-                client.unregisterPaintable(layout);
-            }
-            setWidget((Widget) newLayout);
-            layout = newLayout;
-        }
-        layout.updateFromUIDL(layoutUidl, client);
+        renderContent(uidl);
 
         // We may have actions attached to this panel
         if (uidl.getChildCount() > 1) {
@@ -234,6 +194,63 @@ public class VPanel extends SimplePanel implements Container {
 
         rendering = false;
 
+    }
+
+    protected void renderContent(UIDL uidl) {
+        // Render content
+        final UIDL layoutUidl = uidl.getChildUIDL(0);
+        final Paintable newLayout = client.getPaintable(layoutUidl);
+        if (newLayout != layout) {
+            if (layout != null) {
+                client.unregisterPaintable(layout);
+            }
+            setWidget((Widget) newLayout);
+            layout = newLayout;
+        }
+        layout.updateFromUIDL(layoutUidl, client);
+    }
+
+    protected void renderDOM(UIDL uidl) {
+        // Handle caption displaying and style names, prior generics.
+        // Affects size
+        // calculations
+
+        // Restore default stylenames
+        contentNode.setClassName(CLASSNAME + "-content");
+        bottomDecoration.setClassName(CLASSNAME + "-deco");
+        captionNode.setClassName(CLASSNAME + "-caption");
+        boolean hasCaption = false;
+        if (uidl.hasAttribute("caption")
+                && !uidl.getStringAttribute("caption").equals("")) {
+            setCaption(uidl.getStringAttribute("caption"));
+            hasCaption = true;
+        } else {
+            setCaption("");
+            captionNode.setClassName(CLASSNAME + "-nocaption");
+        }
+
+        // Add proper stylenames for all elements. This way we can prevent
+        // unwanted CSS selector inheritance.
+        if (uidl.hasAttribute("style")) {
+            final String[] styles = uidl.getStringAttribute("style").split(
+                    " ");
+            final String captionBaseClass = CLASSNAME
+                    + (hasCaption ? "-caption" : "-nocaption");
+            final String contentBaseClass = CLASSNAME + "-content";
+            final String decoBaseClass = CLASSNAME + "-deco";
+            String captionClass = captionBaseClass;
+            String contentClass = contentBaseClass;
+            String decoClass = decoBaseClass;
+            for (int i = 0; i < styles.length; i++) {
+                captionClass += " " + captionBaseClass + "-" + styles[i];
+                contentClass += " " + contentBaseClass + "-" + styles[i];
+                decoClass += " " + decoBaseClass + "-" + styles[i];
+            }
+            captionNode.setClassName(captionClass);
+            contentNode.setClassName(contentClass);
+            bottomDecoration.setClassName(decoClass);
+
+        }
     }
 
     @Override
@@ -433,14 +450,14 @@ public class VPanel extends SimplePanel implements Container {
         return contentMarginLeft;
     }
 
-    private int getCaptionPaddingHorizontal() {
+    protected int getCaptionPaddingHorizontal() {
         if (captionPaddingHorizontal < 0) {
             detectContainerBorders();
         }
         return captionPaddingHorizontal;
     }
 
-    private int getContainerBorderHeight() {
+    protected int getContainerBorderHeight() {
         if (borderPaddingVertical < 0) {
             detectContainerBorders();
         }
@@ -466,14 +483,14 @@ public class VPanel extends SimplePanel implements Container {
         }
     }
 
-    private int getContainerBorderWidth() {
+    protected int getContainerBorderWidth() {
         if (borderPaddingHorizontal < 0) {
             detectContainerBorders();
         }
         return borderPaddingHorizontal;
     }
 
-    private void detectContainerBorders() {
+    protected void detectContainerBorders() {
         DOM.setStyleAttribute(contentNode, "overflow", "hidden");
 
         borderPaddingHorizontal = Util.measureHorizontalBorder(contentNode);
@@ -512,7 +529,7 @@ public class VPanel extends SimplePanel implements Container {
         int h = 0;
 
         if (width != null && !width.equals("")) {
-            w = getOffsetWidth() - getContainerBorderWidth();
+            w = contentNode.getOffsetWidth() - getContainerBorderWidth();
             if (w < 0) {
                 w = 0;
             }

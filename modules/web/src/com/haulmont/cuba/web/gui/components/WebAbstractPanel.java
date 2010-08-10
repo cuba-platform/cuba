@@ -27,10 +27,6 @@ public class WebAbstractPanel extends Panel
 
     private boolean expandable = true;
 
-    public WebAbstractPanel() {
-        setStyleName(Panel.STYLE_LIGHT);
-    }
-
     public void add(Component component) {
         final com.vaadin.ui.Component comp = WebComponentsHelper.unwrap(component);
         if (comp instanceof Layout) {
@@ -58,7 +54,7 @@ public class WebAbstractPanel extends Panel
 
     public void requestFocus() {
         if (getComponentIterator().hasNext()) {
-            com.vaadin.ui.Component component = (com.vaadin.ui.Component) getComponentIterator().next();
+            com.vaadin.ui.Component component = getComponentIterator().next();
             if (component instanceof Focusable) {
                 ((Focusable) component).focus();
             }

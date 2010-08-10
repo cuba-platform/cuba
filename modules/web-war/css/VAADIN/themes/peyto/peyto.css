@@ -148,9 +148,15 @@
  *  Custom Control styles
  */
 
-.v-verticallayout .edit-area,
-.v-horizontallayout .edit-area,
-.v-gridlayout .edit-area {
+.v-verticallayout.edit-area,
+.v-horizontallayout.edit-area,
+.v-gridlayout.edit-area {
+    background-color: #dee7f8;
+    border: 1px solid #c3c3c3;
+    color: #000;
+}
+
+.group-box-edit-area fieldset {
     background-color: #dee7f8;
     border: 1px solid #c3c3c3;
     color: #000;

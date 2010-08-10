@@ -11,5 +11,28 @@
 
 package com.haulmont.cuba.gui.components;
 
+import java.io.Serializable;
+
 public interface GroupBox extends Layout, Component.HasCaption, Component.Expandable, Component.HasLayout {
+
+    boolean isCollapsable();
+    void setCollapsable(boolean collapsable);
+
+    boolean isExpanded();
+    void setExpanded(boolean expanded);
+
+    void addListener(ExpandListener listener);
+    void removeListener(ExpandListener listener);
+
+    void addListener(CollapseListener listener);
+    void removeListener(CollapseListener listener);
+
+    interface ExpandListener extends Serializable {
+        void onExpand(GroupBox component);
+    }
+
+    interface CollapseListener extends Serializable {
+        void onCollapse(GroupBox component);
+    }
+
 }

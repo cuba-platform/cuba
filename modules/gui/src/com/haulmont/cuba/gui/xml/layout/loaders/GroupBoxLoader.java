@@ -10,10 +10,12 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.Layout;
 import com.haulmont.cuba.gui.components.GroupBox;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
@@ -37,6 +39,10 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
         loadAlign(component, element);
         loadSubComponentsAndExpand(component, element, "caption", "visible");
 
+        loadExpandable(component, element);
+
+        loadCollapsable(component, element);
+
         loadStyleName(component, element);
 
         loadHeight(component, element);
@@ -44,4 +50,19 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
 
         return component;
     }
+
+    private void loadCollapsable(GroupBox component, Element element) {
+        String collapsable = element.attributeValue("collapsable");
+        if (!StringUtils.isEmpty(collapsable)) {
+            boolean b = BooleanUtils.toBoolean(collapsable);
+            component.setCollapsable(b);
+            if (b) {
+                String expanded = element.attributeValue("expanded");
+                if (!StringUtils.isBlank(expanded)) {
+                    component.setExpanded(BooleanUtils.toBoolean(expanded));
+                }
+            }
+        }
+    }
+
 }

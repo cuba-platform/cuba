@@ -70,7 +70,9 @@ public class FieldGroup extends Form {
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
         target.addAttribute("collapsable", isCollapsable());
-        target.addAttribute("expanded", isExpanded());
+        if (isCollapsable()) {
+            target.addAttribute("expanded", isExpanded());
+        }
     }
 
     @Override

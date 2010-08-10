@@ -52,15 +52,10 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         loadHeight(component, element);
         loadWidth(component, element);
 
-        loadSwitchable(component, element);
+        loadCollapsable(component, element);
         loadExpandable(component, element);
 
         loadCaptionAlignment(component, element);
-
-        String expanded = element.attributeValue("expanded");
-        if (!StringUtils.isBlank(expanded)) {
-            component.setExpanded(BooleanUtils.toBoolean(expanded));
-        }
 
         final Datasource ds = loadDatasource(element);
         if (element.elements("column").isEmpty()) {
@@ -250,10 +245,17 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    private void loadSwitchable(FieldGroup component, Element element) {
-        String switchable = element.attributeValue("collapsable");
-        if (!StringUtils.isEmpty(switchable)) {
-            component.setCollapsable(BooleanUtils.toBoolean(switchable));
+    private void loadCollapsable(FieldGroup component, Element element) {
+        String collapsable = element.attributeValue("collapsable");
+        if (!StringUtils.isEmpty(collapsable)) {
+            boolean b = BooleanUtils.toBoolean(collapsable);
+            component.setCollapsable(b);
+            if (b) {
+                String expanded = element.attributeValue("expanded");
+                if (!StringUtils.isBlank(expanded)) {
+                    component.setExpanded(BooleanUtils.toBoolean(expanded));
+                }
+            }
         }
     }
 }

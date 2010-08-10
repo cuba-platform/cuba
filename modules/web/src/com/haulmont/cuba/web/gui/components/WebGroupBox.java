@@ -11,11 +11,29 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupBox;
+import com.haulmont.cuba.toolkit.gwt.client.ui.VGroupBox;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.VerticalLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+@ClientWidget(VGroupBox.class)
 public class WebGroupBox extends WebAbstractPanel implements GroupBox {
 
+    private static final long serialVersionUID = 603031841274663159L;
+
+    private boolean expanded = true;
+    private boolean collapsable;
+
+    private List<ExpandListener> expandListeners = null;
+    private List<CollapseListener> collapseListeners = null;
+
     public WebGroupBox() {
+//        setStyleName(Panel.STYLE_LIGHT);
         setContent(new VerticalLayout());
     }
 
@@ -30,6 +48,104 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
         } else {
             getContent().setWidth("100%");
             getContent().setHeight("-1px");
+        }
+    }
+
+    public boolean isExpanded() {
+        return !collapsable || expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        if (collapsable) {
+            this.expanded = expanded;
+            getContent().setVisible(expanded);
+            requestRepaint();
+        }
+    }
+
+    public boolean isCollapsable() {
+        return collapsable;
+    }
+
+    public void setCollapsable(boolean collapsable) {
+        this.collapsable = collapsable;
+        if (collapsable) {
+            setExpanded(true);
+        }
+    }
+
+    public void addListener(ExpandListener listener) {
+        if (expandListeners == null) {
+            expandListeners = new ArrayList<ExpandListener>();
+        }
+        expandListeners.add(listener);
+    }
+
+    public void removeListener(ExpandListener listener) {
+        if (expandListeners != null) {
+            expandListeners.remove(listener);
+            if (expandListeners.isEmpty()) {
+                expandListeners = null;
+            }
+        }
+    }
+
+    private void fireExpandListeners() {
+        if (expandListeners != null) {
+            for (final ExpandListener expandListener : expandListeners) {
+                expandListener.onExpand(this);
+            }
+        }
+    }
+
+    public void addListener(CollapseListener listener) {
+        if (collapseListeners == null) {
+            collapseListeners = new ArrayList<CollapseListener>();
+        }
+        collapseListeners.add(listener);
+    }
+
+    public void removeListener(CollapseListener listener) {
+        if (collapseListeners != null) {
+            collapseListeners.remove(listener);
+            if (collapseListeners.isEmpty()) {
+                collapseListeners = null;
+            }
+        }
+    }
+
+    private void fireCollapseListeners() {
+        if (collapseListeners != null) {
+            for (final CollapseListener collapseListener : collapseListeners) {
+                collapseListener.onCollapse(this);
+            }
+        }
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        super.paintContent(target);
+        target.addAttribute("collapsable", isCollapsable());
+        if (isCollapsable()) {
+            target.addAttribute("expanded", isExpanded());
+        }
+    }
+
+    @Override
+    public void changeVariables(Object source, Map variables) {
+        super.changeVariables(source, variables);
+        if (isCollapsable()) {
+            if (variables.containsKey("expand")) {
+                setExpanded(true);
+                getContent().requestRepaintAll();
+
+                fireExpandListeners();
+
+            } else if (variables.containsKey("collapse")) {
+                setExpanded(false);
+
+                fireCollapseListeners();
+            }
         }
     }
 }
