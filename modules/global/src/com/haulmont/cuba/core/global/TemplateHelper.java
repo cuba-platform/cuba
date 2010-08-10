@@ -16,6 +16,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,9 @@ public class TemplateHelper {
     public static String processTemplateFromFile(String templatePath, Map<String, Object> parameterValues) {
         final FileTemplateLoader templateLoader;
         try {
-            templateLoader = new FileTemplateLoader(new File(AppContext.getProperty("cuba.confDir")), true);
+            String rootPath = AppContext.getProperty("cuba.templateRootDir");
+            if (StringUtils.isEmpty(rootPath)) rootPath = AppContext.getProperty("cuba.confDir");
+            templateLoader = new FileTemplateLoader(new File(rootPath), true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
