@@ -173,6 +173,7 @@
 .v-table-cell-content .v-button {
     height: 17px; 
 	background: transparent url(img/table-button-left.png) no-repeat left center;
+    padding: 0 0 0 3px;
 }
 
 .v-table-cell-content .v-button:hover {
