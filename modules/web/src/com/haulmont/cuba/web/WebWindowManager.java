@@ -274,11 +274,11 @@ public class WebWindowManager extends WindowManager {
     }
 
     private void closeStartupScreen(AppWindow appWindow) {
-        fireCloseStartupLayoutListeners();
-        appWindow.unInitStartupLayout();
         if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
             TabSheet tabSheet = appWindow.getTabSheet();
             if (tabSheet == null) {
+                fireCloseStartupLayoutListeners();
+                appWindow.unInitStartupLayout();
                 VerticalLayout mainLayout = appWindow.getMainLayout();
                 tabSheet = new AppWindow.AppTabSheet();
                 tabSheet.setSizeFull();
@@ -341,7 +341,7 @@ public class WebWindowManager extends WindowManager {
             for (final Component c : components) {
                 layout.addComponent(c);
             }
-        }
+        }                                                                                       
 
         final Component component = WebComponentsHelper.getComposition(window);
         component.setSizeFull();
