@@ -275,24 +275,18 @@ public class WebWindowManager extends WindowManager {
 
     private void closeStartupScreen(AppWindow appWindow) {
         fireCloseStartupLayoutListeners();
+        appWindow.unInitStartupLayout();
         if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
             TabSheet tabSheet = appWindow.getTabSheet();
             if (tabSheet == null) {
                 VerticalLayout mainLayout = appWindow.getMainLayout();
-                mainLayout.removeAllComponents();
                 tabSheet = new AppWindow.AppTabSheet();
                 tabSheet.setSizeFull();
                 mainLayout.addComponent(tabSheet);
                 mainLayout.setExpandRatio(tabSheet, 1);
                 appWindow.setTabSheet(tabSheet);
             }
-        } else {
-            if (getTabs().size() == 0) {
-                VerticalLayout mainLayout = appWindow.getMainLayout();
-                mainLayout.removeAllComponents();
-            }
         }
-        appWindow.unInitStartupLayout();
     }
 
     protected Layout createNewWinLayout(Window window, Component... components) {

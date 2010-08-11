@@ -57,7 +57,7 @@ import java.util.*;
  * instance in {@link com.haulmont.cuba.web.App#createAppWindow()} method
  */
 public class AppWindow extends Window implements UserSubstitutionListener {
-    
+
     private static final long serialVersionUID = 7269808125566032433L;
 
     /**
@@ -170,11 +170,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         middleLayout = new HorizontalLayout();
         middleLayout.setSizeFull();
 
-        mainLayout = new VerticalLayout();
-        mainLayout.setMargin(true);
-        mainLayout.setSpacing(true);
-        mainLayout.setSizeFull();
-
         foldersPane = createFoldersPane();
 
         if (foldersPane != null) {
@@ -184,15 +179,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             foldersSplit.setLocked(true);
 
             foldersSplit.addComponent(foldersPane);
-            foldersSplit.addComponent(mainLayout);
-
+            
             middleLayout.addComponent(foldersSplit);
             middleLayout.setExpandRatio(foldersSplit, 1);
 
             foldersPane.init(foldersSplit);
-        } else {
-            middleLayout.addComponent(mainLayout);
-            middleLayout.setExpandRatio(mainLayout, 1);
         }
 
         layout.addComponent(middleLayout);
@@ -281,12 +272,39 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     protected void initLayout() {
     }
 
+    private void genericStartupLayout() {
+        if (mainLayout != null) {
+            if (foldersPane != null) {
+                foldersSplit.removeComponent(mainLayout);
+            } else {
+                middleLayout.removeComponent(mainLayout);
+            }
+            mainLayout = null;
+        }
+        mainLayout = new VerticalLayout();
+        mainLayout.setSizeFull();
+        if (foldersPane != null) {
+            foldersSplit.addComponent(mainLayout);
+        } else {
+            middleLayout.addComponent(mainLayout);
+            middleLayout.setExpandRatio(mainLayout, 1);
+        }
+    }
+
     /* Draw startup screen layout */
+
     protected void initStartupLayout() {
+        genericStartupLayout();
+        mainLayout.setMargin(false);
+        mainLayout.setSpacing(false);
     }
 
     /*  */
+
     protected void unInitStartupLayout() {
+        genericStartupLayout();
+        mainLayout.setMargin(true);
+        mainLayout.setSpacing(true);
     }
 
     /**
@@ -368,6 +386,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     /*
      * Can be overriding by client application to change title caption
      */
+
     protected String getLogoLabelCaption() {
         return MessageProvider.getMessage(getMessagesPack(), "logoLabel");
     }
@@ -607,7 +626,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             for (final Iterator<RichNotification> it = richNotifications.iterator(); it
                     .hasNext();) {
                 final RichNotification n = it.next();
-                
+
                 target.startTag("richNotification");
                 if (n.getCaption() != null) {
                     target.addAttribute("caption", n.getCaption());

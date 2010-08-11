@@ -80,7 +80,8 @@
     padding: 0 0 0 4px;
 }
 
-.v-button-white-border .v-button-wrap {
+.v-button-white-border .v-button-wrap,
+.v-button-white-border:hover .v-button-wrap {
     height: 23px;
     padding-top: 2px;
     background: transparent url(button/img/btn-wb-right.png) no-repeat right top;

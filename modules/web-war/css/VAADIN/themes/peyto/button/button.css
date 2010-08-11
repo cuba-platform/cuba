@@ -41,11 +41,12 @@
     display: block;
 }
 
-.v-button:hover{
+.v-button:hover {
     background: transparent url(img/button-left-active.png) no-repeat left center;
 }
 
-.v-button-wrap:hover {
+.v-button-wrap:hover,
+.v-button:hover .v-button-wrap {
     background: transparent url(img/button-active.png) no-repeat right top;
 }
 
