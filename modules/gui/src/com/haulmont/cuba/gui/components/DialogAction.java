@@ -16,18 +16,20 @@ import com.haulmont.cuba.gui.AppConfig;
 public class DialogAction extends AbstractAction {
 
     public enum Type {
-        OK("ok", "actions.Ok"),
-        CANCEL("cancel", "actions.Cancel"),
-        YES("yes", "actions.Yes"),
-        NO("no", "actions.No"),
-        CLOSE("close", "actions.Close");
+        OK("ok", "actions.Ok", "icons/ok.png"),
+        CANCEL("cancel", "actions.Cancel", "icons/cancel.png"),
+        YES("yes", "actions.Yes", "icons/ok.png"),
+        NO("no", "actions.No", "icons/cancel.png"),
+        CLOSE("close", "actions.Close", "");
 
         private String id;
         private String msgKey;
+        private String icon;
 
-        Type(String id, String msgKey) {
+        Type(String id, String msgKey, String icon) {
             this.id = id;
             this.msgKey = msgKey;
+            this.icon = icon;
         }
     }
 
@@ -41,6 +43,11 @@ public class DialogAction extends AbstractAction {
     @Override
     public String getCaption() {
         return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), type.msgKey);
+    }
+
+    @Override
+    public String getIcon() {
+        return type.icon;
     }
 
     public void actionPerform(Component component) {
