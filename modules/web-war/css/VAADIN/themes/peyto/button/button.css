@@ -59,6 +59,16 @@
     background: transparent url(img/button-left.png) no-repeat left center;
 }
 
+.v-ie .v-disabled .v-button-wrap,
+.v-ie .v-disabled .v-button-wrap:hover {
+    background: transparent url(img/button.gif) no-repeat right top;
+}
+
+.v-ie .v-disabled.v-button,
+.v-ie .v-disabled.v-button:hover  {
+    background: transparent url(img/button-left.gif) no-repeat left center;
+}
+
 
 .v-button-Window-actionButton .v-button-wrap,
 .v-button-icon .v-button-wrap {

@@ -152,19 +152,24 @@
 .v-verticallayout.edit-area,
 .v-horizontallayout.edit-area,
 .v-gridlayout.edit-area {
-    background-color: #dee7f8;
+    background-color: #F6F6F6;
     border: 1px solid #c3c3c3;
     color: #000;
 }
 
 .group-box-edit-area fieldset {
-    background-color: #dee7f8;
+    background-color: #F6F6F6;
     border: 1px solid #c3c3c3;
     color: #000;
 }
 
+/*todo:gorodnov Remove when you fix the bug with edit-area style*/
+.group-box-edit-area legend {
+    display: none;
+}
+
 .edit-area .v-label, .edit-area .v-label.h2 {
-    color: #000;
+    color: #002157;
 }
 
 .v-label.h2 {
