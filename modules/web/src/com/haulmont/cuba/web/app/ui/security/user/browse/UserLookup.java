@@ -22,7 +22,7 @@ public class UserLookup extends AbstractLookup {
 
     protected void init(Map<String, Object> params) {
         final Table table  = getComponent("users");
-
+        setHeight("400px");
         String multiSelect = (String) params.get("param$multiSelect");
         if ("true".equals(multiSelect)) {
             table.setMultiSelect(true);
