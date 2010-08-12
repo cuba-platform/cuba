@@ -10,7 +10,22 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
+
 public interface TwinColumn extends OptionsField {
     Object getNullOption();
     void setNullOption(Object nullOption);
+
+    int getColumns();
+    void setColumns(int columns);
+
+    int getRows();
+    void setRows(int rows);
+
+    void setStyleProvider(StyleProvider styleProvider);
+
+    interface StyleProvider {
+        String getStyleName(Entity item, Object property, boolean selected);
+        String getItemIcon(Entity item, boolean selected);
+    }
 }

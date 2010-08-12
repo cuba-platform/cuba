@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect;
 import com.vaadin.data.Property;
+import com.vaadin.terminal.Resource;
 import com.vaadin.ui.AbstractSelect;
 
 import java.util.Collection;
@@ -29,6 +30,8 @@ public class WebTwinColumn
 {
 
     private Object nullOption;
+
+    private StyleProvider styleProvider;
     
     private static final long serialVersionUID = 9028516889145414298L;
 
@@ -47,6 +50,19 @@ public class WebTwinColumn
                         itemProperty.setValue(v);
                     }
                 });
+            }
+
+            @Override
+            public Resource getItemIcon(Object itemId) {
+                if (styleProvider != null) {
+                    @SuppressWarnings({"unchecked"})
+                    final Entity item = optionsDatasource.getItem(itemId);
+                    final String resURL = styleProvider.getItemIcon(item, isSelected(itemId));
+
+                    return resURL == null ? null : WebComponentsHelper.getResource(resURL);
+                } else {
+                    return null;
+                }
             }
         };
         attachListener(component);
@@ -78,6 +94,36 @@ public class WebTwinColumn
     public void setNullOption(Object nullOption) {
         this.nullOption = nullOption;
         component.setNullSelectionItemId(nullOption);
+    }
+
+    public int getColumns() {
+        return component.getColumns();
+    }
+
+    public void setColumns(int columns) {
+        component.setColumns(columns);
+    }
+
+    public int getRows() {
+        return component.getRows();
+    }
+
+    public void setRows(int rows) {
+        component.setRows(rows);
+    }
+
+    public void setStyleProvider(final StyleProvider styleProvider) {
+        this.styleProvider = styleProvider;
+        if (styleProvider != null) {
+            component.setStyleGenerator(new TwinColumnSelect.OptionStyleGenerator() {
+                public String generateStyle(AbstractSelect source, Object itemId, boolean selected) {
+                    final Entity item = optionsDatasource.getItem(itemId);
+                    return styleProvider.getStyleName(item, itemId, component.isSelected(itemId));
+                }
+            });
+        } else {
+            component.setStyleGenerator(null);
+        }
     }
 
     @Override

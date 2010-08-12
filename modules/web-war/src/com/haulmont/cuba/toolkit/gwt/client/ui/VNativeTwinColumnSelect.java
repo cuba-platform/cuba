@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.terminal.gwt.client.ui;
+package com.haulmont.cuba.toolkit.gwt.client.ui;
 
 import com.google.gwt.dom.client.OptionElement;
 import com.google.gwt.dom.client.SelectElement;
@@ -29,13 +29,15 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.ui.VButton;
+import com.vaadin.terminal.gwt.client.ui.VOptionGroupBase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandler {
+public class VNativeTwinColumnSelect extends VOptionGroupBase implements DoubleClickHandler {
 
     private static final String CLASSNAME = "v-select-twincol";
 
@@ -43,9 +45,9 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
 
     private static final int DEFAULT_COLUMN_COUNT = 10;
 
-    private final TwinColListBox options;
+    private final NativeTwinColListBox options;
 
-    private final TwinColListBox selections;
+    private final NativeTwinColListBox selections;
 
     private final VButton add;
 
@@ -59,7 +61,7 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
 
     private Map<String, UIDL> optionsUidl;
 
-    private class TwinColListBox extends ListBox implements HasDoubleClickHandlers {
+    private class NativeTwinColListBox extends ListBox implements HasDoubleClickHandlers {
         public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
             return addDomHandler(handler, DoubleClickEvent.getType());
         }
@@ -83,14 +85,14 @@ public class VTwinColSelect extends VOptionGroupBase implements DoubleClickHandl
         }
     }
 
-    public VTwinColSelect() {
+    public VNativeTwinColumnSelect() {
         super(CLASSNAME);
 
-        options = new TwinColListBox();
+        options = new NativeTwinColListBox();
         options.addClickHandler(this);
         options.addDoubleClickHandler(this);
 
-        selections = new TwinColListBox();
+        selections = new NativeTwinColListBox();
         selections.addClickHandler(this);
         selections.addDoubleClickHandler(this);
 

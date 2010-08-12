@@ -10,16 +10,21 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.toolkit.gwt.client.ui.VTwinColumnSelect;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.TwinColSelect;
 
 @SuppressWarnings("serial")
+@ClientWidget(VTwinColumnSelect.class)
 public class TwinColumnSelect extends TwinColSelect {
 
     private OptionStyleGenerator styleGenerator;
+
+    private boolean nativeSelect;
 
     @Override
     protected int paintOptions(PaintTarget target, String[] selectedKeys, int keyIndex, Object id, String key, String caption, Resource icon) throws PaintException {
@@ -44,12 +49,26 @@ public class TwinColumnSelect extends TwinColSelect {
         return keyIndex;
     }
 
+    @Override
+    protected String getComponentType() {
+        return nativeSelect ? "nativetwincolumn" : "twincoluumn";
+    }
+
     public OptionStyleGenerator getStyleGenerator() {
         return styleGenerator;
     }
 
     public void setStyleGenerator(OptionStyleGenerator styleGenerator) {
         this.styleGenerator = styleGenerator;
+        requestRepaint();
+    }
+
+    public boolean isNativeSelect() {
+        return nativeSelect;
+    }
+
+    public void setNativeSelect(boolean nativeSelect) {
+        this.nativeSelect = nativeSelect;
         requestRepaint();
     }
 

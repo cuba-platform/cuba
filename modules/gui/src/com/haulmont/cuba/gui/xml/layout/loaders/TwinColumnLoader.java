@@ -39,6 +39,16 @@ public class TwinColumnLoader extends AbstractFieldLoader {
             component.setNullOption(nullName);
         }
 
+        String columns = element.attributeValue("columns");
+        if (!StringUtils.isEmpty(columns)) {
+            component.setColumns(Integer.parseInt(columns));
+        }
+
+        String rows = element.attributeValue("rows");
+        if (!StringUtils.isEmpty(rows)) {
+            component.setRows(Integer.parseInt(rows));
+        }
+
         return component;
     }
 

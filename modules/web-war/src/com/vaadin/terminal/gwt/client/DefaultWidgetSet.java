@@ -18,9 +18,7 @@ package com.vaadin.terminal.gwt.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.toolkit.gwt.client.ui.IPageTable;
-import com.haulmont.cuba.toolkit.gwt.client.ui.IPageTreeTable;
-import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollTreeTable;
+import com.haulmont.cuba.toolkit.gwt.client.ui.*;
 import com.vaadin.terminal.gwt.client.ui.*;
 
 public class DefaultWidgetSet implements WidgetSet {
@@ -79,6 +77,10 @@ public class DefaultWidgetSet implements WidgetSet {
                 final String type = uidl.getStringAttribute("type").intern();
                 if (type == "twincol") {
                     return VTwinColSelect.class;
+                } else if (type == "nativetwincolumn") {
+                    return VNativeTwinColumnSelect.class;
+                } else if (type == "twincolumn") {
+                    return VTwinColumnSelect.class;
                 } else if (type == "optiongroup") {
                     return VOptionGroup.class;
                 } else if (type == "native") {

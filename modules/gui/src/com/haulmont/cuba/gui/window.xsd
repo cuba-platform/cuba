@@ -790,6 +790,8 @@
                         <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:string" use="optional"/>
+                        <xs:attribute name="columns" type="xs:string" use="optional"/>
+                        <xs:attribute name="rows" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
