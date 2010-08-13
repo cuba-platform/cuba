@@ -25,7 +25,7 @@
     color: white;
 }
 
-.v-tree-node-selected .v-tree-node-caption span {
+.v-tree-node-selected.v-tree-node-caption span {
 	background: #5daee8;
 	color: #fff;
 	padding: 0 2px;
