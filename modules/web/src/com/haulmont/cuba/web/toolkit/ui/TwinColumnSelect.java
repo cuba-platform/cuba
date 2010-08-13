@@ -17,6 +17,7 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.TwinColSelect;
+import org.apache.commons.lang.StringUtils;
 
 @SuppressWarnings("serial")
 @ClientWidget(VTwinColumnSelect.class)
@@ -43,7 +44,10 @@ public class TwinColumnSelect extends TwinColSelect {
             selectedKeys[keyIndex++] = key;
         }
         if (styleGenerator != null) {
-            target.addAttribute("style", styleGenerator.generateStyle(this, id, selected));
+            String style = styleGenerator.generateStyle(this, id, selected);
+            if (!StringUtils.isEmpty(style)) {
+                target.addAttribute("style", style);
+            }
         }
         target.endTag("so");
         return keyIndex;
