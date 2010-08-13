@@ -133,7 +133,8 @@ border: none;
     background: transparent;
 }
 
-.v-button-link .v-button-wrap:hover {
+.v-button-link .v-button-wrap:hover,
+.v-button-link:hover .v-button-wrap {
     background: transparent;
 }
 
