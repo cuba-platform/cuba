@@ -21,7 +21,7 @@ import java.util.Map;
 public interface ReportService {
     String NAME = "report_ReportService";
 
-    byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params);
+    byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params) throws IOException;
 
     Report reloadReport(Report report);
 

@@ -37,7 +37,7 @@ public class ReportServiceBean implements ReportService {
     *  Simple algorithm for band tree creation
     */
 
-    public byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params) {
+    public byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params) throws IOException {
         this.params.set(params);
         report = reloadEntity(report, "report.edit");
 
@@ -92,7 +92,7 @@ public class ReportServiceBean implements ReportService {
 
     //todo: move to another service
 
-    private Formatter createFormatter(Report report, ReportOutputType format) {
+    private Formatter createFormatter(Report report, ReportOutputType format) throws IOException {
         if (ReportOutputType.XLS.equals(format)) {
             return new XLSFormatter(report.getTemplateFileDescriptor());
         } else return new DocFormatter(report.getTemplateFileDescriptor(), format);

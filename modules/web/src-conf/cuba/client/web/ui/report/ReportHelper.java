@@ -26,6 +26,7 @@ import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
 
+import java.io.IOException;
 import java.util.*;
 
 public class ReportHelper {
@@ -43,9 +44,13 @@ public class ReportHelper {
     }
 
     private static void printReport(Report report, Map<String, Object> params, ReportOutputType reportOutputType, ExportFormat exportFormat) {
-        ReportService srv = ServiceLocator.lookup(ReportService.NAME);
-        byte[] byteArr = srv.createReport(report, reportOutputType, params);
-        new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), "report", exportFormat);
+        try {
+            ReportService srv = ServiceLocator.lookup(ReportService.NAME);
+            byte[] byteArr = srv.createReport(report, reportOutputType, params);
+            new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), "report", exportFormat);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /* This method ignores security */
