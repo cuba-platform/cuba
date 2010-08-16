@@ -8,7 +8,7 @@
     
     <layout expand="mainPane">
         <vbox id="mainPane" expand="spring" margin="true" spacing="true">
-            <vbox stylename="edit-area" margin="true" spacing="true">
+            <vbox id="main" stylename="edit-area" margin="true" spacing="true">
                 <grid spacing="true" expandable="false">
                     <columns>
                         <column flex="1"/>
