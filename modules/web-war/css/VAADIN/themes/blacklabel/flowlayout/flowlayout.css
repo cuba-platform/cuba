@@ -1,0 +1,35 @@
+.flow-layout {
+}
+
+.flow-layout .flow-layout-content {
+
+}
+
+.flow-layout .flow-layout-widget {
+    float: left;
+}
+
+.flow-layout-m-t {
+    padding-top: 10px;
+}
+
+.flow-layout-m-r {
+    padding-right: 10px;
+}
+
+.flow-layout-m-b {
+    padding-bottom: 10px;
+}
+
+.flow-layout-m-l {
+    padding-left: 10px;
+}
+
+.flow-layout-s .flow-layout-widget {
+    padding: 0 5px 5px 0;
+}
+
+.v-ie .flow-layout .flow-layout-widget {
+    display: inline;
+    zoom: 1;
+}

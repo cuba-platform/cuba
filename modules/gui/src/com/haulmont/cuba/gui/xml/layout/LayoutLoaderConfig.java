@@ -51,6 +51,7 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("scrollbox", ScrollBoxLayoutLoader.class);
         config.register("togglebox", ToggleBoxLoader.class);
         config.register("htmlbox", HtmlBoxLoader.class);
+        config.register("flowbox", FlowBoxLoader.class);
 
         config.register("button", ButtonLoader.class);
         config.register("groupBox", GroupBoxLoader.class);
@@ -76,7 +77,6 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("buttonsPanel", ButtonsPanelLoader.class);
         config.register("actionsField", ActionsFieldLoader.class);
         config.register("popupButton", PopupButtonLoader.class);
-
         config.register("fieldGroup", FieldGroupLoader.class);
         config.register("tokenList", TokenListLoader.class);
         config.register("widgetsTree", WidgetsTreeLoader.class);

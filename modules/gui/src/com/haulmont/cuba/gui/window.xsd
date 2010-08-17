@@ -218,6 +218,21 @@
                         <xs:attribute name="align" type="align" use="optional"/>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="flowbox">
+                    <xs:complexType>
+                        <xs:group ref="layoutOrComponent"/>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="expand" type="xs:string" use="optional"/>
+                        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="margin" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="expandable" type="xs:boolean"/>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="split">
                     <xs:complexType>
                         <xs:sequence minOccurs="2" maxOccurs="2">

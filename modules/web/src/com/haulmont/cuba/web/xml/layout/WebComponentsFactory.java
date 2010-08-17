@@ -38,6 +38,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("scrollbox", WebScrollBoxLayout.class);
         classes.put("togglebox", WebToggleBoxLayout.class);
         classes.put("htmlbox", WebHtmlBoxLayout.class);
+        classes.put("flowbox", WebFlowBoxLayout.class);
 
         classes.put("button", WebButton.class);
         classes.put("label", WebLabel.class);
