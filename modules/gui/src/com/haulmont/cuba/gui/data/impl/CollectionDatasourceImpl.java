@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -22,9 +23,11 @@ import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.lang.StringUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 public class CollectionDatasourceImpl<T extends Entity<K>, K>
@@ -337,7 +340,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             q = context.setQueryString(queryString);
             q.setParameters(parameters);
         } else {
-            q = context.setQueryString("select e from " + metaClass.getName() + " e");
+            Class javaClass = metaClass.getJavaClass();
+            Annotation annotation = javaClass.getAnnotation(NamePattern.class);
+            if(annotation != null){
+                StringBuilder orderBy = new StringBuilder();
+                orderBy.append(" order by ");
+                String value = StringUtils.substringAfter(((NamePattern)annotation).value(),"|");
+                String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
+                orderBy.append("e."+fields[0]);
+                for(int i =1; i < fields.length;i++)
+                    orderBy.append(", e."+fields[i]);
+                q = context.setQueryString("select e from " + metaClass.getName() + " e"+orderBy.toString());
+            }else
+                q = context.setQueryString("select e from " + metaClass.getName() + " e");
         }
 
         if (maxResults > 0) {
