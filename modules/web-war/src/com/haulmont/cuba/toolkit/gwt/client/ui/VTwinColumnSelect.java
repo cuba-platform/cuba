@@ -14,8 +14,10 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
 import com.vaadin.terminal.gwt.client.ui.VButton;
@@ -74,7 +76,7 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
 
         private boolean multipleSelect;
 
-        private boolean shiftKeyPressed;
+        private boolean cmdKeyPressed;
 
         class Option {
             String key;
@@ -159,9 +161,12 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
 
         public void onClick(ClickEvent event) {
             if (event.getSource() instanceof RenderedOption) {
+                ApplicationConnection.getConsole().log("Click to option >> multiselect: "
+                        + isMultipleSelect() + "; " +
+                        "commandKeyPressed: " + String.valueOf(cmdKeyPressed));
                 RenderedOption renderedOption = (RenderedOption) event.getSource();
                 int optionIndex = container.getWidgetIndex(renderedOption);
-                if (!(isMultipleSelect() && shiftKeyPressed)) {
+                if (!(isMultipleSelect() && cmdKeyPressed)) {
                     for (int index = 0; index < options.size(); index++) {
                         final Option opt = options.get(index);
                         if (opt.selected && index != optionIndex) {
@@ -172,18 +177,21 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
                 if (!isItemSelected(optionIndex)) {
                     setItemSelected(optionIndex, true);
                 }
+                setFocus(true);
             }
         }
 
         public void onKeyDown(KeyDownEvent event) {
-            if (isMultipleSelect() && event.getNativeKeyCode() == 16) {
-                shiftKeyPressed = true;
+            if (isMultipleSelect() && event.getNativeKeyCode() == KeyCodes.KEY_CTRL) {
+                ApplicationConnection.getConsole().log("Key down event: " + event.getNativeKeyCode());
+                cmdKeyPressed = true;
             }
         }
 
         public void onKeyUp(KeyUpEvent event) {
-            if (isMultipleSelect() && event.getNativeKeyCode() == 16) {
-                shiftKeyPressed = false;
+            if (isMultipleSelect() && event.getNativeKeyCode() == KeyCodes.KEY_CTRL) {
+                ApplicationConnection.getConsole().log("Key up event: " + event.getNativeKeyCode());
+                cmdKeyPressed = false;
             }
         }
 
@@ -201,7 +209,7 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
 
         public void setMultipleSelect(boolean multipleSelect) {
             this.multipleSelect = multipleSelect;
-            shiftKeyPressed = false;
+            cmdKeyPressed = false;
         }
 
         private void setVisibleItemCount() {
