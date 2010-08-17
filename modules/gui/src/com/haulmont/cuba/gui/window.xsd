@@ -344,6 +344,11 @@
                                     <xs:attribute name="label" type="xs:string" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
+                            <xs:element name="description" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="label" type="xs:string" use="optional"/>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:group ref="layoutOrComponent" minOccurs="0"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="optional"/>

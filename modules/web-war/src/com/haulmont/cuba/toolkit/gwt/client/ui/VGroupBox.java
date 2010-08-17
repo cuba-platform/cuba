@@ -29,6 +29,8 @@ public class VGroupBox extends VPanel {
     protected boolean expanded;
     protected boolean collapsable;
 
+    private Element descriptionNode;
+
     @Override
     protected void constructDOM() {
         Element fieldSet = DOM.createFieldSet();
@@ -36,10 +38,12 @@ public class VGroupBox extends VPanel {
         captionNode = DOM.createDiv();
         expander = DOM.createDiv();
         captionText = DOM.createSpan();
+        descriptionNode = DOM.createDiv();
         bottomDecoration = DOM.createDiv();
         contentNode = DOM.createDiv();
 
         captionNode.setClassName(CLASSNAME + "-caption");
+        descriptionNode.setClassName(CLASSNAME + "-description");
         contentNode.setClassName(CLASSNAME + "-content");
         bottomDecoration.setClassName(CLASSNAME + "-deco");
 
@@ -49,6 +53,7 @@ public class VGroupBox extends VPanel {
         legend.appendChild(captionNode);
 
         fieldSet.appendChild(legend);
+        fieldSet.appendChild(descriptionNode);
         fieldSet.appendChild(contentNode);
         fieldSet.appendChild(bottomDecoration);
         getElement().appendChild(fieldSet);
@@ -82,6 +87,28 @@ public class VGroupBox extends VPanel {
 
     @Override
     protected void renderDOM(UIDL uidl) {
+        if (uidl.hasAttribute("caption")
+                && !uidl.getStringAttribute("caption").equals("")) {
+            setCaption(uidl.getStringAttribute("caption"));
+        } else {
+            setCaption("");
+        }
+        if (uidl.hasAttribute("description")
+                && !uidl.getStringAttribute("description").equals("")) {
+            setDescription(uidl.getStringAttribute("description"));
+        } else {
+            setDescription("");
+        }
+    }
+
+    private void setDescription(String text) {
+        DOM.setInnerText(descriptionNode, text);
+    }
+
+    @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        super.updateFromUIDL(uidl, client);
+
         collapsable = uidl.getBooleanAttribute("collapsable");
         if (collapsable) {
             DOM.setStyleAttribute(expander, "display", "");
@@ -94,23 +121,18 @@ public class VGroupBox extends VPanel {
             toggleExpand();
         }
 
-        // Handle caption displaying and style names, prior generics.
-        // Affects size
-        // calculations
-
-        boolean hasCaption = false;
-        if (uidl.hasAttribute("caption")
+        if (!uidl.hasAttribute("caption")
                 && !uidl.getStringAttribute("caption").equals("")) {
-            setCaption(uidl.getStringAttribute("caption"));
-            hasCaption = true;
-        } else {
-            setCaption("");
-        }
-
-        if (!hasCaption) {
             addStyleDependentName("nocaption");
         } else {
             removeStyleDependentName("nocaption");
+        }
+
+        if (uidl.hasAttribute("description")
+                && !uidl.getStringAttribute("description").equals("")) {
+            addStyleDependentName("nodescription");
+        } else {
+            removeStyleDependentName("nodescription");
         }
     }
 

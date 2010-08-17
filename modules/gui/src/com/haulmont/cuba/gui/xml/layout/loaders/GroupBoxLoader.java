@@ -36,8 +36,17 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
             }
         }
 
+        final Element descriptionElement = element.element("description");
+        if (descriptionElement != null) {
+            String description = descriptionElement.attributeValue("label");
+            if (!StringUtils.isEmpty(description)) {
+                description = loadResourceString(description);
+                component.setDescription(description);
+            }
+        }
+
         loadAlign(component, element);
-        loadSubComponentsAndExpand(component, element, "caption", "visible");
+        loadSubComponentsAndExpand(component, element, "caption", "description", "visible");
 
         loadExpandable(component, element);
 
