@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -91,6 +92,9 @@ public class ActionsFieldHelper {
                 Entity entity = component.getValue();
                 
                 if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
+                    component.getFrame().showNotification(
+                            MessageProvider.getMessage(ActionsFieldHelper.class,"ActionsFieldHelper.openMsg"),
+                            IFrame.NotificationType.HUMANIZED);
                     return;
                 }
 
