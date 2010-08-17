@@ -157,9 +157,7 @@ public class ChildCell {
     }
 
     private void setFloat(String floatValue) {
-        widget.getElement().getStyle().setProperty("float", floatValue);
-        widget.getElement().getStyle().setProperty("styleFloat", floatValue);
-        widget.getElement().getStyle().setProperty("cssFloat", floatValue);
+        Util.setFloat(widget.getElement(), floatValue);
         if (!parent.isHorizontal()) {
             widget.getElement().getStyle().setProperty("clear", floatValue);
         }

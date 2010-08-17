@@ -65,7 +65,7 @@
     white-space: nowrap;
     text-align: left; /* Force default alignment */
     background: #fff url(img/bg-left-filter.png) no-repeat;
-    /*padding-left: 4px;*/
+    overflow: hidden;
 }
 
 .v-filterselect .v-icon {

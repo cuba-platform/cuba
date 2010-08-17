@@ -8,6 +8,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.incubator.dashlayout.client.util.css.CSSRule;
 import com.vaadin.incubator.dashlayout.client.util.css.CSSUtil;
 import com.vaadin.terminal.gwt.client.*;
@@ -96,9 +97,7 @@ public class VDashLayout extends ComplexPanel implements Container {
         super();
         setElement(Document.get().createDivElement());
         setStylePrimaryName(CLASSNAME);
-        getElement().getStyle().setProperty("float", "left");
-        getElement().getStyle().setProperty("cssFloat", "left");
-        getElement().getStyle().setProperty("styleFloat", "left");
+        Util.setFloat(getElement(), "left");
         getElement().getStyle().setProperty("display", "inline");
         if (BrowserInfo.get().isIE()) {
             getElement().getStyle().setProperty("zoom", "1");
@@ -132,13 +131,6 @@ public class VDashLayout extends ComplexPanel implements Container {
 
     public int getConsumedSpace() {
         return consumedSpace;
-    }
-
-    public void updateActualSize() {
-        width = CSSUtil
-                .parsePixel(CSSUtil.getStyleValue(getElement(), "width"));
-        height = CSSUtil.parsePixel(CSSUtil.getStyleValue(getElement(),
-                "height"));
     }
 
     private void updateMargins() {
@@ -178,6 +170,7 @@ public class VDashLayout extends ComplexPanel implements Container {
         undefHeight = h.equals("");
     }
 
+    //todo change this method like in CellBasedLayout
     private void measureLayoutDetails() {
         margin = CSSUtil.collectMargin(getElement());
         padding = CSSUtil.collectPadding(getElement());
@@ -271,8 +264,8 @@ public class VDashLayout extends ComplexPanel implements Container {
 
         String toBeWidth = "";
 
-        if (w != null && w != "") {
-            int newWidth = CSSUtil.parsePixel(w) - margin[1] - margin[3]
+        if (w != null && !w.equals("")) {
+            int newWidth = Tools.parseSize(w) - margin[1] - margin[3]
                     - border[1] - border[3] - padding[1] - padding[3];
             if (newWidth < 0) {
                 newWidth = 0;
@@ -283,21 +276,7 @@ public class VDashLayout extends ComplexPanel implements Container {
             width = -1;
         }
 
-        final Integer minWidth = layoutDetails.get("minWidth");
-        if (minWidth != null && width < minWidth) {
-            width = minWidth.intValue();
-            toBeWidth = width + "px";
-        }
-
-        final Integer maxWidth = layoutDetails.get("maxWidth");
-        if (maxWidth != null && width > maxWidth) {
-            width = maxWidth.intValue();
-            toBeWidth = width + "px";
-        }
-
         super.setWidth(toBeWidth);
-
-        updateActualSize();
 
         if (width != oldW) {
             if (isRendering) {
@@ -313,14 +292,13 @@ public class VDashLayout extends ComplexPanel implements Container {
      */
     @Override
     public void setHeight(String h) {
-        // Assume pixel values are always passed from ApplicationConnection
 
         int oldH = height;
 
         String toBeHeight = "";
 
-        if (h != null && h != "") {
-            int newHeight = CSSUtil.parsePixel(h) - margin[0] - margin[2]
+        if (h != null && !h.equals("")) {
+            int newHeight = Tools.parseSize(h) - margin[0] - margin[2]
                     - border[0] - border[2] - padding[0] - padding[2];
             if (newHeight < 0) {
                 newHeight = 0;
@@ -331,21 +309,7 @@ public class VDashLayout extends ComplexPanel implements Container {
             height = -1;
         }
 
-        final Integer minHeight = layoutDetails.get("minHeight");
-        if (minHeight != null && height < minHeight) {
-            height = minHeight.intValue();
-            toBeHeight = height + "px";
-        }
-
-        final Integer maxHeight = layoutDetails.get("maxHeight");
-        if (maxHeight != null && height > maxHeight) {
-            height = maxHeight.intValue();
-            toBeHeight = height + "px";
-        }
-
         super.setHeight(toBeHeight);
-
-        updateActualSize();
 
         if (height != oldH) {
             if (isRendering) {
@@ -518,10 +482,6 @@ public class VDashLayout extends ComplexPanel implements Container {
         if (undefHeight) {
             super.setHeight("");
         }
-        if (undefWidth || undefHeight) {
-            updateActualSize();
-        }
-
         consumedSpace = 0;
         int totalSize = 0;
         int biggestSize = 0;

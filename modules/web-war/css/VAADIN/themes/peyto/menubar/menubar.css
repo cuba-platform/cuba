@@ -2,8 +2,9 @@
     padding-top: 3px;
 }
 
-.v-ie .v-menubar {
-    padding-top: 0px;
+.v-ie6 .v-menubar,
+.v-ie7 .v-menubar {
+    padding-top: 0;
 }
 
 .v-menubar table {
@@ -33,14 +34,6 @@
     padding-right: 10px;
     background: transparent;
     height: 19px;
-}
-
-.v-menubar .menuitem .folders-item{
-    background: url(img/folders-pane.png) top left no-repeat;
-}
-
-.v-menubar .menuitem-selected .folders-item{
-    background: url(img/folders-pane-hover.png) top left no-repeat;
 }
 
 .v-menubar .menuitem-selected {

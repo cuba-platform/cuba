@@ -76,7 +76,7 @@
 
 /* Logout & View-log buttons */
 .v-button-white-border {
-    background: transparent url(button/img/btn-wb-left.png) no-repeat left center;
+    background: transparent none;
     height: 26px;
     padding: 0 0 0 4px;
 }
@@ -85,7 +85,7 @@
 .v-button-white-border:hover .v-button-wrap {
     height: 23px;
     padding-top: 2px;
-    background: transparent url(button/img/btn-wb-right.png) no-repeat right top;
+    background: transparent none;
 }
 
 .v-button-white-border .v-button-caption {
@@ -164,11 +164,6 @@
     color: #000;
 }
 
-/*todo:gorodnov Remove when you fix the bug with edit-area style*/
-.group-box-edit-area legend {
-    display: none;
-}
-
 .edit-area .v-label, .edit-area .v-label.h2 {
     color: #002157;
 }
@@ -202,7 +197,7 @@
 }
 
 .v-verticallayout-folderspane .v-tree {
-    border: 0px;
+    border: 0;
     overflow: auto;
 }
 
@@ -255,12 +250,12 @@
 }
 
 .v-button.v-popupbutton .v-menu-indicator {
-	background: transparent url(../../themes/peyto/common/img/sprites.png) no-repeat -5px -10px;
+	background: transparent url(common/img/sprites.png) no-repeat -5px -10px;
 }
 
 .v-panel.dummy-split .v-panel-content {
     background: transparent;
-    background-image: url("../../themes/peyto/splitpanel/img/split-hor-bg.png");
+    background-image: url(splitpanel/img/split-hor-bg.png);
     background-repeat: repeat-y;
     background-position: top left;
 }
@@ -268,4 +263,12 @@
 .v-menubar-folders-pane tr > td.menuitem:first-child,
 .v-menubar-folders-pane tr > td.menuitem-selected:first-child {
     background-color: transparent;    
+}
+
+.v-menubar .menuitem .folders-item{
+    background: url(menubar/img/folders-pane.png) top left no-repeat;
+}
+
+.v-menubar .menuitem-selected .folders-item{
+    background: url(menubar/img/folders-pane-hover.png) top left no-repeat;
 }

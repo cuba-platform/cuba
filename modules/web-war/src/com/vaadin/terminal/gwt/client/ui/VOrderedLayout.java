@@ -226,12 +226,7 @@ public class VOrderedLayout extends CellBasedLayout {
         // + " relative size components done");
 
         /* Fetch widget sizes for relative size components */
-        for (ChildComponentContainer childComponentContainer : widgetToComponentContainer
-                .values()) {
-
-            /* Update widget size from DOM */
-            childComponentContainer.updateWidgetSize();
-        }
+        updateWidgetSizes();
 
         // w.mark("Widget sizes updated");
 
