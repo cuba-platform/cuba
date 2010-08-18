@@ -343,3 +343,21 @@
 }
 
 
+/*next 3 rules are necesary because of situation when actionsField is inside table cell*/
+.v-customcomponent-actionsfield .v-button-link .v-icon {
+    height: 24px;
+    width: 25px;
+}
+
+.v-customcomponent-actionsfield .v-button {
+    margin: 0 !important;
+    padding: 0 !important;
+    outline: none;
+    background-color: #FFF !important;    
+}
+
+.v-customcomponent-actionsfield .v-button-link .v-button-wrap {
+    margin: 0;
+    padding: 0;
+    height: inherit !important;
+}
