@@ -66,9 +66,9 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
             boolean b = BooleanUtils.toBoolean(collapsable);
             component.setCollapsable(b);
             if (b) {
-                String expanded = element.attributeValue("expanded");
-                if (!StringUtils.isBlank(expanded)) {
-                    component.setExpanded(BooleanUtils.toBoolean(expanded));
+                String collapsed = element.attributeValue("collapsed");
+                if (!StringUtils.isBlank(collapsed)) {
+                    component.setExpanded(!BooleanUtils.toBoolean(collapsed));
                 }
             }
         }

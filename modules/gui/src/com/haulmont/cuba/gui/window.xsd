@@ -352,13 +352,12 @@
                             <xs:group ref="layoutOrComponent" minOccurs="0"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
-                        <xs:attribute name="expand" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="collapsable" type="xs:string" use="optional"/>
-                        <xs:attribute name="expanded" type="xs:string" use="optional"/>
+                        <xs:attribute name="collapsed" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
