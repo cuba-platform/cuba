@@ -28,4 +28,4 @@ public interface UIComponentsConfig extends Config
     void setMaxUploadSizeMb(Integer maxUploadSizeMb);
 
     String getResourcesRoot();
-}
+}            
