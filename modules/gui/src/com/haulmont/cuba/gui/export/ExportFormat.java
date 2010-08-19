@@ -20,7 +20,8 @@ public enum ExportFormat {
     RTF("application/rtf", "rtf"),
     DOC("application/doc", "doc"),
     XML("text/xml", "xml"),
-    ZIP("application/zip", "zip");
+    ZIP("application/zip", "zip"),
+    CSV("application/csv", "csv");
 
     private String contentType;
     private String fileExt;
