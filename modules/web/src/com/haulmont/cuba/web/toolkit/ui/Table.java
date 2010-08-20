@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.util.AggregationContainerOrderedWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
@@ -56,6 +57,17 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     public Table(String caption, Container dataSource) {
         super(caption, dataSource);
+    }
+
+    @Override
+    public void setContainerDataSource(Container newDataSource) {
+        if (newDataSource != null
+                && !Container.Ordered.class.isInstance(newDataSource)
+                && AggregationContainer.class.isInstance(newDataSource)) {
+            newDataSource = new AggregationContainerOrderedWrapper(newDataSource);
+        }
+
+        super.setContainerDataSource(newDataSource);
     }
 
     public Object[] getEditableColumns() {

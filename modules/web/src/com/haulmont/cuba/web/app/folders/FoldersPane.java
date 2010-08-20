@@ -112,21 +112,25 @@ public class FoldersPane extends VerticalLayout {
 
         showFolders(nowVisible);
 
-        MenuBar.MenuItem firstItem = menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
+        MenuBar.MenuItem firstItem = getFirstMenuItem(menuBar);
         
-        menuItem = menuBar.addItemBefore("",
-                null,
-                new MenuBar.Command() {
-                    public void menuSelected(MenuBar.MenuItem selectedItem) {
-                        showFolders(!visible);
-                        menuItem.setIcon(getMenuItemIcon());
-                    }
-                },
+        menuItem = menuBar.addItemBefore(getMenuItemCaption(),
+                getMenuItemIcon(),
+                createMenuBarCommand(),
                 firstItem);
 
-        menuItem.setIcon(getMenuItemIcon());
         menuBar.setStyleName("folders-pane");
 
+    }
+
+    protected MenuBar.Command createMenuBarCommand() {
+        return new MenuBar.Command() {
+            public void menuSelected(MenuBar.MenuItem selectedItem) {
+                showFolders(!visible);
+                selectedItem.setText(getMenuItemCaption());
+                selectedItem.setIcon(getMenuItemIcon());
+            }
+        };
     }
 
     private synchronized void showFolders(boolean show) {
@@ -356,6 +360,10 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected String getMenuItemCaption() {
+        return ""; 
+    }
+
+    protected String getDefaultMenuItemCaption() {
         return MessageProvider.getMessage(messagesPack, visible ? "folders.hideFolders" : "folders.showFolders");
     }
 
@@ -597,4 +605,9 @@ public class FoldersPane extends VerticalLayout {
         public void onStopTimer(Timer timer) {
         }
     }
+
+    protected static MenuBar.MenuItem getFirstMenuItem(MenuBar menuBar) {
+        return menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
+    }
 }
+
