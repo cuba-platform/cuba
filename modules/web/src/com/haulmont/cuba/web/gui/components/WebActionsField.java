@@ -148,18 +148,19 @@ public class WebActionsField
         lookupField.setEditable(editable);
         if (lookupButton != null) {
             lookupButton.setVisible(editable);
-        }
-        if (editable && lookupButton != null) {
-            lookupButton.setIcon("select/img/bg-right-lookup.png");
-        } else {
-            if (lookupButton != null) {
+            if (editable) {
+                lookupButton.setIcon("select/img/bg-right-lookup.png");
+            } else {
                 lookupButton.setIcon("select/img/bg-right-lookup-readonly.png");
             }
         }
-        if (editable && openButton != null) {
-            openButton.setIcon("select/img/bg-right-open.png");
-        } else {
-            if (openButton != null) {
+        if (openButton != null) {
+            if (getValue() == null) {
+                openButton.setVisible(editable);
+            }
+            if (editable) {
+                openButton.setIcon("select/img/bg-right-open.png");
+            } else {
                 openButton.setIcon("select/img/bg-right-open-readonly.png");
             }
         }
