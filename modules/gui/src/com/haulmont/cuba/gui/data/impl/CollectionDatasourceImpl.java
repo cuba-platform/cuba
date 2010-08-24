@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
@@ -344,12 +345,18 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             Annotation annotation = javaClass.getAnnotation(NamePattern.class);
             if(annotation != null){
                 StringBuilder orderBy = new StringBuilder();
-                orderBy.append(" order by ");
                 String value = StringUtils.substringAfter(((NamePattern)annotation).value(),"|");
                 String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
-                orderBy.append("e."+fields[0]);
-                for(int i =1; i < fields.length;i++)
-                    orderBy.append(", e."+fields[i]);
+                for(int i = 0; i < fields.length; i++) {
+                    MetaProperty metaProperty = metaClass.getProperty(fields[i]);
+                    if (metaProperty != null 
+                            && metaProperty.getAnnotatedElement().getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) == null)
+                    orderBy.append("e.").append(fields[i]).append(", ");
+                }
+                if (orderBy.length() > 0) {
+                    orderBy.delete(orderBy.length() - 2, orderBy.length());
+                    orderBy.insert(0, " order by ");
+                }
                 q = context.setQueryString("select e from " + metaClass.getName() + " e"+orderBy.toString());
             }else
                 q = context.setQueryString("select e from " + metaClass.getName() + " e");
