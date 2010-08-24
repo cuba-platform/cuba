@@ -38,6 +38,8 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
     private Date since;
     @MetaProperty
     private Date lastUsedTs;
+    @MetaProperty
+    private Boolean system;
 
     public UUID getId() {
         return id;
@@ -93,6 +95,14 @@ public class UserSessionEntity extends AbstractNotPersistentEntity {
 
     public void setClientInfo(String clientInfo) {
         this.clientInfo = clientInfo;
+    }
+
+    public Boolean getSystem() {
+        return system;
+    }
+
+    public void setSystem(Boolean system) {
+        this.system = system;
     }
 
     public String toString() {

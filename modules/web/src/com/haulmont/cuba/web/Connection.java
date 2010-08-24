@@ -79,18 +79,15 @@ public class Connection implements Serializable
             throw new IllegalArgumentException("Locale is null");
 
         session = getLoginService().login(login, password, locale);
-
-        WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
-        session.setAddress(browser.getAddress());
-        session.setClientInfo(browser.getBrowserApplication());
-
         connected = true;
-        WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
-        fireConnectionListeners();
-
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Logged in: user=%s, ip=%s, browser=%s",
-                    login, browser.getAddress(), browser.getBrowserApplication()));
+        try {
+            internalLogin(login);
+        } catch (RuntimeException e) {
+            internalLogout();
+            throw e;
+        } catch (Exception e) {
+            internalLogout();
+            throw new RuntimeException(e);
         }
     }
 
@@ -105,11 +102,26 @@ public class Connection implements Serializable
 
         session = getLoginService().loginActiveDirectory(login, locale);
         connected = true;
+        try {
+            internalLogin(login);
+        } catch (RuntimeException e) {
+            internalLogout();
+            throw e;
+        } catch (Exception e) {
+            internalLogout();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void internalLogin(String login) throws LoginException {
+        WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
+        session.setAddress(browser.getAddress());
+        session.setClientInfo(browser.getBrowserApplication());
+
         WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
 
         if (log.isDebugEnabled()) {
-            WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
             log.debug(String.format("Logged in: user=%s, ip=%s, browser=%s",
                     login, browser.getAddress(), browser.getBrowserApplication()));
         }
@@ -130,6 +142,15 @@ public class Connection implements Serializable
         if (!connected)
             return;
 
+        internalLogout();
+        try {
+            fireConnectionListeners();
+        } catch (LoginException e) {
+            log.warn("Exception on logout:", e);
+        }
+    }
+
+    private void internalLogout() {
         LoginService ls = getLoginService();
         ls.logout();
 
@@ -137,11 +158,6 @@ public class Connection implements Serializable
 
         connected = false;
         session = null;
-        try {
-            fireConnectionListeners();
-        } catch (LoginException e) {
-            log.warn("Exception on logout:", e);
-        }
     }
 
     public void addListener(ConnectionListener listener) {

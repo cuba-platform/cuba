@@ -35,7 +35,7 @@ public class TestSecurityProvider extends SecurityProvider
         user.setName("Test Administrator");
         user.setPassword(DigestUtils.md5Hex("test_admin"));
 
-        UserSession session = new UserSession(user, new String[]{"Administrators"}, Locale.getDefault());
+        UserSession session = new UserSession(user, new String[]{"Administrators"}, Locale.getDefault(), false);
         session.addConstraint("sec$Group", "", "a.createdBy = :currentUserLogin");
 
         return session;

@@ -41,7 +41,7 @@ public class UserSessionManager
         this.sessions = sessions;
     }
 
-    public UserSession createSession(User user, Locale locale) {
+    public UserSession createSession(User user, Locale locale, boolean system) {
         List<String> roleNames = new ArrayList<String>();
         List<Role> roles = new ArrayList<Role>();
         for (UserRole userRole : user.getUserRoles()) {
@@ -51,7 +51,7 @@ public class UserSessionManager
             }
         }
         UserSession session = new UserSession(
-                user, roleNames.toArray(new String[roleNames.size()]), locale);
+                user, roleNames.toArray(new String[roleNames.size()]), locale, system);
         compilePermissions(session, roles);
         compileConstraints(session, user.getGroup());
         sessions.add(session);
@@ -140,7 +140,7 @@ public class UserSessionManager
                 }
             }
             UserSession session = new UserSession(
-                    user, roleNames.toArray(new String[roleNames.size()]), SecurityProvider.currentUserSession().getLocale());
+                    user, roleNames.toArray(new String[roleNames.size()]), SecurityProvider.currentUserSession().getLocale(), false);
             compilePermissions(session, roles);
             result = session.getPermissionValue(permissionType, target);
             tx.commit();

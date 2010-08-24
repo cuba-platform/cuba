@@ -142,14 +142,14 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
     public void add(UserSession session) {
         UserSessionInfo usi = new UserSessionInfo(session);
         cache.put(session.getId(), usi);
-
-        clusterManager.send(usi);
+        if (!session.isSystem())
+            clusterManager.send(usi);
     }
 
     public void remove(UserSession session) {
         UserSessionInfo usi = cache.remove(session.getId());
 
-        if (usi != null) {
+        if (!session.isSystem() && usi != null) {
             usi.lastUsedTs = 0;
             clusterManager.send(usi);
         }
@@ -189,19 +189,20 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
     public Collection<UserSessionEntity> getUserSessionInfo() {
         ArrayList<UserSessionEntity> sessionInfoList = new ArrayList<UserSessionEntity>();
         for (UserSessionInfo nfo : cache.values()) {
-            UserSessionEntity userSession = new UserSessionEntity();
-            userSession.setId(nfo.session.getId());
-            userSession.setLogin(nfo.session.getUser().getLogin());
-            userSession.setUserName(nfo.session.getUser().getName());
-            userSession.setAddress(nfo.session.getAddress());
-            userSession.setClientInfo(nfo.session.getClientInfo());
+            UserSessionEntity use = new UserSessionEntity();
+            use.setId(nfo.session.getId());
+            use.setLogin(nfo.session.getUser().getLogin());
+            use.setUserName(nfo.session.getUser().getName());
+            use.setAddress(nfo.session.getAddress());
+            use.setClientInfo(nfo.session.getClientInfo());
             Date since = TimeProvider.currentTimestamp();
             since.setTime(nfo.since);
-            userSession.setSince(since);
+            use.setSince(since);
             Date last = TimeProvider.currentTimestamp();
             last.setTime(nfo.lastUsedTs);
-            userSession.setLastUsedTs(last);
-            sessionInfoList.add(userSession);
+            use.setLastUsedTs(last);
+            use.setSystem(nfo.session.isSystem());
+            sessionInfoList.add(use);
         }
         return sessionInfoList;
     }

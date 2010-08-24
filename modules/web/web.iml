@@ -9,7 +9,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="groovy" level="application" />
     <orderEntry type="library" name="common" level="project" />
     <orderEntry type="library" name="chile" level="project" />
     <orderEntry type="library" name="server" level="project" />
@@ -17,6 +16,7 @@
     <orderEntry type="module" module-name="global" />
     <orderEntry type="module" module-name="gui" />
     <orderEntry type="module" module-name="web-war" />
+    <orderEntry type="library" name="groovy" level="application" />
   </component>
 </module>
 

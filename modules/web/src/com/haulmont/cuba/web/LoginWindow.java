@@ -324,7 +324,16 @@ public class LoginWindow extends Window
                 passwordField.removeListener(loginChangeListener);
                 loginChangeListener = null;
             }
+        } catch (Exception e) {
+            handleException(e);
         }
+    }
+
+    protected void handleException(Exception e) {
+        if (e instanceof RuntimeException)
+            throw (RuntimeException) e;
+        else
+            throw new RuntimeException(e);
     }
 
     protected void doLogin() {

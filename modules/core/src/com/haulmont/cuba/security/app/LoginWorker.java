@@ -10,10 +10,15 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
+
 /**
  * Interface to {@link com.haulmont.cuba.security.app.LoginWorkerBean}
  */
 public interface LoginWorker extends LoginService
 {
     String NAME = "cuba_LoginWorker";
+
+    UserSession loginSystem(String login, String password) throws LoginException;
 }

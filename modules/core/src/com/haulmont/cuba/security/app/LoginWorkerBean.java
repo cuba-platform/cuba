@@ -73,7 +73,24 @@ public class LoginWorkerBean implements LoginWorker
         Transaction tx = Locator.createTransaction();
         try {
             User user = loadUser(login, password, locale);
-            UserSession session = UserSessionManager.getInstance().createSession(user, locale);
+            UserSession session = UserSessionManager.getInstance().createSession(user, locale, false);
+            if (user.getDefaultSubstitutedUser() != null) {
+                UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+            }
+            log.info("Logged in: " + session);
+
+            tx.commit();
+            return session;
+        } finally {
+            tx.end();
+        }
+    }
+
+    public UserSession loginSystem(String login, String password) throws LoginException {
+        Transaction tx = Locator.createTransaction();
+        try {
+            User user = loadUser(login, password, Locale.getDefault());
+            UserSession session = UserSessionManager.getInstance().createSession(user, Locale.getDefault(), true);
             if (user.getDefaultSubstitutedUser() != null) {
                 UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
             }
@@ -90,7 +107,7 @@ public class LoginWorkerBean implements LoginWorker
         Transaction tx = Locator.createTransaction();
         try {
             User user = loadUser(login, null, locale);
-            UserSession session = UserSessionManager.getInstance().createSession(user, locale);
+            UserSession session = UserSessionManager.getInstance().createSession(user, locale, false);
             if (user.getDefaultSubstitutedUser() != null) {
                 UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
             }

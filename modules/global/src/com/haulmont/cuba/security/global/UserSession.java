@@ -33,6 +33,7 @@ public class UserSession implements Serializable
     private Locale locale;
     private String address;
     private String clientInfo;
+    private boolean system;
 
     private Map<String, Integer>[] permissions;
     private Map<String, List<String[]>> constraints;
@@ -55,9 +56,10 @@ public class UserSession implements Serializable
         return name;
     }
 
-    public UserSession(User user, String[] roles, Locale locale) {
+    public UserSession(User user, String[] roles, Locale locale, boolean system) {
         this.id = UuidProvider.createUuid();
         this.user = user;
+        this.system = system;
 
         this.roles = roles;
         Arrays.sort(this.roles);
@@ -74,7 +76,7 @@ public class UserSession implements Serializable
     }
     
     public UserSession(UserSession src, User user, String[] roles, Locale locale) {
-        this(user, roles, locale);
+        this(user, roles, locale, src.system);
         this.id = src.id;
         this.user = src.user;
         this.substitutedUser = user;
@@ -281,6 +283,13 @@ public class UserSession implements Serializable
      */
     public Collection<String> getAttributeNames() {
         return new ArrayList(attributes.keySet());
+    }
+
+    /**
+     * System session is created by LoginWorker.loginSystem() for schedulers and JMX users
+     */
+    public boolean isSystem() {
+        return system;
     }
 
     public String toString() {

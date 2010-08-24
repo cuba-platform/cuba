@@ -103,7 +103,7 @@ public class ManagementBean
             else
                 password = DigestUtils.md5Hex(password);
 
-            UserSession session = loginWorker.login(name, password, Locale.getDefault());
+            UserSession session = loginWorker.loginSystem(name, password);
             ServerSecurityUtils.setSecurityAssociation(name, session.getId());
             loginPerformed.set(true);
         }
