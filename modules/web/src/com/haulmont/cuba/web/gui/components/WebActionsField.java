@@ -178,7 +178,8 @@ public class WebActionsField
 
     @Override
     public <T> T getValue() {
-        if (getDatasource() != null) {
+        Datasource ds = getDatasource();
+        if (ds != null && Datasource.State.VALID.equals(ds.getState())) {
             Instance instance = (Instance) getDatasource().getItem();
             return instance == null ? null : (T) instance.getValue(getMetaProperty().getName());
         }
