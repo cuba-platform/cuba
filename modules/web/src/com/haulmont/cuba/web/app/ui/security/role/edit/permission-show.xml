@@ -1,0 +1,16 @@
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    caption="msg://permissions"
+    class="com.haulmont.cuba.web.app.ui.security.role.edit.PermissionShow"
+    messagesPack="com.haulmont.cuba.web.app.ui.security.role.edit"
+>
+
+    <dsContext/>
+
+    <layout height="50%">
+        <vbox expand="permissionsMessage" spacing="true">
+            <textField id="permissionsMessage" rows="10"/>
+            <button id="ok" caption="actions.Ok" icon="icons/ok.png"/>
+        </vbox>
+    </layout>
+</window>

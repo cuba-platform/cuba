@@ -24,10 +24,12 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.NameBuilderListener;
 import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.gui.components.WebPopupButton;
 import com.haulmont.cuba.web.gui.components.WebTextField;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -44,6 +46,7 @@ public class UserEditor extends AbstractEditor {
     protected TextField passwField;
     protected TextField confirmPasswField;
     protected LookupField languageLookup;
+    protected PopupButton popupButton;
 
     public UserEditor(Window frame) {
         super(frame);
@@ -124,25 +127,33 @@ public class UserEditor extends AbstractEditor {
         FieldGroup.Field f = fields.getField("permissionsLookupField");
         fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, Object propertyId) {
-                final LookupField lookupField = new WebLookupField();
+                popupButton = new WebPopupButton();
+                popupButton.setCaption(getMessage("permissions"));
+                popupButton.addAction(new PermissionLookupAction("screens",getMessage("screens"),"show-screens"));
+                popupButton.addAction(new PermissionLookupAction("entities",getMessage("entities"),"show-entities"));
+                popupButton.addAction(new PermissionLookupAction("properties",getMessage("properties"),"show-properties"));
+                popupButton.addAction(new PermissionLookupAction("specific",getMessage("specific"),"show-specific"));
 
-                java.util.Map<String, Object> optionsMap = new HashMap<String, Object>();
-
-                optionsMap.put(getMessage("screens"), "show-screens");
-                optionsMap.put(getMessage("entities"), "show-entities");
-                optionsMap.put(getMessage("properties"), "show-properties");
-                optionsMap.put(getMessage("specific"), "show-specific");
-
-                lookupField.setOptionsMap(optionsMap);
-
-                lookupField.addListener(new ValueListener() {
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value == null) return;
-                        rolesTable.getAction((String)value).actionPerform(rolesTable);
-                        lookupField.setValue(null);
-                    }
-                });
-                return lookupField;
+                return popupButton;
+//                final LookupField lookupField = new WebLookupField();
+//
+//                java.util.Map<String, Object> optionsMap = new HashMap<String, Object>();
+//
+//                optionsMap.put(getMessage("screens"), "show-screens");
+//                optionsMap.put(getMessage("entities"), "show-entities");
+//                optionsMap.put(getMessage("properties"), "show-properties");
+//                optionsMap.put(getMessage("specific"), "show-specific");
+//
+//                lookupField.setOptionsMap(optionsMap);
+//
+//                lookupField.addListener(new ValueListener() {
+//                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+//                        if (value == null) return;
+//                        rolesTable.getAction((String)value).actionPerform(rolesTable);
+//                        lookupField.setValue(null);
+//                    }
+//                });
+//                return lookupField;
             }
         });
 
@@ -196,6 +207,8 @@ public class UserEditor extends AbstractEditor {
                 final PermissionsLookup permissionsLookup = openLookup(lookupAlias, null, WindowManager.OpenType.THIS_TAB, params);
                 permissionsLookup.setLookupHandler(new Lookup.Handler() {
                     public void handleLookup(Collection items) {
+                        if(items.size()==0)
+                            return;
                         StringBuilder sb = new StringBuilder();
                         UserSessionService uss = ServiceLocator.lookup(UserSessionService.JNDI_NAME);
                         for (Object item : items) {
@@ -210,13 +223,17 @@ public class UserEditor extends AbstractEditor {
                                 if (permissionValue == null) permissionValue = 1;
                                 permissionStringValue = (permissionValue == 1) ? "ALLOW" : "DENY";
                             }
-                            sb.append("Permission on " + target.getValue() + " is ")
-                                    .append(permissionStringValue).append("<br/>");
+                            sb.append(getMessage("permissionOn") +" "+ target.getValue()+" ("+target.getCaption()+")"+ " - ")
+                                    .append(getMessage(permissionStringValue)).append("\n");
                         }
                         if (sb.length() == 0) {
                             showNotification("Please, ensure you've selected target attributes", NotificationType.WARNING);
                         } else
-                            showNotification(sb.toString(), NotificationType.HUMANIZED);
+                            openWindow("sec$Permission.show", WindowManager.OpenType.DIALOG,
+                                    Collections.<String,Object>singletonMap("message",sb.toString()));
+                            //showNotification(sb.toString(), NotificationType.HUMANIZED);
+                        if(popupButton != null)
+                            popupButton.setPopupVisible(false);
                     }
                 });
             }
@@ -336,6 +353,27 @@ public class UserEditor extends AbstractEditor {
             if (usDs.getItem() != null)
                 openEditor("sec$UserSubstitution.edit", usDs.getItem(),
                         WindowManager.OpenType.DIALOG, usDs);
+        }
+    }
+
+    private class PermissionLookupAction extends AbstractAction{
+
+        private String caption;
+        private String screen;
+
+        private PermissionLookupAction(String id, String caption, String screen) {
+            super(id);
+            this.caption = caption;
+            this.screen = screen;
+        }
+
+        public void actionPerform(Component component) {
+            rolesTable.getAction(screen).actionPerform(rolesTable);
+        }
+
+        @Override
+        public String getCaption() {
+            return caption;
         }
     }
 }
