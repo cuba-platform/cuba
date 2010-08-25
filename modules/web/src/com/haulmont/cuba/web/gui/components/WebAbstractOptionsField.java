@@ -120,7 +120,9 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             setCaptionMode(CaptionMode.ITEM);
             this.optionsList = optionsList;
         } else {
-            component.setContainerDataSource(new ObjectContainer(Collections.EMPTY_LIST));
+            component.setContainerDataSource(new ObjectContainer(optionsList));
+            setCaptionMode(CaptionMode.ITEM);
+            this.optionsList = optionsList;
         }
     }
 

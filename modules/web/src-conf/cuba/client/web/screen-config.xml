@@ -72,6 +72,12 @@
     <screen id="core$LockInfo.browse"
             template="/com/haulmont/cuba/web/app/ui/core/locking/lock-browse.xml"/>
 
+    <screen id="fts$Search"
+            class="com.haulmont.fts.web.ui.results.SearchLauncher"/>
+
+    <screen id="fts$SearchResults"
+            template="/com/haulmont/fts/web/ui/results/search-results.xml"/>
+
     <!-- report screens-->
     <screen id="report$Report.browse"
             template="/cuba/client/web/ui/report/browse/report-browse.xml"/>

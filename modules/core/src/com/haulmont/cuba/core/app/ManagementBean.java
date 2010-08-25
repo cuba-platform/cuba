@@ -19,7 +19,6 @@ import com.haulmont.cuba.security.app.LoginWorker;
 
 import java.util.UUID;
 import java.util.Locale;
-import java.util.Date;
 
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
@@ -31,8 +30,7 @@ import javax.inject.Inject;
 
 /**
  * Base class for MBeans.<br>
- * Main purpose is to provide login/logout support for methods invoked
- * from JBoss schedulers or JMX-console.
+ * Main purpose is to provide login/logout support for methods invoked from schedulers or JMX-console.
  */
 public class ManagementBean
 {
@@ -41,6 +39,10 @@ public class ManagementBean
     private LoginWorker loginWorker;
 
     private UserSessionManager userSessionManager;
+
+    private ThreadLocal<Boolean> loginPerformed = new ThreadLocal<Boolean>();
+
+    protected UUID sessionId;
 
     @Inject
     public void setLoginWorker(LoginWorker loginWorker) {
@@ -53,34 +55,42 @@ public class ManagementBean
     }
 
     /**
-     * Base class for creating of <code>org.jboss.varia.scheduler.Schedulable</code> instances.<br>
-     * Used for setting login credentials when invoking MBean methods from JBoss schedulers.
-     * <p>DEPRECATED - use Spring scheduling
+     * Performs login with credentials set in app.properties<br>
+     * First checks if the bean is already logged in and that session is still valid.
+     * If no, performs login and stores sessionId in the protected field.<br>
+     * No logout assumed.
+     * @throws LoginException
      */
-    @Deprecated
-    public static abstract class LoginSupport //implements Schedulable
-    {
-        protected String user;
-        protected String password;
+    protected void loginOnce() throws LoginException {
+        if (sessionId == null || userSessionManager.findSession(sessionId) == null) {
+            String name;
+            String password;
+            SecurityContext securityContext = ServerSecurityUtils.getSecurityAssociation();
+            if (securityContext == null || securityContext.getUser() == null || securityContext.getPassword() == null) {
+                ManagementBean.Credentials credentialsForLogin = getCredentialsForLogin();
+                name = credentialsForLogin.getUserName();
+                password = credentialsForLogin.getPassword();
+            } else {
+                name = securityContext.getUser();
+                password = securityContext.getPassword();
+            }
+            if (password.startsWith("md5:"))
+                password = password.substring("md5:".length(), password.length());
+            else
+                password = DigestUtils.md5Hex(password);
 
-        public LoginSupport(String user, String password) {
-            this.user = user;
-            this.password = password;
+            UserSession session = loginWorker.loginSystem(name, password);
+            loginPerformed.set(true);
+            sessionId = session.getId();
+            ServerSecurityUtils.setSecurityAssociation(name, session.getId());
+        } else {
+            UserSession session = userSessionManager.getSession(sessionId);
+            ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         }
-
-        public void perform(Date now, long remainingRepetitions) {
-            ServerSecurityUtils.setSecurityAssociation(user, "md5:" + password);
-            invoke(now, remainingRepetitions);
-        }
-
-        public abstract void invoke(Date now, long remainingRepetitions);
     }
 
-    private ThreadLocal<Boolean> loginPerformed = new ThreadLocal<Boolean>();
-
     /**
-     * Performs login with credentials set in app.properties
-     * or a {@link LoginSupport} instance.<br>
+     * Performs login with credentials set in app.properties<br>
      * Should be placed inside try/finally block with logout in "finally" section
      * @throws LoginException
      */
@@ -91,7 +101,7 @@ public class ManagementBean
             String password;
             SecurityContext securityContext = ServerSecurityUtils.getSecurityAssociation();
             if (securityContext == null || securityContext.getUser() == null || securityContext.getPassword() == null) {
-                ManagementBean.Credentials credintialsForLogin = getCredintialsForLogin();
+                ManagementBean.Credentials credintialsForLogin = getCredentialsForLogin();
                 name = credintialsForLogin.getUserName();
                 password = credintialsForLogin.getPassword();
             } else {
@@ -109,7 +119,7 @@ public class ManagementBean
         }
     }
 
-    protected Credentials getCredintialsForLogin() {
+    protected Credentials getCredentialsForLogin() {
         return new Credentials(AppContext.getProperty("cuba.jmxUserLogin"), AppContext.getProperty("cuba.jmxUserPassword"));
     }
 

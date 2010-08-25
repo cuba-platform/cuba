@@ -270,3 +270,12 @@
 .v-button.v-popupbutton .v-menu-indicator {
 	background: transparent url(../../themes/blacklabel/common/img/sprites.png) no-repeat -5px -10px;
 }
+
+.fts-found-instance {
+    height: 20px;
+    padding-top: 5px;
+}
+
+.fts-hit {
+    padding-left: 20px;
+}

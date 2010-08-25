@@ -35,8 +35,11 @@ import org.dom4j.Element;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * GenericUI class intended for creating and opening application screens.
@@ -207,31 +210,61 @@ public abstract class WindowManager implements Serializable {
     }
 
     protected Window createWindow(WindowInfo windowInfo, Map params) {
-        final Object windowObject;
+        final Window window;
         try {
-            windowObject = windowInfo.getScreenClass().newInstance();
+            window = (Window) windowInfo.getScreenClass().newInstance();
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+        window.setId(windowInfo.getId());
+        try {
+            ReflectionHelper.invokeMethod(window, "init", params);
+        } catch (NoSuchMethodException e) {
+            // Do nothing
+        }
+        return window;
+    }
 
-        if (windowObject instanceof Runnable) {
-            ((Runnable) windowObject).run();
+    protected Window createWindowByScreenClass(WindowInfo windowInfo, Map<String, Object> params) {
+        Class screenClass = windowInfo.getScreenClass();
+
+        Class[] paramTypes = ReflectionHelper.getParamTypes(params);
+        Constructor constructor = null;
+        try {
+            constructor = screenClass.getConstructor(paramTypes);
+        } catch (NoSuchMethodException e) {
+            //
         }
 
-        if (windowObject instanceof Window) {
-            Window window = (Window) windowObject;
-            window.setId(windowInfo.getId());
-            try {
-                ReflectionHelper.invokeMethod(windowObject, "init", params);
-            } catch (NoSuchMethodException e) {
-                // Do nothing
+        Object obj;
+        try {
+            if (constructor == null) {
+                obj = screenClass.newInstance();
+            } else {
+                obj = constructor.newInstance(params);
             }
-            return window;
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
 
-        return null;
+        if (obj instanceof Callable) {
+            try {
+                Window window = ((Callable<Window>) obj).call();
+                return window;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else if (obj instanceof Runnable) {
+            ((Runnable) obj).run();
+            return null;
+        } else
+            throw new IllegalStateException("Screen class must be an instance of Callable<Window> or Runnable");
     }
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
@@ -257,17 +290,10 @@ public abstract class WindowManager implements Serializable {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null) {
                 //noinspection unchecked
-                Window window = createWindow(windowInfo, params);
-                if (window != null) {
-                    window.setId(windowInfo.getId());
-
-                    String caption = loadCaption(window, params);
-                    showWindow(window, caption, openType);
-
-                    return (T)window;
-                }
-            }
-            return null;
+                Window window = createWindowByScreenClass(windowInfo, params);
+                return (T) window;
+            } else
+                return null;
         }
     }
 

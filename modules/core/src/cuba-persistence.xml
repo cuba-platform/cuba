@@ -12,6 +12,7 @@
         <class>com.haulmont.cuba.core.entity.Folder</class>
         <class>com.haulmont.cuba.core.entity.AbstractSearchFolder</class>
         <class>com.haulmont.cuba.core.entity.AppFolder</class>
+        <class>com.haulmont.cuba.core.entity.FtsQueue</class>
 
         <class>com.haulmont.cuba.security.entity.User</class>
         <class>com.haulmont.cuba.security.entity.Role</class>

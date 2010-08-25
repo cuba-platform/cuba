@@ -22,9 +22,8 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -33,14 +32,24 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
-import com.haulmont.cuba.web.gui.components.WebSplitPanel;
+import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.vaadin.data.Property;
+import com.vaadin.event.*;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.SplitPanel;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
@@ -49,6 +58,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 
 /**
  * Main application window.
@@ -330,7 +340,55 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         menuBar = createMenuBar();
         layout.addComponent(menuBar);
 
+        if (ConfigProvider.getConfig(FtsConfig.class).getEnabled()) {
+            HorizontalLayout searchLayout = new HorizontalLayout();
+            searchLayout.setMargin(false, true, false, true);
+
+            final TextField searchField = new TextField();
+            searchField.setWidth(120, Sizeable.UNITS_PIXELS);
+            searchField.addShortcutListener(new ShortcutListener("", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
+                @Override
+                public void handleAction(Object sender, Object target) {
+                    openSearchWindow(searchField);
+                }
+            });
+
+
+            Button searchBtn = new Button();
+            searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
+            searchBtn.setIcon(new ThemeResource("select/img/fts-btn.png"));
+            searchBtn.addListener(
+                    new Button.ClickListener() {
+                        public void buttonClick(Button.ClickEvent event) {
+                            openSearchWindow(searchField);
+                        }
+                    }
+            );
+
+            searchLayout.addComponent(searchField);
+            searchLayout.addComponent(searchBtn);
+
+            layout.addComponent(searchLayout);
+            layout.setComponentAlignment(searchLayout, Alignment.MIDDLE_RIGHT);
+        }
+
         return layout;
+    }
+
+    protected void openSearchWindow(TextField searchField) {
+        String searchTerm = (String) searchField.getValue();
+        if (StringUtils.isBlank(searchTerm))
+            return;
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("searchTerm", searchTerm);
+
+        WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo("fts$Search");
+        App.getInstance().getWindowManager().openWindow(
+                windowInfo,
+                WindowManager.OpenType.NEW_TAB,
+                params
+        );
     }
 
     /**

@@ -284,3 +284,12 @@
 .v-menubar .menuitem-selected .folders-item{
     background: url(menubar/img/folders-pane-hover.png) top left no-repeat;
 }
+
+.fts-found-instance {
+    height: 20px;
+    padding-top: 5px;
+}
+
+.fts-hit {
+    padding-left: 20px;
+}

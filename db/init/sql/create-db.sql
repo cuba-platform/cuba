@@ -385,6 +385,18 @@ alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_USER foreign k
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SYS_FTS_QUEUE (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    ENTITY_ID varchar(36),
+    ENTITY_NAME varchar(200),
+    CHANGE_TYPE char(1),
+    SOURCE_HOST varchar(100),
+    primary key (ID)
+);
+
+------------------------------------------------------------------------------------------------------------
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null);
 

@@ -584,7 +584,6 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/perf4j-0.9.10.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/iText-2.1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/jasperreports-3.5.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/poi-3.2-FINAL-20081019.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-pool-1.5.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/openjpa-1.2.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/google-collect-1.0-rc2.jar!/" />
@@ -609,6 +608,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-cli-1.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.7.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/asm-3.2.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/poi-3.6-20091214.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

@@ -59,4 +59,7 @@ public class ActionsField extends CustomField {
         field.setNullSelectionAllowed(!required);
     }
 
+    public AbstractSelect getSelect() {
+        return field;
+    }
 }

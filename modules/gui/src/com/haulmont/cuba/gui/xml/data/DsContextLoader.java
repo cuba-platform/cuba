@@ -38,7 +38,7 @@ public class DsContextLoader {
     public DsContext loadDatasources(Element element, DsContext parent) {
         if (element == null) {
             // throw an informational exception
-            throw new RuntimeException("Datasource element not specified in template");
+            throw new RuntimeException("dsContext element not specified in template");
         }
         String contextClass = element.attributeValue("class");
         if (StringUtils.isEmpty(contextClass)) {
