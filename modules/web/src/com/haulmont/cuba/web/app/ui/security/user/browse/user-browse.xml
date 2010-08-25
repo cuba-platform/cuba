@@ -27,6 +27,10 @@
                             join="left join u.group.hierarchyList h" paramClass="com.haulmont.cuba.security.entity.Group">
                         (h.parent.id = ? or h.group.id = ?) or (u.group.id = ? and h.parent is null)
                     </custom>
+                    <custom name="customByRole" caption="msg://genericFilter.customByRole"
+                            join="left join u.userRoles ur" paramClass="com.haulmont.cuba.security.entity.Role">
+                        (ur.role.id = ?)
+                    </custom>
                 </filter>
             </vbox>
             <vbox id="table-panel" expand="users" spacing="true">
