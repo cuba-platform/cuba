@@ -4,5 +4,10 @@
         <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
         <class>com.haulmont.cuba.core.global.LockInfo</class>
         <class>com.haulmont.cuba.security.entity.EntityLogAttrWrapper</class>
+        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanDomain</class>
+        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo</class>
+        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute</class>
+        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperation</class>
+        <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperationParameter</class>
     </metadata-model>
 </metadata>

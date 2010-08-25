@@ -1,0 +1,69 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.jmxcontrol.inspect.MbeanInspectWindow"
+        messagesPack="cuba.client.web.ui.jmxcontrol.inspect"
+        datasource="mbeanDs"
+        caption="msg://inspectMbean.title">
+
+    <metadataContext>
+    </metadataContext>
+
+    <dsContext>
+        <datasource id="mbeanDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo" view="_local"/>
+        <collectionDatasource id="attrDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute"
+                              view="_local">
+            <datasourceClass>cuba.client.web.ui.jmxcontrol.ds.ManagedBeanAttributeDatasource</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="table-panel" expandLayout="vbox">
+        <vbox spacing="true" id="vbox" expand="scrollbox">
+            <grid spacing="true" margin="true" stylename="edit-area">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://mbean.domain"/>
+                        <label datasource="mbeanDs" property="domain" id="domain" stylename="h2"/>
+                    </row>
+                    <row>
+                        <label value="msg://mbean.propertyList"/>
+                        <label id="propertyList" datasource="mbeanDs" property="propertyList" stylename="h2"/>
+                    </row>
+                    <row>
+                        <label value="msg://mbean.className"/>
+                        <label id="className" datasource="mbeanDs" property="className"/>
+                    </row>
+                    <row>
+                        <label value="msg://mbean.description"/>
+                        <label id="description" datasource="mbeanDs" property="description"/>
+                    </row>
+                </rows>
+            </grid>
+            <scrollbox id="scrollbox">
+                <vbox spacing="true" stylename="edit-area" margin="true">
+                    <label value="msg://mbean.attributes" stylename="h2"/>
+                    <table id="attributes" width="100%" stylename="varheight">
+                        <columns>
+                            <column id="name" caption="msg://mbean.attribute.name"/>
+                            <column id="type" caption="msg://mbean.attribute.type"/>
+                            <column id="readableWriteable" caption="msg://mbean.attribute.access"/>
+                            <column id="valueString" caption="msg://mbean.attribute.value"/>
+                        </columns>
+                        <rows datasource="attrDs"/>
+                    </table>
+                    <label value="msg://mbean.operations" stylename="h2"/>
+                    <vbox id="operations" spacing="true">
+
+                    </vbox>
+                </vbox>
+            </scrollbox>
+            <button id="close" action="windowCommit" icon="icons/ok.png"/>
+        </vbox>
+        <!--<hbox id="space">
+
+        </hbox>-->
+    </layout>
+</window>

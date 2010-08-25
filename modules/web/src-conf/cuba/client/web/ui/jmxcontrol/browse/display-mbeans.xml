@@ -1,0 +1,35 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.jmxcontrol.browse.MbeansDisplayWindow"
+        messagesPack="cuba.client.web.ui.jmxcontrol.browse"
+        caption="msg://displayMbeans.title">
+
+    <metadataContext>
+    </metadataContext>
+
+    <dsContext>
+        <collectionDatasource
+                id="mbeanDs"
+                class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo"
+                 view="_local">
+            <datasourceClass>cuba.client.web.ui.jmxcontrol.ds.ManagedBeanInfoDatasource</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="table-panel">
+        <vbox id="table-panel" expand="table" spacing="true">
+            <treeTable id="mbeans" editable="false">
+                <buttonsPanel>
+                    <button action="mbeans.refresh"/>
+                    <button action="mbeans.inspect"/>
+                </buttonsPanel>
+                <columns>
+                    <column id="domain" caption="msg://mbean.domain"/>
+                    <column id="propertyList" caption="msg://mbean.propertyList"/>
+                    <column id="description" caption="msg://mbean.description"/>
+                </columns>
+                <rows datasource="mbeanDs"/>
+            </treeTable>
+        </vbox>
+    </layout>
+</window>

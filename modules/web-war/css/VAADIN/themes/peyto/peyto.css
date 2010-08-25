@@ -285,6 +285,17 @@
     background: url(menubar/img/folders-pane-hover.png) top left no-repeat;
 }
 
+/*
+ * Fix until issue with vaadin & border solves
+ */
+.v-scrollable-panel-content .edit-area {
+    border: 0;
+}
+
+.v-verticallayout-operationContainer {
+    border-bottom: 1px solid #71A4D5;
+}
+
 .fts-found-instance {
     height: 20px;
     padding-top: 5px;

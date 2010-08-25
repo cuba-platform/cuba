@@ -109,4 +109,17 @@
     <screen id="report$ReportScreen.edit"
             template="/cuba/client/web/ui/report/edit/report-screen-edit.xml"/>
 
+    <!-- JMX control -->
+    <screen id="jmxcontrol$DisplayMbeans"
+            template="/cuba/client/web/ui/jmxcontrol/browse/display-mbeans.xml"/>
+
+    <screen id="jmxcontrol$InspectMbean"
+            template="/cuba/client/web/ui/jmxcontrol/inspect/mbean-inspect.xml"/>
+
+    <screen id="jmxcontrol$EditAttribute"
+            template="/cuba/client/web/ui/jmxcontrol/inspect/attribute/attribute-edit.xml"/>
+
+    <screen id="jmxcontrol$OperationResult"
+            template="/cuba/client/web/ui/jmxcontrol/inspect/operation/operation-result.xml"/>
+
 </screen-config>

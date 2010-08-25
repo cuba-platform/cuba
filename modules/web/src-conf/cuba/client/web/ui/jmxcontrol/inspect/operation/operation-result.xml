@@ -1,0 +1,24 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="cuba.client.web.ui.jmxcontrol.inspect.operation.OperationResultWindow"
+        messagesPack="cuba.client.web.ui.jmxcontrol.inspect.operation"
+        caption="msg://operationResult.title">
+
+    <metadataContext>
+    </metadataContext>
+    <dsContext>
+
+    </dsContext>
+
+    <layout expand="table-panel" expandLayout="space">
+        <scrollbox id="scrollbox" height="350px">
+            <vbox spacing="true" id="container">
+
+            </vbox>
+        </scrollbox>
+        <button id="close" icon="icons/ok.png"/>
+        <hbox id="space">
+
+        </hbox>
+    </layout>
+</window>
