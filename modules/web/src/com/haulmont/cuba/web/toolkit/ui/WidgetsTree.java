@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.toolkit.gwt.client.ui.VWidgetsTree;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.Resource;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Component;
 
@@ -35,9 +36,26 @@ public class WidgetsTree extends com.vaadin.ui.Tree {
         if (widgetBuilder != null) {
             Component c = widgetBuilder.buildWidget(this, itemId, areChildrenAllowed(itemId));
             if (c != null) {
+                final String key = itemIdMapper.key(itemId);
+                target.addAttribute("key", key);
+/*
+                if (isSelected(itemId)) {
+                    target.addAttribute("selected", true);
+                    selectedKeys.add(key);
+                }
+*/
+                if (areChildrenAllowed(itemId) && hasChildren(itemId)) {
+                    target.addAttribute("hasChildren", true);
+                }
+                if (areChildrenAllowed(itemId) && isExpanded(itemId)) {
+                    target.addAttribute("expanded", true);
+                    expandedKeys.add(key);
+                }
                 target.addAttribute("hasWidget", true);
                 
                 target.startTag("widget");
+                c.setParent(this);
+                c.requestRepaint();
                 c.paint(target);
                 target.endTag("widget");
                 return;

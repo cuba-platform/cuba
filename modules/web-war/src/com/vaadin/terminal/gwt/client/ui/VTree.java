@@ -47,11 +47,11 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
     private boolean isNullSelectionAllowed = true;
 
-    private boolean disabled = false;
+    protected boolean disabled = false;
 
     private boolean readonly;
 
-    private boolean rendering;
+    protected boolean rendering;
 
     private VAbstractDropHandler dropHandler;
 
@@ -271,7 +271,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
         dropHandler.updateAcceptRules(childUidl);
     }
 
-    private void handleUpdate(UIDL uidl) {
+    protected void handleUpdate(UIDL uidl) {
         final TreeNode rootNode = keyToNode.get(uidl
                 .getStringAttribute("rootKey"));
         if (rootNode != null) {
@@ -345,8 +345,14 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
         private boolean blocked = false;
 
+        protected boolean canExpand;
+
         public TreeNode() {
             constructDom();
+            attachEvents();
+        }
+
+        protected void attachEvents() {
             sinkEvents(Event.ONCLICK | Event.ONDBLCLICK | Event.MOUSEEVENTS
                     | Event.ONCONTEXTMENU);
         }
@@ -384,7 +390,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
             // also add classname to "folder node" into which the drag is
             // targeted
 
-            TreeNode folder = null;
+            TreeNode folder;
             /* Possible parent of this TreeNode will be stored here */
             TreeNode parentFolder = getParentNode();
 
@@ -430,6 +436,10 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
         @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
+            handleBrowseEvent(event);
+        }
+
+        protected void handleBrowseEvent(Event event) {
             if (disabled) {
                 return;
             }
@@ -503,7 +513,6 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                     currentMouseOverKey = key;
                     event.stopPropagation();
                 }
-
             }
         }
 
@@ -519,13 +528,13 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                     details.toString(), imm);
         }
 
-        private void toggleSelection() {
+        protected void toggleSelection() {
             if (selectable) {
                 VTree.this.setSelected(this, !isSelected());
             }
         }
 
-        private void toggleState() {
+        protected void toggleState() {
             setState(!getState(), true);
         }
 
@@ -564,13 +573,10 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                 actionKeys = uidl.getStringArrayAttribute("al");
             }
 
-            if (uidl.getTag().equals("node")) {
-                if (uidl.getChildCount() == 0) {
-                    childNodeContainer.setVisible(false);
-                } else {
-                    renderChildNodes(uidl.getChildIterator());
-                    childrenLoaded = true;
-                }
+            boolean isNode = uidl.getTag().equals("node");
+            if (isNode) {
+                renderChildNodes(uidl.getChildIterator());
+                childNodeContainer.setVisible(childNodeContainer.getWidgetCount() != 0);
             } else {
                 addStyleName(CLASSNAME + "-leaf");
             }
@@ -606,6 +612,15 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                     DOM.removeChild(DOM.getFirstChild(nodeCaptionDiv), icon
                             .getElement());
                     icon = null;
+                }
+            }
+
+            if (isNode) {
+                canExpand = uidl.hasAttribute("hasChildren");
+                if (canExpand) {
+                    removeStyleName("noChildren");
+                } else {
+                    addStyleName("noChildren");
                 }
             }
 
@@ -677,7 +692,9 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
             if (childTree != null) {
                 childTree.addStyleName("last");
             }
-            childrenLoaded = true;
+            if (childNodeContainer.getWidgetCount() > 0) {
+                childrenLoaded = true;
+            }
         }
 
         public boolean isChildrenLoaded() {

@@ -13,6 +13,8 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 
+import java.util.LinkedList;
+
 @SuppressWarnings("serial")
 public class Tree extends com.vaadin.ui.Tree {
     private boolean doubleClickMode = false;
@@ -23,6 +25,14 @@ public class Tree extends com.vaadin.ui.Tree {
 
         if (isDoubleClickMode()) {
             target.addAttribute("doubleClickMode", isDoubleClickMode());
+        }
+    }
+
+    @Override
+    protected void paintItem(PaintTarget target, Object itemId, LinkedList<String> selectedKeys, LinkedList<String> expandedKeys) throws PaintException {
+        super.paintItem(target, itemId, selectedKeys, expandedKeys);
+        if (areChildrenAllowed(itemId) && hasChildren(itemId)) {
+            target.addAttribute("hasChildren", true);
         }
     }
 

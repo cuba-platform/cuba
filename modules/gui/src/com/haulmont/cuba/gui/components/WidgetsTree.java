@@ -14,6 +14,11 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 public interface WidgetsTree extends Tree {
 
+    boolean isExpanded(Object itemId);
+
+    void expand(Object itemId);
+    void collapse(Object itemId);
+
     void setWidgetBuilder(WidgetBuilder widgetBuilder);
 
     interface WidgetBuilder {

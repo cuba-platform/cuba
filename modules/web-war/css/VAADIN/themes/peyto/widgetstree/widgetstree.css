@@ -3,19 +3,31 @@
     background: #fff;
 }
 
-.widgets-tree .v-tree-node, .widgets-tree .v-tree-node-expanded {
-    background-image: none;
+.widgets-tree .v-tree-node {
+    background: none;
+    position: relative;
+}
+
+.widgets-tree .v-tree-node-expanded {
+    background: none;
 }
 
 .widgets-tree .v-tree-node-children .v-tree-node,
 .widgets-tree .v-tree-node-children .v-tree-node-expanded {
-    padding-left: 16px;
-    background-image: none;
+    padding-left: 0;
+}
+
+.widgets-tree .v-tree-node-children .v-tree-node {
+    background: none;
+}
+
+.widgets-tree .v-tree-node-children .v-tree-node-expanded {
+    background: none;
 }
 
 .widgets-tree .v-tree-node-leaf.v-tree-node,
 .widgets-tree .v-tree-node-leaf.v-tree-node.last {
-    padding-left: 16px;
+    padding-left: 0;
     background-image: none;
 }
 
@@ -29,31 +41,35 @@
     border-radius: 4px;
 }
 
-.widgets-tree .v-tree-node-caption {
-    margin-left: 16px;
-}
-
-.widgets-tree .v-tree-node-leaf .v-tree-node-caption {
-    margin-left: 2px;
-}
-
-.widgets-tree .v-tree-node .v-tree-node-caption span {
-    padding: 0 2px;
-    cursor: pointer;
-    white-space: nowrap;
-    font-size: 9pt;
-    color: #000;
-}
-
-.widgets-tree .v-tree-node-nocaption .v-tree-node-caption {
+.widgets-tree .v-tree-node-leaf .v-tree-node-caption,
+.widgets-tree .v-tree-node.noChildren .v-tree-node-caption,
+.widgets-tree .v-tree-node-children .v-tree-node.noChildren .v-tree-node-caption{
     display: none;
 }
 
-.widgets-tree .v-tree-node-selected .v-tree-node-caption span {
-    background: #5daee8;
-    color: #000;
-    padding: 0 2px;
+.widgets-tree .v-tree-node .v-tree-node-caption {
+    display: block;
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    margin: 0;
     cursor: pointer;
+    top: 0;
+    left: 0;
+}
+
+.widgets-tree .v-tree-node-caption,
+.widgets-tree .v-tree-node-children .v-tree-node-caption {
+    background: transparent url(../tree/img/item-collapsed.png) no-repeat 0 1px;
+}
+
+.widgets-tree .v-tree-node-caption.expanded,
+.widgets-tree .v-tree-node-children .v-tree-node-caption.expanded {
+    background: transparent url(../tree/img/item-expanded.png) no-repeat 0 1px;
+}
+
+.widgets-tree .v-tree-node .v-tree-node-content {
+    margin-left: 16px;
 }
 
 .widgets-tree .v-tree-node-children {

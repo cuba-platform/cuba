@@ -19,6 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.VTree;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -40,6 +41,33 @@ public class VWidgetsTree extends VTree {
         }
     }
 
+    @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        super.updateFromUIDL(uidl, client);
+/*
+
+        rendering = true;
+
+        changeWidgetsRelativeSize();
+
+        rendering = false;
+*/
+//        Util.notifyParentOfSizeChange(this, false);
+    }                                  //todo change request layout
+/*
+    private void changeWidgetsRelativeSize() {
+        final Collection<TreeNode> nodes = keyToNode.values();
+        for (final TreeNode treeNode : nodes) {
+            if (treeNode instanceof WidgetTreeNode) {
+                final WidgetTreeNode widgetTreeNode = (WidgetTreeNode) treeNode;
+                if (widgetTreeNode.isRelativeSize()) {
+                    widgetTreeNode.updateComponentRelativeSize();
+                }
+            }
+        }
+    }
+*/
+
     class WidgetTreeNode extends TreeNode implements Container {
 
         private FlowPanel nodeContent;
@@ -47,6 +75,8 @@ public class VWidgetsTree extends VTree {
 
         private boolean dynWidth;
         private boolean dynHeight;
+
+        private boolean relativeSize;
 
         WidgetTreeNode(UIDL uidl) {
             setStyleName(CLASSNAME);
@@ -90,6 +120,21 @@ public class VWidgetsTree extends VTree {
         }
 
         @Override
+        protected void attachEvents() {
+            DOM.sinkEvents(nodeCaptionDiv, Event.ONCLICK);
+        }
+
+        @Override
+        protected void setState(boolean state, boolean notifyServer) {
+            super.setState(state, notifyServer);
+            if (state) {
+                nodeCaptionDiv.addClassName("expanded");
+            } else {
+                nodeCaptionDiv.removeClassName("expanded");
+            }
+        }
+
+        @Override
         protected void renderChildNodes(Iterator i) {
             childNodeContainer.clear();
             childNodeContainer.setVisible(true);
@@ -115,7 +160,9 @@ public class VWidgetsTree extends VTree {
             if (childTree != null) {
                 childTree.addStyleName("last");
             }
-            childrenLoaded = true;
+            if (childNodeContainer.getWidgetCount() > 0) {
+                childrenLoaded = true;
+            }
         }
 
         protected void paintWidget(UIDL uidl) {
@@ -145,6 +192,17 @@ public class VWidgetsTree extends VTree {
             float relativeHeight = Util.parseRelativeSize(h);
 
             if (relativeWidth >= 0f || relativeHeight >= 0f) {
+                relativeSize = true;
+                updateComponentRelativeSize();
+            }
+        }
+
+        public boolean isRelativeSize() {
+            return relativeSize;
+        }
+
+        private void updateComponentRelativeSize() {
+            if (relativeSize) {
                 client.handleComponentRelativeSize(nodeWidget.getWidget());
             }
         }
@@ -171,8 +229,15 @@ public class VWidgetsTree extends VTree {
         }
 
         @Override
-        public void onBrowserEvent(Event event) {
-            //do nothing
+        protected void handleBrowseEvent(Event event) {
+            if (disabled) return;
+            if (canExpand && DOM.eventGetType(event) == Event.ONCLICK) {
+                Element target = DOM.eventGetCurrentTarget(event);
+                if (target == nodeCaptionDiv) {
+                    toggleState();
+                    DOM.eventCancelBubble(event, true);
+                }
+            }
         }
 
         public void replaceChildComponent(Widget oldComponent, Widget newComponent) {

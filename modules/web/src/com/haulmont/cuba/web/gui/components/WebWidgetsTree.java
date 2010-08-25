@@ -25,6 +25,8 @@ public class WebWidgetsTree
 
     private String hierarchyProperty;
 
+    private static final long serialVersionUID = 8256179252367394044L;
+
     public WebWidgetsTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.WidgetsTree();
         component.setSelectable(false);
@@ -51,6 +53,18 @@ public class WebWidgetsTree
                 component.expandItemsRecursively(id);
             }
         }
+    }
+
+    public boolean isExpanded(Object itemId) {
+        return component.isExpanded(itemId);
+    }
+
+    public void expand(Object itemId) {
+        component.expandItem(itemId);
+    }
+
+    public void collapse(Object itemId) {
+        component.collapseItem(itemId);
     }
 
     public void setWidgetBuilder(final WidgetBuilder widgetBuilder) {
