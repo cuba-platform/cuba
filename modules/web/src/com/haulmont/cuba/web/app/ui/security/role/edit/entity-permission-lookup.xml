@@ -39,6 +39,7 @@
 
     <layout>
         <vbox expand="split" spacing="true">
+            <label id="permissionsType" stylename="h2"/>
             <split id="split" orientation="horizontal" pos="30">
                 <tree id="permissions-tree">
                     <treechildren datasource="entities" captionProperty="caption"/>
@@ -52,8 +53,6 @@
                     />
                 </vbox>
             </split>
-
-            <optionsGroup id="access" multiselect="false" required="true"/>
         </vbox>
     </layout>
 </window>

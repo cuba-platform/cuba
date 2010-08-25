@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.app.ui.security.role.edit;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.config.PermissionConfig;
@@ -29,19 +30,5 @@ public class ScreenPermissionsLookup extends PermissionsLookup {
     @Override
     protected void init(Map<String, Object> params) {
         super.init(params);
-
-        final OptionsGroup access = getComponent("access");
-
-        CollectionDatasource ds = getDsContext().get("permissions");
-        ds.addListener(
-                new DsListenerAdapter() {
-                    @Override
-                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        PermissionConfig.Target target = (PermissionConfig.Target) item;
-                        boolean enable = target != null/* && target.getId().startsWith("item:")*/;
-                        access.setEnabled(enable);
-                    }
-                }
-        );
     }
 }

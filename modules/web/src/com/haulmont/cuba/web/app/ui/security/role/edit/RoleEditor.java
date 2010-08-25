@@ -22,6 +22,11 @@ import java.util.*;
 public class RoleEditor extends AbstractEditor {
 
     private Set<String> initialized = new HashSet<String>();
+    private Table table;
+    private PopupButton screenPermissionsGrant;
+    private PopupButton entityPermissionsGrant;
+    private PopupButton propertyPermissionsGrant;
+    private PopupButton specificPermissionsGrant;
 
     public RoleEditor(IFrame frame) {
         super(frame);
@@ -33,6 +38,10 @@ public class RoleEditor extends AbstractEditor {
                 "sec$Target.screenPermissions.lookup",
                 "screen-permissions",
                 PermissionType.SCREEN);
+        table = getComponent("screen-permissions");
+        screenPermissionsGrant = getComponent("screen-permissions-grant");
+        screenPermissionsGrant.addAction(table.getAction("allow"));
+        screenPermissionsGrant.addAction(table.getAction("deny"));
         if(!PersistenceHelper.isNew((Role)params.get("item"))){
             getComponent("name").setEnabled(false);
         }
@@ -44,19 +53,50 @@ public class RoleEditor extends AbstractEditor {
                             "sec$Target.entityPermissions.lookup",
                             "entity-permissions",
                             PermissionType.ENTITY_OP);
+                    table = getComponent("entity-permissions");
+                    entityPermissionsGrant = getComponent("entity-permissions-grant");
+                    if(entityPermissionsGrant.getActions().isEmpty()){
+                        entityPermissionsGrant.addAction(table.getAction("allow"));
+                        entityPermissionsGrant.addAction(table.getAction("deny"));
+                    }
                 } else if ("property-permissions-tab".equals(newTab.getName())) {
                     initPermissionControls(
                             "sec$Target.propertyPermissions.lookup",
                             "property-permissions",
                             PermissionType.ENTITY_ATTR);
+                    table = getComponent("property-permissions");
+                    propertyPermissionsGrant = getComponent("property-permissions-grant");
+                    if(propertyPermissionsGrant.getActions().isEmpty()){
+                        propertyPermissionsGrant.addAction(table.getAction("modify"));
+                        propertyPermissionsGrant.addAction(table.getAction("view"));
+                        propertyPermissionsGrant.addAction(table.getAction("forbid"));
+                    }
                 } else if ("specific-permissions-tab".equals(newTab.getName())) {
                     initPermissionControls(
                             "sec$Target.specificPermissions.lookup",
                             "specific-permissions",
                             PermissionType.SPECIFIC);
+                    table = getComponent("specific-permissions");
+                    specificPermissionsGrant = getComponent("specific-permissions-grant");
+                    if(specificPermissionsGrant.getActions().isEmpty()){
+                        specificPermissionsGrant.addAction(table.getAction("allow"));
+                        specificPermissionsGrant.addAction(table.getAction("deny"));
+                    }
                 }
             }
         });
+    }
+
+    private void hideMenuPopupButton(){
+        if(screenPermissionsGrant != null)
+            screenPermissionsGrant.setPopupVisible(false);
+        if(entityPermissionsGrant != null)
+            entityPermissionsGrant.setPopupVisible(false);
+        if(propertyPermissionsGrant != null)
+            propertyPermissionsGrant.setPopupVisible(false);
+        if(specificPermissionsGrant != null)
+            specificPermissionsGrant.setPopupVisible(false);
+
     }
 
     protected void initPermissionControls(final String lookupAction, final String permissionsStorage,
@@ -70,26 +110,21 @@ public class RoleEditor extends AbstractEditor {
         ds.refresh();
 
         final Table table = getComponent(permissionsStorage);
-        table.addAction(new AbstractAction("grant") {
-            public void actionPerform(Component component) {
-                final PermissionsLookup permissionsLookup = openLookup(lookupAction, null, WindowManager.OpenType.THIS_TAB);
-                permissionsLookup.setLookupHandler(new Lookup.Handler() {
-                    public void handleLookup(Collection items) {
-                        Integer value = permissionsLookup.getPermissionValue();
-                        @SuppressWarnings({"unchecked"})
-                        Collection<PermissionConfig.Target> targets = items;
-                        for (PermissionConfig.Target target : targets) {
-                            createPermissionItem(permissionsStorage, target, permissionType, value);
-                        }
-                    }
-                });
-            }
+        table.setMultiSelect(true);
 
-            @Override
-            public String getCaption() {
-                return MessageProvider.getMessage(getClass(), "permissions.grant");
-            }
-        });
+        if(permissionType != PermissionType.ENTITY_ATTR){
+            table.addAction(new OpenPermissionAction("allow",lookupAction, permissionsStorage,
+                                    permissionType, PermissionValue.ALLOW.name(),  PermissionValue.ALLOW.getValue()));
+            table.addAction(new OpenPermissionAction("deny",lookupAction, permissionsStorage,
+                                    permissionType, PermissionValue.DENY.name(),  PermissionValue.DENY.getValue()));
+        } else {
+            table.addAction(new OpenPermissionAction("modify",lookupAction, permissionsStorage,
+                                    permissionType, PropertyPermissionValue.MODIFY.name(),  PropertyPermissionValue.MODIFY.getValue()));
+            table.addAction(new OpenPermissionAction("view",lookupAction, permissionsStorage,
+                                    permissionType, PropertyPermissionValue.VIEW.name(),  PropertyPermissionValue.VIEW.getValue()));
+            table.addAction(new OpenPermissionAction("forbid",lookupAction, permissionsStorage,
+                                    permissionType, "FORBID",  PropertyPermissionValue.DENY.getValue()));
+        }
 
         final TableActionsHelper helper = new TableActionsHelper(this, table);
         helper.createRemoveAction(false);
@@ -180,6 +215,49 @@ public class RoleEditor extends AbstractEditor {
             ds.addItem(newPermission);
         } else {
             permission.setValue(value);
+        }
+    }
+
+    protected class OpenPermissionAction extends AbstractAction{
+        private String lookupAction;
+        private String permissionsStorage;
+        private PermissionType permissionType;
+        private String name;
+        private int value;
+        public OpenPermissionAction(String id,String lookupAction, String permissionsStorage,
+                                    PermissionType permissionType,String name, int value){
+            super(id);
+            this.lookupAction = lookupAction;
+            this.permissionsStorage = permissionsStorage;
+            this.permissionType = permissionType;
+            this.name = name;
+            this.value = value;
+        }
+        public void actionPerform(Component component) {
+            final PermissionsLookup permissionsLookup = openLookup(lookupAction, null, WindowManager.OpenType.THIS_TAB,
+                    Collections.<String, Object>singletonMap("param$PermissionValue", name));
+            permissionsLookup.setLookupHandler(new Lookup.Handler() {
+                public void handleLookup(Collection items) {
+                    @SuppressWarnings({"unchecked"})
+                    Collection<PermissionConfig.Target> targets = items;
+                    for (PermissionConfig.Target target : targets) {
+                        createPermissionItem(permissionsStorage, target, permissionType, value);
+                    }
+                }
+            });
+            permissionsLookup.addListener(new CloseListener() {
+                public void windowClosed(String actionId) {
+                    hideMenuPopupButton();
+                }
+            });
+        }
+
+        @Override
+        public String getCaption() {
+            if(permissionType != PermissionType.ENTITY_ATTR)
+                return MessageProvider.getMessage(getClass(),"PermissionValue."+name);
+            else
+                return MessageProvider.getMessage(getClass(),"PropertyPermissionValue."+name);
         }
     }
 }

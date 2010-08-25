@@ -265,6 +265,18 @@
     background-color: transparent;    
 }
 
+.widgets-tree-empty .v-tree-node-widget {
+    border-bottom:0px;
+    border-left:0px;
+    padding-bottom:0px;
+    margin:0px;
+    padding-left:0px;
+    padding-right:0px;
+    border-top:0px;
+    border-right:0px;
+    padding-top:0px;
+}
+
 .v-menubar .menuitem .folders-item{
     background: url(menubar/img/folders-pane.png) top left no-repeat;
 }

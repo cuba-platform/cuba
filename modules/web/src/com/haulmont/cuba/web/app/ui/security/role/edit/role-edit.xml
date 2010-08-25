@@ -56,6 +56,8 @@
             <hbox spacing="true" margin="true" align="MIDDLE_LEFT" width="100%"  expand="spacer"
                   stylename="edit-area">
                 <#assign width = 200>
+                <#assign widthPPB = 120>
+                <#assign widthPPBMenu = 100>
                 <grid  spacing="true">
                     <columns>
                         <column/>
@@ -104,8 +106,8 @@
                 <tab id="screen-permissions-tab" caption="msg://screen-permissions">
                     <vbox expand="screen-permissions" margin="true">
                         <hbox margin="true" spacing="true">
-                            <button id="screen-permissions-grant" action="screen-permissions.grant"
-                                    caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <popupButton id="screen-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
+                                         width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="screen-permissions-remove" action="screen-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
@@ -121,8 +123,8 @@
                 <tab id="entity-permissions-tab" caption="msg://entity-permissions" lazy="true">
                     <vbox expand="entity-permissions" margin="true">
                         <hbox margin="true" spacing="true">
-                            <button id="entity-permissions-grant" action="entity-permissions.grant"
-                                    caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <popupButton id="entity-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
+                                         width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="entity-permissions-remove" action="entity-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
@@ -138,8 +140,8 @@
                 <tab id="property-permissions-tab" caption="msg://property-permissions" lazy="true">
                     <vbox expand="property-permissions" margin="true">
                         <hbox margin="true" spacing="true">
-                            <button id="property-permissions-grant" action="property-permissions.grant"
-                                    caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <popupButton id="property-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
+                                         width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="property-permissions-remove" action="property-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>
@@ -155,8 +157,8 @@
                 <tab id="specific-permissions-tab" caption="msg://specific-permissions" lazy="true">
                     <vbox expand="specific-permissions" margin="true">
                         <hbox margin="true" spacing="true">
-                            <button id="specific-permissions-grant" action="specific-permissions.grant"
-                                    caption="msg://permissions.grant" icon="icons/add.png"/>
+                            <popupButton id="specific-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
+                                         width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="specific-permissions-remove" action="specific-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
                         </hbox>

@@ -25,15 +25,4 @@ public class PropertyPermissionsLookup extends PermissionsLookup {
     protected void init(Map<String, Object> params) {
         super.init(params);
     }
-
-    @Override
-    protected void fillAccessOptions() {
-        accessOptions.setOptionsList(Arrays.asList(PropertyPermissionValue.values()));
-    }
-
-    @Override
-    public Integer getPermissionValue() {
-        PropertyPermissionValue option = accessOptions.getValue();
-        return option == null ? null : option.getValue();
-    }
 }
