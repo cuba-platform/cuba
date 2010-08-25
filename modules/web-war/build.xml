@@ -7,8 +7,8 @@
 
     <property name="module.name" value="web-war"/>
 
-    <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${root.dir}/build.properties"/>
+    <import file="${root.dir}/build-inc-mod.xml"/>
     <property file="${project.dir}/lib.properties"/>
 
     <property name="web.src.dir" location="${module.dir}/web"/>

@@ -8,8 +8,8 @@
 	<property name="module.name" value="global"/>
 	<property name="module.jar" value="cuba-global.jar"/>
 
-	<import file="${root.dir}/build-inc-mod.xml"/>
-	<property file="${root.dir}/build.properties"/>
+    <property file="${root.dir}/build.properties"/>
+    <import file="${root.dir}/build-inc-mod.xml"/>
 
     <fileset id="chile-jars" dir="${root.dir}/chile/build">
         <include name="*.jar"/>
