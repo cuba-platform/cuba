@@ -10,22 +10,27 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.VTree;
+import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
-public class VWidgetsTree extends VTree {
+public class VWidgetsTree extends VTree implements Container {
 
     private static final String CLASSNAME = "widgets-tree";
+
+    private Map<Widget, WidgetTreeNode> widgetNodes = new HashMap<Widget, WidgetTreeNode>();
+
+    private CellBasedLayout.Spacing borderPaddingsInfo = null;
 
     public VWidgetsTree() {
         super();
@@ -42,33 +47,56 @@ public class VWidgetsTree extends VTree {
     }
 
     @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-/*
+    public void setWidth(String width) {
+        if (width == null) { return; }
+        super.setWidth(width);
+    }
 
-        rendering = true;
+    public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
+        //do nothing
+    }
 
-        changeWidgetsRelativeSize();
+    public boolean hasChildComponent(Widget component) {
+        return widgetNodes.containsKey(component);
+    }
 
-        rendering = false;
-*/
-//        Util.notifyParentOfSizeChange(this, false);
-    }                                  //todo change request layout
-/*
-    private void changeWidgetsRelativeSize() {
-        final Collection<TreeNode> nodes = keyToNode.values();
-        for (final TreeNode treeNode : nodes) {
-            if (treeNode instanceof WidgetTreeNode) {
-                final WidgetTreeNode widgetTreeNode = (WidgetTreeNode) treeNode;
-                if (widgetTreeNode.isRelativeSize()) {
-                    widgetTreeNode.updateComponentRelativeSize();
-                }
-            }
+    public void updateCaption(Paintable component, UIDL uidl) {
+        //do nothing
+    }
+
+    public boolean requestLayout(Set<Paintable> children) {
+        return false;
+    }
+
+    public RenderSpace getAllocatedSpace(Widget child) {
+        WidgetTreeNode node = widgetNodes.get(child);
+        if (borderPaddingsInfo == null) {
+            detectNodeBorderPaddings(node);
+        }
+        int w = node.nodeWidget.getOffsetWidth() - borderPaddingsInfo.hSpacing;
+        int h = node.nodeWidget.getOffsetHeight() - borderPaddingsInfo.vSpacing;
+        return new RenderSpace(w, h);
+    }
+
+    private void detectNodeBorderPaddings(WidgetTreeNode node) {
+        if (isAttached() && borderPaddingsInfo == null) {
+            Element el = node.nodeWidget.getElement();
+            DOM.setStyleAttribute(el, "overflow", "hidden");
+            DOM.setStyleAttribute(el, "width", "0px");
+            DOM.setStyleAttribute(el, "height", "0px");
+
+            int w = el.getOffsetWidth();
+            int h = el.getOffsetHeight();
+
+            borderPaddingsInfo = new CellBasedLayout.Spacing(w, h);
+
+            DOM.setStyleAttribute(el, "overflow", "visible");
+            DOM.setStyleAttribute(el, "width", "");
+            DOM.setStyleAttribute(el, "height", "");
         }
     }
-*/
 
-    class WidgetTreeNode extends TreeNode implements Container {
+    class WidgetTreeNode extends TreeNode {
 
         private FlowPanel nodeContent;
         private SimplePanel nodeWidget;
@@ -165,9 +193,19 @@ public class VWidgetsTree extends VTree {
             }
         }
 
+        @Override
+        public void onAttach() {
+            super.onAttach();
+            if (borderPaddingsInfo == null) {
+                detectNodeBorderPaddings(this);
+            }
+        }
+
         protected void paintWidget(UIDL uidl) {
             Paintable p = client.getPaintable(uidl);
             nodeWidget.setWidget((Widget) p);
+            widgetNodes.put((Widget) p, this);
+            
             p.updateFromUIDL(uidl, client);
 
             if (isAttached()) {
@@ -238,28 +276,6 @@ public class VWidgetsTree extends VTree {
                     DOM.eventCancelBubble(event, true);
                 }
             }
-        }
-
-        public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
-            //do nothing
-        }
-
-        public boolean hasChildComponent(Widget component) {
-            return nodeWidget.getWidget() != null && nodeWidget.getWidget().equals(component);
-        }
-
-        public void updateCaption(Paintable component, UIDL uidl) {
-            //todo gorodnov: implement this method when it will be needed, now  I can't see any reasons to do it
-        }
-
-        public boolean requestLayout(Set<Paintable> children) {
-            return true;
-        }
-
-        public RenderSpace getAllocatedSpace(Widget child) {
-            int w = child.getOffsetWidth();
-            int h = child.getOffsetHeight();
-            return new RenderSpace(w, h);
         }
     }
 }

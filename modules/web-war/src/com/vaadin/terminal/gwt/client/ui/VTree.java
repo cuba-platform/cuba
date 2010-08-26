@@ -6,11 +6,9 @@ package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.*;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.UIObject;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
+import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.dd.*;
 
@@ -661,6 +659,12 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
             if (!rendering) {
                 Util.notifyParentOfSizeChange(VTree.this, false);
+                if (notifyServer) {
+                    Container container = Util.getLayout(VTree.this);
+                    if (container != null && ((Widget) container).getParent() instanceof IScrollablePanel) {
+                        client.runDescendentsLayout((HasWidgets) ((Widget) container).getParent());
+                    }
+                }
             }
         }
 

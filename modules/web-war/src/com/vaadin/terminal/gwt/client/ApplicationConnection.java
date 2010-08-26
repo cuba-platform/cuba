@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.HasIndicator;
 import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
+import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
 import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
 import com.vaadin.terminal.gwt.client.RenderInformation.Size;
 import com.vaadin.terminal.gwt.client.ui.*;
@@ -902,6 +903,16 @@ public class ApplicationConnection {
         }
 
         Util.componentSizeUpdated(sizeUpdatedWidgets);
+
+        //This is a hack that helps resize VTree component
+        for (Paintable paintable : sizeUpdatedWidgets) {
+            if (paintable instanceof VTree) {
+                Container container = Util.getLayout((Widget) paintable);
+                if (container != null && ((Widget) container).getParent() instanceof IScrollablePanel) {
+                    runDescendentsLayout((HasWidgets) ((Widget) container).getParent());
+                }
+            }
+        }
 
         handleTimers(json);
 
