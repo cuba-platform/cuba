@@ -17,8 +17,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.record.PaletteRecord;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.AreaReference;
-import org.apache.poi.hssf.util.CellRangeAddress;
-import org.apache.poi.hssf.util.CellReference;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.hssf.util.HSSFColor;
 
 import java.io.ByteArrayOutputStream;
