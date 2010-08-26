@@ -162,12 +162,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 com.vaadin.ui.Field f;
 
                 String id = (String) propertyId;
-                if (ds.getMetaClass().getProperty(id) != null) {
+
+                MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(id);
+                if (propertyPath != null) {
                    c = fieldGenerator.generateField(ds, propertyId);
                    f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
 
                    if (f.getPropertyDataSource() == null) {
-                       MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyEx(id);
                        if (field.getDatasource() != null) {
                            final ItemWrapper dsWrapper = createDatasourceWrapper(ds,
                                    Collections.<MetaPropertyPath>singleton(propertyPath));
@@ -184,8 +185,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 if (f.getCaption() == null) {
                     if (field.getCaption() != null) {
                         f.setCaption(field.getCaption());
-                    } else if (ds.getMetaClass().getProperty(id) != null) {
-                        MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyEx(id);
+                    } else if (propertyPath != null) {
                         f.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
                                 id));
                     }
@@ -224,8 +224,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 fields = new ArrayList<MetaPropertyPath>();
                 for (final String id : fieldIds) {
                     final Field field = getField(id);
-                    if (field.getDatasource() == null && datasource.getMetaClass().getProperty(field.getId()) != null) {
-                        MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyEx(field.getId());
+                    MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
+                    if (field.getDatasource() == null && propertyPath != null) {
                         fields.add(propertyPath);
                     }
                 }
@@ -259,7 +259,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 if (datasource != null && fieldConf.getDatasource() == null) {
                     field = component.getField(id);
                 } else if (fieldConf.getDatasource() != null) {
-                    MetaPropertyPath propertyPath = fieldConf.getDatasource().getMetaClass().getPropertyEx(fieldConf.getId());
+                    MetaPropertyPath propertyPath = fieldConf.getDatasource().getMetaClass().getPropertyPath(fieldConf.getId());
                     final ItemWrapper dsWrapper = createDatasourceWrapper(fieldConf.getDatasource(),
                             Collections.<MetaPropertyPath>singleton(propertyPath));
 

@@ -12,6 +12,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -106,8 +107,8 @@ public class MessageUtils {
      * Get localized name of an entity property. Messages pack should be placed in the packet of entity.
      */
     public static String getPropertyCaption(MetaClass metaClass, String propertyName) {
-        MetaProperty property = metaClass.getProperty(propertyName);
-        return getPropertyCaption(property);
+        MetaPropertyPath propertyPath = metaClass.getPropertyPath(propertyName);
+        return getPropertyCaption(propertyPath.getMetaProperty());
     }
 
     /**
