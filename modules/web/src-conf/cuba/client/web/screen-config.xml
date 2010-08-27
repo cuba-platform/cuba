@@ -109,6 +109,9 @@
     <screen id="report$ReportScreen.edit"
             template="/cuba/client/web/ui/report/edit/report-screen-edit.xml"/>
 
+    <screen id="core$Entity.restore"
+            template="/com/haulmont/cuba/web/app/ui/core/restore/entity-restore.xml"/>
+
     <!-- JMX control -->
     <screen id="jmxcontrol$DisplayMbeans"
             template="/cuba/client/web/ui/jmxcontrol/browse/display-mbeans.xml"/>

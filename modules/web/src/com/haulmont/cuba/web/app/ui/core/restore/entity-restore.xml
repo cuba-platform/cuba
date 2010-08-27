@@ -1,0 +1,25 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.core.restore.EntityRestore"
+        messagesPack="com.haulmont.cuba.web.app.ui.core.restore"
+        caption="msg://entityRestore.caption"
+        >
+
+    <dsContext>
+        <groupDatasource id="entitiesDs"/>
+    </dsContext>
+    <layout>
+        <vbox expand="table-panel" spacing="true">
+            <hbox margin="true;true;true;false" spacing="true">
+                <lookupField id="entities"/>
+                <button id="refresh" icon="icons/refresh.png"/>
+            </hbox>
+            <filter id="genericFilter" stylename="edit-area">
+                <properties include=".*" exclude=""/>
+            </filter>
+
+            <vbox id="table-panel" spacing="true">
+            </vbox>
+        </vbox>
+    </layout>
+</window>
