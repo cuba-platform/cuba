@@ -48,11 +48,6 @@ public class SearchFolder extends AbstractSearchFolder {
         }
     }
 
-    @Override
-    public String getName() {
-        return getCaption();
-    }
-
     public String getLocName(){
         return code != null ? MessageProvider.getMessage(MessageUtils.getMessagePack(), code) : code;
     }
