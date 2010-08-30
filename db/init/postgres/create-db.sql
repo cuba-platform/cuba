@@ -347,6 +347,7 @@ create table SYS_FOLDER (
     PARENT_ID uuid,
     NAME varchar(100),
     SORT_ORDER integer,
+    CODE varchar(200), 
     primary key (ID)
 )^
 

@@ -495,8 +495,13 @@ public class FoldersPane extends VerticalLayout {
             if (target instanceof SearchFolder) {
                 if (StringUtils.isBlank(((SearchFolder) target).getFilterComponentId()))
                     return new Action[]{new CreateAction(), new EditAction(), new RemoveAction()};
-                else
-                    return new Action[]{new OpenAction(), new CreateAction(), new EditAction(), new RemoveAction()};
+                else{
+                    if(((SearchFolder) target).getCode() == null)
+                        return new Action[]{new OpenAction(), new CreateAction(), new EditAction(), new RemoveAction()};
+                    else
+                        return new Action[]{new OpenAction(), new CreateAction()};
+                }
+
             } else
                 return new Action[]{new CreateAction()};
         }

@@ -147,7 +147,7 @@ public class FolderEditWindow extends Window {
         FoldersService service = ServiceLocator.lookup(FoldersService.JNDI_NAME);
         List<SearchFolder> list = service.loadSearchFolders();
         for (SearchFolder folder : list) {
-            if (!folder.equals(this.folder)) {
+            if (!folder.equals(this.folder) && folder.getCode() == null) {
                 parentSelect.addItem(folder);
                 parentSelect.setItemCaption(folder, folder.getName());
             }

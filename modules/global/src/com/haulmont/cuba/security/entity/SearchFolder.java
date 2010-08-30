@@ -11,6 +11,8 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 
 import javax.persistence.*;
 
@@ -35,5 +37,23 @@ public class SearchFolder extends AbstractSearchFolder {
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public String getCaption() {
+        if (code != null) {
+            return getLocName();
+        } else {
+            return name;
+        }
+    }
+
+    @Override
+    public String getName() {
+        return getCaption();
+    }
+
+    public String getLocName(){
+        return code != null ? MessageProvider.getMessage(MessageUtils.getMessagePack(), code) : code;
     }
 }

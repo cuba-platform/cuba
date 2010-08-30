@@ -35,6 +35,9 @@ public class Folder extends StandardEntity {
     @Transient
     protected String itemStyle = null;
 
+    @Column(name="CODE")
+    protected String code;
+
     public Folder getParent() {
         return parent;
     }
@@ -69,5 +72,13 @@ public class Folder extends StandardEntity {
 
     public void setItemStyle(String itemStyle){
         this.itemStyle = itemStyle;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
