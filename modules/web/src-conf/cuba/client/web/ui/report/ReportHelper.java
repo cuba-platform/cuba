@@ -48,7 +48,8 @@ public class ReportHelper {
             ReportService srv = ServiceLocator.lookup(ReportService.NAME);
             byte[] byteArr = srv.createReport(report, reportOutputType, params);
             new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), "report", exportFormat);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
