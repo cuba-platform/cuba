@@ -10,4 +10,8 @@
         <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperation</class>
         <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperationParameter</class>
     </metadata-model>
+
+    <!--<entityFactory>-->
+        <!--<replace class="com.haulmont.cuba.security.entity.UserSubstitution" with="com.haulmont.cuba.security.entity.UserSubstitution"/>-->
+    <!--</entityFactory>-->
 </metadata>

@@ -321,7 +321,7 @@ public class UserEditor extends AbstractEditor {
         public void actionPerform(Component component) {
             final CollectionDatasource<UserSubstitution, UUID> usDs = substTable.getDatasource();
 
-            final UserSubstitution substitution = new UserSubstitution();
+            final UserSubstitution substitution = EntityFactory.create(UserSubstitution.class);
             substitution.setUser(userDs.getItem());
 
             final CollectionDatasource<UserSubstitution, UUID> suDs = getDsContext().get("substitutions");
