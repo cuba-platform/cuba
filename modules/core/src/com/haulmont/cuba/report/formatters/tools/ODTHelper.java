@@ -6,29 +6,24 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.comp.helper.BootstrapException;
-import com.sun.star.container.NoSuchElementException;
-import com.sun.star.container.XEnumeration;
-import com.sun.star.container.XEnumerationAccess;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.frame.XStorable;
 import com.sun.star.io.IOException;
 import com.sun.star.io.XInputStream;
 import com.sun.star.io.XOutputStream;
-import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
-import com.sun.star.lang.XServiceInfo;
-import com.sun.star.text.XText;
-import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextDocument;
-import com.sun.star.text.XTextRange;
+import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XCloseable;
+import com.sun.star.util.XPropertyReplace;
+import com.sun.star.util.XReplaceDescriptor;
+import com.sun.star.util.XReplaceable;
 import ooo.connector.BootstrapSocketConnector;
 
 import java.io.File;
-import java.util.Map;
 
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 
@@ -109,32 +104,58 @@ public class ODTHelper {
         xStorable.storeToURL(pathToUrl(path), props);
     }
 
-    public static void replaceInDocumentText(XTextDocument xTextDocument, Map<String, String> replacements, boolean isRegExp) throws NoSuchElementException, WrappedTargetException {
-        XText xText = xTextDocument.getText();
-        XEnumerationAccess paragraphsAccess = asXEnumerationAccess(xText);
-        XEnumeration paragraphs = paragraphsAccess.createEnumeration();
-        while (paragraphs.hasMoreElements()) {
-            XTextContent xTextContent = asXTextContent(paragraphs.nextElement());
-            XServiceInfo xServiceInfo = asXServiceInfo(xTextContent);
-            // Accessing only paragraphs, not tables
-            if (!xServiceInfo.supportsService("com.sun.star.text.TextTable")) {
-                XEnumerationAccess textPortionsAccess = asXEnumerationAccess(xTextContent);
-                XEnumeration textPortions = textPortionsAccess.createEnumeration();
-                while (textPortions.hasMoreElements()) {
-                    XTextRange xTextPortion = asXTextRange(textPortions.nextElement());
-                    for (String target : replacements.keySet()) {
-                        if (isRegExp) {
-                            String sourceString = xTextPortion.getString();
-                            String resultString = sourceString.replaceAll(target, replacements.get(target));
-                            xTextPortion.setString(resultString);
-                        } else {
-                            xTextPortion.setString(xTextPortion.getString().replace(target, replacements.get(target)));
-                        }
-                    }
-                }
-            }
+    public static long replaceInDocument(XTextDocument xTextDocument, String searchString, String replaceString) {
+        XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
+        XReplaceDescriptor xRepDesc = xReplaceable.createReplaceDescriptor();
+        // set a string to search for
+        xRepDesc.setSearchString(searchString);
+        // set the string to be inserted
+        xRepDesc.setReplaceString(replaceString);
+        // create an array of one property value for a CharWeight property
+        PropertyValue[] aReplaceArgs = new PropertyValue[0];
+//        // create PropertyValue struct
+//        aReplaceArgs[0] = new PropertyValue();
+//         // CharWeight should be bold
+//        aReplaceArgs[0].Name = "CharWeight";
+//        aReplaceArgs[0].Value = new Float(com.sun.star.awt.FontWeight.BOLD);
+        // set our sequence with one property value as ReplaceAttribute 
+        XPropertyReplace xPropRepl = (XPropertyReplace) UnoRuntime.queryInterface(
+                XPropertyReplace.class, xRepDesc);
+        try {
+            xPropRepl.setReplaceAttributes(aReplaceArgs);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
+// replace
+        return xReplaceable.replaceAll(xRepDesc);
     }
+
+//    public static void replaceInDocumentText(XTextDocument xTextDocument, Map<String, String> replacements, boolean isRegExp) throws NoSuchElementException, WrappedTargetException {
+//        XText xText = xTextDocument.getText();
+//        XEnumerationAccess paragraphsAccess = asXEnumerationAccess(xText);
+//        XEnumeration paragraphs = paragraphsAccess.createEnumeration();
+//        while (paragraphs.hasMoreElements()) {
+//            XTextContent xTextContent = asXTextContent(paragraphs.nextElement());
+//            XServiceInfo xServiceInfo = asXServiceInfo(xTextContent);
+//            // Accessing only paragraphs, not tables
+//            if (!xServiceInfo.supportsService("com.sun.star.text.TextTable")) {
+//                XEnumerationAccess textPortionsAccess = asXEnumerationAccess(xTextContent);
+//                XEnumeration textPortions = textPortionsAccess.createEnumeration();
+//                while (textPortions.hasMoreElements()) {
+//                    XTextRange xTextPortion = asXTextRange(textPortions.nextElement());
+//                    for (String target : replacements.keySet()) {
+//                        if (isRegExp) {
+//                            String sourceString = xTextPortion.getString();
+//                            String resultString = sourceString.replaceAll(target, replacements.get(target));
+//                            xTextPortion.setString(resultString);
+//                        } else {
+//                            xTextPortion.setString(xTextPortion.getString().replace(target, replacements.get(target)));
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     /*
     *  Utility method. Converts path to url
