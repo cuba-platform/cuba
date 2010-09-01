@@ -161,6 +161,8 @@ public class VCssLayout extends SimplePanel implements Paintable, Container {
             }
             clear();
 
+            DOM.setInnerHTML(getElement(), "<div style=\"width:0;height:0;clear:both;\"></div>");
+            
             ValueMap mapAttribute = null;
             if (uidl.hasAttribute("css")) {
                 mapAttribute = uidl.getMapAttribute("css");
@@ -212,6 +214,22 @@ public class VCssLayout extends SimplePanel implements Paintable, Container {
                 }
                 widgetToCaption.remove(w);
             }
+        }
+
+        @Override
+        protected void add(Widget child, Element container) {
+            // Detach new child.
+            child.removeFromParent();
+
+            // Logical attach.
+            getChildren().add(child);
+
+            // Physical attach.
+            DOM.insertBefore(container, child.getElement(),
+                    DOM.getChild(container, DOM.getChildCount(container) - 1));
+
+            // Adopt.
+            adopt(child);
         }
 
         public boolean hasChildComponent(Widget component) {
