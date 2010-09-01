@@ -10,17 +10,21 @@
  */
 package cuba.client.web.ui.report.browse;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebLabel;
 import com.haulmont.cuba.web.gui.components.WebTable;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
+import com.vaadin.ui.Component;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class CommonLookupController extends AbstractLookup {
@@ -35,17 +39,26 @@ public class CommonLookupController extends AbstractLookup {
         final MetaClass metaClass = (MetaClass) params.get("param$class");
         final Class javaClass = metaClass.getJavaClass();
         setCaption(MessageProvider.getMessage(javaClass, javaClass.getSimpleName()));
-        CollectionDatasourceImpl cds = new CollectionDatasourceImpl(getDsContext(), getDsContext().getDataService(), "mainDs", metaClass, "_minimal");
-        WebTable table = new WebTable() {
+        final CollectionDatasourceImpl cds = new CollectionDatasourceImpl(getDsContext(), getDsContext().getDataService(), "mainDs", metaClass, "_minimal");
+        final WebTable table = new WebTable() {
             @Override
             protected void initComponent(com.haulmont.cuba.web.toolkit.ui.Table component) {
                 super.initComponent(component);
-                for (MetaProperty prop : metaClass.getOwnProperties()) {//todo: reimplement - not all properties
-                    MetaPropertyPath mpp = new MetaPropertyPath(metaClass, prop);
-                    Table.Column column = new Table.Column(mpp);
-                    column.setCaption(MessageProvider.getMessage(javaClass, javaClass.getSimpleName() + "." + prop.getName()));
-                    addColumn(column);
-                }
+                com.vaadin.ui.Table.ColumnGenerator generator = new com.vaadin.ui.Table.ColumnGenerator() {
+                    @Override
+                    public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                        Object inst = cds.getItem(itemId);
+                        WebLabel label = new WebLabel();
+                        label.setValue(((Instance) inst).getInstanceName());
+                        return WebComponentsHelper.unwrap(label);
+                    }
+                };
+
+                MetaPropertyPath nameProperty = new MetaPropertyPath(metaClass, new ArrayList<MetaProperty>(metaClass.getOwnProperties()).get(0));
+                Column column = new Column(nameProperty);
+                column.setCaption("Name");
+                addColumn(column);
+                addGeneratedColumn(nameProperty, generator); //todo: govnokod. write ticket to gorodnov
             }
         };
         table.setId("table");
