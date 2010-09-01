@@ -86,7 +86,7 @@
             template="/cuba/client/web/ui/report/edit/report-edit.xml"/>
 
     <screen id="report$Report.fileUploadDialog"
-            template="cuba\client\web\ui\report\fileuploaddialog\file-upload-dialog.xml"/>
+            template="/cuba/client/web/ui/report/fileuploaddialog/file-upload-dialog.xml"/>
 
     <screen id="report$Report.run"
             template="/cuba/client/web/ui/report/run/report-run.xml"/>
