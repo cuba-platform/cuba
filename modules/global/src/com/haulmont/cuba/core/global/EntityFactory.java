@@ -82,6 +82,10 @@ public class EntityFactory {
         }
     }
 
+    private <T> Class<T> __getReplacedClass(Class<T> clazz) {
+        return map.get(clazz);
+    }
+
     public static <T> T create(Class<T> entityClass) {
         return getInstance().__create(entityClass);
     }
@@ -93,5 +97,18 @@ public class EntityFactory {
     public static <T> T create(String entityName) {
         MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
         return (T) getInstance().__create(metaClass.getJavaClass());
+    }
+
+    public static <T> Class<T> getReplacedClass(Class<T> clazz) {
+        return getInstance().__getReplacedClass(clazz);
+    }
+
+    public static <T> Class<T> getReplacedClass(MetaClass metaClass) {
+        return getInstance().__getReplacedClass(metaClass.getJavaClass());
+    }
+
+    public static <T> Class<T> getReplacedClass(String entityName) {
+        MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
+        return getInstance().__getReplacedClass(metaClass.getJavaClass());
     }
 }
