@@ -15,6 +15,7 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.Orientation;
 import com.haulmont.cuba.report.formatters.xls.Area;
 import com.haulmont.cuba.report.formatters.xls.AreaAlign;
+import com.haulmont.cuba.report.formatters.xls.Cell;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.record.PaletteRecord;
@@ -32,6 +33,7 @@ import org.apache.poi.ddf.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class XLSFormatter extends AbstractFormatter {
     private HSSFWorkbook templateWorkbook;
@@ -241,34 +243,37 @@ public class XLSFormatter extends AbstractFormatter {
 
         int i = 0;
         for (HSSFClientAnchor anchor : list) {
-            Area areaReference = getAreaByCoordinate(anchor.getCol1(), anchor.getRow1());
-            List<Area> dependent = areasDependency.get(areaReference);
+            Cell topLeft = getCellFromTemplate(new Cell(anchor.getCol1(), anchor.getRow1()));
+            anchor.setCol1(topLeft.getCol());
+            anchor.setRow1(topLeft.getRow());
 
-            if (dependent != null && !dependent.isEmpty()) {
-                Area destination = dependent.get(0);
-
-                int col = anchor.getCol1() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
-                int row = anchor.getRow1() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
-
-                anchor.setCol1(col);
-                anchor.setRow1(row);
-            }
-
-            areaReference = getAreaByCoordinate(anchor.getCol2(), anchor.getRow2());
-            dependent = areasDependency.get(areaReference);
-
-            if (dependent != null && !dependent.isEmpty()) {
-                Area destination = dependent.get(0);
-
-                int col = anchor.getCol2() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
-                int row = anchor.getRow2() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
-
-                anchor.setCol2(col);
-                anchor.setRow2(row);
-            }
+            Cell bottomRight = getCellFromTemplate(new Cell(anchor.getCol2(), anchor.getRow2()));
+            anchor.setCol2(bottomRight.getCol());
+            anchor.setRow2(bottomRight.getRow());
 
             workingPatriarch.createPicture(anchor, orderedPicturesId.get(i++));
         }
+    }
+
+    protected void updateCell(Cell cell) {
+        Area areaReference = getAreaByCoordinate(cell.getCol(), cell.getRow());
+        List<Area> dependent = areasDependency.get(areaReference);
+
+        if (dependent != null && !dependent.isEmpty()) {
+            Area destination = dependent.get(0);
+
+            int col = cell.getCol() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
+            int row = cell.getRow() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
+
+            cell.setCol(col);
+            cell.setRow(row);
+        }
+    }
+
+    protected Cell getCellFromTemplate(Cell cell) {
+        Cell newCell = new Cell(cell);
+        updateCell(newCell);
+        return newCell;
     }
 
     private void updateRefPtg(Area originalContainingArea, Area dependentContainingArea, RefPtg current) {

@@ -25,6 +25,11 @@ public class Cell {
         this(originalCell.getCol(), originalCell.getRow());
     }
 
+    public Cell(Cell cell) {
+        col = cell.getCol();
+        row = cell.getRow();
+    }
+
     public int getRow() {
         return row;
     }
