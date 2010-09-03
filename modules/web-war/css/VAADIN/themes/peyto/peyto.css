@@ -304,3 +304,210 @@
 .fts-hit {
     padding-left: 20px;
 }
+
+
+/*
+ * Next styles are moved from thesis project
+ * //todo put them into appropriate folders in peyto theme
+ */
+
+.v-dashlayout .v-button.v-button-link .v-button-wrap {
+    height: 18px
+}
+
+.v-horizontallayout-headline-container .v-horizontallayout-margin-top {
+	padding-top: 3px;
+}
+.v-horizontallayout-headline-container .v-horizontallayout-margin-bottom{
+	padding-bottom: 3px;
+}
+
+.v-verticallayout .v-label-large {
+    font-size: 130%;
+    font-weight: bold;
+}
+
+.v-verticallayout-infoBox {
+    color: #000;
+    border: 1px solid #74797c;
+
+}
+
+.v-verticallayout-infoBox .v-label {
+    color: #000;
+}
+
+.v-verticallayout-infoBox .v-button-link {
+    color: #000;
+    margin:0;
+    padding:0;
+}
+
+.v-textarea.v-readonly {
+    overflow: auto;
+}
+
+.v-label.v-label-bold {
+    font-weight: bold;
+}
+
+.v-button-mini-button .v-button-wrap {
+    padding: 0;
+}
+
+/*
+* Grid styles
+*/
+
+.v-gridlayout-spacing-on {
+	padding-left:10px;
+	padding-top:4px;
+	overflow:hidden;
+}
+
+.v-gridlayout-margin-top {
+	padding-top: 10px;
+}
+.v-gridlayout-margin-bottom {
+	padding-bottom: 10px;
+}
+.v-gridlayout-margin-left {
+	padding-left: 10px;
+}
+.v-gridlayout-margin-right {
+	padding-right: 10px;
+}
+
+/*
+* Menu separator
+*/
+
+.menu-separator {
+    height: 1px;
+    background: #4D7AB2;
+    width:100%;
+    overflow:hidden;
+}
+
+/*
+* Correspondence History style
+*/
+
+.v-table-cell-content-income,
+.v-collapsed .v-table-cell-content-income .v-table-float,
+.v-expanded .v-table-cell-content-income .v-table-float {
+     background: transparent url(images/income.png) 0 center no-repeat;
+     padding-left: 19px;
+}
+
+.v-table-cell-content-outcome,
+.v-collapsed .v-table-cell-content-outcome .v-table-float,
+.v-expanded .v-table-cell-content-outcome .v-table-float {
+     background: transparent url(images/outcome.png) 0 center no-repeat;
+     padding-left: 19px;
+}
+
+.v-collapsed .v-table-cell-content-income,
+.v-expanded .v-table-cell-content-income,
+.v-collapsed .v-table-cell-content-outcome,
+.v-expanded .v-table-cell-content-outcome{
+     background: transparent;
+     padding-left: 0;
+}
+
+.v-label-form-error, .edit-area .v-label-form-error {
+    color: red;
+    font-size: 10px;
+}
+
+/*
+* Table Attachments
+*/
+
+.v-table-cell-content-attachments,
+.v-collapsed .v-table-cell-content-attachments .v-table-float {
+     background: transparent url(icons/attachment-small.png) 0 center no-repeat;
+}
+
+.v-button-ss-link-button .v-button-wrap {
+    background: transparent;
+    padding: 0px;
+}
+
+.v-button-ss-link-button .v-button-caption {
+    font-size: 14px;
+    color: blue;
+    text-decoration: underline;
+}
+
+.v-button-ss-link-button,
+.v-button-ss-link-button:hover {
+    background: transparent;
+    height: 18px;
+    margin-top: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.v-button-ss-link-button:hover .v-button-wrap {
+    background: transparent;
+}
+
+.v-splitpanel-horizontal-ss-white-layout {
+    background: #FFF;
+}
+
+.v-app .v-label-ss-header {
+    font-size: 19px;
+}
+
+.v-app .v-label-ss-link-label {
+    font-size: 14px;
+    height: 18px;
+}
+
+.v-app .v-label-ss-link-today-label {
+    font-size: 14px;
+    height: 18px;
+    font-weight: bold;
+}
+
+.v-app .ss-service-button-link,
+.v-app .ss-service-button-link:hover,
+.v-app .ss-service-button-link .v-button-wrap,
+.v-app .ss-service-button-link .v-button-caption {
+    background: transparent;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0px;
+    color: #333;
+    margin-top: 5px;
+}
+
+.v-app .v-label-ss-service-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.v-splitpanel-first-container-ss-white-layout {
+    overflow: hidden;
+}
+
+.v-splitpanel-first-container-background-notebook {
+    background-image: url(wallpapers/notebook.png);
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+
+.v-app .v-label-black {
+    color:black;
+}
+
+.v-app .v-button.v-button-grouplink .v-button-wrap .v-button-caption {
+    font-size:8pt;
+}
+
+/*
+ * End of thesis styles
+ */
