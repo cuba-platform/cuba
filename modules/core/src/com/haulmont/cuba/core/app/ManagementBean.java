@@ -56,12 +56,18 @@ public class ManagementBean
 
     /**
      * Performs login with credentials set in app.properties<br>
-     * First checks if the bean is already logged in and that session is still valid.
+     * First checks if a current thread session exists or the bean is already logged in and that session is still valid.
      * If no, performs login and stores sessionId in the protected field.<br>
      * No logout assumed.
      * @throws LoginException
      */
     protected void loginOnce() throws LoginException {
+        // first check if a current thread session exists - may be got here from Web UI 
+        UUID currentSessionId = ServerSecurityUtils.getSessionId();
+        if (currentSessionId != null && userSessionManager.findSession(currentSessionId) != null) {
+            return;
+        }
+        // no current thread session - so work with the internal session
         if (sessionId == null || userSessionManager.findSession(sessionId) == null) {
             String name;
             String password;
