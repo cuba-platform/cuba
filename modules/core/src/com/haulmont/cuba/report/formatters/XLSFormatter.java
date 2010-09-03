@@ -18,6 +18,7 @@ import com.haulmont.cuba.report.formatters.xls.AreaAlign;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.record.PaletteRecord;
+import org.apache.poi.hssf.record.EscherAggregate;
 import org.apache.poi.hssf.record.formula.AreaPtg;
 import org.apache.poi.hssf.record.formula.Ptg;
 import org.apache.poi.hssf.record.formula.RefPtg;
@@ -26,6 +27,7 @@ import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ddf.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,8 +44,10 @@ public class XLSFormatter extends AbstractFormatter {
     private HSSFWorkbook resultWorkbook;
     private Map<String, List<CellRangeAddress>> mergeRegionsForRangeNames = new HashMap<String, List<CellRangeAddress>>();
     private Map<HSSFSheet, HSSFSheet> templateToResultSheetsMapping = new HashMap<HSSFSheet, HSSFSheet>();
-    
-    private Map<Area, List<Area>> dependency = new LinkedHashMap<Area, List<Area>>();
+
+    private Map<Area, List<Area>> areasDependency = new LinkedHashMap<Area, List<Area>>();
+    private List<Integer> orderedPicturesId = new ArrayList();
+
 
     public XLSFormatter(FileDescriptor template) throws IOException {
         templateWorkbook = new HSSFWorkbook(getFileInputStream(template));
@@ -79,6 +83,9 @@ public class XLSFormatter extends AbstractFormatter {
         }
         for (int i = 0; i < lastColNum; i++)
             resultSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));
+
+        resultSheet.setDisplayGridlines(templateSheet.isDisplayGridlines());
+        resultWorkbook.setSheetName(sheetNumber, templateWorkbook.getSheetName(sheetNumber));
     }
 
     /**
@@ -107,9 +114,9 @@ public class XLSFormatter extends AbstractFormatter {
      * Method creates mapping [rangeName -> List<CellRangeAddress>]. List contains all merge regions for this named range
      *
      * @param currentSheet - sheet which contains merge regions
-     *
-     * todo: if merged regions writes wrong - look on methods isMergeRegionInsideNamedRange & isNamedRangeInsideMergeRegion
-     * todo: how to recognize if merge region must be copied with named range 
+     *                     <p/>
+     *                     todo: if merged regions writes wrong - look on methods isMergeRegionInsideNamedRange & isNamedRangeInsideMergeRegion
+     *                     todo: how to recognize if merge region must be copied with named range
      */
     private void initMergeRegions(HSSFSheet currentSheet) {
         int rangeNumber = templateWorkbook.getNumberOfNames();
@@ -171,13 +178,19 @@ public class XLSFormatter extends AbstractFormatter {
             writeBand(childBand);
         }
 
-        for (Map.Entry<Area, List<Area>> entry : dependency.entrySet()) {
+        for (Map.Entry<Area, List<Area>> entry : areasDependency.entrySet()) {
             Area original = entry.getKey();
 
             for (Area dependent : entry.getValue()) {
                 updateBandFormula(original, dependent);
-                updateBandPicture(original, dependent);
             }
+        }
+
+        for (int sheetNumber = 0; sheetNumber < templateWorkbook.getNumberOfSheets(); sheetNumber++) {
+            HSSFSheet templateSheet = templateWorkbook.getSheetAt(sheetNumber);
+            HSSFSheet resultSheet = resultWorkbook.getSheetAt(sheetNumber);
+
+            copyPicturesOnSheet(templateSheet, resultSheet);
         }
 
         try {
@@ -194,7 +207,7 @@ public class XLSFormatter extends AbstractFormatter {
     private void copyAllPictures() {
         List<HSSFPictureData> pictures = templateWorkbook.getAllPictures();
         for (HSSFPictureData picture : pictures) {
-            resultWorkbook.addPicture(picture.getData(), picture.getFormat());
+            orderedPicturesId.add(resultWorkbook.addPicture(picture.getData(), picture.getFormat()));
         }
     }
 
@@ -222,40 +235,51 @@ public class XLSFormatter extends AbstractFormatter {
         }
     }
 
-    private void updateBandPicture(Area original, Area dependent) {
-        HSSFSheet templateSheet = getTemplateSheetForRangeName(original.getName());
-        HSSFSheet resultSheet = templateToResultSheetsMapping.get(templateSheet);
-
-        HSSFPatriarch templatePatriarch = templateSheet.getDrawingPatriarch();
+    private void copyPicturesOnSheet(HSSFSheet templateSheet, HSSFSheet resultSheet) {
+        List<HSSFClientAnchor> list = getAllAnchors(templateSheet);
         HSSFPatriarch workingPatriarch = resultSheet.createDrawingPatriarch();
 
-        if (templatePatriarch == null) return;
+        int i = 0;
+        for (HSSFClientAnchor anchor : list) {
+            Area areaReference = getAreaByCoordinate(anchor.getCol1(), anchor.getRow1());
+            List<Area> dependent = areasDependency.get(areaReference);
 
-        List<HSSFShape> shapes = templatePatriarch.getChildren();
+            if (dependent != null && !dependent.isEmpty()) {
+                Area destination = dependent.get(0);
 
-        if (shapes == null) return;
+                int col = anchor.getCol1() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
+                int row = anchor.getRow1() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
 
-        for (HSSFShape shape : shapes) {
-            if (!(shape instanceof HSSFPicture)) continue;
-
-            HSSFPicture picture = (HSSFPicture) shape;
-
-            if (picture.getAnchor() instanceof HSSFClientAnchor) {
-                HSSFClientAnchor anchor = (HSSFClientAnchor) shape.getAnchor();
-                HSSFClientAnchor resultAnchor = new HSSFClientAnchor(anchor.getDx1(), anchor.getDy1(), anchor.getDx2(),
-                        anchor.getDy2(), anchor.getCol1(), anchor.getRow1(), anchor.getCol2(), anchor.getRow2());
-                resultAnchor.setAnchorType(anchor.getAnchorType());
-                workingPatriarch.createPicture(resultAnchor, picture.getPictureIndex());
+                anchor.setCol1(col);
+                anchor.setRow1(row);
             }
+
+            areaReference = getAreaByCoordinate(anchor.getCol2(), anchor.getRow2());
+            dependent = areasDependency.get(areaReference);
+
+            if (dependent != null && !dependent.isEmpty()) {
+                Area destination = dependent.get(0);
+
+                int col = anchor.getCol2() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
+                int row = anchor.getRow2() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
+
+                anchor.setCol2(col);
+                anchor.setRow2(row);
+            }
+
+            workingPatriarch.createPicture(anchor, orderedPicturesId.get(i++));
         }
     }
 
     private void updateRefPtg(Area originalContainingArea, Area dependentContainingArea, RefPtg current) {
         Area areaReference = getAreaByCoordinate(current.getColumn(), current.getRow());
+
+        if (areaReference == null) return;
+
         Area destination;
         if (areaReference.equals(originalContainingArea)) destination = dependentContainingArea;
         else {
-            List<Area> dependent = dependency.get(areaReference);
+            List<Area> dependent = areasDependency.get(areaReference);
             if (dependent == null || dependent.isEmpty()) return;
             destination = dependent.get(0);
         }
@@ -270,7 +294,7 @@ public class XLSFormatter extends AbstractFormatter {
     private void updateAreaPtg(AreaPtg current) {
         Area areaReference = getAreaByCoordinate(current.getFirstColumn(), current.getFirstRow());
 
-        List<Area> dependent = dependency.get(areaReference);
+        List<Area> dependent = areasDependency.get(areaReference);
 
         if (dependent == null || dependent.isEmpty()) return;
 
@@ -304,7 +328,7 @@ public class XLSFormatter extends AbstractFormatter {
     }
 
     private Area getAreaByCoordinate(int col, int row) {
-        for (Area areaReference : dependency.keySet()) {
+        for (Area areaReference : areasDependency.keySet()) {
             if (areaReference.getTopLeft().getCol() > col) continue;
             if (areaReference.getTopLeft().getRow() > row) continue;
             if (areaReference.getBottomRight().getCol() < col) continue;
@@ -395,11 +419,11 @@ public class XLSFormatter extends AbstractFormatter {
     }
 
     private void addDependency(Area main, Area dependent) {
-        List<Area> set = dependency.get(main);
+        List<Area> set = areasDependency.get(main);
 
         if (set == null) {
             set = new ArrayList<Area>();
-            dependency.put(main, set);
+            areasDependency.put(main, set);
         }
 
         set.add(dependent);
@@ -585,5 +609,52 @@ public class XLSFormatter extends AbstractFormatter {
 
                     resultSheet.addMergedRegion(cra2);
                 }
+    }
+
+
+    public List<HSSFClientAnchor> getAllAnchors(HSSFSheet sheet) {
+        List<HSSFClientAnchor> pictures = new ArrayList<HSSFClientAnchor>();
+        List<EscherRecord> escherRecords = getEscherAggregate(sheet).getEscherRecords();
+        searchForAnchors(escherRecords, pictures);
+        return pictures;
+    }
+
+    private void searchForAnchors(List escherRecords, List<HSSFClientAnchor> pictures) {
+        Iterator recordIter = escherRecords.iterator();
+        HSSFClientAnchor anchor = null;
+        while (recordIter.hasNext()) {
+            Object obj = recordIter.next();
+            if (obj instanceof EscherRecord) {
+                EscherRecord escherRecord = (EscherRecord) obj;
+                if (escherRecord instanceof EscherClientAnchorRecord) {
+                    EscherClientAnchorRecord anchorRecord = (EscherClientAnchorRecord) escherRecord;
+                    if (anchor == null) anchor = new HSSFClientAnchor();
+                    anchor.setDx1(anchorRecord.getDx1());
+                    anchor.setDx2(anchorRecord.getDx2());
+                    anchor.setDy1(anchorRecord.getDy1());
+                    anchor.setDy2(anchorRecord.getDy2());
+                    anchor.setRow1(anchorRecord.getRow1());
+                    anchor.setRow2(anchorRecord.getRow2());
+                    anchor.setCol1(anchorRecord.getCol1());
+                    anchor.setCol2(anchorRecord.getCol2());
+                }
+                // Recursive call.
+                searchForAnchors(escherRecord.getChildRecords(), pictures);
+            }
+        }
+        if (anchor != null)
+            pictures.add(anchor);
+    }
+
+
+    private Map<String, EscherAggregate> sheetToEscherAggregate = new HashMap<String, EscherAggregate>();
+
+    private EscherAggregate getEscherAggregate(HSSFSheet sheet) {
+        EscherAggregate agg = sheetToEscherAggregate.get(sheet.getSheetName());
+        if (agg == null) {
+            agg = sheet.getDrawingEscherAggregate();
+            sheetToEscherAggregate.put(sheet.getSheetName(), agg);
+        }
+        return agg;
     }
 }
