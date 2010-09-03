@@ -41,6 +41,19 @@
             url="${db.url}"
             userid="${db.user}" password="${db.password}"
             autocommit="true"/>
+
+        <condition property="functions-exist">
+            <available file="${sql.dir}/functions.sql"/>
+        </condition>
+        <antcall target="add-functions"/>
+    </target>
+
+    <target name="add-functions" if="functions-exist">
+        <sql classpathref="run-cp" src="${sql.dir}/functions.sql" delimiter="${sql.delimiter}"
+             driver="${db.driver}"
+             url="${db.url}"
+             userid="${db.user}" password="${db.password}"
+             autocommit="true"/>
     </target>
 
     <target name="create-sample-data">
