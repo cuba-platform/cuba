@@ -42,6 +42,15 @@ public class MbeanInspectWindow extends AbstractEditor {
 
         final Table attrTable = (Table) getComponent("attributes");
 
+        Action refreshAction = new AbstractAction("refresh")  {
+            private static final long serialVersionUID = -603235110641508028L;
+
+            public void actionPerform(Component component) {
+                reloadAttributes();
+            }
+        };
+        attrTable.addAction(refreshAction);
+
         Action editAction = new AbstractAction("edit") {
             private static final long serialVersionUID = -603235110641508028L;
 
@@ -74,6 +83,20 @@ public class MbeanInspectWindow extends AbstractEditor {
         };
 
         attrTable.setItemClickAction(editAction);
+
+        Action closeAction = new AbstractAction("close") {
+            private static final long serialVersionUID = 3530488601672890970L;
+
+            public void actionPerform(Component component) {
+                commitAndClose();
+            }
+
+            @Override
+            public String getCaption() {
+                return getMessage("close");
+            }
+        };
+        ((Button) getComponent("close")).setAction(closeAction);
     }
 
     private void reloadAttribute(ManagedBeanAttribute attribute) {

@@ -25,12 +25,8 @@
                 </columns>
                 <rows>
                     <row>
-                        <label value="msg://mbean.domain"/>
-                        <label datasource="mbeanDs" property="domain" id="domain" stylename="h2"/>
-                    </row>
-                    <row>
-                        <label value="msg://mbean.propertyList"/>
-                        <label id="propertyList" datasource="mbeanDs" property="propertyList" stylename="h2"/>
+                        <label value="msg://mbean.name"/>
+                        <label datasource="mbeanDs" property="objectName" id="domain" stylename="h2"/>
                     </row>
                     <row>
                         <label value="msg://mbean.className"/>
@@ -46,6 +42,9 @@
                 <vbox spacing="true" stylename="edit-area" margin="true">
                     <label value="msg://mbean.attributes" stylename="h2"/>
                     <table id="attributes" width="100%" stylename="varheight">
+                        <buttonsPanel>
+                            <button action="attributes.refresh" icon="icons/refresh.png"/>
+                        </buttonsPanel>
                         <columns>
                             <column id="name" caption="msg://mbean.attribute.name"/>
                             <column id="type" caption="msg://mbean.attribute.type"/>
@@ -60,7 +59,7 @@
                     </vbox>
                 </vbox>
             </scrollbox>
-            <button id="close" action="windowCommit" icon="icons/ok.png"/>
+            <button id="close" icon="icons/ok.png"/>
         </vbox>
         <!--<hbox id="space">
 

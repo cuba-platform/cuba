@@ -20,12 +20,12 @@
         <vbox id="table-panel" expand="table" spacing="true">
             <treeTable id="mbeans" editable="false">
                 <buttonsPanel>
-                    <button action="mbeans.refresh"/>
-                    <button action="mbeans.inspect"/>
+                    <button action="mbeans.refresh" icon="icons/refresh.png"/>
+                    <button action="mbeans.inspect"  icon="icons/edit.png"/>
                 </buttonsPanel>
                 <columns>
                     <column id="domain" caption="msg://mbean.domain"/>
-                    <column id="propertyList" caption="msg://mbean.propertyList"/>
+                    <column id="objectName" caption="msg://mbean.name"/>
                     <column id="description" caption="msg://mbean.description"/>
                 </columns>
                 <rows datasource="mbeanDs"/>

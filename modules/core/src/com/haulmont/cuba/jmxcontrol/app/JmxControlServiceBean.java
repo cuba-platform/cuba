@@ -102,8 +102,8 @@ public class JmxControlServiceBean implements JmxControlService {
 
                 attrs.add(mba);
             }
+            Collections.sort(attrs, new AttributeComparator());
             mbinfo.setAttributes(attrs);
-
         }
         catch (IOException e) {
             throw new JmxControlException(e);
@@ -307,6 +307,16 @@ public class JmxControlServiceBean implements JmxControlService {
             return mbd1 != null && mbd1.getPropertyList() != null
                     ? mbd1.getPropertyList().compareTo(mbd2.getPropertyList())
                     : (mbd2 != null && mbd2.getPropertyList() != null ? 1 : 0);
+        }
+    }
+
+    public static class AttributeComparator implements Comparator {
+        public int compare(Object o1, Object o2) {
+            ManagedBeanAttribute mbd1 = (ManagedBeanAttribute) o1;
+            ManagedBeanAttribute mbd2 = (ManagedBeanAttribute) o2;
+            return mbd1 != null && mbd1.getName() != null
+                    ? mbd1.getName().compareTo(mbd2.getName())
+                    : (mbd2 != null && mbd2.getName() != null ? 1 : 0);
         }
     }
 
