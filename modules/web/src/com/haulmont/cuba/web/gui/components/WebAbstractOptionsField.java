@@ -67,7 +67,22 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     }
 
     public void setOptionsMap(Map<String, Object> options) {
-        if (metaProperty == null) {
+        if (metaProperty != null && metaProperty.getRange().isEnum()) {
+            List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());
+            List opts = new ArrayList();
+
+            for (String key : options.keySet()) {
+                Object itemId = options.get(key);
+                component.setItemCaption(itemId, key);
+                if (!constants.contains(itemId)) {
+                    throw new UnsupportedOperationException(itemId + " is not of class of meta property" + metaProperty);
+                }
+                opts.add(itemId);
+            }
+            this.optionsList = opts;
+            component.setContainerDataSource(new EnumerationContainer(opts));
+            setCaptionMode(CaptionMode.ITEM);
+        } else {
             List opts = new ArrayList();
             for (String key : options.keySet()) {
                 Object itemId = options.get(key);
@@ -77,27 +92,6 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             component.setContainerDataSource(new ObjectContainer(opts));
             component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
             this.optionsMap = options;
-        }
-        else {
-            if (metaProperty.getRange().isEnum()) {
-                List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());
-                List opts = new ArrayList();
-
-                for (String key : options.keySet()) {
-                    Object itemId = options.get(key);
-                    component.setItemCaption(itemId, key);
-                    if (!constants.contains(itemId)) {
-                        throw new UnsupportedOperationException(itemId + " is not of class of meta property" + metaProperty);
-                    }
-                    opts.add(itemId);
-                }
-                this.optionsList = opts;
-                component.setContainerDataSource(new EnumerationContainer(opts));
-                setCaptionMode(CaptionMode.ITEM);
-            }
-            else {
-                throw new UnsupportedOperationException();
-            }
         }
     }
 
