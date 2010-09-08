@@ -25,7 +25,7 @@ public abstract class UuidProvider
 
     public static UUID createUuid() {
         if (AppContext.getApplicationContext() == null)
-            return null;
+            return UUID.randomUUID();
 
         return getInstance().__createUuid();
     }
