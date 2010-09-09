@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema
+        targetNamespace="http://www.haulmont.com/schema/cuba/gui/charts.xsd"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://www.haulmont.com/schema/cuba/gui/charts.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        >
+    <xs:element name="pieChart">
+        <xs:complexType>
+            <xs:attributeGroup ref="chartAttributes"/>
+            <xs:attribute name="valueProperty" type="xs:string" use="optional"/>
+            <xs:attribute name="is3D" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="barChart">
+        <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="unbounded" >
+                <xs:element name="column" type="columnType"/>
+            </xs:sequence>
+            <xs:attributeGroup ref="chartAttributes"/>
+            <xs:attribute name="orientation" type="orientationType" use="optional"/>
+            <xs:attribute name="is3D" type="xs:string" use="optional"/>
+            <xs:attribute name="xLabel" type="xs:string" use="optional" default="msg://"/>
+            <xs:attribute name="yLabel" type="xs:string" use="optional" default="msg://"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="lineChart">
+        <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="unbounded" >
+                <xs:element name="column" type="columnType"/>
+            </xs:sequence>
+            <xs:attributeGroup ref="chartAttributes"/>
+            <xs:attribute name="orientation" type="orientationType" use="optional"/>
+            <xs:attribute name="xLabel" type="xs:string" use="optional" default="msg://"/>
+            <xs:attribute name="yLabel" type="xs:string" use="optional" default="msg://"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:attributeGroup name="chartAttributes">
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+        <xs:attribute name="vendor" type="vendorType" default="jfree" use="required"/>
+        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+        <xs:attribute name="width" type="xs:string" use="optional"/>
+        <xs:attribute name="height" type="xs:string" use="optional"/>
+        <xs:attribute name="visible" type="xs:string" use="optional"/>
+        <xs:attribute name="legend" type="xs:string" use="optional"/>
+        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+    </xs:attributeGroup>
+
+    <xs:simpleType name="vendorType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="jfree"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="columnType">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+    </xs:complexType>
+
+    <xs:simpleType name="orientationType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="VERTICAL"/>
+            <xs:enumeration value="HORIZONTAL"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

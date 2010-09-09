@@ -13,19 +13,20 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.GlobalUtils;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Browser;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.App;
-import com.vaadin.terminal.gwt.server.ApplicationServlet;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.Application;
+import com.vaadin.terminal.gwt.server.ApplicationServlet;
+import com.vaadin.terminal.gwt.server.CommunicationManager;
+import com.vaadin.terminal.gwt.server.SessionExpiredException;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.commons.lang.time.DateUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
@@ -85,8 +86,47 @@ public class CubaApplicationServlet extends ApplicationServlet {
             }
             response.sendRedirect(sb.toString());
         } else {
-            super.service(request, response);
+            doService(request, response);
         }
+    }
+
+    private void doService(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        RequestType requestType = getRequestType(request);
+        if (requestType == RequestType.OTHER && isChartRequest(request)) {
+            Application application = null;
+
+            try {
+                application = findApplicationInstance(request, requestType);
+                if (application == null) {
+                    return;
+                }
+
+                WebApplicationContext webApplicationContext = getApplicationContext(request.getSession());
+                CommunicationManager applicationManager = webApplicationContext
+                        .getApplicationManager(application, this);
+
+                if (applicationManager instanceof CubaCommunicationManager) {
+                    ((CubaCommunicationManager) applicationManager).handleChartRequest(request, response, this);
+                    return;
+                }
+
+            } catch (SessionExpiredException e) {
+                handleServiceException(request, response, application, e);
+            }
+        }
+        super.service(request, response);
+    }
+
+    private boolean isChartRequest(HttpServletRequest request) {
+        String pathInfo = request.getPathInfo();
+
+        if (pathInfo == null) {
+            return false;
+        }
+
+        String compare = "/chart";
+
+        return pathInfo.startsWith(compare + "/") || pathInfo.endsWith(compare);
     }
 
     private void testSessionSerialization(HttpSession session) {
@@ -139,7 +179,35 @@ public class CubaApplicationServlet extends ApplicationServlet {
                         + themeUri + "/favicon.ico\" />");
 
         page.write("<title>" + title + "</title>");
+
+        page.write("<script src=\"" + request.getContextPath() + "/VAADIN/resources/js/jquery-1.4.2.min.js\" laguage=\"javascript\"> </script>");
+        page.write("<script src=\"" + request.getContextPath() + "/VAADIN/resources/js/jquery.disable.text.select.pack.js\" laguage=\"javascript\"> </script>");
+        page.write("<script src=\"" + request.getContextPath() + "/VAADIN/resources/js/scripts.js\" laguage=\"javascript\"> </script>");
     }
+
+/*
+    @Override
+    protected void injectThemeScript(String themeName, BufferedWriter page, String themeUri) throws IOException {
+        // Custom theme's stylesheet, load only once, in different
+        // script
+        // tag to be dominate styles injected by widget
+        // set
+        page.write("<script type=\"text/javascript\">\n");
+        page.write("//<![CDATA[\n");
+        page.write("if(!vaadin.themesLoaded['" + themeName + "']) {\n");
+        page.write("var stylesheet = document.createElement('link');\n");
+        page.write("stylesheet.setAttribute('rel', 'stylesheet');\n");
+        page.write("stylesheet.setAttribute('type', 'text/css');\n");
+
+        String timestamp = ConfigProvider.getConfig(GlobalConfig.class).getBuildTimestamp();
+        page.write("stylesheet.setAttribute('href', '" + themeUri
+                + "/styles.css" + (timestamp == null ? "" : "?" + timestamp) + "');\n");
+        page
+                .write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
+        page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
+        page.write("//]]>\n</script>\n");
+    }
+*/
 
     void sendCriticalNotification(HttpServletRequest request,
             HttpServletResponse response, String caption, String message,

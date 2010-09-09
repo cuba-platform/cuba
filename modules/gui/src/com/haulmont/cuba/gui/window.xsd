@@ -837,6 +837,7 @@
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:group ref="component"/>
                 <xs:group ref="layout"/>
+                <xs:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>

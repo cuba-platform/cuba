@@ -16,9 +16,11 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.web.toolkit.Timer;
+import com.haulmont.cuba.web.toolkit.ui.charts.*;
 import com.vaadin.Application;
 import com.vaadin.external.org.apache.commons.fileupload.*;
 import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.Paintable;
 import com.vaadin.terminal.UploadStream;
 import com.vaadin.terminal.VariableOwner;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -30,7 +32,11 @@ import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 
@@ -42,6 +48,8 @@ public class CubaCommunicationManager extends CommunicationManager {
     private Map<String, Timer> id2Timer = new HashMap<String, Timer>();
 
     private Map<Timer, String> timer2Id = new HashMap<Timer, String>();
+
+    private Log log = LogFactory.getLog(CubaCommunicationManager.class);
 
     public CubaCommunicationManager(Application application) {
         super(application);
@@ -405,6 +413,30 @@ public class CubaCommunicationManager extends CommunicationManager {
         for (final Timer.Listener listener : listeners) {
             listener.onStopTimer(timer);
             timer.removeListener(listener);
+        }
+    }
+
+    public void handleChartRequest(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            CubaApplicationServlet applicationServlet
+    ) {
+        String chartId = request.getParameter("id");
+        if (chartId == null) {
+            return;
+        }
+        Paintable chart = idPaintableMap.get(chartId);
+        if (chart != null) {
+            String vendor = ((ChartImplementation) chart).getVendor();
+            ChartDataProvider dataProvider = ChartDataProviderFactory.getDataProvider(vendor);
+            try {
+                dataProvider.handleDataRequest(request, response, (ChartImplementation) chart);
+            } catch (ChartException e) {
+                log.error("Unable to handle data request", e);
+            }
+        } else {
+            System.err.println(String.format("Warning: non-existent chart component, VAR_PID=%s",
+                    chartId));
         }
     }
 }

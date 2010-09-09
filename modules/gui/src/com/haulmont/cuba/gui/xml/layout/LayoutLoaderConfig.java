@@ -10,6 +10,9 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
+import com.haulmont.cuba.gui.xml.layout.loaders.charts.BarChartLoader;
+import com.haulmont.cuba.gui.xml.layout.loaders.charts.LineChartLoader;
+import com.haulmont.cuba.gui.xml.layout.loaders.charts.PieChartLoader;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -81,6 +84,11 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("tokenList", TokenListLoader.class);
         config.register("widgetsTree", WidgetsTreeLoader.class);
         config.register("twinColumn", TwinColumnLoader.class);
+
+        //charts
+        config.register("pieChart", PieChartLoader.class);
+        config.register("barChart", BarChartLoader.class);
+        config.register("lineChart", LineChartLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

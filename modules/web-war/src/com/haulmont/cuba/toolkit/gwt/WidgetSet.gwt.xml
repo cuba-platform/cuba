@@ -1,11 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.0//EN" "http://google-web-toolkit.googlecode.com/svn/trunk/distro-source/core/src/gwt-module.dtd">
 <module>
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
     <inherits name="com.vaadin.incubator.dashlayout.DashLayoutWidgetSet" />
     <inherits name="org.vaadin.hene.popupbutton.PopupbuttonWidgetset" />
-
-    <script src="js/jquery-1.4.2.min.js"/>
-    <script src="js/jquery.disable.text.select.pack.js"/>
-    <script src="js/scripts.js"/>
 
     <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet" />
 </module>

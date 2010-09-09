@@ -242,7 +242,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final String id = element.attributeValue("id");
 
         final MetaClass metaClass = ds.getMetaClass();
-        final MetaPropertyPath metaPropertyPath = metaClass.getPropertyEx(id);
+        final MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(id);
         if (metaPropertyPath == null)
             throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'", id, metaClass.getName()));
 

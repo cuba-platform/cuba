@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.toolkit.ui.charts.Chart;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.Table;
@@ -336,5 +337,10 @@ public class WebComponentsHelper {
             default:
                 return FieldGroupLayout.CAPTION_ALIGN_LEFT;
         }
+    }
+
+    public static Chart.Orientation convertChartOrientation(com.haulmont.cuba.gui.components.charts.Chart.Orientation orientation) {
+        return orientation == com.haulmont.cuba.gui.components.charts.Chart.Orientation.VERTICAL
+                ? Chart.Orientation.VERTICAL : Chart.Orientation.HORIZONTAL;
     }
 }

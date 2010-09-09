@@ -189,8 +189,8 @@
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
         <inspection_tool class="AntDuplicateImportedTargetsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
-        <inspection_tool class="EmptyWebServiceClass" level="WARNING" enabled="false" />
-        <inspection_tool class="ImplicitlyExposedWebServiceMethods" level="INFO" enabled="false" />
+        <inspection_tool class="EmptyWebServiceClass" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="ImplicitlyExposedWebServiceMethods" enabled="false" level="INFO" enabled_by_default="false" />
         <inspection_tool class="JavaDoc" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="TOP_LEVEL_CLASS_OPTIONS">
             <value>
@@ -221,13 +221,13 @@
           <option name="IGNORE_DUPLICATED_THROWS" value="false" />
           <option name="myAdditionalJavadocTags" value="" />
         </inspection_tool>
-        <inspection_tool class="JpaQlInspection" level="ERROR" enabled="false" />
-        <inspection_tool class="NonJaxWsWebServices" level="WARNING" enabled="false" />
+        <inspection_tool class="JpaQlInspection" enabled="false" level="ERROR" enabled_by_default="false" />
+        <inspection_tool class="NonJaxWsWebServices" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="NonSerializableObjectBoundToHttpSession" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="NonSerializableObjectPassedToObjectStream" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="NonSerializableWithSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="NonSerializableWithSerializationMethods" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="OneWayWebMethod" level="ERROR" enabled="false" />
+        <inspection_tool class="OneWayWebMethod" enabled="false" level="ERROR" enabled_by_default="false" />
         <inspection_tool class="ReadObjectAndWriteObjectPrivate" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ReadResolveAndWriteReplaceProtected" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="SerialVersionUIDNotStaticFinal" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -248,7 +248,7 @@
           <option name="m_ignoreImmediatelyReturnedVariables" value="true" />
           <option name="m_ignoreAnnotatedVariables" value="false" />
         </inspection_tool>
-        <inspection_tool class="ValidExternallyBoundObject" level="ERROR" enabled="false" />
+        <inspection_tool class="ValidExternallyBoundObject" enabled="false" level="ERROR" enabled_by_default="false" />
       </profile>
     </profiles>
     <option name="PROJECT_PROFILE" value="Project Default" />
@@ -410,7 +410,7 @@
           <configuration>
             <setting name="compilerMaxHeapSize" value="128" />
             <setting name="gwtScriptOutputStyle" value="DETAILED" />
-            <setting name="gwtSdkUrl" value="file://$PROJECT_DIR$/../../../Exchange/gwt1.7" />
+            <setting name="gwtSdkUrl" value="file://E:/../Exchange/gwt1.7" />
           </configuration>
         </default-facet-configuration>
       </entry>
@@ -439,8 +439,6 @@
       <module name="web-war" />
       <option name="VM_PARAMETERS" value="-Xms256M -Xmx512M" />
       <option name="SHELL_PARAMETERS" value="-noserver -whitelist &quot;127.0.0.1 ^http[:][/][/]127[.]0[.]0[.]1[:]8080&quot; http://127.0.0.1:8080/cuba" />
-      <option name="RUN_PAGE" value="" />
-      <option name="CUSTOM_WEB_XML" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="1827" />
         <option name="TRANSPORT" value="0" />
@@ -560,6 +558,8 @@
         <root url="jar://$PROJECT_DIR$/../lib/server/jurt-3.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/juh-3.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/server/ridl-3.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jcommon-1.0.16.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/jfreechart-1.0.13.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

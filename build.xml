@@ -65,8 +65,6 @@
         <ext:install-lib name="vaadin" version="${vaadin.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="jcifs" version="${jcifs.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="jespa" version="${jespa.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
-        <ext:install-lib name="gwt-dev" version="${gwt-dev.version}" toDir="${lib.gwt.dir}"/>
         <ext:install-lib name="dashlayout" version="${dashlayout.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="popupbutton" version="${popupbutton.version}" toDir="${lib.server.dir}"/>
 
@@ -78,6 +76,12 @@
         <ext:install-lib name="jgroups" version="${jgroups.version}" toDir="${lib.server.dir}"/>
 
         <ext:install-lib name="servlet-api" version="${servlet-api.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="jcommon" version="${jcommon.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="jfreechart" version="${jfreechart.version}" toDir="${lib.server.dir}"/>
+
+        <!-- gwt libs -->
+        <ext:install-lib name="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
+        <ext:install-lib name="gwt-dev" version="${gwt-dev.version}" toDir="${lib.gwt.dir}"/>
 
         <!-- jdbc -->
         <ext:install-lib name="hsqldb" version="${hsqldb.version}" toDir="${lib.jdbc.dir}"/>

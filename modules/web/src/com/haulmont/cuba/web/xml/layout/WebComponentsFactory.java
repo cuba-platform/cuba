@@ -9,12 +9,16 @@
  */
 package com.haulmont.cuba.web.xml.layout;
 
+import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeBarChart;
+import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeLineChart;
+import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreePieChart;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -69,6 +73,11 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("tokenList", WebTokenList.class);
         classes.put("widgetsTree", WebWidgetsTree.class);
         classes.put("twinColumn", WebTwinColumn.class);
+
+        //JFree charts
+        classes.put("jfree@pieChart", WebJFreePieChart.class);
+        classes.put("jfree@barChart", WebJFreeBarChart.class);
+        classes.put("jfree@lineChart", WebJFreeLineChart.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
@@ -85,5 +94,14 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
 
     public <T extends Timer> T createTimer() throws InstantiationException {
         return (T) new WebTimer();
+    }
+
+    public <T extends Chart> T createChart(String vendor, String name) throws InstantiationException, IllegalAccessException {
+        final Class<Chart> chartClass = (Class<Chart>) classes.get(vendor + "@" + name);
+        if (chartClass == null) {
+            throw new IllegalStateException(String.format("Can't find chart class for '%s', vendor is %s",
+                    name, vendor));
+        }
+        return (T) chartClass.newInstance();
     }
 }
