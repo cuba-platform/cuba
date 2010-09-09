@@ -53,6 +53,21 @@ public class UserSettingHelper {
         uss.saveSetting(ClientType.WEB, "appWindowTheme", theme);
     }
 
+    public static String loadAppWindowWallpaper() {
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
+        String s = uss.loadSetting(ClientType.WEB, "appWindowWallpaper");
+        if (s != null) {
+            return s;
+        }
+        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        return webConfig.getAppWindowWallpaper();
+    }
+
+    public static void saveAppWindowWallpaper(String wallpaper) {
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
+        uss.saveSetting(ClientType.WEB, "appWindowWallpaper", wallpaper);
+    }
+
     public static class FoldersState {
 
         public final boolean visible;

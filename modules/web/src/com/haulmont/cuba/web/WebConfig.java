@@ -87,4 +87,7 @@ public interface WebConfig extends Config
     @DefaultInt(100)
     int getBrowserMaxResults();
 
+    @Default("default")
+    String getAppWindowWallpaper();
+
 }
