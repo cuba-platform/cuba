@@ -55,11 +55,12 @@
                     <label value="msg://roles" stylename="h2"/>
                     <hbox align="MIDDLE_LEFT" spacing="true">
                         <button action="roles.add" icon="icons/add.png"/>
+                        <button action="roles.edit" icon="icons/edit.png"/>
                         <button action="roles.remove" icon="icons/remove.png"/>
                     </hbox>
                     <table id="roles" editable="false">
                         <columns>
-                            <column id="role" caption="msg://roleName" captionProperty="name" clickAction="open:sec$Role.edit"/>
+                            <column id="role" caption="msg://roleName" captionProperty="name"/>
                             <column id="role.locName" caption="msg://localizedRoleName"/>
                         </columns>
                         <rows datasource="roles"/>

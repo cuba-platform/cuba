@@ -59,6 +59,7 @@ public class UserEditor extends AbstractEditor {
 
         rolesTable = getComponent("roles");
         rolesTable.addAction(new AddRoleAction());
+        rolesTable.addAction(new EditRoleAction());
         TableActionsHelper rolesTableActions = new TableActionsHelper(this, rolesTable);
         rolesTableActions.createRemoveAction(false);
 
@@ -69,10 +70,10 @@ public class UserEditor extends AbstractEditor {
         substTableActions.createRemoveAction(false);
 
 
-        setPermissionsShowAction(rolesTable, "show-screens", "sec$Target.screenPermissions.lookup", PermissionType.SCREEN);
-        setPermissionsShowAction(rolesTable, "show-entities", "sec$Target.entityPermissions.lookup", PermissionType.ENTITY_OP);
-        setPermissionsShowAction(rolesTable, "show-properties", "sec$Target.propertyPermissions.lookup", PermissionType.ENTITY_ATTR);
-        setPermissionsShowAction(rolesTable, "show-specific", "sec$Target.specificPermissions.lookup", PermissionType.SPECIFIC);
+        //setPermissionsShowAction(rolesTable, "show-screens", "sec$Target.screenPermissions.lookup", PermissionType.SCREEN);
+        //setPermissionsShowAction(rolesTable, "show-entities", "sec$Target.entityPermissions.lookup", PermissionType.ENTITY_OP);
+        //setPermissionsShowAction(rolesTable, "show-properties", "sec$Target.propertyPermissions.lookup", PermissionType.ENTITY_ATTR);
+        //setPermissionsShowAction(rolesTable, "show-specific", "sec$Target.specificPermissions.lookup", PermissionType.SPECIFIC);
 
         initCustomFields();
 
@@ -310,6 +311,31 @@ public class UserEditor extends AbstractEditor {
                 }
 
             }, WindowManager.OpenType.THIS_TAB, lookupParams);
+        }
+    }
+
+    private class EditRoleAction extends AbstractAction {
+
+        public EditRoleAction() {
+            super("edit");
+        }
+
+        public void actionPerform(Component component) {
+            Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
+            final CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
+            Window window = openEditor("sec$Role.edit", ds.getItem().getRole(), WindowManager.OpenType.THIS_TAB);
+            window.addListener(new CloseListener() {
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        ds.refresh();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public String getCaption() {
+            return getMessage("actions.Edit");
         }
     }
 
