@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.vaadin.terminal.ExternalResource;
@@ -73,7 +74,9 @@ public class FileDisplayWindow extends FileWindow {
     protected URL createURL() {
         try {
             App app = App.getInstance();
-            return new URL(app.getURL() + FileDownloadHelper.makeUrl(fd, false));
+            String contentType = FileTypesHelper.getMIMEType("." + fd.getExtension().toLowerCase());
+            boolean attachment = !"application/pdf".equals(contentType);    //All files excluding pdf are attachment
+            return new URL(app.getURL() + FileDownloadHelper.makeUrl(fd, attachment));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
