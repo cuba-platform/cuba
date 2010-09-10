@@ -142,7 +142,7 @@ public class DataServiceBean implements DataService
     public <A extends Entity> List<A> loadList(LoadContext context) {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
-                    + ", query=" + printQuery(context.getQuery()));
+                    + ", query=" + (context.getQuery() == null ? null : printQuery(context.getQuery().getQueryString())));
 
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
 
@@ -176,11 +176,11 @@ public class DataServiceBean implements DataService
         return resultList;
     }
 
-    private String printQuery(LoadContext.Query query) {
-        if (query == null || query.getQueryString() == null)
+    private String printQuery(String query) {
+        if (query == null)
             return null;
 
-        String str = StringHelper.removeExtraSpaces(query.getQueryString());
+        String str = StringHelper.removeExtraSpaces(query);
 
         if (ConfigProvider.getConfig(LogConfig.class).getCutLoadListQueries()) {
             str = StringUtils.abbreviate(str.replaceAll("[\\n\\r]", " "), 50);
@@ -196,7 +196,10 @@ public class DataServiceBean implements DataService
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
 
         com.haulmont.cuba.core.Query query = em.createQuery(context.getQuery().getQueryString());
-        SecurityProvider.applyConstraints(query, metaClass.getName());
+
+        boolean constraintsApplied = SecurityProvider.applyConstraints(query, metaClass.getName());
+        if (constraintsApplied)
+            log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
 
         if (context.getQuery().getFirstResult() != 0)
             query.setFirstResult(context.getQuery().getFirstResult());

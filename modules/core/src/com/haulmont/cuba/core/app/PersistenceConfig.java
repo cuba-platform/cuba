@@ -10,10 +10,10 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.QueryParser;
+import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.core.sys.DbUpdater;
-import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
@@ -37,7 +37,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * mainly to support soft delete functionality;
  */
 @ManagedBean(PersistenceConfigAPI.NAME)
-public class PersistenceConfig implements PersistenceConfigMBean, PersistenceConfigAPI
+public class PersistenceConfig extends ManagementBean implements PersistenceConfigMBean, PersistenceConfigAPI
 {
     private static Log log = LogFactory.getLog(PersistenceConfig.class);
     private boolean metadataLoaded;
@@ -126,6 +126,55 @@ public class PersistenceConfig implements PersistenceConfigMBean, PersistenceCon
             return sb.toString();
         } catch (Throwable e) {
             return ExceptionUtils.getStackTrace(e);
+        }
+    }
+
+    public String jpqlLoadList(String queryString) {
+        try {
+            Transaction tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                Query query = em.createQuery(queryString);
+                QueryParser parser = QueryTransformerFactory.createParser(queryString);
+                Set<String> paramNames = parser.getParamNames();
+                for (String paramName : paramNames) {
+                    SecurityProvider.setQueryParam(query, paramName);
+                }
+                List resultList = query.getResultList();
+                tx.commit();
+
+                StrBuilder sb = new StrBuilder();
+                sb.appendWithSeparators(resultList, "\n");
+                return sb.toString();
+            } finally {
+                tx.end();
+            }
+        } catch (Throwable e) {
+            log.error("jpqlLoadList error", e);
+            return ExceptionUtils.getStackTrace(e);
+        }
+    }
+
+    public String jpqlExecuteUpdate(String queryString, boolean softDeletion) {
+        try {
+            login();
+            Transaction tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                em.setSoftDeletion(softDeletion);
+                Query query = em.createQuery(queryString);
+                int count = query.executeUpdate();
+                tx.commit();
+
+                return "Done: " + count + " entities affected, softDeletion=" + softDeletion;
+            } finally {
+                tx.end();
+            }
+        } catch (Throwable e) {
+            log.error("jpqlExecuteUpdate error", e);
+            return ExceptionUtils.getStackTrace(e);
+        } finally {
+            logout();
         }
     }
 }

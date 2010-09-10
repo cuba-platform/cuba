@@ -22,4 +22,8 @@ public interface PersistenceConfigMBean
     String updateDatabase();
 
     String findUpdateDatabaseScripts();
+
+    String jpqlLoadList(String queryString);
+
+    String jpqlExecuteUpdate(String queryString, boolean softDeletion);
 }
