@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Implementation of {@link QueryTransformer} based on regular expressions
@@ -58,15 +57,25 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         else
             sb.append(" where ");
 
-        addReplacingAlias(sb, where, alias);
+        if (where.indexOf(ALIAS_PLACEHOLDER) >= 0) {
+            // replace ALIAS_PLACEHOLDER
+            sb.append(where);
+            int idx;
+            while ((idx = sb.indexOf(ALIAS_PLACEHOLDER)) >= 0) {
+                sb.replace(idx, idx + ALIAS_PLACEHOLDER.length(), alias);
+            }
+        } else {
+            Matcher matcher = ALIAS_PATTERN.matcher(where);
+            int pos = 0;
+            while (matcher.find()) {
+                sb.append(where.substring(pos, matcher.start(2)));
+                pos = matcher.end(2);
+                sb.append(alias);
+            }
+            sb.append(where.substring(pos));
+        }
 
         buffer.insert(insertPos, sb);
-
-        // replace ALIAS_PLACEHOLDER
-        int idx;
-        while ((idx = buffer.indexOf(ALIAS_PLACEHOLDER)) >= 0) {
-            buffer.replace(idx, idx + ALIAS_PLACEHOLDER.length(), alias);
-        }
 
         Matcher paramMatcher = PARAM_PATTERN.matcher(where);
         while (paramMatcher.find()) {
@@ -217,17 +226,6 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
             endPos = lastClauseMatcher.start();
 
         addWhere(query.substring(startPos, endPos));
-    }
-
-    private void addReplacingAlias(StringBuilder sb, String clause, String alias) {
-        Matcher matcher = ALIAS_PATTERN.matcher(clause);
-        int pos = 0;
-        while (matcher.find()) {
-            sb.append(clause.substring(pos, matcher.start(2)));
-            pos = matcher.end(2);
-            sb.append(alias);
-        }
-        sb.append(clause.substring(pos));
     }
 
     private int insertReplacingAlias(StringBuffer sb, int insertPos, String clause, String alias) {

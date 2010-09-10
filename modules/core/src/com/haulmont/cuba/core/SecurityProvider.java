@@ -79,18 +79,27 @@ public abstract class SecurityProvider
      * @param query query to modify
      * @param entityName name of entity which is quering
      */
-    public static void applyConstraints(Query query, String entityName) {
-        getInstance().__applyConstraints(query, entityName);
+    public static boolean applyConstraints(Query query, String entityName) {
+        return getInstance().__applyConstraints(query, entityName);
+    }
+
+    /**
+     * Sets the query param to a value provided by user session (see constants above)
+     * @param query Query instance
+     * @param paramName parameter to set
+     */
+    public static void setQueryParam(Query query, String paramName) {
+        getInstance().__setQueryParam(query, paramName);
     }
 
     protected abstract boolean __checkCurrentUserSession();
 
     protected abstract UserSession __currentUserSession();
 
-    protected void __applyConstraints(Query query, String entityName) {
+    protected boolean __applyConstraints(Query query, String entityName) {
         List<String[]> constraints = __currentUserSession().getConstraints(entityName);
         if (constraints.isEmpty())
-            return;
+            return false;
 
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(
                 query.getQueryString(), entityName);
@@ -105,11 +114,12 @@ public abstract class SecurityProvider
         }
         query.setQueryString(transformer.getResult());
         for (String paramName : transformer.getAddedParams()) {
-            setQueryParam(query, paramName);
+            __setQueryParam(query, paramName);
         }
+        return true;
     }
 
-    protected void setQueryParam(Query query, String paramName) {
+    protected void __setQueryParam(Query query, String paramName) {
         if (paramName.startsWith(CONSTRAINT_PARAM_SESSION_ATTR)) {
             UserSession userSession = __currentUserSession();
 
