@@ -14,7 +14,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 
-@MetaClass(name = "ecoach$ManagedBeanOperationParameter")
+@MetaClass(name = "jmxcontrol$ManagedBeanOperationParameter")
 public class ManagedBeanOperationParameter extends AbstractNotPersistentEntity {
     private static final long serialVersionUID = 4327221019269447414L;
 
