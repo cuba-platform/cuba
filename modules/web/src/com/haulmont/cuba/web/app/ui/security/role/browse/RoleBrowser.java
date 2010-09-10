@@ -35,32 +35,11 @@ public class RoleBrowser extends AbstractLookup {
         helper.createRemoveAction();
         helper.createExcelAction(new WebExportDisplay());
 
-        LinkColumnHelper.initColumn(table, "name",
-                new LinkColumnHelper.Handler() {
-                    public void onClick(Entity entity) {
-                        openRole(entity);
-                    }
-                }
-        );
-
         table.refresh();
 
         String windowOpener = (String) params.get("param$windowOpener");
         if ("sec$User.edit".equals(windowOpener)) {
             table.setMultiSelect(true);
         }
-    }
-
-    private void openRole(Entity entity) {
-        Window window = openEditor("sec$Role.edit", entity, WindowManager.OpenType.THIS_TAB);
-        window.addListener(
-                new CloseListener() {
-                    public void windowClosed(String actionId) {
-                        if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                            table.getDatasource().refresh();
-                        }
-                    }
-                }
-        );
     }
 }
