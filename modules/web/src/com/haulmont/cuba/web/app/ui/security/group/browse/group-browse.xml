@@ -30,6 +30,12 @@
             <query>select c from sec$Constraint c where c.group.id = :ds$groups</query>
         </collectionDatasource>
 
+        <collectionDatasource
+            id="attributes"
+            class="com.haulmont.cuba.security.entity.SessionAttribute"
+            view="_local">
+            <query>select a from sec$SessionAttribute a where a.group.id = :ds$groups</query>
+        </collectionDatasource>
     </dsContext>
 
     <layout>
@@ -50,7 +56,7 @@
                         <!--<label value="msg://group.name"/>-->
                         <!--<textField id="group.name" datasource="groups" property="name"/>-->
                     <!--</hbox>-->
-                    <tabsheet id="group-editor">
+                    <tabsheet id="tabsheet">
                         <tab id="usersTab" caption="msg://tabsheet.users">
                             <vbox expand="users" spacing="true" margin="true">
                                 <!--<hbox>-->
@@ -71,7 +77,7 @@
                                 </table>
                             </vbox>
                         </tab>
-                        <tab id="constraintsTab" caption="msg://tabsheet.constraints">
+                        <tab id="constraintsTab" caption="msg://tabsheet.constraints" lazy="true">
                             <vbox expand="constraints" spacing="true" margin="true">
                                 <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                                     <button id="constraints.create" action="constraints.create" icon="icons/create.png"/>
@@ -85,6 +91,23 @@
                                         <column id="whereClause" caption="msg://where"/>
                                     </columns>
                                     <rows datasource="constraints"/>
+                                </table>
+                            </vbox>
+                        </tab>
+                        <tab id="attributesTab" caption="msg://tabsheet.attributes" lazy="true">
+                            <vbox expand="attributes" spacing="true" margin="true">
+                                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                                    <button id="attributes.create" action="attributes.create" icon="icons/create.png"/>
+                                    <button id="attributes.edit" action="attributes.edit" icon="icons/edit.png"/>
+                                    <button id="attributes.remove" action="attributes.remove" icon="icons/remove.png"/>
+                                </hbox>
+                                <table id="attributes">
+                                    <columns>
+                                        <column id="name" caption="msg://attribute.name"/>
+                                        <column id="datatypeCaption" caption="msg://attribute.datatype"/>
+                                        <column id="stringValue" caption="msg://attribute.stringValue"/>
+                                    </columns>
+                                    <rows datasource="attributes"/>
                                 </table>
                             </vbox>
                         </tab>

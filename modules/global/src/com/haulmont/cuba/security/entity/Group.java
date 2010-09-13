@@ -48,6 +48,11 @@ public class Group extends StandardEntity
     @OnDelete(DeletePolicy.CASCADE)
     private Set<Constraint> constraints;
 
+    @OneToMany(mappedBy = "group")
+    @Aggregation()
+    @OnDelete(DeletePolicy.CASCADE)
+    private Set<SessionAttribute> sessionAttributes;
+
     public String getName() {
         return name;
     }
@@ -78,6 +83,14 @@ public class Group extends StandardEntity
 
     public void setConstraints(Set<Constraint> constraints) {
         this.constraints = constraints;
+    }
+
+    public Set<SessionAttribute> getSessionAttributes() {
+        return sessionAttributes;
+    }
+
+    public void setSessionAttributes(Set<SessionAttribute> sessionAttributes) {
+        this.sessionAttributes = sessionAttributes;
     }
 
     public String toString() {

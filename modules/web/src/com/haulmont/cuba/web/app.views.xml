@@ -68,4 +68,8 @@
         <property name="joinClause"/>
         <property name="whereClause"/>
     </view>
+
+    <view class="com.haulmont.cuba.security.entity.SessionAttribute" name="edit" extends="_local">
+        <property name="group" view="_local"/>
+    </view>
 </views>

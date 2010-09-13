@@ -60,6 +60,9 @@
     <screen id="sec$Constraint.edit"
             template="/com/haulmont/cuba/web/app/ui/security/constraint/edit/constraint-edit.xml"/>
 
+    <screen id="sec$SessionAttribute.edit"
+            template="/com/haulmont/cuba/web/app/ui/security/sessionattr/edit/session-attr-edit.xml"/>
+
     <screen id="settings"
             template="/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml"/>
 
