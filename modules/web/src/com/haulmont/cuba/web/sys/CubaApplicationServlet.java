@@ -10,9 +10,11 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.app.CubaReleaseService;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.GlobalUtils;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Browser;
 import com.haulmont.cuba.web.WebConfig;
@@ -33,6 +35,8 @@ import java.util.regex.Matcher;
 
 public class CubaApplicationServlet extends ApplicationServlet {
     private static final long serialVersionUID = -8701539520754293569L;
+
+    private static String releaseTimestamp = null;
 
     @Override
     protected boolean isTestingMode() {
@@ -180,12 +184,24 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
         page.write("<title>" + title + "</title>");
 
-        page.write("<script src=\"" + request.getContextPath() + "/VAADIN/resources/js/jquery-1.4.2.min.js\" laguage=\"javascript\"> </script>");
-        page.write("<script src=\"" + request.getContextPath() + "/VAADIN/resources/js/jquery.disable.text.select.pack.js\" laguage=\"javascript\"> </script>");
-        page.write("<script src=\"" + request.getContextPath() + "/VAADIN/resources/js/scripts.js\" laguage=\"javascript\"> </script>");
+        writeScriptResource(request, page, "jquery-1.4.2.min.js", false);
+        writeScriptResource(request, page, "jquery.disable.text.select.pack.js", false);
+        writeScriptResource(request, page, "scripts.js", true);
     }
 
-/*
+    private void writeScriptResource(HttpServletRequest request, BufferedWriter page, String fileName, boolean nocache) throws IOException {
+        page.write("<script src=\"" + request.getContextPath() + "/VAADIN/resources/js");
+        if (!fileName.startsWith("/")) {
+            page.write("/");
+        }
+        page.write(fileName);
+        if (nocache) {
+            String timestamp = releaseTimestamp();
+            page.write(timestamp == null ? "" : "?" + timestamp);
+        }
+        page.write("\" laguage=\"javascript\"> </script>");
+    }
+
     @Override
     protected void injectThemeScript(String themeName, BufferedWriter page, String themeUri) throws IOException {
         // Custom theme's stylesheet, load only once, in different
@@ -199,15 +215,13 @@ public class CubaApplicationServlet extends ApplicationServlet {
         page.write("stylesheet.setAttribute('rel', 'stylesheet');\n");
         page.write("stylesheet.setAttribute('type', 'text/css');\n");
 
-        String timestamp = ConfigProvider.getConfig(GlobalConfig.class).getBuildTimestamp();
+        String timestamp = releaseTimestamp();
         page.write("stylesheet.setAttribute('href', '" + themeUri
                 + "/styles.css" + (timestamp == null ? "" : "?" + timestamp) + "');\n");
-        page
-                .write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
+        page.write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
         page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
         page.write("//]]>\n</script>\n");
     }
-*/
 
     void sendCriticalNotification(HttpServletRequest request,
             HttpServletResponse response, String caption, String message,
@@ -230,5 +244,15 @@ public class CubaApplicationServlet extends ApplicationServlet {
         } catch (final InstantiationException e) {
             throw new ServletException("getNewApplication failed", e);
         }
+    }
+
+    private static String releaseTimestamp() {
+        if (releaseTimestamp == null) {
+            CubaReleaseService service = ServiceLocator.lookup(CubaReleaseService.NAME);
+            String timestamp = service.getReleaseTimestamp();
+            timestamp = timestamp.replaceAll("[^0-9]", "");
+            releaseTimestamp = timestamp;
+        }
+        return releaseTimestamp;
     }
 }

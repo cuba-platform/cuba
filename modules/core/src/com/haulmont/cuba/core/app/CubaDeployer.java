@@ -25,7 +25,7 @@ import java.io.InputStream;
  * Also holds some information about the system.
  */
 @ManagedBean(CubaDeployerMBean.NAME)
-public class CubaDeployer implements CubaDeployerMBean
+public class CubaDeployer implements CubaDeployerMBean, CubaReleaseService
 {
     private Log log = LogFactory.getLog(CubaDeployer.class);
 
