@@ -24,6 +24,8 @@ import java.text.ParseException;
 import java.util.*;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -34,6 +36,8 @@ public class UserSessionManager
     public static final String NAME = "cuba_UserSessionManager";
 
     private UserSessionsAPI sessions;
+
+    private static Log log = LogFactory.getLog(UserSessionManager.class);
 
     public static UserSessionManager getInstance() {
         // TODO KK: remove this, change to injection
@@ -114,16 +118,21 @@ public class UserSessionManager
     }
 
     private void compileSessionAttributes(UserSession session, Group group) {
+        List<SessionAttribute> list = new ArrayList<SessionAttribute>(group.getSessionAttributes());
+
         EntityManager em = PersistenceProvider.getEntityManager();
         Query q = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
-                "where h.group.id = ?1 order by h.level");
+                "where h.group.id = ?1 order by h.level desc");
         q.setParameter(1, group);
         List<SessionAttribute> attributes = q.getResultList();
-        List<SessionAttribute> list = new ArrayList<SessionAttribute>(attributes);
-        list.addAll(group.getSessionAttributes());
+        list.addAll(attributes);
+
         for (SessionAttribute attribute : list) {
             Datatype datatype = Datatypes.getInstance().get(attribute.getDatatype());
             try {
+                if (session.getAttributeNames().contains(attribute.getName())) {
+                    log.warn("Duplicate definition of '" + attribute.getName() + "' session attribute in the group hierarchy");
+                }
                 session.setAttribute(attribute.getName(), (Serializable) datatype.parse(attribute.getStringValue()));
             } catch (ParseException e) {
                 throw new RuntimeException("Unable to set session attribute " + attribute.getName(), e);
