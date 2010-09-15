@@ -90,15 +90,16 @@ public class JmxControlServiceBean implements JmxControlService {
                 if (attribute.isWritable()) mask += "W";
                 mba.setReadableWriteable(mask);
 
-                try {
-                    Object value = connection.getAttribute(name, mba.getName());
-                    mba.setValue(value);
-                }
-                catch (Exception e) {
-                    log.error(e);
-                    mba.setValue(e.getMessage());
-                    mba.setWriteable(false);
-                }
+                if (mba.getReadable())
+                    try {
+                        Object value = connection.getAttribute(name, mba.getName());
+                        mba.setValue(value);
+                    }
+                    catch (Exception e) {
+                        log.error(e);
+                        mba.setValue(e.getMessage());
+                        mba.setWriteable(false);
+                    }
 
                 attrs.add(mba);
             }
@@ -128,14 +129,15 @@ public class JmxControlServiceBean implements JmxControlService {
 
             ObjectName name = new ObjectName(attr.getMbean().getObjectName());
 
-            Object value;
-            try {
-                value = connection.getAttribute(name, attr.getName());
-            }
-            catch (Exception e) {
-                log.error(e);
-                value = e.getMessage();
-            }
+            Object value = null;
+            if (attr.getReadable())
+                try {
+                    value = connection.getAttribute(name, attr.getName());
+                }
+                catch (Exception e) {
+                    log.error(e);
+                    value = e.getMessage();
+                }
             attr.setValue(value);
         }
         catch (MalformedObjectNameException e) {
