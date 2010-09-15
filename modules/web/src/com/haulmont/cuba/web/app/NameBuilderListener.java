@@ -11,15 +11,18 @@
 package com.haulmont.cuba.web.app;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.app.ui.UserUtils;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.Field;
 import org.apache.commons.lang.StringUtils;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -54,20 +57,26 @@ public class NameBuilderListener extends DsListenerAdapter {
         String middleName = (String) middleNameField.getValue();
 
         String displayedName;
-
-        Locale locale = App.getInstance().getLocale();
-
-        if (locale != null && "ru".equals(locale.getLanguage())) {
-            displayedName =
-                    (StringUtils.isNotEmpty(lastName) ? lastName : "") +
-                    (StringUtils.isNotEmpty(firstName) ? " " + firstName.substring(0, 1).toUpperCase() + "." : "") +
-                    (StringUtils.isNotEmpty(middleName) ? " " + middleName.substring(0, 1).toUpperCase() + "." : "");
-        } else {
-            displayedName =
-                    (StringUtils.isNotEmpty(firstName) ? firstName : "") +
-                    (StringUtils.isNotEmpty(middleName) ? " " + middleName.substring(0, 1).toUpperCase() + "." : "") +
-                    (StringUtils.isNotEmpty(lastName) ? " " + lastName : "");
+        try{
+            displayedName = UserUtils.formatName(AppContext.getProperty("cuba.user.displayPattern"),
+                    firstName, lastName, middleName);
+        }catch(ParseException pe){
+            displayedName = "";
         }
+
+//        Locale locale = App.getInstance().getLocale();
+//
+//        if (locale != null && "ru".equals(locale.getLanguage())) {
+//            displayedName =
+//                    (StringUtils.isNotEmpty(lastName) ? lastName : "") +
+//                    (StringUtils.isNotEmpty(firstName) ? " " + firstName.substring(0, 1).toUpperCase() + "." : "") +
+//                    (StringUtils.isNotEmpty(middleName) ? " " + middleName.substring(0, 1).toUpperCase() + "." : "");
+//        } else {
+//            displayedName =
+//                    (StringUtils.isNotEmpty(firstName) ? firstName : "") +
+//                    (StringUtils.isNotEmpty(middleName) ? " " + middleName.substring(0, 1).toUpperCase() + "." : "") +
+//                    (StringUtils.isNotEmpty(lastName) ? " " + lastName : "");
+//        }
 
         displayedNameField.setValue(displayedName);
 
