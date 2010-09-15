@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
@@ -389,6 +390,7 @@ public class FoldersPane extends VerticalLayout {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("disableAutoRefresh", true);
         params.put("description", MessageProvider.getMessage(messagesPack, folder.getName()));
+        params.put("disableApplySettings", true);
 
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
                 WindowManager.OpenType.NEW_TAB, params);
@@ -410,6 +412,8 @@ public class FoldersPane extends VerticalLayout {
 
             filterComponent.setFilterEntity(filterEntity);
         }
+
+        window.applySettings(new SettingsImpl(window.getId()));
     }
 
     protected boolean isNeedRootAppFolder() {

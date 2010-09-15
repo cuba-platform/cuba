@@ -32,6 +32,7 @@ import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -270,7 +271,9 @@ public class WebWindowManager extends WindowManager {
             getWindowOpenMode().put(window, openMode);
         }
 
-        window.applySettings(new SettingsImpl(window.getId()));
+        if (!BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings"))) {
+            window.applySettings(new SettingsImpl(window.getId()));
+        }
     }
 
     private void closeStartupScreen(AppWindow appWindow) {
