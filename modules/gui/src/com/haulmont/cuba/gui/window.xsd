@@ -890,6 +890,11 @@
         <xs:attribute name="visible" type="xs:boolean" use="optional"/>
         <xs:attribute name="width" type="xs:integer" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
+
+        <!-- Additional attributes, use only for editable table -->
+        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+        <xs:attribute name="resolution" type="xs:string" use="optional"/>
+        <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="tableType">
