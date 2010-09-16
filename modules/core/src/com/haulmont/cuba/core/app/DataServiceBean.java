@@ -115,15 +115,11 @@ public class DataServiceBean implements DataService
             if (!context.isSoftDeletion())
                 em.setSoftDeletion(false);
 
-            if (context.getId() != null) {
-                result = em.find(metaClass.getJavaClass(), context.getId());
-            } else {
-                com.haulmont.cuba.core.Query query = createQuery(em, context);
-                try {
-                    result = query.getSingleResult();
-                } catch (javax.persistence.NoResultException e) {
-                    result = null;
-                }
+            com.haulmont.cuba.core.Query query = createQuery(em, context);
+            try {
+                result = query.getSingleResult();
+            } catch (javax.persistence.NoResultException e) {
+                result = null;
             }
 
             if (result != null && context.getView() != null) {
@@ -190,28 +186,40 @@ public class DataServiceBean implements DataService
     }
 
     protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, LoadContext context) {
-        if (context.getQuery() == null || StringUtils.isBlank(context.getQuery().getQueryString()))
+        if ((context.getQuery() == null || StringUtils.isBlank(context.getQuery().getQueryString()))
+                && context.getId() == null)
             throw new IllegalArgumentException("QueryString is empty");
 
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
 
-        com.haulmont.cuba.core.Query query = em.createQuery(context.getQuery().getQueryString());
+        String queryString;
+        Map<String, Object> queryParams;
+        if (context.getQuery() != null && !StringUtils.isBlank(context.getQuery().getQueryString())) {
+            queryString = context.getQuery().getQueryString();
+            queryParams = context.getQuery().getParameters();
+        } else {
+            queryString = "select e from " + metaClass.getName() + " e where e.id = :entityId";
+            queryParams = new HashMap<String, Object>();
+            queryParams.put("entityId", context.getId());
+        }
+
+        com.haulmont.cuba.core.Query query = em.createQuery(queryString);
 
         boolean constraintsApplied = SecurityProvider.applyConstraints(query, metaClass.getName());
         if (constraintsApplied)
             log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
 
-        if (context.getQuery().getFirstResult() != 0)
-            query.setFirstResult(context.getQuery().getFirstResult());
-        if (context.getQuery().getMaxResults() != 0)
-            query.setMaxResults(context.getQuery().getMaxResults());
-
-        final String queryString = context.getQuery().getQueryString();
+        if (context.getQuery() != null) {
+            if (context.getQuery().getFirstResult() != 0)
+                query.setFirstResult(context.getQuery().getFirstResult());
+            if (context.getQuery().getMaxResults() != 0)
+                query.setMaxResults(context.getQuery().getMaxResults());
+        }
 
         QueryParser parser = QueryTransformerFactory.createParser(queryString);
         Set<String> paramNames = parser.getParamNames();
 
-        for (Map.Entry<String, Object> entry : context.getQuery().getParameters().entrySet()) {
+        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
             final String name = entry.getKey();
             if (paramNames.contains(name)) {
                 final Object value = entry.getValue();
