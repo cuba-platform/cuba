@@ -41,6 +41,8 @@ public class MbeanInspectWindow extends AbstractEditor {
         super.init(params);
 
         final Table attrTable = (Table) getComponent("attributes");
+        com.haulmont.cuba.web.toolkit.ui.Table vaadinAttrTable = (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(attrTable);
+        vaadinAttrTable.setTextSelectionEnabled(true);
 
         Action refreshAction = new AbstractAction("refresh")  {
             private static final long serialVersionUID = -603235110641508028L;
