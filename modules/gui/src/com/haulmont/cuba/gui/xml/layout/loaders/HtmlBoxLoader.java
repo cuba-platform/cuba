@@ -15,8 +15,8 @@ import com.haulmont.cuba.gui.components.HtmlBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class HtmlBoxLoader extends ContainerLoader implements ComponentLoader {
     public HtmlBoxLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -31,6 +31,7 @@ public class HtmlBoxLoader extends ContainerLoader implements ComponentLoader {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
+        loadEnable(component, element);
 
         loadStyleName(component, element);
 

@@ -14,9 +14,9 @@ import java.net.URL;
  */
 public class EmbeddedLoader extends ComponentLoader {
 
-    protected final String URL_PREFIX = "url";
+    protected static final String URL_PREFIX = "url";
 
-    protected final String FILE_PREFIX = "file";
+    protected static final String FILE_PREFIX = "file";
 
     public EmbeddedLoader(Context context) {
         super(context);
