@@ -30,7 +30,7 @@
 	background: transparent url(img/split-ver-bg.png) repeat-x 50% 50%;
 	border: 0;
 	cursor: n-resize;
-	margin: 0px 0;
+	margin: 0;
 }
 
 
@@ -50,4 +50,19 @@
 * html .v-splitpanel-vertical .v-splitpanel-vsplitter div {
 	margin: 0;
 }
+
+/* Webkit fix */
+
+.v-webkit .v-splitpanel-horizontal .v-splitpanel-first-container,
+.v-webkit .v-splitpanel-horizontal .v-splitpanel-second-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.v-webkit .v-splitpanel-vertical .v-splitpanel-first-container,
+.v-webkit .v-splitpanel-vertical .v-splitpanel-second-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 

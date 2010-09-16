@@ -56,7 +56,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             if (splitter.isOrHasChild(target)) {
                 super.onContextMenu(event);
             }
-        };
+        }
 
         @Override
         protected void fireClick(NativeEvent event) {
@@ -164,9 +164,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
         DOM.setStyleAttribute(firstContainer, "position", "absolute");
         DOM.setStyleAttribute(secondContainer, "position", "absolute");
 
-        DOM.setStyleAttribute(firstContainer, "overflow", "auto");
-        DOM.setStyleAttribute(secondContainer, "overflow", "auto");
-
+//        DOM.setStyleAttribute(firstContainer, "overflow", "auto");
+//        DOM.setStyleAttribute(secondContainer, "overflow", "auto");
     }
 
     private void setOrientation(int orientation) {
@@ -176,11 +175,22 @@ public class VSplitPanel extends ComplexPanel implements Container,
             DOM.setStyleAttribute(splitter, "top", "0");
             DOM.setStyleAttribute(firstContainer, "height", "100%");
             DOM.setStyleAttribute(secondContainer, "height", "100%");
+
+            DOM.setStyleAttribute(firstContainer, "overflowX", "auto");
+            DOM.setStyleAttribute(firstContainer, "overflowY", "hidden");
+            DOM.setStyleAttribute(secondContainer, "overflowX", "auto");
+            DOM.setStyleAttribute(secondContainer, "overflowY", "hidden");
+
         } else {
             DOM.setStyleAttribute(splitter, "width", "100%");
             DOM.setStyleAttribute(splitter, "left", "0");
             DOM.setStyleAttribute(firstContainer, "width", "100%");
             DOM.setStyleAttribute(secondContainer, "width", "100%");
+
+            DOM.setStyleAttribute(firstContainer, "overflowX", "hidden");
+            DOM.setStyleAttribute(firstContainer, "overflowY", "auto");
+            DOM.setStyleAttribute(secondContainer, "overflowX", "hidden");
+            DOM.setStyleAttribute(secondContainer, "overflowY", "auto");
         }
 
         DOM.setElementProperty(firstContainer, "className", CLASSNAME
