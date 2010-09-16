@@ -18,13 +18,13 @@ public class WebDateField
     implements
         DateField, Component.Wrapper {
 
-    private Resolution resolution = Resolution.MIN;
+    private Resolution resolution;
 
     public WebDateField() {
         component = new com.haulmont.cuba.web.toolkit.ui.DateField();
         attachListener(component);
         component.setImmediate(true);
-        __setResolution(Resolution.MIN);
+        setResolution(Resolution.MIN);
     }
 
     public Resolution getResolution() {
@@ -45,14 +45,6 @@ public class WebDateField
     }
 
     protected void __setResolution(Resolution resolution) {
-        switch (resolution) {
-            case MSEC: {component.setResolution(com.vaadin.ui.DateField.RESOLUTION_MSEC); break;}
-            case SEC: {component.setResolution(com.vaadin.ui.DateField.RESOLUTION_SEC); break;}
-            case MIN: {component.setResolution(com.vaadin.ui.DateField.RESOLUTION_MIN); break;}
-            case HOUR: {component.setResolution(com.vaadin.ui.DateField.RESOLUTION_HOUR); break;}
-            case DAY: {component.setResolution(com.vaadin.ui.DateField.RESOLUTION_DAY); break;}
-            case MONTH: {component.setResolution(com.vaadin.ui.DateField.RESOLUTION_MONTH); break;}
-            case YEAR: {component.setResolution(com.vaadin.ui.DateField.RESOLUTION_YEAR); break;}
-        }
+        component.setResolution(WebComponentsHelper.convertDateFieldResolution(resolution));
     }
 }

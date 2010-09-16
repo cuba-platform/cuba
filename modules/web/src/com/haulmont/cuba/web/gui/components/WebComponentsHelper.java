@@ -24,6 +24,7 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -342,5 +343,32 @@ public class WebComponentsHelper {
     public static Chart.Orientation convertChartOrientation(com.haulmont.cuba.gui.components.charts.Chart.Orientation orientation) {
         return orientation == com.haulmont.cuba.gui.components.charts.Chart.Orientation.VERTICAL
                 ? Chart.Orientation.VERTICAL : Chart.Orientation.HORIZONTAL;
+    }
+
+    public static int convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution resolution) {
+        switch (resolution) {
+            case MSEC: {
+                return com.vaadin.ui.DateField.RESOLUTION_MSEC;
+            }
+            case SEC: {
+                return com.vaadin.ui.DateField.RESOLUTION_SEC;
+            }
+            case HOUR: {
+                return com.vaadin.ui.DateField.RESOLUTION_HOUR;
+            }
+            case DAY: {
+                return com.vaadin.ui.DateField.RESOLUTION_DAY;
+            }
+            case MONTH: {
+                return com.vaadin.ui.DateField.RESOLUTION_MONTH;
+            }
+            case YEAR: {
+                return com.vaadin.ui.DateField.RESOLUTION_YEAR;
+            }
+            case MIN:
+            default: {
+                return com.vaadin.ui.DateField.RESOLUTION_MIN;
+            }
+        }
     }
 }
