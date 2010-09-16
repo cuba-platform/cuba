@@ -43,6 +43,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     protected boolean aggregatable = false;
 
+    private boolean textSelectionEnabled;
+
     public enum PagingMode {
         PAGE,
         SCROLLING
@@ -293,6 +295,10 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
         if (isStoreColWidth()) {
             target.addAttribute("storeColWidth", true);
+        }
+
+        if (isTextSelectionEnabled()) {
+            target.addAttribute("textSelection", true);
         }
 
         if (pagingMode == PagingMode.PAGE) {
@@ -974,6 +980,15 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     public void setPagingProvider(PagingProvider pagingProvider) {
         this.pagingProvider = pagingProvider;
+        requestRepaint();
+    }
+
+    public boolean isTextSelectionEnabled() {
+        return textSelectionEnabled;
+    }
+
+    public void setTextSelectionEnabled(boolean textSelectionEnabled) {
+        this.textSelectionEnabled = textSelectionEnabled;
         requestRepaint();
     }
 

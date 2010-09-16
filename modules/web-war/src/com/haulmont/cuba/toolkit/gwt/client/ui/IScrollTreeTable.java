@@ -302,7 +302,7 @@ public class IScrollTreeTable
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                Tools.textSelectionEnable(td, false);
+                Tools.textSelectionEnable(td, textSelectionEnabled);
             }
 
             @Override

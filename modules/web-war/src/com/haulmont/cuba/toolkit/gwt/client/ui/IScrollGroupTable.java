@@ -553,7 +553,7 @@ public class IScrollGroupTable extends IScrollTable {
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                Tools.textSelectionEnable(td, false);
+                Tools.textSelectionEnable(td, textSelectionEnabled);
             }
 
             @Override

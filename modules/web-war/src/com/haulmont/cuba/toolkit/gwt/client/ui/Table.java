@@ -121,6 +121,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected int scrollPos = 0;
     protected int focusWidgetIndex = -1;
 
+    protected boolean textSelectionEnabled;
+
     protected Table() {
         tHead = createHead();
         bodyContainer.setStyleName(CLASSNAME + "-body");
@@ -231,6 +233,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         allowMultiStingCells = uidl.getBooleanAttribute("multistring");
         nullSelectionDisallowed = uidl.getBooleanAttribute("nullSelectionDisallowed");
         storeColWidth = uidl.getBooleanAttribute("storeColWidth");
+
+        textSelectionEnabled = uidl.getBooleanAttribute("textSelection");
 
         if (uidl.hasVariable("sortascending")) {
             sortAscending = uidl.getBooleanVariable("sortascending");
@@ -1662,7 +1666,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                Tools.textSelectionEnable(td, false);
+                Tools.textSelectionEnable(td, textSelectionEnabled);
             }
 
             public void addCell(Widget w, char align, String style, int col) {
@@ -2297,7 +2301,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.appendChild(td, container);
             DOM.appendChild(tr, td);
 
-            Tools.textSelectionEnable(td, false);
+            Tools.textSelectionEnable(td, textSelectionEnabled);
         }
 
         protected void addCell(Widget widget, char align, String style) {
