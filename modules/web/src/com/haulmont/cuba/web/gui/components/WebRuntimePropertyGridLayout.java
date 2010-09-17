@@ -41,6 +41,8 @@ import java.util.List;
 
 public class WebRuntimePropertyGridLayout extends WebGridLayout implements RuntimePropertyGridLayout {
 
+    private static final long serialVersionUID = -4806876038643471003L;
+
     private static Log log = LogFactory.getLog(WebRuntimePropertyGridLayout.class);
 
     private Datasource mainDs;
@@ -69,9 +71,11 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     public void setMainDs(Datasource ds) {
         this.mainDs = ds;
-        this.attributeMetaClass = defineMetaClass(typeProperty, attributeProperty);
+        this.attributeMetaClass = defineMetaClass(attributeValueProperty, attributeProperty);
         this.attributeValueMetaClass = defineMetaClass(attributeValueProperty);
-        this.mainEntityTypeMetaClass = defineMetaClass(typeProperty);
+
+        if (typeProperty != null)
+            this.mainEntityTypeMetaClass = defineMetaClass(typeProperty);
 
         this.inverseAttributePropertyInValue = getInversePropertyName(attributeValueMetaClass, attributeMetaClass);
         this.inverseMainEntityPropertyInValue = getInversePropertyName(attributeValueMetaClass);
@@ -90,7 +94,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             }
         });
-        
+
         if (Datasource.State.VALID.equals(this.mainDs.getState())) {
             executeLazyTask();
         }
@@ -210,18 +214,10 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
     }
 
     protected List<Entity> loadAttributes() {
-        DataService service = ServiceLocator.getDataService();
-
-        LoadContext lc = new LoadContext(attributeMetaClass);
-        String typeName = getInversePropertyName(attributeMetaClass, mainEntityTypeMetaClass);
-        Instance ins = (Instance) mainDs.getItem();
-        Entity type = ins.getValue(typeProperty);
-        if (type == null) {
-            return Collections.EMPTY_LIST;
-        }
-        lc.setQueryString("select e from " + attributeMetaClass.getName() + " e where e." + typeName + ".id = :id order by e.name");
-        lc.getQuery().addParameter("id", type.getId());
-        return service.loadList(lc);
+        if (mainEntityTypeMetaClass == null)
+            return loadAttributesAll();
+        else
+            return loadAttributesByType();
     }
 
     protected Boolean isAddNewProperties() {
@@ -344,7 +340,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                 instance.setValue("value", ((Entity) value).getId().toString());
             } else {
                 if (value instanceof String) {
-                    instance.setValue("value", value);                    
+                    instance.setValue("value", value);
                 } else {
                     instance.setValue("value", Datatypes.getInstance().get(type).format(value));
                 }
@@ -386,6 +382,27 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             label.setValue(value.getName());
         }
         return label;
+    }
+
+    private List<Entity> loadAttributesByType() {
+        DataService service = ServiceLocator.getDataService();
+        LoadContext lc = new LoadContext(attributeMetaClass);
+        String typeName = getInversePropertyName(attributeMetaClass, mainEntityTypeMetaClass);
+        Instance ins = (Instance) mainDs.getItem();
+        Entity type = ins.getValue(typeProperty);
+        if (type == null) {
+            return Collections.EMPTY_LIST;
+        }
+        lc.setQueryString("select e from " + attributeMetaClass.getName() + " e where e." + typeName + ".id = :id order by e.name");
+        lc.getQuery().addParameter("id", type.getId());
+        return service.loadList(lc);
+    }
+
+    private List<Entity> loadAttributesAll() {
+        DataService service = ServiceLocator.getDataService();
+        LoadContext lc = new LoadContext(attributeMetaClass);
+        lc.setQueryString("select e from " + attributeMetaClass.getName() + " e order by e.name");
+        return service.loadList(lc);
     }
 
     public Datasource getMainDs() {
