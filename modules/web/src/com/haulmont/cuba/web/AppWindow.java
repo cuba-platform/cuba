@@ -478,15 +478,29 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         userLabel.setStyleName("select-label");
         userLabel.setSizeUndefined();
 
+        titleLayout.addComponent(userLabel);
+        titleLayout.setComponentAlignment(userLabel, Alignment.MIDDLE_RIGHT);
+
         final NativeSelect substUserSelect = new NativeSelect();
         substUserSelect.setNullSelectionAllowed(false);
         substUserSelect.setImmediate(true);
         substUserSelect.setStyleName("select-label");
 
         fillSubstitutedUsers(substUserSelect);
-        UserSession us = App.getInstance().getConnection().getSession();
-        substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
-        substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
+        if (substUserSelect.getItemIds().size() > 1) {
+            UserSession us = App.getInstance().getConnection().getSession();
+            substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
+            substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
+
+            titleLayout.addComponent(substUserSelect);
+            titleLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
+        } else {
+            Label userNameLabel = new Label(getSubstitutedUserCaption((User) substUserSelect.getItemIds().iterator().next()));
+            userNameLabel.setStyleName("select-label");
+            userNameLabel.setSizeUndefined();
+            titleLayout.addComponent(userNameLabel);
+            titleLayout.setComponentAlignment(userNameLabel, Alignment.MIDDLE_RIGHT);
+        }
 
         Button logoutBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
                 new Button.ClickListener() {
@@ -508,19 +522,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode())
             logoutBtn.setDebugId("logoutBtn");
 
-        Button viewLogBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "viewLogBtn"),
-                new Button.ClickListener() {
-                    private static final long serialVersionUID = -2017737447316558248L;
-
-                    public void buttonClick(Button.ClickEvent event) {
-                        LogWindow logWindow = new LogWindow();
-                        addWindow(logWindow);
-                    }
-                }
-        );
-        viewLogBtn.setStyleName("white-border");
-        viewLogBtn.setIcon(new ThemeResource("images/show-log.gif"));
-        //viewLogBtn.setIcon(new ThemeResource("images/showlog.png"));
+        titleLayout.addComponent(logoutBtn);
+        titleLayout.setComponentAlignment(logoutBtn, Alignment.MIDDLE_RIGHT);
 
         Button newWindowBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "newWindowBtn"),
                 new Button.ClickListener() {
@@ -534,18 +537,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         );
         newWindowBtn.setStyleName("white-border");
         newWindowBtn.setIcon(new ThemeResource("images/clean.gif"));
-
-        titleLayout.addComponent(userLabel);
-        titleLayout.setComponentAlignment(userLabel, Alignment.MIDDLE_RIGHT);
-
-        titleLayout.addComponent(substUserSelect);
-        titleLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
-
-        titleLayout.addComponent(logoutBtn);
-        titleLayout.setComponentAlignment(logoutBtn, Alignment.MIDDLE_RIGHT);
-
-        titleLayout.addComponent(viewLogBtn);
-        titleLayout.setComponentAlignment(viewLogBtn, Alignment.MIDDLE_RIGHT);
 
         titleLayout.addComponent(newWindowBtn);
         titleLayout.setComponentAlignment(newWindowBtn, Alignment.MIDDLE_RIGHT);

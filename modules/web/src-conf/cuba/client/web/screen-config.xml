@@ -69,6 +69,9 @@
     <screen id="feedback"
             template="/com/haulmont/cuba/web/app/ui/core/feedback/feedback-window.xml"/>
 
+    <screen id="logWindow"
+            class="com.haulmont.cuba.web.log.LogWindowLauncher"/>
+
     <screen id="core$SimpleLookup"
             template="/com/haulmont/cuba/web/app/ui/core/lookup/simple-lookup.xml"/>
 

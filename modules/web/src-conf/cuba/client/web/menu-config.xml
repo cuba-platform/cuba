@@ -9,10 +9,13 @@
         <item id="jmxcontrol$DisplayMbeans"/>
         <item id="core$Entity.restore"/>
     </menu>
-    <menu id="settings"/>
-    <menu id="feedback"/>
     <menu id="reports">
         <item id="report$Report.browse"/>
         <item id="report$Report.run"/>
+    </menu>
+    <menu id="help">
+        <item id="settings"/>
+        <item id="feedback"/>
+        <item id="logWindow"/>
     </menu>
 </menu-config>
