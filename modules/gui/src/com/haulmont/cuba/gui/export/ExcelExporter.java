@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.poi.hssf.usermodel.*;
 
+import javax.persistence.TemporalType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
@@ -168,7 +169,7 @@ public class ExcelExporter {
         HSSFCell cell = row.createCell(groupNumber);
         Object val = groupInfo.getValue();
         val = val == null ? MessageProvider.getMessage(getClass(), "excelExporter.empty") : val;
-        formatValueCell(cell, val, groupNumber++, rowNumber, 0);
+        formatValueCell(cell, val, groupNumber++, rowNumber, 0, true);
 
         int oldRowNumber = rowNumber;
         List<GroupInfo> children = ds.getChildren(groupInfo);
@@ -202,7 +203,11 @@ public class ExcelExporter {
 
             Table.Column column = columns.get(c);
             Object val = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
-            formatValueCell(cell, val, c, rowNumber, level);
+            TemporalType tt = (TemporalType) ((MetaPropertyPath) column.getId()).getMetaProperty().getAnnotations().get("temporal");
+            boolean isFull = true;
+            if (tt != null && tt == TemporalType.DATE)
+                isFull = false;
+            formatValueCell(cell, val, c, rowNumber, level, isFull);
         }
 
     }
@@ -219,7 +224,7 @@ public class ExcelExporter {
         return sb.toString();
     }
 
-    protected void formatValueCell(HSSFCell cell, Object val, int sizersIndex, int notificationReqiured, int level) {
+    protected void formatValueCell(HSSFCell cell, Object val, int sizersIndex, int notificationReqiured, int level, boolean isFull) {
         if (val == null)
             return;
         if (val instanceof Number) {
@@ -250,7 +255,10 @@ public class ExcelExporter {
             cell.setCellValue(((Date) val));
 
             final HSSFCellStyle cellStyle = wb.createCellStyle();
-            cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
+            if (isFull)
+                cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
+            else
+                cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
             cell.setCellStyle(cellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
