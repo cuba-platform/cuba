@@ -114,7 +114,11 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
                 field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
             } else {
-                field = super.createField(container, itemId, propertyId, uiContext);
+                if (Boolean.class.isAssignableFrom(range.<Object>asDatatype().getJavaClass())) {
+                    field = new CheckBox();
+                } else {
+                    field = super.createField(container, itemId, propertyId, uiContext);
+                }
             }
         } else {
             field = super.createField(container, itemId, propertyId, uiContext);

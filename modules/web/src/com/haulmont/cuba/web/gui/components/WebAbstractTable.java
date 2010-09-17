@@ -41,6 +41,7 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -1042,6 +1043,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 Table.Column column = columns.get(propertyPath);
                 initDateField((com.vaadin.ui.DateField) field, column);
             }
+            
+            if (field instanceof CheckBox) {
+                ((CheckBox) field).setLayoutCaption(true);
+            }
+            
         }
 
         private void initDateField(com.vaadin.ui.DateField field, Table.Column column) {
