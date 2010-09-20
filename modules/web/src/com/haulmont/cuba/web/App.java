@@ -260,11 +260,12 @@ public class App extends Application
             stopTimers();
 
             for (Object win : new ArrayList(getWindows())) {
-                if (win instanceof AppWindow)
-                    removeWindow((Window) win);
+                removeWindow((Window) win);
             }
 
-            String name = createWindowName(true);
+            String name = currentWindowName.get();
+            if (name == null)
+                name = createWindowName(true);
 
             Window window = getWindow(name);
 
@@ -285,11 +286,12 @@ public class App extends Application
             stopTimers();
 
             for (Object win : new ArrayList(getWindows())) {
-                if (win instanceof LoginWindow)
-                    removeWindow((Window) win);
+                removeWindow((Window) win);
             }
 
-            String name = createWindowName(false);
+            String name = currentWindowName.get();
+            if (name == null)
+                name = createWindowName(false);
 
             Window window = createLoginWindow();
             window.setName(name);
@@ -343,13 +345,7 @@ public class App extends Application
 
         // it does not exist yet, create it.
         if (window == null) {
-//            Matcher m = BAD_WIN_PATTERN.matcher(name);
-//            if (m.matches()) {
-//                throw new RuntimeException("Bad window name: " + name);
-//            }
-
             if (connection.isConnected()) {
-
                 final AppWindow appWindow = createAppWindow();
                 appWindow.setName(name);
                 addWindow(appWindow);
@@ -381,6 +377,9 @@ public class App extends Application
             currentApp.set((App) application);
         }
         application.setLocale(request.getLocale());
+
+        if (ActiveDirectoryHelper.useActiveDirectory())
+            setUser(request.getUserPrincipal());
 
         if (contextName == null) {
             contextName = request.getContextPath().substring(1);
@@ -424,54 +423,26 @@ public class App extends Application
         //noinspection deprecation
         currentWindowName.set(getMainWindow() == null ? null : getMainWindow().getName());
 
-        if (connection.isConnected()) {
-            String[] parts = requestURI.split("/");
-            boolean contextFound = false;
-            for (String part : parts) {
-                if (StringUtils.isEmpty(part)) {
-                    continue;
-                }
-                if (part.equals(contextName) && !contextFound) {
-                    contextFound = true;
-                    continue;
-                }
-                if (contextFound && part.equals("UIDL")) {
-                    continue;
-                }
-                Matcher m = WIN_PATTERN.matcher(part);
-                if (m.matches()) {
-                    currentWindowName.set(part);
-                    break;
-                }
+        String[] parts = requestURI.split("/");
+        boolean contextFound = false;
+        for (String part : parts) {
+            if (StringUtils.isEmpty(part)) {
+                continue;
             }
-        }
-    }
-    /*
-    private void setupCurrentWindowName(String requestURI) {
-        //noinspection deprecation
-        currentWindowName.set(getMainWindow() == null ? null : getMainWindow().getName());
-
-        if (connection.isConnected()) {
-            String[] parts = requestURI.split("/");
-            boolean contextFound = false;
-            for (String part : parts) {
-                if (StringUtils.isEmpty(part)) {
-                    continue;
-                }
-                if (part.equals(contextName) && !contextFound) {
-                    contextFound = true;
-                    continue;
-                }
-                if (contextFound && part.equals("UIDL")) {
-                    continue;
-                }
-                if (!part.startsWith("open")) {
-                    currentWindowName.set(part);
-                }
+            if (part.equals(contextName) && !contextFound) {
+                contextFound = true;
+                continue;
+            }
+            if (contextFound && part.equals("UIDL")) {
+                continue;
+            }
+            Matcher m = WIN_PATTERN.matcher(part);
+            if (m.matches()) {
+                currentWindowName.set(part);
                 break;
             }
         }
-    }*/
+    }
 
     private void processExternalLink(HttpServletRequest request, String requestURI) {
         if (requestURI.endsWith("/open") && !requestURI.contains("/UIDL/")) {

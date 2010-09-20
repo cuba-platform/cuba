@@ -17,11 +17,9 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.gui.AppConfig;
-import com.vaadin.Application;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.ThemeResource;
@@ -32,8 +30,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.security.Principal;
 import java.util.Locale;
 import java.util.Map;
 
@@ -45,8 +43,7 @@ import java.util.Map;
  */
 @SuppressWarnings("serial")
 public class LoginWindow extends Window
-        implements ApplicationContext.TransactionListener,
-        Action.Handler, Action.Container {
+        implements Action.Handler, Action.Container {
 
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
@@ -73,7 +70,6 @@ public class LoginWindow extends Window
 
         setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.caption", loc));
         this.connection = connection;
-        app.getContext().addTransactionListener(this);
 
         loginField = new TextField();
         passwordField = new TextField();
@@ -247,7 +243,7 @@ public class LoginWindow extends Window
         localesSelect.setValue(selected);
 
         if (ActiveDirectoryHelper.useActiveDirectory()) {
-            loginField.setValue(null);
+            loginField.setValue(app.getUser() == null ? null : ((Principal) app.getUser()).getName());
             passwordField.setValue("");
         } else {
             WebConfig config = ConfigProvider.getConfig(WebConfig.class);
@@ -266,18 +262,6 @@ public class LoginWindow extends Window
 
             initRememberMe(app);
         }
-    }
-
-    public void transactionStart(Application application, Object transactionData) {
-        HttpServletRequest request = (HttpServletRequest) transactionData;
-        if (request.getUserPrincipal() != null
-                && ActiveDirectoryHelper.useActiveDirectory()
-                && loginField.getValue() == null) {
-            loginField.setValue(request.getUserPrincipal().getName());
-        }
-    }
-
-    public void transactionEnd(Application application, Object transactionData) {
     }
 
     public class SubmitListener implements Button.ClickListener {
