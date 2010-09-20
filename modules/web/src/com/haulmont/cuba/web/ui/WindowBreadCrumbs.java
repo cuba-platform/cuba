@@ -13,6 +13,8 @@ package com.haulmont.cuba.web.ui;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppWindow;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -31,6 +33,8 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         void windowClick(Window window);
     }
 
+    protected boolean tabbedMode;
+
     protected LinkedList<Window> windows = new LinkedList<Window>();
 
     protected HorizontalLayout logoLayout;
@@ -47,22 +51,30 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         setHeight(-1, Sizeable.UNITS_PIXELS); // TODO (abramov) This is a bit tricky
         setStyleName("headline-container");
 
+        tabbedMode = AppWindow.Mode.TABBED.equals(App.getInstance().getAppWindow().getMode());
+
+        if (tabbedMode)
+            setVisible(false);
+
         logoLayout = new HorizontalLayout();
         logoLayout.setMargin(true);
         logoLayout.setSpacing(true);
 
         linksLayout = new HorizontalLayout();
         linksLayout.setStyleName("breadcrumbs");
-        closeBtn = new Button("", new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                final Window window = getCurrentWindow();
-                window.close("close");
-            }
-        });
-        closeBtn.setIcon(new ThemeResource("images/close.gif"));
-        closeBtn.setStyleName("closetab-button");
-        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode())
-            closeBtn.setDebugId("closeBtn");
+
+        if (!tabbedMode) {
+            closeBtn = new Button("", new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent event) {
+                    final Window window = getCurrentWindow();
+                    window.close("close");
+                }
+            });
+            closeBtn.setIcon(new ThemeResource("images/close.gif"));
+            closeBtn.setStyleName("closetab-button");
+            if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode())
+                closeBtn.setDebugId("closeBtn");
+        }
 
         HorizontalLayout enclosingLayout = new HorizontalLayout();
         enclosingLayout.addComponent(linksLayout);
@@ -71,7 +83,10 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         addComponent(logoLayout);
         setComponentAlignment(logoLayout, Alignment.MIDDLE_LEFT);
         addComponent(enclosingLayout);
-        addComponent(closeBtn);
+
+        if (closeBtn != null)
+            addComponent(closeBtn);
+
         setComponentAlignment(enclosingLayout, Alignment.MIDDLE_LEFT);
         linksLayout.setSizeFull();
         setExpandRatio(enclosingLayout, 1);
@@ -87,6 +102,8 @@ public class WindowBreadCrumbs extends HorizontalLayout {
     public void addWindow(Window window) {
         windows.add(window);
         update();
+        if (windows.size() > 1 && tabbedMode)
+            setVisible(true);
     }
 
     public void removeWindow() {
@@ -94,6 +111,8 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             windows.removeLast();
             update();
         }
+        if (windows.size() <= 1 && tabbedMode)
+            setVisible(false);
     }
 
     public void addListener(Listener listener) {
@@ -123,16 +142,18 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
-            Button button = new Button(window.getCaption(), new BtnClickListener());
+            Button button = new Button(window.getCaption().trim(), new BtnClickListener());
             button.setStyleName(BaseTheme.BUTTON_LINK);
 
             btn2win.put(button, window);
 
             if (it.hasNext()) {
                 linksLayout.addComponent(button);
-                linksLayout.addComponent(new Label("> "));
+                Label separatorLab = new Label("&nbsp;&gt;&nbsp;");
+                separatorLab.setContentMode(Label.CONTENT_XHTML);
+                linksLayout.addComponent(separatorLab);
             } else {
-                linksLayout.addComponent(new Label(" " + window.getCaption()));
+                linksLayout.addComponent(new Label(window.getCaption()));
             }
         }
     }
