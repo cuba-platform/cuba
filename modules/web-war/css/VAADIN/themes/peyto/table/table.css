@@ -236,11 +236,17 @@
 
 .v-table-column-selector {
 	float: right;
-	background: transparent url(../table/img/colsel.png) no-repeat center left;
-	margin: -21px 0 0 0;
-	height: 18px;
+	background: transparent url(img/table-header-bg.png) repeat-x;
+	margin: -23px 0 0 0;
+	height: 23px;
 	width: 16px;
 	position: relative; /* hide this from IE, it works without it */
+}
+
+.v-table-column-selector div {
+    background: transparent url(../table/img/colsel.png) no-repeat center left;
+    height: 23px;
+    width: 16px;
 }
 
 * html .v-table-column-selector {

@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -1055,6 +1056,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.setElementProperty(table, "className", CLASSNAME
                     + "-header-internal");
 
+            DOM.setInnerHTML(columnSelector, "<div></div>");
+
             DOM.appendChild(table, headerTableBody);
             DOM.appendChild(headerTableBody, tr);
             DOM.appendChild(hTableContainer, table);
@@ -1286,7 +1289,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         @Override
         public void onBrowserEvent(Event event) {
             if (enabled) {
-                if (event.getEventTarget().cast() == columnSelector) {
+                final EventTarget target = event.getEventTarget();
+                if (target.cast() == columnSelector || DOM.getParent(target.<Element>cast()) == columnSelector) {
                     final int left = DOM.getAbsoluteLeft(columnSelector);
                     final int top = DOM.getAbsoluteTop(columnSelector)
                             + DOM.getElementPropertyInt(columnSelector,
