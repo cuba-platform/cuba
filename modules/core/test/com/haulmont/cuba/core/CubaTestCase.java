@@ -63,7 +63,7 @@ public abstract class CubaTestCase extends TestCase
         processor.setSourceFiles(getPersistenceSourceFiles());
 
         File currentDir = new File(System.getProperty("user.dir"));
-        processor.setOutputFile(currentDir + "/modules/core/test/persistence.xml");
+        processor.setOutputFile(currentDir + "/out/test/core/persistence.xml");
 
         processor.create();
     }
