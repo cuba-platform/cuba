@@ -507,6 +507,10 @@
     font-size:8pt;
 }
 
+.v-webkit textarea {
+    resize: none;
+}
+
 /*
  * End of thesis styles
  */
