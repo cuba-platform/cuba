@@ -198,7 +198,7 @@ public class DataServiceBean implements DataService
             queryString = context.getQuery().getQueryString();
             queryParams = context.getQuery().getParameters();
         } else {
-            queryString = "select e from " + metaClass.getName() + " e where e.id = :entityId";
+            queryString = "select distinct e from " + metaClass.getName() + " e where e.id = :entityId";
             queryParams = new HashMap<String, Object>();
             queryParams.put("entityId", context.getId());
         }
