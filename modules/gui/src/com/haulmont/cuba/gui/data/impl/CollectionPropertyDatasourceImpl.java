@@ -330,6 +330,13 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         throw new UnsupportedOperationException();
     }
 
+    public boolean getRefreshOnComponentValueChange() {
+        return false;
+    }
+
+    public void setRefreshOnComponentValueChange(boolean refresh) {
+    }
+
     @Override
     public void commited(Map<Entity, Entity> map) {
         Collection<T> collection = __getCollection();
