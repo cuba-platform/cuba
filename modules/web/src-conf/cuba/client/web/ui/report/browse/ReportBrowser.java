@@ -12,13 +12,12 @@ package cuba.client.web.ui.report.browse;
 
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
-import cuba.client.web.ui.report.ReportHelper;
+import com.haulmont.cuba.web.app.ui.report.ReportHelper;
 import cuba.client.web.ui.report.fileuploaddialog.ReportImportDialog;
 
 import java.util.Collections;

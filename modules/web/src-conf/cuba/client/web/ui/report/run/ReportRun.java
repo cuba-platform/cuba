@@ -2,9 +2,8 @@ package cuba.client.web.ui.report.run;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.report.Report;
-import cuba.client.web.ui.report.ReportHelper;
+import com.haulmont.cuba.web.app.ui.report.ReportHelper;
 
 import java.util.Collections;
 import java.util.Map;

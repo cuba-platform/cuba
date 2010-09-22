@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package cuba.client.web.ui.report;
+package com.haulmont.cuba.web.app.ui.report;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
