@@ -12,9 +12,7 @@ package com.haulmont.cuba.web.app.ui.report;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
@@ -23,7 +21,6 @@ import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.ReportType;
 import com.haulmont.cuba.report.app.ReportService;
-import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
 
 import java.io.IOException;
@@ -113,8 +110,8 @@ public class ReportHelper {
     }
 
 
-    public static void createSingleObjectPrintFormButton(Button printFormButton, final Window.Editor editor) {
-        printFormButton.setAction(new AbstractAction(editor.getMessage(printFormButton.getId())) {
+    public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor) {
+        return new AbstractAction(editor.getMessage(captionId)) {
             public void actionPerform(Component component) {
                 final Entity entity = editor.getItem();
                 if (entity != null) {
@@ -123,30 +120,16 @@ public class ReportHelper {
                 } else
                     editor.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
             }
-        });
+        };
     }
 
-    public static void createMultiObjectsPrintFormButton(Button printFormButton, final Window window, final Table table) {
-        printFormButton.setAction(new AbstractAction(window.getMessage(printFormButton.getId())) {
+    public static AbstractAction createPrintformFromTableAction(String captionId, final Window window, final Table table, final boolean multiObjects) {
+        return new AbstractAction(window.getMessage(captionId)) {
             public void actionPerform(Component component) {
-                final Set<Entity> entities = table.getSelected();
-                if (entities != null && entities.size() != 0) {
-                    final String javaClassName = entities.iterator().next().getClass().getCanonicalName();
-                    openRunReportScreen(window, "entities", entities, javaClassName, ReportType.LIST_PRINT_FORM);
-
-                } else
-                    window.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
-            }
-        });
-    }
-
-    public static AbstractAction createPrintSingleObjectFromTableAction(String id, final Window window, final Table table) {
-        return new AbstractAction(window.getMessage(id)) {
-            public void actionPerform(Component component) {
-                final Entity entity = table.getSingleSelected();
-                if (entity != null) {
-                    final String javaClassName = entity.getClass().getCanonicalName();
-                    openRunReportScreen(window, "entity", entity, javaClassName, ReportType.PRINT_FORM);
+                final Object fromTable = multiObjects ? table.getSelected() : table.getSingleSelected();
+                if (fromTable != null && (((Collection) fromTable).size() > 0 || multiObjects)) {
+                    final String javaClassName = multiObjects ? ((Collection) fromTable).iterator().next().getClass().getCanonicalName() : fromTable.getClass().getCanonicalName();
+                    openRunReportScreen(window, multiObjects ? "entities" : "entity", fromTable, javaClassName, multiObjects ? ReportType.LIST_PRINT_FORM : ReportType.PRINT_FORM);
                 } else
                     window.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
             }
