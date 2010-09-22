@@ -52,8 +52,9 @@ public interface WindowContext extends Serializable {
      */
     void setValue(String property, Object value);
 
-    /** Not implemented yet */
-    void addValueListener(ValueListener listener);
-    /** Not implemented yet */
-    void removeValueListener(ValueListener listener);
+    /** Add the value listener to the specified component */
+    void addValueListener(String componentName, ValueListener listener);
+
+    /** Remove the value listener from the specified component */
+    void removeValueListener(String componentName, ValueListener listener);
 }

@@ -20,23 +20,23 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Param {
 
@@ -57,6 +57,7 @@ public class Param {
     private String entityView;
     private Datasource datasource;
     private MetaProperty property;
+    private List<ValueListener> listeners = new ArrayList<ValueListener>();
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource) {
         this(name, javaClass, entityWhere, entityView, datasource, null);
@@ -102,7 +103,13 @@ public class Param {
     }
 
     public void setValue(Object value) {
-        this.value = value;
+        if (!ObjectUtils.equals(value, this.value)) {
+            Object prevValue = this.value;
+            this.value = value;
+            for (ValueListener listener : listeners) {
+                listener.valueChanged(this, "value", prevValue, value);
+            }
+        }
     }
 
     public void parseValue(String text) {
@@ -348,6 +355,8 @@ public class Param {
         CollectionDatasourceImpl ds = new CollectionDatasourceImpl(datasource.getDsContext(),
                 new GenericDataService(), "ds", metaClass, entityView);
 
+        ds.setRefreshOnComponentValueChange(true);
+
         if (entityWhere != null) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(
                     "select e from " + metaClass.getName() + " e",
@@ -357,7 +366,7 @@ public class Param {
             ds.setQuery(q);
         }
 
-        WebLookupField lookup = new WebLookupField();
+        final WebLookupField lookup = new WebLookupField();
         lookup.setOptionsDatasource(ds);
         ds.initialized();
 
@@ -365,6 +374,15 @@ public class Param {
         if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
             ds.refresh();
         }
+
+        ds.addListener(
+                new CollectionDsListenerAdapter() {
+                    @Override
+                    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                        lookup.setValue(null);
+                    }
+                }
+        );
 
         lookup.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
@@ -395,5 +413,14 @@ public class Param {
         lookup.setValue(value);
 
         return lookup.getComponent();
+    }
+
+    public void addListener(ValueListener listener) {
+        if (!listeners.contains(listener))
+            listeners.add(listener);
+    }
+
+    public void removeListener(ValueListener listener) {
+        listeners.remove(listener);
     }
 }

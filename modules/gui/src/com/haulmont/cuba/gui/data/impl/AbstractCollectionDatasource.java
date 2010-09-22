@@ -25,6 +25,8 @@ import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -41,6 +43,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected int maxResults;
     protected ParameterInfo[] queryParameters;
     protected boolean softDeletion;
+    protected ComponentValueListener componentValueListener;
+    private boolean refreshOnComponentValueChange;
+
+    private static Log log = LogFactory.getLog(AbstractCollectionDatasource.class);
 
     public AbstractCollectionDatasource(DsContext dsContext, DataService dataservice, String id, MetaClass metaClass, String viewName) {
         super(dsContext, dataservice, id, metaClass, viewName);
@@ -101,6 +107,14 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
+    }
+
+    public boolean getRefreshOnComponentValueChange() {
+        return refreshOnComponentValueChange;
+    }
+
+    public void setRefreshOnComponentValueChange(boolean refresh) {
+        refreshOnComponentValueChange = refresh;
     }
 
     public void setQuery(String query, QueryFilter filter) {
@@ -200,11 +214,22 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                     break;
                 }
                 case COMPONENT: {
-                    Object value =
-                            dsContext.getWindowContext() == null ?
-                                    null : dsContext.getWindowContext().getValue(path);
-                    if (value instanceof String && info.isCaseInsensitive()) {
-                        value = makeCaseInsensitive((String) value);
+                    Object value = null;
+                    if (dsContext.getWindowContext() != null) {
+                        value = dsContext.getWindowContext().getValue(path);
+                        if (value instanceof String && info.isCaseInsensitive()) {
+                            value = makeCaseInsensitive((String) value);
+                        }
+
+                        if (refreshOnComponentValueChange) {
+                            if (componentValueListener == null)
+                                componentValueListener = new ComponentValueListener();
+                            try {
+                                dsContext.getWindowContext().addValueListener(path, componentValueListener);
+                            } catch (Exception e) {
+                                log.error("Unable to add value listener: " + e);
+                            }
+                        }
                     }
                     map.put(name, value);
                     break;
@@ -330,5 +355,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+    }
+
+    private class ComponentValueListener implements ValueListener {
+        public void valueChanged(Object source, String property, Object prevValue, Object value) {
+            refresh();
+        }
     }
 }

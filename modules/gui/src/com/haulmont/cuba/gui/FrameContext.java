@@ -30,6 +30,8 @@ public class FrameContext implements WindowContext {
     public FrameContext(IFrame window, Map<String, Object> params) {
         this.frame = window;
         this.params = params;
+
+        frame.getComponents();
     }
 
     public Collection<String> getParameterNames() {
@@ -96,7 +98,7 @@ public class FrameContext implements WindowContext {
         if (component instanceof Component.HasValue) {
             //noinspection RedundantTypeArguments
             return ((Component.HasValue) component).<T>getValue();
-        } else if (component instanceof List) {
+        } else if (component instanceof com.haulmont.cuba.gui.components.List) {
             com.haulmont.cuba.gui.components.List list = (com.haulmont.cuba.gui.components.List) component;
             //noinspection unchecked
             return list.isMultiSelect() ? (T)list.getSelected() : (T)list.getSingleSelected();
@@ -114,9 +116,29 @@ public class FrameContext implements WindowContext {
         }
     }
 
-    public void addValueListener(ValueListener listener) {
+    public void addValueListener(String componentName, ValueListener listener) {
+        Component component = frame.getComponent(componentName);
+        if (component == null)
+            throw new RuntimeException("Component not found: " + componentName);
+        if (component instanceof Component.HasValue) {
+            ((Component.HasValue) component).addListener(listener);
+        } else if (component instanceof com.haulmont.cuba.gui.components.List) {
+            throw new UnsupportedOperationException("List component is not supported yet");
+        } else {
+            throw new RuntimeException("Unable to add listener to the component " + component);
+        }
     }
 
-    public void removeValueListener(ValueListener listener) {
+    public void removeValueListener(String componentName, ValueListener listener) {
+        Component component = frame.getComponent(componentName);
+        if (component == null)
+            throw new RuntimeException("Component not found: " + componentName);
+        if (component instanceof Component.HasValue) {
+            ((Component.HasValue) component).removeListener(listener);
+        } else if (component instanceof com.haulmont.cuba.gui.components.List) {
+            throw new UnsupportedOperationException("List component is not supported yet");
+        } else {
+            throw new RuntimeException("Unable to add listener to the component " + component);
+        }
     }
 }

@@ -93,6 +93,7 @@ public class WebFilter
     private boolean changingFilter;
     private boolean applyingDefault;
     private boolean editing;
+    private FilterEditor editor;
     private FoldersPane foldersPane;
 
     private boolean useMaxResults;
@@ -505,7 +506,8 @@ public class WebFilter
                 names.add(((FilterEntity) id).getName());
         }
 
-        final FilterEditor editor = new FilterEditor(this, filterEntity, getXmlDescriptor(), names);
+        editor = new FilterEditor(this, filterEntity, getXmlDescriptor(), names);
+        editor.init();
         editLayout.addComponent(editor.getLayout());
     }
 
@@ -520,6 +522,7 @@ public class WebFilter
 
     private void switchToUse() {
         editing = false;
+        editor = null;
         updateControls();
         component.removeComponent(editLayout);
         createParamsLayout();
@@ -565,7 +568,9 @@ public class WebFilter
     }
 
     public <T extends Component> T getOwnComponent(String id) {
-        for (Condition condition : conditions) {
+        List<Condition> list = editor == null ? conditions : editor.getConditions();
+
+        for (Condition condition : list) {
             if (condition.getParam() != null) {
                 String paramName = condition.getParam().getName();
                 String componentName = paramName.substring(paramName.lastIndexOf('.') + 1);
@@ -825,9 +830,11 @@ public class WebFilter
         }
 
         public void addListener(ValueListener listener) {
+            condition.getParam().addListener(listener);
         }
 
         public void removeListener(ValueListener listener) {
+            condition.getParam().removeListener(listener);
         }
 
         public boolean isEditable() {

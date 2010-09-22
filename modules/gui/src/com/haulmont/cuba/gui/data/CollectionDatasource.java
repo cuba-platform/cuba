@@ -123,6 +123,18 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     void refresh(Map<String, Object> parameters);
 
     /**
+     * Whether to refresh datasource on changing value of a component which it depends on
+     * (through <code>component$</code> parameter)
+     */
+    boolean getRefreshOnComponentValueChange();
+
+    /**
+     * Whether to refresh datasource on changing value of a component which it depends on
+     * (through <code>component$</code> parameter)
+     */
+    void setRefreshOnComponentValueChange(boolean refresh);
+
+    /**
      * CollectionDatasource which underlying collection is ordered.
      * Supports predictable navigation between items.
      * @param <T> type of entity

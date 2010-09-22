@@ -16,6 +16,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -23,6 +24,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.vaadin.data.Property;
+import com.vaadin.event.Action;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +37,7 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 public class FilterEditor {
 
+    private WebFilter webFilter;
     private FilterEntity filterEntity;
     private Element filterDescriptor;
     private MetaClass metaClass;
@@ -58,6 +61,7 @@ public class FilterEditor {
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames)
     {
+        this.webFilter = webFilter;
         this.filterEntity = filterEntity;
         this.filterDescriptor = filterDescriptor;
         this.datasource = webFilter.getDatasource();
@@ -72,7 +76,9 @@ public class FilterEditor {
 
         FilterParser parser = new FilterParser(this.filterEntity.getXml(), messagesPack, filterComponentName, datasource);
         this.conditions = parser.fromXml().getConditions();
+    }
 
+    public void init() {
         layout = new VerticalLayout();
         layout.setSpacing(true);
         layout.setMargin(true, false, false, false);
@@ -226,6 +232,25 @@ public class FilterEditor {
                     condition
             );
         }
+
+        final Action showNameAction = new Action(MessageProvider.getMessage(getClass(), "FilterEditor.showNameAction"));
+        table.addActionHandler(
+                new Action.Handler() {
+                    public Action[] getActions(Object target, Object sender) {
+                        return new Action[] {showNameAction};
+                    }
+
+                    public void handleAction(Action action, Object sender, Object target) {
+                        if (action.equals(showNameAction)) {
+                            App.getInstance().getWindowManager().showMessageDialog(
+                                    MessageProvider.getMessage(getClass(), "FilterEditor.showNameTitle"),
+                                    ((Condition) target).getParam().getName(),
+                                    IFrame.MessageType.CONFIRMATION
+                            );
+                        }
+                    }
+                }
+        );
 
         layout.addComponent(table);
     }
@@ -383,5 +408,9 @@ public class FilterEditor {
             filterEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
 
         return true;
+    }
+
+    public List<Condition> getConditions() {
+        return conditions;
     }
 }
