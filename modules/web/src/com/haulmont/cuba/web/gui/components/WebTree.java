@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Tree;
@@ -118,5 +119,14 @@ public class WebTree
 
         HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
         component.setContainerDataSource(wrapper);
+
+        if (UserSessionClient.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+            ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
+            if (action == null) {
+                action = new ShowInfoAction();
+                addAction(action);
+            }
+            action.setDatasource(datasource);
+        }
     }
 }

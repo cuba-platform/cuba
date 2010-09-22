@@ -4,6 +4,7 @@
 
         <category id="cuba">
             <category id="cuba.gui">
+                <permission id="cuba.gui.showInfo"/>
                 <category id="cuba.gui.filter">
                     <permission id="cuba.gui.filter.global"/>
                     <permission id="cuba.gui.filter.customConditions"/>

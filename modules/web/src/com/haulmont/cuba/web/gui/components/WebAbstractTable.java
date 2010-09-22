@@ -421,6 +421,15 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         setVisibleColumns(columnsOrder);
+
+        if (UserSessionClient.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+            ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
+            if (action == null) {
+                action = new ShowInfoAction();
+                addAction(action);
+            }
+            action.setDatasource(datasource);
+        }
     }
 
     protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
