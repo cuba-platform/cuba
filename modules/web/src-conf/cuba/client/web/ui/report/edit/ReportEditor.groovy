@@ -259,7 +259,7 @@ public class ReportEditor extends AbstractEditor {
         def up = [
                 actionPerform: {Component component ->
                     BandDefinition definition = (BandDefinition) treeDs.getItem()
-                    if (definition) {
+                    if (definition && definition.getParentBandDefinition()) {
                         BandDefinition parentDefinition = dataService.reload(definition.getParentBandDefinition(), bandDefinitionView);
                         List definitionsList = parentDefinition.getChildrenBandDefinitions()
                         int index = definitionsList.indexOf(definition);
@@ -278,7 +278,7 @@ public class ReportEditor extends AbstractEditor {
         def down = [
                 actionPerform: {Component component ->
                     BandDefinition definition = (BandDefinition) treeDs.getItem()
-                    if (definition) {
+                    if (definition && definition.getParentBandDefinition()) {
                         BandDefinition parentDefinition = dataService.reload(definition.getParentBandDefinition(), bandDefinitionView);
                         List definitionsList = parentDefinition.getChildrenBandDefinitions()
                         int index = definitionsList.indexOf(definition);

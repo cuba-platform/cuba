@@ -10,14 +10,41 @@
  */
 package cuba.client.web.ui.report.browse
 
-import com.haulmont.cuba.gui.components.ActionAdapter
+import com.haulmont.cuba.gui.components.AbstractWindow
+import com.haulmont.cuba.gui.components.IFrame
+import com.haulmont.cuba.report.Report
+import com.haulmont.cuba.report.ReportInputParameter
 
+import com.haulmont.cuba.web.gui.components.WebTextField
+import com.haulmont.cuba.gui.components.Component
+import com.haulmont.cuba.report.ParameterType
+import com.haulmont.cuba.web.gui.components.WebDateField
+
+import com.haulmont.cuba.web.gui.components.WebLabel
+import com.haulmont.cuba.web.gui.components.WebGridLayout
+import com.haulmont.cuba.gui.components.Button
+
+import com.haulmont.cuba.gui.components.ActionAdapter
+import com.haulmont.cuba.gui.components.Field
+
+import com.haulmont.cuba.gui.WindowManager
+import com.haulmont.cuba.gui.components.Window
+
+import com.haulmont.cuba.gui.components.Window.Lookup.Handler
+import com.haulmont.cuba.web.gui.components.WebActionsField
+import com.haulmont.cuba.gui.components.ActionsField
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper
 import com.vaadin.ui.AbstractSelect
 
-import com.haulmont.cuba.web.app.ui.report.ReportHelper
+import com.haulmont.cuba.core.entity.Entity
 
+import com.haulmont.cuba.core.global.MetadataProvider
+import com.haulmont.cuba.web.gui.components.WebCheckBox
+import com.haulmont.cuba.gui.components.validators.DoubleValidator
 import com.vaadin.data.Validator
 import com.haulmont.chile.core.model.Instance
+import com.haulmont.cuba.core.global.MessageProvider
+import com.haulmont.cuba.web.app.ui.report.ReportHelper
 
 public class InputParametersController extends AbstractWindow {
 

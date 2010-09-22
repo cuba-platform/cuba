@@ -18,6 +18,7 @@ import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
 import com.haulmont.cuba.web.app.ui.report.ReportHelper;
+import com.haulmont.cuba.gui.components.*;
 import cuba.client.web.ui.report.fileuploaddialog.ReportImportDialog;
 
 import java.util.Collections;
