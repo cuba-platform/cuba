@@ -97,7 +97,7 @@ public class QueryFilter {
             if (!StringUtils.isBlank(where)) {
                 Set<String> joins = refined.getJoins();
                 if (!joins.isEmpty()) {
-                    String joinsStr = new StrBuilder().appendAll(joins).toString();
+                    String joinsStr = new StrBuilder().appendWithSeparators(joins, " ").toString();
                     transformer.addJoinAsIs(joinsStr);
                 }
                 transformer.addWhereAsIs(where);
