@@ -4,6 +4,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.web.app.ui.report.ReportHelper;
+import com.haulmont.cuba.gui.components.*;
 
 import java.util.Collections;
 import java.util.Map;

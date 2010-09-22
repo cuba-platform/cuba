@@ -140,6 +140,19 @@ public class ReportHelper {
         });
     }
 
+    public static AbstractAction createPrintSingleObjectFromTableAction(String id, final Window window, final Table table) {
+        return new AbstractAction(window.getMessage(id)) {
+            public void actionPerform(Component component) {
+                final Entity entity = table.getSingleSelected();
+                if (entity != null) {
+                    final String javaClassName = entity.getClass().getCanonicalName();
+                    openRunReportScreen(window, "entity", entity, javaClassName, ReportType.PRINT_FORM);
+                } else
+                    window.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
+            }
+        };
+    }
+
     private static void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue, String javaClassName, ReportType reportType) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("javaClassName", javaClassName);
