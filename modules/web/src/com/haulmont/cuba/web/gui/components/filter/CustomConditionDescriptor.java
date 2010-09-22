@@ -43,6 +43,8 @@ public class CustomConditionDescriptor extends ConditionDescriptor {
     public Class getJavaClass() {
         String className = element.attributeValue("paramClass");
         if (className == null)
+            className = element.attributeValue("class");
+        if (className == null)
             return null;
         else {
             Class paramClass = ScriptingProvider.loadClass(element.attributeValue("paramClass"));

@@ -225,8 +225,8 @@ public class Param {
 
         if (String.class.equals(javaClass)) {
             field = createTextField();
-        } else if (Date.class.equals(javaClass)) {
-            field = createDateField(datatype);
+        } else if (Date.class.isAssignableFrom(javaClass)) {
+            field = createDateField(javaClass);
         } else if (Number.class.isAssignableFrom(javaClass)) {
             field = createNumberField(datatype);
         } else if (Boolean.class.isAssignableFrom(javaClass)) {
@@ -253,18 +253,25 @@ public class Param {
         return field;
     }
 
-    private AbstractField createDateField(Datatype datatype) {
+    private AbstractField createDateField(Class javaClass) {
         final AbstractField field = new com.haulmont.cuba.web.toolkit.ui.DateField();
         field.setImmediate(true);
 
-        int resolution = DateField.RESOLUTION_MIN;
-        String formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
+        int resolution;
+        String formatStr;
+        boolean dateOnly = false;
         if (property != null) {
             TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
-            if (tt == TemporalType.DATE) {
-                resolution = DateField.RESOLUTION_DAY;
-                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
-            }
+            dateOnly = (tt == TemporalType.DATE);
+        } else if (javaClass.equals(java.sql.Date.class)) {
+            dateOnly = true;
+        }
+        if (dateOnly) {
+            resolution = DateField.RESOLUTION_DAY;
+            formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
+        } else {
+            resolution = DateField.RESOLUTION_MIN;
+            formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
         }
         ((DateField) field).setResolution(resolution);
         ((DateField) field).setDateFormat(formatStr);

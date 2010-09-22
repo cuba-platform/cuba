@@ -33,6 +33,7 @@ public class CustomConditionEditDlg extends Window {
     public enum ParamType {
         STRING,
         DATE,
+        DATETIME,
         NUMBER,
         LONG,
         BOOLEAN,
@@ -258,6 +259,8 @@ public class CustomConditionEditDlg extends Window {
             case STRING:
                 return String.class;
             case DATE:
+                return java.sql.Date.class;
+            case DATETIME:
                 return Date.class;
             case NUMBER:
                 return Double.class;
@@ -374,8 +377,10 @@ public class CustomConditionEditDlg extends Window {
                 case DATATYPE:
                     if (String.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.STRING);
-                    else if (Date.class.equals(param.getJavaClass()))
+                    else if (java.sql.Date.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.DATE);
+                    else if (Date.class.equals(param.getJavaClass()))
+                        select.setValue(ParamType.DATETIME);
                     else if (Boolean.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.BOOLEAN);
                     else if (Number.class.equals(param.getJavaClass()) || Double.class.equals(param.getJavaClass()))
