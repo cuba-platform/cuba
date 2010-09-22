@@ -57,6 +57,7 @@ import org.dom4j.Attribute;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.vaadin.hene.popupbutton.PopupButton;
 
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
@@ -79,13 +80,7 @@ public class WebFilter
     private AbstractLayout paramsLayout;
     private AbstractOrderedLayout editLayout;
     private AbstractSelect select;
-    private AbstractSelect actions;
-
-    private String nullActionId;
-    private String createActionId;
-    private String editActionId;
-    private String deleteActionId;
-    private String saveAsFolderActionId;
+    private WebPopupButton actions;
 
     private Button applyBtn;
     private CheckBox defaultCb;
@@ -131,20 +126,9 @@ public class WebFilter
         });
         topLayout.addComponent(applyBtn);
 
-        nullActionId = MessageProvider.getMessage(MESSAGES_PACK, "nullAction");
-        createActionId = MessageProvider.getMessage(MESSAGES_PACK, "createAction");
-        editActionId = MessageProvider.getMessage(MESSAGES_PACK, "editAction");
-        deleteActionId = MessageProvider.getMessage(MESSAGES_PACK, "removeAction");
-        saveAsFolderActionId = MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderBtn");
-
-        actions = new FilterSelect();
-        actions.setWidth(80, Sizeable.UNITS_PIXELS);
-        actions.setStyleName("generic-filter-actions");
-        actions.setImmediate(true);
-        actions.setNullSelectionAllowed(true);
-        actions.setNullSelectionItemId(nullActionId);
-        actions.addListener(new ActionsListener());
-        topLayout.addComponent(actions);
+        actions = new WebPopupButton();
+        actions.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
+        topLayout.addComponent((com.vaadin.ui.Component) actions.getComponent());
 
         defaultCb = new CheckBox();
         defaultCb.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "defaultCb"));
@@ -192,27 +176,28 @@ public class WebFilter
     }
 
     private void fillActions() {
-        actions.removeAllItems();
-        actions.addItem(nullActionId);
+        for (Action action : new ArrayList<Action>(actions.getActions())) {
+            actions.removeAction(action);
+        }
 
         if (editing)
             return;
 
-        actions.addItem(createActionId);
+        actions.addAction(new CreateAction());
 
         if (filterEntity == null)
             return;
 
         if (checkGlobalFilterPermission()) {
             if (filterEntity.getFolder() == null || filterEntity.getFolder() instanceof SearchFolder)
-                actions.addItem(editActionId);
+                actions.addAction(new EditAction());
 
             if (filterEntity.getFolder() == null)
-                actions.addItem(deleteActionId);
+                actions.addAction(new DeleteAction());
         }
 
         if (foldersPane != null && filterEntity.getFolder() == null)
-            actions.addItem(saveAsFolderActionId);
+            actions.addAction(new SaveAsFolderAction());
     }
 
     public void apply() {
@@ -541,11 +526,13 @@ public class WebFilter
 
     private void updateControls() {
         fillActions();
-        actions.setEnabled(!editing);
-        select.setEnabled(!editing);
-        applyBtn.setEnabled(!editing);
+        actions.setVisible(!editing);
+        ((PopupButton) actions.getComponent()).setPopupVisible(false);
 
-        defaultCb.setEnabled(filterEntity != null && !editing && filterEntity.getFolder() == null);
+        select.setEnabled(!editing);
+        applyBtn.setVisible(!editing);
+
+        defaultCb.setVisible(filterEntity != null && !editing && filterEntity.getFolder() == null);
         if (filterEntity != null && !editing)
             defaultCb.setValue(isTrue(filterEntity.getIsDefault()));
         else
@@ -763,26 +750,69 @@ public class WebFilter
         }
     }
 
-    private class ActionsListener implements Property.ValueChangeListener {
+    private class CreateAction extends AbstractAction {
 
-        public void valueChange(Property.ValueChangeEvent event) {
-            Object value = event.getProperty().getValue();
-            if (nullActionId.equals(value))
-                return;
+        protected CreateAction() {
+            super("createAction");
+        }
 
-            if (createActionId.equals(value)) {
-                createFilterEntity();
-                parseFilterXml();
-                switchToEdit();
-            } else if (editActionId.equals(value)) {
-                switchToEdit();
-            } else if (deleteActionId.equals(value)) {
-                delete();
-            } else if (saveAsFolderActionId.equals(value)) {
-                saveAsFolder();
-            }
+        @Override
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
 
-            actions.setValue(nullActionId);
+        public void actionPerform(Component component) {
+            createFilterEntity();
+            parseFilterXml();
+            switchToEdit();
+        }
+    }
+
+    private class EditAction extends AbstractAction {
+
+        protected EditAction() {
+            super("editAction");
+        }
+
+        @Override
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
+
+        public void actionPerform(Component component) {
+            switchToEdit();
+        }
+    }
+
+    private class DeleteAction extends AbstractAction {
+
+        protected DeleteAction() {
+            super("deleteAction");
+        }
+
+        @Override
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
+
+        public void actionPerform(Component component) {
+            delete();
+        }
+    }
+
+    private class SaveAsFolderAction extends AbstractAction {
+
+        protected SaveAsFolderAction() {
+            super("saveAsFolderAction");
+        }
+
+        @Override
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
+
+        public void actionPerform(Component component) {
+            saveAsFolder();
         }
     }
 
