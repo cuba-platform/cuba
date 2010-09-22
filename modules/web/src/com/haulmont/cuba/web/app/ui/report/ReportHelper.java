@@ -51,7 +51,7 @@ public class ReportHelper {
         }
     }
 
-    /* This method ignores security */
+    /* This method ignores report's security settings*/
     @Deprecated
     public static void createRunReportWithSingleObjectButton(Button runReportButton, final Window frame, final Table table) {
         final String javaClassName = table.getDatasource().getMetaClass().getJavaClass().getCanonicalName();
@@ -84,8 +84,8 @@ public class ReportHelper {
         });
     }
 
-    public static void createRunReportButton(Button runReportButton, final Window window) {
-        runReportButton.setAction(new AbstractAction(window.getMessage("runReport")) {
+    public static AbstractAction createRunReportButton(String captionId, final Window window) {
+        return new AbstractAction(window.getMessage(captionId)) {
             public void actionPerform(Component component) {
                 final Map<String, Object> params = new HashMap<String, Object>();
                 params.put("screen", window.getId());
@@ -106,7 +106,7 @@ public class ReportHelper {
                     }
                 }, WindowManager.OpenType.DIALOG, params);
             }
-        });
+        };
     }
 
 
@@ -126,10 +126,13 @@ public class ReportHelper {
     public static AbstractAction createPrintformFromTableAction(String captionId, final Window window, final Table table, final boolean multiObjects) {
         return new AbstractAction(window.getMessage(captionId)) {
             public void actionPerform(Component component) {
-                final Object fromTable = multiObjects ? table.getSelected() : table.getSingleSelected();
-                if (fromTable != null && (((Collection) fromTable).size() > 0 || multiObjects)) {
-                    final String javaClassName = multiObjects ? ((Collection) fromTable).iterator().next().getClass().getCanonicalName() : fromTable.getClass().getCanonicalName();
-                    openRunReportScreen(window, multiObjects ? "entities" : "entity", fromTable, javaClassName, multiObjects ? ReportType.LIST_PRINT_FORM : ReportType.PRINT_FORM);
+                Object selected = multiObjects ? table.getSelected() : table.getSingleSelected();
+                if (selected != null && (!multiObjects || ((Collection) selected).size() > 0)) {
+                    ReportType reportType = multiObjects ? ReportType.LIST_PRINT_FORM : ReportType.PRINT_FORM;
+                    String paramName = multiObjects ? "entities" : "entity";
+                    String javaClassName = multiObjects ? ((Collection) selected).iterator().next().getClass().getCanonicalName() : selected.getClass().getCanonicalName();
+
+                    openRunReportScreen(window, paramName, selected, javaClassName, reportType);
                 } else
                     window.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
             }
