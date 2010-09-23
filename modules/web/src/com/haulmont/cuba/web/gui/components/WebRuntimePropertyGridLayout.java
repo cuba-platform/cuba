@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.security.entity.AttributeEntity;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
@@ -71,11 +72,14 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     public void setMainDs(Datasource ds) {
         this.mainDs = ds;
-        this.attributeMetaClass = defineMetaClass(attributeValueProperty, attributeProperty);
-        this.attributeValueMetaClass = defineMetaClass(attributeValueProperty);
+
+        String[] attributeValuePropertyArr = attributeValueProperty.split("\\.");
+        String[] attributePropertyArr = attributeProperty.split("\\.");
+        this.attributeMetaClass = defineMetaClass((String[])ArrayUtils.addAll(attributeValuePropertyArr, attributePropertyArr));
+        this.attributeValueMetaClass = defineMetaClass(attributeValueProperty.split("\\."));
 
         if (typeProperty != null)
-            this.mainEntityTypeMetaClass = defineMetaClass(typeProperty);
+            this.mainEntityTypeMetaClass = defineMetaClass(typeProperty.split("\\."));
 
         this.inverseAttributePropertyInValue = getInversePropertyName(attributeValueMetaClass, attributeMetaClass);
         this.inverseMainEntityPropertyInValue = getInversePropertyName(attributeValueMetaClass);
@@ -389,7 +393,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         LoadContext lc = new LoadContext(attributeMetaClass);
         String typeName = getInversePropertyName(attributeMetaClass, mainEntityTypeMetaClass);
         Instance ins = (Instance) mainDs.getItem();
-        Entity type = ins.getValue(typeProperty);
+        Entity type = ins.getValueEx(typeProperty);
         if (type == null) {
             return Collections.EMPTY_LIST;
         }
