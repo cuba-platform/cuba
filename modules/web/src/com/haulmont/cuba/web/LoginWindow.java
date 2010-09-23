@@ -297,7 +297,7 @@ public class LoginWindow extends Window
                         : DigestUtils.md5Hex((String) passwordField.getValue());
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
-                connection.login(login, passwd, locale);
+                login(login, passwd, locale);
             }
             open(new ExternalResource(App.getInstance().getMainWindow().getURL()));
         } catch (LoginException e) {
@@ -311,6 +311,10 @@ public class LoginWindow extends Window
         } catch (Exception e) {
             handleException(e);
         }
+    }
+
+    protected void login(String login, String passwd, Locale locale) throws LoginException {
+        connection.login(login, passwd, locale);
     }
 
     protected void handleException(Exception e) {
@@ -367,5 +371,10 @@ public class LoginWindow extends Window
 
     protected String getMessagesPack() {
         return AppConfig.getInstance().getMessagesPack();
+    }
+
+
+    public static void main(String[] args) {
+        System.getProperties().list(System.out);
     }
 }
