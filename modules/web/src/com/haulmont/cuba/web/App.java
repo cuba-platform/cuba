@@ -393,7 +393,7 @@ public class App extends Application
                 && request.getUserPrincipal() != null
                 && !principalIsWrong
                 && ActiveDirectoryHelper.useActiveDirectory()
-                && !(requestURI.endsWith("/login") || requestURI.contains("/UIDL/")))
+                && !(requestURI.endsWith("/login") || requestURI.contains("/UIDL/") || requestURI.contains("/APP/")))
         {
             String userName = request.getUserPrincipal().getName();
             log.debug("Trying to login ActiveDirectory as " + userName);
