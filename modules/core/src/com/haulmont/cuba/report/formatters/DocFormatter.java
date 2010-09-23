@@ -109,9 +109,10 @@ public class DocFormatter extends AbstractFormatter {
                     Object bandValue = entry.getValue();
                     if (bandValue == null) bandValue = "";
                     String bandValueStr = bandValue instanceof Entity ? ((Instance) bandValue).getInstanceName() : bandValue.toString();
-                    ODTHelper.replaceInDocument(xTextDocument, valueExpression, bandValueStr);
+                    ODTHelper.replaceInDocument(xTextDocument, valueExpression, bandValueStr, false);
                 }
             }
+            ODTHelper.replaceInDocument(xTextDocument, "\\$\\{.+?\\}", "", true);
         }
     }
 

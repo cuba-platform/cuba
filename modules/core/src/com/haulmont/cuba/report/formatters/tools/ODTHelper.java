@@ -104,7 +104,7 @@ public class ODTHelper {
         xStorable.storeToURL(pathToUrl(path), props);
     }
 
-    public static long replaceInDocument(XTextDocument xTextDocument, String searchString, String replaceString) {
+    public static long replaceInDocument(XTextDocument xTextDocument, String searchString, String replaceString, boolean isRegexp) {
         XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
         XReplaceDescriptor xRepDesc = xReplaceable.createReplaceDescriptor();
         // set a string to search for
@@ -113,20 +113,20 @@ public class ODTHelper {
         xRepDesc.setReplaceString(replaceString);
         // create an array of one property value for a CharWeight property
         PropertyValue[] aReplaceArgs = new PropertyValue[0];
-//        // create PropertyValue struct
-//        aReplaceArgs[0] = new PropertyValue();
-//         // CharWeight should be bold
-//        aReplaceArgs[0].Name = "CharWeight";
-//        aReplaceArgs[0].Value = new Float(com.sun.star.awt.FontWeight.BOLD);
-        // set our sequence with one property value as ReplaceAttribute 
-        XPropertyReplace xPropRepl = (XPropertyReplace) UnoRuntime.queryInterface(
-                XPropertyReplace.class, xRepDesc);
+
         try {
+            if (isRegexp) {
+                xRepDesc.setPropertyValue("SearchRegularExpression", true);
+            }
+
+            // set our sequence with one property value as ReplaceAttribute
+            XPropertyReplace xPropRepl = (XPropertyReplace) UnoRuntime.queryInterface(
+                    XPropertyReplace.class, xRepDesc);
             xPropRepl.setReplaceAttributes(aReplaceArgs);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-// replace
+        // replace
         return xReplaceable.replaceAll(xRepDesc);
     }
 
