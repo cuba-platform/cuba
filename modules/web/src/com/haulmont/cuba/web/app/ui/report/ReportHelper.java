@@ -85,7 +85,7 @@ public class ReportHelper {
     }
 
     public static AbstractAction createRunReportButton(String captionId, final Window window) {
-        return new AbstractAction(window.getMessage(captionId)) {
+        return new AbstractAction(captionId) {
             public void actionPerform(Component component) {
                 final Map<String, Object> params = new HashMap<String, Object>();
                 params.put("screen", window.getId());
@@ -106,12 +106,17 @@ public class ReportHelper {
                     }
                 }, WindowManager.OpenType.DIALOG, params);
             }
+
+            @Override
+            public String getCaption() {
+                return window.getMessage(getId());
+            }
         };
     }
 
 
     public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor) {
-        return new AbstractAction(editor.getMessage(captionId)) {
+        return new AbstractAction(captionId) {
             public void actionPerform(Component component) {
                 final Entity entity = editor.getItem();
                 if (entity != null) {
@@ -120,11 +125,16 @@ public class ReportHelper {
                 } else
                     editor.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
             }
+
+            @Override
+            public String getCaption() {
+                return editor.getMessage(getId());
+            }
         };
     }
 
     public static AbstractAction createPrintformFromTableAction(String captionId, final Window window, final Table table, final boolean multiObjects) {
-        return new AbstractAction(window.getMessage(captionId)) {
+        return new AbstractAction(captionId) {
             public void actionPerform(Component component) {
                 Object selected = multiObjects ? table.getSelected() : table.getSingleSelected();
                 if (selected != null && (!multiObjects || ((Collection) selected).size() > 0)) {
@@ -135,6 +145,11 @@ public class ReportHelper {
                     openRunReportScreen(window, paramName, selected, javaClassName, reportType);
                 } else
                     window.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
+            }
+
+            @Override
+            public String getCaption() {
+                return window.getMessage(getId());
             }
         };
     }
