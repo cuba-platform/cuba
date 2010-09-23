@@ -24,9 +24,13 @@
         <vbox expand="split" spacing="true">
             <label id="permissionsType" stylename="h2"/>
             <split id="split" orientation="horizontal" pos="30">
-                <widgetsTree id="permissions-tree">
-                    <items datasource="permissions"/>
-                </widgetsTree>
+                <scrollbox height="100%" width="100%">
+                    <vbox>
+                        <widgetsTree id="permissions-tree">
+                            <items datasource="permissions"/>
+                        </widgetsTree>
+                    </vbox>
+                </scrollbox>
             </split>
             <hbox margin="true" spacing="true">
                 <button id="checkAll" icon="icons/checkAll.png"/>
