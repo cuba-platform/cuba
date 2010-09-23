@@ -58,17 +58,21 @@ public class CubaApplicationServlet extends ApplicationServlet {
         }
 
         String[] parts = requestURI.split("/");
-        String lastPart = parts[parts.length - 1];
-        boolean needRedirect = parts.length > 0 && (contextName.equals(lastPart) || "open".equals(lastPart) || "login".equals(lastPart));
+        boolean needRedirect = parts.length > 0 && !App.auxillaryUrl(requestURI);
         if (needRedirect) {
-            for (String part : parts) {
-                Matcher m = App.WIN_PATTERN.matcher(part);
-                if (part.equals("UIDL") || part.equals("VAADIN") || m.matches()) {
-                    needRedirect = false;
-                    break;
+            String lastPart = parts[parts.length - 1];
+            needRedirect = contextName.equals(lastPart) || "open".equals(lastPart) || "login".equals(lastPart);
+            if (needRedirect) {
+                for (String part : parts) {
+                    Matcher m = App.WIN_PATTERN.matcher(part);
+                    if (m.matches()) {
+                        needRedirect = false;
+                        break;
+                    }
                 }
             }
         }
+
         if (needRedirect) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < parts.length; i++) {

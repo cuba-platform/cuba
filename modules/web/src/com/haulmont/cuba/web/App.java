@@ -393,7 +393,7 @@ public class App extends Application
                 && request.getUserPrincipal() != null
                 && !principalIsWrong
                 && ActiveDirectoryHelper.useActiveDirectory()
-                && !(requestURI.endsWith("/login") || requestURI.contains("/UIDL/") || requestURI.contains("/APP/")))
+                && !(requestURI.endsWith("/login") || auxillaryUrl(requestURI)))
         {
             String userName = request.getUserPrincipal().getName();
             log.debug("Trying to login ActiveDirectory as " + userName);
@@ -418,6 +418,9 @@ public class App extends Application
         processExternalLink(request, requestURI);
     }
 
+    public static boolean auxillaryUrl(String uri) {
+        return uri.contains("/UIDL/") || uri.contains("/APP/") || uri.contains("/VAADIN/");
+    }
 
     private void setupCurrentWindowName(String requestURI) {
         //noinspection deprecation
@@ -445,7 +448,7 @@ public class App extends Application
     }
 
     private void processExternalLink(HttpServletRequest request, String requestURI) {
-        if (requestURI.endsWith("/open") && !requestURI.contains("/UIDL/")) {
+        if (requestURI.endsWith("/open") && !auxillaryUrl(requestURI)) {
             Map<String, String> params = new HashMap<String, String>();
             Enumeration parameterNames = request.getParameterNames();
             while (parameterNames.hasMoreElements()) {
