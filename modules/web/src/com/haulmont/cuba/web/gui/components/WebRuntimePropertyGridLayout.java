@@ -50,6 +50,8 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     private String attributeProperty;
 
+    private String attributePropertyOrder;
+
     private String attributeValueProperty;
 
     private String typeProperty;
@@ -397,7 +399,8 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         if (type == null) {
             return Collections.EMPTY_LIST;
         }
-        lc.setQueryString("select e from " + attributeMetaClass.getName() + " e where e." + typeName + ".id = :id order by e.name");
+        lc.setQueryString("select e from " + attributeMetaClass.getName() + " e where e." + typeName + ".id = :id" +
+                (attributePropertyOrder != null ? " order by e." + attributePropertyOrder : ""));
         lc.getQuery().addParameter("id", type.getId());
         return service.loadList(lc);
     }
@@ -444,6 +447,14 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     public void setAttributeProperty(String value) {
         this.attributeProperty = value;
+    }
+
+    public String getAttributePropertyOrder() {
+        return attributePropertyOrder;
+    }
+
+    public void setAttributePropertyOrder(String value) {
+        this.attributePropertyOrder = value;
     }
 
     public String getInnerComponentWidth() {
