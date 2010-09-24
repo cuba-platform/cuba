@@ -258,11 +258,19 @@ public class WebWindow
     }
 
     public void showNotification(String caption, NotificationType type) {
-        component.getWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+        com.vaadin.ui.Window.Notification notify =
+                new com.vaadin.ui.Window.Notification(caption, WebComponentsHelper.convertNotificationType(type));
+        if(type.equals(IFrame.NotificationType.HUMANIZED))
+            notify.setDelayMsec(3000);
+        component.getWindow().showNotification(notify);
     }
 
     public void showNotification(String caption, String description, NotificationType type) {
-        component.getWindow().showNotification(caption, description, WebComponentsHelper.convertNotificationType(type));
+        com.vaadin.ui.Window.Notification notify =
+                new com.vaadin.ui.Window.Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
+        if(type.equals(IFrame.NotificationType.HUMANIZED))
+            notify.setDelayMsec(3000);
+        component.getWindow().showNotification(notify);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
