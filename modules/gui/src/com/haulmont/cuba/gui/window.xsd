@@ -330,6 +330,7 @@
                         <xs:attribute name="typeProperty" type="xs:string" use="required"/>
                         <xs:attribute name="attributeValueProperty" type="xs:string" use="required"/>
                         <xs:attribute name="attributeProperty" type="xs:string" use="required"/>
+                        <xs:attribute name="attributePropertyOrder" type="xs:string" use="optional"/>
                         <xs:attribute name="innerComponentWidth" type="xs:string" use="optional"/>
                         <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:string" use="optional"/>
