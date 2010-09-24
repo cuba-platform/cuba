@@ -48,11 +48,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     private Datasource mainDs;
 
-    private String attributeProperty;
-
     private String attributePropertyOrder;
-
-    private String attributeValueProperty;
 
     private String typeProperty;
 
@@ -72,16 +68,18 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     private String inverseMainEntityPropertyInValue;
 
+    private String[] attributeValuePropertyArr;
+    private String[] attributePropertyArr;
+    private String[] typePropertyArr;
+
     public void setMainDs(Datasource ds) {
         this.mainDs = ds;
 
-        String[] attributeValuePropertyArr = attributeValueProperty.split("\\.");
-        String[] attributePropertyArr = attributeProperty.split("\\.");
         this.attributeMetaClass = defineMetaClass((String[])ArrayUtils.addAll(attributeValuePropertyArr, attributePropertyArr));
-        this.attributeValueMetaClass = defineMetaClass(attributeValueProperty.split("\\."));
+        this.attributeValueMetaClass = defineMetaClass(attributeValuePropertyArr);
 
-        if (typeProperty != null)
-            this.mainEntityTypeMetaClass = defineMetaClass(typeProperty.split("\\."));
+        if (typePropertyArr != null)
+            this.mainEntityTypeMetaClass = defineMetaClass(typePropertyArr);
 
         this.inverseAttributePropertyInValue = getInversePropertyName(attributeValueMetaClass, attributeMetaClass);
         this.inverseMainEntityPropertyInValue = getInversePropertyName(attributeValueMetaClass);
@@ -109,7 +107,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     protected CollectionDatasource createDatasource() {
         CollectionDatasource cds = new CollectionDatasourceImpl(mainDs.getDsContext(), mainDs.getDataService(),
-                "valuesDs", defineMetaClass(attributeValueProperty), createAttributesView());
+                "valuesDs", defineMetaClass(attributeValuePropertyArr), createAttributesView());
         cds.setQuery("select e from " + attributeValueMetaClass.getName() + " e where e." + inverseMainEntityPropertyInValue
                 + ".id = :custom$id order by e." + inverseAttributePropertyInValue + ".name");
         cds.refresh(Collections.singletonMap("id", mainDs.getItem().getId()));
@@ -186,10 +184,10 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     protected void checkAttributesType() {
         if (attributeMetaClass == null) {
-            throw new IllegalArgumentException("there is no property " + attributeProperty + " in metaclass " + attributeMetaClass.getName());
+            throw new IllegalArgumentException("there is no property " + arrToString(attributePropertyArr, ".") + " in metaclass " + attributeMetaClass.getName());
         }
         if (!ClassUtils.isAssignable(attributeMetaClass.getJavaClass(), AttributeEntity.class)) {
-            throw new IllegalArgumentException("property " + attributeProperty + " isn't assignable to " + AttributeEntity.class.getName());
+            throw new IllegalArgumentException("property " + arrToString(attributePropertyArr, ".") + " isn't assignable to " + AttributeEntity.class.getName());
         }
     }
 
@@ -426,11 +424,11 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
     }
 
     public String getAttributeValueProperty() {
-        return attributeValueProperty;
+        return arrToString(attributeValuePropertyArr, ".");
     }
 
     public void setAttributeValueProperty(String attributeValueProperty) {
-        this.attributeValueProperty = attributeValueProperty;
+        this.attributeValuePropertyArr = attributeValueProperty.split("\\.");
     }
 
     public String getTypeProperty() {
@@ -439,14 +437,15 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     public void setTypeProperty(String typeProperty) {
         this.typeProperty = typeProperty;
+        typePropertyArr = typeProperty.split("\\.");
     }
 
     public String getAttributeProperty() {
-        return attributeProperty;
+        return arrToString(attributePropertyArr, ".");
     }
 
     public void setAttributeProperty(String value) {
-        this.attributeProperty = value;
+        this.attributePropertyArr = value.split("\\.");
     }
 
     public String getAttributePropertyOrder() {
@@ -473,5 +472,12 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         this.dateFormat = dateFormat;
     }
 
+    private String arrToString(String[] arr, String delimiter) {
+        StringBuilder sb = new StringBuilder(arr[0]);
+        for (int i = 1; i < arr.length; i++)
+            sb.append(delimiter).append(arr[i]);
+
+        return sb.toString();
+    }
 
 }

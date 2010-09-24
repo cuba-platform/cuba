@@ -67,6 +67,7 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
 
         loadExpandable(component, element);
         loadAttributeProperty(component, element);
+        loadAttributePropertyOrder(component, element);
         loadTypeProperty(component, element);
         loadAttributeValueProperty(component, element);
         loadComponentWidth(component, element);
@@ -91,6 +92,13 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         String s = element.attributeValue("attributeProperty");
         if (!StringUtils.isEmpty(s)) {
             propertyGridLayout.setAttributeProperty(s);
+        }
+    }
+
+    protected void loadAttributePropertyOrder(RuntimePropertyGridLayout propertyGridLayout, Element element) {
+        String s = element.attributeValue("attributePropertyOrder");
+        if (!StringUtils.isEmpty(s)) {
+            propertyGridLayout.setAttributePropertyOrder(s);
         }
     }
 

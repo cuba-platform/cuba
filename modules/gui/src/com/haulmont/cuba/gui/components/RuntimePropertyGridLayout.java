@@ -22,6 +22,9 @@ public interface RuntimePropertyGridLayout extends GridLayout, Component.HasCapt
     String getAttributeProperty();
     void setAttributeProperty(String value);
 
+    String getAttributePropertyOrder();
+    void setAttributePropertyOrder(String value);
+
     String getInnerComponentWidth();
     void setInnerComponentWidth(String width);
 
