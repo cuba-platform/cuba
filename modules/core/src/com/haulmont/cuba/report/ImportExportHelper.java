@@ -20,10 +20,11 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.zip.CRC32;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.CRC32;
+
+import org.apache.tools.zip.ZipOutputStream;
+import org.apache.tools.zip.ZipEntry;
 
 /*
 * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
@@ -37,11 +38,13 @@ import java.util.zip.ZipOutputStream;
 */
 
 public class ImportExportHelper {
+    private static final String ENCODING = "CP866";
 
     public static byte[] exportReports(Collection<Report> reports) throws IOException, FileStorageException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
         zipOutputStream.setMethod(ZipEntry.STORED);
+        zipOutputStream.setEncoding(ENCODING);
         for (Report report : reports) {
             try {
                 byte[] reportBytes = exportReport(report);
@@ -68,6 +71,7 @@ public class ImportExportHelper {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
         zipOutputStream.setMethod(ZipEntry.STORED);
+        zipOutputStream.setEncoding(ENCODING);
         report = ((ReportService) Locator.lookup(ReportService.NAME)).reloadReport(report);
         String xml = toXML(report);
         byte[] xmlBytes = xml.getBytes();
@@ -154,7 +158,7 @@ public class ImportExportHelper {
         LinkedList<Report> reports = null;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);
         ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream);
-        ZipEntry zipEntry;
+        java.util.zip.ZipEntry zipEntry;
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (reports == null) {
                 reports = new LinkedList<Report>();
@@ -173,7 +177,7 @@ public class ImportExportHelper {
         Report report = null;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);
         ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream);
-        ZipEntry zipEntry;
+        java.util.zip.ZipEntry zipEntry;
         // importing report.xml to report object
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (zipEntry.getName().equals("report.xml")) {
