@@ -17,7 +17,7 @@ import javax.persistence.*;
 
 @Entity(name = "report$ReportScreen")
 @Table(name = "REPORT_REPORT_SCREEN")
-public class ReportScreen extends StandardEntity {
+public class ReportScreen extends HardDeleteEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REPORT_ID")

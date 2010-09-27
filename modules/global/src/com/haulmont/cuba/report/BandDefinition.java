@@ -22,7 +22,7 @@ import java.util.List;
 @Entity(name = "report$BandDefinition")
 @Table(name = "REPORT_BAND_DEFINITION")
 @NamePattern("%s|name")
-public class BandDefinition extends StandardEntity {
+public class BandDefinition extends HardDeleteEntity {
     private static final long serialVersionUID = 8658220979738705511L;
 
     @Column(name = "NAME")

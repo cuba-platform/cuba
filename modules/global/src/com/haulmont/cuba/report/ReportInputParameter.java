@@ -16,7 +16,7 @@ import javax.persistence.*;
 
 @Entity(name = "report$ReportInputParameter")
 @Table(name = "REPORT_INPUT_PARAMETER")
-public class ReportInputParameter extends StandardEntity {
+public class ReportInputParameter extends HardDeleteEntity {
     private static final long serialVersionUID = 6231014880104406246L;
 
     @ManyToOne(fetch = FetchType.LAZY)

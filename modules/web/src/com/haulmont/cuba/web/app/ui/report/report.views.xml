@@ -32,6 +32,8 @@
         <property name="rootBandDefinition" view="report.export"/>
         <property name="inputParameters" view="_local"/>
         <property name="templateFileDescriptor" view="_local"/>
+        <property name="roles" view="_local"/>
+        <property name="reportScreens" view="_local"/>
     </view>
 
 </views>

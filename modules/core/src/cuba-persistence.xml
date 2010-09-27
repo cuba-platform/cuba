@@ -31,6 +31,7 @@
         <class>com.haulmont.cuba.security.entity.FilterEntity</class>
         <class>com.haulmont.cuba.security.entity.SearchFolder</class>
 
+        <class>com.haulmont.cuba.report.HardDeleteEntity</class>
         <class>com.haulmont.cuba.report.DataSet</class>
         <class>com.haulmont.cuba.report.BandDefinition</class>
         <class>com.haulmont.cuba.report.Report</class>

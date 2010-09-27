@@ -137,7 +137,7 @@ public class ImportExportHelper {
     }
 
 //    private static void addClassAlias(XStream xStream, Class clazz, HashSet<Class> knownClasses) {
-    
+
 //        if (!knownClasses.contains(clazz) && Entity.class.isAssignableFrom(clazz)) {
 //            xStream.alias(clazz.getSimpleName(), clazz);
 //            knownClasses.add(clazz);
@@ -207,7 +207,21 @@ public class ImportExportHelper {
         }
         zipInputStream.close();
         byteArrayInputStream.close();
+
         Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            Report exisitngReport = em.find(Report.class, report.getId());
+            if (exisitngReport != null) {
+                em.remove(exisitngReport);
+                em.flush();
+            }
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             if (PersistenceHelper.isNew(report)) {

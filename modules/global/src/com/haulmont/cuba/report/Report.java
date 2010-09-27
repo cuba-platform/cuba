@@ -24,7 +24,7 @@ import java.util.List;
 @Entity(name = "report$Report")
 @Table(name = "REPORT_REPORT")
 @NamePattern("%s|name")
-public class Report extends StandardEntity {
+public class Report extends HardDeleteEntity {
     private static final long serialVersionUID = -2817764915661205093L;
 
     @Column(name = "NAME")

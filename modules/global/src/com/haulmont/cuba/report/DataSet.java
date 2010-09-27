@@ -16,7 +16,7 @@ import javax.persistence.*;
 
 @Entity(name = "report$DataSet")
 @Table(name = "REPORT_DATA_SET")
-public class DataSet extends StandardEntity {
+public class DataSet extends HardDeleteEntity {
     private static final long serialVersionUID = -3706206933129963303L;
 
     @Column(name = "NAME")
