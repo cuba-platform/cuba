@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.bali.util.StringHelper;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
@@ -223,8 +224,25 @@ public class DataServiceBean implements DataService
             final String name = entry.getKey();
             if (paramNames.contains(name)) {
                 final Object value = entry.getValue();
+
                 if (value instanceof Entity) {
                     query.setParameter(entry.getKey(), ((Entity) value).getId());
+
+                } else if (value instanceof EnumClass) {
+                        query.setParameter(entry.getKey(), ((EnumClass) value).getId());
+
+                } else if (value instanceof Collection) {
+                    List list = new ArrayList(((Collection) value).size());
+                    for (Object item : (Collection) value) {
+                        if (item instanceof Entity)
+                            list.add(((Entity) item).getId());
+                        else if (item instanceof EnumClass)
+                            list.add(((EnumClass) item).getId());
+                        else
+                            list.add(item);
+                    }
+                    query.setParameter(entry.getKey(), list);
+
                 } else {
                     query.setParameter(entry.getKey(), value);
                 }

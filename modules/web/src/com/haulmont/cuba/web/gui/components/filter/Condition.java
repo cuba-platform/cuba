@@ -11,10 +11,8 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -37,6 +35,7 @@ public abstract class Condition {
     protected String filterComponentName;
     protected String text;
     protected boolean unary;
+    protected boolean inExpr;
     protected Class javaClass;
     protected Param param;
     protected String entityAlias;
@@ -57,6 +56,7 @@ public abstract class Condition {
         text = StringEscapeUtils.unescapeXml(element.getText());
         caption = element.attributeValue("caption");
         unary = Boolean.valueOf(element.attributeValue("unary"));
+        inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
         hidden = Boolean.valueOf(element.attributeValue("hidden"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");
@@ -72,7 +72,7 @@ public abstract class Condition {
             String paramName = paramElem.attributeValue("name");
 
             if (unary) {
-                param = new Param(paramName, null, null, null, null);
+                param = new Param(paramName, null, null, null, null, false);
             } else {
                 param = createParam(paramName);
             }
@@ -95,7 +95,7 @@ public abstract class Condition {
     }
 
     protected Param createParam(String paramName) {
-        return new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource);
+        return new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource, inExpr);
     }
 
     public void addListener(Listener listener) {
@@ -176,6 +176,9 @@ public abstract class Condition {
         if (unary)
             element.addAttribute("unary", "true");
 
+        if (inExpr)
+            element.addAttribute("inExpr", "true");
+
         if (hidden)
             element.addAttribute("hidden", "true");
 
@@ -210,6 +213,14 @@ public abstract class Condition {
 
     public void setUnary(boolean unary) {
         this.unary = unary;
+    }
+
+    public boolean isInExpr() {
+        return inExpr;
+    }
+
+    public void setInExpr(boolean inExpr) {
+        this.inExpr = inExpr;
     }
 
     public String getOperationCaption() {

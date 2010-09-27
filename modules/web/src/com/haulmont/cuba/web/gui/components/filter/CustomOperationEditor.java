@@ -17,13 +17,15 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.AppConfig;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class CustomOperationEditor extends OperationEditor {
 
     public CustomOperationEditor(final Condition condition) {
         super(condition);
 
-        Button btn = WebComponentsHelper.createButton("icons/edit.png");
+        Button btn = WebComponentsHelper.createButton();
+        btn.setStyleName(BaseTheme.BUTTON_LINK);
         btn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Edit"));
 
         btn.setEnabled(UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions"));

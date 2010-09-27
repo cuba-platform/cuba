@@ -26,6 +26,7 @@ public abstract class ConditionDescriptor {
     protected MetaClass metaClass;
     protected CollectionDatasource datasource;
     protected String entityAlias;
+    protected boolean inExpr;
 
     public ConditionDescriptor(String name, String filterComponentName, CollectionDatasource datasource) {
         this.name = name;
@@ -58,9 +59,17 @@ public abstract class ConditionDescriptor {
         return metaClass;
     }
 
+    public boolean isInExpr() {
+        return inExpr;
+    }
+
+    public void setInExpr(boolean inExpr) {
+        this.inExpr = inExpr;
+    }
+
     public Param createParam(Condition condition) {
         Param param = new Param(condition.createParamName(), getJavaClass(),
-                getEntityParamWhere(), getEntityParamView(), datasource);
+                getEntityParamWhere(), getEntityParamView(), datasource, inExpr);
         return param;
     }
 

@@ -26,6 +26,7 @@ import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -195,6 +196,7 @@ public class FilterEditor {
         table.setPageLength(0);
         table.setWidth(EDITOR_WIDTH);
         table.setHeight("200px");
+        table.setStyleName("filter-conditions");
 
         String nameCol = getMessage("FilterEditor.column.name");
         String opCol = getMessage("FilterEditor.column.op");
@@ -291,7 +293,8 @@ public class FilterEditor {
     }
 
     private Button createDeleteConditionBtn(final Condition condition) {
-        Button delBtn = WebComponentsHelper.createButton("icons/remove.png");
+        Button delBtn = WebComponentsHelper.createButton("icons/tab-remove.png");
+        delBtn.setStyleName(BaseTheme.BUTTON_LINK);
         delBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 deleteCondition(condition);

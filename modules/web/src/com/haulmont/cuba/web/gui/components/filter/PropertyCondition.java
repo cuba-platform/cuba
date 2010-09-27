@@ -27,6 +27,7 @@ public class PropertyCondition extends Condition {
 
     public enum Op {
         EQUAL("=", false),
+        IN("in", false),
         NOT_EQUAL("<>", false),
         GREATER(">", false),
         GREATER_OR_EQUAL(">=", false),
@@ -63,17 +64,19 @@ public class PropertyCondition extends Condition {
 
         public static EnumSet<Op> availableOps(Class javaClass) {
             if (String.class.equals(javaClass))
-                return EnumSet.of(EQUAL, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, EMPTY, NOT_EMPTY);
+                return EnumSet.of(EQUAL, IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, EMPTY, NOT_EMPTY);
 
             else if (Date.class.isAssignableFrom(javaClass)
                     || Number.class.isAssignableFrom(javaClass))
-                return EnumSet.of(EQUAL, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, EMPTY, NOT_EMPTY);
+                return EnumSet.of(EQUAL, IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, EMPTY, NOT_EMPTY);
 
-            else if (Boolean.class.equals(javaClass)
-                    || UUID.class.equals(javaClass)
+            else if (Boolean.class.equals(javaClass))
+                return EnumSet.of(EQUAL, NOT_EQUAL, EMPTY, NOT_EMPTY);
+
+            else if (UUID.class.equals(javaClass)
                     || Enum.class.isAssignableFrom(javaClass)
                     || Entity.class.isAssignableFrom(javaClass))
-                return EnumSet.of(EQUAL, NOT_EQUAL, EMPTY, NOT_EMPTY);
+                return EnumSet.of(EQUAL, IN, NOT_EQUAL, EMPTY, NOT_EMPTY);
 
             else
                 throw new UnsupportedOperationException("Unsupported java class: " + javaClass);
@@ -112,7 +115,7 @@ public class PropertyCondition extends Condition {
     @Override
     protected Param createParam(String paramName) {
         MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
-        return new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource, metaProperty);
+        return new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource, metaProperty, inExpr);
     }
 
     @Override
@@ -126,8 +129,15 @@ public class PropertyCondition extends Condition {
 
         sb.append(" ").append(operator.getText());
 
-        if (!operator.isUnary())
-            sb.append(" :").append(param.getName());
+        if (!operator.isUnary()) {
+            if (inExpr)
+                sb.append(" (");
+            else
+                sb.append(" ");
+            sb.append(":").append(param.getName());
+            if (inExpr)
+                sb.append(")");
+        }
 
         text = sb.toString();
     }
@@ -154,10 +164,12 @@ public class PropertyCondition extends Condition {
 
             if (operator.isUnary()) {
                 unary = true;
-                setParam(new Param(paramName, null, null, null, null));
+                inExpr = false;
+                setParam(new Param(paramName, null, null, null, null, false));
             } else {
                 unary = false;
-                setParam(new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource));
+                inExpr = operator.equals(Op.IN);
+                setParam(new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource, inExpr));
             }
         }
     }

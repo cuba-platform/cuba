@@ -31,12 +31,16 @@ public class CustomConditionDescriptor extends ConditionDescriptor {
         this.caption = element.attributeValue("caption");
         if (this.caption != null)
             this.locCaption = MessageUtils.loadString(messagesPack, this.caption);
+
+        inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
     }
 
     @Override
     public Condition createCondition() {
-        return new CustomCondition(this, 
+        CustomCondition condition = new CustomCondition(this,
                 element.getText(), element.attributeValue("join"), entityAlias);
+        condition.setInExpr(inExpr);
+        return condition;
     }
 
     @Override

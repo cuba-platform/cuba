@@ -48,6 +48,7 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
                 messagesPack,
                 filterComponentName,
                 datasource);
+        inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");
     }
@@ -61,7 +62,7 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
     public Param createParam(Condition condition) {
         MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
         Param param = new Param(condition.createParamName(), getJavaClass(),
-                getEntityParamWhere(), getEntityParamView(), datasource, metaProperty);
+                getEntityParamWhere(), getEntityParamView(), datasource, metaProperty, inExpr);
         return param;
     }
 

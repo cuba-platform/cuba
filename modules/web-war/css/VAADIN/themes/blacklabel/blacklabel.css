@@ -284,3 +284,22 @@
 .fts-hit {
     padding-left: 20px;
 }
+
+.filter-conditions .v-table-cell-content .pickerfield .v-button {
+    margin: 0;
+    padding: 0;
+}
+
+.filter-conditions .v-table-cell-content .pickerfield .v-button-wrap {
+   padding: 0;
+}
+
+.filter-conditions .v-table-cell-content .pickerfield .v-icon {
+    height: auto;
+    margin-right: 0;
+}
+
+.filter-param-list-edit-del {
+    height: 25px;
+}
+

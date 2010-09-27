@@ -21,20 +21,22 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 
 public class CustomConditionEditDlg extends Window {
-    private Label entityParamWhereLab;
-    private Label entityParamViewLab;
 
     public enum ParamType {
         STRING,
         DATE,
         DATETIME,
-        NUMBER,
+        DOUBLE,
+        BIGDECIMAL,
+        INTEGER,
         LONG,
         BOOLEAN,
         UUID,
@@ -50,9 +52,11 @@ public class CustomConditionEditDlg extends Window {
     private TextField whereText;
     private TextField joinText;
     private AbstractSelect typeSelect;
+    private CheckBox typeCheckBox;
     private TextField entityParamWhereText;
     private TextField entityParamViewText;
-
+    private Label entityParamWhereLab;
+    private Label entityParamViewLab;
 
     private static final String FIELD_WIDTH = "250px";
     private String messagesPack;
@@ -128,12 +132,20 @@ public class CustomConditionEditDlg extends Window {
         grid.addComponent(typeLab, 0, i);
         grid.setComponentAlignment(typeLab, Alignment.MIDDLE_RIGHT);
 
+        HorizontalLayout typeLayout = new HorizontalLayout();
+
         typeSelect = new Select();
         typeSelect.setImmediate(true);
         typeSelect.setNullSelectionAllowed(false);
         fillTypeSelect(typeSelect, condition.getParam());
         typeSelect.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
+                boolean disableTypeCheckBox = ParamType.UNARY.equals(typeSelect.getValue()) ||
+                        ParamType.BOOLEAN.equals(typeSelect.getValue());
+                typeCheckBox.setEnabled(!disableTypeCheckBox);
+                if (disableTypeCheckBox)
+                    typeCheckBox.setValue(false);
+
                 boolean isEntity = ParamType.ENTITY.equals(typeSelect.getValue());
                 boolean isEnum = ParamType.ENUM.equals(typeSelect.getValue());
                 entityLab.setEnabled(isEntity || isEnum);
@@ -142,11 +154,17 @@ public class CustomConditionEditDlg extends Window {
                 entityParamWhereText.setEnabled(isEntity);
                 entityParamViewLab.setEnabled(isEntity);
                 entityParamViewText.setEnabled(isEntity);
+
                 fillEntitySelect(entitySelect, condition.getParam());
             }
         });
-        grid.addComponent(typeSelect, 1, i++);
-        grid.setComponentAlignment(typeSelect, Alignment.MIDDLE_LEFT);
+        typeLayout.addComponent(typeSelect);
+
+        typeCheckBox = new CheckBox(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.typeCheckBox"));
+        typeCheckBox.setValue(condition.isInExpr());
+        typeLayout.addComponent(typeCheckBox);
+
+        grid.addComponent(typeLayout, 1, i++);
 
         entityLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.entityLabel"));
         entityLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
@@ -237,6 +255,8 @@ public class CustomConditionEditDlg extends Window {
 
         condition.setUnary(ParamType.UNARY.equals(type));
 
+        condition.setInExpr(BooleanUtils.isTrue((Boolean) typeCheckBox.getValue()));
+
         if (paramName != null || ParamType.UNARY.equals(type)) {
             Class javaClass = getParamJavaClass(type);
             condition.setJavaClass(javaClass);
@@ -247,7 +267,8 @@ public class CustomConditionEditDlg extends Window {
             String entityParamView = (String) entityParamViewText.getValue();
             condition.setEntityParamView(entityParamView);
 
-            Param param = new Param(paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource());
+            Param param = new Param(paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
+                    condition.isInExpr());
             condition.setParam(param);
         }
 
@@ -262,8 +283,12 @@ public class CustomConditionEditDlg extends Window {
                 return java.sql.Date.class;
             case DATETIME:
                 return Date.class;
-            case NUMBER:
+            case DOUBLE:
                 return Double.class;
+            case BIGDECIMAL:
+                return BigDecimal.class;
+            case INTEGER:
+                return Integer.class;
             case LONG:
                 return Long.class;
             case BOOLEAN:
@@ -383,11 +408,15 @@ public class CustomConditionEditDlg extends Window {
                         select.setValue(ParamType.DATETIME);
                     else if (Boolean.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.BOOLEAN);
-                    else if (Number.class.equals(param.getJavaClass()) || Double.class.equals(param.getJavaClass()))
-                        select.setValue(ParamType.NUMBER);
-                    else if (Long.class.equals(param.getJavaClass())) {
+                    else if (BigDecimal.class.equals(param.getJavaClass()))
+                        select.setValue(ParamType.BIGDECIMAL);
+                    else if (Double.class.equals(param.getJavaClass()))
+                        select.setValue(ParamType.DOUBLE);
+                    else if (Integer.class.equals(param.getJavaClass()))
+                        select.setValue(ParamType.INTEGER);
+                    else if (Long.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.LONG);
-                    } else if (UUID.class.equals(param.getJavaClass()))
+                    else if (UUID.class.equals(param.getJavaClass()))
                         select.setValue(ParamType.UUID);
                     else
                         throw new UnsupportedOperationException("Unsupported param class: " + param.getJavaClass());
