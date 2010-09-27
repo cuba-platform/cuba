@@ -277,6 +277,8 @@ public class App extends Application
             if (linkHandler != null) {
                 linkHandler.handle();
                 linkHandler = null;
+            } else {
+                window.open(new ExternalResource(window.getURL()));
             }
         }
         else {

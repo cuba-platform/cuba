@@ -299,7 +299,6 @@ public class LoginWindow extends Window
                 App.getInstance().setLocale(locale);
                 login(login, passwd, locale);
             }
-            open(new ExternalResource(App.getInstance().getMainWindow().getURL()));
         } catch (LoginException e) {
             showNotification(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
             if (loginByRememberMe) {
