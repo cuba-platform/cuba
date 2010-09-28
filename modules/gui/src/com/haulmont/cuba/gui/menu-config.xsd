@@ -11,21 +11,20 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="menuType" mixed="true">
+    <xs:complexType name="menuType">
         <xs:sequence>
             <xs:element type="itemType" name="item" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element type="menuType" name="menu" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
-        <xs:attribute type="xs:string" name="shortcut" use="optional" />
     </xs:complexType>
 
-    <xs:complexType name="itemType" mixed="true">
+    <xs:complexType name="itemType">
         <xs:sequence>
             <xs:element type="paramType" name="param" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
-        <xs:attribute type="xs:string" name="shortcut" use="optional" />
+        <xs:attribute type="openTypeType" name="openType" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="paramType">
@@ -36,5 +35,12 @@
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
+
+    <xs:simpleType name="openTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NEW_TAB"/>
+            <xs:enumeration value="DIALOG"/>
+        </xs:restriction>
+    </xs:simpleType>
 
 </xs:schema>
