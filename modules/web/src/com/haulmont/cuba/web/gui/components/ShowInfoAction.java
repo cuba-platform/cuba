@@ -77,12 +77,14 @@ public class ShowInfoAction extends AbstractAction {
             sb.append("<hr/>");
             sb.append(MessageProvider.getMessage(mp, "table.showInfoAction.row")).append("<br/>");
             sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.id", instance.getId())).append("<br/>");
-            if (instance instanceof Versioned) {
+            if (instance instanceof Versioned && ((Versioned) instance).getVersion() != null) {
                 sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.version", ((Versioned) instance).getVersion())).append("<br/>");
             }
             if (instance instanceof BaseEntity) {
-                sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.createTs", df.format(((BaseEntity) instance).getCreateTs()))).append("<br/>");
-                sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.createdBy", ((BaseEntity) instance).getCreatedBy())).append("<br/>");
+                if (((BaseEntity) instance).getCreateTs() != null)
+                    sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.createTs", df.format(((BaseEntity) instance).getCreateTs()))).append("<br/>");
+                if (((BaseEntity) instance).getCreatedBy() != null)
+                    sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.createdBy", ((BaseEntity) instance).getCreatedBy())).append("<br/>");
             }
             if (instance instanceof Updatable) {
                 Date updateTs = ((Updatable) instance).getUpdateTs();
@@ -104,5 +106,4 @@ public class ShowInfoAction extends AbstractAction {
 
         return sb.toString();
     }
-
 }
