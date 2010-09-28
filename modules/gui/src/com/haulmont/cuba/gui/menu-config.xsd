@@ -22,6 +22,7 @@
     <xs:complexType name="itemType">
         <xs:sequence>
             <xs:element type="paramType" name="param" minOccurs="0"/>
+            <xs:element type="permissionsType" name="permissions" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
         <xs:attribute type="openTypeType" name="openType" use="optional"/>
@@ -40,6 +41,26 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="NEW_TAB"/>
             <xs:enumeration value="DIALOG"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="permissionsType">
+        <xs:sequence>
+            <xs:element type="permissionType" name="permission" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="permissionType">
+        <xs:attribute type="permissionTypeType" name="type"/>
+        <xs:attribute type="xs:string" name="target"/>
+    </xs:complexType>
+
+    <xs:simpleType name="permissionTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SCREEN"/>
+            <xs:enumeration value="ENTITY_OP"/>
+            <xs:enumeration value="ENTITY_ATTR"/>
+            <xs:enumeration value="SPECIFIC"/>
         </xs:restriction>
     </xs:simpleType>
 

@@ -10,7 +10,9 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.security.entity.PermissionType;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 
@@ -71,7 +73,20 @@ public class MenuItem implements Serializable
         if (StringUtils.isEmpty(id)) {
              return true;
         } else {
-            return session.isScreenPermitted(AppConfig.getInstance().getClientType(), id);
+            boolean screenPermitted = session.isScreenPermitted(AppConfig.getInstance().getClientType(), id);
+            if (screenPermitted) {
+                Element permissionsElem = descriptor.element("permissions");
+                if (permissionsElem != null) {
+                    for (Element element : Dom4j.elements(permissionsElem, "permission")) {
+                        PermissionType type = PermissionType.valueOf(element.attributeValue("type"));
+                        String target = element.attributeValue("target");
+                        screenPermitted = session.isPermitted(type, target);
+                        if (!screenPermitted)
+                            break;
+                    }
+                }
+            }
+            return screenPermitted;
         }
     }
 
