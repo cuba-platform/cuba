@@ -577,12 +577,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         @Override
         public String format(Object groupId, Object value) {
             String formattedValue = super.format(groupId, value);
-            if (!StringUtils.isEmpty(formattedValue)) {
-                int count = WebGroupTable.this.component.getGroupItemsCount(groupId);
-                return String.format("%s (%d)", formattedValue, count);
-            } else {
-                return formattedValue;
-            }
+            int count = WebGroupTable.this.component.getGroupItemsCount(groupId);
+            return String.format("%s (%d)", formattedValue == null ? "" : formattedValue, count);
         }
     }
 
