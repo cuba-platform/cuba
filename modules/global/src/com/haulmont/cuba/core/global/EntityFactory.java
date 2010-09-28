@@ -83,7 +83,8 @@ public class EntityFactory {
     }
 
     private <T> Class<T> __getReplacedClass(Class<T> clazz) {
-        return map.get(clazz);
+        Class replacedClass = map.get(clazz);
+        return replacedClass == null ? clazz : replacedClass;
     }
 
     public static <T> T create(Class<T> entityClass) {
