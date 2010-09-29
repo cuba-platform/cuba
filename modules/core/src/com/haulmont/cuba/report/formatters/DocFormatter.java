@@ -166,7 +166,7 @@ public class DocFormatter extends AbstractFormatter {
         String[] tablesNames = xTextTablesSupplier.getTextTables().getElementNames();
         XTextTable xTextTable;
         for (String tableName : tablesNames) {
-//            if (bandExists(rootBand, tableName)) { ED - I think we have to look thrugh all tables, not only with data  
+//            if (bandExists(rootBand, tableName)) { ED - I think we have to look through all tables, not only with data  
                 xTextTable = getTableByName(xTextTablesSupplier, tableName);
                 TableTemplate tableTemplate = createTableTemplate(xTextTable, tableName);
                 tableTemplates.put(tableTemplate.getTableName(), tableTemplate);
