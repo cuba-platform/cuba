@@ -56,7 +56,7 @@ public class TableTemplate {
         boolean haveValueExpressions = false;
         for(String columnTemplate : columnsTemplates.values()) {
             String templateText = columnTemplate;
-            if (templateText.contains("${") && templateText.contains("}")) {
+            if (templateText.matches("\\$\\{[^\\.]+?\\}")) {//ED - only table aliases are matched there - if there is a point - this is not a table alias 
                 haveValueExpressions = true;
             }
         }
