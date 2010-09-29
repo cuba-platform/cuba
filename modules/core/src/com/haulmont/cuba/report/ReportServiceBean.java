@@ -38,26 +38,30 @@ public class ReportServiceBean implements ReportService {
     */
 
     public byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params) throws IOException {
-        this.params.set(params);
-        report = reloadEntity(report, "report.edit");
+        try {
+            this.params.set(params);
+            report = reloadEntity(report, "report.edit");
 
-        if (report.getIsCustom()) {
-            return new CustomFormatter(report, params).createDocument(null);
+            if (report.getIsCustom()) {
+                return new CustomFormatter(report, params).createDocument(null);
+            }
+
+            BandDefinition rootBandDefinition = report.getRootBandDefinition();
+
+            List<BandDefinition> childrenBandDefinitions = rootBandDefinition.getChildrenBandDefinitions();
+            Band rootBand = createRootBand(rootBandDefinition);
+
+            for (BandDefinition definition : childrenBandDefinitions) {
+                List<Band> bands = createBands(definition, rootBand);
+                rootBand.addChildren(bands);
+            }
+            System.out.println(rootBand);
+
+            Formatter formatter = createFormatter(report, format);
+            return formatter.createDocument(rootBand);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        BandDefinition rootBandDefinition = report.getRootBandDefinition();
-
-        List<BandDefinition> childrenBandDefinitions = rootBandDefinition.getChildrenBandDefinitions();
-        Band rootBand = createRootBand(rootBandDefinition);
-
-        for (BandDefinition definition : childrenBandDefinitions) {
-            List<Band> bands = createBands(definition, rootBand);
-            rootBand.addChildren(bands);
-        }
-        System.out.println(rootBand);
-
-        Formatter formatter = createFormatter(report, format);
-        return formatter.createDocument(rootBand);
     }
 
     public Report reloadReport(Report report) {
