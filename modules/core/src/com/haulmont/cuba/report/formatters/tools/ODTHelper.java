@@ -4,8 +4,11 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.report.Band;
+import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.comp.helper.BootstrapException;
+import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.frame.XStorable;
@@ -15,17 +18,13 @@ import com.sun.star.io.XOutputStream;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.text.XTextDocument;
+import com.sun.star.text.XTextRange;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
-import com.sun.star.util.XCloseable;
-import com.sun.star.util.XPropertyReplace;
-import com.sun.star.util.XReplaceDescriptor;
-import com.sun.star.util.XReplaceable;
+import com.sun.star.util.*;
 import ooo.connector.BootstrapSocketConnector;
 
 import java.io.File;
-
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -129,33 +128,6 @@ public class ODTHelper {
         // replace
         return xReplaceable.replaceAll(xRepDesc);
     }
-
-//    public static void replaceInDocumentText(XTextDocument xTextDocument, Map<String, String> replacements, boolean isRegExp) throws NoSuchElementException, WrappedTargetException {
-//        XText xText = xTextDocument.getText();
-//        XEnumerationAccess paragraphsAccess = asXEnumerationAccess(xText);
-//        XEnumeration paragraphs = paragraphsAccess.createEnumeration();
-//        while (paragraphs.hasMoreElements()) {
-//            XTextContent xTextContent = asXTextContent(paragraphs.nextElement());
-//            XServiceInfo xServiceInfo = asXServiceInfo(xTextContent);
-//            // Accessing only paragraphs, not tables
-//            if (!xServiceInfo.supportsService("com.sun.star.text.TextTable")) {
-//                XEnumerationAccess textPortionsAccess = asXEnumerationAccess(xTextContent);
-//                XEnumeration textPortions = textPortionsAccess.createEnumeration();
-//                while (textPortions.hasMoreElements()) {
-//                    XTextRange xTextPortion = asXTextRange(textPortions.nextElement());
-//                    for (String target : replacements.keySet()) {
-//                        if (isRegExp) {
-//                            String sourceString = xTextPortion.getString();
-//                            String resultString = sourceString.replaceAll(target, replacements.get(target));
-//                            xTextPortion.setString(resultString);
-//                        } else {
-//                            xTextPortion.setString(xTextPortion.getString().replace(target, replacements.get(target)));
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     /*
     *  Utility method. Converts path to url

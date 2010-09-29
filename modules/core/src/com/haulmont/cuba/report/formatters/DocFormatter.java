@@ -24,6 +24,7 @@ import com.haulmont.cuba.report.formatters.tools.TableTemplate;
 import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.container.NoSuchElementException;
+import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.io.XInputStream;
 import com.sun.star.lang.IllegalArgumentException;
@@ -33,6 +34,10 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextTable;
 import com.sun.star.text.XTextTablesSupplier;
+import com.sun.star.text.XTextRange;
+import com.sun.star.util.XReplaceable;
+import com.sun.star.util.XSearchDescriptor;
+import com.sun.star.uno.UnoRuntime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +47,7 @@ import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
 import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXTextDocument;
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXTextTablesSupplier;
+import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXTextRange;
 
 public class DocFormatter extends AbstractFormatter {
     private String openOfficePath;
@@ -78,7 +84,8 @@ public class DocFormatter extends AbstractFormatter {
             fillTablesWithBandData(tablesSupplier);
             deleteTemplateRows(tablesSupplier);
             // Handling text
-            replaceValueExpressionsInDocument(asXTextDocument(xComponent));
+//            replaceValueExpressionsInDocument(asXTextDocument(xComponent)); ED - I think we have to replace aliases as in XLS formatter - select ${smth} in text and fund parameters in band
+            replaceAllAliasesInDocument(asXTextDocument(xComponent));
             // Saving document to output stream and closing
             return saveAndClose(xComponent);
         } catch (Exception e) {
@@ -99,6 +106,12 @@ public class DocFormatter extends AbstractFormatter {
         return ooos.toByteArray();
     }
 
+
+
+    /**
+     * Old method - now use <code>replaceAllAliasesInDocument</code>
+     */
+    @Deprecated
     private void replaceValueExpressionsInDocument(XTextDocument xTextDocument) throws NoSuchElementException, WrappedTargetException, IllegalArgumentException, PropertyVetoException, UnknownPropertyException {
         //todo: do refactoring!!
         if (rootBand.getChildren() != null) {
@@ -116,28 +129,37 @@ public class DocFormatter extends AbstractFormatter {
         }
     }
 
-//    private void replaceValueExpressionsInTextPortion(XTextRange xTextPortion) throws NoSuchElementException, WrappedTargetException, IllegalArgumentException, PropertyVetoException, UnknownPropertyException {
-//        String text = xTextPortion.getString();
-//        List<String> valueExpressions = new ArrayList<String>();
-//        Pattern namePattern = Pattern.compile(VALUE_EXPRESSION_PATTERN, Pattern.CASE_INSENSITIVE);
-//        Matcher matcher = namePattern.matcher(text);
-//        while (matcher.find()) {
-//            valueExpressions.add(matcher.group());
-//        }
-//        for (String valueExpression : valueExpressions) {
-//            String bandName = parseValueExpression(valueExpression)[0];
-//            String propertyName = parseValueExpression(valueExpression)[1];
-//            Band band = rootBand.getChildByName(bandName);
-//            Object bandValue = null;
-//            if (band != null) {
-//                bandValue = band.getData().get(propertyName);
-//            }
-//            if (bandValue == null) bandValue = "";
-//            String bandValueStr = bandValue instanceof Entity ? ((Instance) bandValue).getInstanceName() : bandValue.toString();
-//            text = text.replaceAll("\\$\\{" + bandName + "\\." + propertyName + "\\}", bandValueStr);
-//        }
-//        xTextPortion.setString(text);
-//    }
+    /**
+     * Replaces all aliases (${bandname.paramname} in document).
+     * If there is not appropriate band or alias is bad - throws RuntimeException
+     *
+     * @param xTextDocument - document
+     */
+    private void replaceAllAliasesInDocument(XTextDocument xTextDocument) {
+        XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
+        XSearchDescriptor searchDescriptor = xReplaceable.createSearchDescriptor();
+        searchDescriptor.setSearchString("\\$\\{.+?\\..+?\\}");
+        try {
+            searchDescriptor.setPropertyValue("SearchRegularExpression", true);
+            XIndexAccess indexAccess = xReplaceable.findAll(searchDescriptor);
+            for (int i = 0; i < indexAccess.getCount(); i++) {
+                XTextRange o = asXTextRange(indexAccess.getByIndex(i));
+                String[] parts = o.getString().replaceAll("[\\{|\\|\\$}]", "").split("\\.");
+
+                if (parts == null || parts.length < 2) throw new RuntimeException("Bad alias : " + o.getString());
+
+                String bandName = parts[0];
+                Band band = bandName.equals("Root") ? rootBand : rootBand.getChildByName(bandName);
+
+                if (band == null) throw new RuntimeException("No band for alias : " + o.getString());
+
+                Object parameter = band.getParameter(parts[1]);
+                o.setString(parameter != null ? parameter.toString() : "");
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     private void fillTablesWithBandData(XTextTablesSupplier xTextTablesSupplier) throws NoSuchElementException, WrappedTargetException, IndexOutOfBoundsException {
         // Iterating over all table templates
@@ -167,9 +189,9 @@ public class DocFormatter extends AbstractFormatter {
         XTextTable xTextTable;
         for (String tableName : tablesNames) {
 //            if (bandExists(rootBand, tableName)) { ED - I think we have to look through all tables, not only with data  
-                xTextTable = getTableByName(xTextTablesSupplier, tableName);
-                TableTemplate tableTemplate = createTableTemplate(xTextTable, tableName);
-                tableTemplates.put(tableTemplate.getTableName(), tableTemplate);
+            xTextTable = getTableByName(xTextTablesSupplier, tableName);
+            TableTemplate tableTemplate = createTableTemplate(xTextTable, tableName);
+            tableTemplates.put(tableTemplate.getTableName(), tableTemplate);
 //            }
         }
         // Delete templates without value expressions

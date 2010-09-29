@@ -322,11 +322,11 @@ public class ReportEditor extends AbstractEditor {
                     templatePath.setCaption(templateDescriptor.getName());
                     oldTemplateDescriptor = report.templateFileDescriptor
                     report.templateFileDescriptor = templateDescriptor;
-                    showNotification(MessageProvider.getMessage(ReportEditor.class, 'uploadSuccess'), IFrame.NotificationType.HUMANIZED);
+                    showNotification(MessageProvider.getMessage(ReportEditor.class, 'generalFrame.uploadSuccess'), IFrame.NotificationType.HUMANIZED);
                 },
 
                 uploadFailed: {Event event ->
-                    showNotification(MessageProvider.getMessage(ReportEditor.class, 'uploadUnsuccess'), IFrame.NotificationType.WARNING);
+                    showNotification(MessageProvider.getMessage(ReportEditor.class, 'generalFrame.uploadUnsuccess'), IFrame.NotificationType.WARNING);
                 },
 
                 updateProgress: {
