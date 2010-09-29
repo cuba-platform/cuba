@@ -11,61 +11,62 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.security.entity.FilterEntity;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.QueryFilter;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
+import com.haulmont.cuba.security.entity.FilterEntity;
+import com.haulmont.cuba.security.entity.SearchFolder;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.app.folders.FolderEditWindow;
+import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.app.folders.FoldersPane;
-import com.haulmont.cuba.web.app.folders.FolderEditWindow;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.SearchFolder;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.ArrayUtils;
-import org.dom4j.Element;
-import org.dom4j.Attribute;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.BooleanUtils;
+import org.dom4j.Attribute;
+import org.dom4j.Element;
 import org.vaadin.hene.popupbutton.PopupButton;
 
-import static org.apache.commons.lang.BooleanUtils.isTrue;
-
+import java.text.ParseException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.text.ParseException;
+
+import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 public class WebFilter
         extends WebAbstractComponent<VerticalLayout> implements Filter
@@ -96,6 +97,8 @@ public class WebFilter
     private Label maxResultsLabel;
     private TextField maxResultsField;
     private HorizontalLayout maxResultsPanel;
+
+    private Component applyTo;
 
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
 
@@ -630,6 +633,14 @@ public class WebFilter
         return false;
     }
 
+    public Component getApplyTo() {
+        return applyTo;
+    }
+
+    public void setApplyTo(Component component) {
+        applyTo = component;
+    }
+
     private void saveAsFolder() {
         final SearchFolder folder = new SearchFolder();
         folder.setName(filterEntity.getName());
@@ -640,7 +651,17 @@ public class WebFilter
         else
             folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
 
+        Presentations presentations;
+        if (applyTo != null && applyTo instanceof HasPresentations) {
+            final HasPresentations presentationsOwner = (HasPresentations) applyTo;
+            presentations = presentationsOwner.isUsePresentations()
+                    ? presentationsOwner.getPresentations() : null;
+        } else {
+            presentations = null;
+        }
+
         final FolderEditWindow window = new FolderEditWindow(false, folder,
+                presentations,
                 new Runnable() {
                     public void run() {
                         SearchFolder savedFolder = saveFolder(folder);

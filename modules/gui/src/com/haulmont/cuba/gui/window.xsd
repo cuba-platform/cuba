@@ -622,6 +622,7 @@
                         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="buttonsPanel" type="buttonsPanelType"/>
                 <xs:element name="table" type="tableType"/>
                 <xs:element name="treeTable" type="tableType"/>
                 <xs:element name="groupTable">
@@ -681,6 +682,7 @@
                         <xs:attribute name="datasource" type="xs:string" use="required"/>
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="applyTo" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
@@ -909,7 +911,7 @@
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
-        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="id" type="xs:string" use="required" default="table"/>
         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
         <xs:attribute name="margin" type="xs:string" use="optional"/>
@@ -920,6 +922,7 @@
         <xs:attribute name="height" type="xs:string" use="optional"/>
         <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
         <xs:attribute name="aggregatable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="presentations" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="tableColumnsType">

@@ -248,6 +248,14 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
+    protected void loadPresentations(Component.HasPresentations component, Element element) {
+        String presentations = element.attributeValue("presentations");
+        if (!StringUtils.isEmpty(presentations) && isBoolean(presentations)) {
+            component.usePresentations(evaluateBoolean(presentations));
+            context.addLazyTask(new LoadPresentationsLazyTask(component));
+        }
+    }
+
     protected void loadIcon(Component.HasIcon component, Element element) {
         final String icon = element.attributeValue("icon");
         if (!StringUtils.isEmpty(icon)) {

@@ -10,6 +10,7 @@
                     <permission id="cuba.gui.filter.customConditions"/>
                 </category>
                 <permission id="cuba.gui.searchFolder.global"/>
+                <permission id="cuba.gui.presentations.global"/>
             </category>
         </category>
         

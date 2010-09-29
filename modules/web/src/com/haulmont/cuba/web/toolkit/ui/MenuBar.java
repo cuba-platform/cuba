@@ -20,10 +20,10 @@ import com.vaadin.ui.ClientWidget;
 import java.util.*;
 
 @SuppressWarnings("serial")
-@ClientWidget(VMenuBar.class)
 public class MenuBar extends com.vaadin.ui.MenuBar {
 
     private Map<MenuItem, String> shortcuts;
+    private boolean vertical;
 
     public MenuBar() {
         shortcuts = new HashMap<MenuItem, String>();
@@ -62,6 +62,10 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
         // Stack for list iterators
         Stack<Iterator<MenuItem>> iteratorStack = new Stack<Iterator<MenuItem>>();
 
+        if (isVertical()) {
+            target.addAttribute("vertical", true);
+        }
+
         target.startTag("options");
 
         if (getSubmenuIcon() != null) {
@@ -99,7 +103,7 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
         target.addAttribute("id", item.getId());
 
         if (item.getStyleName() != null) {
-            target.addAttribute("style", item.getStyleName());
+            target.addAttribute("stylename", item.getStyleName());
         }
 
         if (item.isSeparator()) {
@@ -139,5 +143,14 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
         }
 
         target.endTag("item");
+    }
+
+    public boolean isVertical() {
+        return vertical;
+    }
+
+    public void setVertical(boolean vertical) {
+        this.vertical = vertical;
+        requestRepaint();
     }
 }

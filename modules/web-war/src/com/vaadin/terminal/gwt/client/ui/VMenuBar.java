@@ -122,7 +122,7 @@ public class VMenuBar extends Widget implements Paintable,
 
         if (collapseItems) {
             UIDL moreItemUIDL = options.getChildUIDL(0);
-            StringBuffer itemHTML = new StringBuffer();
+            StringBuffer itemHTML = new StringBuffer("<div>");
 
             if (moreItemUIDL.hasAttribute("icon")) {
                 itemHTML.append("<img src=\""
@@ -130,7 +130,7 @@ public class VMenuBar extends Widget implements Paintable,
                                 .getStringAttribute("icon"))
                         + "\" align=\"left\" />");
             }
-            itemHTML.append(moreItemUIDL.getStringAttribute("text"));
+            itemHTML.append(moreItemUIDL.getStringAttribute("text")).append("</div>");
 
             moreItem = new CustomMenuItem(itemHTML.toString(), emptyCommand, "");
         }
@@ -152,7 +152,7 @@ public class VMenuBar extends Widget implements Paintable,
             boolean itemHasCommand = item.getBooleanAttribute("command");
 
             // Construct html from the text and the optional icon
-            StringBuffer itemHTML = new StringBuffer();
+            StringBuffer itemHTML = new StringBuffer("<div>");
 
             if (item.hasAttribute("icon")) {
                 itemHTML.append("<img src=\"").append(client.translateVaadinUri(item
@@ -166,6 +166,8 @@ public class VMenuBar extends Widget implements Paintable,
                 itemHTML.append("<img src=\"").append(submenuIcon)
                         .append("\" align=\"right\" />");
             }
+
+            itemHTML.append("</div>");
 
             Command cmd = null;
 

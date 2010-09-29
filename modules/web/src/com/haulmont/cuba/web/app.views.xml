@@ -72,4 +72,12 @@
     <view class="com.haulmont.cuba.security.entity.SessionAttribute" name="edit" extends="_local">
         <property name="group" view="_local"/>
     </view>
+
+    <view class="com.haulmont.cuba.security.entity.Presentation" name="app">
+        <property name="componentId"/>
+        <property name="name"/>
+        <property name="xml"/>
+        <property name="user" view="app"/>
+        <property name="autoSave"/>
+    </view>
 </views>

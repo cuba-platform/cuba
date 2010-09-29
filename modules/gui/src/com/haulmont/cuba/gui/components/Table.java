@@ -19,7 +19,8 @@ import java.util.List;
 
 public interface Table
     extends
-        com.haulmont.cuba.gui.components.List, Component.Editable, Component.HasSettings, Component.Expandable, Component.HasButtonsPanel
+        com.haulmont.cuba.gui.components.List, Component.Editable, Component.HasSettings, Component.Expandable,
+        Component.HasButtonsPanel, Component.HasPresentations
 {
     List<Column> getColumns();
     Column getColumn(String id);

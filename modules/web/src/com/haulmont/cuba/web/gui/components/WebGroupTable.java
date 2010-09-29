@@ -29,6 +29,8 @@ import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.vaadin.data.Item;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
@@ -41,6 +43,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
+
+    private static final long serialVersionUID = 4274142811721901398L;
 
     public WebGroupTable() {
         component = new com.haulmont.cuba.web.toolkit.ui.GroupTable() {
@@ -55,6 +59,19 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 } else {
                     return null;
                 }
+            }
+
+            @Override
+            protected boolean changeVariables(Map<String, Object> variables) {
+                boolean b = super.changeVariables(variables);
+                b = handleSpecificVariables(variables) || b;
+                return b;
+            }
+
+            @Override
+            public void paintContent(PaintTarget target) throws PaintException {
+                super.paintContent(target);
+                paintSpecificContent(target);
             }
         };
         initComponent(component);
@@ -620,7 +637,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     @Override
     public List<Column> getColumns() {
         Object[] visibleColumns = component.getVisibleColumns();
-        
+
         if (visibleColumns == null) {
             return Collections.emptyList();
         }

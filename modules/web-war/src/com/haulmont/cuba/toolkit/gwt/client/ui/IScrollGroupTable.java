@@ -172,6 +172,11 @@ public class IScrollGroupTable extends IScrollTable {
     protected void updateHeaderColumns(String[] colIds, int colIndex) {
         boolean dividerPainted = false;
         int i;
+
+        //clear old header cells
+        clearOrphanedCells(colIds);
+
+        //show updated header cells
         for (i = 0; i < colIds.length; i++) {
             final String cid = colIds[i];
             if (!isGroupColumn(cid) && !dividerPainted) {
@@ -190,7 +195,7 @@ public class IScrollGroupTable extends IScrollTable {
         }
     }
 
-    @Override                    
+    @Override
     protected void reOrderColumn(String columnKey, int newIndex) {
 
         final int oldIndex = getColIndexByKey(columnKey);

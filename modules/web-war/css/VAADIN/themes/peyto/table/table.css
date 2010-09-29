@@ -13,6 +13,7 @@
 	border: 1px solid #71a4d5;
 	border-bottom: none;
 	overflow: hidden;
+    position: relative;
 }
 
 .v-table-header .v-table-caption-container {
@@ -235,26 +236,36 @@
 
 
 .v-table-column-selector {
-	float: right;
 	background: transparent url(img/table-header-bg.png) repeat-x;
-	margin: -23px 0 0 0;
 	height: 23px;
 	width: 16px;
-	position: relative; /* hide this from IE, it works without it */
+	position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .v-table-column-selector div {
-    background: transparent url(../table/img/colsel.png) no-repeat center left;
+    background: transparent url(../table/img/round_right_arrow.png) no-repeat center left;
     height: 23px;
     width: 16px;
+    cursor: pointer;
 }
 
-* html .v-table-column-selector {
-	position: static;
+.v-table-pres-selector {
+    background: transparent url(img/table-header-bg.png) repeat-x;
+	height: 23px;
+	width: 18px;
+    position: absolute;
+    top: 0;
+    right: 16px;
 }
 
-*+html .v-table-column-selector  {
-	position: static;
+.v-table-pres-selector div {
+    background: transparent url(../table/img/table.png) no-repeat center center;
+    height: 23px;
+    width: 16px;
+    margin-right: 2px;
+    cursor: pointer;
 }
 
 .v-table-focus-slot-left {
@@ -294,18 +305,19 @@
 /* row in column selector */
 .v-contextmenu .gwt-MenuItem .v-on div {
 	background: transparent url(img/check.png) no-repeat 5px 50%;
-	text-indent: 16px;
 }
 
 .v-contextmenu .gwt-MenuItem-selected .v-on div {
 	background: url(img/check-hover.png) no-repeat 5px 50%;
-	text-indent: 16px;
     background-color: #5280b7;
     color: #fff;
 }
 
+.v-contextmenu .gwt-MenuItem div {
+    padding-left: 20px;
+}
+
 .v-off div {
-	text-indent: 6px;
 }
 
 .v-table .v-link {
@@ -340,12 +352,13 @@
 }
 
 .v-table-arow {
-   border-top: 1px solid #71a4d5;
-   border-left: 1px solid #71a4d5;
-   border-right: 1px solid #71a4d5;
+    border-top: 1px solid #71a4d5;
+    border-left: 1px solid #71a4d5;
+    border-right: 1px solid #71a4d5;
+    background: #ccc;
 }
+
 .v-table-arow-row {
-   background : #CCC;
 }
 
 /* IE6 hack */

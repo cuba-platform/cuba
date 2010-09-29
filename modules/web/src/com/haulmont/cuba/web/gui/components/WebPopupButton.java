@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.vaadin.incubator.dashlayout.ui.VerDashLayout;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -130,7 +131,7 @@ public class WebPopupButton
             com.vaadin.ui.Button vButton = (com.vaadin.ui.Button) button.getComposition();
             vButton.setImmediate(true);            
             vButton.setSizeFull();
-            vButton.setStyleName(com.vaadin.ui.Button.STYLE_LINK);
+            vButton.setStyleName(BaseTheme.BUTTON_LINK);
 
             vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);

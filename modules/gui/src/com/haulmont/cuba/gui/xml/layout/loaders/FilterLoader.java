@@ -13,11 +13,10 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import org.apache.commons.lang.BooleanUtils;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class FilterLoader extends ComponentLoader {
 
@@ -45,6 +44,19 @@ public class FilterLoader extends ComponentLoader {
         }
 
         assignFrame(filter);
+
+        final String applyTo = element.attributeValue("applyTo");
+        if (!StringUtils.isEmpty(applyTo)) {
+            context.addLazyTask(new LazyTask() {
+                public void execute(Context context, IFrame frame) {
+                    Component c = frame.getComponent(applyTo);
+                    if (c == null) {
+                        throw new IllegalArgumentException("Cannot apply filter to component with id: " + applyTo);
+                    }
+                    filter.setApplyTo(c);
+                }
+            });
+        }
 
         context.addLazyTask(
                 new LazyTask() {

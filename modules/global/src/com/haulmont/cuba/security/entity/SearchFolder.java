@@ -26,12 +26,24 @@ public class SearchFolder extends AbstractSearchFolder {
     @JoinColumn(name = "USER_ID")
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRESENTATION_ID")
+    private Presentation presentation;
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Presentation getPresentation() {
+        return presentation;
+    }
+
+    public void setPresentation(Presentation presentation) {
+        this.presentation = presentation;
     }
 
     @Override

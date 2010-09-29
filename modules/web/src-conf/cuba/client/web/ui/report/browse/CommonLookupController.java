@@ -45,7 +45,6 @@ public class CommonLookupController extends AbstractLookup {
             protected void initComponent(com.haulmont.cuba.web.toolkit.ui.Table component) {
                 super.initComponent(component);
                 com.vaadin.ui.Table.ColumnGenerator generator = new com.vaadin.ui.Table.ColumnGenerator() {
-                    @Override
                     public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         Object inst = cds.getItem(itemId);
                         WebLabel label = new WebLabel();

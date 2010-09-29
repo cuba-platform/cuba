@@ -21,6 +21,7 @@ import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.dom.client.TableSectionElement;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -29,19 +30,12 @@ public class VContextMenu extends VOverlay implements SubPartAware {
 
     private ActionOwner actionOwner;
 
-    private final CMenuBar menu = new CMenuBar();
+    protected final CMenuBar menu = new CMenuBar();
 
     private int left;
 
     private int top;
 
-    /**
-     * This method should be used only by Client object as only one per client
-     * should exists. Request an instance via client.getContextMenu();
-     * 
-     * @param cli
-     *            to be set as an owner of menu
-     */
     public VContextMenu() {
         super(true, false, true);
         setWidget(menu);
@@ -106,7 +100,7 @@ public class VContextMenu extends VOverlay implements SubPartAware {
      * Extend standard Gwt MenuBar to set proper settings and to override
      * onPopupClosed method so that PopupPanel gets closed.
      */
-    class CMenuBar extends MenuBar {
+    protected class CMenuBar extends MenuBar {
         public CMenuBar() {
             super(true);
         }

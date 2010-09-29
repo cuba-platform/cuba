@@ -10,19 +10,20 @@
  */
 package com.haulmont.cuba.web.app.folders;
 
-import com.haulmont.cuba.core.entity.AbstractSearchFolder;
-import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.vaadin.ui.*;
-import com.vaadin.terminal.Sizeable;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 
+import java.util.Collection;
 import java.util.List;
 
 public class FolderEditWindow extends Window {
@@ -32,10 +33,11 @@ public class FolderEditWindow extends Window {
     private TextField nameField;
     private Select parentSelect;
     private TextField sortOrderField;
+    private Select presentation;
     private CheckBox globalCb;
     private Runnable commitHandler;
 
-    public FolderEditWindow(boolean adding, Folder folder, Runnable commitHandler) {
+    public FolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
         super();
         this.folder = folder;
         this.commitHandler = commitHandler;
@@ -65,6 +67,25 @@ public class FolderEditWindow extends Window {
         fillParentSelect();
         parentSelect.setValue(folder.getParent());
         layout.addComponent(parentSelect);
+
+        if (folder instanceof SearchFolder) {
+            if (presentations != null) {
+                presentation = new Select();
+                presentation.setCaption(getMessage("folders.folderEditWindow.presentation"));
+                presentation.setWidth("250px");
+                presentation.setNullSelectionAllowed(true);
+                fillPresentations(presentations);
+                presentation.setValue(((SearchFolder) folder).getPresentation());
+                layout.addComponent(presentation);
+            } else if (((SearchFolder) folder).getPresentation() != null) {
+                final TextField selectedPresentation = new TextField();
+                selectedPresentation.setWidth("250px");
+                selectedPresentation.setCaption(getMessage("folders.folderEditWindow.presentation"));
+                selectedPresentation.setValue(((SearchFolder) folder).getPresentation().getName());
+                selectedPresentation.setEnabled(false);
+                layout.addComponent(selectedPresentation);
+            }
+        }
 
         sortOrderField = new TextField();
         sortOrderField.setCaption(getMessage("folders.folderEditWindow.sortOrder"));
@@ -121,6 +142,10 @@ public class FolderEditWindow extends Window {
                         ((SearchFolder) FolderEditWindow.this.folder).setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                 }
 
+                if (presentation != null) {
+                    ((SearchFolder) FolderEditWindow.this.folder).setPresentation((Presentation) presentation.getValue());
+                }
+
                 FolderEditWindow.this.commitHandler.run();
 
                 close();
@@ -151,6 +176,17 @@ public class FolderEditWindow extends Window {
                 parentSelect.addItem(folder);
                 parentSelect.setItemCaption(folder, folder.getName());
             }
+        }
+    }
+
+    private void fillPresentations(Presentations presentations) {
+        presentation.removeAllItems();
+
+        final Collection<Object> availablePresentationIds = presentations.getPresentationIds();
+        for (final Object pId : availablePresentationIds) {
+            final Presentation p = presentations.getPresentation(pId);
+            presentation.addItem(p);
+            presentation.setItemCaption(p, presentations.getCaption(pId));
         }
     }
 

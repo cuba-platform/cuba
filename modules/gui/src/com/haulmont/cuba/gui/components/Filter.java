@@ -32,4 +32,7 @@ public interface Filter
     void setUseMaxResults(boolean useMaxResults);
 
     boolean getUseMaxResults();
+
+    void setApplyTo(Component component);
+    Component getApplyTo();
 }

@@ -24,19 +24,19 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.CompositionLayout;
+import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -46,8 +46,10 @@ import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -63,7 +65,7 @@ import java.util.*;
 import java.util.List;
 
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
-        extends WebAbstractList<T> {
+        extends WebAbstractList<T> implements Table {
 
     protected Map<MetaPropertyPath, Table.Column> columns = new HashMap<MetaPropertyPath, Table.Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
@@ -91,6 +93,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected ButtonsPanel buttonsPanel;
 
     protected Map<Table.Column, Object> aggregationCells = null;
+
+    private boolean usePresentations;
+
+    protected Presentations presentations;
+    protected TablePresentations tablePresentations;
 
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
@@ -555,6 +562,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                         component.setSortAscending(sortAscending);
                         component.setSortContainerPropertyId(sortProperty);
                     }
+                } else {
+                    component.setSortContainerPropertyId(null);
                 }
             }
         }
@@ -1141,14 +1150,103 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    protected boolean handleSpecificVariables(Map<String, Object> variables) {
+        boolean needReload = false;
+
+        if (isUsePresentations()) {
+
+            final Presentations p = getPresentations();
+
+            if (p.getCurrent() != null && p.isAutoSave(p.getCurrent()) && needUpdatePresentation(variables)) {
+                Element e = p.getSettings(p.getCurrent());
+                saveSettings(e);
+                p.setSettings(p.getCurrent(), e);
+            }
+        }
+
+        return needReload;
+    }
+
+    private boolean needUpdatePresentation(Map<String, Object> variables) {
+        return variables.containsKey("colwidth") || variables.containsKey("sortcolumn")
+                || variables.containsKey("sortascending") || variables.containsKey("columnorder")
+                || variables.containsKey("collapsedcolumns") || variables.containsKey("groupedcolumns");
+    }
+
+    protected void paintSpecificContent(PaintTarget target) throws PaintException {
+        target.addVariable(component, "presentations", isUsePresentations());
+        if (isUsePresentations()) {
+            target.startTag("presentations");
+            tablePresentations.paint(target);
+            target.endTag("presentations");
+        }
+    }
+
     public List<Table.Column> getNotCollapsedColumns() {
-        List<Table.Column> visibleColumns = new ArrayList<Table.Column>();
+        final List<Table.Column> visibleColumns = new ArrayList<Table.Column>(component.getVisibleColumns().length);
         Object[] keys = component.getVisibleColumns();
-        for (int i=0; i < keys.length; i++) {
-            if (!component.isColumnCollapsed(keys[i])) {
-                visibleColumns.add(columns.get(keys[i]));
+        for (final Object key : keys) {
+            if (!component.isColumnCollapsed(key)) {
+                visibleColumns.add(columns.get(key));
             }
         }
         return visibleColumns;
+    }
+
+    public void usePresentations(boolean use) {
+        usePresentations = use;
+    }
+
+    public boolean isUsePresentations() {
+        return usePresentations;
+    }
+
+    public void loadPresentations() {
+        if (isUsePresentations()) {
+            presentations = new PresentationsImpl(this);
+
+            tablePresentations = new TablePresentations(this);
+        } else {
+            throw new UnsupportedOperationException("Component doesn't use presentations");
+        }
+    }
+
+    public Presentations getPresentations() {
+        if (isUsePresentations()) {
+            return presentations;
+        } else {
+            throw new UnsupportedOperationException("Component doesn't use presentations");
+        }
+    }
+
+    public void applyPresentation(Object id) {
+        if (isUsePresentations()) {
+            Presentation p = presentations.getPresentation(id);
+            applyPresentation(p);
+        } else {
+            throw new UnsupportedOperationException("Component doesn't use presentations");
+        }
+    }
+
+    public void applyPresentationAsDefault(Object id) {
+        if (isUsePresentations()) {
+            Presentation p = presentations.getPresentation(id);
+            presentations.setDefault(p);
+            applyPresentation(p);
+        } else {
+            throw new UnsupportedOperationException("Component doesn't use presentations");
+        }
+    }
+
+    protected void applyPresentation(Presentation p) {
+        presentations.setCurrent(p);
+        Element settingsElement  = presentations.getSettings(p);
+        applySettings(settingsElement);
+        component.requestRepaint();
+    }
+
+    public Object getDefaultPresentationId() {
+        Presentation def = presentations.getDefault();
+        return def == null ? null : def.getId();
     }
 }

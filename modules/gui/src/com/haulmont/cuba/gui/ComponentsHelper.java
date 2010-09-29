@@ -88,4 +88,22 @@ public abstract class ComponentsHelper {
             throw new IllegalStateException();
         }
     }
+
+    public static String getComponentPath(Component c) {
+        StringBuilder sb = new StringBuilder(c.getId() == null ? "" : c.getId());
+        if (c instanceof Component.BelongToFrame) {
+            IFrame frame = ((Component.BelongToFrame) c).getFrame();
+            while (frame != null) {
+                sb.insert(0, ".");
+                String s = frame.getId();
+                if (s.contains("."))
+                    s = "[" + s + "]";
+                sb.insert(0, s);
+                if (frame instanceof Window)
+                    break;
+                frame = frame.getFrame();
+            }
+        }
+        return sb.toString();
+    }
 }

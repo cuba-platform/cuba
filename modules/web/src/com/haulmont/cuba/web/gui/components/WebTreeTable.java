@@ -24,9 +24,11 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.vaadin.data.Item;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 
 import java.util.*;
@@ -38,6 +40,8 @@ public class WebTreeTable
         TreeTable, Component.Wrapper
 {
     protected String hierarchyProperty;
+    
+    private static final long serialVersionUID = 4587793124533649610L;
 
     public WebTreeTable() {
         component = new com.haulmont.cuba.web.toolkit.ui.TreeTable() {
@@ -52,6 +56,19 @@ public class WebTreeTable
                 } else {
                     return null;
                 }
+            }
+
+            @Override
+            protected boolean changeVariables(Map<String, Object> variables) {
+                boolean b = super.changeVariables(variables);
+                b = handleSpecificVariables(variables) || b;
+                return b;
+            }
+
+            @Override
+            public void paintContent(PaintTarget target) throws PaintException {
+                super.paintContent(target);
+                paintSpecificContent(target);
             }
         };
         initComponent(component);

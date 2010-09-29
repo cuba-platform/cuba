@@ -9,7 +9,6 @@
 .v-menubar table {
     font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
     font-size: 11px;
-    color: #fff;
     white-space: nowrap;
     border: 0;
     margin: 0 0 0 5px;
@@ -33,6 +32,10 @@
     padding-right: 11px;
     background: transparent;
     height: 21px;
+}
+
+.v-menubar .menuitem div {
+    color: #fff;
 }
 
 .v-menubar .menuitem-selected {

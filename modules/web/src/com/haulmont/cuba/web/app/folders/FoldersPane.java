@@ -395,9 +395,11 @@ public class FoldersPane extends VerticalLayout {
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
                 WindowManager.OpenType.NEW_TAB, params);
 
+        Filter filterComponent = null;
+
         if (strings.length > 1) {
             String filterComponentId = StringUtils.join(Arrays.copyOfRange(strings, 1, strings.length), '.');
-            Filter filterComponent = window.getComponent(filterComponentId);
+            filterComponent = window.getComponent(filterComponentId);
 
             FilterEntity filterEntity = new FilterEntity();
             filterEntity.setFolder(folder);
@@ -414,6 +416,14 @@ public class FoldersPane extends VerticalLayout {
         }
 
         window.applySettings(new SettingsImpl(window.getId()));
+
+        if (filterComponent != null && folder instanceof SearchFolder) {
+            final SearchFolder searchFolder = (SearchFolder) folder;
+            if (searchFolder.getPresentation() != null) {
+                ((com.haulmont.cuba.gui.components.Component.HasPresentations) filterComponent.getApplyTo())
+                        .applyPresentation(searchFolder.getPresentation().getId());
+            }
+        }
     }
 
     protected boolean isNeedRootAppFolder() {
@@ -545,7 +555,7 @@ public class FoldersPane extends VerticalLayout {
             newFolder.setName("");
             newFolder.setParent(folder);
             newFolder.setUser(UserSessionClient.getUserSession().getUser());
-            final FolderEditWindow window = new FolderEditWindow(true, newFolder, new Runnable() {
+            final FolderEditWindow window = new FolderEditWindow(true, newFolder, null, new Runnable() {
                 public void run() {
                     saveFolder(newFolder);
                     refreshFolders();
@@ -567,7 +577,8 @@ public class FoldersPane extends VerticalLayout {
         }
 
         public void perform(final Folder folder) {
-            final FolderEditWindow window = new FolderEditWindow(false, folder, new Runnable() {
+
+            final FolderEditWindow window = new FolderEditWindow(false, folder, null, new Runnable() {
                 public void run() {
                     saveFolder(folder);
                     refreshFolders();

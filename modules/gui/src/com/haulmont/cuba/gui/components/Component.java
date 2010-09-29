@@ -10,6 +10,9 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
+import com.haulmont.cuba.security.entity.Presentation;
 import org.dom4j.Element;
 
 import java.util.Collection;
@@ -223,5 +226,19 @@ public interface Component {
     interface HasButtonsPanel {
         ButtonsPanel getButtonsPanel();
         void setButtonsPanel(ButtonsPanel panel);
+    }
+
+    interface HasPresentations extends HasSettings {
+        void usePresentations(boolean b);
+        boolean isUsePresentations();
+
+        void loadPresentations();
+
+        Presentations getPresentations();
+
+        void applyPresentation(Object id);
+        void applyPresentationAsDefault(Object id);
+
+        Object getDefaultPresentationId();
     }
 }

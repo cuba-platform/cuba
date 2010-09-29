@@ -309,6 +309,13 @@ public class WebWindow
                             log.trace("Applying settings for : " + name + " : " + component);
                             Element e = WebWindow.this.settings.get(name);
                             ((HasSettings) component).applySettings(e);
+                            if (component instanceof HasPresentations && e.attributeValue("presentation") != null) {
+                                final String def = e.attributeValue("presentation");
+                                if (!StringUtils.isEmpty(def)) {
+                                    UUID defaultId = UUID.fromString(def);
+                                    ((HasPresentations) component).applyPresentationAsDefault(defaultId);
+                                }
+                            }
                         }
                     }
                 }
@@ -532,6 +539,13 @@ public class WebWindow
                             log.trace("Saving settings for : " + name + " : " + component);
                             Element e = WebWindow.this.settings.get(name);
                             boolean modified = ((HasSettings) component).saveSettings(e);
+                            if (component instanceof HasPresentations) {
+                                Object def = ((HasPresentations) component).getDefaultPresentationId();
+                                if (def != null) {
+                                    e.addAttribute("presentation", def.toString());
+                                }
+                                ((HasPresentations) component).getPresentations().commit();
+                            }
                             WebWindow.this.settings.setModified(modified);
                         }
                         if (component instanceof Disposable) {

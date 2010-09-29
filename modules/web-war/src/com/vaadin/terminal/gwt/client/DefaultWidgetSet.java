@@ -119,6 +119,8 @@ public class DefaultWidgetSet implements WidgetSet {
             } else {
                 return IScrollTable.class;
             }
+        } else if (widgetClass == VMenuBar.class && uidl.hasAttribute("vertical")) {
+            return VerticalMenuBar.class;
         }
 
         return widgetClass;

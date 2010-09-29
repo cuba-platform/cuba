@@ -15,13 +15,14 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 
 import java.util.*;
@@ -30,8 +31,9 @@ public class WebTable
     extends
         WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.Table>
     implements
-        Table, Component.Wrapper
+        Component.Wrapper
 {
+    private static final long serialVersionUID = -471562532396731699L;
 
     public WebTable() {
         component = new com.haulmont.cuba.web.toolkit.ui.Table() {
@@ -46,6 +48,19 @@ public class WebTable
                 } else {
                     return null;
                 }
+            }
+
+            @Override
+            protected boolean changeVariables(Map<String, Object> variables) {
+                boolean b = super.changeVariables(variables);
+                b = handleSpecificVariables(variables) || b;
+                return b;
+            }
+
+            @Override
+            public void paintContent(PaintTarget target) throws PaintException {
+                super.paintContent(target);
+                paintSpecificContent(target);
             }
         };
         initComponent(component);

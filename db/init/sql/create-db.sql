@@ -371,6 +371,7 @@ create table SYS_FOLDER (
     PARENT_ID varchar(36),
     NAME varchar(100),
     SORT_ORDER integer,
+    CODE varchar(200),
     primary key (ID)
 );
 
@@ -391,17 +392,36 @@ alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SEC_PRESENTATION (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    COMPONENT varchar(200),
+    NAME varchar(255),
+    XML varchar(7000),
+    USER_ID varchar(36),
+    IS_AUTO_SAVE smallint,
+    primary key (ID)
+);
+
+------------------------------------------------------------------------------------------------------------
+
 create table SEC_SEARCH_FOLDER (
     FOLDER_ID varchar(36),
     FILTER_COMPONENT varchar(200),
     FILTER_XML varchar(7000),
     USER_ID varchar(36),
+    PRESENTATION_ID varchar(36),
     primary key (FOLDER_ID)
 );
 
 alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID);
 
 alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_USER foreign key (USER_ID) references SEC_USER(ID);
+
+alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_PRESENTATION foreign key (PRESENTATION_ID) references SEC_PRESENTATION(ID) on delete set null;
 
 ------------------------------------------------------------------------------------------------------------
 

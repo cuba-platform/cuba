@@ -1758,6 +1758,10 @@ public class ApplicationConnection {
         float relativeWidth = Util.parseRelativeSize(w);
         float relativeHeight = Util.parseRelativeSize(h);
 
+        updateComponentSize(cd, w, h, relativeWidth, relativeHeight);
+    }
+
+    private void updateComponentSize(ComponentDetail cd, String w, String h, float relativeWidth, float relativeHeight) {
         // First update maps so they are correct in the setHeight/setWidth calls
         if (relativeHeight >= 0.0 || relativeWidth >= 0.0) {
             // One or both is relative
@@ -1790,7 +1794,6 @@ public class ApplicationConnection {
             // One or both is relative
             handleComponentRelativeSize(cd);
         }
-
     }
 
     /**
@@ -2016,6 +2019,11 @@ public class ApplicationConnection {
         return handleComponentRelativeSize(idToPaintableDetail.get(getPid(child
                 .getElement())));
 
+    }
+
+    public void updateComponentSize(Widget child, String w, String h) {
+        ComponentDetail cd = idToPaintableDetail.get(getPid(child.getElement()));
+        updateComponentSize(cd, w, h, cd.getRelativeSize().getWidth(), cd.getRelativeSize().getHeight());
     }
 
     /**

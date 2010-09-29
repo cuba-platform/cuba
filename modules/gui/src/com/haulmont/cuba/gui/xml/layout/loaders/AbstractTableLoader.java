@@ -59,6 +59,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadExpandable(component, element);
         loadAggregatable(component, element);
 
+        loadPresentations(component, element);
+
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
 

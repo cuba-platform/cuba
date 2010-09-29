@@ -276,12 +276,20 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             tHead.setColumnCollapsingAllowed(false);
         }
 
+        if (uidl.hasVariable("presentations")) {
+            tHead.setPresentationsAllow(uidl.getBooleanVariable("presentations"));
+        } else {
+            tHead.setPresentationsAllow(false);
+        }
+
         for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
             final UIDL c = (UIDL) it.next();
             if (c.getTag().equals("actions")) {
                 updateActionMap(c);
             } else if (c.getTag().equals("visiblecolumns")) {
                 tHead.updateCellsFromUIDL(c);
+            } else if (c.getTag().equals("presentations")) {
+                tHead.updatePresentationsPopup(c);
             }
         }
 
@@ -377,11 +385,33 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected void updateHeaderColumns(String[] colIds, int colIndex) {
         int i;
+
+        //clear old header cells
+        clearOrphanedCells(colIds);
+
+        //show updated header cells
         for (i = 0; i < colIds.length; i++) {
             final String cid = colIds[i];
             visibleColOrder[colIndex] = cid;
             tHead.enableColumn(cid, colIndex);
             colIndex++;
+        }
+    }
+
+    protected void clearOrphanedCells(String[] colIds) {
+        Vector<Widget> cells = new Vector<Widget>(tHead.visibleCells);
+        for (final Object o : cells) {
+            final HeaderCell cell = (HeaderCell) o;
+            boolean columnExist = false;
+            for (String newColId : colIds) {
+                if (cell.getColKey() == newColId) {
+                    columnExist = true;
+                    break;
+                }
+            }
+            if (!columnExist) {
+                tHead.removeCell(cell.getColKey());
+            }
         }
     }
 
@@ -1038,6 +1068,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         Element tr = DOM.createTR();
 
         private final Element columnSelector = DOM.createDiv();
+        private Element presentationSelector = DOM.createDiv();
+
+        private Element clickedSelector;
+
+        private PopupContainer popup;
 
         private int focusedSlot = -1;
 
@@ -1045,6 +1080,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.setStyleAttribute(hTableWrapper, "overflow", "hidden");
             DOM.setElementProperty(hTableWrapper, "className", CLASSNAME
                     + "-header");
+
+            DOM.setElementProperty(presentationSelector, "className", CLASSNAME
+                    + "-pres-selector");
+            DOM.setStyleAttribute(presentationSelector, "display", "none");
 
             DOM.setElementProperty(columnSelector, "className", CLASSNAME
                     + "-column-selector");
@@ -1056,6 +1095,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.setElementProperty(table, "className", CLASSNAME
                     + "-header-internal");
 
+            DOM.setInnerHTML(presentationSelector, "<div></div>");
             DOM.setInnerHTML(columnSelector, "<div></div>");
 
             DOM.appendChild(table, headerTableBody);
@@ -1063,12 +1103,14 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.appendChild(hTableContainer, table);
             DOM.appendChild(hTableWrapper, hTableContainer);
             DOM.appendChild(div, hTableWrapper);
+            DOM.appendChild(div, presentationSelector);
             DOM.appendChild(div, columnSelector);
             setElement(div);
 
             setStyleName(CLASSNAME + "-header-wrap");
 
             DOM.sinkEvents(columnSelector, Event.ONCLICK);
+            DOM.sinkEvents(presentationSelector, Event.ONCLICK);
 
             availableCells.put("0", new RowHeadersHeaderCell());
         }
@@ -1171,6 +1213,14 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.setStyleAttribute(columnSelector, "display", "block");
             } else {
                 DOM.setStyleAttribute(columnSelector, "display", "none");
+            }
+        }
+
+        public void setPresentationsAllow(boolean b) {
+            if (b) {
+                DOM.setStyleAttribute(presentationSelector, "display", "block");
+            } else {
+                DOM.setStyleAttribute(presentationSelector, "display", "none");
             }
         }
 
@@ -1289,15 +1339,38 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         @Override
         public void onBrowserEvent(Event event) {
             if (enabled) {
-                final EventTarget target = event.getEventTarget();
-                if (target.cast() == columnSelector || DOM.getParent(target.<Element>cast()) == columnSelector) {
-                    final int left = DOM.getAbsoluteLeft(columnSelector);
-                    final int top = DOM.getAbsoluteTop(columnSelector)
-                            + DOM.getElementPropertyInt(columnSelector,
-                            "offsetHeight");
-                    client.getContextMenu().showAt(this, left, top);
+                try {
+                    final EventTarget target = event.getEventTarget();
+                    if (target.cast() == columnSelector || DOM.getParent(target.<Element>cast()) == columnSelector) {
+                        final int left = DOM.getAbsoluteLeft(columnSelector);
+                        final int top = DOM.getAbsoluteTop(columnSelector)
+                                + DOM.getElementPropertyInt(columnSelector,
+                                "offsetHeight");
+
+                        clickedSelector = columnSelector;
+
+                        client.getContextMenu().showAt(this, left, top);
+                    } else if (target.cast() == presentationSelector || DOM.getParent(target.<Element>cast()) == presentationSelector) {
+                        final int left = DOM.getAbsoluteLeft(presentationSelector);
+                        final int top = DOM.getAbsoluteTop(presentationSelector)
+                                + DOM.getElementPropertyInt(presentationSelector,
+                                "offsetHeight");
+
+                        clickedSelector = presentationSelector;
+                        
+                        popup.showAt(left, top);
+                    }
+                } finally {
+                    clickedSelector = null;
                 }
             }
+        }
+
+        protected void updatePresentationsPopup(UIDL uidl) {
+            if (popup == null) {
+                popup = new PopupContainer();
+            }
+            popup.updateFromUIDL(uidl, client);
         }
 
         protected class VisibleColumnAction extends Action {
@@ -1354,6 +1427,14 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
          * Returns columns as Action array for column select popup
          */
         public Action[] getActions() {
+            if (clickedSelector == columnSelector) {
+                return getColumnSelectionActions();
+            } else {
+                return new Action[0];
+            }
+        }
+
+        private Action[] getColumnSelectionActions() {
             final Object[] cols = getActionColumns();
             final Action[] actions = new Action[cols.length];
 
