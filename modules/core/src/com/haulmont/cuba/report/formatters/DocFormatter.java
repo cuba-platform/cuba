@@ -137,7 +137,7 @@ public class DocFormatter extends AbstractFormatter {
     private void replaceAllAliasesInDocument(XTextDocument xTextDocument) {
         XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
         XSearchDescriptor searchDescriptor = xReplaceable.createSearchDescriptor();
-        searchDescriptor.setSearchString("\\$\\{[.]+?\\.[.]+?\\}");
+        searchDescriptor.setSearchString("\\$\\{[^\\.]+?\\.[a-z|0-9|\\.|\\_]+?\\}");//todo: EUDE - implement correct regexp
         try {
             searchDescriptor.setPropertyValue("SearchRegularExpression", true);
             XIndexAccess indexAccess = xReplaceable.findAll(searchDescriptor);
