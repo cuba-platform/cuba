@@ -154,6 +154,7 @@ public class DocFormatter extends AbstractFormatter {
                 StringBuffer paramName = new StringBuffer();
                 for (int j = 1; j < parts.length; j++) {
                     paramName.append(parts[j]);
+                    if (j != parts.length - 1) paramName.append(".");
                 }
 
                 Object parameter = band.getParameter(paramName.toString());
