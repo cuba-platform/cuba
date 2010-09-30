@@ -50,6 +50,9 @@
         </copy>
 
         <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/web-toolkit.jar">
+            <manifest>
+                <attribute name="Vaadin-Widgetsets" value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>
+            </manifest>
             <include name="**/*"/>
         </jar>
 

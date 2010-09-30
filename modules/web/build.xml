@@ -44,7 +44,15 @@
         </copy>
     </target>
 
-    <target name="build-module" depends="base-mod.build-module">
+    <target name="build-module" depends="compile-module">
+        <echo>==> building ${project.dir} ${module.name}</echo>
+        <mkdir dir="${build.dir}"/>
+        <jar basedir="${prod.out.dir}/${module.name}" destfile="${build.dir}/${module.jar}">
+            <manifest>
+                <attribute name="Vaadin-Widgetsets" value="com.haulmont.cuba.toolkit.gwt.WidgetSet"/>
+            </manifest>
+            <include name="**/*"/>
+        </jar>
         <mkdir dir="${build.dir}/conf"/>
         <copy todir="${build.dir}/conf">
             <fileset dir="src-conf" includes="**/*"/>
