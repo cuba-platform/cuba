@@ -406,6 +406,8 @@ create table SEC_PRESENTATION (
     primary key (ID)
 );
 
+alter table SEC_PRESENTATION add constraint SEC_PRESENTATION_USER foreign key (USER_ID) references SEC_USER(ID);
+
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_SEARCH_FOLDER (
