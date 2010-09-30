@@ -143,7 +143,7 @@ public class DocFormatter extends AbstractFormatter {
             XIndexAccess indexAccess = xReplaceable.findAll(searchDescriptor);
             for (int i = 0; i < indexAccess.getCount(); i++) {
                 XTextRange o = asXTextRange(indexAccess.getByIndex(i));
-                String[] parts = o.getString().replaceAll("[\\{|\\|\\$}]", "").split("\\.");
+                String[] parts = o.getString().replaceAll("[\\{|\\}|\\$]", "").split("\\.");
 
                 if (parts == null || parts.length < 2) throw new RuntimeException("Bad alias : " + o.getString());
 
