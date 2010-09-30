@@ -107,7 +107,6 @@ public class DocFormatter extends AbstractFormatter {
     }
 
 
-
     /**
      * Old method - now use <code>replaceAllAliasesInDocument</code>
      */
@@ -138,7 +137,7 @@ public class DocFormatter extends AbstractFormatter {
     private void replaceAllAliasesInDocument(XTextDocument xTextDocument) {
         XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
         XSearchDescriptor searchDescriptor = xReplaceable.createSearchDescriptor();
-        searchDescriptor.setSearchString("\\$\\{.+?\\..+?\\}");
+        searchDescriptor.setSearchString("\\$\\{[.]+?\\.[.]+?\\}");
         try {
             searchDescriptor.setPropertyValue("SearchRegularExpression", true);
             XIndexAccess indexAccess = xReplaceable.findAll(searchDescriptor);
@@ -152,8 +151,12 @@ public class DocFormatter extends AbstractFormatter {
                 Band band = bandName.equals("Root") ? rootBand : rootBand.getChildByName(bandName);
 
                 if (band == null) throw new RuntimeException("No band for alias : " + o.getString());
+                StringBuffer paramName = new StringBuffer();
+                for (int j = 1; j < parts.length; j++) {
+                    paramName.append(parts[j]);
+                }
 
-                Object parameter = band.getParameter(parts[1]);
+                Object parameter = band.getParameter(paramName.toString());
                 o.setString(parameter != null ? parameter.toString() : "");
             }
         } catch (Exception ex) {
