@@ -974,6 +974,18 @@ public class WebWindow
                     buffer.toString(), NotificationType.TRAY);
             if (field != null) {
                 try {
+                    com.vaadin.ui.Component c = field;
+                    com.vaadin.ui.Component cp;
+                    do{
+                        cp = c.getParent();
+                        if(cp != null)
+                            if (cp instanceof com.vaadin.ui.Component.Focusable) {
+                                ((com.vaadin.ui.Component.Focusable) cp).focus();
+                            } else if (cp instanceof TabSheet){
+                                ((TabSheet)cp).setSelectedTab(c);
+                            }
+                        c = cp;
+                    }while(c != null);
                     field.focus();
                 } catch (UnsupportedOperationException e) {
                     //

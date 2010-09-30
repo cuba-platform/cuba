@@ -10,10 +10,10 @@
         <vbox id="mainPane" expand="spring" margin="true" spacing="true">
             <vbox stylename="edit-area" margin="true" spacing="true">
                 <label value="msg://theme"/>
-                <lookupField id="reason" required="true" width="200px" />
-                <textField id="reasonFreeText" required="true" width="400px" />
+                <lookupField id="reason" required="true" width="200px" requiredMessage="themeMsg"/>
+                <textField id="reasonFreeText" required="true" width="400px" requiredMessage="themeMsg"/>
                 <label value="msg://body"/>
-                <textField id="mainBody" required="true" rows="15" width="600px" />
+                <textField id="mainBody" required="true" rows="15" width="600px" requiredMessage="bodyMsg"/>
             </vbox>
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
                 <button id="ok" icon="icons/ok.png"/>

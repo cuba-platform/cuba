@@ -37,13 +37,13 @@
                     <row>
                         <label value="msg://definition.name"/>
                         <textField id="name" datasource="bandDefinitionDs" property="name"
-                                   width="${width}" required="true"/>
+                                   width="${width}" required="true" requiredMessage="definition.nameMsg"/>
                     </row>
 
                     <row>
                         <label value="msg://definition.orientation"/>
                         <lookupField id="orientation" datasource="bandDefinitionDs" property="orientation"
-                                   width="${width}" required="true"/>
+                                   width="${width}" required="true" requiredMessage="definition.orientationMsg"/>
                     </row>
                 </rows>
             </grid>

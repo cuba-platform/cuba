@@ -30,17 +30,17 @@
                     <row>
                         <label value="msg://parameters.name"/>
                         <textField id="name" datasource="parameterDs" property="name" required="true"
-                                   width="${width}"/>
+                                   width="${width}" requiredMessage="parameters.nameMsg"/>
                     </row>
                     <row>
                         <label value="msg://parameters.alias"/>
                         <textField id="alias" datasource="parameterDs" property="alias" required="true"
-                                   width="${width}"/>
+                                   width="${width}" requiredMessage="parameters.aliasMsg"/>
                     </row>
                     <row>
                         <label value="msg://parameters.type"/>
                         <lookupField id="type" datasource="parameterDs" property="type" required="true"
-                                     width="${width}"/>
+                                     width="${width}" requiredMessage="parameters.typeMsg"/>
                     </row>
 
                     <row>
@@ -66,7 +66,7 @@
                     <row>
                         <label value="msg://parameters.className"/>
                         <textField id="className" datasource="parameterDs" property="className" required="true"
-                                   width="${width}" editable="false"/>
+                                   width="${width}" editable="false" requiredMessage="/parameters.classNameMsg"/>
                     </row>
                 </rows>
             </grid>

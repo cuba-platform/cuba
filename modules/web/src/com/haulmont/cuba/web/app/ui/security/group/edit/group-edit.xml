@@ -13,7 +13,7 @@
             <hbox spacing="true" margin="true" align="MIDDLE_LEFT" expandable="false">
                 <label value="msg://group.name"/>
                 <textField id="name" datasource="group" property="name"
-                           width="300px" required="true"/>
+                           width="300px" required="true" requiredMessage="nameMsg"/>
             </hbox>
         </vbox>
 

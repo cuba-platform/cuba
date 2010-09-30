@@ -18,17 +18,17 @@
                         <row>
                             <label value="msg://report.name"/>
                             <textField id="name" datasource="reportDs" property="name"
-                                       width="${width}" required="true"/>
+                                       width="${width}" required="true" requiredMessage="report.nameMsg"/>
                         </row>
                         <row>
                             <label value="msg://report.reportType"/>
                             <lookupField id="reportType" datasource="reportDs" property="reportType"
-                                      width="${width}" required="true"/>
+                                      width="${width}" required="true" requiredMessage="report.reportTypeMsg"/>
                         </row>
                         <row>
                             <label value="msg://report.reportOutputType"/>
                             <lookupField id="reportOutputType" datasource="reportDs" property="reportOutputType"
-                                         width="${width}" required="true"/>
+                                         width="${width}" required="true" requiredMessage="report.reportOutputTypeMsg"/>
                         </row>
                         <row>
                             <label value="msg://report.template"/>
