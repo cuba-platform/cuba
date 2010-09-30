@@ -539,7 +539,7 @@ public class WebWindow
                             log.trace("Saving settings for : " + name + " : " + component);
                             Element e = WebWindow.this.settings.get(name);
                             boolean modified = ((HasSettings) component).saveSettings(e);
-                            if (component instanceof HasPresentations) {
+                            if (component instanceof HasPresentations && ((HasPresentations) component).isUsePresentations()) {
                                 Object def = ((HasPresentations) component).getDefaultPresentationId();
                                 if (def != null) {
                                     e.addAttribute("presentation", def.toString());
