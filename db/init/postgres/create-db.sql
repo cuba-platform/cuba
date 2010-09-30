@@ -389,7 +389,7 @@ alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_PRESENTATION (
-    ID varchar(36),
+    ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
     UPDATE_TS timestamp,
@@ -397,7 +397,7 @@ create table SEC_PRESENTATION (
     COMPONENT varchar(200),
     NAME varchar(255),
     XML varchar(7000),
-    USER_ID varchar(36),
+    USER_ID uuid,
     IS_AUTO_SAVE boolean,
     primary key (ID)
 );
