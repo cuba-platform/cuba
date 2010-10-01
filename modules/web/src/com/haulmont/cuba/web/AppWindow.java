@@ -344,9 +344,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             HorizontalLayout searchLayout = new HorizontalLayout();
             searchLayout.setMargin(false, true, false, true);
 
-            final TextField searchField = new TextField();
+            final TextField searchField = new com.haulmont.cuba.web.toolkit.ui.TextField();
             searchField.setWidth(120, Sizeable.UNITS_PIXELS);
-            searchField.addShortcutListener(new ShortcutListener("", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
+            searchField.addShortcutListener(new ShortcutListener("fts", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
                 @Override
                 public void handleAction(Object sender, Object target) {
                     openSearchWindow(searchField);
