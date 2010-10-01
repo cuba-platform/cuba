@@ -1,17 +1,23 @@
 package com.haulmont.cuba.report;
 
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.report.app.ReportService;
+import com.javamex.arcmexer.ArchiveEntry;
+import com.javamex.arcmexer.ArchiveFormatException;
+import com.javamex.arcmexer.ArchiveReader;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
+import org.apache.commons.io.IOUtils;
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,11 +26,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.zip.ZipInputStream;
 import java.util.zip.CRC32;
-
-import org.apache.tools.zip.ZipOutputStream;
-import org.apache.tools.zip.ZipEntry;
 
 /*
 * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
@@ -140,35 +142,23 @@ public class ImportExportHelper {
         }
     }
 
-//    private static void addClassAlias(XStream xStream, Class clazz, HashSet<Class> knownClasses) {
-
-//        if (!knownClasses.contains(clazz) && Entity.class.isAssignableFrom(clazz)) {
-//            xStream.alias(clazz.getSimpleName(), clazz);
-//            knownClasses.add(clazz);
-//            for (Field field : clazz.getDeclaredFields()) {
-//                addClassAlias(xStream, field.getType(), knownClasses);
-//            }
-//            for (Field field : clazz.getFields()) {
-//                addClassAlias(xStream, field.getType(), knownClasses);
-//            }
-//        }
-//    }
-
     public static Collection<Report> importReports(byte[] zipBytes) throws IOException, FileStorageException {
         LinkedList<Report> reports = null;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);
-        ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream);
-        java.util.zip.ZipEntry zipEntry;
-        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            if (reports == null) {
-                reports = new LinkedList<Report>();
+        ArchiveReader archiveReader;
+        try {
+            archiveReader = ArchiveReader.getReader(byteArrayInputStream);
+            ArchiveEntry archiveEntry;
+            while ((archiveEntry = archiveReader.nextEntry()) != null) {
+                if (reports == null) {
+                    reports = new LinkedList<Report>();
+                }
+                Report report = importReport(IOUtils.toByteArray(archiveEntry.getInputStream()));
+                reports.add(report);
             }
-            byte[] singleReportArchive = new byte[(int) zipEntry.getSize()];
-            zipInputStream.read(singleReportArchive);
-            Report report = importReport(singleReportArchive);
-            reports.add(report);
+        } catch (ArchiveFormatException e) {
+            throw new IllegalArgumentException("Wrong report archive format. Report not imported.");
         }
-        zipInputStream.close();
         byteArrayInputStream.close();
         return reports;
     }
@@ -176,40 +166,36 @@ public class ImportExportHelper {
     private static Report importReport(byte[] zipBytes) throws IOException, FileStorageException {
         Report report = null;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);
-        ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream);
-        java.util.zip.ZipEntry zipEntry;
-        // importing report.xml to report object
-        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            if (zipEntry.getName().equals("report.xml")) {
-                byte[] fileBytes = new byte[(int) zipEntry.getSize()];
-                zipInputStream.read(fileBytes);
-                String xml = new String(fileBytes);
-                report = fromXML(Report.class, xml);
-                break;
+        ArchiveReader archiveReader;
+        try {
+            archiveReader = ArchiveReader.getReader(byteArrayInputStream);
+            ArchiveEntry archiveEntry;
+            // importing report.xml to report object
+            while ((archiveEntry = archiveReader.nextEntry()) != null) {
+                if (archiveEntry.getFilename().equals("report.xml")) {
+                    String xml = new String(IOUtils.toByteArray(archiveEntry.getInputStream()));
+                    report = fromXML(Report.class, xml);
+                    break;
+                }
             }
-        }
-        if (report == null) {
-            throw new RuntimeException("Wrong report archive format. Report not imported.");
-        }
-        zipInputStream.close();
-        byteArrayInputStream.close();
-        // importring template files
-        // not using zipInputStream.reset here because marks not supported.
-        byteArrayInputStream = new ByteArrayInputStream(zipBytes);
-        zipInputStream = new ZipInputStream(byteArrayInputStream);
-        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            if (!zipEntry.getName().equals("report.xml")) {
-                byte[] fileBytes = new byte[(int) zipEntry.getSize()];
-                zipInputStream.read(fileBytes);
-                FileDescriptor fd = report.getTemplateFileDescriptor();
-                FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
-                try {
-                    mbean.removeFile(fd);
-                } catch (FileStorageException e) {/*Do nothing*/}
-                mbean.saveFile(fd, fileBytes);
+
+            byteArrayInputStream.close();
+            // importring template files
+            // not using zipInputStream.reset here because marks not supported.
+            byteArrayInputStream = new ByteArrayInputStream(zipBytes);
+            while ((archiveEntry = archiveReader.nextEntry()) != null) {
+                if (!archiveEntry.getFilename().equals("report.xml")) {
+                    FileDescriptor fd = report.getTemplateFileDescriptor();
+                    FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
+                    try {
+                        mbean.removeFile(fd);
+                    } catch (FileStorageException e) {/*Do nothing*/}
+                    mbean.saveFile(fd, IOUtils.toByteArray(archiveEntry.getInputStream()));
+                }
             }
+        } catch (ArchiveFormatException e) {
+            throw new IllegalArgumentException("Wrong report archive format. Report not imported.");
         }
-        zipInputStream.close();
         byteArrayInputStream.close();
 
         Transaction tx = Locator.createTransaction();

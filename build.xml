@@ -107,6 +107,7 @@
 
         <!--Apache tools-->
         <ext:install-lib name="ant" version="${antlib.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib name="arcmexer" version="${arcmexer.version}" toDir="${lib.server.dir}"/>
 	</target>
 	
 	<target name="compile">
