@@ -94,7 +94,12 @@ public class ScriptingProviderImpl extends ScriptingProvider {
         if (gse == null) {
             synchronized (this) {
                 if (gse == null) {
-                    final String rootPath = ConfigProvider.getConfig(ServerConfig.class).getServerConfDir();
+                    final String[] rootPath =  new String[]{
+                            // src-conf directory:
+                            ConfigProvider.getConfig(ServerConfig.class).getServerConfDir(),
+                            // db scripts directory:
+                            ConfigProvider.getConfig(ServerConfig.class).getServerDbDir()
+                    };
                     try {
                         gse = new GroovyScriptEngine(rootPath);
                     } catch (IOException e) {

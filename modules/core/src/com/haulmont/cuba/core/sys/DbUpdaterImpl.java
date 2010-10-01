@@ -17,7 +17,7 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.sys.DbUpdater;
+import groovy.lang.Binding;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -38,9 +38,29 @@ import java.util.*;
 @ManagedBean(DbUpdater.NAME)
 public class DbUpdaterImpl implements DbUpdater {
 
+    // File extension handler
+    private abstract class FileHandler{
+        abstract void run(File file);
+    }
+
     private boolean changelogTableExists;
 
     protected File dbDir;
+
+    // register handlers for script files
+    private HashMap<String,FileHandler> extensionHandlers = new HashMap<String,FileHandler>();
+    {
+        extensionHandlers.put("sql", new FileHandler(){
+            void run(File file){
+                executeSqlScript(file);    
+            }
+        });
+        extensionHandlers.put("groovy", new FileHandler(){
+            void run(File file){
+                executeGroovyScript(file);
+            }
+        });
+    }
 
     private ClusterManagerAPI clusterManager;
 
@@ -176,7 +196,7 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     private void doUpdate() {
-        log.info("Updating database");
+        log.info("Updating database...");
 
         if (!changelogTableExists) {
             log.info("Changelog table not found, creating it and mark all scripts as executed");
@@ -240,7 +260,7 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
-    private void executeScript(File file) {
+    private void executeSqlScript(File file) {
         log.info("Executing script " + file.getPath());
         String script;
         try {
@@ -269,6 +289,31 @@ public class DbUpdaterImpl implements DbUpdater {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void executeGroovyScript(File file){
+        log.info("Executing script " + file.getPath());
+        Binding bind = new Binding();
+        ScriptingProviderImpl.runGroovyScript(getScriptName(file), bind);
+    }
+
+    private void executeScript(File file){
+        log.info("Execute script!");
+        String filename = file.getName();
+        String[] paths = filename.split("\\.");
+        if (paths.length > 1)
+        {
+            String extension = paths[paths.length - 1];
+            if (extensionHandlers.containsKey(extension)){
+                FileHandler handler = extensionHandlers.get(extension);
+                handler.run(file);
+            }
+            else
+                log.warn("Update script ignored, file handler for extension not found:" +
+                    file.getName());
+        }
+        else
+            log.warn("Update script ignored, file extension undefined:" + file.getName());
     }
 
     private void markScript(String name, boolean init) {
