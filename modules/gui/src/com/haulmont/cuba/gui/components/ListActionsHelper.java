@@ -2,6 +2,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.*;
@@ -20,6 +21,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
     protected T component;
     protected UserSession userSession;
     protected MetaClass metaClass;
+    protected MetaProperty metaProperty;
 
     protected java.util.List<Listener> listeners;
 
@@ -30,7 +32,11 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         this.frame = frame;
         this.component = component;
         userSession = UserSessionClient.getUserSession();
-        metaClass = component.getDatasource().getMetaClass();
+        CollectionDatasource ds = component.getDatasource();
+        metaClass = ds.getMetaClass();
+        if (ds instanceof PropertyDatasource) {
+            metaProperty = ((PropertyDatasource) ds).getProperty();
+        }
         listeners = new ArrayList<Listener>();
     }
 
@@ -313,8 +319,12 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
             return MessageProvider.getMessage(messagesPackage, "actions.Remove");
         }
 
+        public boolean isManyToMany() {
+            return metaProperty != null && metaProperty.getRange() != null && metaProperty.getRange().getCardinality() != null && metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY;
+        }
+
         public boolean isEnabled() {
-            return super.isEnabled() && userSession.isEntityOpPermitted(metaClass, EntityOp.DELETE);
+            return super.isEnabled() && (isManyToMany() || userSession.isEntityOpPermitted(metaClass, EntityOp.DELETE));
         }
 
         public void actionPerform(Component component) {

@@ -9,12 +9,10 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.filter.QueryFilter;
@@ -217,7 +215,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             final Entity parentItem = ds.getItem();
             ((DatasourceImplementation) ds).modified(parentItem);
         }
-        modified(item);
+        if (metaProperty != null && metaProperty.getRange() != null && metaProperty.getRange().getCardinality() != null
+                && metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY
+                && !PersistenceHelper.isNew(item)) {
+            // do not mark for update existing many-to-many item;
+            // item is not updated here, but many-to-many table entry is added
+        }
+        else {
+            modified(item);
+        }
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
