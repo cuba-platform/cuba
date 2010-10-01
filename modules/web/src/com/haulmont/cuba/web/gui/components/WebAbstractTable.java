@@ -232,6 +232,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (selected.isEmpty()) {
                     //noinspection unchecked
                     datasource.setItem(null);
+                } else if (selected.size() > 1) {
+                    datasource.setItem(null);
+                    datasource.setItem((Entity) selected.iterator().next());
                 } else {
                     //noinspection unchecked
                     datasource.setItem((Entity) selected.iterator().next());
@@ -631,6 +634,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         if (pagingMode == Table.PagingMode.PAGE) {
             setPagingProvider(new DefaultPagingProvider());
         }
+    }
+
+    @Override
+    public void setMultiSelect(boolean multiselect) {
+        component.setNullSelectionAllowed(multiselect);
+        super.setMultiSelect(multiselect);
     }
 
     public ButtonsPanel getButtonsPanel() {

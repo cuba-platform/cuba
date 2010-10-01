@@ -108,6 +108,122 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     }
 
     @Override
+    public void changeVariables(Object source, Map<String, Object> variables) {
+        if (!isSelectable() && variables.containsKey("selected")) {
+            // Not-selectable is a special case, AbstractSelect does not support
+            // TODO could be optimized.
+            variables = new HashMap<String, Object>(variables);
+            variables.remove("selected");
+        }
+
+        /*
+         * The AbstractSelect cannot handle the multiselection properly, instead
+         * we handle it ourself
+         */
+        else if (isSelectable() && isMultiSelect()
+                && variables.containsKey("selected")
+                /*&& multiSelectMode == MultiSelectMode.DEFAULT*/) {
+            handleSelectedItems(variables);
+            variables = new HashMap<String, Object>(variables);
+            variables.remove("selected");
+        }
+        super.changeVariables(source, variables);
+    }
+
+    /**
+     * Gets items ids from a range of key values
+     *
+     * @param startRowKey
+     *            The start key
+     * @param endRowKey
+     *            The end key
+     * @return
+     */
+    protected Set<Object> getItemIdsInRange(Object itemId, final int length) {
+        HashSet<Object> ids = new HashSet<Object>();
+        for (int i = 0; i < length; i++) {
+            assert itemId != null; // should not be null unless client-server
+                                   // are out of sync
+            ids.add(itemId);
+            itemId = nextItemId(itemId);
+        }
+        return ids;
+    }
+
+    /**
+     * Handles selection if selection is a multiselection
+     *
+     * @param variables
+     *            The variables
+     */
+    private void handleSelectedItems(Map<String, Object> variables) {
+        final String[] ka = (String[]) variables.get("selected");
+        final String[] ranges = (String[]) variables.get("selectedRanges");
+
+        Set<Object> renderedItemIds = getCurrentlyRenderedItemIds();
+
+        HashSet<Object> newValue = new HashSet<Object>(
+                (Collection<Object>) getValue());
+
+        if (variables.containsKey("clearSelections")) {
+            // the client side has instructed to swipe all previous selections
+            newValue.clear();
+        } else {
+            /*
+             * first clear all selections that are currently rendered rows (the
+             * ones that the client side counterpart is aware of)
+             */
+            newValue.removeAll(renderedItemIds);
+        }
+
+        /*
+         * Then add (possibly some of them back) rows that are currently
+         * selected on the client side (the ones that the client side is aware
+         * of).
+         */
+        for (int i = 0; i < ka.length; i++) {
+            // key to id
+            final Object id = itemIdMapper.get(ka[i]);
+            if (!isNullSelectionAllowed()
+                    && (id == null || id == getNullSelectionItemId())) {
+                // skip empty selection if nullselection is not allowed
+                requestRepaint();
+            } else if (id != null && containsId(id)) {
+                newValue.add(id);
+            }
+        }
+
+        if (!isNullSelectionAllowed() && newValue.size() < 1) {
+            // empty selection not allowed, keep old value
+            requestRepaint();
+            return;
+        }
+
+        /* Add range items aka shift clicked multiselection areas */
+        if (ranges != null) {
+            for (String range : ranges) {
+                String[] split = range.split("-");
+                Object startItemId = itemIdMapper.get(split[0]);
+                int length = Integer.valueOf(split[1]);
+                newValue.addAll(getItemIdsInRange(startItemId, length));
+            }
+        }
+
+        setValue(newValue, true);
+
+    }
+
+    private Set<Object> getCurrentlyRenderedItemIds() {
+        HashSet<Object> ids = new HashSet<Object>();
+        if (pageBuffer != null) {
+            for (int i = 0; i < pageBuffer[CELL_ITEMID].length; i++) {
+                ids.add(pageBuffer[CELL_ITEMID][i]);
+            }
+        }
+        return ids;
+    }
+
+    @Override
     protected boolean changeVariables(Map<String, Object> variables) {
 
         boolean clientNeedsContentRefresh = false;
@@ -385,11 +501,12 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             }
             target.addAttribute("key", Integer.parseInt(cells[CELL_KEY][i]
                     .toString()));
-            if (actionHandlers != null || isSelectable()) {
+            //TODO GP http://dev.vaadin.com/ticket/3520
+//            if (actionHandlers != null || isSelectable()) {
                 if (isSelected(itemId)) {
                     target.addAttribute("selected", true);
                 }
-            }
+//            }
 
             // Actions
             paintRowActions(target, actionSet, itemId);

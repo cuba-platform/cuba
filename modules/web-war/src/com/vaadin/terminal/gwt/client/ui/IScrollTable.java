@@ -19,10 +19,13 @@ package com.vaadin.terminal.gwt.client.ui;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.UIDL;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * IScrollTable
@@ -68,6 +71,12 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
     protected int rows; //received rows count
     protected int firstrow; //an index of the first row whitch will be rendered
 
+    /*
+     * When scrolling and selecting at the same time, the selections are not in
+     * sync with the server while retrieving new rows (until key is released).
+     */
+    private HashSet<Object> unSyncedselectionsBeforeRowFetch;
+
     public IScrollTable() {
         super();
         bodyContainer.addScrollHandler(this);
@@ -92,6 +101,35 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         }
 
         super.updateFromUIDL(uidl);
+
+        boolean keyboardSelectionOverRowFetchInProgress = false;
+
+        if (uidl.hasVariable("selected")) {
+            final Set<String> selectedKeys = uidl
+                    .getStringArrayVariableAsSet("selected");
+            if (tBody != null) {
+                Iterator<Widget> iterator = tBody.iterator();
+                while (iterator.hasNext()) {
+                    /*
+                     * Make the focus reflect to the server side state unless we
+                     * are currently selecting multiple rows with keyboard.
+                     */
+                    IScrollTableBody.IScrollTableRow row = (IScrollTableBody.IScrollTableRow) iterator.next();
+                    boolean selected = selectedKeys.contains(row.getKey());
+                    if (!selected
+                            && unSyncedselectionsBeforeRowFetch != null
+                            && unSyncedselectionsBeforeRowFetch.contains(row
+                                    .getKey())) {
+                        selected = true;
+                        keyboardSelectionOverRowFetchInProgress = true;
+                    }
+                    if (selected != row.isSelected()) {
+                        row.toggleSelection();
+                    }
+                }
+            }
+        }
+        unSyncedselectionsBeforeRowFetch = null;
 
         hideScrollPositionAnnotation();
         purgeUnregistryBag();
@@ -125,6 +163,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             if (isAttached()) {
                 sizeInit();
             }
+            tBody.restoreRowVisibility();
         }
     }
 
@@ -214,7 +253,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             cont = tBody.unlinkRow(false);
         }
         tBody.fixSpacers();
-
+        tBody.restoreRowVisibility();
     }
 
     @Override
@@ -455,6 +494,10 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                         false);
                 client.updateVariable(paintableId, "reqrows", reqRows, true);
 
+                if (selectionChanged) {
+                    unSyncedselectionsBeforeRowFetch = new HashSet<Object>(
+                            selectedRowKeys);
+                }
             }
         }
 
@@ -668,6 +711,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         }
 
         protected void addRowBeforeFirstRendered(IScrollTableRow row) {
+            row.setIndex(firstRendered - 1);
             IScrollTableRow first = null;
             if (renderedRows.size() > 0) {
                 first = (IScrollTableRow) renderedRows.get(0);
@@ -680,12 +724,14 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             if (row.isSelected()) {
                 row.addStyleName("v-selected");
             }
-            DOM.insertChild(tBody, row.getElement(), 0);
+            tBody.insertBefore(row.getElement(),
+                    tBody.getFirstChild());
             adopt(row);
             renderedRows.add(0, row);
         }
 
         protected void addRow(IScrollTableRow row) {
+            row.setIndex(firstRendered + renderedRows.size());
             IScrollTableRow last = null;
             if (renderedRows.size() > 0) {
                 last = (IScrollTableRow) renderedRows
@@ -699,7 +745,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             if (row.isSelected()) {
                 row.addStyleName("v-selected");
             }
-            DOM.appendChild(tBody, row.getElement());
+            tBody.appendChild(row.getElement());
             adopt(row);
             renderedRows.add(row);
         }

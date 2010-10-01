@@ -423,8 +423,12 @@ public class IScrollTreeTable
 
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
-                        handleClickEvent(event);
-                        handleRowClick(event);
+                        if (groupCell != null && DOM.eventGetTarget(event) == groupCell) {
+                            handleClickEvent(event);
+                            handleRowClick(event);
+                        } else {
+                            super.onBrowserEvent(event);
+                        }
                         break;
                     case Event.ONDBLCLICK:
                         handleClickEvent(event);

@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollGroupTable;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
@@ -399,6 +400,35 @@ public class GroupTable extends Table implements GroupTableContainer {
         } else {
             return items.getItemIds();
         }
+    }
+
+    @Override
+    protected Set<Object> getItemIdsInRange(Object itemId, int length) {
+        HashSet<Object> ids = new HashSet<Object>();
+        for (int i = 0; i < length; i++) {
+            assert itemId != null; // should not be null unless client-server
+                                  // are out of sync
+
+            if (itemId instanceof GroupInfo) {
+                Collection<?> itemIds = getGroupItemIds(itemId);
+                ids.addAll(itemIds);
+
+                List<GroupInfo> children = (List<GroupInfo>) getChildren(itemId);
+                for(GroupInfo groupInfo: children) {
+                    if (!isExpanded(groupInfo)) {
+                        expand(groupInfo, true);
+                    }
+                }
+
+                if (!isExpanded(itemId)) {
+                    expand(itemId, true);
+                }
+            } else {
+                ids.add(itemId);
+            }
+            itemId = nextItemId(itemId);
+        }
+        return ids;
     }
 
     protected void paintGroupAggregation(PaintTarget target, Object groupId, Map<Object, Object> aggregations)

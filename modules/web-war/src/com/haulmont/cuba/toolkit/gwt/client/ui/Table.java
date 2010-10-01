@@ -31,6 +31,7 @@ import java.util.*;
 public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table, KeyDownHandler,
         KeyUpHandler, ScrollHandler {
     public static final String CLASSNAME = "v-table";
+    public static final String CLASSNAME_SELECTION_FOCUS = CLASSNAME + "-focus";
 
     /**
      * Amount of padding inside one table cell (this is reduced from the
@@ -123,6 +124,98 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected int focusWidgetIndex = -1;
 
     protected boolean textSelectionEnabled;
+
+    /**
+     * Represents a select range of rows
+     */
+    private class SelectionRange {
+        private ITableBody.ITableRow startRow;
+        private int length;
+
+        /**
+         * Constuctor.
+         */
+        public SelectionRange(ITableBody.ITableRow row1, ITableBody.ITableRow row2) {
+            ITableBody.ITableRow endRow;
+            if (row2.isBefore(row1)) {
+                startRow = row2;
+                endRow = row1;
+            } else {
+                startRow = row1;
+                endRow = row2;
+            }
+            length = endRow.getIndex() - startRow.getIndex() + 1;
+        }
+
+        public SelectionRange(ITableBody.ITableRow row, int length) {
+            startRow = row;
+            this.length = length;
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return startRow.getKey() + "-" + length;
+        }
+
+        private boolean inRange(ITableBody.ITableRow row) {
+            return row.getIndex() >= startRow.getIndex()
+                    && row.getIndex() < startRow.getIndex() + length;
+        }
+
+        public Collection<SelectionRange> split(ITableBody.ITableRow row) {
+            assert row.isAttached();
+            ArrayList<SelectionRange> ranges = new ArrayList<SelectionRange>(2);
+
+            int endOfFirstRange = row.getIndex() - 1;
+            if (!(endOfFirstRange - startRow.getIndex() < 0)) {
+                // create range of first part unless its length is < 1
+                ITableBody.ITableRow endOfRange = tBody
+                        .getRowByRowIndex(endOfFirstRange);
+                ranges.add(new SelectionRange(startRow, endOfRange));
+            }
+            int startOfSecondRange = row.getIndex() + 1;
+            if (!(getEndIndex() - startOfSecondRange < 0)) {
+                // create range of second part unless its length is < 1
+                ITableBody.ITableRow startOfRange = tBody
+                        .getRowByRowIndex(startOfSecondRange);
+                ranges.add(new SelectionRange(startOfRange, getEndIndex()
+                        - startOfSecondRange + 1));
+            }
+            return ranges;
+        }
+
+        private int getEndIndex() {
+            return startRow.getIndex() + length - 1;
+        }
+
+    };
+
+    private final HashSet<SelectionRange> selectedRowRanges = new HashSet<SelectionRange>();
+
+    /*
+     * The currently focused row
+     */
+    private ITableBody.ITableRow focusedRow;
+
+    /*
+     * Helper to store selection range start in when using the keyboard
+     */
+    private ITableBody.ITableRow selectionRangeStart;
+
+    private int multiselectmode;
+
+    private static final int MULTISELECT_MODE_DEFAULT = 0;
+
+    /*
+     * Flag for notifying when the selection has changed and should be sent to
+     * the server
+     */
+    protected boolean selectionChanged = false;
 
     protected Table() {
         tHead = createHead();
@@ -263,6 +356,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
         }
 
+        multiselectmode = MULTISELECT_MODE_DEFAULT;
+
         if (uidl.hasVariable("columnorder")) {
             columnReordering = true;
             columnOrder = uidl.getStringArrayVariable("columnorder");
@@ -311,6 +406,61 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected abstract void updateBody(UIDL uidl);
 
     protected abstract boolean updateImmediate();
+
+    protected boolean isSelectable() {
+        return selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
+    }
+
+    /**
+     * Sends the selection to the server if changed since the last update/visit.
+     */
+    protected void sendSelectedRows() {
+        // Don't send anything if selection has not changed
+        if (!selectionChanged) {
+            return;
+        }
+
+        // Reset selection changed flag
+        selectionChanged = false;
+
+        // Note: changing the immediateness of this might require changes to
+        // "clickEvent" immediateness also.
+        if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+            // Convert ranges to a set of strings
+            Set<String> ranges = new HashSet<String>();
+            for (SelectionRange range : selectedRowRanges) {
+                ranges.add(range.toString());
+            }
+
+            // Send the selected row ranges
+            client.updateVariable(paintableId, "selectedRanges",
+                    ranges.toArray(new String[selectedRowRanges.size()]), false);
+
+            // clean selectedRowKeys so that they don't contain excess values
+            for (Iterator<String> iterator = selectedRowKeys.iterator(); iterator
+                    .hasNext();) {
+                String key = iterator.next();
+                ITableBody.ITableRow renderedRowByKey = getRenderedRowByKey(key);
+                if (renderedRowByKey != null) {
+                    for (SelectionRange range : selectedRowRanges) {
+                        if (range.inRange(renderedRowByKey)) {
+                            iterator.remove();
+                        }
+                    }
+                } else {
+                    // orphaned selected key, must be in a range, ignore
+                    iterator.remove();
+                }
+
+            }
+        }
+
+        // Send the selected rows
+        client.updateVariable(paintableId, "selected",
+                selectedRowKeys.toArray(new String[selectedRowKeys.size()]),
+                immediate);
+
+    }
 
     protected ITableBody.ITableRow getRenderedRowByKey(String key) {
         final Iterator it = tBody.iterator();
@@ -1499,7 +1649,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     }
 
-    protected abstract class ITableBody extends Panel {
+    public abstract class ITableBody extends Panel {
         public static final int CELL_EXTRA_WIDTH = 20;
 
         public static final int DEFAULT_ROW_HEIGHT = 24;
@@ -1517,9 +1667,22 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         protected char[] aligns;
 
+        protected int firstRendered;
+
+        protected int lastRendered;
+
         public ITableBody() {
             setElement(container);
             aligns = tHead.getColumnAlignments();
+        }
+
+        public ITableRow getRowByRowIndex(int indexInTable) {
+            int internalIndex = indexInTable - firstRendered;
+            if (internalIndex >= 0 && internalIndex < renderedRows.size()) {
+                return (ITableRow) renderedRows.get(internalIndex);
+            } else {
+                return null;
+            }
         }
 
         public abstract int getAvailableWidth();
@@ -1623,7 +1786,17 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         }
 
-        protected class ITableRow extends Panel implements ActionOwner,
+        /**
+         * Restore row visibility which is set to "none" when the row is
+         * rendered (due a performance optimization).
+         */
+        public void restoreRowVisibility() {
+            for (Widget row : renderedRows) {
+                row.getElement().getStyle().setProperty("visibility", "");
+            }
+        }
+
+        public class ITableRow extends Panel implements ActionOwner,
                 Container {
             protected Vector childWidgets = new Vector();
             private boolean selected = false;
@@ -1634,6 +1807,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             protected Map widgetColumns = null;
 
+            private int index;
+            private static final String ROW_CLASSNAME_EVEN = CLASSNAME + "-row";
+            private static final String ROW_CLASSNAME_ODD = CLASSNAME
+                    + "-row-odd";
+
             protected ITableRow() {
                 rowKey = 0;
             }
@@ -1642,11 +1820,17 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 this.rowKey = rowKey;
                 setElement(DOM.createElement("tr"));
                 DOM.sinkEvents(getElement(), Event.ONCLICK | Event.ONDBLCLICK
-                        | Event.ONCONTEXTMENU);
+                        | Event.ONCONTEXTMENU | Event.ONMOUSEDOWN);
             }
 
             public ITableRow(UIDL uidl, char[] aligns) {
                 this(uidl.getIntAttribute("key"));
+
+                /*
+                 * Rendering the rows as hidden improves Firefox and Safari
+                 * performance drastically.
+                 */
+                getElement().getStyle().setProperty("visibility", "hidden");
 
                 String rowStyle = uidl.getStringAttribute("rowstyle");
                 if (rowStyle != null) {
@@ -1671,6 +1855,40 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 if (uidl.hasAttribute("selected") && !isSelected()) {
                     toggleSelection();
                 }
+            }
+
+            /**
+             * Makes a check based on indexes whether the row is before the
+             * compared row.
+             *
+             * @param row1
+             * @return true if this rows index is smaller than in the row1
+             */
+            public boolean isBefore(ITableRow row1) {
+                return getIndex() < row1.getIndex();
+            }
+
+            /**
+             * Sets the index of the row in the whole table. Currently used just
+             * to set even/odd classname
+             *
+             * @param indexInWholeTable
+             */
+            public void setIndex(int indexInWholeTable) {
+                index = indexInWholeTable;
+                /*boolean isOdd = indexInWholeTable % 2 == 0;
+                // Inverted logic to be backwards compatible with earlier 6.4.
+                // It is very strange because rows 1,3,5 are considered "even"
+                // and 2,4,6 "odd".
+                if (!isOdd) {
+                    addStyleName(ROW_CLASSNAME_ODD);
+                } else {
+                    addStyleName(ROW_CLASSNAME_EVEN);
+                }*/
+            }
+
+            public int getIndex() {
+                return index;
             }
 
             protected void paintComponent(Paintable p, UIDL uidl) {
@@ -1854,17 +2072,24 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                                 colKey, false);
                     }
                     MouseEventDetails details = new MouseEventDetails(event);
-                    // Note: the 'immediate' logic would need to be more
-                    // involved (see #2104), but iscrolltable always sends
-                    // select event, even though nullselectionallowed wont let
-                    // the change trough. Will need to be updated if that is
-                    // changed.
+
+                    boolean imm = true;
+                    if (immediate && event.getButton() == Event.BUTTON_LEFT
+                            && !dbl && isSelectable() && !isSelected()) {
+                        /*
+                         * A left click when the table is selectable and in
+                         * immediate mode on a row that is not currently
+                         * selected will cause a selection event to be fired
+                         * after this click event. By making the click event
+                         * non-immediate we avoid sending two separate messages
+                         * to the server.
+                         */
+                        imm = false;
+                    }
+
                     client
-                            .updateVariable(
-                                    paintableId,
-                                    "clickEvent",
-                                    details.toString(),
-                                    (dbl || selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE || immediate));
+                            .updateVariable(paintableId, "clickEvent",
+                                    details.toString(), imm);
                 }
             }
 
@@ -1879,10 +2104,97 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     return;
 
                 switch (DOM.eventGetType(event)) {
-                    case Event.ONCLICK:
+                    /*case Event.ONCLICK:
                         handleClickEvent(event);
                         handleRowClick(event);
-                        break;
+                        break;*/
+//                    mDown = false;
+                    case Event.ONCLICK:
+                            handleClickEvent(event/*, targetTdOrTr*/);
+//                            scrollBodyPanel.setFocus(true);
+                            if (isSelectable()) {
+
+                                // Ctrl+Shift click
+                                if ((event.getCtrlKey() || event.getMetaKey())
+                                        && event.getShiftKey()
+                                        && selectMode == SELECT_MODE_MULTI
+                                        && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                                    toggleShiftSelection(false);
+                                    setRowFocus(this);
+
+                                    // Ctrl click
+                                } else if ((event.getCtrlKey() || event
+                                        .getMetaKey())
+                                        && selectMode == SELECT_MODE_MULTI
+                                        && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                                    boolean wasSelected = isSelected();
+                                    toggleSelection();
+                                    setRowFocus(this);
+                                    /*
+                                     * next possible range select must start on
+                                     * this row
+                                     */
+                                    selectionRangeStart = this;
+                                    if (wasSelected) {
+                                        removeRowFromUnsentSelectionRanges(this);
+                                    }
+
+                                    // Ctrl click (Single selection)
+                                } else if ((event.getCtrlKey() || event
+                                        .getMetaKey()
+                                        && selectMode == SELECT_MODE_SINGLE)) {
+                                    if (!isSelected()
+                                            || (isSelected() && !nullSelectionDisallowed)) {
+
+                                        if (!isSelected()) {
+                                            deselectAll();
+                                        }
+
+                                        toggleSelection();
+                                        setRowFocus(this);
+                                    }
+
+                                    // Shift click
+                                } else if (event.getShiftKey()
+                                        && selectMode == SELECT_MODE_MULTI
+                                        && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                                    toggleShiftSelection(true);
+
+                                    // click
+                                } else {
+                                    boolean currentlyJustThisRowSelected = selectedRowKeys
+                                            .size() == 1
+                                            && selectedRowKeys
+                                                    .contains(getKey());
+
+                                    if (!currentlyJustThisRowSelected) {
+                                        if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                                            deselectAll();
+                                        }
+                                        toggleSelection();
+                                    } else if (selectMode == SELECT_MODE_SINGLE
+                                            && !nullSelectionDisallowed) {
+                                        toggleSelection();
+                                    }/*
+                                      * else NOP to avoid excessive server
+                                      * visits (selection is removed with
+                                      * CTRL/META click)
+                                      */
+
+                                    selectionRangeStart = this;
+                                    setRowFocus(this);
+                                }
+
+                                // Remove IE text selection hack
+                                if (BrowserInfo.get().isIE()) {
+                                    ((Element) event.getEventTarget().cast())
+                                            .setPropertyJSO("onselectstart",
+                                                    null);
+                                }
+//                                sendSelectedRows();
+                                handleRowClick(event);
+                            }
+                            break;
                     case Event.ONDBLCLICK:
                         handleClickEvent(event);
                         break;
@@ -1897,7 +2209,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
 
             protected void handleRowClick(Event event) {
-                processRowSelection();
+//                processRowSelection();
+                sendSelectedRows();
             }
 
             private void processRowSelection() {
@@ -1931,11 +2244,12 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             public void toggleSelection() {
                 selected = !selected;
+                selectionChanged = true;
                 String key = String.valueOf(rowKey);
                 if (selected) {
-                    if (selectMode == com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_SINGLE) {
+                    /*if (selectMode == com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_SINGLE) {
                         deselectAll();
-                    }
+                    }*/
                     selectedRowKeys.add(key);
                     if (navigation) {
                         selectedKey = key;
@@ -1953,6 +2267,70 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         selectedKey = null;
                     }
                     removeStyleName("v-selected");
+                }
+            }
+
+            /**
+             * Is called when a user clicks an item when holding SHIFT key down.
+             * This will select a new range from the last focused row
+             *
+             * @param deselectPrevious
+             *            Should the previous selected range be deselected
+             */
+            private void toggleShiftSelection(boolean deselectPrevious) {
+
+                /*
+                 * Ensures that we are in multiselect mode and that we have a
+                 * previous selection which was not a deselection
+                 */
+                if (selectMode == SELECT_MODE_SINGLE) {
+                    // No previous selection found
+                    deselectAll();
+                    toggleSelection();
+                    return;
+                }
+
+                // Set the selectable range
+                ITableRow endRow = this;
+                ITableRow startRow = selectionRangeStart;
+                if (startRow == null) {
+                    startRow = focusedRow;
+                    // If start row is null then we have a multipage selection
+                    // from
+                    // above
+                    if (startRow == null) {
+                        startRow = (ITableRow) Table.this.tBody.iterator()
+                                .next();
+                        setRowFocus(endRow);
+                    }
+                }
+                // Deselect previous items if so desired
+                if (deselectPrevious) {
+                    deselectAll();
+                }
+
+                // we'll ensure GUI state from top down even though selection
+                // was the opposite way
+                if (!startRow.isBefore(endRow)) {
+                    ITableRow tmp = startRow;
+                    startRow = endRow;
+                    endRow = tmp;
+                }
+                SelectionRange range = new SelectionRange(startRow, endRow);
+
+                for (Widget w : Table.this.tBody) {
+                    ITableRow row = (ITableRow) w;
+                    if (range.inRange(row)) {
+                        if (!row.isSelected()) {
+                            row.toggleSelection();
+                        }
+                        selectedRowKeys.add(row.getKey());
+                    }
+                }
+
+                // Add range
+                if (startRow != endRow) {
+                    selectedRowRanges.add(range);
                 }
             }
 
@@ -2058,15 +2436,26 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     }
 
     public void deselectAll() {
-        final Object[] keys = selectedRowKeys.toArray();
-        for (Object key : keys) {
-            final ITableBody.ITableRow row = getRenderedRowByKey((String) key);
-            if (row != null && row.isSelected()) {
+        for (Widget w : tBody) {
+            ITableBody.ITableRow row = (ITableBody.ITableRow) w;
+            if (row.isSelected()) {
                 row.toggleSelection();
             }
         }
         // still ensure all selects are removed from (not necessary rendered)
         selectedRowKeys.clear();
+        selectedRowRanges.clear();
+        // also notify server that it clears all previous selections (the client
+        // side does not know about the invisible ones)
+        instructServerToForgotPreviousSelections();
+    }
+
+    /**
+     * Used in multiselect mode when the client side knows that all selections
+     * are in the next request.
+     */
+    private void instructServerToForgotPreviousSelections() {
+        client.updateVariable(paintableId, "clearSelections", true, false);
     }
 
     public void toggleSelection(String rowKey) {
@@ -2437,6 +2826,116 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     DOM.setStyleAttribute(container, "textAlign", "right");
                     break;
             }
+        }
+    }
+
+    /**
+     * Moves the selection head to a specific row
+     *
+     * @param row
+     *            The row to where the selection head should move
+     * @return Returns true if focus was moved successfully, else false
+     */
+    private boolean setRowFocus(ITableBody.ITableRow row) {
+
+        if (selectMode == SELECT_MODE_NONE) {
+            return false;
+        }
+
+        // Remove previous selection
+        if (focusedRow != null && focusedRow != row) {
+            focusedRow.removeStyleName(CLASSNAME_SELECTION_FOCUS);
+        }
+
+        if (row != null) {
+
+            // Apply focus style to new selection
+            row.addStyleName(CLASSNAME_SELECTION_FOCUS);
+
+            // Trying to set focus on already focused row
+            if (row == focusedRow) {
+                return false;
+            }
+
+            // Set new focused row
+            focusedRow = row;
+
+            ensureRowIsVisible(row);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Ensures that the row is visible
+     *
+     * @param row
+     *            The row to ensure is visible
+     */
+    private void ensureRowIsVisible(ITableBody.ITableRow row) {
+        scrollIntoViewVertically(row.getElement());
+    }
+
+    /**
+     * Scrolls an element into view vertically only. Modified version of
+     * Element.scrollIntoView.
+     *
+     * @param elem
+     *            The element to scroll into view
+     */
+    private native void scrollIntoViewVertically(Element elem)
+    /*-{
+        var top = elem.offsetTop;
+        var height = elem.offsetHeight;
+
+        if (elem.parentNode != elem.offsetParent) {
+          top -= elem.parentNode.offsetTop;
+        }
+
+        var cur = elem.parentNode;
+        while (cur && (cur.nodeType == 1)) {
+          if (top < cur.scrollTop) {
+            cur.scrollTop = top;
+          }
+          if (top + height > cur.scrollTop + cur.clientHeight) {
+            cur.scrollTop = (top + height) - cur.clientHeight;
+          }
+
+          var offsetTop = cur.offsetTop;
+          if (cur.parentNode != cur.offsetParent) {
+            offsetTop -= cur.parentNode.offsetTop;
+          }
+
+          top += offsetTop - cur.scrollTop;
+          cur = cur.parentNode;
+        }
+     }-*/;
+
+    /**
+     * Removes a key from a range if the key is found in a selected range
+     *
+     * @param key
+     *            The key to remove
+     */
+    private void removeRowFromUnsentSelectionRanges(ITableBody.ITableRow row) {
+        Collection<SelectionRange> newRanges = null;
+        for (Iterator<SelectionRange> iterator = selectedRowRanges.iterator(); iterator
+                .hasNext();) {
+            SelectionRange range = iterator.next();
+            if (range.inRange(row)) {
+                // Split the range if given row is in range
+                Collection<SelectionRange> splitranges = range.split(row);
+                if (newRanges == null) {
+                    newRanges = new ArrayList<SelectionRange>();
+                }
+                newRanges.addAll(splitranges);
+                iterator.remove();
+            }
+        }
+        if (newRanges != null) {
+            selectedRowRanges.addAll(newRanges);
         }
     }
 }
