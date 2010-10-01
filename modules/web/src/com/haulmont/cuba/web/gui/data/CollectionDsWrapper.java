@@ -226,6 +226,9 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             Item wrapper = getItemWrapper(source);
 
             MetaProperty metaProperty = datasource.getMetaClass().getProperty(property);
+            if (metaProperty == null) {
+                return;
+            }
             Property itemProperty = wrapper.getItemProperty(metaProperty);
             if (itemProperty instanceof PropertyWrapper) {
                 ((PropertyWrapper) itemProperty).fireValueChangeEvent();

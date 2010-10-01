@@ -1,9 +1,4 @@
-package org.vaadin.hene.popupbutton.client.ui;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
+package org.vaadin.hene.popupbutton.widgetset.client.ui;
 
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
@@ -15,26 +10,23 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Console;
-import com.vaadin.terminal.gwt.client.Container;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.RenderSpace;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VCaption;
-import com.vaadin.terminal.gwt.client.VCaptionWrapper;
-import com.vaadin.terminal.gwt.client.VDebugConsole;
+import com.haulmont.cuba.toolkit.gwt.client.ui.Table;
+import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.RenderInformation.Size;
 import com.vaadin.terminal.gwt.client.ui.VButton;
 import com.vaadin.terminal.gwt.client.ui.VOverlay;
 import com.vaadin.terminal.gwt.client.ui.richtextarea.VRichTextArea;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 // This class contains code from the VPopupView class.  
 
@@ -44,7 +36,7 @@ public class VPopupButton extends VButton implements Container,
 	/** Set the CSS class name to allow styling. */
 	public static final String CLASSNAME = "v-popupbutton";
 
-	public static final String MENU_INDICATOR_CLASSNAME = "v-menu-indicator";
+	public static final String POPUP_INDICATOR_CLASSNAME = "v-popup-indicator";
 
 	private final LayoutPopup popup = new LayoutPopup();
 
@@ -55,7 +47,7 @@ public class VPopupButton extends VButton implements Container,
 	public VPopupButton() {
 		super();
 		DivElement e = Document.get().createDivElement();
-		e.setClassName(MENU_INDICATOR_CLASSNAME);
+		e.setClassName(POPUP_INDICATOR_CLASSNAME);
 		getElement().getFirstChildElement().appendChild(e);
 	}
 
@@ -64,6 +56,10 @@ public class VPopupButton extends VButton implements Container,
 	 */
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 		super.updateFromUIDL(uidl, client);
+		if (client.updateComponent(this, uidl, false)) {
+			hidePopup();
+			return;
+		}
 		addStyleName(CLASSNAME);
 
         autoClose = uidl.getBooleanVariable("autoClose");
@@ -83,12 +79,15 @@ public class VPopupButton extends VButton implements Container,
 	public void onBrowserEvent(Event event) {
 		int type = event.getTypeInt();
 		switch (type) {
-		case Event.ONMOUSEDOWN:
+		case Event.ONCLICK:
+            Widget parent = this.getParent();
+            if (parent instanceof Table.ITableBody.ITableRow) {
+                parent.onBrowserEvent(event);    
+            }
 			updateState(true, false);
 			break;
 		}
 		super.onBrowserEvent(event);
-
 	}
 
 	private void updateState(boolean visible, boolean immediate) {
@@ -206,6 +205,7 @@ public class VPopupButton extends VButton implements Container,
 					// hiding
 					activeChildren.add(target);
 				}
+				break;
 			default:
 				break;
 			}

@@ -3,7 +3,7 @@
 <module>
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
     <inherits name="com.vaadin.incubator.dashlayout.DashLayoutWidgetSet" />
-    <inherits name="org.vaadin.hene.popupbutton.PopupbuttonWidgetset" />
+    <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
 
     <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet" />
 </module>

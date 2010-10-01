@@ -248,7 +248,7 @@
     outline: none;
 }
 
-.v-button.v-popupbutton .v-menu-indicator {
+.v-button.v-popupbutton .v-popup-indicator {
 	background: transparent url(common/img/sprites.png) no-repeat -5px -10px;
 }
 

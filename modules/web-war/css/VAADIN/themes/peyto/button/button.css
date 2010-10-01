@@ -252,3 +252,7 @@ background: #ffe0e0;
 	background: #ffe0e0;
 }
 */
+
+.v-button-grey .v-button-caption {
+    color: black;
+}

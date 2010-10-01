@@ -1,13 +1,21 @@
 package org.vaadin.hene.popupbutton;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.*;
-import org.vaadin.hene.popupbutton.client.ui.VPopupButton;
-
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
+
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.tools.ReflectTools;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ClientWidget;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.Table;
 
 /**
  * Server side component for the VPopupButton widget.
@@ -17,24 +25,18 @@ import java.util.Map;
 @ClientWidget(VPopupButton.class)
 public class PopupButton extends Button implements ComponentContainer {
 
-	private static final Method COMPONENT_ATTACHED_METHOD;
+	private static final Method COMPONENT_ATTACHED_METHOD = ReflectTools
+			.findMethod(ComponentAttachListener.class,
+					"componentAttachedToContainer", ComponentAttachEvent.class);
 
-	private static final Method COMPONENT_DETACHED_METHOD;
+	private static final Method COMPONENT_DETACHED_METHOD = ReflectTools
+			.findMethod(ComponentDetachListener.class,
+					"componentDetachedFromContainer",
+					ComponentDetachEvent.class);
 
-	static {
-		try {
-			COMPONENT_ATTACHED_METHOD = ComponentAttachListener.class
-					.getDeclaredMethod("componentAttachedToContainer",
-							new Class[] { ComponentAttachEvent.class });
-			COMPONENT_DETACHED_METHOD = ComponentDetachListener.class
-					.getDeclaredMethod("componentDetachedFromContainer",
-							new Class[] { ComponentDetachEvent.class });
-		} catch (final NoSuchMethodException e) {
-			// This should never happen
-			throw new RuntimeException(
-					"Internal error finding methods in PopupButton");
-		}
-	}
+	private static final Method POPUP_VISIBILITY_METHOD = ReflectTools
+			.findMethod(PopupVisibilityListener.class, "popupVisibilityChange",
+					PopupVisibilityEvent.class);
 
 	private Component component;
 
@@ -75,12 +77,11 @@ public class PopupButton extends Button implements ComponentContainer {
 	 * java.util.Map)
 	 */
 	@Override
-	public void changeVariables(Object source, Map variables) {
+	public void changeVariables(Object source, Map<String, Object> variables) {
 		super.changeVariables(source, variables);
 		if (variables.containsKey("popupVisible")) {
-			popupVisible = ((Boolean) variables.get("popupVisible"))
-					.booleanValue();
-			requestRepaint();
+			setPopupVisible(((Boolean) variables.get("popupVisible"))
+					.booleanValue());
 		}
 	}
 
@@ -117,13 +118,13 @@ public class PopupButton extends Button implements ComponentContainer {
 	}
 
 	public void addListener(ComponentAttachListener listener) {
-		addListener(ComponentAttachEvent.class, listener,
+		addListener(ComponentContainer.ComponentAttachEvent.class, listener,
 				COMPONENT_ATTACHED_METHOD);
 
 	}
 
 	public void addListener(ComponentDetachListener listener) {
-		addListener(ComponentDetachEvent.class, listener,
+		addListener(ComponentContainer.ComponentDetachEvent.class, listener,
 				COMPONENT_DETACHED_METHOD);
 	}
 
@@ -199,7 +200,7 @@ public class PopupButton extends Button implements ComponentContainer {
 	 * ComponentContainer.ComponentAttachListener)
 	 */
 	public void removeListener(ComponentAttachListener listener) {
-		removeListener(ComponentAttachEvent.class, listener,
+		removeListener(ComponentContainer.ComponentAttachEvent.class, listener,
 				COMPONENT_ATTACHED_METHOD);
 	}
 
@@ -210,7 +211,7 @@ public class PopupButton extends Button implements ComponentContainer {
 	 * ComponentContainer.ComponentDetachListener)
 	 */
 	public void removeListener(ComponentDetachListener listener) {
-		removeListener(ComponentDetachEvent.class, listener,
+		removeListener(ComponentContainer.ComponentDetachEvent.class, listener,
 				COMPONENT_DETACHED_METHOD);
 	}
 
@@ -254,8 +255,11 @@ public class PopupButton extends Button implements ComponentContainer {
 	 *            if true, popup is set to visible, otherwise popup is hidden.
 	 */
 	public void setPopupVisible(boolean popupVisible) {
-		this.popupVisible = popupVisible;
-		requestRepaint();
+		if (this.popupVisible != popupVisible) {
+			this.popupVisible = popupVisible;
+			fireEvent(new PopupVisibilityEvent(this));
+			requestRepaint();
+		}
 	}
 
 	/**
@@ -285,4 +289,86 @@ public class PopupButton extends Button implements ComponentContainer {
     public boolean isAutoClose() {
         return autoClose;
     }
+
+	/**
+	 * Add a listener that is called whenever the visibility of the popup is
+	 * changed.
+	 *
+	 * @param listener
+	 *            the listener to add
+	 * @see PopupVisibilityListener
+	 * @see PopupVisibilityEvent
+	 * @see #removePopupVisibilityListener(PopupVisibilityListener)
+	 *
+	 */
+	public void addPopupVisibilityListener(PopupVisibilityListener listener) {
+		addListener(PopupVisibilityEvent.class, listener,
+				POPUP_VISIBILITY_METHOD);
+	}
+
+	/**
+	 * Removes a previously added listener, so that it no longer receives events
+	 * when the visibility of the popup changes.
+	 *
+	 * @param listener
+	 *            the listener to remove
+	 * @see PopupVisibilityListener
+	 * @see #addPopupVisibilityListener(PopupVisibilityListener)
+	 */
+	public void removePopupVisibilityListener(PopupVisibilityListener listener) {
+		removeListener(PopupVisibilityEvent.class, listener,
+				POPUP_VISIBILITY_METHOD);
+	}
+
+	/**
+	 * This event is received by the PopupVisibilityListeners when the
+	 * visibility of the popup changes. You can get the new visibility directly
+	 * with {@link #isPopupVisible()}, or get the PopupButton that produced the
+	 * event with {@link #getPopupButton()}.
+	 *
+	 */
+	public class PopupVisibilityEvent extends Event {
+
+		public PopupVisibilityEvent(PopupButton source) {
+			super(source);
+		}
+
+		/**
+		 * Get the PopupButton instance that is the source of this event.
+		 *
+		 * @return the source PopupButton
+		 */
+		public PopupButton getPopupButton() {
+			return (PopupButton) getSource();
+		}
+
+		/**
+		 * Returns the current visibility of the popup.
+		 *
+		 * @return true if the popup is visible
+		 */
+		public boolean isPopupVisible() {
+			return getPopupButton().isPopupVisible();
+		}
+	}
+
+	/**
+	 * Defines a listener that can receive a PopupVisibilityEvent when the
+	 * visibility of the popup changes.
+	 *
+	 */
+	public interface PopupVisibilityListener extends Serializable {
+		/**
+		 * Pass to {@link PopupButton#PopupVisibilityEvent} to start listening
+		 * for popup visibility changes.
+		 *
+		 * @param event
+		 *            the event
+		 *
+		 * @see {@link PopupVisibilityEvent}
+		 * @see {@link PopupButton#addPopupVisibilityListener(PopupVisibilityListener)}
+		 */
+		public void popupVisibilityChange(PopupVisibilityEvent event);
+	}
+
 }
