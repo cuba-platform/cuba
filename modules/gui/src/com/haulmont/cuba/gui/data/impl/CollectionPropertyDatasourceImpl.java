@@ -162,7 +162,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
                 if (item instanceof Instance) {
                     final MetaClass aClass = ((Instance) item).getMetaClass();
-                    if (!aClass.equals(getMetaClass())) {
+                    MetaClass metaClass = getMetaClass();
+                    if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
                         throw new IllegalStateException(String.format("Invalid item metaClass"));
                     }
                 }
