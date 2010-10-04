@@ -63,6 +63,8 @@ CREATE TABLE report_input_parameter
   class_name character varying,
   from_browser boolean,
   required boolean DEFAULT false,
+  position integer default 0,
+  meta_class varchar(255),
   CONSTRAINT repor_input_parameter_pkey PRIMARY KEY (id),
   CONSTRAINT fk_repor_input_parameter_to_report_report FOREIGN KEY (report_id)
       REFERENCES report_report (id) MATCH SIMPLE

@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -47,7 +48,7 @@ public abstract class AbstractDatasourceComponentLoader extends ComponentLoader 
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
-            final Class<Formatter> aClass = ReflectionHelper.getClass(className);
+            final Class<Formatter> aClass = ScriptingProvider.loadClass(className);
             try {
                 final Constructor<Formatter> constructor = aClass.getConstructor(Element.class);
                 try {
