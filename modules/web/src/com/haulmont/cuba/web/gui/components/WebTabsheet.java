@@ -32,6 +32,8 @@ public class WebTabsheet
     private boolean componentTabChangeListenerInitialized;
 
     private ComponentLoader.Context context;
+    
+    private static final long serialVersionUID = -2920295325234843920L;
 
     public WebTabsheet() {
         component = new TabSheetEx(this);
@@ -186,6 +188,10 @@ public class WebTabsheet
         if (tab == null) throw new IllegalStateException(String.format("Can't find tab '%s'", name));
 
         this.component.setSelectedTab(WebComponentsHelper.unwrap(tab.getComponent()));
+    }
+
+    public Tabsheet.Tab getTab(String name) {
+        return tabs.get(name);
     }
 
     public Collection<com.haulmont.cuba.gui.components.Tabsheet.Tab> getTabs() {
