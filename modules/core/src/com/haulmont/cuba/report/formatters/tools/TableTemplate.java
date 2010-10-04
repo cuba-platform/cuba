@@ -3,6 +3,7 @@ package com.haulmont.cuba.report.formatters.tools;
 import com.sun.star.text.XText;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,7 +57,7 @@ public class TableTemplate {
         boolean haveValueExpressions = false;
         for(String columnTemplate : columnsTemplates.values()) {
             String templateText = columnTemplate;
-            if (templateText.matches(".*\\$\\{[^\\.]+?\\}.*")) {//ED - only table aliases are matched there - if there is a point - this is not a table alias 
+            if (Pattern.compile("\\$\\{[^\\.]+?\\}").matcher(templateText).find()) {//ED - only table aliases are matched there - if there is a point - this is not a table alias 
                 haveValueExpressions = true;
             }
         }
