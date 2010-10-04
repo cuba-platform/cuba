@@ -28,6 +28,8 @@ public interface Tabsheet
     void setTab(Tab tab);
     void setTab(String name);
 
+    Tab getTab(String name);
+
     Collection<Tab> getTabs();
 
     void addListener(TabChangeListener listener);
