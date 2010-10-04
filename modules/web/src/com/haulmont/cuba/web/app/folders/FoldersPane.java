@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
@@ -219,6 +220,13 @@ public class FoldersPane extends VerticalLayout {
             if (getParent() != null)
                 getParent().requestRepaint();
 
+            if (appFoldersTree != null) {
+                collapseItemInTree(appFoldersTree, "appFoldersCollapse");
+            }
+            if (searchFoldersTree != null) {
+                collapseItemInTree(searchFoldersTree, "searchFoldersCollapse");
+            }
+
         } else {
             if (timer != null)
                 timer.stopTimer();
@@ -240,6 +248,78 @@ public class FoldersPane extends VerticalLayout {
         }
 
         visible = show;
+    }
+
+    protected void collapseItemInTree(Tree tree, final String foldersCollapse) {
+        final UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
+        String s = uss.loadSetting(foldersCollapse);
+        List<UUID> idFolders = strToIds(s);
+        for (AbstractSearchFolder folder : (Collection<AbstractSearchFolder>) tree.getItemIds()) {
+            if (idFolders.contains(folder.getId())) {
+                tree.collapseItem(folder);
+            }
+        }
+        tree.addListener(new Tree.ExpandListener() {
+            public void nodeExpand(Tree.ExpandEvent event) {
+                if (event.getItemId() instanceof AbstractSearchFolder) {
+                    UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
+                    String str = uss.loadSetting(foldersCollapse);
+                    uss.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
+                }
+            }
+        });
+        tree.addListener(new Tree.CollapseListener() {
+            public void nodeCollapse(Tree.CollapseEvent event) {
+                if (event.getItemId() instanceof AbstractSearchFolder) {
+                    UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
+                    String str = uss.loadSetting(foldersCollapse);
+                    uss.saveSetting(foldersCollapse, addIdInStr(str, uuid));
+                }
+            }
+        });
+    }
+
+    protected String addIdInStr(String inputStr, UUID uuid) {
+        if (inputStr == null)
+            inputStr = "";
+        String str = uuid != null ? uuid.toString() : "";
+        if (!inputStr.contains(str)) {
+            if (inputStr.length() == 0)
+                return str;
+            else
+                return inputStr + ":" + str;
+        } else
+            return inputStr;
+    }
+
+    protected String removeIdInStr(String inputStr, UUID uuid) {
+        if (inputStr == null) inputStr = "";
+        List<UUID> uuids = strToIds(inputStr);
+        if (uuid != null)
+            uuids.remove(uuid);
+        return idsToStr(uuids);
+    }
+
+    protected List<UUID> strToIds(String inputStr) {
+        if (inputStr == null) inputStr = "";
+        String[] args = StringUtils.split(inputStr, ':');
+        ArrayList<UUID> uuids = new ArrayList<UUID>();
+        for (String str : args) {
+            uuids.add(UUID.fromString(str));
+        }
+        return uuids;
+    }
+
+    protected String idsToStr(List<UUID> uuids) {
+        if (uuids == null) return "";
+        StringBuffer sb = new StringBuffer();
+        for (UUID uuid : uuids) {
+            sb.append(":").append(uuid.toString());
+        }
+        if (sb.length() != 0) {
+            sb.deleteCharAt(0);
+        }
+        return sb.toString();
     }
 
     private void addFoldersLabel(AbstractLayout layout, Label label) {
