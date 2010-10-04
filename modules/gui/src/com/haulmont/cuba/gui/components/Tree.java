@@ -10,12 +10,17 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 public interface Tree extends List
 {
     void expandTree();
+    void expand(Object itemId);
+
+    void collapseTree();
+    void collapse(Object itemId);
+
+    boolean isExpanded(Object itemId);
 
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);

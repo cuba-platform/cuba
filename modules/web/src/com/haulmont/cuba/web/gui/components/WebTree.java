@@ -32,6 +32,8 @@ public class WebTree
     private String hierarchyProperty;
     private CaptionMode captionMode = CaptionMode.ITEM;
     private String captionProperty;
+    
+    private static final long serialVersionUID = -5838850934944507736L;
 
     public WebTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.Tree();
@@ -102,6 +104,28 @@ public class WebTree
                 component.expandItemsRecursively(id);
             }
         }
+    }
+
+    public void collapse(Object itemId) {
+        component.collapseItem(itemId);
+    }
+
+    public void expand(Object itemId) {
+        component.expandItem(itemId);
+    }
+
+    public void collapseTree() {
+        com.vaadin.data.Container.Hierarchical container =
+                (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
+        if (container != null) {
+            for (Object id : container.rootItemIds()) {
+                component.collapseItemsRecursively(id);
+            }
+        }
+    }
+
+    public boolean isExpanded(Object itemId) {
+        return component.isExpanded(itemId);
     }
 
     public String getHierarchyProperty() {

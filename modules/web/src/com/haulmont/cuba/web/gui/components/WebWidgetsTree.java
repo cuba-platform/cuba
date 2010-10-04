@@ -55,6 +55,16 @@ public class WebWidgetsTree
         }
     }
 
+    public void collapseTree() {
+        com.vaadin.data.Container.Hierarchical container =
+                (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
+        if (container != null) {
+            for (Object id : container.rootItemIds()) {
+                component.collapseItemsRecursively(id);
+            }
+        }
+    }
+
     public boolean isExpanded(Object itemId) {
         return component.isExpanded(itemId);
     }
