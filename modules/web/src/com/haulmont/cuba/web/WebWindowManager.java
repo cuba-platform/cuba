@@ -226,6 +226,9 @@ public class WebWindowManager extends WindowManager {
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
         Component component;
 
+        window.setCaption(caption);
+        window.setDescription(description);
+
         switch (type) {
             case NEW_TAB:
                 closeStartupScreen(appWindow);
@@ -271,7 +274,8 @@ public class WebWindowManager extends WindowManager {
             getWindowOpenMode().put(window, openMode);
         }
 
-        if (!BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings"))) {
+        if (window.getContext() != null && 
+                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings"))) {
             window.applySettings(new SettingsImpl(window.getId()));
         }
     }
