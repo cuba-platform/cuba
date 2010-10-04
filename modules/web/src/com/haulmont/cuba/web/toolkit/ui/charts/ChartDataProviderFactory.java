@@ -20,16 +20,31 @@ public abstract class ChartDataProviderFactory {
 
     private static Map<String, ChartDataProvider> providers;
 
+    private static Map<String, ChartDataProvider> customProviders;
+
     static {
         providers = new HashMap<String, ChartDataProvider>();
         providers.put("jfree", new JFreeChartDataProvider());
     }
 
+    public static void register(String chartVendor, ChartDataProvider dataProvider) {
+        if (customProviders == null) {
+            customProviders = new HashMap<String, ChartDataProvider>();
+        }
+        customProviders.put(chartVendor, dataProvider);
+    }
+
     public static ChartDataProvider getDataProvider(String chartVendor) {
-        return providers.get(chartVendor);
+        ChartDataProvider dataProvider = null;
+        if (customProviders != null) {
+            dataProvider = customProviders.get(chartVendor);
+        }
+        if (dataProvider == null) {
+            dataProvider = providers.get(chartVendor);
+        }
+        return dataProvider;
     }
 
     protected ChartDataProviderFactory() {
-
     }
 }

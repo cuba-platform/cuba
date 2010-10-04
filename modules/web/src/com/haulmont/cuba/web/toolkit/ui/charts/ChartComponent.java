@@ -46,7 +46,7 @@ public abstract class ChartComponent extends AbstractComponent implements
 
     private boolean has3D;
 
-    private Chart.Orientation orientation;
+    private Chart.Orientation orientation = Chart.Orientation.VERTICAL;
 
     private List<Object> columnPropertyIds = new ArrayList<Object>();
 
@@ -73,8 +73,6 @@ public abstract class ChartComponent extends AbstractComponent implements
         if (datasource == null) {
             datasource = new IndexedContainer();
         }
-          //todo gorodnov: implement captionChageListener
-//        getCaptionChangeListener().clear();
 
         if (items != datasource) {
             if (items != null) {

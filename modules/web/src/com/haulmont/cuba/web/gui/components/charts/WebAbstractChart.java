@@ -12,6 +12,8 @@ package com.haulmont.cuba.web.gui.components.charts;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.charts.Chart;
+import com.haulmont.cuba.gui.data.ChartColumnInfo;
+import com.haulmont.cuba.gui.data.ChartDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -39,30 +41,51 @@ public abstract class WebAbstractChart<T extends ChartComponent>
     }
 
     public void setCollectionDatasource(CollectionDatasource datasource) {
+        if (datasource instanceof ChartDatasource) {
+            final ChartDatasource chartDatasource = (ChartDatasource) datasource;
 
-        Collection<MetaPropertyPath> props;
-        if (columns.isEmpty()) {
-            props = null;
+            chartDatasource.refresh();
+
+            final Collection<ChartColumnInfo> columns = chartDatasource.getColumns();
+            for (final ChartColumnInfo column : columns) {
+                component.addColumnProperty(column.getProperty(), column.getType());
+                component.setColumnCaption(column.getProperty(), column.getCaption());
+            }
+
+            final Collection<Object> rowIds = chartDatasource.getRowIds();
+            for (Object rowId : rowIds) {
+                component.addRow(rowId, chartDatasource.getRowCaption(rowId));
+                for (final ChartColumnInfo column : columns) {
+                    component.getColumnProperty(rowId, column.getProperty())
+                            .setValue(chartDatasource.getColumnValue(rowId, column));
+                }
+            }
+
         } else {
-            props = new LinkedHashSet<MetaPropertyPath>(columns.keySet());
-        }
+            Collection<MetaPropertyPath> props;
+            if (columns.isEmpty()) {
+                props = null;
+            } else {
+                props = new LinkedHashSet<MetaPropertyPath>(columns.keySet());
+            }
 
-        if (props == null) {
-            throw new IllegalStateException("Properties cannot be NULL");
-        }
+            if (props == null) {
+                throw new IllegalStateException("Properties cannot be NULL");
+            }
 
-        if (getRowCaptionPropertyId() != null) {
-            props.add(getRowCaptionPropertyId());
-        }
+            if (getRowCaptionPropertyId() != null) {
+                props.add(getRowCaptionPropertyId());
+            }
 
-        CollectionDsWrapper dsWrapper = createContainerDatasource(datasource, props);
+            CollectionDsWrapper dsWrapper = createContainerDatasource(datasource, props);
 
-        this.datasource = datasource;
+            this.datasource = datasource;
 
-        component.setContainerDataSource(dsWrapper);
+            component.setContainerDataSource(dsWrapper);
 
-        for (final Map.Entry<MetaPropertyPath, String> entry : columns.entrySet()) {
-            component.setColumnCaption(entry.getKey(), entry.getValue());
+            for (final Map.Entry<MetaPropertyPath, String> entry : columns.entrySet()) {
+                component.setColumnCaption(entry.getKey(), entry.getValue());
+            }
         }
     }
 

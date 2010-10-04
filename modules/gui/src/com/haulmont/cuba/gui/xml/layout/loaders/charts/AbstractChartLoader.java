@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders.charts;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.ChartDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
@@ -68,16 +69,18 @@ public abstract class AbstractChartLoader extends com.haulmont.cuba.gui.xml.layo
                 throw new IllegalStateException("Cannot find data source by name: " + datasource);
             }
 
-            loadColumns(component, element, ds);
+            if (!(ds instanceof ChartDatasource)) {
+                loadColumns(component, element, ds);
 
-            String captionProperty = element.attributeValue("captionProperty");
-            if (!StringUtils.isEmpty(captionProperty)) {
-                MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(captionProperty);
-                if (propertyPath == null) {
-                    throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
-                            captionProperty, ds.getMetaClass().getName()));
+                String captionProperty = element.attributeValue("captionProperty");
+                if (!StringUtils.isEmpty(captionProperty)) {
+                    MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(captionProperty);
+                    if (propertyPath == null) {
+                        throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
+                                captionProperty, ds.getMetaClass().getName()));
+                    }
+                    component.setRowCaptionPropertyId(propertyPath);
                 }
-                component.setRowCaptionPropertyId(propertyPath);
             }
 
             component.setCollectionDatasource(ds);

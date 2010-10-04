@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.components.charts.PieChart;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.data.ChartDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
@@ -48,27 +49,29 @@ public class PieChartLoader extends AbstractChartLoader {
                 throw new IllegalStateException("Cannot find data source by name: " + datasource);
             }
 
-            String valueProperty = element.attributeValue("valueProperty");
-            if (StringUtils.isEmpty(valueProperty)) {
-                throw new IllegalAccessError("PieChart must contains non-empty 'valueProperty' attribute");
-            }
-
-            MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(valueProperty);
-            if (propertyPath == null) {
-                throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
-                        valueProperty, ds.getMetaClass().getName()));
-            }
-
-            component.addColumn(propertyPath, null);
-
-            String captionProperty = element.attributeValue("captionProperty");
-            if (!StringUtils.isEmpty(captionProperty)) {
-                MetaPropertyPath captionPropertyPath = ds.getMetaClass().getPropertyPath(captionProperty);
-                if (captionPropertyPath == null) {
-                    throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
-                            captionProperty, ds.getMetaClass().getName()));
+            if (!(ds instanceof ChartDatasource)) {
+                String valueProperty = element.attributeValue("valueProperty");
+                if (StringUtils.isEmpty(valueProperty)) {
+                    throw new IllegalAccessError("PieChart must contains non-empty 'valueProperty' attribute");
                 }
-                component.setRowCaptionPropertyId(captionPropertyPath);
+
+                MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(valueProperty);
+                if (propertyPath == null) {
+                    throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
+                            valueProperty, ds.getMetaClass().getName()));
+                }
+
+                component.addColumn(propertyPath, null);
+
+                String captionProperty = element.attributeValue("captionProperty");
+                if (!StringUtils.isEmpty(captionProperty)) {
+                    MetaPropertyPath captionPropertyPath = ds.getMetaClass().getPropertyPath(captionProperty);
+                    if (captionPropertyPath == null) {
+                        throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
+                                captionProperty, ds.getMetaClass().getName()));
+                    }
+                    component.setRowCaptionPropertyId(captionPropertyPath);
+                }
             }
 
             component.setCollectionDatasource(ds);

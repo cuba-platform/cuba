@@ -12,10 +12,14 @@ package com.haulmont.cuba.gui.data;
 
 import org.apache.commons.collections.map.LinkedMap;
 
+import java.io.Serializable;
+
 @SuppressWarnings("unchecked")
-public class GroupInfo<P> {
+public class GroupInfo<P> implements Serializable {
     private LinkedMap group;
     private P groupProperty;
+    
+    private static final long serialVersionUID = 5959558199811950577L;
 
     public GroupInfo(LinkedMap group) {
         this.group = new LinkedMap(group);
