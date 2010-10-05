@@ -508,7 +508,7 @@ public abstract class WindowManager implements Serializable {
         Window res = window;
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
-            Class<Window> aClass = null;
+            Class<Window> aClass;
             aClass = ScriptingProvider.loadClass(screenClass);
             if (aClass == null)
                 aClass = ReflectionHelper.getClass(screenClass);
@@ -531,7 +531,7 @@ public abstract class WindowManager implements Serializable {
 
     public abstract void showNotification(String caption, String description, IFrame.NotificationType type);
 
-    public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
+    public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType, WindowParameters windowParameters);
 
-    public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
+    public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions, WindowParameters windowParameters);
 }

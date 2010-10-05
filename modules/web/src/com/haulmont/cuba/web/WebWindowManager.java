@@ -666,8 +666,17 @@ public class WebWindowManager extends WindowManager {
         app.getAppWindow().showNotification(notify);
     }
 
-    @Override
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
+        showMessageDialog(title, message, messageType, WindowParameters.EMPTY);
+    }
+
+    @Override
+    public void showMessageDialog(
+            String title,
+            String message,
+            IFrame.MessageType messageType,
+            WindowParameters wp
+    ) {
         removeWindowsWithName("cuba-message-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
@@ -681,12 +690,19 @@ public class WebWindowManager extends WindowManager {
 
         final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
-        window.setLayout(layout);
+        window.setContent(layout);
 
         Label desc = new Label(message, Label.CONTENT_XHTML);
         layout.addComponent(desc);
 
-        window.setWidth(400, Sizeable.UNITS_PIXELS);
+        float width;
+        if (wp != null && !wp.equals(WindowParameters.EMPTY) && wp.getParameter("width") != null) {
+            width = (Float) wp.getParameter("width");
+        } else {
+            width = 400;
+        }
+
+        window.setWidth(width, Sizeable.UNITS_PIXELS);
         window.setResizable(false);
         window.setModal(true);
 
@@ -694,9 +710,18 @@ public class WebWindowManager extends WindowManager {
         window.center();
     }
 
+    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
+        showOptionDialog(title, message, messageType, actions, WindowParameters.EMPTY);
+    }
+
     @Override
-    public void showOptionDialog(String title, String message,
-                                 IFrame.MessageType messageType, Action[] actions) {
+    public void showOptionDialog(
+            String title,
+            String message,
+            IFrame.MessageType messageType,
+            Action[] actions,
+            WindowParameters wp
+    ) {
         removeWindowsWithName("cuba-option-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
@@ -710,14 +735,21 @@ public class WebWindowManager extends WindowManager {
 
         Label messageBox = new Label(message, Label.CONTENT_XHTML);
 
-        window.setWidth(400, Sizeable.UNITS_PIXELS);
+        float width;
+        if (wp != null && !wp.equals(WindowParameters.EMPTY) && wp.getParameter("width") != null) {
+            width = (Float) wp.getParameter("width");
+        } else {
+            width = 400;
+        }
+
+        window.setWidth(width, Sizeable.UNITS_PIXELS);
         window.setResizable(false);
         window.setModal(true);
 
         final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
-        window.setLayout(layout);
+        window.setContent(layout);
 
         HorizontalLayout actionsBar = new HorizontalLayout();
         actionsBar.setHeight(-1, Sizeable.UNITS_PIXELS);
