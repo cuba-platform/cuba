@@ -122,6 +122,7 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                                 datasource.addItem((Entity) item);
                                 ((DatasourceImplementation) datasource).setModified(modified);
                             }
+                            TableActionsHelper.this.component.setSelected((Entity) item);
                             fireCreateEvent((Entity) item);
                         }
                     }

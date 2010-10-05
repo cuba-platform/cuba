@@ -40,8 +40,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 {
     protected LinkedMap data = new LinkedMap();
 
-    protected SortInfo<MetaPropertyPath>[] sortInfos;
-
     private Map<String, Object> savedParameters;
 
     private boolean inRefresh;
@@ -76,12 +74,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
 
-
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
                 String id, MetaClass metaClass, String viewName, boolean softDeletion)
     {
         super(context, dataservice, id, metaClass, viewName);
+        setSoftDeletion(softDeletion);
+    }
+
+    public CollectionDatasourceImpl(
+            DsContext context, DataService dataservice,
+                String id, MetaClass metaClass, View view, boolean softDeletion)
+    {
+        super(context, dataservice, id, metaClass, view);
         setSoftDeletion(softDeletion);
     }
 
@@ -181,12 +186,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
-    protected Comparator<T> createEntityComparator() {
-        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-        final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-        return new EntityComparator<T>(propertyPath, asc);
-    }
-
     public K firstItemId() {
         if (!data.isEmpty()) {
             return (K) data.firstKey();
@@ -275,34 +274,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return data.containsKey(itemId);
     }
 
-    @Override
-    public void commit() {
-        if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
-            final DataService service = getDataService();
-            Set<Entity> commitInstances = new HashSet<Entity>();
-            Set<Entity> deleteInstances = new HashSet<Entity>();
-
-            commitInstances.addAll(itemToCreate);
-            commitInstances.addAll(itemToUpdate);
-            deleteInstances.addAll(itemToDelete);
-
-            CommitContext<Entity> context =
-                    new CommitContext<Entity>(commitInstances, deleteInstances);
-            for (Entity entity : commitInstances) {
-                context.getViews().put(entity, getView());
-            }
-            for (Entity entity : deleteInstances) {
-                context.getViews().put(entity, getView());
-            }
-
-            final Map<Entity, Entity> map = service.commit(context);
-
-            commited(map);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     public void commited(Map<Entity, Entity> map) {
         if (map.containsKey(item)) {
             item = (T) map.get(item);
@@ -325,42 +296,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         final LoadContext context = new LoadContext(metaClass);
 
-        LoadContext.Query q;
-
-        if (query != null && queryParameters != null) {
-            final Map<String, Object> parameters = getQueryParameters(params);
-            for (ParameterInfo info : queryParameters) {
-                if (ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
-                    final Object value = parameters.get(info.getFlatName());
-                    if (value == null)
-                        return;
-                }
-            }
-
-            String queryString = getJPQLQuery(getTemplateParams(params));
-            q = context.setQueryString(queryString);
-            q.setParameters(parameters);
-        } else {
-            Class javaClass = metaClass.getJavaClass();
-            Annotation annotation = javaClass.getAnnotation(NamePattern.class);
-            if(annotation != null){
-                StringBuilder orderBy = new StringBuilder();
-                String value = StringUtils.substringAfter(((NamePattern)annotation).value(),"|");
-                String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
-                for(int i = 0; i < fields.length; i++) {
-                    MetaProperty metaProperty = metaClass.getProperty(fields[i]);
-                    if (metaProperty != null 
-                            && metaProperty.getAnnotatedElement().getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) == null)
-                    orderBy.append("e.").append(fields[i]).append(", ");
-                }
-                if (orderBy.length() > 0) {
-                    orderBy.delete(orderBy.length() - 2, orderBy.length());
-                    orderBy.insert(0, " order by ");
-                }
-                q = context.setQueryString("select e from " + metaClass.getName() + " e"+orderBy.toString());
-            }else
-                q = context.setQueryString("select e from " + metaClass.getName() + " e");
-        }
+        LoadContext.Query q = createLoadContextQuery(context, params);
+        if (q == null)
+            return;
 
         if (maxResults > 0) {
             q.setMaxResults(maxResults);

@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.app.PersistenceConfigAPI;
+import com.haulmont.cuba.core.app.PersistenceManagerAPI;
 import com.haulmont.cuba.core.sys.AppContext;
 
 public class AppContextTest extends CubaTestCase {
@@ -19,7 +19,7 @@ public class AppContextTest extends CubaTestCase {
         Locator locator = AppContext.getApplicationContext().getBean("cuba_Locator", Locator.class);
         assertNotNull(locator);
 
-        PersistenceConfigAPI pc = AppContext.getApplicationContext().getBean(PersistenceConfigAPI.NAME, PersistenceConfigAPI.class);
+        PersistenceManagerAPI pc = AppContext.getApplicationContext().getBean(PersistenceManagerAPI.NAME, PersistenceManagerAPI.class);
         assertNotNull(pc);
     }
 }

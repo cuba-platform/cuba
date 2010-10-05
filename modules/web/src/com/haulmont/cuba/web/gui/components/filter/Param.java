@@ -23,10 +23,9 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.vaadin.data.Property;
@@ -454,11 +453,13 @@ public class Param {
     private Component createEntityLookup() {
         MetaClass metaClass = MetadataProvider.getSession().getClass(javaClass);
 
-        CollectionDatasourceImpl ds = new CollectionDatasourceImpl(datasource.getDsContext(),
-                new GenericDataService(), "ds", metaClass, entityView);
+        CollectionDatasource ds = new DsBuilder(datasource.getDsContext())
+                .setMetaClass(metaClass)
+                .setViewName(entityView)
+                .buildCollectionDatasource();
 
         ds.setRefreshOnComponentValueChange(true);
-        ds.initialized();
+        ((DatasourceImplementation) ds).initialized();
 
         Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
         if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {

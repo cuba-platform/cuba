@@ -63,7 +63,6 @@
                                         <xs:attribute name="query" type="xs:string" use="optional"/>
                                         <xs:attribute name="view" type="xs:string" use="required"/>
                                         <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
-                                        <xs:attribute name="fetchMode" type="fetchMode" use="optional"/>
                                         <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
                                     </xs:complexType>
                                 </xs:element>
@@ -86,7 +85,6 @@
                                         <xs:attribute name="class" type="xs:string" use="required"/>
                                         <xs:attribute name="query" type="xs:string" use="optional"/>
                                         <xs:attribute name="view" type="xs:string" use="required"/>
-                                        <xs:attribute name="fetchMode" type="fetchMode" use="optional"/>
                                         <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
                                     </xs:complexType>
                                 </xs:element>
@@ -952,7 +950,7 @@
         <xs:attribute name="format" type="xs:string" use="optional"/>
         <xs:attribute name="type" type="columnFormatterType" use="optional"/>
     </xs:complexType>
-    
+
     <xs:complexType name="validatorType">
         <xs:attribute name="class" type="xs:string" use="optional"/>
         <xs:attribute name="message" type="xs:string" use="optional"/>

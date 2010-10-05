@@ -13,16 +13,15 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.QueryTransformer;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.commons.collections.map.LinkedMap;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.*;
 
@@ -36,10 +35,12 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     protected Integer size;
 
     protected Map<String, Object> params = Collections.emptyMap();
-    protected Map<String, Object> parametersValues;
 
-    protected int chunk = 20;
-    private SortInfo<MetaPropertyPath>[] sortInfos;
+    protected int chunk = 50;
+
+    private Map<String, Object> savedParameters;
+
+    private boolean inRefresh;
 
     public LazyCollectionDatasource(
             DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
@@ -50,30 +51,71 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
     public LazyCollectionDatasource(
             DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
+                String id, MetaClass metaClass, View view)
+    {
+        super(dsContext, dataservice, id, metaClass, view);
+    }
+
+    public LazyCollectionDatasource(
+            DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
                 String id, MetaClass metaClass, String viewName, boolean softDeletion)
     {
         super(dsContext, dataservice, id, metaClass, viewName);
         setSoftDeletion(softDeletion);
     }
 
+    public LazyCollectionDatasource(
+            DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
+                String id, MetaClass metaClass, View view, boolean softDeletion)
+    {
+        super(dsContext, dataservice, id, metaClass, view);
+        setSoftDeletion(softDeletion);
+    }
+
     public void addItem(T item) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        checkState();
+
+        attachListener((Instance) item);
+
+        data.put(item.getId(), item);
+
+        if (sortInfos != null)
+            sortInMemory();
+
+        if (PersistenceHelper.isNew(item)) {
+            itemToCreate.add(item);
+        }
+
+        modified = true;
+        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
     public void removeItem(T item) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        checkState();
+
+        data.remove(item.getId());
+        detachListener((Instance) item);
+
+        deleted(item);
+
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     public void modifyItem(T item) {
         if (data.containsKey(item.getId())) {
-            updateItem(item);
-            modified(item);
+            if (PersistenceHelper.isNew(item)) {
+                Object existingItem = data.get(item.getId());
+                InstanceUtils.copy((Instance) item, (Instance) existingItem);
+                modified((T) existingItem);
+            } else {
+                updateItem(item);
+                modified(item);
+            }
         }
     }
 
     public void updateItem(T item) {
-        if (!State.VALID.equals(state))
-            throw new IllegalStateException("Invalid datasource state: " + state);
+        checkState();
 
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
@@ -83,78 +125,98 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     public boolean containsItem(K itemId) {
-        if (!isAllLoaded()) loadNextChunk(true);
         return data.containsKey(itemId);
     }
 
     @Override
-    public void refresh() {
-        invalidate();
+    public synchronized void refresh() {
+        if (savedParameters == null)
+            refresh(Collections.<String, Object>emptyMap());
+        else
+            refresh(savedParameters);
     }
 
-    public void refresh(Map<String, Object> parameters) {
+    public synchronized void refresh(Map<String, Object> parameters) {
         this.params = parameters;
-        invalidate();
+        if (inRefresh)
+            return;
+
+        inRefresh = true;
+        try {
+            savedParameters = parameters;
+
+            size = null;
+            for (Object entity : data.values()) {
+                detachListener((Instance) entity);
+            }
+            data.clear();
+
+            invalidate();
+
+            getSize();
+            if (!State.VALID.equals(state))
+                loadNextChunk(false);
+        } finally {
+            inRefresh = false;
+        }
     }
 
     @Override
-    public void invalidate() {
+    public synchronized void invalidate() {
         super.invalidate();
-        size = null;
-        for (Object entity : data.values()) {
-            detachListener((Instance) entity);
-        }
-        data.clear();
     }
 
-    public int getSize() {
+    private int getSize() {
         if (size == null) {
-            parametersValues = getQueryParameters(params);
-            for (ParameterInfo info : queryParameters) {
-                if (ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
-                    final Object value = parametersValues.get(info.getFlatName());
-                    if (value == null) return 0;
-                }
-            }
+            LoadContext context = new LoadContext(metaClass);
+            LoadContext.Query q = createLoadContextQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
+            if (q == null)
+                return 0;
 
-            String jpqlQuery = getJPQLQuery(getTemplateParams(params));
-
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(jpqlQuery, metaClass.getName());
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
             transformer.replaceWithCount();
-            jpqlQuery = transformer.getResult();
+            String jpqlQuery = transformer.getResult();
+            q.setQueryString(jpqlQuery);
 
-            final LoadContext context =
-                    new LoadContext(metaClass);
-
-            context.setQueryString(jpqlQuery).setParameters(parametersValues);
-
-            final List res = dataservice.loadList(context);
+            List res = dataservice.loadList(context);
             size = res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
         }
 
         return size;
     }
 
-    public T getItem(K key) {
-        //noinspection unchecked
-        return (T) data.get(key);
+    public synchronized T getItem(K key) {
+        if (State.NOT_INITIALIZED.equals(state)) {
+            throw new IllegalStateException("Invalid datasource state " + state);
+        } else {
+            T item = (T) data.get(key);
+            return item;
+        }
     }
 
     public K getItemId(T item) {
         return item == null ? null : item.getId();
     }
 
-    public Collection<K> getItemIds() {
-        if (!isAllLoaded()) loadNextChunk(true);
-        //noinspection unchecked
-        return data.keySet();
+    public synchronized Collection<K> getItemIds() {
+        if (State.NOT_INITIALIZED.equals(state)) {
+            return Collections.emptyList();
+        } else {
+            if (!isAllLoaded()) loadNextChunk(true);
+            //noinspection unchecked
+            return data.keySet();
+        }
     }
 
-    public int size() {
-        return getSize();
+    public synchronized int size() {
+        if (State.NOT_INITIALIZED.equals(state)) {
+            return 0;
+        } else {
+            return size == null ? 0 : size;
+        }
     }
 
-    public K nextItemId(K itemId) {
+    public synchronized K nextItemId(K itemId) {
         @SuppressWarnings({"unchecked"})
         K nextId = (K) data.nextKey(itemId);
         if (nextId == null && !isAllLoaded()) {
@@ -165,12 +227,12 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         return nextId;
     }
 
-    public K prevItemId(K itemId) {
+    public synchronized K prevItemId(K itemId) {
         //noinspection unchecked
         return (K) data.previousKey(itemId);
     }
 
-    public K firstItemId() {
+    public synchronized K firstItemId() {
         if (data.isEmpty())
             loadNextChunk(false);
 
@@ -182,7 +244,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
-    public K lastItemId() {
+    public synchronized K lastItemId() {
         if (!isAllLoaded())
             loadNextChunk(true);
 
@@ -201,7 +263,6 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     public boolean isLastId(K itemId) {
         //noinspection SimplifiableConditionalExpression
         return isAllLoaded() ? itemId.equals(lastItemId()) : false;
-
     }
 
     protected boolean isAllLoaded() {
@@ -209,21 +270,30 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     protected void loadNextChunk(boolean all) {
-        String jpqlQuery = getJPQLQuery(getTemplateParams(params));
+        StopWatch sw = new Log4JStopWatch("LCDS " + id);
 
-        QueryTransformer transformer = QueryTransformerFactory.createTransformer(jpqlQuery, metaClass.getName());
+        getSize(); // ensure size is loaded
+
+        LoadContext ctx = new LoadContext(metaClass);
+        LoadContext.Query q = createLoadContextQuery(ctx, params);
+        if (q == null)
+            return;
+
         if (sortInfos != null) {
-            final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-            final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
 
-            if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
+            boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+            MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
 
-            transformer.replaceOrderBy(propertyPath.getMetaProperty().getName(), asc);
+            if (propertyPath.get().length > 1)
+                throw new UnsupportedOperationException();
+
+            transformer.replaceOrderBy(propertyPath.getMetaProperty().getName(), !asc);
+            String jpqlQuery = transformer.getResult();
+
+            q.setQueryString(jpqlQuery);
         }
-        jpqlQuery = transformer.getResult();
 
-        LoadContext ctx = new LoadContext(Server.class);
-        ctx.setQueryString(jpqlQuery);
         ctx.getQuery().setFirstResult(data.size());
         ctx.setView(view);
 
@@ -238,30 +308,29 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (res.size() < chunk) {
             size = data.size(); // all is loaded
         }
+
+        State prevState = state;
+        if (!prevState.equals(State.VALID)) {
+            state = State.VALID;
+            forceStateChanged(prevState);
+        }
+
+        sw.stop();
     }
 
-    public void sort(SortInfo[] sortInfos) {
+    public synchronized void sort(SortInfo[] sortInfos) {
         if (sortInfos.length != 1)
             throw new UnsupportedOperationException("Supporting sort by one field only");
 
         if (!Arrays.equals(this.sortInfos, sortInfos)) {
-            doSort();
-            //noinspection unchecked
             this.sortInfos = sortInfos;
+            doSort();
         }
     }
 
     private void doSort() {
         if (isAllLoaded()) {
-            final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-            final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-
-            List<T> order = new ArrayList<T>(data.values());
-            Collections.sort(order, new EntityComparator<T>(propertyPath, asc));
-            data.clear();
-            for (T t : order) {
-                data.put(t.getId(), t);
-            }
+            sortInMemory();
         } else {
             for (Object entity : data.values()) {
                 detachListener((Instance) entity);
@@ -269,5 +338,33 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             data.clear();
             loadNextChunk(false);
         }
+    }
+
+    private void sortInMemory() {
+        List<T> order = new ArrayList<T>(data.values());
+        Collections.sort(order, createEntityComparator());
+        data.clear();
+        for (T t : order) {
+            data.put(t.getId(), t);
+        }
+    }
+
+    private void checkState() {
+        if (!State.VALID.equals(state)) {
+            refresh();
+        }
+    }
+
+    @Override
+    public synchronized void commited(Map<Entity, Entity> map) {
+        if (map.containsKey(item)) {
+            item = (T) map.get(item);
+        }
+        for (Entity newEntity : map.values()) {
+            updateItem((T) newEntity);
+        }
+
+        modified = false;
+        clearCommitLists();
     }
 }

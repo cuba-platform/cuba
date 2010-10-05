@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.WrappedFrame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.impl.DatasourceFactoryImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
@@ -59,7 +58,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
         if (dsContextElement != null) {
             final DsContextLoader contextLoader =
-                    new DsContextLoader(new DatasourceFactoryImpl(), context.getDsContext().getDataService());
+                    new DsContextLoader(context.getDsContext().getDataService());
 
             dsContext = contextLoader.loadDatasources(dsContextElement, parentContext.getDsContext());
         } else {

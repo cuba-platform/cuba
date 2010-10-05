@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
 
 import java.util.Collection;
@@ -38,10 +39,25 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
 
     public GroupDatasourceImpl(
             DsContext context, DataService dataservice,
+            String id, MetaClass metaClass, View view
+    ) {
+        super(context, dataservice, id, metaClass, view);
+    }
+
+    public GroupDatasourceImpl(
+            DsContext context, DataService dataservice,
             String id, MetaClass metaClass, String viewName,
             boolean softDeletion
     ) {
         super(context, dataservice, id, metaClass, viewName, softDeletion);
+    }
+
+    public GroupDatasourceImpl(
+            DsContext context, DataService dataservice,
+            String id, MetaClass metaClass, View view,
+            boolean softDeletion
+    ) {
+        super(context, dataservice, id, metaClass, view, softDeletion);
     }
 
     public void groupBy(Object[] properties) {

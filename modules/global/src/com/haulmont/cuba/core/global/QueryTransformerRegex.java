@@ -255,6 +255,11 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
             error("No alias for target entity " + targetEntity + " found");
 
         buffer.replace(0, entityMatcher.start(), "select count(" + alias + ") from ");
+
+        Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
+        if (orderMatcher.find()) {
+            buffer.delete(orderMatcher.start(), buffer.length());
+        }
     }
 
     public void replaceOrderBy(String property, boolean desc) {

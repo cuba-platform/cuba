@@ -67,6 +67,21 @@ create table SYS_LOCK_CONFIG (
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SYS_ENTITY_STATISTICS (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    NAME varchar(50),
+    INSTANCE_COUNT bigint,
+    MAX_FETCH_UI integer,
+    LAZY_COLLECTION_THRESHOLD integer,
+    primary key (ID)
+);
+
+------------------------------------------------------------------------------------------------------------
+
 create table SEC_ROLE (
     ID varchar(36),
     CREATE_TS timestamp,

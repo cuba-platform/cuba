@@ -97,8 +97,8 @@
     <bean id="cuba_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
-                <entry key="${cuba.webContextName}.cuba:service=PersistenceConfig"
-                       value-ref="cuba_PersistenceConfig"/>
+                <entry key="${cuba.webContextName}.cuba:service=PersistenceManager"
+                       value-ref="cuba_PersistenceManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=ConfigStorage" value-ref="cuba_ConfigStorage"/>
                 <entry key="${cuba.webContextName}.cuba:service=DataCache" value-ref="cuba_DataCache"/>
                 <entry key="${cuba.webContextName}.cuba:service=ResourceRepository"
@@ -112,6 +112,7 @@
                 <entry key="${cuba.webContextName}.cuba:service=LockManager" value-ref="cuba_LockManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=CachingFacade" value-ref="cuba_CachingFacade"/>
                 <entry key="${cuba.webContextName}.cuba:service=ClusterManager" value-ref="cuba_ClusterManager"/>
+                <entry key="${cuba.webContextName}.cuba:service=Scripting" value-ref="cuba_Scripting"/>
                 <entry key="${cuba.webContextName}.cuba:service=CubaDeployer" value-ref="cuba_CubaDeployer"/>
             </map>
         </property>
@@ -119,7 +120,7 @@
             <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
                 <property name="interfaceMappings">
                     <map>
-                        <entry key="cuba_PersistenceConfig" value="com.haulmont.cuba.core.app.PersistenceConfigMBean"/>
+                        <entry key="cuba_PersistenceManager" value="com.haulmont.cuba.core.app.PersistenceManagerMBean"/>
                         <entry key="cuba_ConfigStorage" value="com.haulmont.cuba.core.app.ConfigStorageMBean"/>
                         <entry key="cuba_DataCache" value="com.haulmont.cuba.core.app.DataCacheMBean"/>
                         <entry key="cuba_ResourceRepository"
@@ -133,6 +134,7 @@
                         <entry key="cuba_LockManager" value="com.haulmont.cuba.core.app.LockManagerMBean"/>
                         <entry key="cuba_CachingFacade" value="com.haulmont.cuba.core.app.CachingFacadeMBean"/>
                         <entry key="cuba_ClusterManager" value="com.haulmont.cuba.core.app.ClusterManagerMBean"/>
+                        <entry key="cuba_Scripting" value="com.haulmont.cuba.core.app.ScriptingMBean"/>
                         <entry key="cuba_CubaDeployer" value="com.haulmont.cuba.core.app.CubaDeployerMBean"/>
                     </map>
                 </property>
@@ -144,7 +146,7 @@
 
     <bean id="haulmont_cuba_service_PersistenceConfig" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
         <property name="objectName" value="${cuba.webContextName}.cuba:service=PersistenceConfig"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.PersistenceConfigMBean"/>
+        <property name="proxyInterface" value="com.haulmont.cuba.core.app.PersistenceManagerMBean"/>
     </bean>
 
     <bean id="haulmont_cuba_service_ConfigStorage" class="org.springframework.jmx.access.MBeanProxyFactoryBean">

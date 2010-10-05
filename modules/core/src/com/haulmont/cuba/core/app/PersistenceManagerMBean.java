@@ -11,12 +11,18 @@
 package com.haulmont.cuba.core.app;
 
 /**
- * Management interface of the {@link PersistenceConfig} MBean.<br>
+ * Management interface of the {@link PersistenceManager} MBean.<br>
  */
-public interface PersistenceConfigMBean
+public interface PersistenceManagerMBean
 {
-    String OBJECT_NAME = "haulmont.cuba:service=PersistenceConfig";
+    String OBJECT_NAME = "haulmont.cuba:service=PersistenceManager";
     
+    int getDefaultLazyCollectionThreshold();
+    void setDefaultLazyCollectionThreshold(int value);
+
+    int getDefaultMaxFetchUI();
+    void setDefaultMaxFetchUI(int value);
+
     String printSoftDeleteTables();
 
     String updateDatabase();
@@ -26,4 +32,10 @@ public interface PersistenceConfigMBean
     String jpqlLoadList(String queryString);
 
     String jpqlExecuteUpdate(String queryString, boolean softDeletion);
+
+    String refreshStatistics(String entityName);
+
+    String showStatistics(String entityName);
+
+    String loadStatisticsCache();
 }

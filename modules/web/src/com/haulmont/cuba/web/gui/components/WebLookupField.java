@@ -189,7 +189,7 @@ public class WebLookupField
         component.disablePaging();
     }
 
-    private class DsWrapper extends CollectionDsWrapper {
+    private class DsWrapper extends CollectionDsWrapper implements com.vaadin.data.Container.Ordered {
 
         public DsWrapper(CollectionDatasource datasource) {
             super(datasource);
@@ -239,13 +239,64 @@ public class WebLookupField
 
         @Override
         public int size() {
-            return getItemIds().size();
+            if (Datasource.State.INVALID.equals(datasource.getState()))
+                datasource.refresh();
+            return datasource.size();
         }
 
         @Override
         public boolean containsId(Object itemId) {
-            Collection itemIds = getItemIds();
-            return itemIds.contains(itemId);
+            return datasource.containsItem(itemId);
+        }
+
+        public Object nextItemId(Object itemId) {
+            if (datasource instanceof CollectionDatasource.Ordered)
+                return ((CollectionDatasource.Ordered) datasource).nextItemId(itemId);
+            else
+                throw new UnsupportedOperationException();
+        }
+
+        public Object prevItemId(Object itemId) {
+            if (datasource instanceof CollectionDatasource.Ordered)
+                return ((CollectionDatasource.Ordered) datasource).prevItemId(itemId);
+            else
+                throw new UnsupportedOperationException();
+        }
+
+        public Object firstItemId() {
+            if (datasource instanceof CollectionDatasource.Ordered)
+                return ((CollectionDatasource.Ordered) datasource).firstItemId();
+            else
+                throw new UnsupportedOperationException();
+        }
+
+        public Object lastItemId() {
+            if (datasource instanceof CollectionDatasource.Ordered)
+                return ((CollectionDatasource.Ordered) datasource).lastItemId();
+            else
+                throw new UnsupportedOperationException();
+        }
+
+        public boolean isFirstId(Object itemId) {
+            if (datasource instanceof CollectionDatasource.Ordered)
+                return ((CollectionDatasource.Ordered) datasource).isFirstId(itemId);
+            else
+                throw new UnsupportedOperationException();
+        }
+
+        public boolean isLastId(Object itemId) {
+            if (datasource instanceof CollectionDatasource.Ordered)
+                return ((CollectionDatasource.Ordered) datasource).isLastId(itemId);
+            else
+                throw new UnsupportedOperationException();
+        }
+
+        public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
         }
     }
 }

@@ -10,11 +10,16 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Versioned;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.UserSessionClient;
@@ -25,9 +30,11 @@ import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,6 +52,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected boolean softDeletion;
     protected ComponentValueListener componentValueListener;
     private boolean refreshOnComponentValueChange;
+    protected Sortable.SortInfo<MetaPropertyPath>[] sortInfos;
 
     private static Log log = LogFactory.getLog(AbstractCollectionDatasource.class);
 
@@ -355,6 +363,79 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+    }
+
+    @Override
+    public void commit() {
+        if (CommitMode.DATASTORE.equals(getCommitMode())) {
+            final DataService service = getDataService();
+            Set<Entity> commitInstances = new HashSet<Entity>();
+            Set<Entity> deleteInstances = new HashSet<Entity>();
+
+            commitInstances.addAll(itemToCreate);
+            commitInstances.addAll(itemToUpdate);
+            deleteInstances.addAll(itemToDelete);
+
+            CommitContext<Entity> context =
+                    new CommitContext<Entity>(commitInstances, deleteInstances);
+            for (Entity entity : commitInstances) {
+                context.getViews().put(entity, getView());
+            }
+            for (Entity entity : deleteInstances) {
+                context.getViews().put(entity, getView());
+            }
+
+            final Map<Entity, Entity> map = service.commit(context);
+
+            commited(map);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    protected Comparator<T> createEntityComparator() {
+        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+        final boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
+        return new EntityComparator<T>(propertyPath, asc);
+    }
+
+    protected LoadContext.Query createLoadContextQuery(LoadContext context, Map<String, Object> params) {
+        LoadContext.Query q;
+        if (query != null && queryParameters != null) {
+            final Map<String, Object> parameters = getQueryParameters(params);
+            for (ParameterInfo info : queryParameters) {
+                if (ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
+                    final Object value = parameters.get(info.getFlatName());
+                    if (value == null)
+                        return null;
+                }
+            }
+
+            String queryString = getJPQLQuery(getTemplateParams(params));
+            q = context.setQueryString(queryString);
+            q.setParameters(parameters);
+        } else {
+            Class javaClass = metaClass.getJavaClass();
+            Annotation annotation = javaClass.getAnnotation(NamePattern.class);
+            if (annotation != null) {
+                StringBuilder orderBy = new StringBuilder();
+                String value = StringUtils.substringAfter(((NamePattern) annotation).value(), "|");
+                String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
+                for (int i = 0; i < fields.length; i++) {
+                    MetaProperty metaProperty = metaClass.getProperty(fields[i]);
+                    if (metaProperty != null
+                            && metaProperty.getAnnotatedElement().getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) == null)
+                        orderBy.append("e.").append(fields[i]).append(", ");
+                }
+                if (orderBy.length() > 0) {
+                    orderBy.delete(orderBy.length() - 2, orderBy.length());
+                    orderBy.insert(0, " order by ");
+                }
+                q = context.setQueryString("select e from " + metaClass.getName() + " e" + orderBy.toString());
+            } else
+                q = context.setQueryString("select e from " + metaClass.getName() + " e");
+        }
+        return q;
     }
 
     private class ComponentValueListener implements ValueListener {

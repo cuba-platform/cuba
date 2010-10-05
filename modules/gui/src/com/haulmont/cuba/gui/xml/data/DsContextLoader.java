@@ -25,13 +25,13 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 public class DsContextLoader {
-    private DatasourceFactory factory;
+
+    private DsBuilder builder;
     private DataService dataservice;
 
     private DsContextImplementation context;
 
-    public DsContextLoader(DatasourceFactory factory, DataService dataservice) {
-        this.factory = factory;
+    public DsContextLoader(DataService dataservice) {
         this.dataservice = dataservice;
     }
 
@@ -58,6 +58,8 @@ public class DsContextLoader {
         if (parent != null) {
             context.setParent(parent);
         }
+
+        builder = new DsBuilder(context);
 
         //noinspection unchecked
         List<Element> elements = element.elements("datasource");
@@ -109,29 +111,24 @@ public class DsContextLoader {
         final String viewName = element.attributeValue("view");
         final String hierarchyProperty = element.attributeValue("hierarchyProperty");
         String deletion = element.attributeValue("softDeletion");
-        boolean softDeletion = deletion == null || "true".equals(deletion);
+        boolean softDeletion = deletion == null || Boolean.valueOf(deletion);
+
+        builder.reset().setMetaClass(metaClass).setId(id).setViewName(viewName).setSoftDeletion(softDeletion);
+
+        final HierarchicalDatasource datasource;
 
         final Element datasourceClassElement = element.element("datasourceClass");
 
-        final HierarchicalDatasource datasource;
         if (datasourceClassElement != null) {
             final String datasourceClass = datasourceClassElement.getText();
-            if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
+            if (StringUtils.isEmpty(datasourceClass))
+                throw new IllegalStateException("Datasource class is not specified");
 
-            try {
-                final Class<HierarchicalDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
-                final Constructor<HierarchicalDatasource> constructor =
-                        aClass.getConstructor(
-                                DsContext.class, DataService.class,
-                                    String.class, MetaClass.class, String.class);
-                datasource = constructor.newInstance(context, dataservice, id, metaClass, viewName);
-                datasource.setSoftDeletion(softDeletion);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+            Class<HierarchicalDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
         } else {
-            final CollectionDatasource.FetchMode mode = getFetchMode(element);
-            datasource = factory.createHierarchicalDatasource(context, dataservice, id, metaClass, viewName, mode, softDeletion);
+            CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
+            datasource = builder.setFetchMode(fetchMode).buildHierarchicalDatasource();
         }
 
         if (!StringUtils.isEmpty(hierarchyProperty)) {
@@ -153,29 +150,24 @@ public class DsContextLoader {
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
         String deletion = element.attributeValue("softDeletion");
-        boolean softDeletion = deletion == null || "true".equals(deletion);
+        boolean softDeletion = deletion == null || Boolean.valueOf(deletion);
+
+        builder.reset().setMetaClass(metaClass).setId(id).setViewName(viewName).setSoftDeletion(softDeletion);
+
+        final GroupDatasource datasource;
 
         final Element datasourceClassElement = element.element("datasourceClass");
 
-        final GroupDatasource datasource;
         if (datasourceClassElement != null) {
             final String datasourceClass = datasourceClassElement.getText();
-            if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
+            if (StringUtils.isEmpty(datasourceClass))
+                throw new IllegalStateException("Datasource class is not specified");
 
-            try {
-                final Class<GroupDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
-                final Constructor<GroupDatasource> constructor =
-                        aClass.getConstructor(
-                                DsContext.class, DataService.class,
-                                    String.class, MetaClass.class, String.class);
-                datasource = constructor.newInstance(context, dataservice, id, metaClass, viewName);
-                datasource.setSoftDeletion(softDeletion);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+            final Class<GroupDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            datasource = builder.setDsClass(aClass).buildGroupDatasource();
         } else {
-            final CollectionDatasource.FetchMode mode = getFetchMode(element);
-            datasource = factory.createGroupDatasource(context, dataservice, id, metaClass, viewName, mode, softDeletion);
+            final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
+            datasource = builder.setFetchMode(fetchMode).buildGroupDatasource();
         }
 
         Element queryElem = element.element("query");
@@ -191,7 +183,6 @@ public class DsContextLoader {
             }
         }
 
-
         loadDatasources(element, datasource);
 
         return datasource;
@@ -202,25 +193,22 @@ public class DsContextLoader {
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
 
-        final Element datasourceClassElement = element.element("datasourceClass");
+        builder.reset().setMetaClass(metaClass).setId(id).setViewName(viewName);
 
         final Datasource datasource;
+
+        final Element datasourceClassElement = element.element("datasourceClass");
+
         if (datasourceClassElement != null) {
             final String datasourceClass = datasourceClassElement.getText();
-            if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
+            if (StringUtils.isEmpty(datasourceClass))
+                throw new IllegalStateException("Datasource class is not specified");
 
-            try {
-                final Class<Datasource> aClass = ScriptingProvider.loadClass(datasourceClass);
-                final Constructor<Datasource> constructor =
-                        aClass.getConstructor(
-                                DsContext.class, DataService.class,
-                                    String.class, MetaClass.class, String.class);
-                datasource = constructor.newInstance(context, dataservice, id, metaClass, viewName);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        } else
-            datasource = factory.createDatasource(context, dataservice, id, metaClass, viewName);
+            final Class<Datasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            datasource = builder.setDsClass(aClass).buildDatasource();
+        } else {
+            datasource = builder.buildDatasource();
+        }
 
         // TODO implement ContextListeners
 //        String item = element.attributeValue("item");
@@ -267,8 +255,11 @@ public class DsContextLoader {
                     String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
         }
 
-        final Datasource datasource =
-                factory.createDatasource(id, ds, property);
+        Datasource datasource = builder.reset()
+                .setId(id)
+                .setMaster(ds)
+                .setProperty(property)
+                .buildDatasource();
 
         loadDatasources(element, datasource);
 
@@ -285,22 +276,21 @@ public class DsContextLoader {
                     String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
         }
 
+        builder.reset().setMetaClass(metaClass).setId(id).setMaster(ds).setProperty(property);
+
+        final CollectionDatasource datasource;
+
         final Element datasourceClassElement = element.element("datasourceClass");
-        CollectionDatasource datasource;
+
         if (datasourceClassElement != null) {
             final String datasourceClass = datasourceClassElement.getText();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
-            try {
-                final Class<CollectionDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
-                final Constructor<CollectionDatasource> constructor =
-                        aClass.getConstructor(String.class, Datasource.class, String.class);
-                datasource = constructor.newInstance(id, ds, property);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+
+            final Class<CollectionDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            datasource = builder.setDsClass(aClass).buildCollectionDatasource();
         } else {
-            datasource = factory.createCollectionDatasource(id, ds, property);
+            datasource = builder.buildCollectionDatasource();
         }
 
         loadDatasources(element, datasource);
@@ -318,22 +308,19 @@ public class DsContextLoader {
                     String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
         }
 
+        builder.reset().setMetaClass(metaClass).setId(id).setMaster(ds).setProperty(property);
+
         final Element datasourceClassElement = element.element("datasourceClass");
         GroupDatasource datasource;
         if (datasourceClassElement != null) {
             final String datasourceClass = datasourceClassElement.getText();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
-            try {
-                final Class<GroupDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
-                final Constructor<GroupDatasource> constructor =
-                        aClass.getConstructor(String.class, Datasource.class, String.class);
-                datasource = constructor.newInstance(id, ds, property);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+
+            final Class<GroupDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            datasource = builder.setDsClass(aClass).buildGroupDatasource();
         } else {
-            datasource = factory.createGroupDatasource(id, ds, property);
+            datasource = builder.buildGroupDatasource();
         }
 
         loadDatasources(element, datasource);
@@ -360,29 +347,23 @@ public class DsContextLoader {
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
         String deletion = element.attributeValue("softDeletion");
-        boolean softDeletion = deletion == null || "true".equals(deletion);
+        boolean softDeletion = deletion == null || Boolean.valueOf(deletion);
+
+        builder.reset().setMetaClass(metaClass).setId(id).setViewName(viewName).setSoftDeletion(softDeletion);
 
         final Element datasourceClassElement = element.element("datasourceClass");
 
         final CollectionDatasource datasource;
         if (datasourceClassElement != null) {
             final String datasourceClass = datasourceClassElement.getText();
-            if (StringUtils.isEmpty(datasourceClass)) throw new IllegalStateException("Datasource class is not specified");
+            if (StringUtils.isEmpty(datasourceClass))
+                throw new IllegalStateException("Datasource class is not specified");
 
-            try {
-                final Class<CollectionDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
-                final Constructor<CollectionDatasource> constructor =
-                        aClass.getConstructor(
-                                DsContext.class, DataService.class,
-                                    String.class, MetaClass.class, String.class);
-                datasource = constructor.newInstance(context, dataservice, id, metaClass, viewName);
-                datasource.setSoftDeletion(softDeletion);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+            final Class<CollectionDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            datasource = builder.setDsClass(aClass).buildCollectionDatasource();
         } else {
-            final CollectionDatasource.FetchMode mode = getFetchMode(element);
-            datasource = factory.createCollectionDatasource(context, dataservice, id, metaClass, viewName, mode, softDeletion);
+            final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
+            datasource = builder.setFetchMode(fetchMode).buildCollectionDatasource();
         }
 
         Element queryElem = element.element("query");
@@ -404,13 +385,11 @@ public class DsContextLoader {
     }
 
     protected CollectionDatasource.FetchMode getFetchMode(Element element) {
-        final CollectionDatasource.FetchMode mode;
+        CollectionDatasource.FetchMode mode = null;
 
         final String fetchMode = element.attributeValue("fetchMode");
         if (!StringUtils.isEmpty(fetchMode)) {
             mode = CollectionDatasource.FetchMode.valueOf(fetchMode);
-        } else {
-            mode = CollectionDatasource.FetchMode.ALL;
         }
         return mode;
     }

@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -37,9 +38,24 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
 
     public HierarchicalDatasourceImpl(
             DsContext context, DataService dataservice,
+                String id, MetaClass metaClass, View view)
+    {
+        super(context, dataservice, id, metaClass, view);
+    }
+
+    public HierarchicalDatasourceImpl(
+            DsContext context, DataService dataservice,
                 String id, MetaClass metaClass, String viewName, boolean softDeletion)
     {
         super(context, dataservice, id, metaClass, viewName);
+        setSoftDeletion(softDeletion);
+    }
+
+    public HierarchicalDatasourceImpl(
+            DsContext context, DataService dataservice,
+                String id, MetaClass metaClass, View view, boolean softDeletion)
+    {
+        super(context, dataservice, id, metaClass, view);
         setSoftDeletion(softDeletion);
     }
 

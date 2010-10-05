@@ -139,7 +139,9 @@ public class DataServiceBean implements DataService
     public <A extends Entity> List<A> loadList(LoadContext context) {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
-                    + ", query=" + (context.getQuery() == null ? null : printQuery(context.getQuery().getQueryString())));
+                    + ", query=" + (context.getQuery() == null ? null : printQuery(context.getQuery().getQueryString()))
+                    + (context.getQuery().getFirstResult() == 0 ? "" : ", first=" + context.getQuery().getFirstResult())
+                    + (context.getQuery().getMaxResults() == 0 ? "" : ", max=" + context.getQuery().getMaxResults()));
 
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
 

@@ -118,6 +118,10 @@ public class LoadContext implements Serializable {
             return queryString;
         }
 
+        public void setQueryString(String queryString) {
+            this.queryString = queryString;
+        }
+
         public Map<String, Object> getParameters() {
             return parameters;
         }

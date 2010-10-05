@@ -11,11 +11,6 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.CubaTestCase;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.ConfigStorageAPI;
-import com.haulmont.cuba.core.app.ConfigStorageMBean;
-import com.haulmont.cuba.core.app.PersistenceConfigAPI;
-import com.haulmont.cuba.core.app.PersistenceConfigMBean;
 
 public class DeprecatedMBeanLocationTest extends CubaTestCase {
 
@@ -24,8 +19,8 @@ public class DeprecatedMBeanLocationTest extends CubaTestCase {
 //        ConfigStorageAPI api = mBean.getAPI();
 //        assertNotNull(api);
 //
-//        PersistenceConfigMBean persistenceConfigMBean = Locator.lookupMBean(PersistenceConfigMBean.class);
-//        PersistenceConfigAPI persistenceConfigAPI = persistenceConfigMBean.getAPI();
+//        PersistenceManagerMBean persistenceConfigMBean = Locator.lookupMBean(PersistenceManagerMBean.class);
+//        PersistenceManagerAPI persistenceConfigAPI = persistenceConfigMBean.getAPI();
 //        assertNotNull(persistenceConfigAPI);
     }
 }

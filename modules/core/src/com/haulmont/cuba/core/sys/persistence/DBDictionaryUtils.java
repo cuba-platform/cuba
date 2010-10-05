@@ -12,7 +12,7 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.app.PersistenceConfigAPI;
+import com.haulmont.cuba.core.app.PersistenceManagerAPI;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.*;
@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class DBDictionaryUtils
 {
-    private static PersistenceConfigAPI persistenceConfig;
+    private static PersistenceManagerAPI persistenceManager;
 
     public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join) {
         final String deleteTsCol = PersistenceProvider.getDbDialect().getDeleteTsColumn();
@@ -135,7 +135,7 @@ public class DBDictionaryUtils
                         }
                     }
                 }
-                if (add && getPersistenceConfigAPI().isSoftDeleteFor(tableName)) {
+                if (add && getPersistenceManagerAPI().isSoftDeleteFor(tableName)) {
                     aliases.add(alias);
                 }
             }
@@ -167,7 +167,7 @@ public class DBDictionaryUtils
                         int dot = t.indexOf('.');
                         if (dot > 0)
                             t = t.substring(dot + 1);
-                        if (getPersistenceConfigAPI().isSoftDeleteFor(t)) {
+                        if (getPersistenceManagerAPI().isSoftDeleteFor(t)) {
                             String alias = ((String) table).substring(p + 1);
                             if (sb.length() > 0)
                                 sb.append(" AND ");
@@ -183,10 +183,10 @@ public class DBDictionaryUtils
         }
     }
 
-    private static PersistenceConfigAPI getPersistenceConfigAPI() {
-        if (persistenceConfig == null) {
-            persistenceConfig = Locator.lookup(PersistenceConfigAPI.NAME);
+    private static PersistenceManagerAPI getPersistenceManagerAPI() {
+        if (persistenceManager == null) {
+            persistenceManager = Locator.lookup(PersistenceManagerAPI.NAME);
         }
-        return persistenceConfig;
+        return persistenceManager;
     }
 }

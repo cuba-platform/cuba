@@ -11,11 +11,15 @@
 package com.haulmont.cuba.core.app;
 
 /**
- * API of {@link PersistenceConfig} MBean.<br>
+ * API of {@link PersistenceManager} MBean.<br>
  */
-public interface PersistenceConfigAPI
+public interface PersistenceManagerAPI
 {
-    String NAME = "cuba_PersistenceConfig";
+    String NAME = "cuba_PersistenceManager";
 
     boolean isSoftDeleteFor(String table);
+
+    boolean useLazyCollection(String entityName);
+
+    int getMaxFetchUI(String entityName);
 }
