@@ -133,6 +133,10 @@ public class VPanel extends SimplePanel implements Container {
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         rendering = true;
+
+        this.client = client;
+        id = uidl.getId();
+
         if (!uidl.hasAttribute("cached")) {
             renderDOM(uidl);
         }
@@ -143,10 +147,18 @@ public class VPanel extends SimplePanel implements Container {
             return;
         }
 
-        clickEventHandler.handleEventHandlerRegistration(client);
+        updateFromUIDL(uidl);
 
-        this.client = client;
-        id = uidl.getId();
+        // Must be run after scrollTop is set as Webkit overflow fix re-sets the
+        // scrollTop
+        runHacks(false);
+
+        rendering = false;
+
+    }
+
+    protected void updateFromUIDL(UIDL uidl) {
+        clickEventHandler.handleEventHandlerRegistration(client);
 
         setIconUri(uidl, client);
 
@@ -187,13 +199,6 @@ public class VPanel extends SimplePanel implements Container {
             // caught by scroll listener), see #3784
             scrollLeft = contentNode.getScrollLeft();
         }
-
-        // Must be run after scrollTop is set as Webkit overflow fix re-sets the
-        // scrollTop
-        runHacks(false);
-
-        rendering = false;
-
     }
 
     protected void renderContent(UIDL uidl) {
@@ -425,14 +430,41 @@ public class VPanel extends SimplePanel implements Container {
             if (containerHeight < 0) {
                 containerHeight = 0;
             }
-            DOM
-                    .setStyleAttribute(contentNode, "height", containerHeight
-                            + "px");
+            DOM.setStyleAttribute(contentNode, "height", containerHeight
+                    + "px");
         } else {
             DOM.setStyleAttribute(contentNode, "height", "");
         }
         if (!rendering) {
             runHacks(true);
+        }
+    }
+
+    @Override
+    public void setWidth(String width) {
+        String oldWidth = this.width;
+
+        this.width = width;
+        super.setWidth(width);
+        if (width != null && width != "") {
+            final int targetWidth = getOffsetWidth();
+            int contentWidth = targetWidth - getContainerBorderWidth();
+            if (contentWidth < 0) {
+                contentWidth = 0;
+            }
+            DOM.setStyleAttribute(contentNode, "width", contentWidth
+                    + "px");
+        } else {
+            DOM.setStyleAttribute(contentNode, "width", "");
+        }
+
+        if (!rendering && !oldWidth.equals(width)) {
+            runHacks(true);
+
+            if (height.equals("")) {
+                // Width change may affect height
+                Util.updateRelativeChildrenAndSendSizeUpdateEvent(client, this);
+            }
         }
     }
 
@@ -462,25 +494,6 @@ public class VPanel extends SimplePanel implements Container {
             detectContainerBorders();
         }
         return borderPaddingVertical;
-    }
-
-    @Override
-    public void setWidth(String width) {
-        if (this.width.equals(width)) {
-            return;
-        }
-
-        this.width = width;
-        super.setWidth(width);
-        if (!rendering) {
-            runHacks(true);
-
-            if (height.equals("")) {
-                // Width change may affect height
-                Util.updateRelativeChildrenAndSendSizeUpdateEvent(client, this);
-            }
-
-        }
     }
 
     protected int getContainerBorderWidth() {

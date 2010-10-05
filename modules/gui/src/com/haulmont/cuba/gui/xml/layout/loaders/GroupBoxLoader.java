@@ -27,6 +27,9 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final GroupBox component = factory.createComponent("groupBox");
 
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
+
         final Element captionElement = element.element("caption");
         if (captionElement != null) {
             String caption = captionElement.attributeValue("label");

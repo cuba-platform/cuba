@@ -106,8 +106,20 @@ public class VGroupBox extends VPanel {
     }
 
     @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
+    public void updateFromUIDL(UIDL uidl) {
+        super.updateFromUIDL(uidl);
+
+        if (!uidl.hasAttribute("caption") || uidl.getStringAttribute("caption").equals("")) {
+            addStyleDependentName("nocaption");
+        } else {
+            removeStyleDependentName("nocaption");
+        }
+
+        if (!uidl.hasAttribute("description") || uidl.getStringAttribute("description").equals("")) {
+            addStyleDependentName("nodescription");
+        } else {
+            removeStyleDependentName("nodescription");
+        }
 
         collapsable = uidl.getBooleanAttribute("collapsable");
         if (collapsable) {
@@ -121,19 +133,7 @@ public class VGroupBox extends VPanel {
             toggleExpand();
         }
 
-        if (!uidl.hasAttribute("caption")
-                && !uidl.getStringAttribute("caption").equals("")) {
-            addStyleDependentName("nocaption");
-        } else {
-            removeStyleDependentName("nocaption");
-        }
-
-        if (uidl.hasAttribute("description")
-                && !uidl.getStringAttribute("description").equals("")) {
-            addStyleDependentName("nodescription");
-        } else {
-            removeStyleDependentName("nodescription");
-        }
+        detectContainerBorders();
     }
 
     protected void toggleExpand() {
@@ -163,19 +163,19 @@ public class VGroupBox extends VPanel {
         borderPaddingHorizontal = contentNodeBorderPaddingsHor = contentNode.getOffsetWidth();
         borderPaddingVertical = contentNodeBorderPaddingsVer = contentNode.getOffsetHeight();
 
-        DOM.setStyleAttribute(contentNode, "width", oldWidth);
-        DOM.setStyleAttribute(contentNode, "height", oldHeight);
-
-        DOM.setStyleAttribute(contentNode, "overflow", "auto");
-
         Element fieldsetElement = DOM.getParent(contentNode);
         DOM.setStyleAttribute(fieldsetElement, "overflow", "hidden");
 
         DOM.setStyleAttribute(fieldsetElement, "width", "0px");
         DOM.setStyleAttribute(fieldsetElement, "height", "0px");
 
-        borderPaddingHorizontal += fieldsetElement.getOffsetWidth();
-        borderPaddingVertical += fieldsetElement.getOffsetHeight();
+        borderPaddingHorizontal += (fieldsetElement.getOffsetWidth() - contentNode.getOffsetWidth());
+        borderPaddingVertical += (fieldsetElement.getOffsetHeight() - contentNode.getOffsetHeight());
+
+        DOM.setStyleAttribute(contentNode, "width", oldWidth);
+        DOM.setStyleAttribute(contentNode, "height", oldHeight);
+
+        DOM.setStyleAttribute(contentNode, "overflow", "auto");
 
         DOM.setStyleAttribute(fieldsetElement, "width", "");
         DOM.setStyleAttribute(fieldsetElement, "height", "");

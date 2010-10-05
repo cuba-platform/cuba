@@ -33,7 +33,6 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
     private List<CollapseListener> collapseListeners = null;
 
     public WebGroupBox() {
-//        setStyleName(Panel.STYLE_LIGHT);
         setContent(new VerticalLayout());
     }
 
