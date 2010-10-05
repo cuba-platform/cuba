@@ -39,8 +39,8 @@ import java.util.*;
 public class DbUpdaterImpl implements DbUpdater {
 
     // File extension handler
-    private abstract class FileHandler{
-        abstract void run(File file);
+    private interface FileHandler{
+        void run(File file);
     }
 
     private boolean changelogTableExists;
@@ -51,12 +51,12 @@ public class DbUpdaterImpl implements DbUpdater {
     private HashMap<String,FileHandler> extensionHandlers = new HashMap<String,FileHandler>();
     {
         extensionHandlers.put("sql", new FileHandler(){
-            void run(File file){
+            public void run(File file){
                 executeSqlScript(file);    
             }
         });
         extensionHandlers.put("groovy", new FileHandler(){
-            void run(File file){
+            public void run(File file){
                 executeGroovyScript(file);
             }
         });
