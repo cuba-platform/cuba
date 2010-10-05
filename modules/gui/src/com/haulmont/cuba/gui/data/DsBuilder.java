@@ -111,6 +111,8 @@ public class DsBuilder {
 
     public DsBuilder setView(View view) {
         this.view = view;
+        if (view != null)
+            this.viewName = view.getName();
         return this;
     }
 
@@ -196,7 +198,7 @@ public class DsBuilder {
                     Constructor constructor = dsClass.getConstructor(
                             DsContext.class, DataService.class, String.class, MetaClass.class, String.class);
                     datasource = (Datasource) constructor.newInstance(
-                            dsContext, dataService, id, metaClass, view.getName());
+                            dsContext, dataService, id, metaClass, view == null ? null : view.getName());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -232,7 +234,7 @@ public class DsBuilder {
                     Constructor constructor = dsClass.getConstructor(
                             DsContext.class, DataService.class, String.class, MetaClass.class, String.class);
                     datasource = (CollectionDatasource) constructor.newInstance(
-                            dsContext, dataService, id, metaClass, view.getName());
+                            dsContext, dataService, id, metaClass, view == null ? null : view.getName());
                     datasource.setSoftDeletion(softDeletion);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -278,7 +280,7 @@ public class DsBuilder {
                     Constructor constructor = dsClass.getConstructor(
                             DsContext.class, DataService.class, String.class, MetaClass.class, String.class);
                     datasource = (HierarchicalDatasource) constructor.newInstance(
-                            dsContext, dataService, id, metaClass, view.getName());
+                            dsContext, dataService, id, metaClass, view == null ? null : view.getName());
                     datasource.setSoftDeletion(softDeletion);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -302,7 +304,7 @@ public class DsBuilder {
                     Constructor constructor = dsClass.getConstructor(
                             DsContext.class, DataService.class, String.class, MetaClass.class, String.class);
                     datasource = (GroupDatasource) constructor.newInstance(
-                            dsContext, dataService, id, metaClass, view.getName());
+                            dsContext, dataService, id, metaClass, view == null ? null : view.getName());
                     datasource.setSoftDeletion(softDeletion);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
