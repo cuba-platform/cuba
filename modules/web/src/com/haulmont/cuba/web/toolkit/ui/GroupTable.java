@@ -403,30 +403,26 @@ public class GroupTable extends Table implements GroupTableContainer {
     }
 
     @Override
-    protected Set<Object> getItemIdsInRange(Object itemId, int length) {
-        HashSet<Object> ids = new HashSet<Object>();
-        for (int i = 0; i < length; i++) {
-            assert itemId != null; // should not be null unless client-server
-                                  // are out of sync
-
+    protected Set<Object> getItemIdsInRange(Object startItemId, int length) {
+        Set<Object> rootIds = super.getItemIdsInRange(startItemId, length);
+        Set<Object> ids = new HashSet<Object>();
+        for (Object itemId: rootIds) {
             if (itemId instanceof GroupInfo) {
-                Collection<?> itemIds = getGroupItemIds(itemId);
-                ids.addAll(itemIds);
+                if (!isExpanded(itemId)) {
+                    Collection<?> itemIds = getGroupItemIds(itemId);
+                    ids.addAll(itemIds);
+                    expand(itemId, true);
+                }
 
                 List<GroupInfo> children = (List<GroupInfo>) getChildren(itemId);
-                for(GroupInfo groupInfo: children) {
+                for (GroupInfo groupInfo : children) {
                     if (!isExpanded(groupInfo)) {
                         expand(groupInfo, true);
                     }
                 }
-
-                if (!isExpanded(itemId)) {
-                    expand(itemId, true);
-                }
             } else {
                 ids.add(itemId);
             }
-            itemId = nextItemId(itemId);
         }
         return ids;
     }

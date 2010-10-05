@@ -602,30 +602,23 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
         }
     }
 
-    protected Set<Object> getItemIdsInRange(Object itemId, final int length) {
-        HashSet<Object> ids = new HashSet<Object>();
-        for (int i = 0; i < length; i++) {
-            assert itemId != null; // should not be null unless client-server
-                                  // are out of sync
+    protected Set<Object> getItemIdsInRange(Object startItemId, final int length) {
+        Set<Object> rootIds = super.getItemIdsInRange(startItemId, length);
+        Set<Object> ids = new HashSet<Object>(rootIds);
+        for (Object itemId: rootIds) {
 
-            if (hasChildren(itemId)) {
+            if (!isExpanded(itemId) && hasChildren(itemId)) {
                 Collection<?> itemIds = getChildren(itemId);
                 ids.addAll(itemIds);
 
-                Collection children = getChildren(itemId);
-                for(Object item: children) {
-                    if (!isExpanded(item) && hasChildren(item)) {
-                        setExpanded(item, true);
+                for (Object childItemId : itemIds) {
+                    if (!isExpanded(childItemId) && hasChildren(childItemId)) {
+                        setExpanded(childItemId, true);
                     }
                 }
 
-                if (!isExpanded(itemId)) {
-                    setExpanded(itemId, true);
-                }
-            } else {
-                ids.add(itemId);
+                setExpanded(itemId, true);
             }
-            itemId = nextItemId(itemId);
         }
         return ids;
     }
