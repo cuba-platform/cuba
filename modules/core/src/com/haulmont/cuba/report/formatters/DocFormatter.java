@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.sys.DbUpdaterImpl;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.formatters.exception.FailedToConnectToOpenOfficeAPIException;
@@ -38,6 +39,8 @@ import com.sun.star.text.XTextRange;
 import com.sun.star.util.XReplaceable;
 import com.sun.star.util.XSearchDescriptor;
 import com.sun.star.uno.UnoRuntime;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,6 +72,7 @@ public class DocFormatter extends AbstractFormatter {
     public byte[] createDocument(Band rootBand) {
         this.rootBand = rootBand;
         openOfficePath = ConfigProvider.getConfig(ServerConfig.class).getOpenOfficePath();
+        
         XComponentLoader xComponentLoader;
         try {
             xComponentLoader = createXComponentLoader(openOfficePath);
@@ -137,20 +141,25 @@ public class DocFormatter extends AbstractFormatter {
     private void replaceAllAliasesInDocument(XTextDocument xTextDocument) {
         XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
         XSearchDescriptor searchDescriptor = xReplaceable.createSearchDescriptor();
-        searchDescriptor.setSearchString("\\$\\{[^\\.]+?\\.[a-z|0-9|\\.|\\_]+?\\}");//todo: EUDE - implement correct regexp
+        // regexp: \$\{[^\.]+?[a-zA-Z0-9\.]*[^\.]\}
+        searchDescriptor.setSearchString("\\$\\{[^\\.]+?[a-zA-Z0-9\\.]*[^\\.]\\}");
         try {
             searchDescriptor.setPropertyValue("SearchRegularExpression", true);
             XIndexAccess indexAccess = xReplaceable.findAll(searchDescriptor);
             for (int i = 0; i < indexAccess.getCount(); i++) {
                 XTextRange o = asXTextRange(indexAccess.getByIndex(i));
-                String[] parts = o.getString().replaceAll("[\\{|\\}|\\$]", "").split("\\.");
+                String alias = o.getString().replaceAll("[\\{|\\}|\\$]", "");
+                String[] parts = alias.split("\\.");
 
                 if (parts == null || parts.length < 2) throw new RuntimeException("Bad alias : " + o.getString());
 
                 String bandName = parts[0];
                 Band band = bandName.equals("Root") ? rootBand : rootBand.getChildByName(bandName);
+                String bands = "";
+                for (Band b : rootBand.getChildren())
+                    bands += b.getName() + "|";
 
-                if (band == null) throw new RuntimeException("No band for alias : " + o.getString());
+                if (band == null) throw new RuntimeException("No band for alias : " + alias + "\nBands : " + bands);
                 StringBuffer paramName = new StringBuffer();
                 for (int j = 1; j < parts.length; j++) {
                     paramName.append(parts[j]);

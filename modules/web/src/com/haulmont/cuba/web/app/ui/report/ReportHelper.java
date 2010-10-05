@@ -25,19 +25,38 @@ import com.haulmont.cuba.web.rpt.WebExportDisplay;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class ReportHelper {
+    static HashMap<ReportOutputType, ExportFormat> exportFormats = new HashMap<ReportOutputType, ExportFormat>();
+    static {
+        exportFormats.put(ReportOutputType.XLS, ExportFormat.XLS);
+        exportFormats.put(ReportOutputType.DOC, ExportFormat.DOC);
+        exportFormats.put(ReportOutputType.PDF, ExportFormat.PDF);
+    }
+
     private ReportHelper() {
     }
 
     public static void printReport(Report report, Map<String, Object> params) {
         ReportOutputType reportOutputType = report.getReportOutputType();
+        Iterator iterator  = exportFormats.keySet().iterator();
+        boolean find = false;
+        Map.Entry<ReportOutputType, ExportFormat> item = null;
+        while (iterator.hasNext() && !find){
+            item = (Map.Entry<ReportOutputType, ExportFormat>)iterator.next();
+            find = item.getKey().equals(reportOutputType);
+        }
+        if (find)
+            printReport(report, params, item.getKey(), item.getValue());
+        /*
         if (ReportOutputType.XLS.equals(reportOutputType))
             printReport(report, params, ReportOutputType.XLS, ExportFormat.XLS);
         else if (ReportOutputType.DOC.equals(reportOutputType))
             printReport(report, params, ReportOutputType.DOC, ExportFormat.DOC);
         else if (ReportOutputType.PDF.equals(reportOutputType))
             printReport(report, params, ReportOutputType.PDF, ExportFormat.PDF);
+        */
     }
 
     private static void printReport(Report report, Map<String, Object> params, ReportOutputType reportOutputType, ExportFormat exportFormat) {
@@ -113,7 +132,6 @@ public class ReportHelper {
             }
         };
     }
-
 
     public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor) {
         return new AbstractAction(captionId) {

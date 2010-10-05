@@ -1,14 +1,23 @@
+/*
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Fontanenko
+ * Created: 07.05.2010 15:12:05
+ *
+ * $Id$
+ */
+
 package com.haulmont.cuba.report.formatters.tools;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.report.Band;
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.comp.helper.BootstrapException;
-import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.frame.XStorable;
@@ -18,7 +27,6 @@ import com.sun.star.io.XOutputStream;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.text.XTextDocument;
-import com.sun.star.text.XTextRange;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.*;
@@ -26,13 +34,6 @@ import ooo.connector.BootstrapSocketConnector;
 
 import java.io.File;
 
-/**
- * Created by IntelliJ IDEA.
- * User: fontanenko
- * Date: 23.06.2010
- * Time: 14:15:08
- * To change this template use File | Settings | File Templates.
- */
 public class ODTHelper {
 
     public static XComponentLoader createXComponentLoader(String openOfficePath) throws BootstrapException, com.sun.star.uno.Exception {

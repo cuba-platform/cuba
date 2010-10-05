@@ -23,6 +23,8 @@ import com.haulmont.cuba.report.formatters.DocFormatter;
 import com.haulmont.cuba.report.formatters.Formatter;
 import com.haulmont.cuba.report.formatters.XLSFormatter;
 import com.haulmont.cuba.report.loaders.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -51,11 +53,15 @@ public class ReportServiceBean implements ReportService {
             List<BandDefinition> childrenBandDefinitions = rootBandDefinition.getChildrenBandDefinitions();
             Band rootBand = createRootBand(rootBandDefinition);
 
+            String bandstr = "";
+
+            // bug is here >>
             for (BandDefinition definition : childrenBandDefinitions) {
                 List<Band> bands = createBands(definition, rootBand);
                 rootBand.addChildren(bands);
+                bandstr += definition.getName() + "|";
             }
-            System.out.println(rootBand);
+            // << bug is here
 
             Formatter formatter = createFormatter(report, format);
             return formatter.createDocument(rootBand);
@@ -95,7 +101,6 @@ public class ReportServiceBean implements ReportService {
     }
 
     //todo: move to another service
-
     private Formatter createFormatter(Report report, ReportOutputType format) throws IOException {
         if (ReportOutputType.XLS.equals(format)) {
             return new XLSFormatter(report.getTemplateFileDescriptor());
@@ -158,7 +163,7 @@ public class ReportServiceBean implements ReportService {
     *   Create band from band definition
     *   Perform query from definition and create band from each result row. Do it recursive down
     */
-
+    
     private List<Band> createBands(BandDefinition definition, Band parentBand) {
         definition = reloadEntity(definition, "report.edit");
         List<Map<String, Object>> outputData = getBandData(definition, parentBand);

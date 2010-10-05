@@ -225,11 +225,11 @@ public class XLSFormatter extends AbstractFormatter {
 
             Ptg[] ptgs = HSSFFormulaParser.parse(resultCell.getCellFormula(), templateWorkbook);
 
-            for (int i = 0; i < ptgs.length; i++) {
-                if (ptgs[i] instanceof AreaPtg)
-                    updateAreaPtg((AreaPtg) ptgs[i]);
-                else if (ptgs[i] instanceof RefPtg)
-                    updateRefPtg(original, dependent, (RefPtg) ptgs[i]);
+            for (Ptg ptg : ptgs) {
+                if (ptg instanceof AreaPtg)
+                    updateAreaPtg((AreaPtg) ptg);
+                else if (ptg instanceof RefPtg)
+                    updateRefPtg(original, dependent, (RefPtg) ptg);
             }
 
             String calculatedFormula = HSSFFormulaParser.toFormulaString(templateWorkbook, ptgs);
@@ -484,13 +484,16 @@ public class XLSFormatter extends AbstractFormatter {
     }
 
     protected boolean isOneValueCell(HSSFCell cell) {
+        boolean result = true;
         if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
             String value = cell.getRichStringCellValue().getString();
 
-            if (value.lastIndexOf("${") != 0) return false;
-
-            return value.indexOf("}") == value.length() - 1;
-        } else return true;
+            if (value.lastIndexOf("${") != 0)
+                result = false;
+            else
+                result = value.indexOf("}") == value.length() - 1;
+        }
+        return result;
     }
 
     private void updateValueCell(Band band, HSSFCell templateCell, HSSFCell resultCell) {
