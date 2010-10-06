@@ -261,7 +261,6 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     private void executeSqlScript(File file) {
-        log.info("Executing script " + file.getPath());
         String script;
         try {
             script = FileUtils.readFileToString(file);
@@ -292,13 +291,12 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     private void executeGroovyScript(File file){
-        log.info("Executing script " + file.getPath());
         Binding bind = new Binding();
         ScriptingProviderImpl.runGroovyScript(getScriptName(file), bind);
     }
 
     private void executeScript(File file){
-        log.info("Execute script!");
+        log.info("Executing script " + file.getPath());
         String filename = file.getName();
         String[] paths = filename.split("\\.");
         if (paths.length > 1)

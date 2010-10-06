@@ -37,11 +37,24 @@ public class UserSessionManager
 
     private UserSessionsAPI sessions;
 
+    private UserSession NO_USER_SESSION;
+
     private static Log log = LogFactory.getLog(UserSessionManager.class);
 
     public static UserSessionManager getInstance() {
         // TODO KK: remove this, change to injection
         return AppContext.getApplicationContext().getBean(NAME, UserSessionManager.class);
+    }
+
+    private UserSessionManager() {
+        User noUser = new User();
+        noUser.setLogin("server");
+        NO_USER_SESSION = new UserSession(noUser, new String[0], Locale.getDefault(), true) {
+            @Override
+            public UUID getId() {
+                return AppContext.NO_USER_CONTEXT.getSessionId();
+            }
+        };
     }
 
     @Inject
@@ -153,7 +166,10 @@ public class UserSessionManager
     }
 
     public UserSession findSession(UUID sessionId) {
-        return sessions.get(sessionId);
+        if (AppContext.isStarted())
+            return sessions.get(sessionId);
+        else
+            return NO_USER_SESSION;
     }
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {

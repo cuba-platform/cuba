@@ -12,10 +12,7 @@ package com.haulmont.cuba.core.sys;
 
 import org.springframework.context.ApplicationContext;
 
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AppContext {
 
@@ -33,6 +30,8 @@ public class AppContext {
     private static Set<Listener> listeners = new LinkedHashSet<Listener>();
 
     private static volatile boolean started;
+
+    public static final SecurityContext NO_USER_CONTEXT = new SecurityContext("server", "", UUID.fromString("23dce942-d13f-11df-88cd-b3d32fd1e595"));
 
     public static ApplicationContext getApplicationContext() {
         return context;
@@ -55,7 +54,10 @@ public class AppContext {
     }
 
     public static SecurityContext getSecurityContext() {
-        return securityContextHolder.get();
+        if (started)
+            return securityContextHolder.get();
+        else
+            return NO_USER_CONTEXT;
     }
 
     public static void setSecurityContext(SecurityContext securityContext) {
