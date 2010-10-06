@@ -93,6 +93,8 @@ public class App extends Application
     
     private AppCookies cookies;
 
+    private boolean pageReloadRequired;
+
     static {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
@@ -277,8 +279,9 @@ public class App extends Application
             if (linkHandler != null) {
                 linkHandler.handle();
                 linkHandler = null;
-            } else {
+            } else if (pageReloadRequired) {
                 window.open(new ExternalResource(window.getURL()));
+                pageReloadRequired = false;
             }
         }
         else {
@@ -388,6 +391,10 @@ public class App extends Application
         }
 
         String requestURI = request.getRequestURI();
+
+        if (request.getParameter("restartApplication") != null) {
+            pageReloadRequired = true;
+        }
 
         setupCurrentWindowName(requestURI);
 
