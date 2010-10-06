@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 23.06.2010 19:44:23
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report.formatters.tools;
 
 import com.sun.star.text.XText;
@@ -5,13 +15,6 @@ import com.sun.star.text.XText;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-/**
- * Created by IntelliJ IDEA.
- * User: fontanenko
- * Date: 23.06.2010
- * Time: 19:44:23
- * To change this template use File | Settings | File Templates.
- */
 public class TableTemplate {
     private HashMap<Integer, String> columnsTemplates;
     private String tableName;

@@ -15,11 +15,12 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.sys.DbUpdaterImpl;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
-import com.haulmont.cuba.report.formatters.exception.FailedToConnectToOpenOfficeAPIException;
+import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.formatters.exception.FailedToConnectToOpenOfficeAPIExceptionReport;
 import com.haulmont.cuba.report.formatters.tools.ODTHelper;
+import com.haulmont.cuba.report.formatters.tools.ODTUnoConverter;
 import com.haulmont.cuba.report.formatters.tools.OOOutputStream;
 import com.haulmont.cuba.report.formatters.tools.TableTemplate;
 import com.sun.star.beans.PropertyVetoException;
@@ -32,19 +33,23 @@ import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.IndexOutOfBoundsException;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
-import com.sun.star.text.XTextDocument;
-import com.sun.star.text.XTextTable;
-import com.sun.star.text.XTextTablesSupplier;
-import com.sun.star.text.XTextRange;
+import com.sun.star.table.XCell;
+import com.sun.star.table.XCellRange;
+import com.sun.star.text.*;
+import com.sun.star.util.XReplaceDescriptor;
 import com.sun.star.util.XReplaceable;
 import com.sun.star.util.XSearchDescriptor;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.xml.dom.XDocument;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
 import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
@@ -59,6 +64,8 @@ public class DocFormatter extends AbstractFormatter {
     private FileDescriptor docTemplate;
     private ReportOutputType reportOutputType;
 
+    private Log log = LogFactory.getLog(DocFormatter.class);    
+
     private DocFormatter() {
         tableTemplates = new HashMap<String, TableTemplate>();
     }
@@ -72,12 +79,18 @@ public class DocFormatter extends AbstractFormatter {
     public byte[] createDocument(Band rootBand) {
         this.rootBand = rootBand;
         openOfficePath = ConfigProvider.getConfig(ServerConfig.class).getOpenOfficePath();
-        
+
+        String bands = "";
+        for (Band b : rootBand.getChildren())
+            bands += b.getName() + "|";
+        if (rootBand.getChildren().size() == 0)
+            log.info("RootBand is empty");
+
         XComponentLoader xComponentLoader;
         try {
             xComponentLoader = createXComponentLoader(openOfficePath);
         } catch (Exception e) {
-            throw new FailedToConnectToOpenOfficeAPIException("Please check OpenOffice path: " + openOfficePath);
+            throw new FailedToConnectToOpenOfficeAPIExceptionReport("Please check OpenOffice path: " + openOfficePath);
         }
         try {
             XInputStream xis = getXInputStream(docTemplate);
@@ -109,7 +122,6 @@ public class DocFormatter extends AbstractFormatter {
         closeXComponent(xComponent);
         return ooos.toByteArray();
     }
-
 
     /**
      * Old method - now use <code>replaceAllAliasesInDocument</code>
@@ -151,15 +163,13 @@ public class DocFormatter extends AbstractFormatter {
                 String alias = o.getString().replaceAll("[\\{|\\}|\\$]", "");
                 String[] parts = alias.split("\\.");
 
-                if (parts == null || parts.length < 2) throw new RuntimeException("Bad alias : " + o.getString());
+                if (parts == null || parts.length < 2)
+                    throw new ReportFormatterException("Bad alias : " + o.getString());
 
                 String bandName = parts[0];
                 Band band = bandName.equals("Root") ? rootBand : rootBand.getChildByName(bandName);
-                String bands = "";
-                for (Band b : rootBand.getChildren())
-                    bands += b.getName() + "|";
 
-                if (band == null) throw new RuntimeException("No band for alias : " + alias + "\nBands : " + bands);
+                if (band == null) throw new ReportFormatterException("No band for alias : " + alias);
                 StringBuffer paramName = new StringBuffer();
                 for (int j = 1; j < parts.length; j++) {
                     paramName.append(parts[j]);
@@ -170,7 +180,7 @@ public class DocFormatter extends AbstractFormatter {
                 o.setString(parameter != null ? parameter.toString() : "");
             }
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new ReportFormatterException(ex);
         }
     }
 
@@ -192,6 +202,46 @@ public class DocFormatter extends AbstractFormatter {
                     }
                 }
             }
+        }
+    }
+
+    protected void replaceBandDataInCell(XDocument xDoc, XTextTable xTable, Band band, int col, int row) {
+        XCellRange xCellRange = (XCellRange) UnoRuntime.queryInterface(XCellRange.class, xTable);
+        try {
+            XText xCellText = getCellXText(xTable,col,row);
+            // ѕровер€ем параметры дл€ вставки
+            String sourceStr = xCellText.getString();
+            List<String> parametersToInsert = new ArrayList<String>();
+            Pattern namePattern = Pattern.compile("\\$\\{.+?\\}", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = namePattern.matcher(sourceStr);
+            while (matcher.find()) {
+                parametersToInsert.add(matcher.group().replace("${", "").replace("}", ""));
+            }
+            // ќбрабатываем найденные параметры
+            for (String parameterName : parametersToInsert) {
+                // ѕолучаем данные дл€ вставки
+                Object value = band.getData().get(parameterName);
+                String valueStr = value != null ? value.toString() : "";
+                String search = "\\$\\{" + parameterName + "\\}";
+
+                //resultStr = resultStr.replaceAll("\\$\\{" + parameterName + "\\}", valueStr);
+                //«аменить все найденные параметры
+                XReplaceable xReplaceable = (com.sun.star.util.XReplaceable) UnoRuntime.queryInterface(com.sun.star.util.XReplaceable.class, xDoc);
+                XReplaceDescriptor xRepDesc = xReplaceable.createReplaceDescriptor();
+
+                XSearchDescriptor xSearchDesc = xReplaceable.createSearchDescriptor();
+                xSearchDesc.setSearchString(search);
+//                xSearchDesc.setPropertyValue("SearchWords", true);
+
+                xRepDesc.setSearchString(search);
+                xRepDesc.setReplaceString(valueStr);
+//                xRepDesc.setPropertyValue("SearchWords", true);
+
+                //выполн€ем замену
+                xReplaceable.replaceAll(xRepDesc);
+            }
+        } catch (Exception e) {
+            throw new ReportFormatterException();
         }
     }
 
@@ -238,7 +288,7 @@ public class DocFormatter extends AbstractFormatter {
         int lastRow = xTextTable.getRows().getCount() - 1;
         tableTemplate.setTemplateRow(lastRow);
         for (int i = 0; i < colCount; i++) {
-            String cellText = getCellText(xTextTable, i, lastRow);
+            String cellText = getCellText(xTextTable, i, lastRow);            
             tableTemplate.addColumnTemplate(i, cellText);
         }
         return tableTemplate;

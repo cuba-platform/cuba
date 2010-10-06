@@ -188,6 +188,7 @@ public class App extends Application
             exceptionHandlers.addHandler(new NumericOverflowExceptionHandler());
             exceptionHandlers.addHandler(new OptimisticExceptionHandler());
             exceptionHandlers.addHandler(new JPAOptimisticExceptionHandler());
+            exceptionHandlers.addHandler(new ReportExceptionHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }

@@ -1,24 +1,29 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 23.06.2010 14:16:09
+ *
+ * $Id$
+ */
+
 package com.haulmont.cuba.report.formatters.tools;
 
+import com.sun.star.beans.PropertyVetoException;
+import com.sun.star.beans.UnknownPropertyException;
+import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.lang.*;
+import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.IndexOutOfBoundsException;
-import com.sun.star.table.XCell;
-import com.sun.star.table.XTableRows;
-import com.sun.star.text.XText;
-import com.sun.star.text.XTextTable;
-import com.sun.star.text.XTextTablesSupplier;
+import com.sun.star.table.*;
+import com.sun.star.text.*;
 import com.sun.star.uno.Any;
-
+import com.sun.star.uno.UnoRuntime;
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: fontanenko
- * Date: 23.06.2010
- * Time: 14:16:09
- * To change this template use File | Settings | File Templates.
- */
 public class ODTTableHelper {
 
     public static XTextTable getTableByName(XTextTablesSupplier xTextTablesSupplier, String tableName) throws NoSuchElementException, WrappedTargetException {
@@ -48,6 +53,15 @@ public class ODTTableHelper {
 
     public static void setCellXText(XTextTable xTextTable, int col, int row, XText xText) throws com.sun.star.lang.IndexOutOfBoundsException {
         //asXText(getXCell(xTextTable, col, row));
+        XCell xcell = getXCell(xTextTable,col,row);
+        XText xCellText = (XText) UnoRuntime.queryInterface(XText.class, xcell);
+        
+    }
+
+    public static XText getCellXText(XTextTable xTextTable, int col, int row) throws IndexOutOfBoundsException {
+        XCell xcell = getXCell(xTextTable,col,row);
+        XText xCellText = (XText) UnoRuntime.queryInterface(XText.class, xcell);
+        return xCellText;
     }
 
     public static void deleteRow(XTextTable xTextTable, int row) {
@@ -64,5 +78,4 @@ public class ODTTableHelper {
         XTableRows xTableRows = xTextTable.getRows();
         xTableRows.insertByIndex(xTableRows.getCount(), 1);
     }
-
 }

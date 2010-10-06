@@ -55,13 +55,11 @@ public class ReportServiceBean implements ReportService {
 
             String bandstr = "";
 
-            // bug is here >>
             for (BandDefinition definition : childrenBandDefinitions) {
                 List<Band> bands = createBands(definition, rootBand);
                 rootBand.addChildren(bands);
                 bandstr += definition.getName() + "|";
             }
-            // << bug is here
 
             Formatter formatter = createFormatter(report, format);
             return formatter.createDocument(rootBand);
