@@ -40,7 +40,7 @@ public class ReportHelper {
 
     public static void printReport(Report report, Map<String, Object> params) {
         ReportOutputType reportOutputType = report.getReportOutputType();
-        Iterator iterator  = exportFormats.keySet().iterator();
+        Iterator iterator  = exportFormats.entrySet().iterator();
         boolean find = false;
         Map.Entry<ReportOutputType, ExportFormat> item = null;
         while (iterator.hasNext() && !find){
@@ -55,7 +55,7 @@ public class ReportHelper {
         else if (ReportOutputType.DOC.equals(reportOutputType))
             printReport(report, params, ReportOutputType.DOC, ExportFormat.DOC);
         else if (ReportOutputType.PDF.equals(reportOutputType))
-            printReport(report, params, ReportOutputType.PDF, ExportFormat.PDF);
+            printReport(report, params, ReportOutputType.PDF, ExportFormat.PDF);  
         */
     }
 
