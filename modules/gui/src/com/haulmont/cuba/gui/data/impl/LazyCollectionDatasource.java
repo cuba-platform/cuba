@@ -261,12 +261,12 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     public boolean isFirstId(K itemId) {
-        return itemId.equals(firstItemId());
+        return itemId != null && itemId.equals(firstItemId());
     }
 
     public boolean isLastId(K itemId) {
         //noinspection SimplifiableConditionalExpression
-        return isCompletelyLoaded() ? itemId.equals(lastItemId()) : false;
+        return itemId != null && (isCompletelyLoaded() ? itemId.equals(lastItemId()) : false);
     }
 
     public boolean isCompletelyLoaded() {
@@ -280,45 +280,44 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
         LoadContext ctx = new LoadContext(metaClass);
         LoadContext.Query q = createLoadContextQuery(ctx, params);
-        if (q == null)
-            return;
+        if (q != null) {
+            if (sortInfos != null) {
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
 
-        if (sortInfos != null) {
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
+                boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+                MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
 
-            boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-            MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+                if (propertyPath.get().length > 1)
+                    throw new UnsupportedOperationException();
 
-            if (propertyPath.get().length > 1)
-                throw new UnsupportedOperationException();
+                transformer.replaceOrderBy(propertyPath.getMetaProperty().getName(), !asc);
+                String jpqlQuery = transformer.getResult();
 
-            transformer.replaceOrderBy(propertyPath.getMetaProperty().getName(), !asc);
-            String jpqlQuery = transformer.getResult();
-
-            q.setQueryString(jpqlQuery);
-        }
-
-        if (maxResults == 0 || data.size() < maxResults) {
-            ctx.getQuery().setFirstResult(data.size());
-            ctx.setView(view);
-
-            if (all) {
-                if (maxResults > 0)
-                    ctx.getQuery().setMaxResults(maxResults);
-            } else
-                ctx.getQuery().setMaxResults(chunk);
-
-            List<T> res = dataservice.loadList(ctx);
-            for (T t : res) {
-                data.put(t.getId(), t);
-                attachListener((Instance) t);
+                q.setQueryString(jpqlQuery);
             }
 
-            if (res.size() < chunk || (maxResults > 0 && data.size() >= maxResults)) {
-                size = data.size(); // all is loaded
-                for (DatasourceListener listener : dsListeners) {
-                    if (listener instanceof LazyCollectionDatasourceListener) {
-                        ((LazyCollectionDatasourceListener) listener).completelyLoaded(this);
+            if (maxResults == 0 || data.size() < maxResults) {
+                ctx.getQuery().setFirstResult(data.size());
+                ctx.setView(view);
+
+                if (all) {
+                    if (maxResults > 0)
+                        ctx.getQuery().setMaxResults(maxResults);
+                } else
+                    ctx.getQuery().setMaxResults(chunk);
+
+                List<T> res = dataservice.loadList(ctx);
+                for (T t : res) {
+                    data.put(t.getId(), t);
+                    attachListener((Instance) t);
+                }
+
+                if (res.size() < chunk || (maxResults > 0 && data.size() >= maxResults)) {
+                    size = data.size(); // all is loaded
+                    for (DatasourceListener listener : dsListeners) {
+                        if (listener instanceof LazyCollectionDatasourceListener) {
+                            ((LazyCollectionDatasourceListener) listener).completelyLoaded(this);
+                        }
                     }
                 }
             }
