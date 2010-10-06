@@ -6,6 +6,8 @@ import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.gwt.client.ui.VFilterSelect;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Select;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -20,6 +22,8 @@ public class FilterSelect extends Select {
     private boolean fixedTextBoxWidth = false;
 
     private int fetched;
+
+    private static Log log = LogFactory.getLog(FilterSelect.class);
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
@@ -47,7 +51,10 @@ public class FilterSelect extends Select {
                 || filteringMode == FILTERINGMODE_OFF) {
             prevfilterstring = null;
 
+            log.trace("getFilteredOptions: no filterstring");
+
             if (items instanceof Ordered) {
+                log.trace("getFilteredOptions: ordered collection, iterating through items for current page");
                 filteredOptions = new LinkedList();
 
                 int count = (currentPage + 1) * pageLength;
@@ -64,24 +71,22 @@ public class FilterSelect extends Select {
                         prevItemId = itemId;
                     }
                 }
-            } else
+            } else {
+                log.trace("getFilteredOptions: loading all itemIds");
                 filteredOptions = new LinkedList(getItemIds());
+            }
 
             fetched = Math.max(fetched, filteredOptions.size());
             return filteredOptions;
         }
 
         if (filterstring.equals(prevfilterstring)) {
+            log.trace("getFilteredOptions: same filterstring, returning previous filteredOptions");
             return filteredOptions;
         }
 
-        Collection items;
-        if (prevfilterstring != null
-                && filterstring.startsWith(prevfilterstring)) {
-            items = filteredOptions;
-        } else {
-            items = getItemIds();
-        }
+        log.trace("getFilteredOptions: loading all itemIds and filtering");
+        Collection items = getItemIds();
         prevfilterstring = filterstring;
 
         filteredOptions = new LinkedList();

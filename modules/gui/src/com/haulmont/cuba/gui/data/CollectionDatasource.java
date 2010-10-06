@@ -202,4 +202,14 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
          */
         Map<Object, String> aggregate(AggregationInfo[] aggregationInfos, Collection<K> itemIds);
     }
+
+    /**
+     * CollectionDatasource with lazy loading
+     * @param <T> type of entity
+     * @param <K> type of entity ID
+     */
+    interface Lazy<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
+
+        boolean isCompletelyLoaded();
+    }
 }

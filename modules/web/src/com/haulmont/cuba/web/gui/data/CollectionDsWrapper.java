@@ -9,13 +9,16 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
+import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.web.App;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -24,6 +27,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -36,6 +41,10 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     protected Collection<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
+
+    private PersistenceManagerService persistenceManager;
+
+    private static Log log = LogFactory.getLog(CollectionDsWrapper.class);
 
     public CollectionDsWrapper(CollectionDatasource datasource) {
         this(datasource, false);
@@ -56,6 +65,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
+        this.persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
 
         final View view = datasource.getView();
         final MetaClass metaClass = datasource.getMetaClass();
@@ -70,7 +80,10 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     protected DatasourceListener createDatasourceListener() {
-        return new DataSourceRefreshListener();
+        if (datasource instanceof CollectionDatasource.Lazy)
+            return new LazyDataSourceRefreshListener();
+        else
+            return new DataSourceRefreshListener();
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -209,6 +222,17 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         }
     }
 
+    protected void checkMaxFetchUI(CollectionDatasource ds) {
+        String entityName = ds.getMetaClass().getName();
+        if (ds.size() >= persistenceManager.getMaxFetchUI(entityName)) {
+            log.debug("MaxFetchUI threshold exceeded for " + entityName);
+            String msg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "maxFetchUIExceeded");
+            App app = App.getInstance();
+            app.getAppLog().debug(entityName + ": " + msg);
+            app.getWindowManager().showNotification(msg, IFrame.NotificationType.HUMANIZED);
+        }
+    }
+
     protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
         public void itemChanged(Datasource ds, Entity prevItem, Entity item) {}
 
@@ -240,9 +264,21 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             try {
                 itemsCache.clear();
                 fireItemSetChanged();
+                if (!(ds instanceof CollectionDatasource.Lazy)) {
+                    checkMaxFetchUI(ds);
+                }
             } finally {
                 ignoreListeners = prevIgnoreListeners;
             }
+        }
+
+    }
+
+    protected class LazyDataSourceRefreshListener extends DataSourceRefreshListener
+            implements LazyCollectionDatasourceListener<Entity>
+    {
+        public void completelyLoaded(CollectionDatasource.Lazy ds) {
+            checkMaxFetchUI(ds);
         }
     }
 }

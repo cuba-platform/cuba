@@ -15,10 +15,8 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.commons.collections.map.LinkedMap;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
@@ -29,7 +27,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     extends
         AbstractCollectionDatasource<T, K>
     implements
-        CollectionDatasource.Sortable<T, K>
+        CollectionDatasource.Sortable<T, K>, CollectionDatasource.Lazy<T, K>
 {
     protected LinkedMap data = new LinkedMap();
     protected Integer size;
@@ -156,6 +154,8 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             getSize();
             if (!State.VALID.equals(state))
                 loadNextChunk(false);
+
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         } finally {
             inRefresh = false;
         }
@@ -179,7 +179,11 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             q.setQueryString(jpqlQuery);
 
             List res = dataservice.loadList(context);
-            size = res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
+            int realSize = res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
+            if (maxResults == 0)
+                size = realSize;
+            else
+                size = Math.min(realSize, maxResults);
         }
 
         return size;
@@ -202,7 +206,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
         } else {
-            if (!isAllLoaded()) loadNextChunk(true);
+            if (!isCompletelyLoaded()) loadNextChunk(true);
             //noinspection unchecked
             return data.keySet();
         }
@@ -219,7 +223,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     public synchronized K nextItemId(K itemId) {
         @SuppressWarnings({"unchecked"})
         K nextId = (K) data.nextKey(itemId);
-        if (nextId == null && !isAllLoaded()) {
+        if (nextId == null && !isCompletelyLoaded()) {
             loadNextChunk(false);
             //noinspection unchecked
             nextId = (K) data.nextKey(itemId);
@@ -245,7 +249,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     public synchronized K lastItemId() {
-        if (!isAllLoaded())
+        if (!isCompletelyLoaded())
             loadNextChunk(true);
 
         if (!data.isEmpty()) {
@@ -262,10 +266,10 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
     public boolean isLastId(K itemId) {
         //noinspection SimplifiableConditionalExpression
-        return isAllLoaded() ? itemId.equals(lastItemId()) : false;
+        return isCompletelyLoaded() ? itemId.equals(lastItemId()) : false;
     }
 
-    protected boolean isAllLoaded() {
+    public boolean isCompletelyLoaded() {
         return data.size() == getSize();
     }
 
@@ -294,19 +298,30 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             q.setQueryString(jpqlQuery);
         }
 
-        ctx.getQuery().setFirstResult(data.size());
-        ctx.setView(view);
+        if (maxResults == 0 || data.size() < maxResults) {
+            ctx.getQuery().setFirstResult(data.size());
+            ctx.setView(view);
 
-        if (!all) ctx.getQuery().setMaxResults(chunk);
+            if (all) {
+                if (maxResults > 0)
+                    ctx.getQuery().setMaxResults(maxResults);
+            } else
+                ctx.getQuery().setMaxResults(chunk);
 
-        List<T> res = dataservice.loadList(ctx);
-        for (T t : res) {
-            data.put(t.getId(), t);
-            attachListener((Instance) t);
-        }
+            List<T> res = dataservice.loadList(ctx);
+            for (T t : res) {
+                data.put(t.getId(), t);
+                attachListener((Instance) t);
+            }
 
-        if (res.size() < chunk) {
-            size = data.size(); // all is loaded
+            if (res.size() < chunk || (maxResults > 0 && data.size() >= maxResults)) {
+                size = data.size(); // all is loaded
+                for (DatasourceListener listener : dsListeners) {
+                    if (listener instanceof LazyCollectionDatasourceListener) {
+                        ((LazyCollectionDatasourceListener) listener).completelyLoaded(this);
+                    }
+                }
+            }
         }
 
         State prevState = state;
@@ -329,7 +344,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     private void doSort() {
-        if (isAllLoaded()) {
+        if (isCompletelyLoaded()) {
             sortInMemory();
         } else {
             for (Object entity : data.values()) {
