@@ -40,9 +40,13 @@
         <vbox expand="split" spacing="true">
             <label id="permissionsType" stylename="h2"/>
             <split id="split" orientation="horizontal" pos="30">
-                <tree id="permissions-tree">
-                    <treechildren datasource="entities" captionProperty="caption"/>
-                </tree>
+                <scrollbox height="100%" width="100%">
+                    <vbox>
+                        <tree id="permissions-tree">
+                            <treechildren datasource="entities" captionProperty="caption"/>
+                        </tree>
+                    </vbox>
+                </scrollbox>
                 <vbox>
                     <optionsGroup
                         id="permissions"
