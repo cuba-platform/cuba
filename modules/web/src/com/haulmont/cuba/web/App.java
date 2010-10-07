@@ -24,26 +24,26 @@ import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
-import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.ui.Window;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Cookie;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.FileOutputStream;
 
 /**
  * Main class of the web application. Each client connection has its own App.
@@ -90,7 +90,7 @@ public class App extends Application
     private volatile String contextName;
 
     private transient HttpServletResponse response;
-    
+
     private AppCookies cookies;
 
     private boolean pageReloadRequired;
@@ -399,21 +399,9 @@ public class App extends Application
 
         setupCurrentWindowName(requestURI);
 
-        if (!connection.isConnected()
-                && request.getUserPrincipal() != null
-                && !principalIsWrong
-                && ActiveDirectoryHelper.useActiveDirectory()
-                && !(requestURI.endsWith("/login") || auxillaryUrl(requestURI)))
-        {
-            String userName = request.getUserPrincipal().getName();
-            log.debug("Trying to login ActiveDirectory as " + userName);
-            try {
-                connection.loginActiveDirectory(userName, request.getLocale());
-                principalIsWrong = false;
-                setupCurrentWindowName(requestURI);
-            } catch (LoginException e) {
-                principalIsWrong = true;
-            }
+        if (!connection.isConnected() &&
+                !(requestURI.endsWith("/login") || auxillaryUrl(requestURI))) {
+            if (loginOnStart(request)) setupCurrentWindowName(requestURI);
         }
 
         if (connection.isConnected()) {
@@ -426,6 +414,25 @@ public class App extends Application
         }
 
         processExternalLink(request, requestURI);
+    }
+
+    protected boolean loginOnStart(HttpServletRequest request) {
+        if (request.getUserPrincipal() != null
+                && !principalIsWrong
+                && ActiveDirectoryHelper.useActiveDirectory()) {
+            String userName = request.getUserPrincipal().getName();
+            log.debug("Trying to login ActiveDirectory as " + userName);
+            try {
+                connection.loginActiveDirectory(userName, request.getLocale());
+                principalIsWrong = false;
+
+                return true;
+            } catch (LoginException e) {
+                principalIsWrong = true;
+            }
+        }
+
+        return false;
     }
 
     public static boolean auxillaryUrl(String uri) {

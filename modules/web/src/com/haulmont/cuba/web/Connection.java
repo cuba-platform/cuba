@@ -67,6 +67,21 @@ public class Connection implements Serializable
         return ls;
     }
 
+    public void update(UserSession session) throws LoginException {
+        this.session = session;
+        connected = true;
+
+        try {
+            internalLogin();
+        } catch (RuntimeException e) {
+            internalLogout();
+            throw e;
+        } catch (Exception e) {
+            internalLogout();
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Perform login
      * @param login login name
@@ -78,17 +93,7 @@ public class Connection implements Serializable
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
 
-        session = getLoginService().login(login, password, locale);
-        connected = true;
-        try {
-            internalLogin(login);
-        } catch (RuntimeException e) {
-            internalLogout();
-            throw e;
-        } catch (Exception e) {
-            internalLogout();
-            throw new RuntimeException(e);
-        }
+        update(getLoginService().login(login, password, locale));
     }
 
     /**
@@ -100,20 +105,10 @@ public class Connection implements Serializable
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
 
-        session = getLoginService().loginActiveDirectory(login, locale);
-        connected = true;
-        try {
-            internalLogin(login);
-        } catch (RuntimeException e) {
-            internalLogout();
-            throw e;
-        } catch (Exception e) {
-            internalLogout();
-            throw new RuntimeException(e);
-        }
+        update(getLoginService().loginActiveDirectory(login, locale));
     }
 
-    private void internalLogin(String login) throws LoginException {
+    private void internalLogin() throws LoginException {
         WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
         session.setAddress(browser.getAddress());
         session.setClientInfo(browser.getBrowserApplication());
@@ -123,7 +118,7 @@ public class Connection implements Serializable
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Logged in: user=%s, ip=%s, browser=%s",
-                    login, browser.getAddress(), browser.getBrowserApplication()));
+                    session.getUser().getLogin(), browser.getAddress(), browser.getBrowserApplication()));
         }
     }
 
