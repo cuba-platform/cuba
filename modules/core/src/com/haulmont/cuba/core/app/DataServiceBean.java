@@ -208,9 +208,11 @@ public class DataServiceBean implements DataService
 
         com.haulmont.cuba.core.Query query = em.createQuery(queryString);
 
-        boolean constraintsApplied = SecurityProvider.applyConstraints(query, metaClass.getName());
-        if (constraintsApplied)
-            log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
+        if (context.isUseSecurityConstraints()) {
+            boolean constraintsApplied = SecurityProvider.applyConstraints(query, metaClass.getName());
+            if (constraintsApplied)
+                log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
+        }
 
         if (context.getQuery() != null) {
             if (context.getQuery().getFirstResult() != 0)

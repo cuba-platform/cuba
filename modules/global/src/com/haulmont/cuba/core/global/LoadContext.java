@@ -27,6 +27,7 @@ public class LoadContext implements Serializable {
     protected Object id;
     protected Collection<Object> ids;
     protected boolean softDeletion;
+    protected boolean useSecurityConstraints = true;
 
     public LoadContext(MetaClass metaClass) {
         this.metaClass = metaClass.getName();
@@ -94,6 +95,14 @@ public class LoadContext implements Serializable {
 
     public void setSoftDeletion(boolean softDeletion) {
         this.softDeletion = softDeletion;
+    }
+
+    public boolean isUseSecurityConstraints() {
+        return useSecurityConstraints;
+    }
+
+    public void setUseSecurityConstraints(boolean useSecurityConstraints) {
+        this.useSecurityConstraints = useSecurityConstraints;
     }
 
     public static class Query implements Serializable {
