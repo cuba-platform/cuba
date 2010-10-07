@@ -469,38 +469,53 @@ public class VPanel extends SimplePanel implements Container {
     }
 
     private int getCaptionMarginLeft() {
-        if (captionMarginLeft < 0) {
-            detectContainerBorders();
+        if (isAttached()) {
+            if (captionMarginLeft < 0) {
+                detectContainerBorders();
+            }
+            return captionMarginLeft;
         }
-        return captionMarginLeft;
+        return 0;
     }
 
     private int getContentMarginLeft() {
-        if (contentMarginLeft < 0) {
-            detectContainerBorders();
+        if (isAttached()) {
+            if (contentMarginLeft < 0) {
+                detectContainerBorders();
+            }
+            return contentMarginLeft;
         }
-        return contentMarginLeft;
+        return 0;
     }
 
     protected int getCaptionPaddingHorizontal() {
-        if (captionPaddingHorizontal < 0) {
-            detectContainerBorders();
+        if (isAttached()) {
+            if (captionPaddingHorizontal < 0) {
+                detectContainerBorders();
+            }
+            return captionPaddingHorizontal;
         }
-        return captionPaddingHorizontal;
+        return 0;
     }
 
     protected int getContainerBorderHeight() {
-        if (borderPaddingVertical < 0) {
-            detectContainerBorders();
+        if (isAttached()) {
+            if (borderPaddingVertical < 0) {
+                detectContainerBorders();
+            }
+            return borderPaddingVertical;
         }
-        return borderPaddingVertical;
+        return 0;
     }
 
     protected int getContainerBorderWidth() {
-        if (borderPaddingHorizontal < 0) {
-            detectContainerBorders();
+        if (isAttached()) {
+            if (borderPaddingHorizontal < 0) {
+                detectContainerBorders();
+            }
+            return borderPaddingHorizontal;
         }
-        return borderPaddingHorizontal;
+        return 0;
     }
 
     protected void detectContainerBorders() {
@@ -520,11 +535,7 @@ public class VPanel extends SimplePanel implements Container {
     }
 
     public boolean hasChildComponent(Widget component) {
-        if (component != null && component == layout) {
-            return true;
-        } else {
-            return false;
-        }
+        return component != null && component == layout;
     }
 
     public void replaceChildComponent(Widget oldComponent, Widget newComponent) {

@@ -29,12 +29,15 @@ public class VGroupBox extends VPanel {
     protected boolean expanded;
     protected boolean collapsable;
 
-    private Element descriptionNode;
+    protected Element descriptionNode;
+
+    protected Element fieldset;
+    protected Element legend;
 
     @Override
     protected void constructDOM() {
-        Element fieldSet = DOM.createFieldSet();
-        Element legend = DOM.createLegend();
+        fieldset = DOM.createFieldSet();
+        legend = DOM.createLegend();
         captionNode = DOM.createDiv();
         expander = DOM.createDiv();
         captionText = DOM.createSpan();
@@ -52,11 +55,11 @@ public class VGroupBox extends VPanel {
 
         legend.appendChild(captionNode);
 
-        fieldSet.appendChild(legend);
-        fieldSet.appendChild(descriptionNode);
-        fieldSet.appendChild(contentNode);
-        fieldSet.appendChild(bottomDecoration);
-        getElement().appendChild(fieldSet);
+        fieldset.appendChild(legend);
+        fieldset.appendChild(descriptionNode);
+        fieldset.appendChild(contentNode);
+        fieldset.appendChild(bottomDecoration);
+        getElement().appendChild(fieldset);
 
         setStyleName(CLASSNAME);
 
@@ -71,18 +74,7 @@ public class VGroupBox extends VPanel {
 
     @Override
     protected void renderContent(UIDL uidl) {
-        final UIDL layoutUidl = uidl.getChildUIDL(0);
-        if (layoutUidl != null) {
-            final Paintable newLayout = client.getPaintable(layoutUidl);
-            if (newLayout != layout) {
-                if (layout != null) {
-                    client.unregisterPaintable(layout);
-                }
-                setWidget((Widget) newLayout);
-                layout = newLayout;
-            }
-            layout.updateFromUIDL(layoutUidl, client);
-        }
+        //todo nothing
     }
 
     @Override
@@ -133,6 +125,20 @@ public class VGroupBox extends VPanel {
             toggleExpand();
         }
 
+        //render content
+        final UIDL layoutUidl = uidl.getChildUIDL(0);
+        if (layoutUidl != null) {
+            final Paintable newLayout = client.getPaintable(layoutUidl);
+            if (newLayout != layout) {
+                if (layout != null) {
+                    client.unregisterPaintable(layout);
+                }
+                setWidget((Widget) newLayout);
+                layout = newLayout;
+            }
+            layout.updateFromUIDL(layoutUidl, client);
+        }
+
         detectContainerBorders();
     }
 
@@ -152,49 +158,48 @@ public class VGroupBox extends VPanel {
 
     @Override
     protected void detectContainerBorders() {
-        String oldWidth = DOM.getStyleAttribute(contentNode, "width");
-        String oldHeight = DOM.getStyleAttribute(contentNode, "height");
+        if (isAttached()) {
+            String oldWidth = DOM.getStyleAttribute(contentNode, "width");
+            String oldHeight = DOM.getStyleAttribute(contentNode, "height");
 
-        DOM.setStyleAttribute(contentNode, "overflow", "hidden");
+            DOM.setStyleAttribute(contentNode, "overflow", "hidden");
 
-        DOM.setStyleAttribute(contentNode, "width", "0px");
-        DOM.setStyleAttribute(contentNode, "height", "0px");
+            DOM.setStyleAttribute(contentNode, "width", "0px");
+            DOM.setStyleAttribute(contentNode, "height", "0px");
 
-        borderPaddingHorizontal = contentNodeBorderPaddingsHor = contentNode.getOffsetWidth();
-        borderPaddingVertical = contentNodeBorderPaddingsVer = contentNode.getOffsetHeight();
+            borderPaddingHorizontal = contentNodeBorderPaddingsHor = contentNode.getOffsetWidth();
+            borderPaddingVertical = contentNodeBorderPaddingsVer = contentNode.getOffsetHeight();
 
-        Element fieldsetElement = DOM.getParent(contentNode);
-        DOM.setStyleAttribute(fieldsetElement, "overflow", "hidden");
+            DOM.setStyleAttribute(contentNode, "width", "");
+            DOM.setStyleAttribute(contentNode, "height", "");
 
-        DOM.setStyleAttribute(fieldsetElement, "width", "0px");
-        DOM.setStyleAttribute(fieldsetElement, "height", "0px");
+            borderPaddingHorizontal += (fieldset.getOffsetWidth() - contentNode.getOffsetWidth());
+            borderPaddingVertical += (fieldset.getOffsetHeight() - contentNode.getOffsetHeight());
 
-        borderPaddingHorizontal += (fieldsetElement.getOffsetWidth() - contentNode.getOffsetWidth());
-        borderPaddingVertical += (fieldsetElement.getOffsetHeight() - contentNode.getOffsetHeight());
-
-        DOM.setStyleAttribute(contentNode, "width", oldWidth);
-        DOM.setStyleAttribute(contentNode, "height", oldHeight);
-
-        DOM.setStyleAttribute(contentNode, "overflow", "auto");
-
-        DOM.setStyleAttribute(fieldsetElement, "width", "");
-        DOM.setStyleAttribute(fieldsetElement, "height", "");
-
-        DOM.setStyleAttribute(fieldsetElement, "overflow", "visible");
+            DOM.setStyleAttribute(contentNode, "width", oldWidth);
+            DOM.setStyleAttribute(contentNode, "height", oldHeight);
+            DOM.setStyleAttribute(contentNode, "overflow", "auto");
+        }
     }
 
     protected int getContentNodeBorderPaddingsWidth() {
-        if (contentNodeBorderPaddingsHor < 0) {
-            detectContainerBorders();
+        if (isAttached()) {
+            if (contentNodeBorderPaddingsHor < 0) {
+                detectContainerBorders();
+            }
+            return contentNodeBorderPaddingsHor;
         }
-        return contentNodeBorderPaddingsHor;
+        return 0;
     }
 
     protected int getContentNodeBorderPaddingsHeight() {
-        if (contentNodeBorderPaddingsVer < 0) {
-            detectContainerBorders();
+        if (isAttached()) {
+            if (contentNodeBorderPaddingsVer < 0) {
+                detectContainerBorders();
+            }
+            return contentNodeBorderPaddingsVer;
         }
-        return contentNodeBorderPaddingsVer;
+        return 0;
     }
 
     @Override
