@@ -29,6 +29,13 @@ public class SettingsWindow extends AbstractWindow {
         super(frame);
     }
 
+    protected java.util.List<String> getThemesList()
+    {
+        String themeBlacklabel = "blacklabel";
+        String themePeyto = "peyto";
+        return Arrays.asList(themeBlacklabel, themePeyto);
+    }
+
     protected void init(Map<String, Object> params) {
         AppWindow.Mode mode = UserSettingHelper.loadAppWindowMode();
         final String msgTabbed = getMessage("modeTabbed");
@@ -44,7 +51,7 @@ public class SettingsWindow extends AbstractWindow {
         final LookupField theme = getComponent("mainWindowTheme");
         final String themeBlacklabel = "blacklabel";
         final String themePeyto = "peyto";
-        theme.setOptionsList(Arrays.asList(themeBlacklabel, themePeyto));
+        theme.setOptionsList(getThemesList());
         if (themeBlacklabel.equals(UserSettingHelper.loadAppWindowTheme())) {
             theme.setValue(themeBlacklabel);
         } else {
