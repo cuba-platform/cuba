@@ -35,6 +35,15 @@ import ooo.connector.BootstrapSocketConnector;
 import java.io.File;
 
 public class ODTHelper {
+    // Get group of ODT objects
+    public static ODTContextGroup createXComponentGroup(String openOfficePath) throws BootstrapException, com.sun.star.uno.Exception {
+        XComponentContext xRemoteContext = new BootstrapSocketConnector(openOfficePath).connect();
+        XMultiComponentFactory xRemoteServiceManager = xRemoteContext.getServiceManager();
+        Object desktop = xRemoteServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", xRemoteContext);
+        XDesktop xDesktop = asXDesktop(desktop);
+        ODTContextGroup group = new ODTContextGroup(xRemoteContext,xRemoteServiceManager,xDesktop);
+        return group;
+    }
 
     public static XComponentLoader createXComponentLoader(String openOfficePath) throws BootstrapException, com.sun.star.uno.Exception {
         XComponentContext xRemoteContext = new BootstrapSocketConnector(openOfficePath).connect();
