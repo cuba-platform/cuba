@@ -5,6 +5,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.IScrollTable;
@@ -354,6 +355,11 @@ public class IScrollTreeTable
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
+                if (BrowserInfo.get().isChrome()) {
+                    DOM.setElementPropertyBoolean(td, "__cell", true);
+                    DOM.setElementPropertyBoolean(container, "__cell", true);
+                }
+
                 setCellWidget(contentDiv, w, col);
             }
 
@@ -411,19 +417,16 @@ public class IScrollTreeTable
 
             @Override
             public void onBrowserEvent(Event event) {
-//                final Element tdOrTr = DOM.getParent(DOM.eventGetTarget(event));
-//                Element parentElement = DOM.getParent(tdOrTr);
-//                if (getElement() == tdOrTr
-//                        || getElement() == parentElement
-//                        || (parentElement != null && getElement() == DOM.getParent(parentElement))) {
                 final Element targetElement = DOM.eventGetTarget(event);
-                //todo gorodnov: review this code when we will be use a multi selection
                 if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
                     return;
 
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
                         if (groupCell != null && DOM.eventGetTarget(event) == groupCell) {
+                            if (BrowserInfo.get().isChrome()) {
+                                focusPanel.setFocus(true);
+                            }
                             handleClickEvent(event);
                             handleRowClick(event);
                         } else {
@@ -440,7 +443,6 @@ public class IScrollTreeTable
                     default:
                         break;
                 }
-//                }
             }
 
             public boolean hasChildren() {

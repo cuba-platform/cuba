@@ -15,6 +15,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.IScrollTable;
@@ -568,8 +569,12 @@ public class IScrollGroupTable extends IScrollTable {
 
             @Override
             public void onBrowserEvent(Event event) {
+                final Element targetElement = DOM.eventGetTarget(event);
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
+                        if (BrowserInfo.get().isChrome() && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
+                            focusPanel.setFocus(true);
+                        }
                         handleClickEvent(event);
                         handleRowClick(event);
                         break;

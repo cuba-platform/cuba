@@ -16,7 +16,6 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.Widget;
@@ -165,11 +164,6 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             }
             tBody.restoreRowVisibility();
         }
-    }
-
-    @Override
-    public void onKeyUp(KeyUpEvent event) {
-        super.onKeyUp(event);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     @Override
@@ -807,15 +801,16 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
 
         public String aboveRow(String rowKey) {
             IScrollTableRow row = (IScrollTableRow) getRenderedRowByKey(rowKey);
-            int index = rowIndex(row);
+            int index = rowRealIndex(row);
             if (index > 0) {
-                int renderIndex = renderedRows.indexOf(row);
-                row = (IScrollTableRow) renderedRows.get(--renderIndex);
+                if (index - 1 < getBody().getFirstRendered()) return null;
 
+                int rowRenderIndex = renderedRows.indexOf(row);
+                row = (IScrollTableRow) renderedRows.get(--rowRenderIndex);
                 int topVisibleRow = (int) Math.ceil(bodyContainer.getScrollPosition()
                         / (double) getRowHeight());
 
-                int newRowIndex = rowIndex(row);
+                int newRowIndex = rowRealIndex(row);
                 if (topVisibleRow > newRowIndex) {
                     bodyContainer.setScrollPosition(newRowIndex * getRowHeight());
                 }
@@ -828,10 +823,12 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
 
         public String bellowRow(String rowKey) {
             IScrollTableRow row = (IScrollTableRow) getRenderedRowByKey(rowKey);
-            int index = rowIndex(row);
+            int index = rowRealIndex(row);
             if (index > -1 && index < totalRows - 1) {
-                int renderIndex = renderedRows.indexOf(row);
-                row = (IScrollTableRow) renderedRows.get(++renderIndex);
+                if (index + 1 > getBody().getLastRendered()) return null; //todo request rows
+
+                int rowRenderIndex = renderedRows.indexOf(row);
+                row = (IScrollTableRow) renderedRows.get(++rowRenderIndex);
 
                 int bottomVisibleRow = (int) (
                         (bodyContainer.getScrollPosition() + bodyContainer.getOffsetHeight() - getRowHeight())
@@ -842,7 +839,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                 if (bottomVisibleRow >= totalRows) {
                     bodyContainer.scrollToBottom();
                 } else {
-                    int newRowIndex = rowIndex(row);
+                    int newRowIndex = rowRealIndex(row);
                     if (newRowIndex > bottomVisibleRow) {
                         bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() + getRowHeight());
                     }
@@ -854,7 +851,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             }
         }
 
-        protected int rowIndex(IScrollTableRow row) {
+        protected int rowRealIndex(IScrollTableRow row) {
             if (row == null) return -1;
             int rowIndex = renderedRows.indexOf(row);
             if (rowIndex > -1) {

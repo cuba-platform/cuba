@@ -62,7 +62,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected final TableHead tHead;
 
-    private final FocusPanel focusPanel = new FocusPanel();
+    protected final FocusPanel focusPanel = new FocusPanel();
     protected final ScrollPanel bodyContainer = new ScrollPanel();
 
     protected int totalRows;
@@ -1969,6 +1969,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
+                if (BrowserInfo.get().isChrome()) {
+                    DOM.setElementPropertyBoolean(td, "__cell", true);
+                    DOM.setElementPropertyBoolean(container, "__cell", true);
+                }
+
                 Tools.textSelectionEnable(td, textSelectionEnabled);
             }
 
@@ -1999,6 +2004,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
+
+                if (BrowserInfo.get().isChrome()) {
+                    DOM.setElementPropertyBoolean(td, "__cell", true);
+                    DOM.setElementPropertyBoolean(container, "__cell", true);
+                }
 
                 setCellWidget(container, w, col);
             }
@@ -2099,7 +2109,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             @Override
             public void onBrowserEvent(Event event) {
                 final Element targetElement = DOM.eventGetTarget(event);
-                //todo gorodnov: review this code when we will be use a multi selection
                 if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
                     return;
 
@@ -2110,6 +2119,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         break;*/
 //                    mDown = false;
                     case Event.ONCLICK:
+                            if (BrowserInfo.get().isChrome() && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
+                                focusPanel.setFocus(true);
+                            }
+
                             handleClickEvent(event/*, targetTdOrTr*/);
 //                            scrollBodyPanel.setFocus(true);
                             if (isSelectable()) {
