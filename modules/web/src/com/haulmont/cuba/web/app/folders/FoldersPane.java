@@ -322,11 +322,12 @@ public class FoldersPane extends VerticalLayout {
         return sb.toString();
     }
 
-    private void addFoldersLabel(AbstractLayout layout, Label label) {
+    protected Component addFoldersLabel(AbstractLayout layout, Label label) {
         HorizontalLayout l = new HorizontalLayout();
         l.setMargin(false, true, false, true);
         l.addComponent(label);
         layout.addComponent(l);
+        return l;
     }
 
     public void savePosition() {
