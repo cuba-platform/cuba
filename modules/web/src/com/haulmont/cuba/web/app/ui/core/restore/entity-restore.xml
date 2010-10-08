@@ -5,9 +5,9 @@
         caption="msg://entityRestore.caption"
         >
 
-    <dsContext>
-        <groupDatasource id="entitiesDs"/>
-    </dsContext>
+    <dsContext/>
+        <!--<groupDatasource id="entitiesDs"/>-->
+    <!--</dsContext>-->
     <layout>
         <vbox expand="table-panel" spacing="true">
             <hbox margin="true;true;true;false" spacing="true">

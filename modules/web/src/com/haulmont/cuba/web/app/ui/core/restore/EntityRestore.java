@@ -45,7 +45,7 @@ public class EntityRestore extends AbstractWindow{
     protected void init(Map<String, Object> params) {
         super.init(params);
         entities = getComponent("entities");
-        entitiesDs = getDsContext().get("entitiesDs");
+        //entitiesDs = getDsContext().get("entitiesDs");
         primaryFilter = getComponent("genericFilter");
         refreshButton = getComponent("refresh");
         refreshButton.setAction(new AbstractAction("refresh"){
