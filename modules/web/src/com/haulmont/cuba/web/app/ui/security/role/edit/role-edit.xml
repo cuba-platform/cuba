@@ -68,7 +68,7 @@
                         <row>
                             <label value="msg://name"/>
                             <textField id="name" datasource="role" property="name" width="${width}" required="true"
-                                    requiredMessage="nameMsg"/>
+                                    requiredMessage="msg://nameMsg"/>
                         </row>
                         <row>
                             <label value="msg://locName"/>

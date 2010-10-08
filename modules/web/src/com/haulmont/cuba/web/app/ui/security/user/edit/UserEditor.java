@@ -161,6 +161,7 @@ public class UserEditor extends AbstractEditor {
             fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
                 public Component generateField(Datasource datasource, Object propertyId) {
                     passwField = new WebTextField();
+                    passwField.setRequiredMessage(getMessage("passwMsg"));
                     passwField.setSecret(true);
                     passwField.setRequired(!ConfigProvider.getConfig(WebConfig.class).getUseActiveDirectory());
                     return passwField;
@@ -174,6 +175,7 @@ public class UserEditor extends AbstractEditor {
                 public Component generateField(Datasource datasource, Object propertyId) {
                     confirmPasswField = new WebTextField();
                     confirmPasswField.setSecret(true);
+                    confirmPasswField.setRequiredMessage("confirmPasswMsg");
                     confirmPasswField.setRequired(!ConfigProvider.getConfig(WebConfig.class).getUseActiveDirectory());
                     return confirmPasswField;
                 }

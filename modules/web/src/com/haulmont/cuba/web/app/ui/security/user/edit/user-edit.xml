@@ -29,8 +29,9 @@
             <vbox spacing="true" margin="true"  stylename="edit-area" width="100%">
                 <fieldGroup id="fields" width="100%" datasource="user" collapsable="false">
                     <column flex="1" width="250px">
-                        <field id="login" required="true" requiredMessage="loginMsg"/>
-                        <field id="passw" custom="true" visible="PersistenceHelper.isNew(param_item)" caption="msg://password"/>
+                        <field id="login" required="true" requiredMessage="msg://loginMsg"/>
+                        <field id="passw" custom="true" visible="PersistenceHelper.isNew(param_item)" caption="msg://password"
+                                requiredMessage="msg://passwMsg"/>
                         <field id="lastName"/>
                         <field id="middleName"/>
                         <field id="position"/>
@@ -40,8 +41,9 @@
                         <field id="permissionsLookupField" caption="msg://permissions" custom="true"/>
                     </column>
                     <column flex="3" width="250px">
-                        <field id="group" required="true" requiredMessage="groupMsg"/>
-                        <field id="confirmPassw" custom="true" visible="PersistenceHelper.isNew(param_item)" caption="msg://confirmPassword"/>
+                        <field id="group" required="true" requiredMessage="msg://groupMsg"/>
+                        <field id="confirmPassw" custom="true" visible="PersistenceHelper.isNew(param_item)" caption="msg://confirmPassword"
+                                requiredMessage="msg://confirmPasswMsg"/>
                         <field id="firstName" />
                         <field id="name"/>
                         <field id="language" custom="true"/>

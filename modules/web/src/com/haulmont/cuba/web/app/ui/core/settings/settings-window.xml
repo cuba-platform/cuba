@@ -22,7 +22,7 @@
                         <row>
                             <label value="msg://mainWindowTheme"/>
                             <lookupField id="mainWindowTheme" required="true" width="150"
-                                         requiredMessage="mainWindowThemeMsg"/>
+                                         requiredMessage="msg://mainWindowThemeMsg"/>
                         </row>
                         <row>
                             <button id="changePassw" icon="icons/change-pass.png"/>

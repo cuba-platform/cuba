@@ -13,8 +13,8 @@
         <vbox margin="true" stylename="edit-area">
             <fieldGroup id="fields" width="100%" datasource="attribute" collapsable="false">
                 <column width="250px">
-                    <field id="name" required="true" requiredMessage="nameMsg"/>
-                    <field id="datatype" custom="true"/>
+                    <field id="name" required="true" requiredMessage="msg://nameMsg"/>
+                    <field id="datatype" custom="true" requiredMessage="msg://datatypeMsg"/>
                     <field id="stringValue"/>
                 </column>
             </fieldGroup>

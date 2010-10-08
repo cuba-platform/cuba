@@ -41,6 +41,7 @@ public class SessionAttributeEditor extends AbstractEditor {
                     public Component generateField(Datasource datasource, Object propertyId) {
                         WebLookupField lookup = new WebLookupField();
                         lookup.setDatasource(datasource, (String) propertyId);
+                        lookup.setRequiredMessage(getMessage("datatypeMsg"));
                         lookup.setRequired(true);
 
                         Map<String, Object> options = new TreeMap<String, Object>();

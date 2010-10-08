@@ -33,12 +33,12 @@
                     <row>
                         <label value="msg://dataSet.name"/>
                         <textField id="name" datasource="dataSetDs" property="name"
-                                   width="${width}" required="true" requiredMessage="dataSet.nameMsg"/>
+                                   width="${width}" required="true" requiredMessage="msg://dataSet.nameMsg"/>
                     </row>
                     <row>
                         <label value="msg://dataSet.type"/>
                         <lookupField id="type" datasource="dataSetDs" property="type"
-                                     width="${width}" required="true" requiredMessage="dataSet.typeMsg"/>
+                                     width="${width}" required="true" requiredMessage="msg://dataSet.typeMsg"/>
                     </row>
                     <row>
                         <label id="dataSet_text" value="msg://dataSet.text"/>
