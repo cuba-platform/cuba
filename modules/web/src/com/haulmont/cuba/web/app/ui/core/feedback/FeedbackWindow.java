@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.app.UserSettingHelper;
+import com.haulmont.cuba.web.gui.WebWindow;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
@@ -40,12 +41,35 @@ public class FeedbackWindow extends AbstractWindow {
 
     protected Boolean validateAndSend() {
         Boolean result = true;
-        if (StringUtils.isBlank((String) ((TextField) getComponent("mainBody")).getValue())) {
-            showNotification(MessageProvider.getMessage(getClass(),  "emptyBodyErr"), NotificationType.ERROR);
-            result = false;
+        StringBuffer sb = new StringBuffer();
+        TextField mainBody = (TextField) getComponent("mainBody");
+        if (mainBody.isRequired() && mainBody.isVisible()) {
+            try {
+                mainBody.validate();
+            } catch (ValidationException ve) {
+                sb.append(ve.getMessage() + "<br>");
+            }
         }
-        if (StringUtils.isBlank((String) ((LookupField) getComponent("reason")).getValue()) || (otherReason.equals((String) ((LookupField) getComponent("reason")).getValue()) && StringUtils.isBlank((String) ((TextField) getComponent("reasonFreeText")).getValue()))) {
-            showNotification(MessageProvider.getMessage(getClass(),  "emptyReasonErr"), NotificationType.ERROR);
+        LookupField reason = (LookupField) getComponent("reason");
+        if (reason.isRequired() && reason.isVisible()) {
+            try {
+                reason.validate();
+            } catch (ValidationException ve) {
+                sb.append(ve.getMessage() + "<br>");
+            }
+        }
+        TextField reasonFreeText = (TextField) getComponent("reasonFreeText");
+        if (reasonFreeText.isRequired() && reasonFreeText.isVisible()) {
+            try {
+                reasonFreeText.validate();
+            } catch (ValidationException ve) {
+                sb.append(ve.getMessage() + "<br>");
+            }
+        }
+        if(sb.length() > 0){
+            showNotification(MessageProvider.getMessage(WebWindow.class, "validationFail.caption"),
+                    MessageProvider.getMessage(WebWindow.class,  "validationFail") + "<br>" +
+                    sb.toString(), NotificationType.TRAY);
             result = false;
         }
         if (result) {
