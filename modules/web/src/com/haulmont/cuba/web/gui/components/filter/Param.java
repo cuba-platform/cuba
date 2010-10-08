@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -27,6 +28,7 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
@@ -437,7 +439,12 @@ public class Param {
                         }
                         setValue(list);
                     } else {
-                        setValue(UUID.fromString((String) value));
+                        try{
+                            setValue(UUID.fromString((String) value));
+                        }catch(IllegalArgumentException ie){
+                            App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage(this.getClass(),
+                                    "Param.uuid.Err"), Window.Notification.TYPE_TRAY_NOTIFICATION);
+                        }
                     }
                 else if (value instanceof String && StringUtils.isBlank((String) value))
                     setValue(null);
