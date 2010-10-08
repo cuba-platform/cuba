@@ -239,14 +239,29 @@ public class WebLookupField
 
         @Override
         public int size() {
-            if (Datasource.State.INVALID.equals(datasource.getState()))
-                datasource.refresh();
-            return datasource.size();
+            if (datasource instanceof CollectionDatasource.Lazy) {
+                if (Datasource.State.INVALID.equals(datasource.getState()))
+                    datasource.refresh();
+
+                if (datasource.size() == 0) {
+                    Object valueKey = WebLookupField.super.getValue();
+                    return (valueKey != null && !datasource.containsItem(valueKey)) ? 1 : 0;
+                }
+
+                return datasource.size();
+            } else {
+                return getItemIds().size();
+            }
         }
 
         @Override
         public boolean containsId(Object itemId) {
-            return datasource.containsItem(itemId);
+            if (datasource instanceof CollectionDatasource.Lazy) {
+                return datasource.containsItem(itemId);
+            } else {
+                Collection itemIds = getItemIds();
+                return itemIds.contains(itemId);
+            }
         }
 
         public Object nextItemId(Object itemId) {
@@ -264,9 +279,24 @@ public class WebLookupField
         }
 
         public Object firstItemId() {
-            if (datasource instanceof CollectionDatasource.Ordered)
-                return ((CollectionDatasource.Ordered) datasource).firstItemId();
-            else
+            if (datasource instanceof CollectionDatasource.Ordered) {
+                Object itemId = ((CollectionDatasource.Ordered) datasource).firstItemId();
+                if (itemId == null && WebLookupField.this.datasource != null) {
+                    Entity containingEntity = WebLookupField.this.datasource.getItem();
+
+                    Object value;
+                    if (WebLookupField.this.metaPropertyPath != null)
+                        value = InstanceUtils.getValueEx((Instance) containingEntity, WebLookupField.this.metaPropertyPath.getPath());
+                    else
+                        value = ((Instance) containingEntity).getValue(WebLookupField.this.metaProperty.getName());
+
+                    if (value instanceof Entity) {
+                        return ((Entity) value).getId();
+                    } else
+                        return value;
+                } else
+                    return itemId;
+            } else
                 throw new UnsupportedOperationException();
         }
 
