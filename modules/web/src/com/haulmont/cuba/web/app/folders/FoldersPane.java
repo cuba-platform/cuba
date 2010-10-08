@@ -470,7 +470,14 @@ public class FoldersPane extends VerticalLayout {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("disableAutoRefresh", true);
-        params.put("description", MessageProvider.getMessage(messagesPack, folder.getName()));
+        if(!StringUtils.isBlank(folder.getCode()))
+            params.put("description", MessageProvider.getMessage(messagesPack, folder.getCode()+".doubleName"));
+        else if(folder instanceof AppFolder)
+            params.put("description", MessageProvider.getMessage(messagesPack, folder.getName()));
+        else if(!StringUtils.isBlank(folder.getDoubleName()))
+            params.put("description", folder.getDoubleName());
+        else
+            params.put("description",folder.getName());
         params.put("disableApplySettings", true);
 
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
@@ -634,6 +641,7 @@ public class FoldersPane extends VerticalLayout {
         public void perform(final Folder folder) {
             final SearchFolder newFolder = new SearchFolder();
             newFolder.setName("");
+            newFolder.setDoubleName("");
             newFolder.setParent(folder);
             newFolder.setUser(UserSessionClient.getUserSession().getUser());
             final FolderEditWindow window = new FolderEditWindow(true, newFolder, null, new Runnable() {

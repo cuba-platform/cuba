@@ -31,6 +31,7 @@ public class FolderEditWindow extends Window {
     private Folder folder;
     private String messagesPack;
     private TextField nameField;
+    private TextField doubleNameField;
     private Select parentSelect;
     private TextField sortOrderField;
     private Select presentation;
@@ -59,6 +60,12 @@ public class FolderEditWindow extends Window {
         nameField.setWidth(250, Sizeable.UNITS_PIXELS);
         nameField.setValue(folder.getName());
         layout.addComponent(nameField);
+
+        doubleNameField = new TextField();
+        doubleNameField.setCaption(getMessage("folders.folderEditWindow.doubleNameField"));
+        doubleNameField.setWidth(250, Sizeable.UNITS_PIXELS);
+        doubleNameField.setValue(folder.getDoubleName());
+        layout.addComponent(doubleNameField);
 
         parentSelect = new Select();
         parentSelect.setCaption(getMessage("folders.folderEditWindow.parentSelect"));
@@ -110,6 +117,7 @@ public class FolderEditWindow extends Window {
         okBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 FolderEditWindow.this.folder.setName((String) nameField.getValue());
+                FolderEditWindow.this.folder.setDoubleName((String) doubleNameField.getValue());
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     FolderEditWindow.this.folder.setSortOrder(null);

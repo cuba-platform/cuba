@@ -155,6 +155,7 @@
     <file url="file://$PROJECT_DIR$/modules/web/src-conf" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/modules/web/src/com/haulmont/cuba/web/app/ui/core/locking" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/modules/web/src/com/haulmont/cuba/web/app/ui/core/settings" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/modules/web/src/com/haulmont/cuba/web/app/ui/report/ReportHelper.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/modules/web/src/com/haulmont/cuba/web/app/ui/security/role/browse/messages_ru.properties" charset="UTF-8" />
   </component>
   <component name="EntryPointsManager">

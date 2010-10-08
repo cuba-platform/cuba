@@ -429,6 +429,11 @@ public class WebFilter
         String name = InstanceUtils.getInstanceName((Instance) filterEntity);
         AbstractSearchFolder folder = filterEntity.getFolder();
         if (folder != null) {
+            if(!StringUtils.isBlank(folder.getDoubleName()))
+                name = folder.getDoubleName();
+            else if(!StringUtils.isBlank(folder.getCode()))
+                name = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                        folder.getCode()+".doubleName");
             name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
         }
         return name;
@@ -644,6 +649,7 @@ public class WebFilter
     private void saveAsFolder() {
         final SearchFolder folder = new SearchFolder();
         folder.setName(filterEntity.getName());
+        folder.setDoubleName(filterEntity.getName());
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(filterEntity.getXml());
         if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))

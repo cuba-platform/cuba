@@ -38,6 +38,9 @@ public class Folder extends StandardEntity {
     @Column(name="CODE")
     protected String code;
 
+    @Column(name="DOUBLE_NAME")
+    protected String doubleName;
+
     public Folder getParent() {
         return parent;
     }
@@ -80,5 +83,13 @@ public class Folder extends StandardEntity {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getDoubleName() {
+        return doubleName;
+    }
+
+    public void setDoubleName(String doubleName) {
+        this.doubleName = doubleName;
     }
 }
