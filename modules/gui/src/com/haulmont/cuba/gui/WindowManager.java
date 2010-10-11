@@ -66,6 +66,12 @@ public abstract class WindowManager implements Serializable {
     private transient DataService defaultDataService;
     private transient UserSettingService settingService;
 
+    private DialogParams dialogParams;
+
+    protected WindowManager() {
+        dialogParams = createDialogParams();
+    }
+
     public synchronized DataService getDefaultDataService() {
         if (defaultDataService == null) {
             defaultDataService = createDefaultDataService();
@@ -267,10 +273,6 @@ public abstract class WindowManager implements Serializable {
     }
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
-        return (T) openWindow(windowInfo, openType, params, WindowParameters.EMPTY);
-    }
-
-    public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
         checkCanOpenWindow(windowInfo, openType, params);
 
         params = createParametersMap(windowInfo, params);
@@ -282,7 +284,7 @@ public abstract class WindowManager implements Serializable {
 
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
-            showWindow(window, caption, description, openType, windowParameters);
+            showWindow(window, caption, description, openType);
 
             return (T) window;
         } else {
@@ -349,24 +351,15 @@ public abstract class WindowManager implements Serializable {
         return (T) openEditor(windowInfo, item, openType, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
-        return (T) openEditor(windowInfo, item, openType, params, null, windowParameters);
-    }
-
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item, OpenType openType, Map<String, Object> params) {
         //noinspection unchecked
-        return (T) openEditor(windowInfo, item, openType, params, WindowParameters.EMPTY);
+        return (T) openEditor(windowInfo, item, openType, params, null);
     }
 
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
                                            OpenType openType, Map<String, Object> params,
-                                           Datasource parentDs) {
-        return (T) openEditor(windowInfo, item, openType, params, parentDs, WindowParameters.EMPTY);
-    }
-
-    public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
-                                           OpenType openType, Map<String, Object> params,
-                                           Datasource parentDs, WindowParameters windowParameters) {
+                                           Datasource parentDs)
+    {
         checkCanOpenWindow(windowInfo, openType, params);
 
         params = createParametersMap(windowInfo, params);
@@ -394,7 +387,7 @@ public abstract class WindowManager implements Serializable {
 
         final String caption = loadCaption(window, params);
         final String description = loadDescription(window, params);
-        showWindow(window, caption, description, openType, windowParameters);
+        showWindow(window, caption, description, openType);
 
         //noinspection unchecked
         return (T) window;
@@ -476,7 +469,15 @@ public abstract class WindowManager implements Serializable {
         return map;
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    protected DialogParams createDialogParams() {
+        return new DialogParams();
+    }
+
+    public DialogParams getDialogParams() {
+        return dialogParams;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, OpenType openType) {
         //noinspection unchecked
@@ -491,10 +492,6 @@ public abstract class WindowManager implements Serializable {
     protected abstract void showWindow(Window window, String caption, OpenType openType);
 
     protected abstract void showWindow(Window window, String caption, String description, OpenType openType);
-
-    protected abstract void showWindow(Window window, String caption, OpenType openType, WindowParameters windowParameters);
-
-    protected abstract void showWindow(Window window, String caption, String description, OpenType openType, WindowParameters windowParameters);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -531,7 +528,7 @@ public abstract class WindowManager implements Serializable {
 
     public abstract void showNotification(String caption, String description, IFrame.NotificationType type);
 
-    public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType, WindowParameters windowParameters);
+    public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
 
-    public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions, WindowParameters windowParameters);
+    public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
 }

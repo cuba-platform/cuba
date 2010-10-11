@@ -12,8 +12,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowParameters;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -132,6 +132,10 @@ public class WebFrame extends WebVBoxLayout
             allComponents.put(component.getId(), component);
     }
 
+    public DialogParams getDialogParams() {
+        return App.getInstance().getWindowManager().getDialogParams();
+    }
+
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -150,12 +154,6 @@ public class WebFrame extends WebVBoxLayout
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
     }
 
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
-        WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params, windowParameters);
-    }
-
     public <T extends com.haulmont.cuba.gui.components.Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
@@ -172,12 +170,6 @@ public class WebFrame extends WebVBoxLayout
         WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType);
-    }
-
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
-        WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params, windowParameters);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {

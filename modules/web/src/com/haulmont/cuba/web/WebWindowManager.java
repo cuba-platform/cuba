@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowParameters;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
@@ -210,18 +209,10 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void showWindow(final Window window, final String caption, OpenType type) {
-        showWindow(window, caption, type, WindowParameters.EMPTY);
+        showWindow(window, caption, type);
     }
 
-    protected void showWindow(Window window, String caption, String description, OpenType type) {
-        showWindow(window, caption, description, type, WindowParameters.EMPTY);
-    }
-
-    public void showWindow(final Window window, final String caption, OpenType type, WindowParameters windowParameters) {
-        showWindow(window, caption, null, type, windowParameters);
-    }
-
-    public void showWindow(final Window window, final String caption, final String description, OpenType type, WindowParameters windowParameters) {
+    public void showWindow(final Window window, final String caption, final String description, OpenType type) {
         AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
         Component component;
@@ -258,7 +249,7 @@ public class WebWindowManager extends WindowManager {
                 break;
 
             case DIALOG:
-                component = showWindowDialog(window, caption, description, appWindow, windowParameters);
+                component = showWindowDialog(window, caption, description, appWindow);
                 break;
 
             default:
@@ -466,7 +457,7 @@ public class WebWindowManager extends WindowManager {
         return layout;
     }
 
-    protected Component showWindowDialog(final Window window, final String caption, final String description, AppWindow appWindow, WindowParameters windowParameters) {
+    protected Component showWindowDialog(final Window window, final String caption, final String description, AppWindow appWindow) {
         removeWindowsWithName(window.getId());
 
         com.vaadin.ui.Window win = null;
@@ -516,10 +507,12 @@ public class WebWindowManager extends WindowManager {
                 window.close("close", true);
             }
         });
-        if (windowParameters != null && !WindowParameters.EMPTY.equals(windowParameters) && windowParameters.getParameter("width") != null && windowParameters.getParameter("width") instanceof Float)
-            win.setWidth((Float) windowParameters.getParameter("width"), Sizeable.UNITS_PIXELS);
+        if (getDialogParams().getWidth() != null)
+            win.setWidth(getDialogParams().getWidth().floatValue(), Sizeable.UNITS_PIXELS);
         else
             win.setWidth(600, Sizeable.UNITS_PIXELS);
+        getDialogParams().reset();
+
 //        win.setResizable(false);
         win.setModal(true);
 
@@ -666,16 +659,11 @@ public class WebWindowManager extends WindowManager {
         app.getAppWindow().showNotification(notify);
     }
 
-    public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
-        showMessageDialog(title, message, messageType, WindowParameters.EMPTY);
-    }
-
     @Override
     public void showMessageDialog(
             String title,
             String message,
-            IFrame.MessageType messageType,
-            WindowParameters wp
+            IFrame.MessageType messageType
     ) {
         removeWindowsWithName("cuba-message-dialog");
 
@@ -696,11 +684,12 @@ public class WebWindowManager extends WindowManager {
         layout.addComponent(desc);
 
         float width;
-        if (wp != null && !wp.equals(WindowParameters.EMPTY) && wp.getParameter("width") != null) {
-            width = (Float) wp.getParameter("width");
+        if (getDialogParams().getWidth() != null) {
+            width = getDialogParams().getWidth().floatValue();
         } else {
             width = 400;
         }
+        getDialogParams().reset();
 
         window.setWidth(width, Sizeable.UNITS_PIXELS);
         window.setResizable(false);
@@ -710,17 +699,12 @@ public class WebWindowManager extends WindowManager {
         window.center();
     }
 
-    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
-        showOptionDialog(title, message, messageType, actions, WindowParameters.EMPTY);
-    }
-
     @Override
     public void showOptionDialog(
             String title,
             String message,
             IFrame.MessageType messageType,
-            Action[] actions,
-            WindowParameters wp
+            Action[] actions
     ) {
         removeWindowsWithName("cuba-option-dialog");
 
@@ -736,11 +720,12 @@ public class WebWindowManager extends WindowManager {
         Label messageBox = new Label(message, Label.CONTENT_XHTML);
 
         float width;
-        if (wp != null && !wp.equals(WindowParameters.EMPTY) && wp.getParameter("width") != null) {
-            width = (Float) wp.getParameter("width");
+        if (getDialogParams().getWidth() != null) {
+            width = getDialogParams().getWidth().floatValue();
         } else {
             width = 400;
         }
+        getDialogParams().reset();
 
         window.setWidth(width, Sizeable.UNITS_PIXELS);
         window.setResizable(false);

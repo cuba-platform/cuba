@@ -11,10 +11,9 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowParameters;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
 
 import java.util.Map;
@@ -52,6 +51,12 @@ public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLa
     void registerComponent(Component component);
 
     /**
+     * These parameters will be used for a next modal dialog.<br>
+     * Parameters reset to default values after opening of each modal dialog.
+     */
+    DialogParams getDialogParams();
+
+    /**
      * Open window specifying additional parameters
      *
      * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
@@ -61,9 +66,6 @@ public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLa
      */
     <T extends Window> T openWindow(
             String windowAlias, WindowManager.OpenType openType, Map<String, Object> params);
-
-    <T extends Window> T openWindow(
-            String windowAlias, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters);
 
     /**
      * Open window
@@ -102,10 +104,6 @@ public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLa
     <T extends Window> T openEditor(
             String windowAlias, Entity item,
             WindowManager.OpenType openType, Map<String, Object> params);
-
-    <T extends Window> T openEditor(
-            String windowAlias, Entity item,
-            WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters);
 
     /**
      * Open editor

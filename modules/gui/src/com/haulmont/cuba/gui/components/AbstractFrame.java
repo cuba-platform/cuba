@@ -11,8 +11,8 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowParameters;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
@@ -169,12 +169,12 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
         frame.registerComponent(component);
     }
 
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        return frame.<T>openWindow(windowAlias, openType, params, WindowParameters.EMPTY);
+    public DialogParams getDialogParams() {
+        return frame.getDialogParams();
     }
 
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
-        return frame.<T>openWindow(windowAlias, openType, params, windowParameters);
+    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
+        return frame.<T>openWindow(windowAlias, openType, params);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
@@ -187,10 +187,6 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         return frame.<T>openEditor(windowAlias, item, openType, params);
-    }
-
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
-        return frame.<T>openEditor(windowAlias, item, openType, params, windowParameters);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {

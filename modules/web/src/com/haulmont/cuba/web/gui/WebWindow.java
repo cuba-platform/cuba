@@ -183,18 +183,16 @@ public class WebWindow
         return null;
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public DialogParams getDialogParams() {
+        return App.getInstance().getWindowManager().getDialogParams();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params);
-    }
-
-    public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params, windowParameters);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
@@ -213,12 +211,6 @@ public class WebWindow
         final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
-    }
-
-    public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, WindowParameters windowParameters) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params, windowParameters);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {

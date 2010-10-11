@@ -25,9 +25,13 @@
         <collectionDatasource id="users" class="com.haulmont.cuba.security.entity.User" view="usersubst.edit">
             <query>
                 <![CDATA[
-                select u from sec$User u   where u.id <> :ds$subst.user
+                select u from sec$User u where u.id <> :ds$subst.user
                 ]]>
+                <filter>
+                    <c>u.id not in (:param$existingIds)</c>
+                </filter>
             </query>
+
         </collectionDatasource>
     </dsContext>
 

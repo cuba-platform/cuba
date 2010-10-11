@@ -12,9 +12,7 @@ package com.haulmont.cuba.web.app.ui.security.user.edit;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -23,6 +21,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.ui.security.user.NameBuilderListener;
 import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
@@ -345,25 +344,25 @@ public class UserEditor extends AbstractEditor {
         }
 
         public void actionPerform(Component component) {
-            final CollectionDatasource<UserSubstitution, UUID> usDs = substTable.getDatasource();
-
             final UserSubstitution substitution = EntityFactory.create(UserSubstitution.class);
             substitution.setUser(userDs.getItem());
 
-            final CollectionDatasource<UserSubstitution, UUID> suDs = getDsContext().get("substitutions");
+            final CollectionDatasource<UserSubstitution, UUID> usDs = getDsContext().get("substitutions");
 
-            Map<String, Object> params = new Hashtable();
-            if(suDs != null)
-            {
-                int i=0;
-                for(UUID u:suDs.getItemIds())
-                {
-                    params.put("id"+i,suDs.getItem(u));
-                    i++;
+            Map<String, Object> params = new HashMap();
+
+            if (!usDs.getItemIds().isEmpty()) {
+                List<UUID> list = new ArrayList();
+                for (UUID usId : usDs.getItemIds()) {
+                    list.add(usDs.getItem(usId).getSubstitutedUser().getId());
                 }
+                params.put("existingIds", list);
             }
+
+            getDialogParams().setWidth(450);
+
             openEditor("sec$UserSubstitution.edit", substitution,
-                    WindowManager.OpenType.DIALOG,params, usDs);
+                    WindowManager.OpenType.DIALOG, params, usDs);
         }
     }
 
@@ -375,6 +374,7 @@ public class UserEditor extends AbstractEditor {
         public void actionPerform(Component component) {
             final CollectionDatasource<UserSubstitution, UUID> usDs = substTable.getDatasource();
 
+            getDialogParams().setWidth(450);
 
             if (usDs.getItem() != null)
                 openEditor("sec$UserSubstitution.edit", usDs.getItem(),
