@@ -31,7 +31,7 @@ import java.util.*;
 
 public class VFilterSelect extends Composite implements Paintable, Field,
         KeyDownHandler, KeyUpHandler, ClickHandler, FocusHandler, BlurHandler,
-        Focusable, ContainerResizedListener {
+        Focusable, ContainerResizedListener, HasFocusHandlers {
 
     public class FilterSelectSuggestion implements Suggestion, Command {
 
@@ -628,6 +628,10 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         popupOpener.addClickHandler(this);
     }
 
+    public HandlerRegistration addFocusHandler(FocusHandler handler) {
+        return tb.addFocusHandler(handler);
+    }
+
     public boolean hasNextPage() {
         if (totalMatches > (currentPage + 1) * pageLength) {
             return true;
@@ -881,6 +885,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             } else {
                 inputFieldKeyDown(event);
             }
+            DOM.eventCancelBubble(event.getNativeEvent().<Event>cast(), true);
         }
     }
 

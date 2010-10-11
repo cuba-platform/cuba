@@ -34,7 +34,7 @@ import java.util.Iterator;
  *
  */
 public class VTextField extends TextBoxBase implements Paintable, Field,
-        ChangeHandler, FocusHandler, BlurHandler {
+        ChangeHandler, FocusHandler, BlurHandler, com.vaadin.terminal.gwt.client.Focusable {
 
     /**
      * The input node CSS classname.
@@ -81,6 +81,10 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         addFocusHandler(this);
         addBlurHandler(this);
         sinkEvents(VTooltip.TOOLTIP_EVENTS);
+    }
+
+    public void focus() {
+        setFocus(true);
     }
 
     @Override

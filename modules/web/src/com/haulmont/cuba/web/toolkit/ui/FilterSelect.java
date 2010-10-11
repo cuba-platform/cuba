@@ -1,10 +1,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.data.Container;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.gwt.client.ui.VFilterSelect;
-import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Select;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +13,6 @@ import java.util.*;
  * Date: 19.06.2009
  */
 @SuppressWarnings("serial")
-@ClientWidget(VFilterSelect.class)
 public class FilterSelect extends Select {
 
     private boolean fixedTextBoxWidth = false;

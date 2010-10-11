@@ -2039,9 +2039,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 if (w instanceof HasFocusHandlers) {
                     ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
                         public void onFocus(FocusEvent event) {
-                            if (event.getNativeEvent().getEventTarget().cast() == w.getElement()) {
-                                Table.this.focusWidgetIndex = childWidgets.indexOf(w);
-                            }
+                            Table.this.focusWidgetIndex = childWidgets.indexOf(w);
+                            ApplicationConnection.getConsole().log("onFocus: Focus widget index: "+ Table.this.focusWidgetIndex);
                         }
                     });
                 }
@@ -2119,95 +2118,100 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         break;*/
 //                    mDown = false;
                     case Event.ONCLICK:
-                            if (BrowserInfo.get().isChrome() && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
-                                focusPanel.setFocus(true);
-                            }
-
-                            handleClickEvent(event/*, targetTdOrTr*/);
+                        handleClickEvent(event/*, targetTdOrTr*/);
 //                            scrollBodyPanel.setFocus(true);
-                            if (isSelectable()) {
+                        if (isSelectable()) {
 
-                                // Ctrl+Shift click
-                                if ((event.getCtrlKey() || event.getMetaKey())
-                                        && event.getShiftKey()
-                                        && selectMode == SELECT_MODE_MULTI
-                                        && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-                                    toggleShiftSelection(false);
-                                    setRowFocus(this);
+                            // Ctrl+Shift click
+                            if ((event.getCtrlKey() || event.getMetaKey())
+                                    && event.getShiftKey()
+                                    && selectMode == SELECT_MODE_MULTI
+                                    && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                                toggleShiftSelection(false);
+                                setRowFocus(this);
 
-                                    // Ctrl click
-                                } else if ((event.getCtrlKey() || event
-                                        .getMetaKey())
-                                        && selectMode == SELECT_MODE_MULTI
-                                        && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-                                    boolean wasSelected = isSelected();
+                                // Ctrl click
+                            } else if ((event.getCtrlKey() || event
+                                    .getMetaKey())
+                                    && selectMode == SELECT_MODE_MULTI
+                                    && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                                boolean wasSelected = isSelected();
+                                toggleSelection();
+                                setRowFocus(this);
+                                /*
+                                * next possible range select must start on
+                                * this row
+                                */
+                                selectionRangeStart = this;
+                                if (wasSelected) {
+                                    removeRowFromUnsentSelectionRanges(this);
+                                }
+
+                                // Ctrl click (Single selection)
+                            } else if ((event.getCtrlKey() || event
+                                    .getMetaKey()
+                                    && selectMode == SELECT_MODE_SINGLE)) {
+                                if (!isSelected()
+                                        || (isSelected() && !nullSelectionDisallowed)) {
+
+                                    if (!isSelected()) {
+                                        deselectAll();
+                                    }
+
                                     toggleSelection();
                                     setRowFocus(this);
-                                    /*
-                                     * next possible range select must start on
-                                     * this row
-                                     */
-                                    selectionRangeStart = this;
-                                    if (wasSelected) {
-                                        removeRowFromUnsentSelectionRanges(this);
+                                }
+
+                                // Shift click
+                            } else if (event.getShiftKey()
+                                    && selectMode == SELECT_MODE_MULTI
+                                    && multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                                toggleShiftSelection(true);
+
+                                // click
+                            } else {
+                                boolean currentlyJustThisRowSelected = selectedRowKeys
+                                        .size() == 1
+                                        && selectedRowKeys
+                                        .contains(getKey());
+
+                                if (!currentlyJustThisRowSelected) {
+                                    if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                                        deselectAll();
                                     }
-
-                                    // Ctrl click (Single selection)
-                                } else if ((event.getCtrlKey() || event
-                                        .getMetaKey()
-                                        && selectMode == SELECT_MODE_SINGLE)) {
-                                    if (!isSelected()
-                                            || (isSelected() && !nullSelectionDisallowed)) {
-
-                                        if (!isSelected()) {
-                                            deselectAll();
-                                        }
-
-                                        toggleSelection();
-                                        setRowFocus(this);
-                                    }
-
-                                    // Shift click
-                                } else if (event.getShiftKey()
-                                        && selectMode == SELECT_MODE_MULTI
-                                        && multiselectmode == MULTISELECT_MODE_DEFAULT) {
-                                    toggleShiftSelection(true);
-
-                                    // click
-                                } else {
-                                    boolean currentlyJustThisRowSelected = selectedRowKeys
-                                            .size() == 1
-                                            && selectedRowKeys
-                                                    .contains(getKey());
-
-                                    if (!currentlyJustThisRowSelected) {
-                                        if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
-                                            deselectAll();
-                                        }
-                                        toggleSelection();
-                                    } else if (selectMode == SELECT_MODE_SINGLE
-                                            && !nullSelectionDisallowed) {
-                                        toggleSelection();
-                                    }/*
+                                    toggleSelection();
+                                } else if (selectMode == SELECT_MODE_SINGLE
+                                        && !nullSelectionDisallowed) {
+                                    toggleSelection();
+                                }/*
                                       * else NOP to avoid excessive server
                                       * visits (selection is removed with
                                       * CTRL/META click)
                                       */
 
-                                    selectionRangeStart = this;
-                                    setRowFocus(this);
-                                }
-
-                                // Remove IE text selection hack
-                                if (BrowserInfo.get().isIE()) {
-                                    ((Element) event.getEventTarget().cast())
-                                            .setPropertyJSO("onselectstart",
-                                                    null);
-                                }
-//                                sendSelectedRows();
-                                handleRowClick(event);
+                                selectionRangeStart = this;
+                                setRowFocus(this);
                             }
-                            break;
+
+                            // Remove IE text selection hack
+                            if (BrowserInfo.get().isIE()) {
+                                ((Element) event.getEventTarget().cast())
+                                        .setPropertyJSO("onselectstart",
+                                                null);
+                            }
+//                                sendSelectedRows();
+                            handleRowClick(event);
+                        }
+
+                        if (BrowserInfo.get().isChrome()
+                                && childWidgets.isEmpty()
+                                && DOM.getElementPropertyBoolean(targetElement, "__cell"))
+                        {
+                            focusPanel.setFocus(true);
+                            ApplicationConnection.getConsole().log("Chrome: setted focus to panel");
+                        }
+
+                        break;
                     case Event.ONDBLCLICK:
                         handleClickEvent(event);
                         break;
@@ -2269,10 +2273,12 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     }
                     if (!childWidgets.isEmpty()) {
                         Widget w = (Widget) childWidgets.get(focusWidgetIndex > -1 ? focusWidgetIndex : 0);
-                        if (w instanceof Focusable) {
-                            ((Focusable) w).setFocus(true);
+                        if (w instanceof com.vaadin.terminal.gwt.client.Focusable) {
+                            ((com.vaadin.terminal.gwt.client.Focusable) w).focus();
                         }
+                        ApplicationConnection.getConsole().log("onSelect: Focus widget index: "+ focusWidgetIndex);
                     }
+                    
                     addStyleName("v-selected");
                 } else {
                     selectedRowKeys.remove(key);
