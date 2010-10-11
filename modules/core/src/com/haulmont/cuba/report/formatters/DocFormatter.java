@@ -178,7 +178,7 @@ public class DocFormatter extends AbstractFormatter {
                 o.setString(parameter != null ? parameter.toString() : "");
             }
         } catch (Exception ex) {
-            throw new ReportFormatterException(ex);
+            //throw new ReportFormatterException(ex);
         }
     }
 
@@ -188,89 +188,45 @@ public class DocFormatter extends AbstractFormatter {
             // Getting table corresponding to tepmlate
             XTextTable xTextTable = getTableByName(xTextTablesSupplier, tableTemplate.getTableName());
 
-            /*
+            /* todo: remove hack for table with one column
+            boolean hastemp = addTempColumnToTable(xTextTable);
             try {
-                // Copy template row to end
-                CopyTableRow(xTextTable, 0);
-                CopyTableRow(xTextTable, 0);
+                copyTableRow(xTextTable, 0);
             } catch (Exception e) {
                 throw new ReportFormatterException("Error in table copy");
-            }*/
+            } */
 
             // Finding all bands with name of table wich is now processed
-           for (Band band : rootBand.getChildren()) {
-               if (band.getName().trim().equals(tableTemplate.getTableName())) {
-                   // Inserting new row to table
-                   insertRowToEnd(xTextTable);
-                   int lastRow = xTextTable.getRows().getCount() - 1;
-                   // Iterating over all cells templates, specified for this table and processing them
-                   for (Integer column : tableTemplate.getColumnsTemplates().keySet()) {
-                       //setCellText(xTextTable, column, lastRow, processCellTemplate(tableTemplate.getColumnTemplate(column), band));
-                       setCellText(xTextTable, column, lastRow, insertBandDataToString(band, tableTemplate.getColumnTemplate(column)));
-                   }
-               }
-           }
-        }
-    }
-
-    // Temp function for test ODT api
-
-    protected void replaceBandDataInCell(XDocument xDoc, XTextTable xTable, Band band, int col, int row,
-                                         XComponent xComponent, XMultiComponentFactory xMCF, XComponentContext xContext)
-            throws com.sun.star.uno.Exception {
-
-        XCellRange xCellRange = (XCellRange) UnoRuntime.queryInterface(XCellRange.class, xTable);
-        try {
-            XText xCellText = getCellXText(xTable, col, row);
-            // Проверяем параметры для вставки
-            String sourceStr = xCellText.getString();
-            List<String> parametersToInsert = new ArrayList<String>();
-            Pattern namePattern = Pattern.compile("\\$\\{.+?\\}", Pattern.CASE_INSENSITIVE);
-            Matcher matcher = namePattern.matcher(sourceStr);
-            while (matcher.find()) {
-                parametersToInsert.add(matcher.group().replace("${", "").replace("}", ""));
+            for (Band band : rootBand.getChildren()) {
+                if (band.getName().trim().equals(tableTemplate.getTableName())) {
+                    //replaceBandsInRow(xTextTable, 0, band);
+                    // Inserting new row to table
+                    insertRowToEnd(xTextTable);
+                    int lastRow = xTextTable.getRows().getCount() - 1;
+                    // Iterating over all cells templates, specified for this table and processing them
+                    for (Integer column : tableTemplate.getColumnsTemplates().keySet()) {
+                        //setCellText(xTextTable, column, lastRow, processCellTemplate(tableTemplate.getColumnTemplate(column), band));
+                        setCellText(xTextTable, column, lastRow, insertBandDataToString(band, tableTemplate.getColumnTemplate(column)));
+                    }
+                }
             }
-            // Обрабатываем найденные параметры
-            for (String parameterName : parametersToInsert) {
-                // Получаем данные для вставки
-                Object value = band.getData().get(parameterName);
-                String valueStr = value != null ? value.toString() : "";
-                String search = "\\$\\{" + parameterName + "\\}";
 
-                //resultStr = resultStr.replaceAll("\\$\\{" + parameterName + "\\}", valueStr);
-                //Заменить все найденные параметры
-                XReplaceable xReplaceable = (com.sun.star.util.XReplaceable) UnoRuntime.queryInterface(com.sun.star.util.XReplaceable.class, xDoc);
-                XReplaceDescriptor xRepDesc = xReplaceable.createReplaceDescriptor();
-
-                XSearchDescriptor xSearchDesc = xReplaceable.createSearchDescriptor();
-                xSearchDesc.setSearchString(search);
-//                xSearchDesc.setPropertyValue("SearchWords", true);
-
-                xRepDesc.setSearchString(search);
-                xRepDesc.setReplaceString(valueStr);
-//                xRepDesc.setPropertyValue("SearchWords", true);
-
-                //выполняем замену
-                xReplaceable.replaceAll(xRepDesc);
-            }
-        } catch (Exception e) {
-            throw new ReportFormatterException();
+            //removeTempColumFromTable(xTextTable, hastemp);
         }
     }
 
     //Copy table and merge copy with original
-
-    private void CopyTable(XTextTable xTable) throws com.sun.star.uno.Exception {
+    private void copyTable(XTextTable xTable) throws com.sun.star.uno.Exception {
         // All type casts make through ([Class])UnoRuntime.queryInterface([Class].class, object)
         XMultiComponentFactory xMCF = contextGroup.getMCF();
         XComponentContext xContext = contextGroup.getContext();
 
         // Get current controller
-        XTextDocument xTextDocument = (XTextDocument) UnoRuntime.queryInterface(XTextDocument.class, xComponent);
+        XTextDocument xTextDocument = asXTextDocument(xComponent);
         XController currController = xTextDocument.getCurrentController();
 
         // Get selection supplier
-        XSelectionSupplier xSelectionSupplier = (XSelectionSupplier) UnoRuntime.queryInterface(XSelectionSupplier.class, currController);
+        XSelectionSupplier xSelectionSupplier = asXSelectionSupplier(currController);
 
         // Get cell names
         String[] arrCellNames = xTable.getCellNames();
@@ -282,7 +238,7 @@ public class DocFormatter extends AbstractFormatter {
         xTextTableCursor.gotoCellByName(arrCellNames[arrCellNames.length - 1], true);
 
         // Get the table as XCellRange interface
-        XCellRange xTableCellRange = (XCellRange) UnoRuntime.queryInterface(XCellRange.class, xTable);
+        XCellRange xTableCellRange = asXCellRange(xTable);
 
         // Create the cell range using the table cursor
         XCellRange xCellRange = xTableCellRange.getCellRangeByName(xTextTableCursor.getRangeName());
@@ -293,18 +249,18 @@ public class DocFormatter extends AbstractFormatter {
         // Get Dispatch Helper to dispatch commands
         // xContext is the local or remote context , i.e. the office context (XComponentContext)
         // one can obtain this in various ways, the simpler being Bootstrap.bootstrap()
-        XDispatchHelper xDispatchHelper = (XDispatchHelper) UnoRuntime.queryInterface(XDispatchHelper.class,
+        XDispatchHelper xDispatchHelper = asXDispatchHelper(
                 xMCF.createInstanceWithContext("com.sun.star.frame.DispatchHelper", xContext));
 
         // We have the selection
         // Execute copy command
-        XDispatchProvider xFrame = (XDispatchProvider) UnoRuntime.queryInterface(XDispatchProvider.class, currController.getFrame());
+        XDispatchProvider xFrame = asXDispatchProvider(currController.getFrame());
         xDispatchHelper.executeDispatch(xFrame, ".uno:Copy", "", 0, new PropertyValue[]{new PropertyValue()});
 
         // Move the cursor below the table, to paste the contents that we copied
 
         // Get the view cursor
-        XTextViewCursorSupplier xCursorSupplier = (XTextViewCursorSupplier) UnoRuntime.queryInterface(XTextViewCursorSupplier.class, currController);
+        XTextViewCursorSupplier xCursorSupplier = asXTextCursorSupplier(currController);
         XTextViewCursor xViewCursor = xCursorSupplier.getViewCursor();
 
         // The cursor is now positioned at the beginning of text in the last cell
@@ -323,11 +279,11 @@ public class DocFormatter extends AbstractFormatter {
         xViewCursor.collapseToStart();
 
         // Perform Paste command
-        xFrame = (XDispatchProvider) UnoRuntime.queryInterface(XDispatchProvider.class, currController.getFrame());
+        xFrame = asXDispatchProvider(currController.getFrame());
         xDispatchHelper.executeDispatch(xFrame, ".uno:Paste", "", 0, new PropertyValue[]{new PropertyValue()});
 
         // Put the cursor into the first cell of the first table
-        XCellRange xTableCells = (XCellRange) UnoRuntime.queryInterface(XCellRange.class, xTable);
+        XCellRange xTableCells = asXCellRange(xTable);
         xCellRange = xTableCells.getCellRangeByPosition(0, 0, 0, 0);
         xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
 
@@ -335,76 +291,208 @@ public class DocFormatter extends AbstractFormatter {
         currController.getFrame().getContainerWindow().setFocus();
 
         // Perform merge for the two tables
-        xFrame = (XDispatchProvider) UnoRuntime.queryInterface(XDispatchProvider.class, currController.getFrame());
+        xFrame = asXDispatchProvider(currController.getFrame());
         xDispatchHelper.executeDispatch(xFrame, ".uno:MergeTable", "", 0, new PropertyValue[]{new PropertyValue()});
 
         // Now we have to delete the space character that we have inserted before performing paste command
         // TODO
     }
 
-    //Copy table row and add to original table
+    private boolean addTempColumnToTable(XTextTable xTable) {
+        int columnCount = xTable.getColumns().getCount();
+        if (columnCount < 2) {
+            xTable.getColumns().insertByIndex(columnCount, 1);
+        }
+        return columnCount < 2;
+    }
 
-    private void CopyTableRow(XTextTable xTable, int row) throws com.sun.star.uno.Exception {
-        // All type casts make through ([Class])UnoRuntime.queryInterface([Class].class, object)
+    private void removeTempColumFromTable(XTextTable xTable, boolean hastemp) {
+        if (hastemp) {
+            int count = xTable.getColumns().getCount();
+            xTable.getColumns().removeByIndex(count - 1, 1);
+        }
+    }
+
+    private XCellRange getRowCells(XTextTable xTable, int row) {
+        XCellRange xCellRange = null;
         XMultiComponentFactory xMCF = contextGroup.getMCF();
         XComponentContext xContext = contextGroup.getContext();
 
         // Get current controller
-        XTextDocument xTextDocument = (XTextDocument) UnoRuntime.queryInterface(XTextDocument.class, xComponent);
+        XTextDocument xTextDocument = asXTextDocument(xComponent);
         XController currController = xTextDocument.getCurrentController();
 
         // Get selection supplier
-        XSelectionSupplier xSelectionSupplier = (XSelectionSupplier) UnoRuntime.queryInterface(XSelectionSupplier.class, currController);
+        XSelectionSupplier xSelectionSupplier = asXSelectionSupplier(currController);
 
         // Get cell names
-        String[] arrCellNames = xTable.getCellNames();
         int columnCount = xTable.getColumns().getCount();
 
-        // Create a table cursor starting at the first cell
-        String firstCell = arrCellNames[row * columnCount];
-        String lastCell = arrCellNames[(row + 1) * columnCount - 1];
-
-        // Get the table as XCellRange interface
-        XCellRange xTableCellRange = (XCellRange) UnoRuntime.queryInterface(XCellRange.class, xTable);
-        XCellRange xCellRange = null;
-        XTextTableCursor xTextTableCursor = xTable.createCursorByCellName(firstCell);
-        if (!firstCell.equals(lastCell)) {
-            // Move cursor to the last cell in the table
-            xTextTableCursor.gotoCellByName(lastCell, true);
-            // Create the cell range using the table cursor
-            String rangeName = xTextTableCursor.getRangeName();
-            xCellRange = xTableCellRange.getCellRangeByName(rangeName);
-            xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
-        }else{
-            xTextTableCursor.gotoStart(false);
-            xTextTableCursor.gotoEnd(true);
-            
-            //xSelectionSupplier.select(new Any(new Type(xTextTableCursor.getClass()), xTextTableCursor));
+        XCellRange xTableCellRange = asXCellRange(xTable);
+        try {
+            xCellRange = xTableCellRange.getCellRangeByPosition(0, row, columnCount - 1, row);
+        } catch (Exception e) {
+            new ReportFormatterException(e);
         }
+        return xCellRange;
+    }
 
-        // (-)Get row cells
-        // (-)xTableCellRange = xTableCellRange.getCellRangeByPosition(0,columnCount-1,row,row);
+    /* Copy table row and add to original table
+     * @param xTable working table
+     * @param row row in table for copy */
+    private void copyTableRow(XTextTable xTable, int row) {
+        try {
+            // All type casts make through ([Class])UnoRuntime.queryInterface([Class].class, object)
+            XMultiComponentFactory xMCF = contextGroup.getMCF();
+            XComponentContext xContext = contextGroup.getContext();
 
-        // for one cell use absolute address $B$2
-        //if (firstCell.equals(lastCell))
-        //    rangeName = "$" + firstCell.charAt(0) + "$" + firstCell.charAt(1);
-        //xTableCellRange.getCellRangeByPosition(0,row,columnCount-1,row);
+            // Get current controller
+            XTextDocument xTextDocument = asXTextDocument(xComponent);
+            XController currController = xTextDocument.getCurrentController();
 
-        // Get Dispatch Helper to dispatch commands
-        // xContext is the local or remote context , i.e. the office context (XComponentContext)
-        // one can obtain this in various ways, the simpler being Bootstrap.bootstrap()
-        XDispatchHelper xDispatchHelper = (XDispatchHelper) UnoRuntime.queryInterface(XDispatchHelper.class,
-                xMCF.createInstanceWithContext("com.sun.star.frame.DispatchHelper", xContext));
+            // Get selection supplier
+            XSelectionSupplier xSelectionSupplier = asXSelectionSupplier(currController);
 
-        // We have the selection
-        // Execute copy command
-        XDispatchProvider xFrame = (XDispatchProvider) UnoRuntime.queryInterface(XDispatchProvider.class, currController.getFrame());
-        xDispatchHelper.executeDispatch(xFrame, ".uno:Copy", "", 0, new PropertyValue[]{new PropertyValue()});
+            // Get cell names
+            int columnCount = xTable.getColumns().getCount();
+            String[] arrCellNames = xTable.getCellNames();
 
-        // Move the cursor below the table, to paste the contents that we copied
+            // Create a table cursor starting at the first cell
+            String firstCell = arrCellNames[row * columnCount];
+            String lastCell = arrCellNames[(row + 1) * columnCount - 1];
+
+            // Get the table as XCellRange interface
+            XCellRange xTableCellRange = asXCellRange(xTable);
+            XCellRange xCellRange = null;
+            XTextTableCursor xTextTableCursor = xTable.createCursorByCellName(firstCell);
+
+            // Move cursor to the last cell in the table
+            //xTextTableCursor.gotoCellByName(lastCell, true);
+            // Create the cell range using the table cursor
+            // String rangeName = xTextTableCursor.getRangeName();
+            // xCellRange = xTableCellRange.getCellRangeByName(rangeName);
+            // xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
+
+            xCellRange = xTableCellRange.getCellRangeByPosition(0, row, columnCount - 1, row);
+            xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
+
+            // Get Dispatch Helper to dispatch commands
+            // xContext is the local or remote context , i.e. the office context (XComponentContext)
+            // one can obtain this in various ways, the simpler being Bootstrap.bootstrap()
+            XDispatchHelper xDispatchHelper = asXDispatchHelper(
+                    xMCF.createInstanceWithContext("com.sun.star.frame.DispatchHelper", xContext));
+
+            // We have the selection
+            // Execute copy command
+            XDispatchProvider xFrame = asXDispatchProvider(currController.getFrame());
+            xDispatchHelper.executeDispatch(xFrame, ".uno:Copy", "", 0, new PropertyValue[]{new PropertyValue()});
+
+            // Move the cursor below the table, to paste the contents that we copied
+
+            // Get the view cursor
+            XTextViewCursorSupplier xCursorSupplier = asXTextCursorSupplier(currController);
+            XTextViewCursor xViewCursor = xCursorSupplier.getViewCursor();
+
+            // The cursor is now positioned at the beginning of text in the last cell
+            // Get at the end of table
+            xViewCursor.gotoEnd(false);
+
+            // Step out of the table
+            // This also skips to the next line
+            xViewCursor.goRight((short) 1, false);
+
+            // Now we invoke a paste command
+            // Here I had to do a hack, because if I did the paste command at this point,
+            //  an empty line remained between the two tables
+            // If someone knows how to do this without the hack, please please post it here :)
+            xViewCursor.setString(" ");
+            xViewCursor.collapseToStart();
+
+            // Perform Paste command
+            xFrame = asXDispatchProvider(currController.getFrame());
+            xDispatchHelper.executeDispatch(xFrame, ".uno:Paste", "", 0, new PropertyValue[]{new PropertyValue()});
+
+            // Put the cursor into the first cell of the first table
+            XCellRange xTableCells = asXCellRange(xTable);
+            xCellRange = xTableCells.getCellRangeByPosition(0, 0, 0, 0);
+            xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
+
+            // Focus (don't know if is needed)
+            currController.getFrame().getContainerWindow().setFocus();
+
+            // Perform merge for the two tables
+            xFrame = asXDispatchProvider(currController.getFrame());
+            xDispatchHelper.executeDispatch(xFrame, ".uno:MergeTable", "", 0, new PropertyValue[]{new PropertyValue()});
+        }
+        catch (Exception ex) {
+            throw new ReportFormatterException(ex);
+        }
+    }
+
+    private void copyRow(XTextTable xTable, int row) {
+        try {
+            // All type casts make through ([Class])UnoRuntime.queryInterface([Class].class, object)
+            XMultiComponentFactory xMCF = contextGroup.getMCF();
+            XComponentContext xContext = contextGroup.getContext();
+
+            // Get current controller
+            XTextDocument xTextDocument = asXTextDocument(xComponent);
+            XController currController = xTextDocument.getCurrentController();
+
+            // Get selection supplier
+            XSelectionSupplier xSelectionSupplier = asXSelectionSupplier(currController);
+
+            // Get cell names
+            int columnCount = xTable.getColumns().getCount();
+            String[] arrCellNames = xTable.getCellNames();
+
+            // Create a table cursor starting at the first cell
+            String firstCell = arrCellNames[row * columnCount];
+            String lastCell = arrCellNames[(row + 1) * columnCount - 1];
+
+            // Get the table as XCellRange interface
+            XCellRange xTableCellRange = asXCellRange(xTable);
+            XCellRange xCellRange = null;
+            XTextTableCursor xTextTableCursor = xTable.createCursorByCellName(firstCell);
+
+            // Move cursor to the last cell in the table
+            //xTextTableCursor.gotoCellByName(lastCell, true);
+            // Create the cell range using the table cursor
+            // String rangeName = xTextTableCursor.getRangeName();
+            // xCellRange = xTableCellRange.getCellRangeByName(rangeName);
+            // xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
+
+            xCellRange = xTableCellRange.getCellRangeByPosition(0, row, columnCount - 1, row);
+            xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
+
+            // Get Dispatch Helper to dispatch commands
+            // xContext is the local or remote context , i.e. the office context (XComponentContext)
+            // one can obtain this in various ways, the simpler being Bootstrap.bootstrap()
+            XDispatchHelper xDispatchHelper = asXDispatchHelper(
+                    xMCF.createInstanceWithContext("com.sun.star.frame.DispatchHelper", xContext));
+
+            // We have the selection
+            // Execute copy command
+            XDispatchProvider xFrame = asXDispatchProvider(currController.getFrame());
+            xDispatchHelper.executeDispatch(xFrame, ".uno:Copy", "", 0, new PropertyValue[]{new PropertyValue()});
+        }
+        catch (Exception ex) {
+            throw new ReportFormatterException(ex);
+        }
+    }
+
+    private void pasteRow(XTextTable xTable) {
+        XMultiComponentFactory xMCF = contextGroup.getMCF();
+        XComponentContext xContext = contextGroup.getContext();
+
+        XTextDocument xTextDocument = asXTextDocument(xComponent);
+        XController currController = xTextDocument.getCurrentController();
+
+        // Get selection supplier
+        XSelectionSupplier xSelectionSupplier = asXSelectionSupplier(currController);
 
         // Get the view cursor
-        XTextViewCursorSupplier xCursorSupplier = (XTextViewCursorSupplier) UnoRuntime.queryInterface(XTextViewCursorSupplier.class, currController);
+        XTextViewCursorSupplier xCursorSupplier = asXTextCursorSupplier(currController);
         XTextViewCursor xViewCursor = xCursorSupplier.getViewCursor();
 
         // The cursor is now positioned at the beginning of text in the last cell
@@ -423,23 +511,69 @@ public class DocFormatter extends AbstractFormatter {
         xViewCursor.collapseToStart();
 
         // Perform Paste command
-        xFrame = (XDispatchProvider) UnoRuntime.queryInterface(XDispatchProvider.class, currController.getFrame());
-        xDispatchHelper.executeDispatch(xFrame, ".uno:Paste", "", 0, new PropertyValue[]{new PropertyValue()});
+        XDispatchProvider xFrame = asXDispatchProvider(currController.getFrame());
+        XDispatchHelper xDispatchHelper = null;
+        try {
+            xDispatchHelper = asXDispatchHelper(
+                    xMCF.createInstanceWithContext("com.sun.star.frame.DispatchHelper", xContext));
+            xDispatchHelper.executeDispatch(xFrame, ".uno:Paste", "", 0, new PropertyValue[]{new PropertyValue()});
 
-        // Put the cursor into the first cell of the first table
-        XCellRange xTableCells = (XCellRange) UnoRuntime.queryInterface(XCellRange.class, xTable);
-        xCellRange = xTableCells.getCellRangeByPosition(0, 0, 0, 0);
-        xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
+            // Put the cursor into the first cell of the first table
+            XCellRange xTableCells = asXCellRange(xTable);
+            XCellRange xCellRange = xTableCells.getCellRangeByPosition(0, 0, 0, 0);
+            xSelectionSupplier.select(new Any(new Type(xCellRange.getClass()), xCellRange));
 
-        // Focus (don't know if is needed)
-        currController.getFrame().getContainerWindow().setFocus();
+            // Focus (don't know if is needed)
+            currController.getFrame().getContainerWindow().setFocus();
 
-        // Perform merge for the two tables
-        xFrame = (XDispatchProvider) UnoRuntime.queryInterface(XDispatchProvider.class, currController.getFrame());
-        xDispatchHelper.executeDispatch(xFrame, ".uno:MergeTable", "", 0, new PropertyValue[]{new PropertyValue()});
+            // Perform merge for the two tables
+            xFrame = asXDispatchProvider(currController.getFrame());
+            xDispatchHelper.executeDispatch(xFrame, ".uno:MergeTable", "", 0, new PropertyValue[]{new PropertyValue()});
 
-        // Now we have to delete the space character that we have inserted before performing paste command
-        // TODO
+            // Now we have to delete the space character that we have inserted before performing paste command
+            // TODO   
+        } catch (Exception e) {
+            throw new ReportFormatterException(e);
+        }
+    }
+
+    private void replaceBandsInRow(XTextTable xTable, int row, Band band) {
+        try {
+            int columnCount = xTable.getColumns().getCount();
+
+            XTextDocument xTextDocument = asXTextDocument(xComponent);
+            XReplaceable xTextRepl = asXReplaceable(xTextDocument);
+
+            if (xTextRepl != null) {
+                List<String> parametersToInsert = new ArrayList<String>();
+                // Ищем параметры                    
+                for (int i = 0; i < columnCount; i++) {
+                    XText cellText = getCellXText(xTable, i, row);
+                    String sourceStr = cellText.getString();
+                    Pattern namePattern = Pattern.compile("\\$\\{.+?\\}", Pattern.CASE_INSENSITIVE);
+                    Matcher matcher = namePattern.matcher(sourceStr);
+                    while (matcher.find()) {
+                        parametersToInsert.add(matcher.group().replace("${", "").replace("}", ""));
+                    }
+                }
+                // Обрабатываем найденные параметры
+                for (String parameterName : parametersToInsert) {
+                    //Строки для замен
+                    Object value = band.getData().get(parameterName);
+                    String valueStr = value != null ? value.toString() : "";
+                    String search = "${" + parameterName + "}";
+
+                    XReplaceDescriptor xRepDesc = xTextRepl.createReplaceDescriptor();
+                    xRepDesc.setSearchString(search);
+                    xRepDesc.setReplaceString(valueStr);
+
+                    xTextRepl.replaceAll(xRepDesc);
+                }
+            }
+
+        } catch (Exception e) {
+            throw new ReportFormatterException(e);
+        }
     }
 
     private void createTableTemplates(XTextTablesSupplier xTextTablesSupplier) throws NoSuchElementException, WrappedTargetException, IndexOutOfBoundsException {

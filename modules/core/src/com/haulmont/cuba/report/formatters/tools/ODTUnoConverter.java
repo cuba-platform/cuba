@@ -1,14 +1,14 @@
 package com.haulmont.cuba.report.formatters.tools;
 
 import com.sun.star.container.XEnumerationAccess;
-import com.sun.star.frame.XComponentLoader;
-import com.sun.star.frame.XDesktop;
-import com.sun.star.frame.XStorable;
+import com.sun.star.frame.*;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.table.XCellRange;
 import com.sun.star.text.*;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XCloseable;
+import com.sun.star.util.XReplaceable;
+import com.sun.star.view.XSelectionSupplier;
 
 /*
 * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
@@ -68,5 +68,25 @@ public class ODTUnoConverter {
 
     public static XCellRange asXCellRange(Object o) {
         return (XCellRange) UnoRuntime.queryInterface(XCellRange.class, o);
+    }
+
+    public static XDispatchProvider asXDispatchProvider(Object o){
+        return (XDispatchProvider)UnoRuntime.queryInterface(XDispatchProvider.class, o);
+    }
+
+    public static XTextViewCursorSupplier asXTextCursorSupplier(Object o){
+        return (XTextViewCursorSupplier)UnoRuntime.queryInterface(XTextViewCursorSupplier.class, o);
+    }
+
+    public static XDispatchHelper asXDispatchHelper(Object o){
+        return (XDispatchHelper)UnoRuntime.queryInterface(XDispatchHelper.class, o);
+    }
+
+    public static XSelectionSupplier asXSelectionSupplier(Object o){
+        return (XSelectionSupplier)UnoRuntime.queryInterface(XSelectionSupplier.class, o);
+    }
+
+    public static XReplaceable asXReplaceable(Object o){
+        return (XReplaceable)UnoRuntime.queryInterface(XReplaceable.class, o);
     }
 }
