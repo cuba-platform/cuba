@@ -140,6 +140,10 @@ public class GroupTable extends Table implements GroupTableContainer {
             target.addAttribute("listenClicks", true);
         }
 
+        if (isTextSelectionEnabled()) {
+            target.addAttribute("textSelection", true);
+        }
+
         target.addAttribute("cols", cols);
         target.addAttribute("rows", rows);
 

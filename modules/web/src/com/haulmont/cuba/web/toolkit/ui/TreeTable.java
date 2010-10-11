@@ -379,6 +379,10 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
             target.addAttribute("listenClicks", true);
         }
 
+        if (isTextSelectionEnabled()) {
+            target.addAttribute("textSelection", true);
+        }
+
         target.addAttribute("cols", cols);
         target.addAttribute("rows", rows);
 
