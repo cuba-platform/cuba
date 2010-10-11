@@ -103,6 +103,10 @@ public interface Window extends Serializable, IFrame, Component.HasCaption, Comp
          * Passes {@link #COMMIT_ACTION_ID} to associated {@link CloseListener}s
          */
         void commitAndClose();
+
+        /** Check whether item was pessimistically locked when editor was opened */
+        boolean isLocked();
+
     }
 
     /**

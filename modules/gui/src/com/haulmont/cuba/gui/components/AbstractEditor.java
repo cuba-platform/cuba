@@ -83,4 +83,12 @@ public class AbstractEditor extends AbstractWindow implements Window.Editor {
             throw new UnsupportedOperationException();
         }
     }
+
+    public boolean isLocked() {
+        if (frame instanceof Window.Editor) {
+            return ((Editor) frame).isLocked();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

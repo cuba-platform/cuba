@@ -614,7 +614,7 @@ public class WebWindow
     public static class Editor extends WebWindow implements Window.Editor {
 
         protected Entity item;
-        protected boolean locked;
+        protected boolean justLocked;
 
         private boolean commitActionPerformed;
 
@@ -775,7 +775,7 @@ public class WebWindow
             LockService lockService = ServiceLocator.lookup(LockService.NAME);
             LockInfo lockInfo = lockService.lock(ds.getMetaClass().getName(), item.getId().toString());
             if (lockInfo == null) {
-                locked = true;
+                justLocked = true;
             } else if (!(lockInfo instanceof LockNotSupported)) {
                 String mp = AppConfig.getInstance().getMessagesPack();
                 App.getInstance().getWindowManager().showNotification(
@@ -797,7 +797,7 @@ public class WebWindow
 
         @Override
         public boolean onClose(String actionId) {
-            if (locked) {
+            if (justLocked) {
                 Entity entity = getDatasource().getItem();
                 if (entity != null) {
                     LockService lockService = ServiceLocator.lookup(LockService.NAME);
@@ -906,6 +906,10 @@ public class WebWindow
             if (commit()) {
                 close(COMMIT_ACTION_ID);
             }
+        }
+
+        public boolean isLocked() {
+            return !justLocked;
         }
 
         protected boolean __validate() {
