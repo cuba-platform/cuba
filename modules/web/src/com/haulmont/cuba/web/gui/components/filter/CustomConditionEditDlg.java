@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.QueryParserRegex;
@@ -362,9 +363,11 @@ public class CustomConditionEditDlg extends Window {
 
         if (ParamType.ENTITY.equals(typeSelect.getValue())) {
             for (MetaClass metaClass : getMetaClasses()) {
-                select.addItem(metaClass);
-                select.setItemCaption(metaClass,
-                        MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName()));
+                if(metaClass.getJavaClass().getAnnotation(javax.persistence.Entity.class) != null){
+                    select.addItem(metaClass);
+                    select.setItemCaption(metaClass,
+                            MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName()));
+                }
             }
             if (param != null && Param.Type.ENTITY.equals(param.getType())) {
                 Class javaClass = param.getJavaClass();
