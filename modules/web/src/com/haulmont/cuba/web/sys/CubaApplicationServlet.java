@@ -53,6 +53,12 @@ public class CubaApplicationServlet extends ApplicationServlet {
         String requestURI = request.getRequestURI();
         String contextName = request.getContextPath().substring(1);
 
+        if (request.getParameter("restartApp") != null) {
+            request.getSession().invalidate();
+            response.sendRedirect(requestURI);
+            return;
+        }
+
         if (request.getParameter("testSS") != null) {
             testSessionSerialization(request.getSession());
         }
