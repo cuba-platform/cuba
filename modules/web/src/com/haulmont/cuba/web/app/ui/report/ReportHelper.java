@@ -39,6 +39,10 @@ public class ReportHelper {
     }
 
     public static void printReport(Report report, Map<String, Object> params) {
+        printReport(report, "report", params);
+    }
+
+    public static void printReport(Report report, String name, Map<String, Object> params) {
         ReportOutputType reportOutputType = report.getReportOutputType();
         Iterator iterator  = exportFormats.entrySet().iterator();
         boolean find = false;
@@ -48,7 +52,7 @@ public class ReportHelper {
             find = item.getKey().equals(reportOutputType);
         }
         if (find)
-            printReport(report, params, item.getKey(), item.getValue());
+            printReport(report, name, params, item.getKey(), item.getValue());
         /*
         if (ReportOutputType.XLS.equals(reportOutputType))
             printReport(report, params, ReportOutputType.XLS, ExportFormat.XLS);
@@ -59,11 +63,11 @@ public class ReportHelper {
         */
     }
 
-    private static void printReport(Report report, Map<String, Object> params, ReportOutputType reportOutputType, ExportFormat exportFormat) {
+    private static void printReport(Report report, String name, Map<String, Object> params, ReportOutputType reportOutputType, ExportFormat exportFormat) {
         try {
             ReportService srv = ServiceLocator.lookup(ReportService.NAME);
             byte[] byteArr = srv.createReport(report, reportOutputType, params);
-            new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), "report", exportFormat);
+            new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), name, exportFormat);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
