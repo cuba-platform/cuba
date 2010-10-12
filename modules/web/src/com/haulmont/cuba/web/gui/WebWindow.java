@@ -797,6 +797,11 @@ public class WebWindow
 
         @Override
         public boolean onClose(String actionId) {
+            releaseLock();
+            return super.onClose(actionId);
+        }
+
+        public void releaseLock() {
             if (justLocked) {
                 Entity entity = getDatasource().getItem();
                 if (entity != null) {
@@ -804,7 +809,6 @@ public class WebWindow
                     lockService.unlock(getDatasource().getMetaClass().getName(), entity.getId().toString());
                 }
             }
-            return super.onClose(actionId);
         }
 
         public void setParentDs(Datasource parentDs) {

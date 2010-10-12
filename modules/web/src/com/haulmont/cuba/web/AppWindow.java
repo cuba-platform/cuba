@@ -32,6 +32,7 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.log.LogWindow;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
@@ -730,6 +731,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
             App app = App.getInstance();
+            for (com.haulmont.cuba.gui.components.Window window : app.getWindowManager().getOpenWindows()) {
+                if (window instanceof WebWindow.Editor) {
+                    ((WebWindow.Editor)window).releaseLock();
+                }
+            }
             app.getWindowManager().closeAll();
             app.getConnection().substituteUser((User) substUserSelect.getValue());
         }
