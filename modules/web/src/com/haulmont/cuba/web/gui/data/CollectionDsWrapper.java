@@ -284,4 +284,9 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             checkMaxFetchUI(ds);
         }
     }
+
+    @Override
+    public String toString() {
+        return "{ds=" + (datasource == null ? "null" : datasource.getId() + "}");
+    }
 }

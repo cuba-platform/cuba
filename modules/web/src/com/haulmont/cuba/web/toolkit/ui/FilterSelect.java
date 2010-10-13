@@ -47,11 +47,15 @@ public class FilterSelect extends Select {
                 || filteringMode == FILTERINGMODE_OFF) {
             prevfilterstring = null;
 
-            log.trace("getFilteredOptions: no filterstring");
+            log.trace("getFilteredOptions (container: " + items +  "): no filterstring");
+
+            Object value = getValue();
+            boolean valueFound = true;
 
             if (items instanceof Ordered) {
-                log.trace("getFilteredOptions: ordered collection, iterating through items for current page");
+                log.trace("getFilteredOptions (container: " + items +  "): ordered collection, iterating through items for current page");
                 filteredOptions = new LinkedList();
+                valueFound = false;
 
                 int count = (currentPage + 1) * pageLength;
 
@@ -59,29 +63,40 @@ public class FilterSelect extends Select {
                 if (itemId != null) {
                     Object prevItemId = itemId;
                     filteredOptions.add(prevItemId);
+                    if (value == null || value.equals(prevItemId))
+                        valueFound = true;
+
                     for (int i = 0; i < count; i++) {
                         itemId = ((Ordered) items).nextItemId(prevItemId);
                         if (itemId == null)
                             break;
                         filteredOptions.add(itemId);
+                        if (value == null || value.equals(itemId))
+                            valueFound = true;
                         prevItemId = itemId;
                     }
                 }
             } else {
-                log.trace("getFilteredOptions: loading all itemIds");
+                log.trace("getFilteredOptions (container: " + items +  "): loading all itemIds");
                 filteredOptions = new LinkedList(getItemIds());
             }
 
             fetched = Math.max(fetched, filteredOptions.size());
+
+            if (!valueFound && value != null) {
+                log.trace("getFilteredOptions (container: " + items +  "): value is not in filteredOptions, adding it");
+                filteredOptions.add(value);
+            }
+            
             return filteredOptions;
         }
 
         if (filterstring.equals(prevfilterstring)) {
-            log.trace("getFilteredOptions: same filterstring, returning previous filteredOptions");
+            log.trace("getFilteredOptions (container: " + items +  "): same filterstring, returning previous filteredOptions");
             return filteredOptions;
         }
 
-        log.trace("getFilteredOptions: loading all itemIds and filtering");
+        log.trace("getFilteredOptions (container: " + items +  "): loading all itemIds and filtering");
         Collection items = getItemIds();
         prevfilterstring = filterstring;
 
