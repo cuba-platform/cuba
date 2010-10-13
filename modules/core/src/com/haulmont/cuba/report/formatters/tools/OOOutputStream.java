@@ -1,4 +1,12 @@
-package com.haulmont.cuba.report.formatters.tools;/*
+package com.haulmont.cuba.report.formatters.tools;
+
+import com.sun.star.io.BufferSizeExceededException;
+import com.sun.star.io.NotConnectedException;
+import com.sun.star.io.XOutputStream;
+
+import java.io.ByteArrayOutputStream;
+
+/*
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
@@ -8,12 +16,6 @@ package com.haulmont.cuba.report.formatters.tools;/*
  *
  * $Id$
  */
-
-import java.io.ByteArrayOutputStream;
-
-import com.sun.star.io.BufferSizeExceededException;
-import com.sun.star.io.NotConnectedException;
-import com.sun.star.io.XOutputStream;
 
 public class OOOutputStream extends ByteArrayOutputStream implements XOutputStream {
 
@@ -26,7 +28,7 @@ public class OOOutputStream extends ByteArrayOutputStream implements XOutputStre
             this.write(values);
         }
         catch (java.io.IOException e) {
-            throw(new com.sun.star.io.IOException(e.getMessage()));
+            throw (new com.sun.star.io.IOException(e.getMessage()));
         }
     }
 
@@ -36,7 +38,7 @@ public class OOOutputStream extends ByteArrayOutputStream implements XOutputStre
             super.close();
         }
         catch (java.io.IOException e) {
-            throw(new com.sun.star.io.IOException(e.getMessage()));
+            throw (new com.sun.star.io.IOException(e.getMessage()));
         }
     }
 

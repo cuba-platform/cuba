@@ -1,4 +1,13 @@
-package com.haulmont.cuba.report.formatters.tools;/*
+package com.haulmont.cuba.report.formatters.tools;
+
+import java.io.ByteArrayInputStream;
+
+import com.sun.star.io.BufferSizeExceededException;
+import com.sun.star.io.NotConnectedException;
+import com.sun.star.io.XInputStream;
+import com.sun.star.io.XSeekable;
+
+/*
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
@@ -8,13 +17,6 @@ package com.haulmont.cuba.report.formatters.tools;/*
  *
  * $Id$
  */
-
-import java.io.ByteArrayInputStream;
-
-import com.sun.star.io.BufferSizeExceededException;
-import com.sun.star.io.NotConnectedException;
-import com.sun.star.io.XInputStream;
-import com.sun.star.io.XSeekable;
 
 /**
  * Implementation for XInputStream

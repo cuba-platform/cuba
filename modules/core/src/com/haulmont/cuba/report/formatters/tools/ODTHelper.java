@@ -1,57 +1,42 @@
-/*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Fontanenko
- * Created: 07.05.2010 15:12:05
- *
- * $Id$
- */
-
 package com.haulmont.cuba.report.formatters.tools;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 import com.sun.star.beans.PropertyValue;
-import com.sun.star.comp.helper.BootstrapException;
 import com.sun.star.frame.XComponentLoader;
-import com.sun.star.frame.XDesktop;
+import com.sun.star.frame.XDispatchHelper;
+import com.sun.star.frame.XDispatchProvider;
 import com.sun.star.frame.XStorable;
 import com.sun.star.io.IOException;
 import com.sun.star.io.XInputStream;
 import com.sun.star.io.XOutputStream;
 import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.uno.UnoRuntime;
-import com.sun.star.uno.XComponentContext;
-import com.sun.star.util.*;
-import ooo.connector.BootstrapSocketConnector;
+import com.sun.star.util.XCloseable;
+import com.sun.star.util.XPropertyReplace;
+import com.sun.star.util.XReplaceDescriptor;
+import com.sun.star.util.XReplaceable;
 
 import java.io.File;
 
-public class ODTHelper {
-    // Get group of ODT objects
-    public static ODTContextGroup createXComponentGroup(String openOfficePath) throws BootstrapException, com.sun.star.uno.Exception {
-        XComponentContext xRemoteContext = new BootstrapSocketConnector(openOfficePath).connect();
-        XMultiComponentFactory xRemoteServiceManager = xRemoteContext.getServiceManager();
-        Object desktop = xRemoteServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", xRemoteContext);
-        XDesktop xDesktop = asXDesktop(desktop);
-        ODTContextGroup group = new ODTContextGroup(xRemoteContext,xRemoteServiceManager,xDesktop);
-        return group;
-    }
+import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXCloseable;
+import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXStorable;
 
-    public static XComponentLoader createXComponentLoader(String openOfficePath) throws BootstrapException, com.sun.star.uno.Exception {
-        XComponentContext xRemoteContext = new BootstrapSocketConnector(openOfficePath).connect();
-        XMultiComponentFactory xRemoteServiceManager = xRemoteContext.getServiceManager();
-        Object desktop = xRemoteServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", xRemoteContext);
-        XDesktop xDesktop = asXDesktop(desktop);
-        return asXComponentLoader(xDesktop);
-    }
+/*
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: FONTANENKO VASILIY
+ * Created: 12.10.2010 19:21:36
+ *
+ * $Id$
+ */
+
+public class ODTHelper {
 
     public static XInputStream getXInputStream(FileDescriptor fileDescriptor) {
         FileStorageService fss = Locator.lookup(FileStorageService.NAME);
@@ -148,5 +133,13 @@ public class ODTHelper {
         StringBuffer sTmp = new StringBuffer("file:///");
         sTmp.append(sourceFile.getCanonicalPath().replace('\\', '/'));
         return sTmp.toString();
+    }
+
+    public static void copy(XDispatchHelper xDispatchHelper, XDispatchProvider xDispatchProvider) {
+        xDispatchHelper.executeDispatch(xDispatchProvider, ".uno:Copy", "", 0, new PropertyValue[]{new PropertyValue()});
+    }
+
+    public static void paste(XDispatchHelper xDispatchHelper, XDispatchProvider xDispatchProvider) {
+        xDispatchHelper.executeDispatch(xDispatchProvider, ".uno:Paste", "", 0, new PropertyValue[]{new PropertyValue()});
     }
 }

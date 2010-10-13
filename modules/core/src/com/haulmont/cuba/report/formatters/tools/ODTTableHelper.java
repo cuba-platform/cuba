@@ -1,33 +1,47 @@
+package com.haulmont.cuba.report.formatters.tools;
+
+import com.sun.star.container.NoSuchElementException;
+import com.sun.star.container.XNameAccess;
+import com.sun.star.frame.XController;
+import com.sun.star.frame.XDispatchHelper;
+import com.sun.star.frame.XDispatchProvider;
+import com.sun.star.lang.IllegalArgumentException;
+import com.sun.star.lang.IndexOutOfBoundsException;
+import com.sun.star.lang.WrappedTargetException;
+import com.sun.star.lang.XComponent;
+import com.sun.star.table.XCell;
+import com.sun.star.table.XCellRange;
+import com.sun.star.table.XTableRows;
+import com.sun.star.text.XTextTable;
+import com.sun.star.text.XTextTableCursor;
+import com.sun.star.uno.Any;
+import com.sun.star.uno.Type;
+
+import static com.haulmont.cuba.report.formatters.tools.ODTHelper.copy;
+import static com.haulmont.cuba.report.formatters.tools.ODTHelper.paste;
+import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
+
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
 
- * Author: Vasiliy Fontanenko
- * Created: 23.06.2010 14:16:09
+ * Author: FONTANENKO VASILIY
+ * Created: 12.10.2010 19:21:36
  *
  * $Id$
  */
 
-package com.haulmont.cuba.report.formatters.tools;
-
-import com.sun.star.beans.PropertyVetoException;
-import com.sun.star.beans.UnknownPropertyException;
-import com.sun.star.beans.XPropertySet;
-import com.sun.star.container.NoSuchElementException;
-import com.sun.star.lang.*;
-import com.sun.star.lang.IllegalArgumentException;
-import com.sun.star.lang.IndexOutOfBoundsException;
-import com.sun.star.table.*;
-import com.sun.star.text.*;
-import com.sun.star.uno.Any;
-import com.sun.star.uno.UnoRuntime;
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
-
 public class ODTTableHelper {
 
-    public static XTextTable getTableByName(XTextTablesSupplier xTextTablesSupplier, String tableName) throws NoSuchElementException, WrappedTargetException {
-        return (XTextTable) ((Any) xTextTablesSupplier.getTextTables().getByName(tableName)).getObject();
+    public static String[] getTablesNames(XComponent xComponent) {
+        XNameAccess tables = asXTextTablesSupplier(xComponent).getTextTables();
+        return tables.getElementNames();
+    }
+
+    public static XTextTable getTableByName(XComponent xComponent, String tableName) throws NoSuchElementException, WrappedTargetException {
+        XNameAccess tables = asXTextTablesSupplier(xComponent).getTextTables();
+        return (XTextTable) ((Any) tables.getByName(tableName)).getObject();
     }
 
     public static XCell getXCell(XTextTable xTextTable, int col, int row) throws IndexOutOfBoundsException {
@@ -38,30 +52,18 @@ public class ODTTableHelper {
         return xTextTable.getCellByName(cellName);
     }
 
-
-    public static String getCellText(XTextTable xTextTable, int col, int row) throws IndexOutOfBoundsException {
-        return asXText(getXCell(xTextTable, col, row)).getString();
-    }
-
-    public static void setCellText(XTextTable xTextTable, int col, int row, String text) throws IndexOutOfBoundsException {
-        asXText(getXCell(xTextTable, col, row)).setString(text);
-    }
-
-    public static void setCellText(XTextTable xTextTable, String cellName, String text) {
-        asXText(xTextTable.getCellByName(cellName)).setString(text);
-    }
-
-    public static void setCellXText(XTextTable xTextTable, int col, int row, XText xText) throws com.sun.star.lang.IndexOutOfBoundsException {
-        //asXText(getXCell(xTextTable, col, row));
-        XCell xcell = getXCell(xTextTable,col,row);
-        XText xCellText = (XText) UnoRuntime.queryInterface(XText.class, xcell);
-        
-    }
-
-    public static XText getCellXText(XTextTable xTextTable, int col, int row) throws IndexOutOfBoundsException {
-        XCell xcell = getXCell(xTextTable,col,row);
-        XText xCellText = (XText) UnoRuntime.queryInterface(XText.class, xcell);
-        return xCellText;
+    public static void selectRow(XController xController, XTextTable xTextTable, int row) throws com.sun.star.uno.Exception {
+        String[] cellNames = xTextTable.getCellNames();
+        int colCount = xTextTable.getColumns().getCount();
+        String firstCellName = cellNames[row * colCount];
+        String lastCellName = cellNames[row * colCount + colCount - 1];
+        XTextTableCursor xTextTableCursor = xTextTable.createCursorByCellName(firstCellName);
+        xTextTableCursor.gotoCellByName(lastCellName, true);
+        // stupid shit. It works only if XCellRange was created via cursor. why????
+        // todo: refactor this if possible
+        XCellRange xCellRange = asXCellRange(xTextTable).getCellRangeByName(xTextTableCursor.getRangeName());
+        // and why do we need Any here?
+        asXSelectionSupplier(xController).select(new Any(new Type(XCellRange.class), xCellRange));
     }
 
     public static void deleteRow(XTextTable xTextTable, int row) {
@@ -77,5 +79,15 @@ public class ODTTableHelper {
     public static void insertRowToEnd(XTextTable xTextTable) {
         XTableRows xTableRows = xTextTable.getRows();
         xTableRows.insertByIndex(xTableRows.getCount(), 1);
+    }
+
+    public static void duplicateLastRow(XDispatchHelper xDispatchHelper, XController xController, XTextTable xTextTable) throws com.sun.star.uno.Exception, WrappedTargetException, IllegalArgumentException {
+        int lastRowNum = xTextTable.getRows().getCount() - 1;
+        selectRow(xController, xTextTable, lastRowNum);
+        XDispatchProvider xDispatchProvider = asXDispatchProvider(xController.getFrame());
+        copy(xDispatchHelper, xDispatchProvider);
+        insertRowToEnd(xTextTable);
+        selectRow(xController, xTextTable, ++lastRowNum);
+        paste(xDispatchHelper, xDispatchProvider);
     }
 }
