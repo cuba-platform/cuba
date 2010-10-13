@@ -58,6 +58,20 @@ public class MessageUtils {
     }
 
     /**
+     * Returns global DecimalSeparator char set for the application in the main message pack
+     */
+    public static char getNumberDecimalSeparator() {
+        return MessageProvider.getMessage(messagePack, "numberDecimalSeparator").charAt(0);
+    }
+
+    /**
+     * Returns global GroupingSeparator char set for the application in the main message pack
+     */
+    public static char getNumberGroupingSeparator() {
+        return MessageProvider.getMessage(messagePack, "numberGroupingSeparator").charAt(0);
+    }
+
+    /**
      * Get localized message by reference provided in full format
      * @param ref reference to message in the following format: <code>msg://message_pack/message_id</code>
      * @return localized message or input string itself if it doesn't begin with <code>msg://</code>
