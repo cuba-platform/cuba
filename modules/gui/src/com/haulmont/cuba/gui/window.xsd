@@ -483,6 +483,7 @@
                         <xs:attribute name="editable" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -506,6 +507,7 @@
                         <xs:attribute name="editable" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -525,6 +527,7 @@
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -543,6 +546,7 @@
                         <xs:attribute name="editable" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -564,6 +568,7 @@
 
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -582,6 +587,7 @@
                         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -696,6 +702,7 @@
                         <xs:attribute name="editable" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -799,6 +806,7 @@
                         <xs:attribute name="editable" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
