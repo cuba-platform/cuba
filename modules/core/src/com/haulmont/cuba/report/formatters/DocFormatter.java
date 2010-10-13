@@ -197,7 +197,7 @@ public class DocFormatter extends AbstractFormatter {
         XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
         XSearchDescriptor searchDescriptor = xReplaceable.createSearchDescriptor();
         // regexp: \$\{[^\.]+?[a-zA-Z0-9\.]*[^\.]\}
-        searchDescriptor.setSearchString("\\$\\{[^\\.]+?\\..+?\\}");
+        searchDescriptor.setSearchString("\\$\\{[a-z|A-Z|0-9|\\_]+?\\.[a-z|A-Z|0-9|\\_|\\.]+?\\}");
         try {
             searchDescriptor.setPropertyValue("SearchRegularExpression", true);
             XIndexAccess indexAccess = xReplaceable.findAll(searchDescriptor);
