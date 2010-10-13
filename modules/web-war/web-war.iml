@@ -7,7 +7,7 @@
         <setting name="compilerMaxHeapSize" value="128" />
         <setting name="compilerOutputPath" value="" />
         <setting name="gwtScriptOutputStyle" value="DETAILED" />
-        <setting name="gwtSdkUrl" value="file://$MODULE_DIR$/../../../../../../gwt1.7" />
+        <setting name="gwtSdkUrl" value="file://C:/../gwt1.7" />
         <setting name="runGwtCompilerOnMake" value="true" />
         <packaging>
           <module name="com.haulmont.cuba.toolkit.gwt.WidgetSet" path="/com.haulmont.cuba.toolkit.gwt.WidgetSet" />

@@ -110,7 +110,15 @@ public class DocFormatter extends AbstractFormatter {
             Band band = findBand(rootBand, tableName);
             if (band != null) {
                 XTextTable xTextTable = getTableByName(xComponent, tableName);
+                // todo remove this hack!
+                // try to select one cell without it workaround
+                int columnCount = xTextTable.getColumns().getCount();
+                if (columnCount < 2)
+                    xTextTable.getColumns().insertByIndex(columnCount,1);
                 fillTable(tableName, band.getParentBand(), xTextTable, xDispatchHelper);
+                // end workaround
+                if (columnCount < 2)
+                    xTextTable.getColumns().removeByIndex(columnCount,1);    
             }
         }
     }
@@ -127,7 +135,7 @@ public class DocFormatter extends AbstractFormatter {
                 fillRow(child, xTextTable, i);
                 i++;
             }
-        }
+        }   
     }
 
     private void fillRow(Band band, XTextTable xTextTable, int row) throws com.sun.star.lang.IndexOutOfBoundsException, NoSuchElementException, WrappedTargetException {
