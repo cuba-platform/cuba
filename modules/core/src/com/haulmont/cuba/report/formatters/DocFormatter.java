@@ -6,6 +6,7 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.formatters.tools.ClipBoardHelper;
 import com.haulmont.cuba.report.formatters.tools.OOOConnection;
 import com.haulmont.cuba.report.formatters.tools.OOOConnector;
 import com.haulmont.cuba.report.formatters.tools.OOOutputStream;
@@ -115,14 +116,18 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper) throws com.sun.star.uno.Exception {
-        for (Band child : parentBand.getChildren()) {
-            if (name.equals(child.getName())) {
+        ClipBoardHelper.clear();
+        for (int i = 0; i < parentBand.getChildren().size() - 1; i++) {
+            if (name.equals(parentBand.getChildren().get(i).getName()))
                 duplicateLastRow(xDispatchHelper, asXTextDocument(xComponent).getCurrentController(), xTextTable);
-                int preLastRow = xTextTable.getRows().getCount() - 2;
-                fillRow(child, xTextTable, preLastRow);
+        }
+        int i = 0;
+        for (Band child : parentBand.getChildren()) {
+            if (name.equals(child.getName())){
+                fillRow(child, xTextTable, i);
+                i++;
             }
         }
-        deleteLastRow(xTextTable);
     }
 
     private void fillRow(Band band, XTextTable xTextTable, int row) throws com.sun.star.lang.IndexOutOfBoundsException, NoSuchElementException, WrappedTargetException {
