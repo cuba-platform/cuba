@@ -511,6 +511,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                         if (foldersPane != null) {
                             foldersPane.savePosition();
                         }
+                        App app = App.getInstance();
+                        for (com.haulmont.cuba.gui.components.Window window : app.getWindowManager().getOpenWindows()) {
+                            if (window instanceof WebWindow.Editor) {
+                                ((WebWindow.Editor)window).releaseLock();
+                            }
+                        }
                         connection.logout();
                         String url = ActiveDirectoryHelper.useActiveDirectory() ? "login" : "";
                         open(new ExternalResource(App.getInstance().getURL() + url));
