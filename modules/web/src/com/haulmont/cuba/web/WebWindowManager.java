@@ -210,7 +210,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void showWindow(final Window window, final String caption, OpenType type) {
-        showWindow(window, caption, type);
+        showWindow(window, caption, null, type);
     }
 
     public void showWindow(final Window window, final String caption, final String description, OpenType type) {
