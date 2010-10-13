@@ -44,8 +44,10 @@ import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Validator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.Table;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -63,7 +65,7 @@ public class WebWindow
             Window,
             Component.Wrapper,
             Component.HasXmlDescriptor,
-            WrappedWindow 
+            WrappedWindow
 {
     private static final long serialVersionUID = -686695761338837334L;
 
@@ -390,11 +392,11 @@ public class WebWindow
     }
 
     public boolean isEnabled() {
-        return this.isEnabled();
+        return component.isEnabled();
     }
 
     public void setEnabled(boolean enabled) {
-        this.setEnabled(enabled);
+        component.setEnabled(enabled);
     }
 
     public boolean isVisible() {
@@ -934,10 +936,14 @@ public class WebWindow
                         }
                     } else if (impl instanceof com.vaadin.ui.Field
                             && impl.isVisible() && impl.isEnabled() && !impl.isReadOnly()) {
-                        try {
-                            ((com.vaadin.ui.Field) impl).validate();
-                        } catch (Validator.InvalidValueException e) {
-                            problems.put(e, ((com.vaadin.ui.Field) impl));
+                        if (impl instanceof FieldGroup) {
+                            final FieldGroup fieldGroup = (FieldGroup) impl;
+                            for (final Object propId : fieldGroup.getItemPropertyIds()) {
+                                final Field f = fieldGroup.getField(propId);
+                                validateField(f, problems);
+                            }
+                        } else {
+                            validateField(impl, problems);
                         }
                     }
 
@@ -993,6 +999,14 @@ public class WebWindow
             }
 
             return false;
+        }
+
+        private void validateField(com.vaadin.ui.Component impl, final Map<Exception, Field> problems) {
+            try {
+                ((Field) impl).validate();
+            } catch (Validator.InvalidValueException e) {
+                problems.put(e, ((Field) impl));
+            }
         }
 
         protected DataService getDataService() {

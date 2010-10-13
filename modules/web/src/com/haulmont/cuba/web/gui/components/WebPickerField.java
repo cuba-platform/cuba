@@ -383,6 +383,13 @@ public class WebPickerField
         }
 
         public void validate() throws com.vaadin.data.Validator.InvalidValueException {
+            if (field.getValue() == null) {
+                if (isRequired()) {
+                    throw new com.vaadin.data.Validator.EmptyValueException(requiredError);
+                } else {
+                    return;
+                }
+            }
             field.validate();
         }
 
