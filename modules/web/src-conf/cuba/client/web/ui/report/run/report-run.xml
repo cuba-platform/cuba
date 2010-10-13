@@ -22,6 +22,7 @@
                 <![CDATA[select r from report$Report r]]>
                 <filter>
                     <and>
+                        <!--todo: move it to datasource-->
                         <c join=",report$ReportInputParameter p">p.report.id = r.id and p.className like :param$javaClassName</c>
                         <c>r.reportType = :param$reportType</c>
                     </and>

@@ -1,5 +1,8 @@
 package com.haulmont.cuba.report.formatters.tools;
 
+import static com.haulmont.cuba.report.formatters.tools.ODTHelper.copy;
+import static com.haulmont.cuba.report.formatters.tools.ODTHelper.paste;
+import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameAccess;
 import com.sun.star.frame.XController;
@@ -16,10 +19,6 @@ import com.sun.star.text.XTextTable;
 import com.sun.star.text.XTextTableCursor;
 import com.sun.star.uno.Any;
 import com.sun.star.uno.Type;
-
-import static com.haulmont.cuba.report.formatters.tools.ODTHelper.copy;
-import static com.haulmont.cuba.report.formatters.tools.ODTHelper.paste;
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 
 /*
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
@@ -61,9 +60,14 @@ public class ODTTableHelper {
         xTextTableCursor.gotoCellByName(lastCellName, true);
         // stupid shit. It works only if XCellRange was created via cursor. why????
         // todo: refactor this if possible
-        XCellRange xCellRange = asXCellRange(xTextTable).getCellRangeByName(xTextTableCursor.getRangeName());
-        // and why do we need Any here?
-        asXSelectionSupplier(xController).select(new Any(new Type(XCellRange.class), xCellRange));
+        if (firstCellName.equalsIgnoreCase(lastCellName)) {
+            XCell cell = asXCellRange(xTextTable).getCellByPosition(0, row);
+            asXSelectionSupplier(xController).select(new Any(new Type(XCell.class), cell));
+        } else {
+            XCellRange xCellRange = asXCellRange(xTextTable).getCellRangeByName(xTextTableCursor.getRangeName());
+            // and why do we need Any here?
+            asXSelectionSupplier(xController).select(new Any(new Type(XCellRange.class), xCellRange));
+        }
     }
 
     public static void deleteRow(XTextTable xTextTable, int row) {

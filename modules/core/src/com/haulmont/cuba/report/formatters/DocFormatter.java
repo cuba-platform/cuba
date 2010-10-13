@@ -32,6 +32,9 @@ import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
 import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 /*
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
@@ -125,7 +128,7 @@ public class DocFormatter extends AbstractFormatter {
     private void fillRow(Band band, XTextTable xTextTable, int row) throws com.sun.star.lang.IndexOutOfBoundsException, NoSuchElementException, WrappedTargetException {
         int colCount = xTextTable.getColumns().getCount();
         for (int col = 0; col < colCount; col++) {
-            fillCellNoFormatInside(band, getXCell(xTextTable, col, row));
+            fillCell(band, getXCell(xTextTable, col, row));
         }
     }
 
@@ -137,16 +140,8 @@ public class DocFormatter extends AbstractFormatter {
             XEnumeration textPortions = asXEnumerationAccess(paragraph).createEnumeration();
             while (textPortions.hasMoreElements()) {
                 XTextRange textPortion = asXTextRange(textPortions.nextElement());
-                for (java.util.Map.Entry<String, Object> entry : band.getData().entrySet()) {
-                    // todo: I guess we should use regexp here
-                    String portionText = textPortion.getString();
-                    String alias = "${" + entry.getKey() + "}";
-                    Object value = entry.getValue();
-                    String valueStr = (value == null) ? "" : value.toString();
-                    // todo: here we've got a strange problem - after replacing text format of next portion is added to previous somehow
-                    // method can be used after fixing this issue
-                    textPortion.setString(portionText.replace(alias, valueStr));
-                }
+                String portionText = textPortion.getString();
+                textPortion.setString(insertBandDataToString(band, portionText));
             }
         }
     }
