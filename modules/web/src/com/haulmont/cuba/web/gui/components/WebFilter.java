@@ -456,7 +456,7 @@ public class WebFilter
             user = UserSessionClient.getUserSession().getUser();
 
         ctx.setQueryString("select f from sec$Filter f " +
-                "where f.componentId = :component and (f.user is null or f.user.id = :userId)")
+                "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
                 .addParameter("component", getComponentPath())
                 .addParameter("userId", user.getId());
 
