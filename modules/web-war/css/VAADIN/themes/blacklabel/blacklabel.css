@@ -213,7 +213,7 @@
 	margin: 0;
     padding : 5px;
     border: solid 1px #7f8488;
-    background: #373b3e url(../../themes/blacklabel/menubar/img/submenu-bg.png) repeat-x top left;
+    background: #373b3e url(menubar/img/submenu-bg.png) repeat-x top left;
 }
 
 .popupmenu .v-button.v-button-link
@@ -267,7 +267,7 @@
 }
 
 .v-button.v-popupbutton .v-popup-indicator {
-	background: transparent url(../../themes/blacklabel/common/img/sprites.png) no-repeat -5px -10px;
+	background: transparent url(common/img/sprites.png) no-repeat -5px -10px;
 }
 
 .v-verticallayout-operationContainer {
