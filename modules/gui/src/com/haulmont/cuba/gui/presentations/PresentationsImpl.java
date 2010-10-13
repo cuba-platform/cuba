@@ -228,7 +228,7 @@ public class PresentationsImpl implements Presentations, Serializable {
 
     public Presentation getPresentationByName(String name) {
         for (Presentation p : presentations.values()) {
-            if (name.equals(p.getName())) {
+            if (name.equalsIgnoreCase(p.getName())) {
                 return p;
             }
         }

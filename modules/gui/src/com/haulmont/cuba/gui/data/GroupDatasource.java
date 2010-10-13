@@ -21,29 +21,36 @@ import java.util.List;
  * @param <K> type of entity ID
  */
 public interface GroupDatasource<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
-    /**
-     * Perform grouping
-     * @param properties the list of properties for a grouping
-     */
+    /** Perform grouping by the list of properties */
     void groupBy(Object[] properties);
 
+    /** Returns the list of root groups */
     List<GroupInfo> rootGroups();
 
+    /** Indicates that group has nested groups */
     boolean hasChildren(GroupInfo groupId);
 
+    /** Returns the list of nested groups */
     List<GroupInfo> getChildren(GroupInfo groupId);
 
+    /** Returns a group property */
     Object getGroupProperty(GroupInfo groupId);
 
+    /** Returns a group property value */
     Object getGroupPropertyValue(GroupInfo groupId);
 
+    /** Returns item ids that are contained in the selected group */
     Collection<K> getGroupItemIds(GroupInfo groupId);
 
+    /** Returns a count of items that are contained in the selected group */
     int getGroupItemsCount(GroupInfo groupId);
 
+    /** Indicated that a datasource has groups */
     boolean hasGroups();
 
+    /** Returns group properties */
     Collection<?> getGroupProperties();
 
+    /** Indicates that a group is contained in the groups tree */
     boolean containsGroup(GroupInfo groupId);
 }
