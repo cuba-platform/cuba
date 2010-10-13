@@ -6,18 +6,14 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
-import com.haulmont.cuba.report.formatters.tools.ClipBoardHelper;
-import com.haulmont.cuba.report.formatters.tools.OOOConnection;
-import com.haulmont.cuba.report.formatters.tools.OOOConnector;
-import com.haulmont.cuba.report.formatters.tools.OOOutputStream;
+import com.haulmont.cuba.report.formatters.tools.*;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XDispatchHelper;
 import com.sun.star.io.IOException;
 import com.sun.star.io.XInputStream;
-import com.sun.star.lang.WrappedTargetException;
-import com.sun.star.lang.XComponent;
+import com.sun.star.lang.*;
 import com.sun.star.table.XCell;
 import com.sun.star.text.XText;
 import com.sun.star.text.XTextDocument;
@@ -108,30 +104,51 @@ public class DocFormatter extends AbstractFormatter {
         XDispatchHelper xDispatchHelper = connection.createXDispatchHelper();
         for (String tableName : tablesNames) {
             Band band = findBand(rootBand, tableName);
+            XTextTable xTextTable = getTableByName(xComponent, tableName);
             if (band != null) {
-                XTextTable xTextTable = getTableByName(xComponent, tableName);
                 // todo remove this hack!
                 // try to select one cell without it workaround
                 int columnCount = xTextTable.getColumns().getCount();
                 if (columnCount < 2)
-                    xTextTable.getColumns().insertByIndex(columnCount,1);
+                    xTextTable.getColumns().insertByIndex(columnCount, 1);
                 fillTable(tableName, band.getParentBand(), xTextTable, xDispatchHelper);
-                // end workaround
+                // end of workaround ->
                 if (columnCount < 2)
-                    xTextTable.getColumns().removeByIndex(columnCount,1);    
+                    xTextTable.getColumns().removeByIndex(columnCount, 1);
+            } else {
+                if (haveValueExpressions(xTextTable))
+                    deleteLastRow(xTextTable);
             }
         }
     }
 
+    public boolean haveValueExpressions(XTextTable xTextTable) {
+        int lastrow = xTextTable.getRows().getCount() - 1;
+        try {
+            for (int i = 0; i < xTextTable.getRows().getCount(); i++) {
+                String templateText = asXText(ODTTableHelper.getXCell(xTextTable, i, lastrow)).getString();
+                if (Pattern.compile("\\$\\{[^\\.]+?\\}").matcher(templateText).find()) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            throw new ReportFormatterException(e);
+        }
+        return false;
+    }
+
     private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper) throws com.sun.star.uno.Exception {
         ClipBoardHelper.clear();
+        int count = 0;
         for (int i = 0; i < parentBand.getChildren().size(); i++) {
-            if (name.equals(parentBand.getChildren().get(i).getName()))
+            if (name.equals(parentBand.getChildren().get(i).getName())) {
                 duplicateLastRow(xDispatchHelper, asXTextDocument(xComponent).getCurrentController(), xTextTable);
+                count++;
+            }
         }
         int i = 0;
         for (Band child : parentBand.getChildren()) {
-            if (name.equals(child.getName())){
+            if (name.equals(child.getName())) {
                 fillRow(child, xTextTable, i);
                 i++;
             }
