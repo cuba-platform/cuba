@@ -19,7 +19,7 @@
 
 .v-tree-node .v-tree-node-caption span {
 	padding: 0 2px;
-	cursor: pointer;
+	cursor: default;
 	white-space: nowrap;
     font-size: 9pt;
     color: white;
@@ -29,7 +29,7 @@
 	background: #5daee8;
 	color: #fff;
 	padding: 0 2px;
-	cursor: pointer;
+	cursor: default;
 }
 .v-tree-node-children {
 	padding-left: 16px;
