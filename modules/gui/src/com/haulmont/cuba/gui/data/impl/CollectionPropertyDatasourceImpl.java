@@ -33,7 +33,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         CollectionDatasource<T, K>,
         CollectionDatasource.Sortable<T, K>,
         CollectionDatasource.Aggregatable<T, K> {
-    private T item;
+    protected T item;
     protected boolean cascadeProperty;
 
     private static Log log = LogFactory.getLog(CollectionPropertyDatasourceImpl.class);
