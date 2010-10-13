@@ -28,4 +28,6 @@ public interface DsContextImplementation extends DsContext {
 
     void addLazyTask(LazyTask lazyTask);
     void executeLazyTasks();
+
+    void resumeSuspended();
 }

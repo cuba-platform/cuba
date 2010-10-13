@@ -9,26 +9,23 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.AggregationInfo;
-import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.xml.ParameterInfo;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DsContext;
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.commons.lang.StringUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
 
 public class CollectionDatasourceImpl<T extends Entity<K>, K>
@@ -36,7 +33,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         AbstractCollectionDatasource<T, K>
     implements
         CollectionDatasource.Sortable<T, K>,
-        CollectionDatasource.Aggregatable<T, K>
+        CollectionDatasource.Aggregatable<T, K>,
+        CollectionDatasource.Suspendable<T, K>
 {
     protected LinkedMap data = new LinkedMap();
 
@@ -54,6 +52,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             return CollectionDatasourceImpl.this.getItemValue(property, itemId);
         }
     };
+
+    protected boolean suspended;
+
+    protected boolean refreshOnResumeRequired;
 
     /**
      * This constructor is invoked by DsContextLoader, so inheritors must contain a constructor
@@ -95,6 +97,17 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         super.invalidate();
     }
 
+    public void refreshIfNotSuspended() {
+        if (suspended) {
+            if (!state.equals(State.VALID)) {
+                state = State.VALID;
+            }
+            refreshOnResumeRequired = true;
+        } else {
+            refresh();
+        }
+    }
+
     @Override
     public synchronized void refresh() {
         if (savedParameters == null)
@@ -130,6 +143,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 setItem(null);
             }
 
+            suspended = false;
+            refreshOnResumeRequired = false;
+            
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         } finally {
             inRefresh = false;
@@ -158,7 +174,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     public synchronized int size() {
-        if (State.NOT_INITIALIZED.equals(state)) {
+        if (State.NOT_INITIALIZED.equals(state) || suspended) {
             return 0;
         } else {
             return data.size();
@@ -328,6 +344,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             return instance.getValue(property.getMetaProperty().getName());
         } else {
             return instance.getValueEx(property.toString());
+        }
+    }
+
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    public void setSuspended(boolean suspended) {
+        boolean wasSuspended = this.suspended;
+        this.suspended = suspended;
+
+        if (wasSuspended && !suspended && refreshOnResumeRequired) {
+            refresh();
         }
     }
 }

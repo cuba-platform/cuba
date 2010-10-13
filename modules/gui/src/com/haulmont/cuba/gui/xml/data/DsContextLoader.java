@@ -135,6 +135,9 @@ public class DsContextLoader {
             datasource.setHierarchyPropertyName(hierarchyProperty);
         }
 
+        if (datasource instanceof CollectionDatasource.Suspendable)
+            ((CollectionDatasource.Suspendable) datasource).setSuspended(true);
+
         final String query = element.elementText("query");
         if (!StringUtils.isBlank(query)) {
             datasource.setQuery(query);
@@ -169,6 +172,9 @@ public class DsContextLoader {
             final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
             datasource = builder.setFetchMode(fetchMode).buildGroupDatasource();
         }
+
+        if (datasource instanceof CollectionDatasource.Suspendable)
+            ((CollectionDatasource.Suspendable) datasource).setSuspended(true);
 
         Element queryElem = element.element("query");
         if (queryElem != null) {
@@ -365,6 +371,9 @@ public class DsContextLoader {
             final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
             datasource = builder.setFetchMode(fetchMode).buildCollectionDatasource();
         }
+
+        if (datasource instanceof CollectionDatasource.Suspendable)
+            ((CollectionDatasource.Suspendable) datasource).setSuspended(true);
 
         Element queryElem = element.element("query");
         if (queryElem != null) {

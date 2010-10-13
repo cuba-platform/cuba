@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
@@ -154,7 +155,7 @@ public abstract class WindowManager implements Serializable {
         window.setDsContext(dsContext);
 
         for (Datasource ds : dsContext.getAll()) {
-            if (ds instanceof DatasourceImplementation) {
+            if (Datasource.State.NOT_INITIALIZED.equals(ds.getState()) && ds instanceof DatasourceImplementation) {
                 ((DatasourceImplementation) ds).initialized();
             }
         }

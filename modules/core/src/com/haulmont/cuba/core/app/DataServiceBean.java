@@ -179,7 +179,7 @@ public class DataServiceBean implements DataService
         if (query == null)
             return null;
 
-        String str = StringHelper.removeExtraSpaces(query);
+        String str = StringHelper.removeExtraSpaces(query.replace("\n", " "));
 
         if (ConfigProvider.getConfig(LogConfig.class).getCutLoadListQueries()) {
             str = StringUtils.abbreviate(str.replaceAll("[\\n\\r]", " "), 50);

@@ -26,8 +26,9 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
     private DsContext parent;
     private List<DsContext> children = new ArrayList<DsContext>();
 
-    private Map<String, Datasource> datasourceMap =
-            new HashMap<String, Datasource>();
+    private Map<String, Datasource> datasourceMap = new HashMap<String, Datasource>();
+
+    protected Map<Datasource, Datasource> dependencies = new HashMap<Datasource, Datasource>();
 
     // TODO implement ContextListeners
 //    private Map<String, Collection<Datasource>> contextListeners =
@@ -51,6 +52,39 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         for (LazyTask lazyTask : lazyTasks) {
             lazyTask.execute(this);
         }
+    }
+
+    public void resumeSuspended() {
+        LinkedList<CollectionDatasource.Suspendable> list = new LinkedList<CollectionDatasource.Suspendable>();
+
+        addDsContextToResume(this, list);
+
+        for (CollectionDatasource.Suspendable suspendable : list) {
+            suspendable.setSuspended(false);
+        }
+    }
+
+    private void addDsContextToResume(DsContext dsContext, LinkedList<CollectionDatasource.Suspendable> list) {
+        for (Datasource datasource : dsContext.getAll()) {
+            if (datasource instanceof CollectionDatasource.Suspendable) {
+                addDatasourceToResume(list, datasource);
+            }
+        }
+        for (DsContext childContext : dsContext.getChildren()) {
+            addDsContextToResume(childContext, list);
+        }
+    }
+
+    private void addDatasourceToResume(LinkedList<CollectionDatasource.Suspendable> list, Datasource datasource) {
+        if (list.contains(datasource))
+            return;
+
+        if (dependencies.containsKey(datasource)) {
+            Datasource master = dependencies.get(datasource);
+            addDatasourceToResume(list, master);
+        }
+        if (datasource instanceof CollectionDatasource.Suspendable)
+            list.add((CollectionDatasource.Suspendable) datasource);
     }
 
     public WindowContext getWindowContext() {
@@ -188,8 +222,6 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         }
         return commitDatasources;
     }
-
-    protected Map<Datasource, Datasource> dependencies = new HashMap<Datasource, Datasource>();
 
     public void registerDependency(final Datasource datasource, final Datasource dependFrom, final String propertyName) {
         Datasource ds = dependencies.get(datasource);

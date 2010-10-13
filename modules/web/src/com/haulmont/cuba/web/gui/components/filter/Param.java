@@ -470,7 +470,10 @@ public class Param {
 
         Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
         if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
-            ds.refresh();
+            if (ds instanceof CollectionDatasource.Suspendable)
+                ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
+            else
+                ds.refresh();
         }
 
         if (entityWhere != null) {

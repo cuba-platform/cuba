@@ -27,7 +27,9 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     extends
         AbstractCollectionDatasource<T, K>
     implements
-        CollectionDatasource.Sortable<T, K>, CollectionDatasource.Lazy<T, K>
+        CollectionDatasource.Sortable<T, K>,
+        CollectionDatasource.Lazy<T, K>,
+        CollectionDatasource.Suspendable<T, K>
 {
     protected LinkedMap data = new LinkedMap();
     protected Integer size;
@@ -39,6 +41,10 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     private Map<String, Object> savedParameters;
 
     private boolean inRefresh;
+
+    protected boolean suspended;
+
+    protected boolean refreshOnResumeRequired;
 
     public LazyCollectionDatasource(
             DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
@@ -126,6 +132,17 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         return data.containsKey(itemId);
     }
 
+    public void refreshIfNotSuspended() {
+        if (suspended) {
+            if (!state.equals(State.VALID)) {
+                state = State.VALID;
+            }
+            refreshOnResumeRequired = true;
+        } else {
+            refresh();
+        }
+    }
+
     @Override
     public synchronized void refresh() {
         if (savedParameters == null)
@@ -151,6 +168,9 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
             invalidate();
 
+            suspended = false;
+            refreshOnResumeRequired = false;
+
             getSize();
             if (!State.VALID.equals(state))
                 loadNextChunk(false);
@@ -167,6 +187,9 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     private int getSize() {
+        if (suspended)
+            return 0;
+
         if (size == null) {
             LoadContext context = new LoadContext(metaClass);
             LoadContext.Query q = createLoadContextQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
@@ -237,6 +260,9 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     public synchronized K firstItemId() {
+        if (suspended)
+            return null;
+
         if (data.isEmpty())
             loadNextChunk(false);
 
@@ -380,5 +406,18 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
         modified = false;
         clearCommitLists();
+    }
+
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    public void setSuspended(boolean suspended) {
+        boolean wasSuspended = this.suspended;
+        this.suspended = suspended;
+        if (wasSuspended && !suspended && refreshOnResumeRequired) {
+            refresh();
+        }
+        refreshOnResumeRequired = false;
     }
 }

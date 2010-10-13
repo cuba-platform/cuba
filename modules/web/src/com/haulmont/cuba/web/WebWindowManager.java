@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -265,10 +266,12 @@ public class WebWindowManager extends WindowManager {
             getWindowOpenMode().put(window, openMode);
         }
 
-        if (window.getContext() != null && 
+        if (window.getContext() != null &&
                 !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings"))) {
             window.applySettings(new SettingsImpl(window.getId()));
         }
+
+        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
     }
 
     private void closeStartupScreen(AppWindow appWindow) {

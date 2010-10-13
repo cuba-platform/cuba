@@ -41,7 +41,7 @@
                     <button action="users.changePassw" icon="icons/change-pass.png"/>
                     <button action="users.excel" icon="icons/excel.png"/>
                 </buttonsPanel>
-                <table id="users" editable="false">
+                <table id="users" editable="false" presentations="true">
                     <columns>
                         <column id="login" caption="msg://login"/>
                         <column id="name" caption="msg://name"/>

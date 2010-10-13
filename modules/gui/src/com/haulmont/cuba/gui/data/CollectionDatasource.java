@@ -212,4 +212,12 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
         boolean isCompletelyLoaded();
     }
+
+    interface Suspendable<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
+
+        boolean isSuspended();
+        void setSuspended(boolean suspended);
+
+        void refreshIfNotSuspended();
+    }
 }
