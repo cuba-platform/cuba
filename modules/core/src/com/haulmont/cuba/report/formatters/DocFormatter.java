@@ -125,7 +125,7 @@ public class DocFormatter extends AbstractFormatter {
 
     private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper) throws com.sun.star.uno.Exception {
         ClipBoardHelper.clear();
-        for (int i = 0; i < parentBand.getChildren().size() - 1; i++) {
+        for (int i = 0; i < parentBand.getChildren().size(); i++) {
             if (name.equals(parentBand.getChildren().get(i).getName()))
                 duplicateLastRow(xDispatchHelper, asXTextDocument(xComponent).getCurrentController(), xTextTable);
         }
@@ -135,7 +135,8 @@ public class DocFormatter extends AbstractFormatter {
                 fillRow(child, xTextTable, i);
                 i++;
             }
-        }   
+        }
+        deleteLastRow(xTextTable);
     }
 
     private void fillRow(Band band, XTextTable xTextTable, int row) throws com.sun.star.lang.IndexOutOfBoundsException, NoSuchElementException, WrappedTargetException {
