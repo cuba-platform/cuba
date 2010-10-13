@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.haulmont.cuba.web.app.ui.security.user;
+package com.haulmont.cuba.security.global;
 
 import org.apache.commons.lang.StringUtils;
 
