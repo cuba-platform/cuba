@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -275,6 +276,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
 
         loadCaption(column, element);
+        if (column.getCaption() == null) {
+            column.setCaption(MessageUtils.getPropertyCaption(metaPropertyPath.getMetaProperty()));
+        }
 
         column.setXmlDescriptor(element);
         column.setType(metaPropertyPath.getRangeJavaClass());

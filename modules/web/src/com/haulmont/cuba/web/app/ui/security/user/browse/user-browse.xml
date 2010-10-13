@@ -43,12 +43,12 @@
                 </buttonsPanel>
                 <table id="users" editable="false" presentations="true">
                     <columns>
-                        <column id="login" caption="msg://login"/>
-                        <column id="name" caption="msg://name"/>
-                        <column id="position" caption="msg://position"/>
-                        <column id="group" caption="msg://group"/>
-                        <column id="email" caption="msg://email"/>
-                        <column id="active" caption="msg://active"/>
+                        <column id="login"/>
+                        <column id="name"/>
+                        <column id="position"/>
+                        <column id="group"/>
+                        <column id="email"/>
+                        <column id="active"/>
                     </columns>
                     <rows datasource="users"/>
                 </table>
