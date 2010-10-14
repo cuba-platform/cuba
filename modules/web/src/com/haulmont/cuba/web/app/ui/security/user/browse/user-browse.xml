@@ -21,7 +21,7 @@
     <layout >
         <vbox expand="table-panel" spacing="true">
             <vbox expand="genericFilter" stylename="edit-area">
-                <filter id="genericFilter" datasource="users">
+                <filter id="genericFilter" datasource="users" applyTo="users">
                     <properties include=".*" exclude="(password)|(loginLowerCase)"/>
                     <custom name="customByGroup" caption="msg://genericFilter.customByGroup"
                             join="left join u.group.hierarchyList h" paramClass="com.haulmont.cuba.security.entity.Group">
