@@ -8,8 +8,9 @@
 >
     <xs:element name="views">
         <xs:complexType>
-            <xs:sequence minOccurs="0" maxOccurs="unbounded">
-                <xs:element name="view" type="viewType"/>
+            <xs:sequence>
+                <xs:element name="include" type="includeType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="view" type="viewType" minOccurs="1" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -32,5 +33,9 @@
         <xs:attribute name="view"/>
         <xs:attribute name="entity"/>
         <xs:attribute name="lazy" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="includeType">
+        <xs:attribute name="file" type="xs:string"/>
     </xs:complexType>
 </xs:schema>
