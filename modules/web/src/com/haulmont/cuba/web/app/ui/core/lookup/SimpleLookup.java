@@ -57,6 +57,7 @@ public class SimpleLookup extends AbstractLookup {
         ComponentType componentType = lookupConfig.getComponentType();
         List<String> columns = lookupConfig.getColumns();
         String lookupTitle = lookupConfig.getLookupTitle();
+        Map<String, Object> queryParams = lookupConfig.getQueryParams();
 
         MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
         if (metaClass == null)
@@ -67,8 +68,10 @@ public class SimpleLookup extends AbstractLookup {
 
         if (query != null)
             datasource.setQuery(query);
-        
-        datasource.refresh();
+        if(queryParams !=null)
+            datasource.refresh(queryParams);
+        else
+            datasource.refresh();
 
         Container lookupPanel = getComponent("lookupPanel");
 
@@ -142,6 +145,7 @@ public class SimpleLookup extends AbstractLookup {
         private List<String> columns;
         private String lookupTitle;
         private Boolean multiSelect;
+        private Map<String, Object> queryParams;
 
         public String getEntity() {
             return entity;
@@ -197,6 +201,14 @@ public class SimpleLookup extends AbstractLookup {
 
         public void setMultiSelect(Boolean multiSelect) {
             this.multiSelect = multiSelect;
+        }
+
+        public Map<String, Object> getQueryParams() {
+            return queryParams;
+        }
+
+        public void setQueryParams(Map<String, Object> queryParams) {
+            this.queryParams = queryParams;
         }
     }
 
