@@ -38,9 +38,10 @@ import com.sun.star.util.XSearchDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 
 public class DocFormatter extends AbstractFormatter {
     private OOOConnection connection;
@@ -93,16 +94,11 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillTables() throws com.sun.star.uno.Exception {
-        String[] tablesNames = getTablesNames(xComponent);
-        List<String> bandTables = new ArrayList<String>();
-        Set<String> bandDefinitions = rootBand.getBandDefinitionNames();
-        for (String tableName : tablesNames){
-            if (bandDefinitions.contains(tableName))
-                bandTables.add(tableName);
-        }
-        
+        List<String> tablesNames = new ArrayList<String>(Arrays.asList(getTablesNames(xComponent)));
+        tablesNames.retainAll(rootBand.getBandDefinitionNames());
+
         XDispatchHelper xDispatchHelper = connection.createXDispatchHelper();
-        for (String tableName : bandTables) {
+        for (String tableName : tablesNames) {
             Band band = findBand(rootBand, tableName);
             XTextTable xTextTable = getTableByName(xComponent, tableName);
             if (band != null) {
