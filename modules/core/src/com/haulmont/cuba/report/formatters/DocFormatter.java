@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: FONTANENKO VASILIY
+ * Created: 12.10.2010 19:21:36
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report.formatters;
 
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -28,16 +38,9 @@ import com.sun.star.util.XSearchDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: FONTANENKO VASILIY
- * Created: 12.10.2010 19:21:36
- *
- * $Id$
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class DocFormatter extends AbstractFormatter {
     private OOOConnection connection;
@@ -91,8 +94,15 @@ public class DocFormatter extends AbstractFormatter {
 
     private void fillTables() throws com.sun.star.uno.Exception {
         String[] tablesNames = getTablesNames(xComponent);
+        List<String> bandTables = new ArrayList<String>();
+        Set<String> bandDefinitions = rootBand.getBandDefinitionNames();
+        for (String tableName : tablesNames){
+            if (bandDefinitions.contains(tableName))
+                bandTables.add(tableName);
+        }
+        
         XDispatchHelper xDispatchHelper = connection.createXDispatchHelper();
-        for (String tableName : tablesNames) {
+        for (String tableName : bandTables) {
             Band band = findBand(rootBand, tableName);
             XTextTable xTextTable = getTableByName(xComponent, tableName);
             if (band != null) {
