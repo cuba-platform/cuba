@@ -160,36 +160,32 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillCell(Band band, XCell xCell) throws NoSuchElementException, WrappedTargetException {
-        XEnumeration paragraphs = asXEnumerationAccess(xCell).createEnumeration();
-        while (paragraphs.hasMoreElements()) {
-            Object paragraph = paragraphs.nextElement();
-            String cellText = preformatCellText(asXText(xCell).getString());
-            List<String> parametersToInsert = new ArrayList<String>();
-            Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
-            Matcher matcher = namePattern.matcher(cellText);
-            while (matcher.find()) {
-                parametersToInsert.add(unwrapParameterName(matcher.group()));
-            }
-            for (String parameterName : parametersToInsert) {
-                XText xText = asXText(xCell);
-                XTextCursor xTextCursor = xText.createTextCursor();
+        String cellText = preformatCellText(asXText(xCell).getString());
+        List<String> parametersToInsert = new ArrayList<String>();
+        Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = namePattern.matcher(cellText);
+        while (matcher.find()) {
+            parametersToInsert.add(unwrapParameterName(matcher.group()));
+        }
+        for (String parameterName : parametersToInsert) {
+            XText xText = asXText(xCell);
+            XTextCursor xTextCursor = xText.createTextCursor();
 
-                String paramStr = "${" + parameterName + "}";
-                int index = cellText.indexOf(paramStr);
+            String paramStr = "${" + parameterName + "}";
+            int index = cellText.indexOf(paramStr);
 
-                while (index >= 0) {
-                    xTextCursor.gotoStart(false);
-                    xTextCursor.goRight((short) (index + paramStr.length()), false);
-                    xTextCursor.goLeft((short) paramStr.length(), true);
+            while (index >= 0) {
+                xTextCursor.gotoStart(false);
+                xTextCursor.goRight((short) (index + paramStr.length()), false);
+                xTextCursor.goLeft((short) paramStr.length(), true);
 
-                    Object value = band.getData().get(parameterName);
-                    String valueStr = value != null ? value.toString() : "";
+                Object value = band.getData().get(parameterName);
+                String valueStr = value != null ? value.toString() : "";
 
-                    xText.insertString(xTextCursor, valueStr, true);
+                xText.insertString(xTextCursor, valueStr, true);
 
-                    cellText = preformatCellText(xText.getString());
-                    index = cellText.indexOf(paramStr);
-                }
+                cellText = preformatCellText(xText.getString());
+                index = cellText.indexOf(paramStr);
             }
         }
     }
