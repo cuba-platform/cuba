@@ -93,4 +93,12 @@ public class ODTTableHelper {
         selectRow(xController, xTextTable, ++lastRowNum);
         paste(xDispatchHelper, xDispatchProvider);
     }
+
+    //delete nonexistent symbols from cell text
+    public static String preformatCellText(String cellText){
+        if (cellText != null)
+            return cellText.replace("\r","");
+        else
+            return cellText;
+    }
 }

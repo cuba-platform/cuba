@@ -163,14 +163,7 @@ public class DocFormatter extends AbstractFormatter {
         XEnumeration paragraphs = asXEnumerationAccess(xCell).createEnumeration();
         while (paragraphs.hasMoreElements()) {
             Object paragraph = paragraphs.nextElement();
-            // todo: check here that paragraph is not table
-            /*XEnumeration textPortions = asXEnumerationAccess(paragraph).createEnumeration();
-            while (textPortions.hasMoreElements()) {
-                XTextRange textPortion = asXTextRange(textPortions.nextElement());
-                String portionText = textPortion.getString();
-                textPortion.setString(insertBandDataToString(band, portionText));
-            }*/
-            String cellText = asXText(xCell).getString();
+            String cellText = preformatCellText(asXText(xCell).getString());
             List<String> parametersToInsert = new ArrayList<String>();
             Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
             Matcher matcher = namePattern.matcher(cellText);
@@ -194,7 +187,7 @@ public class DocFormatter extends AbstractFormatter {
 
                     xText.insertString(xTextCursor, valueStr, true);
 
-                    cellText = xText.getString();
+                    cellText = preformatCellText(xText.getString());
                     index = cellText.indexOf(paramStr);
                 }
             }
