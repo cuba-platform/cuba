@@ -215,8 +215,12 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     protected void __autoRefreshInvalid() {
         if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
-            Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
-            if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+            DsContext dsContext = datasource.getDsContext();
+            Map<String, Object> params = null;
+            if (dsContext != null && dsContext.getWindowContext() != null) {
+                params = dsContext.getWindowContext().getParams();
+            }
+            if (params == null || !BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
                 if (datasource instanceof CollectionDatasource.Suspendable)
                     ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended();
                 else
