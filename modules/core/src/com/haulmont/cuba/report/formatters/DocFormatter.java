@@ -17,9 +17,11 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.tools.*;
+
 import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
 import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
+
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XIndexAccess;
@@ -29,9 +31,7 @@ import com.sun.star.io.XInputStream;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.table.XCell;
-import com.sun.star.text.XTextDocument;
-import com.sun.star.text.XTextRange;
-import com.sun.star.text.XTextTable;
+import com.sun.star.text.*;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XReplaceable;
 import com.sun.star.util.XSearchDescriptor;
@@ -42,6 +42,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DocFormatter extends AbstractFormatter {
     private OOOConnection connection;
@@ -123,7 +125,7 @@ public class DocFormatter extends AbstractFormatter {
         try {
             for (int i = 0; i < xTextTable.getColumns().getCount(); i++) {
                 String templateText = asXText(ODTTableHelper.getXCell(xTextTable, i, lastrow)).getString();
-                if (templateText.matches(UNIVERSAL_ALIAS_PATTERN)) {
+                if (Pattern.compile(UNIVERSAL_ALIAS_PATTERN).matcher(templateText).find()) {
                     return true;
                 }
             }
@@ -162,11 +164,39 @@ public class DocFormatter extends AbstractFormatter {
         while (paragraphs.hasMoreElements()) {
             Object paragraph = paragraphs.nextElement();
             // todo: check here that paragraph is not table
-            XEnumeration textPortions = asXEnumerationAccess(paragraph).createEnumeration();
+            /*XEnumeration textPortions = asXEnumerationAccess(paragraph).createEnumeration();
             while (textPortions.hasMoreElements()) {
                 XTextRange textPortion = asXTextRange(textPortions.nextElement());
                 String portionText = textPortion.getString();
                 textPortion.setString(insertBandDataToString(band, portionText));
+            }*/
+            String cellText = asXText(xCell).getString();
+            List<String> parametersToInsert = new ArrayList<String>();
+            Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = namePattern.matcher(cellText);
+            while (matcher.find()) {
+                parametersToInsert.add(unwrapParameterName(matcher.group()));
+            }
+            for (String parameterName : parametersToInsert) {
+                XText xText = asXText(xCell);
+                XTextCursor xTextCursor = xText.createTextCursor();
+
+                String paramStr = "${" + parameterName + "}";
+                int index = cellText.indexOf(paramStr);
+
+                while (index >= 0) {
+                    xTextCursor.gotoStart(false);
+                    xTextCursor.goRight((short) (index + paramStr.length()), false);
+                    xTextCursor.goLeft((short) paramStr.length(), true);
+
+                    Object value = band.getData().get(parameterName);
+                    String valueStr = value != null ? value.toString() : "";
+
+                    xText.insertString(xTextCursor, valueStr, true);
+
+                    cellText = xText.getString();
+                    index = cellText.indexOf(paramStr);
+                }
             }
         }
     }
