@@ -77,7 +77,7 @@
 
     </target>
 
-    <target name="build-module-gwt" depends="base-mod.compile-module">
+    <target name="build-module-gwt" depends="base-mod.compile-module" unless="disable-build-gwt">
         <condition property="do-build-gwt" value="true">
             <not>
                 <available file="${widgets.out.dir}"/>
