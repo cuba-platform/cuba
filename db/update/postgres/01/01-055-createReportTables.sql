@@ -1,4 +1,4 @@
-
+-- $Id$
 CREATE TABLE report_band_definition
 (
   id uuid NOT NULL,

@@ -1,4 +1,4 @@
--- $Id$
+-- $Id: 01-090-ChangeReportKeys.sql 2704 2010-09-27 14:23:11Z degtyarjov $
 -- Description: reports now are hard deleted 
 
 alter table report_band_definition drop CONSTRAINT  fk_report_band_definition_to_report_band_definition^
