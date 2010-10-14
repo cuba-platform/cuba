@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.report.app.ReportService;
+import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.CustomFormatter;
 import com.haulmont.cuba.report.formatters.DocFormatter;
 import com.haulmont.cuba.report.formatters.Formatter;
@@ -64,8 +65,11 @@ public class ReportServiceBean implements ReportService {
 
             Formatter formatter = createFormatter(report, format);
             return formatter.createDocument(rootBand);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (ReportFormatterException ex){
+            throw ex;
+        }
+        catch (Exception e) {
+            throw new ReportFormatterException(e);
         }
     }
 
