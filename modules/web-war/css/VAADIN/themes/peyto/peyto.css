@@ -24,7 +24,7 @@
     color: white;
     font-size: 14px;
     font-weight: bold;
-    font-family: "Trebuchet MS", Tahoma, Verdana, Arial, sans-serif;
+    font-family: Verdana, "Trebuchet MS", Tahoma, Arial, sans-serif;
 }
 
 .v-horizontallayout-titlebar .v-label-select-label {
@@ -38,7 +38,7 @@
  *  Breadcrumbs styles
  */
 .v-horizontallayout-breadcrumbs .v-label {
-    font-family: tahoma, sans-serif;
+    font-family: Verdana, tahoma, sans-serif;
     font-size: 14px;
     color: #000;
     font-weight: bold;
@@ -76,6 +76,7 @@
 /* Logout & View-log buttons */
 .v-button-white-border {
     background: transparent none;
+    border: none;
     height: 26px;
     padding: 0 0 0 4px;
 }
@@ -91,6 +92,13 @@
     /* looks not very pretty
     text-decoration: underline;
     */
+    color: #fff;
+}
+
+.v-horizontallayout-work-area,
+.v-verticallayout-work-area,
+.v-customlayout-work-area {
+    background: transparent url("images/bg_main.gif") repeat-x;   
 }
 
 /*
@@ -113,16 +121,12 @@
 }
 
 .v-verticallayout-loginBottom .v-captiontext {
-    color: #000;
-    font-family: arial, sans-serif;
     padding-right: 5px;
     float: none;
 }
 
 .v-verticallayout-loginBottom .v-label-login-caption {
-    color: #000;
     font-weight: bold;
-    font-family: arial, sans-serif;
     font-size: 9pt;
 }
 
@@ -135,13 +139,16 @@
     font-weight: normal;
 }
 
+.v-button-submit-login-btn {
+    padding: 0 10px 0 5px;
+}
+
 /*
  * Work area in single mode
  */
 
 .v-verticallayout-single {
-    border: 1px solid #5280b7;
-    background: #ffffff;
+    background: transparent url("images/bg_main.gif") repeat-x; 
 }
 
 /*
@@ -152,25 +159,22 @@
 .v-verticallayout.edit-area,
 .v-horizontallayout.edit-area,
 .v-gridlayout.edit-area {
-    background-color: #F6F6F6;
-    border: 1px solid #c3c3c3;
-    color: #000;
+    background-color: #FBFDFD;
+    border: 1px solid #E3E9F3;
 }
 
 .group-box-edit-area fieldset {
-    background-color: #F6F6F6;
-    border: 1px solid #c3c3c3;
-    color: #000;
+    background-color: #FBFDFD;
+    border: 1px solid #E3E9F3;
 }
 
 .edit-area .v-label, .edit-area .v-label.h2 {
-    color: #002157;
+    /*color: #002157;*/
 }
 
 .v-label.h2 {
-    font-family: tahoma, sans-serif;
+    font-family: verdana, tahoma, sans-serif;
     font-size: 14px;
-    color: #000;
     font-weight: bold;
 }
 
@@ -182,8 +186,8 @@
 .v-window-contents .v-horizontallayout-edit-area,
 .v-window-contents .v-gridlayout-edit-area,
 .v-window-contents .v-table {
-    font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
-	color: #000;
+    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+	/*color: #000;*/
 	font-size: 8pt;
 }
 
@@ -200,8 +204,10 @@
     overflow: auto;
 }
 
-.v-label-folderspane-caption {
-    font-weight: bold;
+.v-app .v-label-folderspane-caption {
+    font-size: 12px;
+    background: url("images/bg_header.png") no-repeat left bottom;
+    padding-top: 5px;
 }
 
 .popupmenu.v-dashlayout{
@@ -215,6 +221,10 @@
     height: 18px;
     width: 100%;
     padding-right: 10px;
+}
+
+.popupmenu .v-button .v-button-caption {
+    margin-left: 10px;
 }
 
 .popupmenu .v-button:hover .v-button-caption {
@@ -287,9 +297,9 @@
 /*
  * Fix until issue with vaadin & border solves
  */
-.v-scrollable-panel-content .edit-area {
+/*.v-scrollable-panel-content .edit-area {
     border: 0;
-}
+}*/
 
 .v-verticallayout-operationContainer {
     border-bottom: 1px solid #71A4D5;
@@ -435,12 +445,13 @@
 
 .v-button-ss-link-button .v-button-caption {
     font-size: 14px;
-    color: blue;
+    color: #0066FF;
     text-decoration: underline;
 }
 
 .v-button-ss-link-button,
 .v-button-ss-link-button:hover {
+    border: none;
     background: transparent;
     height: 18px;
     margin-top: 2px;
@@ -532,7 +543,7 @@
 .popup-container {
     background-color: #fff;
     border: 1px solid #5280B7;
-    font-family: helvetica,arial,tahoma,verdana,sans-serif;
+    font-family: Verdana, helvetica,arial,tahoma,verdana,sans-serif;
     font-size: 12px;
     line-height: 14px;
     padding: 3px 3px 5px 3px;
@@ -550,7 +561,7 @@
 .popup-container .v-menubar table {
     padding: 0;
     margin: 0;
-    font-family: helvetica,arial,tahoma,verdana,sans-serif;
+    font-family: Verdana, helvetica,arial,tahoma,verdana,sans-serif;
     border-collapse: collapse;
 }
 

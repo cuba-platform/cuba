@@ -59,7 +59,7 @@ body {
 .v-popupview-popup select,
 .v-popupview-popup button,
 .v-popupview-popup textarea {
-	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+	font-family: Verdana, "Trebuchet MS", geneva, helvetica, arial, tahoma, sans-serif;
 	color: #464f52;
 	font-size: 13px;
 }
@@ -128,7 +128,7 @@ input.v-modified,
 	border-left-color: #d5d2c1;
 	font-size: 11px;
 	line-height: 13px;
-	font-family: arial, helvetica, tahoma, verdana, sans-serif;
+	font-family: verdana, arial, helvetica, tahoma, sans-serif;
 	color: #5d5444;
 	cursor: default;
 }
@@ -168,7 +168,7 @@ input.v-modified,
  * Context menu styles
  */
 .v-contextmenu {
-	font-family: "Trebuchet MS", geneva, helvetica, arial, tahoma, verdana, sans-serif;
+	font-family: Verdana, "Trebuchet MS", geneva, helvetica, arial, tahoma, sans-serif;
     border: solid 1px #5280b7;
     background: #fff;
 	font-size: 12px;
@@ -305,7 +305,7 @@ input.v-modified,
 .v-app {
 /*	background: #ccd8ee; */
     background: #F6F6F6;
-    font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+    font-family: Verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
 	color: #000;
 	font-size: 8pt;
 	line-height: 18px;
@@ -330,10 +330,17 @@ input.v-modified,
 .v-popupview-popup select,
 .v-popupview-popup button,
 .v-popupview-popup textarea {
-	font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
-	color: #000;
-	font-size: 8pt;
+	font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+	/*color: #507699;*/
+    color: #2B4666;
+	font-size: 11px;
 }
+
+.v-app div {
+    color: #2B4666;
+	font-size: 13px;
+}
+
 
 /* Fix for liferay. #2384 */
 .v-app input[type="reset"],

@@ -45,8 +45,8 @@
 	padding: 0 2px;
 	cursor: default;
 	white-space: nowrap;
-    font-size: 9pt;
-    color: #000;
+    font-size: 13px;
+    color: #2B4666;
 }
 
 .v-tree-node-selected.v-tree-node-caption span {

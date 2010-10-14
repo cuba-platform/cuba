@@ -179,6 +179,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         layout.addComponent(emptyLayout);
 
         middleLayout = new HorizontalLayout();
+        middleLayout.addStyleName("work-area");
         middleLayout.setSizeFull();
 
         foldersPane = createFoldersPane();

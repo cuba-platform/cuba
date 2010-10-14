@@ -3,18 +3,18 @@
 }
 
 .v-splitpanel-horizontal .v-splitpanel-hsplitter {
-	width: 10px;
+	width: 6px;
 	font-size: 1px; /* for IE6 */
 }
 
 .v-splitpanel-horizontal .v-splitpanel-hsplitter div {
-	width: 8px;
+	width: 6px;
 	font-size: 1px; /* for IE6 */
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	background: transparent url(img/split-hor-bg.png) repeat-y 50% 50%;
-	border: 0 solid #d7dddb;
+	background: #EEF3F9 url(img/bg-ruler-vert.png) center no-repeat;
+	/*border: 0 solid #d7dddb;*/
 	cursor: e-resize;
 	margin: 0 1px;
 }
@@ -25,9 +25,9 @@
 }
 
 .v-splitpanel-vertical .v-splitpanel-vsplitter div {
-	height: 8px;
+	height: 6px;
 	font-size: 1px; /* for IE6 */
-	background: transparent url(img/split-ver-bg.png) repeat-x 50% 50%;
+	background: #EEF3F9 url(img/bg-ruler-horiz.png) center no-repeat;
 	border: 0;
 	cursor: n-resize;
 	margin: 0;

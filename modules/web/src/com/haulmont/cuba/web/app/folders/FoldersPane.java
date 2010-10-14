@@ -185,6 +185,7 @@ public class FoldersPane extends VerticalLayout {
                 vertSplit.setSplitPosition(verticalSplitPos, Sizeable.UNITS_PIXELS);
 
                 VerticalLayout afLayout = new VerticalLayout();
+                afLayout.setSpacing(true);
                 afLayout.setSizeFull();
                 if (appFoldersLabel != null)
                     addFoldersLabel(afLayout, appFoldersLabel);
@@ -193,6 +194,7 @@ public class FoldersPane extends VerticalLayout {
                 vertSplit.setFirstComponent(afLayout);
 
                 VerticalLayout sfLayout = new VerticalLayout();
+                sfLayout.setSpacing(true);
                 sfLayout.setSizeFull();
                 if (searchFoldersLabel != null)
                     addFoldersLabel(sfLayout, searchFoldersLabel);

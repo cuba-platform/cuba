@@ -5,7 +5,7 @@
 }
 
 .v-window-wrap {
-    font-family: Tahoma, Arial, sans-serif;
+    font-family: verdana, Tahoma, Arial, sans-serif;
     color: #fff;
 }
 
@@ -30,7 +30,7 @@
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
-    font-family: "Trebuchet MS", tahoma, arial, sans-serif;
+    font-family: verdana, "Trebuchet MS", tahoma, arial, sans-serif;
 }
 
 * html .v-window-header {

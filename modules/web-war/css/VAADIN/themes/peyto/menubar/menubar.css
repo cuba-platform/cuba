@@ -8,7 +8,7 @@
 }
 
 .v-menubar table {
-    font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
+    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
     font-size: 11px;
     white-space: nowrap;
     border: 0;
@@ -55,7 +55,7 @@
     border: solid 1px #8aa9d1;
     background: #fff;
     padding: 5px;
-    font-family: tahoma, arial, verdana, geneva, helvetica, sans-serif;
+    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
     font-size: 11px;
 }
 

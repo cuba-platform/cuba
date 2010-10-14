@@ -22,7 +22,7 @@
 }
 
 .v-datefield-popup {
-	font-family: tahoma, verdana, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+	font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
 	color: #000;
 	font-size: 12px;
     background: #fff url(img/calendar-popup-bg.png) top left repeat-x;

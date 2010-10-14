@@ -161,7 +161,7 @@
 
 .v-tabsheet-tabitem .v-caption .v-captiontext,
 .v-tabsheet-tabitem-selected .v-caption .v-captiontext {
-    font-family: arial, sans-serif;
+    font-family: verdana, arial, sans-serif;
     font-size: 12px;
     font-weight: normal;
 }
@@ -178,7 +178,7 @@
 }
 
 .v-tabsheet-tabitem-selected .v-caption .v-captiontext {
-    color: #000;
+    color: inherit;
 }
 
 .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected-first,

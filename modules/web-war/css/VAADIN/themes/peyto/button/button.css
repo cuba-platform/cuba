@@ -6,8 +6,8 @@
     zoom: 1;
     text-align: center;
     text-decoration: none;
-    border: none;
-    background: transparent url(img/button-left.png) no-repeat left center;
+    border: #9BB3D3 1px solid;
+    background: transparent url(img/bg-button.gif) repeat-x;
     cursor: pointer;
     white-space: nowrap;
     margin: 0;
@@ -36,37 +36,38 @@
 
 .v-button-wrap {
     height: 20px;
-    background: transparent url(img/button.png) no-repeat right top;
+    /*background: transparent url(img/button.png) no-repeat right top;*/
     padding: 4px 5px 1px 0px;
     display: block;
 }
 
 .v-button:hover {
-    background: transparent url(img/button-left-active.png) no-repeat left center;
+    background: transparent url(img/bg-button-hover.gif) repeat-x;
 }
 
 .v-button-wrap:hover,
 .v-button:hover .v-button-wrap {
-    background: transparent url(img/button-active.png) no-repeat right top;
+    /*background: transparent url(img/button-active.png) no-repeat right top;*/
 }
 
 .v-disabled .v-button-wrap:hover {
-    background: transparent url(img/button.png) no-repeat right top;
+    /*background: transparent url(img/button.png) no-repeat right top;*/
 }
 
 
 .v-disabled.v-button:hover  {
-    background: transparent url(img/button-left.png) no-repeat left center;
+    background: transparent url(img/bg-button.gif) repeat-x;
+    /*background: transparent url(img/button-left.png) no-repeat left center;*/
 }
 
 .v-ie .v-disabled .v-button-wrap,
 .v-ie .v-disabled .v-button-wrap:hover {
-    background: transparent url(img/button.gif) no-repeat right top;
+    /*background: transparent url(img/button.gif) no-repeat right top;*/
 }
 
 .v-ie .v-disabled.v-button,
 .v-ie .v-disabled.v-button:hover  {
-    background: transparent url(img/button-left.gif) no-repeat left center;
+    /*background: transparent url(img/button-left.gif) no-repeat left center;*/
 }
 
 
@@ -78,16 +79,8 @@
 }
 
 .v-button .v-button-caption {
-    font-size: 10pt;
-    font-family: Tahoma, sans-serif;
-}
-
-.v-button .v-button-caption {
-    color: #fff;
-}
-
-.v-button-link .v-button-caption {
-    color: #000;
+    font-size: 13px;
+    font-family: verdana, Tahoma, sans-serif;
 }
 
 
@@ -96,7 +89,7 @@
     vertical-align: middle;
     white-space: nowrap;
     font: inherit;
-    color: inherit;
+    color: #2B4666;
     line-height: normal;
 }
 
@@ -150,7 +143,7 @@ outline-offset: -3px;
 .v-button-link .v-button-caption,
 .v-nativebutton-link .v-nativebutton-caption {
     text-decoration: underline;
-    color: inherit;
+    color: #0066FF;
     text-align: left;
 }
 
@@ -252,6 +245,10 @@ background: #ffe0e0;
 }
 */
 
+.v-button-grey {
+    border: none;
+}
+
 .v-button-grey .v-button-caption {
-    color: black;
+    color: inherit;
 }

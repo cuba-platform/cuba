@@ -9,7 +9,7 @@
 
 .v-table-header-wrap {
 	height: 23px;
-	background: #71a4d5 url(img/table-header-bg.png) repeat-x;
+	background: transparent url(img/table-header-bg.png) repeat-x;
 	border: 1px solid #71a4d5;
 	border-bottom: none;
 	overflow: hidden;
@@ -17,7 +17,7 @@
 }
 
 .v-table-header .v-table-caption-container {
-    color: #fff;
+    font-weight: normal;
 }
 
 .v-table-header,
@@ -48,6 +48,10 @@
 	border: 0;
 }
 
+.v-table-table td {
+    border-right: #EDF3F9 1px solid;
+}
+
 .v-table-header td {
     height: 23px;
     cursor: pointer;
@@ -57,7 +61,8 @@
 	display: block;
 	height: 23px;
 	float: right;
-	background: transparent url(img/table-resizer-bg.png) repeat-y 50% 50%;
+	/*background: #CBDAE9 repeat-y 50% 50%;*/
+    border-right: #CBDAE9 1px solid;
 	cursor: col-resize;
 }
 
@@ -86,7 +91,7 @@
 
 .v-table-body {
 	background: #fff;
-	border: 1px solid #71a4d5;
+	border: 1px solid #A5C4E0;
 }
 
 .v-table-row-spacer {
@@ -104,7 +109,7 @@
 	cursor: default;
 }
 .v-table-row-odd {
-	background-color: #f0f0f0;
+	background-color: #F6F8FA;
 }
 .v-table-row:hover,
 .v-table-row-odd:hover {
@@ -115,7 +120,7 @@
 .v-table-caption-row .v-table-cell,
 .v-table-group-row .v-table-cell{
 	padding: 0;
-    border-bottom:1px solid #83888c;
+    border-bottom: 1px solid #EDF3F9;
 }
 
 /*.v-table .v-table-group-row {*/
@@ -144,11 +149,11 @@
 .v-table-row.v-selected,
 .v-table-row-odd.v-selected,
 .v-table-caption-row.v-selected {
-    background-color: #98b4d4;
+    background-color: #C3E1FF;
 }
 
 .v-selected .v-table-cell-content {
-    color: #000;
+    /*color: #000;*/
 }
 
 .v-table-cell-content .v-icon {
@@ -159,6 +164,7 @@
 .v-table-cell .v-table-cell-content {
     white-space: nowrap;
     overflow: hidden;
+    font-size: 11px;
 }
 
 .v-table-cell-wrap .v-table-cell-content {
@@ -210,7 +216,7 @@
 }
 
 .v-table-cell-content .v-button-caption {
-    font-size: 8pt;
+    font-size: 11px;
     margin: 0;
     padding: 0;
 }
@@ -428,4 +434,8 @@
     background: transparent url(img/table-button-grey-right.png) no-repeat right top;
     padding: 1px 0 0 1px;
     height: 16px;
+}
+
+.v-table div {
+    font-size: 11px;
 }
