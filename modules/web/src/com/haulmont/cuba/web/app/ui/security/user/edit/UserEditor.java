@@ -174,7 +174,7 @@ public class UserEditor extends AbstractEditor {
                 public Component generateField(Datasource datasource, Object propertyId) {
                     confirmPasswField = new WebTextField();
                     confirmPasswField.setSecret(true);
-                    confirmPasswField.setRequiredMessage("confirmPasswMsg");
+                    confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
                     confirmPasswField.setRequired(!ConfigProvider.getConfig(WebConfig.class).getUseActiveDirectory());
                     return confirmPasswField;
                 }
