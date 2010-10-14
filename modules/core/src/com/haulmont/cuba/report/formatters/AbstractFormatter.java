@@ -26,30 +26,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AbstractFormatter implements Formatter {
-    public static final String VALUE_EXPRESSION_PATTERN = "\\$\\{.+?\\..+?\\}";
+    public static final String UNIVERSAL_ALIAS_PATTERN = "\\$\\{[a-z|A-Z|0-9|\\_|\\.]+?\\}";
+    public static final String ALIAS_WITH_BAND_NAME_PATTERN = "\\$\\{[a-z|A-Z|0-9|\\_]+?\\.[a-z|A-Z|0-9|\\_|\\.]+?\\}";
 
     public abstract byte[] createDocument(Band rootBand);
-
-    protected String createTemporaryFile(FileDescriptor fd) {
-        FileStorageService fss = Locator.lookup(FileStorageService.NAME);
-        try {
-            byte[] arr = fss.loadFile(fd);
-            File tmpFile = new File(getTempFileName());
-            String filePath = tmpFile.getAbsolutePath();
-            FileOutputStream fos = new FileOutputStream(tmpFile);
-            fos.write(arr);
-            fos.close();
-            return filePath;
-        } catch (FileStorageException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String getTempFileName() {
-        return ConfigProvider.getConfig(ServerConfig.class).getServerTempDir() + "/" + RandomStringUtils.randomNumeric(10) + ".tmp";
-    }
 
     protected InputStream getFileInputStream(FileDescriptor fd) {
         FileStorageService fss = Locator.lookup(FileStorageService.NAME);
@@ -64,29 +44,24 @@ public abstract class AbstractFormatter implements Formatter {
 
     protected String insertBandDataToString(Band band, String resultStr) {
         List<String> parametersToInsert = new ArrayList<String>();
-        Pattern namePattern = Pattern.compile("\\$\\{.+?\\}", Pattern.CASE_INSENSITIVE);
+        Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = namePattern.matcher(resultStr);
         while (matcher.find()) {
-            parametersToInsert.add(matcher.group().replace("${", "").replace("}", ""));
+            parametersToInsert.add(unwrapParameterName(matcher.group()));
         }
         for (String parameterName : parametersToInsert) {
             Object value = band.getData().get(parameterName);
             String valueStr = value != null ? value.toString() : "";
-            resultStr = resultStr.replaceAll("\\$\\{" + parameterName + "\\}", valueStr);
+            resultStr = inlineParameterValue(resultStr, parameterName, valueStr);
         }
         return resultStr;
     }
 
-    /**
-     * Parse value expression string and extract band name and property name from it.
-     *
-     * @param valueExpression Value expression like ${bandName.propertyName}
-     * @return String array with 2 items. First is band name, second is property name.
-     */
-    protected String[] parseValueExpression(String valueExpression) {
-        if (!valueExpression.matches(VALUE_EXPRESSION_PATTERN)) {
-            throw new IllegalArgumentException("Invalid value expression (" + valueExpression + ")");
-        }
-        return valueExpression.replace("${", "").replace("}", "").split("\\.");
+    protected String unwrapParameterName(String nameWisAlias) {
+        return nameWisAlias.replaceAll("[\\$|\\{|\\}]", "");
+    }
+
+    protected String inlineParameterValue(String template, String parameterName, String value) {
+        return template.replaceAll("\\$\\{" + parameterName + "\\}", value);
     }
 }

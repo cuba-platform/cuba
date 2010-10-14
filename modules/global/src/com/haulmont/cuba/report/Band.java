@@ -10,10 +10,7 @@
  */
 package com.haulmont.cuba.report;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Band {
     private Map<String, Object> data;
@@ -22,6 +19,7 @@ public class Band {
     private String name;
     private int level;
     private Orientation orientation = Orientation.HORIZONTAL;
+    private Set<String> bandDefinitionNames = null;
 
     public Band(String name, int level, Band parentBand, Orientation orientation) {
         this.name = name;
@@ -122,5 +120,13 @@ public class Band {
             }
         }
         return null;
+    }
+
+    public Set<String> getBandDefinitionNames() {
+        return bandDefinitionNames;
+    }
+
+    public void setBandDefinitionNames(Set<String> bandDefinitionNames) {
+        this.bandDefinitionNames = bandDefinitionNames;
     }
 }

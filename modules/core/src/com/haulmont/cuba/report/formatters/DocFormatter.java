@@ -7,15 +7,18 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.tools.*;
+import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
+import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
+import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XDispatchHelper;
 import com.sun.star.io.IOException;
 import com.sun.star.io.XInputStream;
-import com.sun.star.lang.*;
+import com.sun.star.lang.WrappedTargetException;
+import com.sun.star.lang.XComponent;
 import com.sun.star.table.XCell;
-import com.sun.star.text.XText;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextRange;
 import com.sun.star.text.XTextTable;
@@ -24,13 +27,6 @@ import com.sun.star.util.XReplaceable;
 import com.sun.star.util.XSearchDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
-import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
-
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 /*
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
@@ -65,13 +61,7 @@ public class DocFormatter extends AbstractFormatter {
 
     public byte[] createDocument(Band rootBand) {
         this.rootBand = rootBand;
-        /* What is it?
-        String bands = "";
-        for (Band b : rootBand.getChildren())
-            bands += b.getName() + "|";
-        if (rootBand.getChildren().size() == 0)
-            log.info("RootBand is empty");
-        */
+
         try {
             XInputStream xis = getXInputStream(templateFileDescriptor);
             xComponent = loadXComponent(connection.createXComponentLoader(), xis);
@@ -125,9 +115,9 @@ public class DocFormatter extends AbstractFormatter {
     public boolean haveValueExpressions(XTextTable xTextTable) {
         int lastrow = xTextTable.getRows().getCount() - 1;
         try {
-            for (int i = 0; i < xTextTable.getRows().getCount(); i++) {
+            for (int i = 0; i < xTextTable.getColumns().getCount(); i++) {
                 String templateText = asXText(ODTTableHelper.getXCell(xTextTable, i, lastrow)).getString();
-                if (Pattern.compile("\\$\\{[^\\.]+?\\}").matcher(templateText).find()) {
+                if (templateText.matches(UNIVERSAL_ALIAS_PATTERN)) {
                     return true;
                 }
             }
@@ -139,11 +129,9 @@ public class DocFormatter extends AbstractFormatter {
 
     private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper) throws com.sun.star.uno.Exception {
         ClipBoardHelper.clear();
-        int count = 0;
         for (int i = 0; i < parentBand.getChildren().size(); i++) {
             if (name.equals(parentBand.getChildren().get(i).getName())) {
                 duplicateLastRow(xDispatchHelper, asXTextDocument(xComponent).getCurrentController(), xTextTable);
-                count++;
             }
         }
         int i = 0;
@@ -177,17 +165,6 @@ public class DocFormatter extends AbstractFormatter {
         }
     }
 
-    private void fillCellNoFormatInside(Band band, XCell xCell) throws NoSuchElementException, WrappedTargetException {
-        XText xText = asXText(xCell);
-        for (java.util.Map.Entry<String, Object> entry : band.getData().entrySet()) {
-            String portionText = xText.getString();
-            String alias = "${" + entry.getKey() + "}";
-            Object value = entry.getValue();
-            String valueStr = (value == null) ? "" : value.toString();
-            xText.setString(portionText.replace(alias, valueStr));
-        }
-    }
-
     /**
      * Replaces all aliases (${bandname.paramname} in document text).
      * If there is not appropriate band or alias is bad - throws RuntimeException
@@ -196,14 +173,13 @@ public class DocFormatter extends AbstractFormatter {
         XTextDocument xTextDocument = asXTextDocument(xComponent);
         XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
         XSearchDescriptor searchDescriptor = xReplaceable.createSearchDescriptor();
-        // regexp: \$\{[^\.]+?[a-zA-Z0-9\.]*[^\.]\}
-        searchDescriptor.setSearchString("\\$\\{[a-z|A-Z|0-9|\\_]+?\\.[a-z|A-Z|0-9|\\_|\\.]+?\\}");
+        searchDescriptor.setSearchString(ALIAS_WITH_BAND_NAME_PATTERN);
         try {
             searchDescriptor.setPropertyValue("SearchRegularExpression", true);
             XIndexAccess indexAccess = xReplaceable.findAll(searchDescriptor);
             for (int i = 0; i < indexAccess.getCount(); i++) {
                 XTextRange o = asXTextRange(indexAccess.getByIndex(i));
-                String alias = o.getString().replaceAll("[\\{|\\}|\\$]", "");
+                String alias = unwrapParameterName(o.getString());
                 String[] parts = alias.split("\\.");
 
                 if (parts == null || parts.length < 2)
@@ -223,7 +199,7 @@ public class DocFormatter extends AbstractFormatter {
                 o.setString(parameter != null ? parameter.toString() : "");
             }
         } catch (Exception ex) {
-            //throw new ReportFormatterException(ex);
+            throw new ReportFormatterException(ex);
         }
     }
 

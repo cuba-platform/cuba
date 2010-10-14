@@ -34,6 +34,7 @@ import java.util.*;
 public class ReportServiceBean implements ReportService {
 
     private ThreadLocal<Map<String, Object>> params = new ThreadLocal<Map<String, Object>>();
+    private ThreadLocal<Set<String>> bandDefinitionNames = new ThreadLocal<Set<String>>();
 
     /*
     *  Simple algorithm for band tree creation
@@ -42,6 +43,7 @@ public class ReportServiceBean implements ReportService {
     public byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params) throws IOException {
         try {
             this.params.set(params);
+            this.bandDefinitionNames.set(new HashSet<String>());
             report = reloadEntity(report, "report.edit");
 
             if (report.getIsCustom()) {
@@ -53,13 +55,12 @@ public class ReportServiceBean implements ReportService {
             List<BandDefinition> childrenBandDefinitions = rootBandDefinition.getChildrenBandDefinitions();
             Band rootBand = createRootBand(rootBandDefinition);
 
-            String bandstr = "";
-
             for (BandDefinition definition : childrenBandDefinitions) {
+                bandDefinitionNames.get().add(definition.getName());
                 List<Band> bands = createBands(definition, rootBand);
                 rootBand.addChildren(bands);
-                bandstr += definition.getName() + "|";
             }
+            rootBand.setBandDefinitionNames(bandDefinitionNames.get());
 
             Formatter formatter = createFormatter(report, format);
             return formatter.createDocument(rootBand);
@@ -161,7 +162,7 @@ public class ReportServiceBean implements ReportService {
     *   Create band from band definition
     *   Perform query from definition and create band from each result row. Do it recursive down
     */
-    
+
     private List<Band> createBands(BandDefinition definition, Band parentBand) {
         definition = reloadEntity(definition, "report.edit");
         List<Map<String, Object>> outputData = getBandData(definition, parentBand);
@@ -176,6 +177,7 @@ public class ReportServiceBean implements ReportService {
             band.setData(data);
             List<BandDefinition> childrenBandDefinitions = definition.getChildrenBandDefinitions();
             for (BandDefinition childDefinition : childrenBandDefinitions) {
+                bandDefinitionNames.get().add(definition.getName());
                 List<Band> childBands = createBands(childDefinition, band);
                 band.addChildren(childBands);
             }

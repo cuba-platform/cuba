@@ -48,7 +48,7 @@ public class XLSFormatter extends AbstractFormatter {
     private Map<HSSFSheet, HSSFSheet> templateToResultSheetsMapping = new HashMap<HSSFSheet, HSSFSheet>();
 
     private Map<Area, List<Area>> areasDependency = new LinkedHashMap<Area, List<Area>>();
-    private List<Integer> orderedPicturesId = new ArrayList();
+    private List<Integer> orderedPicturesId = new ArrayList<Integer>();
 
 
     public XLSFormatter(FileDescriptor template) throws IOException {
@@ -498,7 +498,7 @@ public class XLSFormatter extends AbstractFormatter {
 
     private void updateValueCell(Band band, HSSFCell templateCell, HSSFCell resultCell) {
         String parameterName = templateCell.toString();
-        parameterName = parameterName.substring("${".length(), parameterName.length() - "}".length());
+        parameterName = unwrapParameterName(parameterName);
 
         if (StringUtils.isEmpty(parameterName)) return;
 
