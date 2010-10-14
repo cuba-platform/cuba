@@ -18,6 +18,8 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -48,6 +50,8 @@ public class ViewRepository
             new ConcurrentHashMap<MetaClass, Map<String, View>>();
 
     private List<Listener> listeners = new ArrayList<Listener>();
+
+    private static Log log = LogFactory.getLog(ViewRepository.class);
 
     public View getView(Class<? extends Entity> entityClass, String name) {
         MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
@@ -96,6 +100,7 @@ public class ViewRepository
 
     public void deployViews(String resourceUrl) {
         if (!readFileNames.contains(resourceUrl)) {
+            log.debug("Deploying views config: " + resourceUrl);
             deployViews(ScriptingProvider.getResourceAsStream(resourceUrl));
             readFileNames.add(resourceUrl);
         }
@@ -114,6 +119,13 @@ public class ViewRepository
             throw new RuntimeException(e);
         }
         Element rootElem = doc.getRootElement();
+
+        for (Element includeElem : (List<Element>) rootElem.elements("include")) {
+            String file = includeElem.attributeValue("file");
+            if (!StringUtils.isBlank(file))
+                deployViews(file);
+        }
+
         for (Element viewElem : (List<Element>) rootElem.elements("view")) {
             deployView(rootElem, viewElem);
         }

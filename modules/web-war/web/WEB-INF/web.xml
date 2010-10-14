@@ -14,6 +14,7 @@
             cuba.MenuConfig.xml=cuba/client/web/menu-config.xml
             cuba.PermissionConfig.xml=cuba/permission-config.xml
             cuba.AppConfig.messagesPack=com.haulmont.cuba.web
+            cuba.ViewsConfig.xml=/com/haulmont/cuba/web/app.views.xml
         </param-value>
     </context-param>
 

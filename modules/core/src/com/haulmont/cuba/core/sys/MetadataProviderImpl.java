@@ -108,6 +108,10 @@ public class MetadataProviderImpl extends MetadataProvider
         for (MetaClass metaClass : session.getClasses()) {
             initMetaClass(metaClass);
         }
+
+        String configName = AppContext.getProperty("cuba.ViewsConfig.xml");
+        if (!StringUtils.isBlank(configName))
+            __getViewRepository().deployViews(configName);
     }
 
     protected void loadMetadata(MetadataLoader loader, Collection<String> packages) {

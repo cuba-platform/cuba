@@ -24,7 +24,6 @@ import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
@@ -201,10 +200,10 @@ public class App extends Application
     }
 
     /**
-     * Should be overridden in descendant to deploy views needed for main window
+     * DEPRECATED: use cuba.ViewsConfig.xml application property in web.xml
      */
+    @Deprecated
     protected void deployViews() {
-        MetadataProvider.getViewRepository().deployViews("/com/haulmont/cuba/web/app.views.xml");
     }
 
     /**
