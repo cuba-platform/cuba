@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 04.07.2010 13:38:18
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report.formatters.tools;
 
 import com.sun.star.container.XEnumerationAccess;
@@ -11,17 +21,6 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XCloseable;
 import com.sun.star.util.XReplaceable;
 import com.sun.star.view.XSelectionSupplier;
-
-/*
-* Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
-* Haulmont Technology proprietary and confidential.
-* Use is subject to license terms.
-
-* Author: FONTANENKO VASILIY
-* Created: 04.07.2010 13:38:18
-*
-* $Id$
-*/
 
 public class ODTUnoConverter {
 

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 29.06.2010 12:23:49
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report.formatters.tools;
 
 import com.sun.star.io.BufferSizeExceededException;
@@ -5,17 +15,6 @@ import com.sun.star.io.NotConnectedException;
 import com.sun.star.io.XOutputStream;
 
 import java.io.ByteArrayOutputStream;
-
-/*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: FONTANENKO VASILIY
- * Created: 29.06.2010 12:23:49
- *
- * $Id$
- */
 
 public class OOOutputStream extends ByteArrayOutputStream implements XOutputStream {
 

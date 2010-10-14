@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 29.06.2010 12:15:57
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report.formatters.tools;
 
 import java.io.ByteArrayInputStream;
@@ -6,17 +16,6 @@ import com.sun.star.io.BufferSizeExceededException;
 import com.sun.star.io.NotConnectedException;
 import com.sun.star.io.XInputStream;
 import com.sun.star.io.XSeekable;
-
-/*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: FONTANENKO VASILIY
- * Created: 29.06.2010 12:15:57
- *
- * $Id$
- */
 
 /**
  * Implementation for XInputStream

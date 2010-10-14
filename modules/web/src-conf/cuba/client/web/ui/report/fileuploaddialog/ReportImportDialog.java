@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 01.07.2010 14:03:06
+ *
+ * $Id$
+ */
 package cuba.client.web.ui.report.fileuploaddialog;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
@@ -6,16 +16,6 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 
 import java.util.Map;
-/*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: FONTANENKO VASILIY
- * Created: 01.07.2010 14:03:06
- *
- * $Id$
- */
 
 public class ReportImportDialog extends AbstractWindow {
     byte[] bytes;

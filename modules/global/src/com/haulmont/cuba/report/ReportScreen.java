@@ -1,19 +1,16 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 19.07.2010 18:32:28
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report;
 
-import com.haulmont.cuba.core.entity.StandardEntity;
-
 import javax.persistence.*;
-
-/*
-* Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
-* Haulmont Technology proprietary and confidential.
-* Use is subject to license terms.
-
-* Author: FONTANENKO VASILIY
-* Created: 19.07.2010 18:32:28
-*
-* $Id$
-*/
 
 @Entity(name = "report$ReportScreen")
 @Table(name = "REPORT_REPORT_SCREEN")

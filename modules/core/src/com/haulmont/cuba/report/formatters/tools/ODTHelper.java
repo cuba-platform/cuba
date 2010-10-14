@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 12.10.2010 19:21:36
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report.formatters.tools;
 
 import com.haulmont.cuba.core.Locator;
@@ -24,17 +34,6 @@ import java.io.File;
 
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXCloseable;
 import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXStorable;
-
-/*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: FONTANENKO VASILIY
- * Created: 12.10.2010 19:21:36
- *
- * $Id$
- */
 
 public class ODTHelper {
 

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 12.07.2010 9:04:06
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report;
 
 import com.haulmont.cuba.core.EntityManager;
@@ -27,17 +37,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.zip.CRC32;
-
-/*
-* Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
-* Haulmont Technology proprietary and confidential.
-* Use is subject to license terms.
-
-* Author: FONTANENKO VASILIY
-* Created: 12.07.2010 9:04:06
-*
-* $Id$
-*/
 
 public class ImportExportHelper {
     private static final String ENCODING = "CP866";

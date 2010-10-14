@@ -1,14 +1,17 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 22.06.2010 13:58:31
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report.formatters.exception;
 
 import com.haulmont.cuba.report.exception.ReportFormatterException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: fontanenko
- * Date: 22.06.2010
- * Time: 13:58:31
- * To change this template use File | Settings | File Templates.
- */
 public class DocReportFormatterException extends ReportFormatterException {
     public DocReportFormatterException() {
     }

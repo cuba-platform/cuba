@@ -1,12 +1,15 @@
+/*
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Vasiliy Fontanenko
+ * Created: 22.06.2010 13:57:49
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.report.formatters.exception;
 
-/**
- * Created by IntelliJ IDEA.
- * User: fontanenko
- * Date: 22.06.2010
- * Time: 13:57:49
- * To change this template use File | Settings | File Templates.
- */
 public class FailedToConnectToOpenOfficeException extends DocReportFormatterException {
     public FailedToConnectToOpenOfficeException() {
     }

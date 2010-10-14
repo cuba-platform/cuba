@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
 
- * Author: FONTANENKO VASILIY
+ * Author: Vasiliy Fontanenko
  * Created: 12.10.2010 19:21:36
  *
  * $Id$
