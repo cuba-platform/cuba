@@ -11,7 +11,7 @@
 }
 
 .v-datefield-wrap {
-	font-size: 13px;
+	font-size: 12px;
 	height: 24px;
     margin: 0;
 	padding: 0 26px 0 0;
@@ -60,7 +60,7 @@
 
 .v-datefield-calendarpanel-header,
 .v-datefield-calendarpanel strong {
-	font-size: 13px;
+	font-size: 12px;
 }
 
 .v-datefield-popup .v-datefield-calendarpanel-header,

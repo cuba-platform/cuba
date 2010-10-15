@@ -160,12 +160,12 @@
 .v-horizontallayout.edit-area,
 .v-gridlayout.edit-area {
     background-color: #FBFDFD;
-    border: 1px solid #E3E9F3;
+    border: 1px solid #A5C4E0;
 }
 
 .group-box-edit-area fieldset {
     background-color: #FBFDFD;
-    border: 1px solid #E3E9F3;
+    border: 1px solid #A5C4E0;
 }
 
 .edit-area .v-label, .edit-area .v-label.h2 {
@@ -220,11 +220,11 @@
 {
     height: 18px;
     width: 100%;
-    padding-right: 10px;
+    padding: 0 10px;
 }
 
 .popupmenu .v-button .v-button-caption {
-    margin-left: 10px;
+    /*margin-left: 10px;*/
 }
 
 .popupmenu .v-button:hover .v-button-caption {

@@ -61,7 +61,7 @@ body {
 .v-popupview-popup textarea {
 	font-family: Verdana, "Trebuchet MS", geneva, helvetica, arial, tahoma, sans-serif;
 	color: #464f52;
-	font-size: 13px;
+	font-size: 12px;
 }
 
 .v-app select,
@@ -338,7 +338,7 @@ input.v-modified,
 
 .v-app div {
     color: #2B4666;
-	font-size: 13px;
+	font-size: 12px;
 }
 
 
