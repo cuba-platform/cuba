@@ -50,6 +50,8 @@ public class DsBuilder {
 
     private MetaClass metaClass;
 
+    private Class javaClass;
+
     private String viewName;
 
     private View view;
@@ -65,6 +67,10 @@ public class DsBuilder {
     private Class<? extends Datasource> dsClass;
 
     private CollectionDatasource.FetchMode fetchMode;
+
+    public DsBuilder() {
+        this(null);
+    }
 
     public DsBuilder(DsContext dsContext) {
         this.dsContext = dsContext;
@@ -89,6 +95,15 @@ public class DsBuilder {
 
     public MetaClass getMetaClass() {
         return metaClass;
+    }
+
+    public Class getJavaClass() {
+        return javaClass;
+    }
+
+    public DsBuilder setJavaClass(Class javaClass) {
+        this.javaClass = javaClass;
+        return this;
     }
 
     public View getView() {
@@ -173,6 +188,7 @@ public class DsBuilder {
         view = null;
         viewName = null;
         metaClass = null;
+        javaClass = null;
         master = null;
         property = null;
         softDeletion = true;
@@ -181,14 +197,17 @@ public class DsBuilder {
         return this;
     }
 
-    private void initView() {
+    private void init() {
+        if (metaClass == null && javaClass != null) {
+            metaClass = MetadataProvider.getSession().getClass(javaClass);
+        }
         if (view == null && viewName != null) {
             view = viewRepository.getView(metaClass, viewName);
         }
     }
 
     public Datasource buildDatasource() {
-        initView();
+        init();
         Datasource datasource;
         if (master == null && property == null) {
             if (dsClass == null) {
@@ -221,7 +240,7 @@ public class DsBuilder {
     }
 
     public CollectionDatasource buildCollectionDatasource() {
-        initView();
+        init();
         CollectionDatasource datasource;
         if (master == null && property == null) {
             if (dsClass == null) {
@@ -270,7 +289,7 @@ public class DsBuilder {
     }
 
     public HierarchicalDatasource buildHierarchicalDatasource() {
-        initView();
+        init();
         HierarchicalDatasource datasource;
         if (master == null && property == null) {
             if (dsClass == null) {
@@ -294,7 +313,7 @@ public class DsBuilder {
     }
 
     public GroupDatasource buildGroupDatasource() {
-        initView();
+        init();
         GroupDatasource datasource;
         if (master == null && property == null) {
             if (dsClass == null) {
