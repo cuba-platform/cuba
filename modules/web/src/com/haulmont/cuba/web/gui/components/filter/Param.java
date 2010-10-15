@@ -476,7 +476,7 @@ public class Param {
                 ds.refresh();
         }
 
-        if (entityWhere != null) {
+        if (!StringUtils.isBlank(entityWhere)) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(
                     "select e from " + metaClass.getName() + " e",
                     metaClass.getName());
