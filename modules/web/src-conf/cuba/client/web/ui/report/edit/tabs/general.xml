@@ -62,11 +62,11 @@
                     <label value="msg://report.bands" stylename="h2"/>
 
                     <hbox spacing="true" margin="true">
-                        <button id="createBandDefinition"/>
-                        <button id="editBandDefinition"/>
-                        <button id="removeBandDefinition"/>
-                        <button id="up"/>
-                        <button id="down"/>
+                        <button id="createBandDefinition" icon="icons/create.png"/>
+                        <button id="editBandDefinition" icon="icons/edit.png"/>
+                        <button id="removeBandDefinition" icon="icons/remove.png"/>
+                        <button id="up" icon="icons/up.png"/>
+                        <button id="down" icon="icons/down.png"/>
                     </hbox>
 
                     <scrollbox id="scroll" height="${treeHeight}" width="${treeWidth}">

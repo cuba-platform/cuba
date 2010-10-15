@@ -10,6 +10,7 @@
  */
 package cuba.client.web.ui.report.edit;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.LookupField;
@@ -46,7 +47,11 @@ public class ReportScreenEditor extends AbstractEditor {
         Collection<WindowInfo> windowInfoCollection = AppConfig.getInstance().getWindowConfig().getWindows();
         List<String> screenAliases = new ArrayList<String>();
         for (WindowInfo windowInfo : windowInfoCollection) {
-            screenAliases.add(windowInfo.getId());
+            String id = windowInfo.getId();
+            String menuId = "menu-config." + id;
+            String localeMsg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),menuId);
+            String title = menuId.equals(localeMsg) ? id : id + " ( " + localeMsg + " )";
+            screenAliases.add(title);
         }
         screenLookupField.setOptionsList(screenAliases);
         screenLookupField.addListener(new ValueListener() {

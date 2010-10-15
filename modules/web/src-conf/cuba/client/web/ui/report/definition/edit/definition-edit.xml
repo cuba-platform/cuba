@@ -6,7 +6,6 @@
         messagesPack="cuba.client.web.ui.report"
         >
 
-
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/report/report.views.xml"/>
     </metadataContext>
@@ -48,13 +47,12 @@
                 </rows>
             </grid>
 
-            <!--<vbox spacing="true" margin="true">-->
             <label value="msg://definition.datasets" stylename="h2"/>
 
             <hbox spacing="true">
-                <button action="dataSets.create"/>
-                <button action="dataSets.edit"/>
-                <button action="dataSets.remove"/>
+                <button action="dataSets.create" icon="icons/create.png"/>
+                <button action="dataSets.edit" icon="icons/edit.png"/>
+                <button action="dataSets.remove" icon="icons/remove.png"/>
             </hbox>
             <table id="dataSets" editable="true">
                 <columns>
@@ -64,7 +62,6 @@
                 </columns>
                 <rows datasource="dataSetsDs"/>
             </table>
-            <!--</vbox>-->
         </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>

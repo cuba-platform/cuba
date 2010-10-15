@@ -6,11 +6,13 @@
         <vbox spacing="true" expand="inputParametersTable">
             <label value="msg://report.parameters" stylename="h2"/>
             <hbox spacing="true" margin="true">
-                <button action="inputParametersTable.create"/>
-                <button action="inputParametersTable.edit" caption="msg://parametersFrame.editParameter"/>
-                <button action="inputParametersTable.remove" caption="msg://parametersFrame.removeParameter"/>
-                <button id="up"/>
-                <button id="down"/>
+                <button action="inputParametersTable.create" icon="icons/create.png"/>
+                <button action="inputParametersTable.edit" caption="msg://parametersFrame.editParameter"
+                        icon="icons/edit.png"/>
+                <button action="inputParametersTable.remove" caption="msg://parametersFrame.removeParameter"
+                        icon="icons/remove.png"/>
+                <button id="up"  icon="icons/up.png"/>
+                <button id="down" icon="icons/down.png"/>
             </hbox>
             <table id="inputParametersTable" sortable="true" height="100%">
                 <columns>

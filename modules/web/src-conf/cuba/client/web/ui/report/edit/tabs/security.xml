@@ -8,8 +8,8 @@
                 <vbox margin="true" spacing="true" expand="rolesTable">
                     <label value="msg://securityFrame.roles" stylename="h2"/>
                     <hbox spacing="true" margin="true">
-                        <button action="rolesTable.add" caption="msg://roles.addRole"/>
-                        <button action="rolesTable.remove" caption="msg://roles.removeRole"/>
+                        <button action="rolesTable.add" caption="msg://roles.addRole" icon="icons/add.png"/>
+                        <button action="rolesTable.remove" caption="msg://roles.removeRole" icon="icons/remove.png"/>
                     </hbox>
                     <table id="rolesTable" width="60%">
                         <columns>
@@ -23,8 +23,10 @@
                 <vbox margin="true" spacing="true" expand="screenTable">
                     <label value="msg://securityFrame.screens" stylename="h2"/>
                     <hbox spacing="true" margin="true">
-                        <button action="screenTable.create" caption="msg://screens.createScreen"/>
-                        <button action="screenTable.remove" caption="msg://screens.removeScreen"/>
+                        <button action="screenTable.create" caption="msg://screens.createScreen"
+                                icon="icons/create.png"/>
+                        <button action="screenTable.remove" caption="msg://screens.removeScreen"
+                                icon="icons/remove.png"/>
                     </hbox>
                     <table id="screenTable" width="60%">
                         <columns>
@@ -35,6 +37,5 @@
                 </vbox>
             </groupBox>
         </split>
-
     </layout>
 </window>

@@ -33,14 +33,14 @@
     <layout expand="table-panel">
         <vbox id="table-panel" expand="table" spacing="true">
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button action="table.create" caption="msg://create"/>
-                <button action="table.edit" caption="msg://edit"/>
-                <button action="table.remove" caption="msg://remove"/>
+                <button action="table.create" caption="msg://create" icon="icons/create.png"/>
+                <button action="table.edit" caption="msg://edit" icon="icons/edit.png"/>
+                <button action="table.remove" caption="msg://remove" icon="icons/remove.png"/>
                 <label/>
                 <button id="import"/>
                 <button id="export"/>
                 <label/>
-                <button id="runReport"/>
+                <button id="runReport" icon="icons/run.png"/>
             </hbox>
             <table id="table" editable="false" multiselect="true">
                 <columns>
