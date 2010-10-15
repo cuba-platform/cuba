@@ -21,7 +21,6 @@
     </dsContext>
     <#assign width = 400>
     <layout expand="windowActions">
-
         <vbox margin="true" stylename="edit-area">
             <grid spacing="true" expandable="false">
                 <columns>

@@ -24,9 +24,9 @@
         </collectionDatasource>
     </dsContext>
     <#assign width = 400>
-    <layout expand="windowActions">
+    <layout expand="box">
 
-        <vbox margin="true" stylename="edit-area" spacing="true">
+        <vbox id="box" margin="true" stylename="edit-area" spacing="true" expand="dataSets">
             <grid spacing="true" expandable="false">
                 <columns>
                     <column flex="1"/>
@@ -48,23 +48,23 @@
                 </rows>
             </grid>
 
-            <vbox spacing="true" margin="true">
-                <label value="msg://definition.datasets" stylename="h2"/>
+            <!--<vbox spacing="true" margin="true">-->
+            <label value="msg://definition.datasets" stylename="h2"/>
 
-                <hbox margin="true" spacing="true">
-                    <button action="dataSets.create"/>
-                    <button action="dataSets.edit"/>
-                    <button action="dataSets.remove"/>
-                </hbox>
-                <table id="dataSets" editable="true" width="75%">
-                    <columns>
-                        <column id="name" caption="msg://dataSet.name"/>
-                        <column id="type" caption="msg://dataSet.type"/>
-                        <column id="text" caption="msg://dataSet.text"/>
-                    </columns>
-                    <rows datasource="dataSetsDs"/>
-                </table>
-            </vbox>
+            <hbox spacing="true">
+                <button action="dataSets.create"/>
+                <button action="dataSets.edit"/>
+                <button action="dataSets.remove"/>
+            </hbox>
+            <table id="dataSets" editable="true">
+                <columns>
+                    <column id="name" caption="msg://dataSet.name"/>
+                    <column id="type" caption="msg://dataSet.type"/>
+                    <!--<column id="text" caption="msg://dataSet.text"/>-->
+                </columns>
+                <rows datasource="dataSetsDs"/>
+            </table>
+            <!--</vbox>-->
         </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>

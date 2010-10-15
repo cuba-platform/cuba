@@ -100,14 +100,14 @@ public class ReportEditor extends AbstractEditor {
 
         final CollectionDatasource parametersDs = getDsContext().get('parametersDs')
 
-        Table parametersTable = getComponent('parametersFrame.inputParametersTable')
+        Table parametersTable = getComponent('generalFrame.parametersFrame.inputParametersTable')
         TableActionsHelper paramHelper = new TableActionsHelper(this, parametersTable)
         paramHelper.createCreateAction([getValues: {['position': parametersDs.itemIds.size(),'report':report]}, getParameters: {[:]}] as ValueProvider)
         paramHelper.createRemoveAction(false)
         paramHelper.createEditAction()
 
-        Button upButton = getComponent('parametersFrame.up')
-        Button downButton = getComponent('parametersFrame.down')
+        Button upButton = getComponent('generalFrame.parametersFrame.up')
+        Button downButton = getComponent('generalFrame.parametersFrame.down')
 
         def up = [
                 actionPerform: {Component component ->

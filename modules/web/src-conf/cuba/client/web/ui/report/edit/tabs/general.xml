@@ -4,74 +4,80 @@
     <#assign treeWidth = 650>
     <layout expand="split" expandLayout="true">
         <split orientation="horizontal" id="split">
-            <vbox margin="true" stylename="edit-area">
-                <grid spacing="true" expandable="false">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://report.generalParameters" stylename="h2"/>
-                        </row>
-                        <row>
-                            <label value="msg://report.name"/>
-                            <textField id="name" datasource="reportDs" property="name"
-                                       width="${width}" required="true" requiredMessage="msg://report.nameMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://report.reportType"/>
-                            <lookupField id="reportType" datasource="reportDs" property="reportType"
-                                      width="${width}" required="true" requiredMessage="msg://report.reportTypeMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://report.reportOutputType"/>
-                            <lookupField id="reportOutputType" datasource="reportDs" property="reportOutputType"
-                                         width="${width}" required="true" requiredMessage="msg://report.reportOutputTypeMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://report.template"/>
-                            <hbox spacing="true">
-                                <button id="templatePath" stylename="link"/>
-                                <upload id="uploadTemplate" width="${treeWidth}"/>
-                            </hbox>
+            <groupBox>
+                <vbox margin="true" expand="parametersFrame">
+                    <grid spacing="true">
+                        <columns>
+                            <column flex="1"/>
+                            <column flex="1"/>
+                            <column flex="1"/>
+                        </columns>
+                        <rows>
+                            <!--<row>
+                                <label value="msg://report.generalParameters" stylename="h2"/>
+                            </row>-->
+                            <row>
+                                <label value="msg://report.name"/>
+                                <textField id="name" datasource="reportDs" property="name"
+                                           width="${width}" required="true" requiredMessage="msg://report.nameMsg"/>
+                            </row>
+                            <row>
+                                <label value="msg://report.reportType"/>
+                                <lookupField id="reportType" datasource="reportDs" property="reportType"
+                                             width="${width}" required="true"
+                                             requiredMessage="msg://report.reportTypeMsg"/>
+                            </row>
+                            <row>
+                                <label value="msg://report.reportOutputType"/>
+                                <lookupField id="reportOutputType" datasource="reportDs" property="reportOutputType"
+                                             width="${width}" required="true"
+                                             requiredMessage="msg://report.reportOutputTypeMsg"/>
+                            </row>
+                            <row>
+                                <label value="msg://report.template"/>
+                                <hbox spacing="true">
+                                    <button id="templatePath" stylename="link"/>
+                                    <upload id="uploadTemplate" width="${treeWidth}"/>
+                                </hbox>
 
-                        </row>
-                        <row>
-                            <label value="msg://report.isCustom"/>
-                            <checkBox id="isCustom" datasource="reportDs" property="isCustom"
-                                      width="${width}"/>
-                        </row>
-                        <row>
-                            <label value="msg://report.customClass"/>
-                            <textField id="customClass" datasource="reportDs" property="customClass"
-                                       width="${width}"/>
-                        </row>
-                    </rows>
-                </grid>
-            </vbox>
+                            </row>
+                            <row>
+                                <label value="msg://report.isCustom"/>
+                                <checkBox id="isCustom" datasource="reportDs" property="isCustom"
+                                          width="${width}"/>
+                            </row>
+                            <row>
+                                <label value="msg://report.customClass"/>
+                                <textField id="customClass" datasource="reportDs" property="customClass"
+                                           width="${width}"/>
+                            </row>
+                        </rows>
+                    </grid>
+                    <iframe src="/cuba/client/web/ui/report/edit/tabs/parameters.xml" id="parametersFrame"/>
+                </vbox>
+            </groupBox>
+            <!-- Splitter -->
+            <groupBox height="${treeHeight}" width="${treeWidth}" stylename="edit-area">
+                <vbox expand="scroll" spacing="true" margin="true">
+                    <label value="msg://report.bands" stylename="h2"/>
 
-            <vbox expand="scroll" spacing="true" height="${treeHeight}" width="${treeWidth}" stylename="edit-area"
-                  margin="true">
-                <label value="msg://report.bands" stylename="h2"/>
+                    <hbox spacing="true" margin="true">
+                        <button id="createBandDefinition"/>
+                        <button id="editBandDefinition"/>
+                        <button id="removeBandDefinition"/>
+                        <button id="up"/>
+                        <button id="down"/>
+                    </hbox>
 
-                <hbox spacing="true" margin="true">
-                    <button id="createBandDefinition"/>
-                    <button id="editBandDefinition"/>
-                    <button id="removeBandDefinition"/>
-                    <button id="up"/>
-                    <button id="down"/>
-                </hbox>
-
-                <scrollbox id="scroll" height="${treeHeight}" width="${treeWidth}">
-                    <vbox id="vbox" height="${treeHeight}" width="${treeWidth}">
-                        <tree id="serviceTree">
-                            <treechildren datasource="treeDs" captionProperty="name"/>
-                        </tree>
-                    </vbox>
-                </scrollbox>
-            </vbox>
+                    <scrollbox id="scroll" height="${treeHeight}" width="${treeWidth}">
+                        <vbox id="vbox" height="${treeHeight}" width="${treeWidth}">
+                            <tree id="serviceTree">
+                                <treechildren datasource="treeDs" captionProperty="name"/>
+                            </tree>
+                        </vbox>
+                    </scrollbox>
+                </vbox>
+            </groupBox>
         </split>
     </layout>
 </window>

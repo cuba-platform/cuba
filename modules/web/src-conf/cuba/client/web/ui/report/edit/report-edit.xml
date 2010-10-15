@@ -6,7 +6,6 @@
         caption="msg://reportEditor"
         >
 
-
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/report/report.views.xml"/>
     </metadataContext>
@@ -30,9 +29,6 @@
         <tabsheet id="tabsheet">
             <tab id="generalTab" caption="msg://generalTab">
                 <iframe src="/cuba/client/web/ui/report/edit/tabs/general.xml" id="generalFrame"/>
-            </tab>
-            <tab id="parametersTab" caption="msg://parametersTab">
-                <iframe src="/cuba/client/web/ui/report/edit/tabs/parameters.xml" id="parametersFrame"/>
             </tab>
             <tab id="securityTab" caption="msg://securityTab">
                 <iframe src="/cuba/client/web/ui/report/edit/tabs/security.xml" id="securityFrame"/>

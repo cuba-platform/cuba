@@ -2,8 +2,9 @@
     <#assign width = 200>
     <#assign treeHeight = 400>
     <#assign treeWidth = 500>
-    <layout expandLayout="false">
-        <vbox margin="true" spacing="true" stylename="edit-area" expand="inputParametersTable">
+    <layout expandLayout="true">
+        <vbox spacing="true" expand="inputParametersTable">
+            <label value="msg://report.parameters" stylename="h2"/>
             <hbox spacing="true" margin="true">
                 <button action="inputParametersTable.create"/>
                 <button action="inputParametersTable.edit" caption="msg://parametersFrame.editParameter"/>
@@ -11,7 +12,7 @@
                 <button id="up"/>
                 <button id="down"/>
             </hbox>
-            <table id="inputParametersTable" sortable="true" width="60%" height="100%">
+            <table id="inputParametersTable" sortable="true" height="100%">
                 <columns>
                     <column id="name" caption="msg://parameters.name"/>
                     <column id="alias" caption="msg://parameters.alias"/>

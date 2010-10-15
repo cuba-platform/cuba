@@ -4,32 +4,36 @@
     <#assign treeWidth = 500>
     <layout expandLayout="false">
         <split orientation="horizontal">
-            <vbox margin="true" spacing="true" expand="rolesTable" stylename="edit-area">
-                <label value="msg://securityFrame.roles" stylename="h2"/>
-                <hbox spacing="true" margin="true">
-                    <button action="rolesTable.add" caption="msg://roles.addRole"/>
-                    <button action="rolesTable.remove" caption="msg://roles.removeRole"/>
-                </hbox>
-                <table id="rolesTable" width="60%">
-                    <columns>
-                        <column id="name" caption="msg://roles.roleName"/>
-                    </columns>
-                    <rows datasource="rolesDs"/>
-                </table>
-            </vbox>
-            <vbox margin="true" spacing="true" expand="screenTable" stylename="edit-area">
-                <label value="msg://securityFrame.screens" stylename="h2"/>
-                <hbox spacing="true" margin="true">
-                    <button action="screenTable.create" caption="msg://screens.createScreen"/>
-                    <button action="screenTable.remove" caption="msg://screens.removeScreen"/>
-                </hbox>
-                <table id="screenTable" width="60%">
-                    <columns>
-                        <column id="screenId" caption="msg://screens.screenId"/>
-                    </columns>
-                    <rows datasource="reportScreensDs"/>
-                </table>
-            </vbox>
+            <groupBox>
+                <vbox margin="true" spacing="true" expand="rolesTable">
+                    <label value="msg://securityFrame.roles" stylename="h2"/>
+                    <hbox spacing="true" margin="true">
+                        <button action="rolesTable.add" caption="msg://roles.addRole"/>
+                        <button action="rolesTable.remove" caption="msg://roles.removeRole"/>
+                    </hbox>
+                    <table id="rolesTable" width="60%">
+                        <columns>
+                            <column id="name" caption="msg://roles.roleName"/>
+                        </columns>
+                        <rows datasource="rolesDs"/>
+                    </table>
+                </vbox>
+            </groupBox>
+            <groupBox>
+                <vbox margin="true" spacing="true" expand="screenTable">
+                    <label value="msg://securityFrame.screens" stylename="h2"/>
+                    <hbox spacing="true" margin="true">
+                        <button action="screenTable.create" caption="msg://screens.createScreen"/>
+                        <button action="screenTable.remove" caption="msg://screens.removeScreen"/>
+                    </hbox>
+                    <table id="screenTable" width="60%">
+                        <columns>
+                            <column id="screenId" caption="msg://screens.screenId"/>
+                        </columns>
+                        <rows datasource="reportScreensDs"/>
+                    </table>
+                </vbox>
+            </groupBox>
         </split>
 
     </layout>
