@@ -103,6 +103,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     public void addField(Field field) {
         fields.put(field.getId(), field);
+        fieldsColumn.put(field, 0);
+        fillColumnFields(0, field);
     }
 
     public void addField(Field field, int col) {
@@ -111,6 +113,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     col, cols));
         }
         fieldsColumn.put(field, col);
+        fillColumnFields(col, field);
+
+        addField(field);
+    }
+
+    private void fillColumnFields(int col, Field field) {
         List<Field> fields = columnFields.get(col);
         if (fields == null) {
             fields = new ArrayList<Field>();
@@ -118,8 +126,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             columnFields.put(col, fields);
         }
         fields.add(field);
-
-        addField(field);
     }
 
     public void removeField(Field field) {
