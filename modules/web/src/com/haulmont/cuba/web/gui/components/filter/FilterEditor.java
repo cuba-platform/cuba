@@ -104,6 +104,8 @@ public class FilterEditor {
                     webFilter.editorCommitted();
             }
         });
+        if(filterEntity.getCode() != null)
+            saveBtn.setEnabled(false);
         controlLayout.addComponent(saveBtn);
 
         Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
@@ -289,7 +291,10 @@ public class FilterEditor {
     }
 
     private void updateControls() {
-        saveBtn.setEnabled(!conditions.isEmpty());
+        if(filterEntity.getCode() == null)
+            saveBtn.setEnabled(!conditions.isEmpty());
+        else
+            saveBtn.setEnabled(false);
     }
 
     private Button createDeleteConditionBtn(final Condition condition) {

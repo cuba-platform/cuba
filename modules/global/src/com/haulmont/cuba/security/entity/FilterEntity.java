@@ -28,6 +28,9 @@ public class FilterEntity extends StandardEntity {
     @Column(name = "NAME", length = 255)
     private String name;
 
+    @Column(name = "CODE", length = 200)
+    private String code;
+
     @Column(name = "XML")
     private String xml;
 
@@ -87,5 +90,13 @@ public class FilterEntity extends StandardEntity {
 
     public void setFolder(AbstractSearchFolder folder) {
         this.folder = folder;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

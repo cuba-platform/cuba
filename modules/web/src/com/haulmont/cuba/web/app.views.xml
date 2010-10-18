@@ -12,6 +12,7 @@
     <view class="com.haulmont.cuba.security.entity.FilterEntity" name="app">
         <property name="componentId"/>
         <property name="name"/>
+        <property name="code"/>
         <property name="xml"/>
         <property name="user" view="app"/>
     </view>

@@ -195,11 +195,11 @@ public class WebFilter
             if (filterEntity.getFolder() == null || filterEntity.getFolder() instanceof SearchFolder)
                 actions.addAction(new EditAction());
 
-            if (filterEntity.getFolder() == null)
+            if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
                 actions.addAction(new DeleteAction());
         }
 
-        if (foldersPane != null && filterEntity.getFolder() == null)
+        if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
             actions.addAction(new SaveAsFolderAction());
     }
 
@@ -385,7 +385,11 @@ public class WebFilter
                                     select.setValue(filter);
                                     updateControls();
                                     apply();
-                                    window.setDescription(filterEntity.getName());
+                                    if(filterEntity.getCode() != null){
+                                        String mp = AppConfig.getInstance().getMessagesPack();
+                                        window.setDescription(MessageProvider.getMessage(mp, filterEntity.getCode()));
+                                    } else
+                                        window.setDescription(filterEntity.getName());
                                 } finally {
                                     applyingDefault = false;
                                 }
@@ -426,7 +430,13 @@ public class WebFilter
     }
 
     private String getCurrentFilterCaption() {
-        String name = InstanceUtils.getInstanceName((Instance) filterEntity);
+        String name;
+        if(filterEntity.getCode() == null)
+            name = InstanceUtils.getInstanceName((Instance) filterEntity);
+        else{
+            String mp = AppConfig.getInstance().getMessagesPack();
+            name = MessageProvider.getMessage(mp, filterEntity.getCode());
+        }
         AbstractSearchFolder folder = filterEntity.getFolder();
         if (folder != null) {
             if(!StringUtils.isBlank(folder.getDoubleName()))
@@ -463,7 +473,12 @@ public class WebFilter
         List<FilterEntity> filters = ds.loadList(ctx);
         for (FilterEntity filter : filters) {
             select.addItem(filter);
-            select.setItemCaption(filter, filter.getName());
+            if(filter.getCode() == null)
+                select.setItemCaption(filter, filter.getName());
+            else{
+                String mp = AppConfig.getInstance().getMessagesPack();
+                select.setItemCaption(filter, MessageProvider.getMessage(mp,filter.getCode()));
+            }
         }
     }
 
@@ -494,9 +509,19 @@ public class WebFilter
         editLayout.setSpacing(true);
 
         List<String> names = new ArrayList<String>();
+        String mp = AppConfig.getInstance().getMessagesPack();
+        Map<String, Locale> locales = ConfigProvider.getConfig(WebConfig.class).getAvailableLocales();
         for (Object id : select.getItemIds()) {
-            if (id != filterEntity)
-                names.add(((FilterEntity) id).getName());
+            if (id != filterEntity){
+                FilterEntity fe = (FilterEntity)id;
+                if(fe.getCode() == null)
+                    names.add(fe.getName());
+                else{
+                    for(Map.Entry<String,Locale> locale : locales.entrySet()){
+                        names.add(MessageProvider.getMessage(mp,fe.getCode(),locale.getValue()));
+                    }
+                }
+            }
         }
 
         editor = new FilterEditor(this, filterEntity, getXmlDescriptor(), names);
@@ -648,8 +673,14 @@ public class WebFilter
 
     private void saveAsFolder() {
         final SearchFolder folder = new SearchFolder();
-        folder.setName(filterEntity.getName());
-        folder.setDoubleName(filterEntity.getName());
+        if(filterEntity.getCode() == null){
+            folder.setName(filterEntity.getName());
+            folder.setDoubleName(filterEntity.getName());
+        }else{
+            String name = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), filterEntity.getCode());
+            folder.setName(name);
+            folder.setDoubleName(name);
+        }
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(filterEntity.getXml());
         if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
@@ -770,7 +801,12 @@ public class WebFilter
 
             if (!applyingDefault) {
                 Window window = ComponentsHelper.getWindow(WebFilter.this);
-                String descr = filterEntity == null ? null : filterEntity.getName();
+                String descr;
+                if (filterEntity.getCode() != null) {
+                    String mp = AppConfig.getInstance().getMessagesPack();
+                    descr = MessageProvider.getMessage(mp, filterEntity.getCode());
+                } else
+                    descr = filterEntity == null ? null : filterEntity.getName();
                 window.setDescription(descr);
                 App.getInstance().getWindowManager().setCurrentWindowCaption(window.getCaption(), descr);
             }
