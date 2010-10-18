@@ -337,9 +337,7 @@ public class WebFilter
 
             parseFilterXml();
 
-            select.addItem(filterEntity);
-            select.setItemCaption(filterEntity, getCurrentFilterCaption());
-            select.setValue(filterEntity);
+            internalSetFilterEntity();
 
             updateControls();
             if (paramsLayout != null)
@@ -417,19 +415,54 @@ public class WebFilter
     public void editorCommitted() {
         changingFilter = true;
         try {
-            select.removeItem(filterEntity);
-
             saveFilterEntity();
             parseFilterXml();
 
-            select.addItem(filterEntity);
-            select.setItemCaption(filterEntity, getCurrentFilterCaption());
-            select.setValue(filterEntity);
+            internalSetFilterEntity();
 
             switchToUse();
         } finally {
             changingFilter = false;
         }
+    }
+
+    private void internalSetFilterEntity() {
+        List<FilterEntity> list = new ArrayList(select.getItemIds());
+        list.remove(filterEntity);
+
+        select.getContainerDataSource().removeAllItems();
+
+        list.add(filterEntity);
+
+        final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
+        for (FilterEntity filter : list) {
+            if (filter == filterEntity) {
+                captions.put(filter, getCurrentFilterCaption());
+            } else {
+                if (filter.getCode() == null)
+                    captions.put(filter, filter.getName());
+                else {
+                    String mp = AppConfig.getInstance().getMessagesPack();
+                    captions.put(filter, MessageProvider.getMessage(mp,filter.getCode()));
+                }
+            }
+        }
+
+        Collections.sort(
+                list,
+                new Comparator<FilterEntity>() {
+                    public int compare(FilterEntity f1, FilterEntity f2) {
+                        return captions.get(f1).compareTo(captions.get(f2));
+                    }
+                }
+        );
+
+        for (FilterEntity filter : list) {
+            select.addItem(filter);
+            select.setItemCaption(filter, captions.get(filter));
+        }
+
+        select.setValue(filterEntity);
     }
 
     private String getCurrentFilterCaption() {
