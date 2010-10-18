@@ -84,6 +84,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     public void setValue(Object value) {
+        if (component.isReadOnly())
+            return;
         component.setValue(value);
     }
 
