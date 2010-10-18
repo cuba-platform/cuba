@@ -385,11 +385,14 @@ public class WebFilter
                                     select.setValue(filter);
                                     updateControls();
                                     apply();
-                                    if(filterEntity.getCode() != null){
-                                        String mp = AppConfig.getInstance().getMessagesPack();
-                                        window.setDescription(MessageProvider.getMessage(mp, filterEntity.getCode()));
-                                    } else
-                                        window.setDescription(filterEntity.getName());
+                                    if(filterEntity != null)
+                                        if(filterEntity.getCode() != null){
+                                            String mp = AppConfig.getInstance().getMessagesPack();
+                                            window.setDescription(MessageProvider.getMessage(mp, filterEntity.getCode()));
+                                        } else
+                                            window.setDescription(filterEntity.getName());
+                                    else
+                                        window.setDescription(null);
                                 } finally {
                                     applyingDefault = false;
                                 }
@@ -431,12 +434,15 @@ public class WebFilter
 
     private String getCurrentFilterCaption() {
         String name;
-        if(filterEntity.getCode() == null)
-            name = InstanceUtils.getInstanceName((Instance) filterEntity);
-        else{
-            String mp = AppConfig.getInstance().getMessagesPack();
-            name = MessageProvider.getMessage(mp, filterEntity.getCode());
-        }
+        if(filterEntity != null)
+            if (filterEntity.getCode() == null)
+                name = InstanceUtils.getInstanceName((Instance) filterEntity);
+            else {
+                String mp = AppConfig.getInstance().getMessagesPack();
+                name = MessageProvider.getMessage(mp, filterEntity.getCode());
+            }
+        else
+            name = "";
         AbstractSearchFolder folder = filterEntity.getFolder();
         if (folder != null) {
             if(!StringUtils.isBlank(folder.getDoubleName()))
@@ -802,11 +808,14 @@ public class WebFilter
             if (!applyingDefault) {
                 Window window = ComponentsHelper.getWindow(WebFilter.this);
                 String descr;
-                if (filterEntity.getCode() != null) {
-                    String mp = AppConfig.getInstance().getMessagesPack();
-                    descr = MessageProvider.getMessage(mp, filterEntity.getCode());
-                } else
-                    descr = filterEntity == null ? null : filterEntity.getName();
+                if (filterEntity != null)
+                    if (filterEntity.getCode() != null) {
+                        String mp = AppConfig.getInstance().getMessagesPack();
+                        descr = MessageProvider.getMessage(mp, filterEntity.getCode());
+                    } else
+                        descr = filterEntity.getName();
+                else
+                    descr = null;
                 window.setDescription(descr);
                 App.getInstance().getWindowManager().setCurrentWindowCaption(window.getCaption(), descr);
             }
