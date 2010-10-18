@@ -269,6 +269,14 @@ public class UserSession implements Serializable
             return (T) attributes.get(name);
     }
 
+     /**
+     * Remove user session attribute. Attribute is a named serializable object bound to session.
+     * @param name attribute name
+     */
+    public void removeAttribute(String name) {
+         attributes.remove(name);
+    }
+
     /**
      * Set user session attribute. Attribute is a named serializable object bound to session.
      * @param name attribute name
