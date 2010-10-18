@@ -10,13 +10,16 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -25,17 +28,22 @@ import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
+import com.haulmont.cuba.web.toolkit.ui.CustomField;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements com.haulmont.cuba.gui.components.FieldGroup {
@@ -230,8 +238,11 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 fields = new ArrayList<MetaPropertyPath>();
                 for (final String id : fieldIds) {
                     final Field field = getField(id);
-                    MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
-                    if (field.getDatasource() == null && propertyPath != null) {
+                    final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
+                    final String clickAction = field.getXmlDescriptor().attributeValue("clickAction");
+                    if (field.getDatasource() == null && propertyPath != null
+                            && StringUtils.isEmpty(clickAction)) {
+                        //fields with attribute "clickAction" will be created manually
                         fields.add(propertyPath);
                     }
                 }
@@ -258,26 +269,43 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             component.setItemDataSource(null, null);
         }
 
+        createFields(datasource);
+    }
+
+    private void createFields(Datasource datasource) {
         for (final String id : this.fields.keySet()) {
             final Field fieldConf = getField(id);
             if (!fieldConf.isCustom()) {
                 com.vaadin.ui.Field field;
+
+                final String clickAction = fieldConf.getXmlDescriptor().attributeValue("clickAction");
                 if (datasource != null && fieldConf.getDatasource() == null) {
-                    field = component.getField(id);
-                } else if (fieldConf.getDatasource() != null) {
-                    MetaPropertyPath propertyPath = fieldConf.getDatasource().getMetaClass().getPropertyPath(fieldConf.getId());
-                    final ItemWrapper dsWrapper = createDatasourceWrapper(fieldConf.getDatasource(),
-                            Collections.<MetaPropertyPath>singleton(propertyPath));
-
-                    field = fieldFactory.createField(dsWrapper, fieldConf.getId(), component);
-
-                    if (field != null && dsWrapper.getItemProperty(fieldConf.getId()) != null) {
-                        field.setPropertyDataSource(dsWrapper.getItemProperty(fieldConf.getId()));
+                    if (!StringUtils.isEmpty(clickAction)) {
+                        field = createField(datasource, fieldConf);
                         component.addField(fieldConf.getId(), field);
+                    } else {
+                        field = component.getField(id);
+                    }
+                } else if (fieldConf.getDatasource() != null) {
+                    if (!StringUtils.isEmpty(clickAction)) {
+                        field = createField(fieldConf.getDatasource(), fieldConf);
+                        component.addField(fieldConf.getId(), field);
+                    } else {
+                        MetaPropertyPath propertyPath = fieldConf.getDatasource().getMetaClass().getPropertyPath(fieldConf.getId());
+                        final ItemWrapper dsWrapper = createDatasourceWrapper(fieldConf.getDatasource(),
+                                Collections.<MetaPropertyPath>singleton(propertyPath));
+
+                        field = fieldFactory.createField(dsWrapper, fieldConf.getId(), component);
+
+                        if (field != null && dsWrapper.getItemProperty(fieldConf.getId()) != null) {
+                            field.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
+                            component.addField(fieldConf.getId(), field);
+                        }
                     }
                 } else {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException(String.format("Unable to get datasource for field '%s'", id));
                 }
+
                 if (field != null && fieldConf.getCaption() != null) {
                     field.setCaption(fieldConf.getCaption());
                 }
@@ -500,18 +528,26 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected void initCommon(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
+            final Field fieldConf = getField(propertyPath.toString());
             if (field instanceof TextField) {
                 ((TextField) field).setNullRepresentation("");
-            } else if (field instanceof DateField && getFormatter(propertyPath) != null) {
-                String format = getFormat(propertyPath);
-                if (format != null) {
-                    ((DateField) field).setDateFormat(format);
+                if (fieldConf != null) {
+                    initTextField((TextField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
+                }
+            } else if (field instanceof DateField) {
+                if (getFormatter(propertyPath) != null) {
+                    String format = getFormat(propertyPath);
+                    if (format != null) {
+                        ((DateField) field).setDateFormat(format);
+                    }
+                }
+                if (fieldConf != null) {
+                    initDateField((DateField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
             } else if (field instanceof CheckBox) {
                 ((CheckBox) field).setLayoutCaption(true); 
             }
 
-            Field fieldConf = getField(propertyPath.toString());
             if (fieldConf != null && fieldConf.getWidth() != null) {
                 field.setWidth(fieldConf.getWidth());
             }
@@ -587,7 +623,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected Formatter getFormatter(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath);
+            Field field = fields.get(propertyPath.toString());
             if (field != null) {
                 return field.getFormatter();
             } else {
@@ -597,12 +633,99 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected String getFormat(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath);
+            Field field = fields.get(propertyPath.toString());
             if (field != null) {
                 Element formatterElement = field.getXmlDescriptor().element("formatter");
                 return formatterElement.attributeValue("format");
             }
             return null;
+        }
+    }
+
+    private com.vaadin.ui.Field createField(final Datasource datasource, final Field fieldConf) {
+        MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(fieldConf.getId());
+        final ItemWrapper dsWrapper = createDatasourceWrapper(
+                datasource,
+                Collections.<MetaPropertyPath>singleton(propertyPath)
+        );
+
+        final LinkField field = new LinkField(datasource, fieldConf);
+        field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaProperty()));
+        field.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
+
+        return field;
+    }
+
+    private class LinkField extends CustomField {
+        private static final long serialVersionUID = 5555318337278242796L;
+
+        private Button component;
+
+        private LinkField(final Datasource datasource, final Field fieldConf) {
+            component = new Button();
+            component.setStyleName("link");
+            component.addListener(new Button.ClickListener() {
+                public void buttonClick(Button.ClickEvent event) {
+                    final Instance entity = (Instance) datasource.getItem();
+                    final Entity value = entity.getValueEx(fieldConf.getId());
+                    String clickAction = fieldConf.getXmlDescriptor().attributeValue("clickAction");
+                    if (!StringUtils.isEmpty(clickAction)) {
+                        if (clickAction.startsWith("open:")) {
+                            final com.haulmont.cuba.gui.components.IFrame frame = WebFieldGroup.this.getFrame();
+                            String screenName = clickAction.substring("open:".length()).trim();
+                            final com.haulmont.cuba.gui.components.Window window =
+                                    frame.openEditor(
+                                            screenName,
+                                            value,
+                                            WindowManager.OpenType.THIS_TAB);
+
+                            window.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
+                                public void windowClosed(String actionId) {
+                                    if (com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID.equals(actionId)
+                                            && window instanceof com.haulmont.cuba.gui.components.Window.Editor)
+                                    {
+                                        Object item = ((com.haulmont.cuba.gui.components.Window.Editor) window).getItem();
+                                        if (item instanceof Entity) {
+                                            entity.setValueEx(fieldConf.getId(), item);
+                                        }
+                                    }
+                                }
+                            });
+                        } else if (clickAction.startsWith("invoke:")) {
+                            final com.haulmont.cuba.gui.components.IFrame frame = WebFieldGroup.this.getFrame();
+                            String methodName = clickAction.substring("invoke:".length()).trim();
+                            try {
+                                IFrame controllerFrame = WebComponentsHelper.getControllerFrame(frame);
+                                Method method = controllerFrame.getClass().getMethod(methodName, Object.class);
+                                method.invoke(controllerFrame, value);
+                            } catch (NoSuchMethodException e) {
+                                throw new RuntimeException("Unable to invoke clickAction", e);
+                            } catch (InvocationTargetException e) {
+                                throw new RuntimeException("Unable to invoke clickAction", e);
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException("Unable to invoke clickAction", e);
+                            }
+
+                        } else {
+                            throw new UnsupportedOperationException(String.format("Unsupported clickAction format: %s", clickAction));
+                        }
+                    }
+                }
+            });
+            setStyleName("linkfield");
+            setCompositionRoot(component);
+        }
+
+        @Override
+        public Class<?> getType() {
+            return String.class;
+        }
+
+        @Override
+        public void valueChange(Property.ValueChangeEvent event) {
+            super.valueChange(event);
+            component.setCaption(event.getProperty().getValue() == null
+                    ? "" : event.getProperty().toString());
         }
     }
 }

@@ -11,9 +11,12 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -29,7 +32,10 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
+import javax.persistence.TemporalType;
 import java.util.Collection;
 
 public abstract class AbstractFieldFactory extends DefaultFieldFactory {
@@ -196,6 +202,70 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     ((com.vaadin.ui.AbstractField) field).setValidationVisible(validationVisible);
                 }
             }
+        }
+    }
+
+    protected void initTextField(com.vaadin.ui.TextField field, MetaProperty metaProperty, Element xmlDescriptor) {
+        final String cols = xmlDescriptor.attributeValue("cols");
+        final String rows = xmlDescriptor.attributeValue("rows");
+        final String maxLength = xmlDescriptor.attributeValue("maxLength");
+
+        if (!StringUtils.isEmpty(cols)) {
+            field.setColumns(Integer.valueOf(cols));
+        }
+        if (!StringUtils.isEmpty(rows)) {
+            field.setRows(Integer.valueOf(rows));
+        }
+        if (!StringUtils.isEmpty(maxLength)) {
+            field.setMaxLength(Integer.valueOf(maxLength));
+        }
+    }
+
+    protected void initDateField(com.vaadin.ui.DateField field, MetaProperty metaProperty, Element xmlDescriptor) {
+        TemporalType tt = null;
+        if (metaProperty != null) {
+            if (metaProperty.getAnnotations() != null) {
+                tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
+            }
+        }
+
+        final String resolution = xmlDescriptor.attributeValue("resolution");
+        String dateFormat = xmlDescriptor.attributeValue("dateFormat");
+
+        if (!StringUtils.isEmpty(resolution)) {
+            com.haulmont.cuba.gui.components.DateField.Resolution res = com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution);
+            field.setResolution(WebComponentsHelper.convertDateFieldResolution(
+                    com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution)
+            ));
+
+            if (dateFormat == null) {
+                if (res == com.haulmont.cuba.gui.components.DateField.Resolution.DAY) {
+                    dateFormat = "msg://dateFormat";
+                } else if (res == com.haulmont.cuba.gui.components.DateField.Resolution.MIN) {
+                    dateFormat = "msg://dateTimeFormat";
+                }
+            }
+
+        } else if (tt == TemporalType.DATE) {
+            field.setResolution(WebComponentsHelper.convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution.DAY));
+        }
+
+        if (!StringUtils.isEmpty(dateFormat)) {
+            if (dateFormat.startsWith("msg://")) {
+                dateFormat = MessageProvider.getMessage(
+                        AppConfig.getInstance().getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+            }
+            field.setDateFormat(dateFormat);
+        } else {
+            String formatStr;
+            if (tt == TemporalType.DATE) {
+                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                        "dateFormat");
+            } else {
+                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                        "dateTimeFormat");
+            }
+            field.setDateFormat(formatStr);
         }
     }
 

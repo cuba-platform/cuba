@@ -24,7 +24,10 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -49,7 +52,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -1066,65 +1069,24 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         protected void initCommon(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
             super.initCommon(field, propertyPath);
 
+            final Table.Column column = columns.get(propertyPath);
+            final MetaProperty metaProperty;
+            if (column.getId() != null) {
+                metaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
+            } else {
+                metaProperty = null;
+            }
+
+            if (field instanceof com.vaadin.ui.TextField) {
+                initTextField((com.vaadin.ui.TextField) field, metaProperty, column.getXmlDescriptor());
+            }
+
             if (field instanceof com.vaadin.ui.DateField) {
-                Table.Column column = columns.get(propertyPath);
-                initDateField((com.vaadin.ui.DateField) field, column);
+                initDateField((com.vaadin.ui.DateField) field, metaProperty, column.getXmlDescriptor());
             }
             
             if (field instanceof CheckBox) {
                 ((CheckBox) field).setLayoutCaption(true);
-            }
-            
-        }
-
-        private void initDateField(com.vaadin.ui.DateField field, Table.Column column) {
-            TemporalType tt = null;
-            if (column.getId() != null) {
-                final MetaProperty metaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
-                if (metaProperty.getAnnotations() != null) {
-                    tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
-                }
-            }
-
-            final Element element = column.getXmlDescriptor();
-
-            final String resolution = element.attributeValue("resolution");
-            String dateFormat = element.attributeValue("dateFormat");
-
-            if (!StringUtils.isEmpty(resolution)) {
-                DateField.Resolution res = DateField.Resolution.valueOf(resolution);
-                field.setResolution(WebComponentsHelper.convertDateFieldResolution(
-                        DateField.Resolution.valueOf(resolution)
-                ));
-
-                if (dateFormat == null) {
-                    if (res == DateField.Resolution.DAY) {
-                        dateFormat = "msg://dateFormat";
-                    } else if (res == DateField.Resolution.MIN) {
-                        dateFormat = "msg://dateTimeFormat";
-                    }
-                }
-
-            } else if (tt == TemporalType.DATE) {
-                field.setResolution(WebComponentsHelper.convertDateFieldResolution(DateField.Resolution.DAY));
-            }
-
-            if (!StringUtils.isEmpty(dateFormat)) {
-                if (dateFormat.startsWith("msg://")) {
-                    dateFormat = MessageProvider.getMessage(
-                            AppConfig.getInstance().getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
-                }
-                field.setDateFormat(dateFormat);
-            } else {
-                String formatStr;
-                if (tt == TemporalType.DATE) {
-                    formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
-                            "dateFormat");
-                } else {
-                    formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
-                            "dateTimeFormat");
-                }
-                field.setDateFormat(formatStr);
             }
         }
     }

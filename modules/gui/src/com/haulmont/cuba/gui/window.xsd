@@ -834,11 +834,18 @@
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="required" type="xs:string" use="optional"/>
+        <xs:attribute name="requiredMessage" type="xs:string" use="optional"/>
         <xs:attribute name="visible" type="xs:string" use="optional"/>
         <xs:attribute name="width" type="xs:string" use="optional"/>
         <xs:attribute name="custom" type="xs:string" use="optional"/>
         <xs:attribute name="caption" type="xs:string" use="optional"/>
         <xs:attribute name="datasource" type="xs:string" use="optional"/>
+        <xs:attribute name="resolution" type="xs:string" use="optional"/>
+        <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
+        <xs:attribute name="maxLength" type="xs:int" use="optional"/>
+        <xs:attribute name="cols" type="xs:int" use="optional"/>
+        <xs:attribute name="rows" type="xs:int" use="optional"/>
+        <xs:attribute name="clickAction" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:group name="layoutOrComponent">
