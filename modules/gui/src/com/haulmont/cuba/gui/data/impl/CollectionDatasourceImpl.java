@@ -143,6 +143,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 setItem(null);
             }
 
+            if (sortInfos != null && sortInfos.length > 0)
+                doSort();
+
             suspended = false;
             refreshOnResumeRequired = false;
             

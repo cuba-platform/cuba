@@ -175,6 +175,9 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             if (!State.VALID.equals(state))
                 loadNextChunk(false);
 
+            if (sortInfos != null && sortInfos.length > 0 && isCompletelyLoaded())
+                sortInMemory();
+
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         } finally {
             inRefresh = false;
