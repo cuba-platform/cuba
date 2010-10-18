@@ -51,7 +51,12 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
             final String hierarchyProperty = TreeActionsHelper.this.component.getHierarchyProperty();
             final DataService dataservice = datasource.getDataService();
 
-            final Entity parentItem = datasource.getItem();
+            Entity parentItem = datasource.getItem();
+
+            //datasource.getItem() may contain deleted item
+            if (!datasource.containsItem(parentItem.getId())) {
+                parentItem = null;
+            }
 //            if (parentItem == null) return;
 
             final Entity item = dataservice.<Entity>newInstance(datasource.getMetaClass());
