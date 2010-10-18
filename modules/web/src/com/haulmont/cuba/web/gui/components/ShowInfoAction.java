@@ -63,6 +63,7 @@ public class ShowInfoAction extends AbstractAction {
         StringBuilder sb = new StringBuilder();
 
         MetaClass metaClass = ds.getMetaClass();
+        sb.append(MessageProvider.getMessage(mp, "table.showInfoAction.table")).append("<br/>");
         sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.entityName", metaClass.getName())).append("<br/>");
         sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.entityClass", metaClass.getJavaClass().getName())).append("<br/>");
 
