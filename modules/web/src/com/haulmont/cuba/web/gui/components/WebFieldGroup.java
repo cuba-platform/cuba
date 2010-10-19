@@ -120,10 +120,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             throw new IllegalStateException(String.format("Illegal column number %s, available amount of columns is %s",
                     col, cols));
         }
+        fields.put(field.getId(), field);
         fieldsColumn.put(field, col);
         fillColumnFields(col, field);
-
-        addField(field);
     }
 
     private void fillColumnFields(int col, Field field) {
