@@ -13,7 +13,8 @@ package com.haulmont.cuba.gui.components;
 
 import java.io.Serializable;
 
-public interface GroupBox extends Layout, Component.HasCaption, Component.Expandable, Component.HasLayout {
+public interface GroupBox extends Layout, Component.HasCaption, Component.Expandable, Component.HasLayout, 
+        Component.BelongToFrame {
 
     boolean isCollapsable();
     void setCollapsable(boolean collapsable);

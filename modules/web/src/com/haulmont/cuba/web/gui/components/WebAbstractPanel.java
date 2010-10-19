@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.ComponentContainer;
@@ -19,13 +20,17 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class WebAbstractPanel extends Panel
-        implements com.haulmont.cuba.gui.components.Layout, Component.Container, Component.Expandable
+        implements com.haulmont.cuba.gui.components.Layout, Component.Container, Component.Expandable, Component.BelongToFrame
 {
     private String id;
     private Component component;
     private Alignment alignment = Alignment.TOP_LEFT;
 
     private boolean expandable = true;
+
+    private IFrame frame;
+    
+    private static final long serialVersionUID = -1826985432510393176L;
 
     public void add(Component component) {
         final com.vaadin.ui.Component comp = WebComponentsHelper.unwrap(component);
@@ -50,6 +55,15 @@ public class WebAbstractPanel extends Panel
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public <A extends IFrame> A getFrame() {
+        return (A) frame;
+    }
+
+    public void setFrame(IFrame frame) {
+        this.frame = frame;
+        frame.registerComponent(this);
     }
 
     public void requestFocus() {
