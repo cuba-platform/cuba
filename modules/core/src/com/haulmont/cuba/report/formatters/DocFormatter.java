@@ -71,8 +71,11 @@ public class DocFormatter extends AbstractFormatter {
         try {
             XInputStream xis = getXInputStream(templateFileDescriptor);
             xComponent = loadXComponent(connection.createXComponentLoader(), xis);
-            // Handling tables
-            fillTables();
+            // Lock clipboard
+            synchronized (ClipBoardHelper.class){
+                // Handling tables
+                fillTables();
+            }
             // Handling text
             replaceAllAliasesInDocument();
             // Saving document to output stream and closing
@@ -136,13 +139,14 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper) throws com.sun.star.uno.Exception {
-        ClipBoardHelper.clear();
+        ClipBoardHelper.clear();                            
+        int startRow = xTextTable.getRows().getCount() - 1;
         for (int i = 0; i < parentBand.getChildren().size(); i++) {
             if (name.equals(parentBand.getChildren().get(i).getName())) {
                 duplicateLastRow(xDispatchHelper, asXTextDocument(xComponent).getCurrentController(), xTextTable);
             }
         }
-        int i = 0;
+        int i = startRow;
         for (Band child : parentBand.getChildren()) {
             if (name.equals(child.getName())) {
                 fillRow(child, xTextTable, i);
