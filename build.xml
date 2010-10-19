@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
-<project xmlns:ext="http://haulmont.com/schema/ant"
+<project xmlns:ext="http://haulmont.com/schema/ant" xmlns:jmx="antlib:org.apache.catalina.ant.jmx"
 	name="cuba" basedir=".">
 
 	<property name="root.dir" location=".."/>
 
+    <property file="local.build.properties"/>
+    <property file="build.properties"/>
 	<property file="${root.dir}/build.properties"/>
 	<import file="${root.dir}/build-inc-prj.xml"/>
 	<property file="lib.properties"/>
@@ -167,10 +169,29 @@
         </copy>
     </target>
 	
-    <target name="deploy-conf" depends="target">
+    <target name="deploy-conf">
+        <mkdir dir="${build.dir}/conf"/>
+        <copy todir="${build.dir}/conf">
+            <fileset dir="modules/web/src-conf" includes="**/*"/>
+        </copy>
+
+        <copy todir="${target.dir}/${app.name}/WEB-INF/conf">
+            <fileset dir="${build.dir}/conf" includes="**/*"/>
+        </copy>
+
         <copy todir="${deploy.dir}/${app.name}/WEB-INF/conf">
             <fileset dir="${target.dir}/${app.name}/WEB-INF/conf" includes="**/*"/>
         </copy>
+        <condition property="do.clear.caches">
+            <istrue value="${enable.clear.caches}"/>
+        </condition>
+        <antcall target="clear-caches"/>
+    </target>
+
+    <target name="clear-caches" if="do.clear.caches">
+        <jmx:open host="localhost" port="7777" username="" password=""/>
+        <jmx:invoke name="app.cuba:service=CachingFacade" operation="clearMessagesCache"/>
+        <jmx:invoke name="app.cuba:service=CachingFacade" operation="clearGroovyCache"/>
     </target>
 
     <target name="undeploy">
