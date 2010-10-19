@@ -16,8 +16,11 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.gui.data.AbstractPropertyWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.PropertyFormatter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,9 +38,44 @@ public class WebTextField
     private Datatype datatype;
 
     protected Formatter formatter;
+    
+    private static final long serialVersionUID = 9160433567349650716L;
 
     public WebTextField() {
         this.component = new com.haulmont.cuba.web.toolkit.ui.TextField();
+
+        final Property p = new AbstractPropertyWrapper() {
+            public Class<?> getType() {
+                return String.class;
+            }
+        };
+
+        component.setPropertyDataSource(new PropertyFormatter(p) {
+            @Override
+            public String format(Object value) {
+                if (datatype != null && value != null) {
+                    return datatype.format(value);
+                } else if (value != null) {
+                    return value.toString();
+                } else {
+                    return null;
+                }
+            }
+
+            @Override
+            public Object parse(String formattedValue) throws Exception {
+                if (datatype != null) {
+                    try {
+                        return datatype.parse(formattedValue);
+                    } catch (ParseException e) {
+                        log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                        return null;
+                    }
+                } else {
+                    return formattedValue;
+                }
+            }
+        });
         attachListener(component);
         component.setImmediate(true);
         component.setNullRepresentation("");

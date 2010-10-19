@@ -9,11 +9,11 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
@@ -24,17 +24,10 @@ import com.vaadin.data.Property;
 import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
-    private boolean readOnly;
-    private Object item;
-
+public class PropertyWrapper extends AbstractPropertyWrapper {
     protected MetaPropertyPath propertyPath;
-
-    private List<ValueChangeListener> listeners = new ArrayList<ValueChangeListener>();
 
     private static final long serialVersionUID = 5863216328152195113L;
 
@@ -53,13 +46,6 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
                     fireValueChangeEvent();
                 }
             });
-        }
-    }
-
-    protected void fireValueChangeEvent() {
-        final ValueChangeEvent changeEvent = new ValueChangeEvent();
-        for (ValueChangeListener listener : new ArrayList<ValueChangeListener>(listeners)) {
-            listener.valueChange(changeEvent);
         }
     }
 
@@ -115,14 +101,6 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
         return propertyPath.getRangeJavaClass();
     }
 
-    public boolean isReadOnly() {
-        return readOnly;
-    }
-
-    public void setReadOnly(boolean newStatus) {
-        readOnly = newStatus;
-    }
-
     @Override
     public String toString() {
         final Object value = getValue();
@@ -150,20 +128,6 @@ public class PropertyWrapper implements Property, Property.ValueChangeNotifier {
                 return ((Instance) value).getInstanceName();
             else
                 return value.toString();
-        }
-    }
-
-    public void addListener(ValueChangeListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
-    }
-
-    public void removeListener(ValueChangeListener listener) {
-        listeners.remove(listener);
-    }
-
-    private class ValueChangeEvent implements Property.ValueChangeEvent {
-        public Property getProperty() {
-            return PropertyWrapper.this;
         }
     }
 }
