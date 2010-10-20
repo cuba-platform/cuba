@@ -13,11 +13,14 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
+import java.text.MessageFormat;
 import java.util.Set;
 
 /**
@@ -26,7 +29,7 @@ import java.util.Set;
 @Entity(name = "sec$User")
 @Table(name = "SEC_USER")
 @Listeners("com.haulmont.cuba.security.listener.UserEntityListener")
-@NamePattern("%s [%s]|name,login")
+@NamePattern("#getCaption|login,name")
 public class User extends StandardEntity
 {
     private static final long serialVersionUID = 5007187642916030394L;
@@ -203,5 +206,14 @@ public class User extends StandardEntity
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public String getCaption() {
+        String pattern = AppContext.getProperty("cuba.user.namePattern");
+        if (StringUtils.isBlank(pattern)) {
+            pattern = "{1} [{0}]";
+        }
+        MessageFormat fmt = new MessageFormat(pattern);
+        return fmt.format(new Object[] {login, name});
     }
 }

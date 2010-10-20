@@ -14,19 +14,17 @@ package com.haulmont.cuba.security.global;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
-import java.util.LinkedList;
-import java.util.List;
 
 public class UserUtils {
 
-    static public String formatName(String pattern, String firstName, String lastName, String middleName) throws ParseException {
+    public static String formatName(String pattern, String firstName, String lastName, String middleName) throws ParseException {
         if (pattern == null || pattern.length() == 0)
             throw new ParseException("Pattern error", 0);
-        if (firstName == null || firstName == "null")
+        if (firstName == null || firstName.equals("null"))
             firstName = "";
-        if (lastName == null || lastName == "null")
+        if (lastName == null || lastName.equals("null"))
             lastName = "";
-        if (middleName == null || middleName == "null")
+        if (middleName == null || middleName.equals("null"))
             middleName = "";
         String[] params = StringUtils.substringsBetween(pattern, "{", "}");
         int i;
@@ -40,7 +38,7 @@ public class UserUtils {
         return pattern;
     }
 
-    static private String parseParam(String param, String firstName, String lastName, String middleName) throws ParseException {
+    private static String parseParam(String param, String firstName, String lastName, String middleName) throws ParseException {
         if (param == null || param.length() == 0)
             throw new ParseException("Pattern error", 0);
         String last = StringUtils.substringAfter(param, "|");

@@ -6,14 +6,9 @@
 
     <metadataContext>
         <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="usersubst.edit">
-            <property name="user" view="usersubst.edit"/>
-            <property name="substitutedUser" view="usersubst.edit"/>
+            <property name="user" view="_minimal"/>
+            <property name="substitutedUser" view="_minimal"/>
             <property name="endDate"/>
-        </view>
-
-        <view class="com.haulmont.cuba.security.entity.User" name="usersubst.edit">
-            <property name="login"/>
-            <property name="name"/>
         </view>
     </metadataContext>
 
@@ -22,7 +17,7 @@
                     class="com.haulmont.cuba.security.entity.UserSubstitution"
                     view="usersubst.edit"/>
 
-        <collectionDatasource id="users" class="com.haulmont.cuba.security.entity.User" view="usersubst.edit">
+        <collectionDatasource id="users" class="com.haulmont.cuba.security.entity.User" view="_minimal">
             <query>
                 <![CDATA[
                 select u from sec$User u where u.id <> :ds$subst.user
