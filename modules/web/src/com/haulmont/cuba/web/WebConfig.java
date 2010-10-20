@@ -10,10 +10,7 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.config.Config;
-import com.haulmont.cuba.core.config.Prefix;
-import com.haulmont.cuba.core.config.Source;
-import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.*;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
@@ -82,6 +79,7 @@ public interface WebConfig extends Config
     int getMainTabCaptionLength();
 
     @Default("peyto")
+    @Property("cuba.AppConfig.themeName")
     String getAppWindowTheme();
 
     @DefaultInt(100)
