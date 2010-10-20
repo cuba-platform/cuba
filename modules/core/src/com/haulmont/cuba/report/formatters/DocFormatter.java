@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
+import com.haulmont.cuba.report.ReportValueFormat;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.tools.*;
 
@@ -38,10 +39,9 @@ import com.sun.star.util.XSearchDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.ArrayList;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,7 +72,7 @@ public class DocFormatter extends AbstractFormatter {
             XInputStream xis = getXInputStream(templateFileDescriptor);
             xComponent = loadXComponent(connection.createXComponentLoader(), xis);
             // Lock clipboard
-            synchronized (ClipBoardHelper.class){
+            synchronized (ClipBoardHelper.class) {
                 // Handling tables
                 fillTables();
             }
@@ -139,7 +139,7 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper) throws com.sun.star.uno.Exception {
-        ClipBoardHelper.clear();                            
+        ClipBoardHelper.clear();
         int startRow = xTextTable.getRows().getCount() - 1;
         for (int i = 0; i < parentBand.getChildren().size(); i++) {
             if (name.equals(parentBand.getChildren().get(i).getName())) {
@@ -164,6 +164,7 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillCell(Band band, XCell xCell) throws NoSuchElementException, WrappedTargetException {
+        String bandFullName = band.getFullName();
         String cellText = preformatCellText(asXText(xCell).getString());
         List<String> parametersToInsert = new ArrayList<String>();
         Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
@@ -184,7 +185,7 @@ public class DocFormatter extends AbstractFormatter {
                 xTextCursor.goLeft((short) paramStr.length(), true);
 
                 Object value = band.getData().get(parameterName);
-                String valueStr = value != null ? value.toString() : "";
+                String valueStr = formatString(value, bandFullName + "." + parameterName);
 
                 xText.insertString(xTextCursor, valueStr, true);
 
@@ -192,6 +193,27 @@ public class DocFormatter extends AbstractFormatter {
                 index = cellText.indexOf(paramStr);
             }
         }
+    }
+
+    private String formatString(Object value, String valueName) {
+        String valueString = "";
+        HashMap<String, ReportValueFormat> formats = rootBand.getValuesFormats();
+        if ((formats != null) && (value != null)) {
+            if (formats.containsKey(valueName)) {
+                String formatString = formats.get(valueName).getFormatString();
+                if (value instanceof Number) {
+                    DecimalFormat decimalFormat = new DecimalFormat(formatString);
+                    valueString = decimalFormat.format(value);
+                } else if (value instanceof Date) {
+                    SimpleDateFormat dateformat = new SimpleDateFormat(formatString);
+                    valueString = dateformat.format(value);
+                } else
+                    valueString = value.toString();
+            }
+            else
+                valueString = value.toString();
+        }
+        return valueString;
     }
 
     /**
@@ -224,8 +246,10 @@ public class DocFormatter extends AbstractFormatter {
                     if (j != parts.length - 1) paramName.append(".");
                 }
 
+                String fullParamName = band.getFullName() + "." + paramName.toString();
                 Object parameter = band.getParameter(paramName.toString());
-                o.setString(parameter != null ? parameter.toString() : "");
+                String valueString = formatString(parameter,fullParamName);
+                o.setString(valueString);
             }
         } catch (Exception ex) {
             throw new ReportFormatterException(ex);

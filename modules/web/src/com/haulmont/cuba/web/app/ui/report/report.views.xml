@@ -8,12 +8,17 @@
     <view entity="report$Report" name="report.edit" extends="_local">
         <property name="rootBandDefinition" view="report.edit"/>
         <property name="inputParameters" view="_local"/>
+        <property name="valuesFormats" view="_local"/>
         <property name="roles" view="_local"/>
         <property name="reportScreens" view="_local"/>
         <property name="templateFileDescriptor" view="_local"/>
     </view>
 
     <view entity="report$ReportInputParameter" name="report.edit" extends="_local">
+        <property name="report" view="_local"/>
+    </view>
+
+    <view entity="report$ReportValueFormat" name="report.edit" extends="_local">
         <property name="report" view="_local"/>
     </view>
 

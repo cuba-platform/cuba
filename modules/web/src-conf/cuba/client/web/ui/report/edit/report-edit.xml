@@ -16,6 +16,7 @@
                 class="com.haulmont.cuba.report.Report"
                 view="report.edit">
             <collectionDatasource id="parametersDs" property="inputParameters"/>
+            <collectionDatasource id="valuesFormatsDs" property="valuesFormats"/>
             <collectionDatasource id="rolesDs" property="roles"/>
             <collectionDatasource id="reportScreensDs" property="reportScreens"/>
         </datasource>

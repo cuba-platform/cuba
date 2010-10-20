@@ -56,6 +56,12 @@ public class ReportServiceBean implements ReportService {
             List<BandDefinition> childrenBandDefinitions = rootBandDefinition.getChildrenBandDefinitions();
             Band rootBand = createRootBand(rootBandDefinition);
 
+            HashMap<String,ReportValueFormat> valuesFormats = new HashMap<String,ReportValueFormat>();
+            for (ReportValueFormat valueFormat : report.getValuesFormats()){
+                valuesFormats.put(valueFormat.getValueName(),valueFormat);
+            }
+            rootBand.setValuesFormats(valuesFormats);
+
             for (BandDefinition definition : childrenBandDefinitions) {
                 bandDefinitionNames.get().add(definition.getName());
                 List<Band> bands = createBands(definition, rootBand);

@@ -2,82 +2,92 @@
     <#assign width = 200>
     <#assign treeHeight = 400>
     <#assign treeWidth = 650>
-    <layout expand="split" expandLayout="true">
-        <split orientation="horizontal" id="split">
-            <groupBox>
-                <vbox margin="true" expand="parametersFrame">
-                    <grid spacing="true">
-                        <columns>
-                            <column flex="1"/>
-                            <column flex="1"/>
-                            <column flex="1"/>
-                        </columns>
-                        <rows>
-                            <!--<row>
-                                <label value="msg://report.generalParameters" stylename="h2"/>
-                            </row>-->
-                            <row>
-                                <label value="msg://report.name"/>
-                                <textField id="name" datasource="reportDs" property="name"
-                                           width="${width}" required="true" requiredMessage="msg://report.nameMsg"/>
-                            </row>
-                            <row>
-                                <label value="msg://report.reportType"/>
-                                <lookupField id="reportType" datasource="reportDs" property="reportType"
-                                             width="${width}" required="true"
-                                             requiredMessage="msg://report.reportTypeMsg"/>
-                            </row>
-                            <row>
-                                <label value="msg://report.reportOutputType"/>
-                                <lookupField id="reportOutputType" datasource="reportDs" property="reportOutputType"
-                                             width="${width}" required="true"
-                                             requiredMessage="msg://report.reportOutputTypeMsg"/>
-                            </row>
-                            <row>
-                                <label value="msg://report.template"/>
-                                <hbox spacing="true">
-                                    <button id="templatePath" stylename="link"/>
-                                    <upload id="uploadTemplate" width="${treeWidth}"/>
-                                </hbox>
+    <layout expand="vSplit" expandLayout="true">
+        <split orientation="vertical" expandable="true" id="vSplit" pos="70">
+            <split orientation="horizontal" id="split">
+                <groupBox>
+                    <vbox margin="true" expandable="false">
+                        <grid spacing="true">
+                            <columns>
+                                <column flex="1"/>
+                                <column flex="1"/>
+                                <column flex="1"/>
+                            </columns>
+                            <rows>
+                                <!--<row>
+                                    <label value="msg://report.generalParameters" stylename="h2"/>
+                                </row>-->
+                                <row>
+                                    <label value="msg://report.name"/>
+                                    <textField id="name" datasource="reportDs" property="name"
+                                               width="${width}" required="true"
+                                               requiredMessage="msg://report.nameMsg"/>
+                                </row>
+                                <row>
+                                    <label value="msg://report.reportType"/>
+                                    <lookupField id="reportType" datasource="reportDs" property="reportType"
+                                                 width="${width}" required="true"
+                                                 requiredMessage="msg://report.reportTypeMsg"/>
+                                </row>
+                                <row>
+                                    <label value="msg://report.reportOutputType"/>
+                                    <lookupField id="reportOutputType" datasource="reportDs"
+                                                 property="reportOutputType"
+                                                 width="${width}" required="true"
+                                                 requiredMessage="msg://report.reportOutputTypeMsg"/>
+                                </row>
+                                <row>
+                                    <label value="msg://report.template"/>
+                                    <hbox spacing="true">
+                                        <button id="templatePath" stylename="link"/>
+                                        <upload id="uploadTemplate" width="${treeWidth}"/>
+                                    </hbox>
 
-                            </row>
-                            <row>
-                                <label value="msg://report.isCustom"/>
-                                <checkBox id="isCustom" datasource="reportDs" property="isCustom"
-                                          width="${width}"/>
-                            </row>
-                            <row>
-                                <label value="msg://report.customClass"/>
-                                <textField id="customClass" datasource="reportDs" property="customClass"
-                                           width="${width}"/>
-                            </row>
-                        </rows>
-                    </grid>
-                    <iframe src="/cuba/client/web/ui/report/edit/tabs/parameters.xml" id="parametersFrame"/>
-                </vbox>
-            </groupBox>
-            <!-- Splitter -->
-            <groupBox height="${treeHeight}" width="${treeWidth}" stylename="edit-area">
-                <vbox expand="scroll" spacing="true" margin="true">
-                    <label value="msg://report.bands" stylename="h2"/>
+                                </row>
+                                <row>
+                                    <label value="msg://report.isCustom"/>
+                                    <checkBox id="isCustom" datasource="reportDs" property="isCustom"
+                                              width="${width}"/>
+                                </row>
+                                <row>
+                                    <label value="msg://report.customClass"/>
+                                    <textField id="customClass" datasource="reportDs" property="customClass"
+                                               width="${width}"/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </vbox>
+                </groupBox>
+                <!-- Splitter -->
+                <groupBox height="${treeHeight}" width="${treeWidth}" stylename="edit-area">
+                    <vbox expand="bandsVBox" spacing="true" margin="true">
+                        <label value="msg://report.bands" stylename="h2"/>
 
-                    <hbox spacing="true" margin="true">
-                        <button id="createBandDefinition" icon="icons/create.png"/>
-                        <button id="editBandDefinition" icon="icons/edit.png"/>
-                        <button id="removeBandDefinition" icon="icons/remove.png"/>
-                        <button id="up" icon="icons/up.png"/>
-                        <button id="down" icon="icons/down.png"/>
-                    </hbox>
+                        <hbox spacing="true" margin="true">
+                            <button id="createBandDefinition" icon="icons/create.png"/>
+                            <button id="editBandDefinition" icon="icons/edit.png"/>
+                            <button id="removeBandDefinition" icon="icons/remove.png"/>
+                            <button id="up" icon="icons/up.png"/>
+                            <button id="down" icon="icons/down.png"/>
+                        </hbox>
 
-                    <scrollbox id="scroll" height="${treeHeight}" width="${treeWidth}">
-                        <vbox id="vbox" height="${treeHeight}" width="${treeWidth}">
-                            <tree id="serviceTree">
-                                <treechildren datasource="treeDs" captionProperty="name"/>
-                            </tree>
+                        <vbox id="bandsVBox">
+                            <scrollbox id="scroll" height="${treeHeight}" width="${treeWidth}">
+                                <vbox id="vbox" height="${treeHeight}" width="${treeWidth}">
+                                    <tree id="serviceTree">
+                                        <treechildren datasource="treeDs" captionProperty="name"/>
+                                    </tree>
+                                </vbox>
+                            </scrollbox>
                         </vbox>
-                    </scrollbox>
-                </vbox>
-            </groupBox>
+                    </vbox>
+                </groupBox>
+            </split>
+            <!-- Vertical split -->
+            <hbox width="100%" spacing="true">
+                <iframe src="/cuba/client/web/ui/report/edit/tabs/parameters.xml" id="parametersFrame"/>
+                <iframe src="/cuba/client/web/ui/report/edit/tabs/formats.xml" id="formatsFrame"/>
+            </hbox>
         </split>
     </layout>
 </window>

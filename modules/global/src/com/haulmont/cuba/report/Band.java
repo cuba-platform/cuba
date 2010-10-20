@@ -20,6 +20,7 @@ public class Band {
     private int level;
     private Orientation orientation = Orientation.HORIZONTAL;
     private Set<String> bandDefinitionNames = null;
+    private HashMap<String,ReportValueFormat> valuesFormats = null;
 
     public Band(String name, int level, Band parentBand, Orientation orientation) {
         this.name = name;
@@ -96,6 +97,16 @@ public class Band {
         this.orientation = orientation;
     }
 
+    public String getFullName(){
+        String fullName = name;
+        Band upBand = parentBand;
+        while ((upBand != null) && (upBand.level > 1)){
+            fullName = upBand.getName() + "." + fullName;
+            upBand = upBand.parentBand;
+        }
+        return fullName;
+    }
+
     @Override
     public String toString() {
         StringBuffer sbf = new StringBuffer();
@@ -128,5 +139,13 @@ public class Band {
 
     public void setBandDefinitionNames(Set<String> bandDefinitionNames) {
         this.bandDefinitionNames = bandDefinitionNames;
+    }
+
+    public HashMap<String,ReportValueFormat> getValuesFormats(){
+        return valuesFormats;
+    }
+
+    public void setValuesFormats(HashMap<String,ReportValueFormat> valuesFormats){
+        this.valuesFormats = valuesFormats;
     }
 }

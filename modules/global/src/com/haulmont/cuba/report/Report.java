@@ -11,7 +11,6 @@
 package com.haulmont.cuba.report;
 
 import com.haulmont.chile.core.annotations.Aggregation;
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -61,6 +60,11 @@ public class Report extends HardDeleteEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
     @OnDelete(value = DeletePolicy.CASCADE)
     @Aggregation
+    private List<ReportValueFormat> valuesFormats;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
+    @OnDelete(value = DeletePolicy.CASCADE)
+    @Aggregation
     private List<ReportScreen> reportScreens;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -92,6 +96,14 @@ public class Report extends HardDeleteEntity {
 
     public void setInputParameters(List<ReportInputParameter> inputParameters) {
         this.inputParameters = inputParameters;
+    }
+
+    public List<ReportValueFormat> getValuesFormats(){
+        return valuesFormats;
+    }
+
+    public void setValuesFormats(List<ReportValueFormat> valuesFormats){
+        this.valuesFormats = valuesFormats;
     }
 
     public ReportOutputType getReportOutputType() {

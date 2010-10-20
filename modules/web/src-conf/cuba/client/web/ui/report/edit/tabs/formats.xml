@@ -1,0 +1,22 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
+    <#assign width = 200>
+    <#assign treeHeight = 400>
+    <#assign treeWidth = 500>
+    <layout expandLayout="true">
+        <vbox spacing="true" expand="valuesFormatsTable">
+            <label value="msg://report.valuesFormats" stylename="h2"/>
+            <hbox spacing="true" margin="true">
+                <button action="valuesFormatsTable.create" icon="icons/create.png"/>
+                <button action="valuesFormatsTable.edit" icon="icons/edit.png"/>
+                <button action="valuesFormatsTable.remove" icon="icons/remove.png"/>
+            </hbox>
+            <table id="valuesFormatsTable" sortable="false" height="100%">
+                <columns>
+                    <column id="valueName" caption="msg://valuesFormats.name"/>
+                    <column id="formatString" caption="msg://valuesFormats.format"/>
+                </columns>
+                <rows datasource="valuesFormatsDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>
