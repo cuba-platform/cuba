@@ -424,6 +424,16 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    public boolean isEnabled(Field field) {
+        com.vaadin.ui.Field f = component.getField(field.getId());
+        return f.isEnabled();
+    }
+
+    public void setEnabled(Field field, boolean enabled) {
+        com.vaadin.ui.Field f = component.getField(field.getId());
+        f.setEnabled(enabled);
+    }
+
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
         return new ItemWrapper(datasource, propertyPaths) {
             @Override

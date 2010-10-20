@@ -42,6 +42,9 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
     boolean isEditable(Field field);
     void setEditable(Field field, boolean editable);
 
+    boolean isEnabled(Field field);
+    void setEnabled(Field field, boolean enabled);
+
     void setCaptionAlignment(FieldCaptionAlignment captionAlignment);
 
     int getColumns();
