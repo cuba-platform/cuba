@@ -35,7 +35,7 @@ public class ValueFormatEditor extends BasicEditor {
     }
 
     @Override
-    public void init(Map<String, Object> params){
+    public void init(Map<String, Object> params) {
         super.init(params);
         final FieldGroup fields = getComponent("formatFields");
         // Add default format strings to combobox
@@ -47,29 +47,31 @@ public class ValueFormatEditor extends BasicEditor {
                 final FilterSelect select = fSelect;
                 for (String format : defaultFormats) {
                     select.addItem(format);
-                    select.setItemCaption(format,format);
+                    select.setItemCaption(format, format);
                 }
-                                
+
                 select.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT);
                 select.setNewItemsAllowed(true);
                 select.setNewItemHandler(new AbstractSelect.NewItemHandler() {
                     public void addNewItem(String newItemCaption) {
                         select.addItem(newItemCaption);
-                        select.setItemCaption(newItemCaption,newItemCaption);
+                        select.setItemCaption(newItemCaption, newItemCaption);
                         select.select(newItemCaption);
                     }
                 });
                 return lookupField;
             }
-        });  
+        });
     }
 
     @Override
-    public void setItem(Entity item){
+    public void setItem(Entity item) {
         super.setItem(item);
         Object value = fSelect.getValue();
-        fSelect.addItem(value);
-        fSelect.setItemCaption(value,value.toString());
-        fSelect.select(value);
+        if (value != null) {
+            fSelect.addItem(value);
+            fSelect.setItemCaption(value, value.toString());
+            fSelect.select(value);
+        }
     }
 }
