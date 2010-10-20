@@ -386,6 +386,7 @@ create table SYS_FOLDER (
     TYPE char(1),
     PARENT_ID varchar(36),
     NAME varchar(100),
+    DOUBLE_NAME varchar(100),
     SORT_ORDER integer,
     CODE varchar(200),
     primary key (ID)
