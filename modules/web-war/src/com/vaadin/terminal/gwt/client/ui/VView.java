@@ -273,14 +273,15 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
         final HashSet<VWindow> removedSubWindows = new HashSet<VWindow>(
                 subWindows);
 
+        boolean actionsUpdated = false;
+
         // Handle other UIDL children
         while ((childUidl = uidl.getChildUIDL(++childIndex)) != null) {
             String tag = childUidl.getTag().intern();
             if (tag == "actions") {
-                if (actionHandler == null) {
-                    actionHandler = new ShortcutActionHandler(id, client);
-                }
+                actionHandler = new ShortcutActionHandler(id, client);
                 actionHandler.updateActionMap(childUidl);
+                actionsUpdated = true;
             } else if (tag == "execJS") {
                 String script = childUidl.getStringAttribute("script");
                 eval(script);
@@ -383,6 +384,10 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
                 }
                 w.updateFromUIDL(childUidl, client);
             }
+        }
+
+        if (!actionsUpdated && actionHandler != null) {
+            actionHandler = null;
         }
 
         // Close old windows which where not in UIDL anymore
