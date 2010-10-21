@@ -12,6 +12,8 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.EntityFactory;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -87,12 +89,14 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public MetaClass getMetaClass() {
-        return metaProperty.getRange().asClass();
+        MetaClass metaClass = metaProperty.getRange().asClass();
+        Class replacedClass = EntityFactory.getReplacedClass(metaClass);
+        return replacedClass != null ? MetadataProvider.getSession().getClass(replacedClass) : metaClass;
     }
 
     public View getView() {
         final ViewProperty property = ds.getView().getProperty(metaProperty.getName());
-        return property == null ? null : property.getView();
+        return property == null ? null : MetadataProvider.getViewRepository().getView(getMetaClass(),property.getView().getName());
     }
 
     public DsContext getDsContext() {

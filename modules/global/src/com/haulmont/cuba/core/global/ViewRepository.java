@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -165,7 +166,8 @@ public class ViewRepository
         }
 
         View v = findView(metaClass, viewName);
-        if (v != null)
+        boolean overwrite = BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"));
+        if (v != null && !overwrite)
             return v;
 
         View view;
