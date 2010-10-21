@@ -54,7 +54,8 @@ public class FilterEditor {
     private String filterComponentName;
     private AbstractSelect addSelect;
 
-    private static final String EDITOR_WIDTH = "600px";
+    private static final String EDITOR_WIDTH = "640px";
+    private static final String TABLE_WIDTH = "600px";
     private static List<String> defaultExcludedProps = Arrays.asList("version");
     private CheckBox globalCb;
     private Button saveBtn;
@@ -183,21 +184,32 @@ public class FilterEditor {
         nameLayout.addComponent(nameField);
 
         topGrid.addComponent(nameLayout, 0, 0);
-        
+        topGrid.setWidth(TABLE_WIDTH);
+
         HorizontalLayout addLayout = new HorizontalLayout();
         addLayout.setSpacing(true);
-        addLayout.addComponent(downBtn);
-        addLayout.addComponent(upBtn);
-
         initAddSelect(addLayout);
-
         topGrid.addComponent(addLayout, 1, 0);
         topGrid.setComponentAlignment(addLayout, Alignment.MIDDLE_RIGHT);
 
-        layout.addComponent(topGrid);
+        HorizontalLayout hlayLayout = new HorizontalLayout();
+        hlayLayout.setSpacing(true);
+        
+        VerticalLayout controlsAndtable = new VerticalLayout();
+        controlsAndtable.addComponent(topGrid);
+        controlsAndtable.setSpacing(true);
+        initTable(controlsAndtable);
 
-        initTable(layout);
+        hlayLayout.addComponent(controlsAndtable);
 
+        VerticalLayout upDownLayout = new VerticalLayout();
+        upDownLayout.setSpacing(true);
+        upDownLayout.addComponent(upBtn);
+        upDownLayout.addComponent(downBtn);
+        hlayLayout.addComponent(upDownLayout);
+        hlayLayout.setComponentAlignment(upDownLayout,Alignment.MIDDLE_CENTER);
+                                         
+        layout.addComponent(hlayLayout);
         layout.addComponent(bottomGrid);
 
         updateControls();
@@ -238,7 +250,7 @@ public class FilterEditor {
         table.setImmediate(true);
         table.setSelectable(true);
         table.setPageLength(0);
-        table.setWidth(EDITOR_WIDTH);
+        table.setWidth(TABLE_WIDTH);
         table.setHeight("200px");
         table.setStyleName("filter-conditions");
 
