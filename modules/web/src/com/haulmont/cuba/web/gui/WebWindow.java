@@ -28,11 +28,8 @@ import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.WindowContext;
-import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.web.App;
@@ -753,6 +750,25 @@ public class WebWindow
             final Datasource ds = getDatasource();
 
             if (ds.getCommitMode().equals(Datasource.CommitMode.PARENT)) {
+                Datasource parentDs = ((DatasourceImpl) ds).getParent();
+                //We have to reload items in parent datasource because when item in child datasource is commited,
+                //item in parant datasource must already have all item fields loaded.
+                if (parentDs != null) {
+                    Collection justChangedItems = new HashSet(((AbstractDatasource) parentDs).getItemsToCreate());
+                    justChangedItems.addAll(((AbstractDatasource) parentDs).getItemsToUpdate());
+
+                    DataService dataservice = ds.getDataService();
+                    if ((parentDs instanceof CollectionDatasourceImpl) && !(justChangedItems.contains(item))) {
+                        item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
+                        ((CollectionDatasourceImpl) parentDs).updateItem(item);
+                    } else if ((parentDs instanceof LazyCollectionDatasource) && !(justChangedItems.contains(item))) {
+                        item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
+                        ((LazyCollectionDatasource) parentDs).updateItem(item);
+                    } else if ((parentDs instanceof CollectionPropertyDatasourceImpl) && !(justChangedItems.contains(item))) {
+                        item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
+                        ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
+                    }
+                }
                 item = (Entity) InstanceUtils.copy((Instance) item);
             } else {
                 if (!PersistenceHelper.isNew(item)) {

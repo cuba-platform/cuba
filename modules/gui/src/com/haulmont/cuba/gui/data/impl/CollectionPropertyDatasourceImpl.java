@@ -289,6 +289,17 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
+    public void replaceItem(T item) {
+        for (T t : __getCollection()) {
+            if (t.equals(item)) {
+                __getCollection().remove(item);
+                __getCollection().add(item);
+                break;
+            }
+        }
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+    }
+
     public boolean containsItem(K itemId) {
         Collection<T> coll = __getCollection();
         if (coll == null)
