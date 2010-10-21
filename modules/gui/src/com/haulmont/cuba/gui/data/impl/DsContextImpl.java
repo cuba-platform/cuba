@@ -83,7 +83,8 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
             Datasource master = dependencies.get(datasource);
             addDatasourceToResume(list, master);
         }
-        if (datasource instanceof CollectionDatasource.Suspendable)
+        if (datasource instanceof CollectionDatasource.Suspendable
+                && ((CollectionDatasource.Suspendable) datasource).isSuspended())
             list.add((CollectionDatasource.Suspendable) datasource);
     }
 

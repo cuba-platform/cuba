@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Tabsheet;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.ComponentVisitor;
@@ -284,6 +285,8 @@ public class WebTabsheet
                                 }
                             }
                     );
+
+                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 }
             }
         }
