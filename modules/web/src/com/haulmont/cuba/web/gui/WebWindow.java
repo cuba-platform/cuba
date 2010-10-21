@@ -758,13 +758,13 @@ public class WebWindow
                     justChangedItems.addAll(((AbstractDatasource) parentDs).getItemsToUpdate());
 
                     DataService dataservice = ds.getDataService();
-                    if ((parentDs instanceof CollectionDatasourceImpl) && !(justChangedItems.contains(item))) {
+                    if ((parentDs instanceof CollectionDatasourceImpl) && !(justChangedItems.contains(item)) && ((CollectionDatasourceImpl) parentDs).containsItem(item)) {
                         item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
                         ((CollectionDatasourceImpl) parentDs).updateItem(item);
-                    } else if ((parentDs instanceof LazyCollectionDatasource) && !(justChangedItems.contains(item))) {
+                    } else if ((parentDs instanceof LazyCollectionDatasource) && !(justChangedItems.contains(item)) && ((LazyCollectionDatasource) parentDs).containsItem(item)) {
                         item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
                         ((LazyCollectionDatasource) parentDs).updateItem(item);
-                    } else if ((parentDs instanceof CollectionPropertyDatasourceImpl) && !(justChangedItems.contains(item))) {
+                    } else if ((parentDs instanceof CollectionPropertyDatasourceImpl) && !(justChangedItems.contains(item)) && ((CollectionPropertyDatasourceImpl) parentDs).containsItem(item)) {
                         item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
                         ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
                     }
