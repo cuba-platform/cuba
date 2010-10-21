@@ -59,9 +59,11 @@ public class FilterEditor {
     private CheckBox globalCb;
     private Button saveBtn;
 
+    private Button upBtn;
+    private Button downBtn;
+
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
-                        Element filterDescriptor, List<String> existingNames)
-    {
+                        Element filterDescriptor, List<String> existingNames) {
         this.webFilter = webFilter;
         this.filterEntity = filterEntity;
         this.filterDescriptor = filterDescriptor;
@@ -96,6 +98,46 @@ public class FilterEditor {
         HorizontalLayout controlLayout = new HorizontalLayout();
         controlLayout.setSpacing(true);
 
+        // Move up button
+        upBtn = WebComponentsHelper.createButton("icons/up.png");
+        upBtn.addListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                Object item = table.getValue();
+                if (item != table.getNullSelectionItemId()) {
+                    Condition condition = (Condition) item;
+                    int index = conditions.indexOf(condition);
+                    if (index > 0) {
+                        Condition next = conditions.get(index - 1);
+                        conditions.set(index - 1, condition);
+                        conditions.set(index, next);
+                        updateTable();
+                    }
+                }
+            }
+        });
+        upBtn.setEnabled(true);
+
+        // Move down button
+        downBtn = WebComponentsHelper.createButton("icons/down.png");
+        downBtn.addListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                Object item = table.getValue();
+                if (item != table.getNullSelectionItemId()) {
+                    Condition condition = (Condition) item;
+                    int index = conditions.indexOf(condition);
+                    int count = conditions.size();
+                    if (index < count - 1) {
+                        Condition next = conditions.get(index + 1);
+                        conditions.set(index + 1, condition);
+                        conditions.set(index, next);
+                        updateTable();
+                    }
+                }
+            }
+        });
+        downBtn.setEnabled(true);
+
+        // Save button
         saveBtn = WebComponentsHelper.createButton("icons/ok.png");
         saveBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Ok"));
         saveBtn.addListener(new Button.ClickListener() {
@@ -104,10 +146,11 @@ public class FilterEditor {
                     webFilter.editorCommitted();
             }
         });
-        if(filterEntity.getCode() != null)
+        if (filterEntity.getCode() != null)
             saveBtn.setEnabled(false);
         controlLayout.addComponent(saveBtn);
 
+        // Cancel button
         Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
         cancelBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel"));
         cancelBtn.addListener(new Button.ClickListener() {
@@ -140,8 +183,13 @@ public class FilterEditor {
         nameLayout.addComponent(nameField);
 
         topGrid.addComponent(nameLayout, 0, 0);
+        
+        HorizontalLayout addLayout = new HorizontalLayout();
+        addLayout.setSpacing(true);
+        addLayout.addComponent(downBtn);
+        addLayout.addComponent(upBtn);
 
-        AbstractLayout addLayout = initAddSelect();
+        initAddSelect(addLayout);
 
         topGrid.addComponent(addLayout, 1, 0);
         topGrid.setComponentAlignment(addLayout, Alignment.MIDDLE_RIGHT);
@@ -155,10 +203,7 @@ public class FilterEditor {
         updateControls();
     }
 
-    private AbstractLayout initAddSelect() {
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setSpacing(true);
-        
+    private void initAddSelect(AbstractLayout layout) {
         Label label = new Label(getMessage("FilterEditor.addCondition"));
         layout.addComponent(label);
 
@@ -185,16 +230,13 @@ public class FilterEditor {
                 }
             }
         });
-
         layout.addComponent(addSelect);
-
-        return layout;
     }
 
     private void initTable(AbstractLayout layout) {
         table = new com.haulmont.cuba.web.toolkit.ui.Table();
         table.setImmediate(true);
-        table.setSelectable(false);
+        table.setSelectable(true);
         table.setPageLength(0);
         table.setWidth(EDITOR_WIDTH);
         table.setHeight("200px");
@@ -226,13 +268,13 @@ public class FilterEditor {
             OperationEditor operationEditor = condition.createOperationEditor();
             ParamEditor paramEditor = new ParamEditor(condition, false);
 
-            table.addItem(new Object[] {
+            table.addItem(new Object[]{
                     nameEditor,
                     operationEditor,
                     paramEditor,
                     createHiddenCheckbox(condition),
                     createDeleteConditionBtn(condition)
-                    },
+            },
                     condition
             );
         }
@@ -241,7 +283,7 @@ public class FilterEditor {
         table.addActionHandler(
                 new Action.Handler() {
                     public Action[] getActions(Object target, Object sender) {
-                        return new Action[] {showNameAction};
+                        return new Action[]{showNameAction};
                     }
 
                     public void handleAction(Action action, Object sender, Object target) {
@@ -271,13 +313,13 @@ public class FilterEditor {
         OperationEditor operationEditor = condition.createOperationEditor();
         ParamEditor paramEditor = new ParamEditor(condition, false);
 
-        table.addItem(new Object[] {
+        table.addItem(new Object[]{
                 nameEditor,
                 operationEditor,
                 paramEditor,
                 createHiddenCheckbox(condition),
                 createDeleteConditionBtn(condition)
-                },
+        },
                 condition
         );
 
@@ -291,10 +333,30 @@ public class FilterEditor {
     }
 
     private void updateControls() {
-        if(filterEntity.getCode() == null)
+        if (filterEntity.getCode() == null)
             saveBtn.setEnabled(!conditions.isEmpty());
         else
             saveBtn.setEnabled(false);
+    }
+
+    private void updateTable() {
+        table.removeAllItems();
+        for (final Condition condition : this.conditions) {
+            NameEditor nameEditor = new NameEditor(condition);
+            OperationEditor operationEditor = condition.createOperationEditor();
+            ParamEditor paramEditor = new ParamEditor(condition, false);
+
+            table.addItem(new Object[]{
+                    nameEditor,
+                    operationEditor,
+                    paramEditor,
+                    createHiddenCheckbox(condition),
+                    createDeleteConditionBtn(condition)
+            },
+                    condition
+            );
+        }
+        updateControls();
     }
 
     private Button createDeleteConditionBtn(final Condition condition) {

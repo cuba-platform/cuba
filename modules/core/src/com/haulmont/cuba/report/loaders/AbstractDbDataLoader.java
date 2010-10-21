@@ -10,19 +10,18 @@
  */
 package com.haulmont.cuba.report.loaders;
 
-import com.haulmont.cuba.report.DataSet;
-import com.haulmont.cuba.report.Band;
-import com.haulmont.cuba.report.DataSetType;
-import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.report.Band;
+import com.haulmont.cuba.report.DataSet;
+import com.haulmont.cuba.report.DataSetType;
+import org.postgresql.util.PGobject;
 
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
-import org.postgresql.util.PGobject;
+import java.util.regex.Pattern;
 
 public abstract class AbstractDbDataLoader implements DataLoader {
     protected Map<String, Object> params = new HashMap<String, Object>();
@@ -34,6 +33,7 @@ public abstract class AbstractDbDataLoader implements DataLoader {
     public abstract List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand);
 
     protected List<String> parseQueryOutputParametersNames(String query) {
+        // todo: Trouble with parsing output fields 
         ArrayList<String> result = new ArrayList<String>();
         Pattern namePattern = Pattern.compile("(?i)as [\\w|\\d|_]+", Pattern.CASE_INSENSITIVE);
         Matcher matcher = namePattern.matcher(query);
@@ -42,7 +42,6 @@ public abstract class AbstractDbDataLoader implements DataLoader {
         }
         return result;
     }
-
 
     protected List<Map<String, Object>> fillOutputData(List resList, List<String> parametersNames) {
         List<Map<String, Object>> outputData = new ArrayList<Map<String, Object>>();

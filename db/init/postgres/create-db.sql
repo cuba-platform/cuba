@@ -359,6 +359,7 @@ create table SEC_FILTER (
     DELETED_BY varchar(50),
     COMPONENT varchar(200),
     NAME varchar(255),
+    CODE varchar(200),
     XML varchar(7000),
     USER_ID uuid,
     primary key (ID)
