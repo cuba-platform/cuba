@@ -19,10 +19,9 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Browser;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.ApplicationServlet;
-import com.vaadin.terminal.gwt.server.CommunicationManager;
-import com.vaadin.terminal.gwt.server.SessionExpiredException;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
+import com.vaadin.terminal.gwt.server.*;
+import com.vaadin.ui.Window;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 
 import javax.servlet.ServletException;
@@ -30,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 
@@ -229,6 +229,9 @@ public class CubaApplicationServlet extends ApplicationServlet {
         page.write("stylesheet.setAttribute('href', '" + themeUri
                 + "/styles.css" + (timestamp == null ? "" : "?" + timestamp) + "');\n");
         page.write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
+        if (timestamp != null) {
+            page.write("vaadin.themeReleaseTimestamp=" + timestamp +";\n");
+        }
         page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
         page.write("//]]>\n</script>\n");
     }

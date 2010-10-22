@@ -2119,7 +2119,9 @@ public class ApplicationConnection {
                         .error("Theme not set: ThemeResource will not be found. ("
                                 + uidlUri + ")");
             }
-            uidlUri = themeUri + uidlUri.substring(7);
+            String params = configuration.getThemeReleaseTimestamp() != null ? 
+                    "?" + configuration.getThemeReleaseTimestamp() : "";
+            uidlUri = themeUri + uidlUri.substring(7) + params;
         }
         return uidlUri;
     }
