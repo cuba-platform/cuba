@@ -107,9 +107,8 @@
         <ext:install-lib name="xstream" version="${xstream.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib name="xpp3" version="${xpp3.version}" toDir="${lib.server.dir}"/>
 
-        <!--Apache tools-->
-        <ext:install-lib name="ant" version="${antlib.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="arcmexer" version="${arcmexer.version}" toDir="${lib.server.dir}"/>
+        <!--Zip tools-->
+        <ext:install-lib name="commons-compress" version="${commons-compress.version}" toDir="${lib.server.dir}"/>
 	</target>
 	
 	<target name="compile">
