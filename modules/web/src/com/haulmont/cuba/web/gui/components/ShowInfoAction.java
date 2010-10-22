@@ -63,7 +63,6 @@ public class ShowInfoAction extends AbstractAction {
         StringBuilder sb = new StringBuilder();
 
         MetaClass metaClass = ds.getMetaClass();
-        sb.append(MessageProvider.getMessage(mp, "table.showInfoAction.table")).append("<br/>");
         sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.entityName", metaClass.getName())).append("<br/>");
         sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.entityClass", metaClass.getJavaClass().getName())).append("<br/>");
 
@@ -76,7 +75,6 @@ public class ShowInfoAction extends AbstractAction {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
             sb.append("<hr/>");
-            sb.append(MessageProvider.getMessage(mp, "table.showInfoAction.row")).append("<br/>");
             sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.id", instance.getId())).append("<br/>");
             if (instance instanceof Versioned && ((Versioned) instance).getVersion() != null) {
                 sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.version", ((Versioned) instance).getVersion())).append("<br/>");
