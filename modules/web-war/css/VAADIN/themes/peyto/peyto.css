@@ -31,7 +31,7 @@
     color: #fff;
     font-size: 12px;
     font-weight: normal;
-    font-family: Arial, sans-serif;
+    font-family: Verdana, Arial, sans-serif;
 }
 
 /**
@@ -64,6 +64,7 @@
 /* Breadcrumbs close button */
 
 .v-button-closetab-button {
+    border: none;
     background: transparent none;
 }
 
@@ -98,7 +99,7 @@
 .v-horizontallayout-work-area,
 .v-verticallayout-work-area,
 .v-customlayout-work-area {
-    background: transparent url("images/bg_main.gif") repeat-x;   
+    background: #fff url("images/bg_main.gif") repeat-x;
 }
 
 /*
@@ -130,6 +131,10 @@
     font-size: 9pt;
 }
 
+.v-verticallayout-loginBottom .v-embedded {
+    padding-top: 10px;
+}
+
 .v-verticallayout-mainLayout {
     background-color: #fff;
 }
@@ -140,7 +145,17 @@
 }
 
 .v-button-submit-login-btn {
-    padding: 0 10px 0 5px;
+    padding: 0 12px 0 10px;
+}
+
+.v-button-submit-login-btn .v-button-caption {
+    padding-bottom: 2px;
+}
+
+.v-button-submit-login-btn .v-button-wrap {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 25px;
 }
 
 /*
@@ -148,7 +163,7 @@
  */
 
 .v-verticallayout-single {
-    background: transparent url("images/bg_main.gif") repeat-x; 
+    background: #fff url("images/bg_main.gif") repeat-x;
 }
 
 /*
@@ -199,7 +214,7 @@
 .v-window-contents .v-table {
     font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
 	/*color: #000;*/
-	font-size: 8pt;
+	font-size: 12px;
 }
 
 

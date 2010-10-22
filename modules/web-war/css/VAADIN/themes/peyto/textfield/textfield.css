@@ -42,7 +42,6 @@
 .v-textfield.v-readonly,
 .v-textarea.v-readonly {
 	background: transparent;
-	color: #222;
 	border: #C3C3C3 1px solid;
     cursor: default;
 }

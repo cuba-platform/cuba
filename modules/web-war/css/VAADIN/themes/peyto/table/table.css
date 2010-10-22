@@ -181,6 +181,8 @@
     height: 17px; 
 	background: transparent url(img/table-button-left.png) no-repeat left center;
     padding: 0 0 0 3px;
+    color: inherit;
+    font: inherit;
 }
 
 .v-table-cell-content .v-button:hover {
@@ -216,13 +218,10 @@
 }
 
 .v-table-cell-content .v-button-caption {
-    font-size: 11px;
+    font: inherit;
     margin: 0;
     padding: 0;
-}
-
-.v-table-cell-content .v-button-link .v-button-caption {
-    /*color: #000;*/
+    color: inherit;
 }
 
 .v-table-cell-content .v-textfield {
@@ -239,6 +238,9 @@
 	margin: -2px 0;
 }
 
+.v-table-cell-content .v-label {
+    color: inherit;
+}
 
 
 .v-table-column-selector {
@@ -437,5 +439,6 @@
 }
 
 .v-table div {
-    font-size: 11px;
+    font: inherit;
+    color: inherit;
 }

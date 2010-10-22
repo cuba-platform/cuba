@@ -21,7 +21,7 @@
 }
 
 .v-window-header {
-	font-size: 14px;
+	font-size: 13px;
     padding: 6px 5px 5px 7px;
 	font-weight: bold;
 	letter-spacing: 0;
@@ -42,10 +42,10 @@
 }
 
 .v-window-contents {
-	background: #fff;
-	color: #000;
+	background: #fff url(img/win-body-bg.png) repeat-x;
+	color: #1E3146;
     padding: 8px;
-    font-size: 10pt;
+    font-size: 12px;
 	border: 1px solid #8aa9d1;
     /*margin: 2px;*/
 	/*border-bottom: none;*/

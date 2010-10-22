@@ -329,15 +329,17 @@ input.v-modified,
 .v-popupview-popup input,
 .v-popupview-popup select,
 .v-popupview-popup button,
-.v-popupview-popup textarea {
+.v-popupview-popup textarea,
+.v-popupview-popup div{
 	font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
 	/*color: #507699;*/
-    color: #2B4666;
+    color: #1E3146;
 	font-size: 11px;
 }
 
-.v-app div {
-    color: #2B4666;
+.v-app div,
+.v-popupview-popup div{
+    color: #1E3146;
 	font-size: 12px;
 }
 

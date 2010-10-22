@@ -89,7 +89,7 @@
     vertical-align: middle;
     white-space: nowrap;
     font: inherit;
-    color: #2B4666;
+    /*color: #1E3146;*/
     line-height: normal;
 }
 
@@ -119,6 +119,7 @@ border: none;
     text-align: left;
     background: transparent;
     padding: 0;
+    color: #0066FF;
 }
 
 .v-button-link:hover,
@@ -143,7 +144,7 @@ outline-offset: -3px;
 .v-button-link .v-button-caption,
 .v-nativebutton-link .v-nativebutton-caption {
     text-decoration: underline;
-    color: #0066FF;
+    color: inherit;
     text-align: left;
 }
 
