@@ -14,29 +14,27 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox margin="true" expand="files" spacing="true">
-            <vbox expand="genericFilter" stylename="edit-area">
-                <filter id="genericFilter" datasource="filesDs">
-                    <properties include=".*"/>
-                </filter>
-            </vbox>
-            <hbox spacing="true" margin="true">
-                <button action="files.refresh" icon="icons/refresh.png"/>
-                <button action="files.create" icon="icons/create.png"/>
-                <button action="files.edit" icon="icons/edit.png"/>
-                <button action="files.remove" icon="icons/remove.png"/>
-                <button action="files.excel" icon="icons/excel.png"/>
-            </hbox>
-            <table id="files" editable="false">
-                <columns>
-                    <column id="name" caption="msg://name"/>
-                    <column id="extension" caption="msg://extension"/>
-                    <column id="size" caption="msg://size"/>
-                    <column id="createDate" caption="msg://createDate"/>
-                </columns>
-                <rows datasource="filesDs"/>
-            </table>
+    <layout expand="files" spacing="true">
+        <vbox expand="genericFilter" stylename="edit-area">
+            <filter id="genericFilter" datasource="filesDs">
+                <properties include=".*"/>
+            </filter>
         </vbox>
+        <buttonsPanel>
+            <button action="files.refresh" icon="icons/refresh.png"/>
+            <button action="files.create" icon="icons/create.png"/>
+            <button action="files.edit" icon="icons/edit.png"/>
+            <button action="files.remove" icon="icons/remove.png"/>
+            <button action="files.excel" icon="icons/excel.png"/>
+        </buttonsPanel>
+        <table id="files" editable="false">
+            <columns>
+                <column id="name" caption="msg://name"/>
+                <column id="extension" caption="msg://extension"/>
+                <column id="size" caption="msg://size"/>
+                <column id="createDate" caption="msg://createDate"/>
+            </columns>
+            <rows datasource="filesDs"/>
+        </table>
     </layout>
 </window>

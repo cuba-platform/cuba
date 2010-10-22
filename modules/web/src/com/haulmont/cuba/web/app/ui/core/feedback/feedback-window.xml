@@ -6,20 +6,21 @@
 
     <dsContext/>
 
-    <layout expand="mainPane">
-        <vbox id="mainPane" expand="spring" margin="true" spacing="true">
-            <vbox stylename="edit-area" margin="true" spacing="true">
+    <layout expand="buttons">
+        <groupBox stylename="edit-area">
+            <vbox>
                 <label value="msg://theme"/>
                 <lookupField id="reason" required="true" width="200px" requiredMessage="msg://themeMsg"/>
                 <textField id="reasonFreeText" required="true" width="400px" requiredMessage="msg://themeMsg"/>
                 <label value="msg://body"/>
                 <textField id="mainBody" required="true" rows="15" width="600px" requiredMessage="msg://bodyMsg"/>
             </vbox>
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+        </groupBox>
+        <vbox id="buttons" margin="true;false;false;false">
+            <buttonsPanel expandable="false">
                 <button id="ok" icon="icons/ok.png"/>
                 <button id="cancel" icon="icons/cancel.png"/>
-            </hbox>
-            <vbox id="spring"/>
+            </buttonsPanel>
         </vbox>
     </layout>
 </window> 

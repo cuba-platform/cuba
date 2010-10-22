@@ -139,6 +139,7 @@
                         <xs:group ref="layoutOrComponent"/>
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
                         <xs:attribute name="expandLayout" type="xs:string" use="optional"/>
+                        <xs:attribute name="spacing" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
@@ -417,18 +418,7 @@
         <xs:sequence>
             <xs:choice minOccurs="1" maxOccurs="unbounded">
                 <xs:element name="button" type="buttonType" />
-
-                <xs:element name="popupButton">
-                    <xs:complexType>
-                        <xs:extension base="buttonType">
-                            <xs:choice minOccurs="1" maxOccurs="1">
-                                <xs:group ref="component"/>
-                                <xs:group ref="layout"/>
-                            </xs:choice>
-                        </xs:extension>
-                        <xs:attribute name="menuWidth" type="xs:string" use="optional"/>
-                    </xs:complexType>
-                </xs:element>
+                <xs:element name="popupButton" type="popupButtonType"/>
 
                 <xs:element name="label">
                     <xs:complexType>
@@ -746,6 +736,7 @@
                         <xs:attribute name="editable" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="tokenList">
@@ -846,6 +837,7 @@
         <xs:attribute name="cols" type="xs:int" use="optional"/>
         <xs:attribute name="rows" type="xs:int" use="optional"/>
         <xs:attribute name="clickAction" type="xs:string" use="optional"/>
+        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:group name="layoutOrComponent">
@@ -976,6 +968,7 @@
     <xs:complexType name="buttonsPanelType">
         <xs:sequence>
             <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType" />
+            <xs:element name="popupButton" minOccurs="0" maxOccurs="unbounded" type="popupButtonType" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="optional"/>
         <xs:attribute name="width" type="xs:string" use="optional"/>
@@ -984,6 +977,7 @@
         <xs:attribute name="align" type="align" use="optional"/>
         <xs:attribute name="stylename" type="xs:string" use="optional"/>
         <xs:attribute name="providerClass" type="xs:string" use="optional"/>
+        <xs:attribute name="expandable" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="buttonType">
@@ -995,6 +989,16 @@
         <xs:attribute name="stylename" type="xs:string" use="optional"/>
         <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
         <xs:attribute name="width" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="popupButtonType">
+        <xs:extension base="buttonType">
+            <xs:choice minOccurs="1" maxOccurs="1">
+                <xs:group ref="component"/>
+                <xs:group ref="layout"/>
+            </xs:choice>
+        </xs:extension>
+        <xs:attribute name="menuWidth" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:simpleType name="orientation">

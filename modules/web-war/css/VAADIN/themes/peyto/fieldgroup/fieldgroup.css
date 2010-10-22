@@ -6,7 +6,7 @@
 
 .v-fieldgroup legend {
 	margin: 0;
-	padding: 0 4px 0.3em 4px;
+	padding: 0;
 	font-weight: bold;
 }
 
@@ -17,6 +17,11 @@
 .v-fieldgroup .v-form-caption {
     clear: both;
     overflow: hidden;
+    padding: 0 4px;
+}
+
+.v-fieldgroup.v-fieldgroup-nocollapsable.v-fieldgroup-nocaption .v-form-caption {
+    display: none;
 }
 
 .v-fieldgroup.v-fieldgroup-nocollapsable.v-fieldgroup-nocaption fieldset {

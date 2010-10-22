@@ -5,36 +5,35 @@
         >
 
     <dsContext/>
-    
-    <layout expand="mainPane">
-        <vbox id="mainPane" expand="spring" margin="true" spacing="true">
-            <vbox id="main" stylename="edit-area" margin="true" spacing="true">
-                <grid spacing="true" expandable="false">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://mainWindowMode"/>
-                            <optionsGroup id="mainWindowMode"/>
-                        </row>
-                        <row>
-                            <label value="msg://mainWindowTheme"/>
-                            <lookupField id="mainWindowTheme" required="true" width="150"
-                                         requiredMessage="msg://mainWindowThemeMsg"/>
-                        </row>
-                        <row>
-                            <button id="changePassw" icon="icons/change-pass.png"/>
-                        </row>
-                    </rows>
-                </grid>
-            </vbox>
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+
+    <layout expand="buttons">
+        <groupBox stylename="edit-area">
+            <grid spacing="true" expandable="false">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://mainWindowMode"/>
+                        <optionsGroup id="mainWindowMode"/>
+                    </row>
+                    <row>
+                        <label value="msg://mainWindowTheme"/>
+                        <lookupField id="mainWindowTheme" required="true" width="150"
+                                     requiredMessage="msg://mainWindowThemeMsg"/>
+                    </row>
+                    <row>
+                        <button id="changePassw" icon="icons/change-pass.png"/>
+                    </row>
+                </rows>
+            </grid>
+        </groupBox>
+        <vbox id="buttons" margin="true;false;false;false">
+            <buttonsPanel expandable="false">
                 <button id="ok" icon="icons/ok.png"/>
                 <button id="cancel" icon="icons/cancel.png"/>
-            </hbox>
-            <vbox id="spring"/>
+            </buttonsPanel>
         </vbox>
     </layout>
 </window>

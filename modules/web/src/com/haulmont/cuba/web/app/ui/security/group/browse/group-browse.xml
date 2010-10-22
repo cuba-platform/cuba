@@ -41,17 +41,17 @@
     <layout>
         <vbox>
             <split id="split" orientation="horizontal" pos="30">
-                <vbox expand="groups">
-                    <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                <vbox expand="groups" spacing="true" margin="false;true;false;false">
+                    <buttonsPanel>
                         <button action="groups.create" icon="icons/create.png"/>
                         <button action="groups.edit" icon="icons/edit.png"/>
                         <button action="groups.remove" icon="icons/remove.png"/>
-                    </hbox>
+                    </buttonsPanel>
                     <tree id="groups">
                         <treechildren datasource="groups" captionProperty="name" hierarchyProperty="parent"/>
                     </tree>
                 </vbox>
-                <vbox expand="group-editor">
+                <vbox expand="group-editor" margin="false;false;false;true">
                     <!--<hbox>-->
                         <!--<label value="msg://group.name"/>-->
                         <!--<textField id="group.name" datasource="groups" property="name"/>-->
@@ -63,11 +63,11 @@
                                     <!--<checkBox id="showDescendants"/>-->
                                     <!--<label value="msg://showDescendants"/>-->
                                 <!--</hbox>-->
-                                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                                <buttonsPanel>
                                     <button id="users.create" action="users.create" icon="icons/create.png"/>
                                     <button id="users.edit" action="users.edit" icon="icons/edit.png"/>
                                     <button id="users.moveToGroup" action="users.moveToGroup" icon="icons/move.png"/>
-                                </hbox>
+                                </buttonsPanel>
                                 <table id="users">
                                     <columns>
                                         <column id="name" caption="msg://user.name"/>
@@ -79,11 +79,11 @@
                         </tab>
                         <tab id="constraintsTab" caption="msg://tabsheet.constraints" lazy="true">
                             <vbox expand="constraints" spacing="true" margin="true">
-                                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                                <buttonsPanel>
                                     <button id="constraints.create" action="constraints.create" icon="icons/create.png"/>
                                     <button id="constraints.edit" action="constraints.edit" icon="icons/edit.png"/>
                                     <button id="constraints.remove" action="constraints.remove" icon="icons/remove.png"/>
-                                </hbox>
+                                </buttonsPanel>
                                 <table id="constraints">
                                     <columns>
                                         <column id="entityName" caption="msg://entity"/>
@@ -96,11 +96,11 @@
                         </tab>
                         <tab id="attributesTab" caption="msg://tabsheet.attributes" lazy="true">
                             <vbox expand="attributes" spacing="true" margin="true">
-                                <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
+                                <buttonsPanel>
                                     <button id="attributes.create" action="attributes.create" icon="icons/create.png"/>
                                     <button id="attributes.edit" action="attributes.edit" icon="icons/edit.png"/>
                                     <button id="attributes.remove" action="attributes.remove" icon="icons/remove.png"/>
-                                </hbox>
+                                </buttonsPanel>
                                 <table id="attributes">
                                     <columns>
                                         <column id="name" caption="msg://attribute.name"/>

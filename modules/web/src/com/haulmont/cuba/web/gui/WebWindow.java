@@ -45,6 +45,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -152,6 +153,12 @@ public class WebWindow
 
     public void setStyleName(String name) {
         component.setStyleName(name);
+    }
+
+    public void setSpacing(boolean enabled) {
+        if (component instanceof Layout.SpacingHandler) {
+            ((Layout.SpacingHandler) component).setSpacing(true);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

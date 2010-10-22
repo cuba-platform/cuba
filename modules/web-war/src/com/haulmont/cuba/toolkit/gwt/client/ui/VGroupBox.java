@@ -74,7 +74,7 @@ public class VGroupBox extends VPanel {
 
     @Override
     protected void renderContent(UIDL uidl) {
-        //todo nothing
+        //do nothing
     }
 
     @Override

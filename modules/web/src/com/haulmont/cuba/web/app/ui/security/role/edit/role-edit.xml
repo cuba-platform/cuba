@@ -105,13 +105,13 @@
 
             <tabsheet id="permissions-types">
                 <tab id="screen-permissions-tab" caption="msg://screen-permissions">
-                    <vbox expand="screen-permissions" margin="true">
-                        <hbox margin="true" spacing="true">
+                    <vbox expand="screen-permissions" margin="true" spacing="true">
+                        <buttonsPanel>
                             <popupButton id="screen-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
                                          width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="screen-permissions-remove" action="screen-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
-                        </hbox>
+                        </buttonsPanel>
                         <table id="screen-permissions">
                             <columns>
                                 <column id="target" caption="msg://target"/>
@@ -122,13 +122,13 @@
                     </vbox>
                 </tab>
                 <tab id="entity-permissions-tab" caption="msg://entity-permissions" lazy="true">
-                    <vbox expand="entity-permissions" margin="true">
-                        <hbox margin="true" spacing="true">
+                    <vbox expand="entity-permissions" margin="true" spacing="true">
+                        <buttonsPanel>
                             <popupButton id="entity-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
                                          width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="entity-permissions-remove" action="entity-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
-                        </hbox>
+                        </buttonsPanel>
                         <table id="entity-permissions">
                             <columns>
                                 <column id="target" caption="msg://target"/>
@@ -139,13 +139,13 @@
                     </vbox>
                 </tab>
                 <tab id="property-permissions-tab" caption="msg://property-permissions" lazy="true">
-                    <vbox expand="property-permissions" margin="true">
-                        <hbox margin="true" spacing="true">
+                    <vbox expand="property-permissions" margin="true" spacing="true">
+                        <buttonsPanel>
                             <popupButton id="property-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
                                          width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="property-permissions-remove" action="property-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
-                        </hbox>
+                        </buttonsPanel>
                         <table id="property-permissions">
                             <columns>
                                 <column id="target" caption="msg://target"/>
@@ -156,13 +156,13 @@
                     </vbox>
                 </tab>
                 <tab id="specific-permissions-tab" caption="msg://specific-permissions" lazy="true">
-                    <vbox expand="specific-permissions" margin="true">
-                        <hbox margin="true" spacing="true">
+                    <vbox expand="specific-permissions" margin="true" spacing="true">
+                        <buttonsPanel>
                             <popupButton id="specific-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
                                          width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="specific-permissions-remove" action="specific-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
-                        </hbox>
+                        </buttonsPanel>
                         <table id="specific-permissions">
                             <columns>
                                 <column id="target" caption="msg://target"/>

@@ -14,13 +14,12 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
-import com.haulmont.cuba.gui.AppConfig;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
@@ -42,8 +41,7 @@ import java.util.Map;
  * instance in {@link App#createLoginWindow()} method
  */
 @SuppressWarnings("serial")
-public class LoginWindow extends Window
-        implements Action.Handler, Action.Container {
+public class LoginWindow extends Window implements Action.Handler {
 
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";

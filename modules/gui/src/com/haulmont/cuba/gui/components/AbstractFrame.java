@@ -272,4 +272,8 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
     public void expandLayout(boolean expandLayout) {
         frame.expandLayout(expandLayout);
     }
+
+    public void setSpacing(boolean enabled) {
+        frame.setSpacing(enabled);
+    }
 }

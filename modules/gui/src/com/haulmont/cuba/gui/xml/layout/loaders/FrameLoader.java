@@ -81,6 +81,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         final Element layoutElement = element.element("layout");
         loadExpandLayout(component, layoutElement);
         loadSubComponentsAndExpand(component, layoutElement);
+        loadSpacing(component, layoutElement);
 
         FrameContext frameContext = new FrameContext(component, params);
         component.setContext(frameContext);

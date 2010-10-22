@@ -178,6 +178,17 @@
     font-weight: bold;
 }
 
+.v-fieldgroup-edit-area fieldset {
+    border: 1px solid #A5C4E0;
+    background-color: #FBFDFD;
+    margin: 0;
+    padding:10px;
+}
+
+.v-fieldgroup-edit-area.v-fieldgroup-nocollapsable.v-fieldgroup-nocaption fieldset {
+    border: 1px solid #A5C4E0;
+}
+
 /*
  *  e.g. text labels for fields
  *  at popup dialog editors
@@ -275,15 +286,9 @@
 }
 
 .widgets-tree-empty .v-tree-node-widget {
-    border-bottom:0px;
-    border-left:0px;
-    padding-bottom:0px;
-    margin:0px;
-    padding-left:0px;
-    padding-right:0px;
-    border-top:0px;
-    border-right:0px;
-    padding-top:0px;
+    border-width: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .v-menubar .menuitem .folders-item{
@@ -297,9 +302,6 @@
 /*
  * Fix until issue with vaadin & border solves
  */
-/*.v-scrollable-panel-content .edit-area {
-    border: 0;
-}*/
 
 .v-verticallayout-operationContainer {
     border-bottom: 1px solid #71A4D5;
@@ -440,7 +442,7 @@
 
 .v-button-ss-link-button .v-button-wrap {
     background: transparent;
-    padding: 0px;
+    padding: 0;
 }
 
 .v-button-ss-link-button .v-button-caption {
@@ -489,7 +491,7 @@
     background: transparent;
     font-size: 14px;
     font-weight: bold;
-    padding: 0px;
+    padding: 0;
     color: #333;
     margin-top: 5px;
 }

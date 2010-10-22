@@ -23,7 +23,7 @@ import java.util.Map;
  * Having its own XML descriptor, but can be instantiated only inside a {@link Window}.
  * Includes functionality for work with datasources and other windows.
  */
-public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLayout {
+public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLayout, Layout.Spacing {
 
     WindowContext getContext();
 
