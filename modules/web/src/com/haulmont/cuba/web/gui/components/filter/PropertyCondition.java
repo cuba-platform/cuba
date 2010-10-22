@@ -169,7 +169,8 @@ public class PropertyCondition extends Condition {
             } else {
                 unary = false;
                 inExpr = operator.equals(Op.IN);
-                setParam(new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource, inExpr));
+                setParam(new Param(
+                        paramName, javaClass, entityParamWhere, entityParamView, datasource, param.getProperty(), inExpr));
             }
         }
     }

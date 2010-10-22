@@ -304,6 +304,12 @@ public class Param {
 
     private Component createDateField(Class javaClass) {
         if (inExpr) {
+            if (property != null) {
+                TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+                if (tt == TemporalType.DATE) {
+                    javaClass = java.sql.Date.class;
+                }
+            }
             final ListEditComponent component = new ListEditComponent(javaClass);
             component.addListener(
                     new Property.ValueChangeListener() {
@@ -612,5 +618,9 @@ public class Param {
 
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
+    }
+
+    public MetaProperty getProperty() {
+        return property;
     }
 }
