@@ -407,7 +407,7 @@ public class Param {
     }
 
     private AbstractField createBooleanField() {
-        final AbstractSelect field = new NativeSelect();
+        final AbstractSelect field = new Select();
         field.setNullSelectionAllowed(true);
         field.setImmediate(true);
 

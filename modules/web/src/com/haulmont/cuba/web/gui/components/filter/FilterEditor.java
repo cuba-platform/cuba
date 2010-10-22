@@ -52,7 +52,7 @@ public class FilterEditor {
     private Table table;
     private String messagesPack;
     private String filterComponentName;
-    private AbstractSelect addSelect;
+    private Select addSelect;
 
     private static final String EDITOR_WIDTH = "640px";
     private static final String TABLE_WIDTH = "600px";
@@ -222,6 +222,7 @@ public class FilterEditor {
         addSelect = new Select();
         addSelect.setImmediate(true);
         addSelect.setNullSelectionAllowed(true);
+        addSelect.setFilteringMode(Select.FILTERINGMODE_CONTAINS);
         addSelect.setWidth("100px");
         for (ConditionDescriptor descriptor : descriptors) {
             addSelect.addItem(descriptor);

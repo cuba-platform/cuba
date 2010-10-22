@@ -16,6 +16,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.QueryParserRegex;
 import com.haulmont.cuba.gui.AppConfig;
@@ -48,7 +49,7 @@ public class CustomConditionEditDlg extends Window {
 
     private CustomCondition condition;
     private Label entityLab;
-    private AbstractSelect entitySelect;
+    private Select entitySelect;
     private TextField nameText;
     private TextField whereText;
     private TextField joinText;
@@ -67,7 +68,7 @@ public class CustomConditionEditDlg extends Window {
 
     public CustomConditionEditDlg(final CustomCondition condition) {
         super(condition.getLocCaption());
-        setWidth("450px");
+        setWidth("470px");
 
         this.condition = condition;
         this.messagesPack = AppConfig.getInstance().getMessagesPack();
@@ -174,8 +175,9 @@ public class CustomConditionEditDlg extends Window {
 
         entitySelect = new Select();
         entitySelect.setImmediate(true);
-        entitySelect.setSizeFull();
+        entitySelect.setWidth(FIELD_WIDTH);
         entitySelect.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()) || ParamType.ENUM.equals(typeSelect.getValue()));
+        entitySelect.setFilteringMode(Select.FILTERINGMODE_CONTAINS);
         fillEntitySelect(entitySelect, condition.getParam());
         grid.addComponent(entitySelect, 1, i++);
         grid.setComponentAlignment(entitySelect, Alignment.MIDDLE_RIGHT);
@@ -187,7 +189,7 @@ public class CustomConditionEditDlg extends Window {
 
         entityParamWhereText = new TextField();
         entityParamWhereText.setWidth(FIELD_WIDTH);
-        entityParamWhereText.setRows(2);
+        entityParamWhereText.setRows(3);
         entityParamWhereText.setNullRepresentation("");
         entityParamWhereText.setValue(condition.getEntityParamWhere());
         entityParamWhereText.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
@@ -361,13 +363,17 @@ public class CustomConditionEditDlg extends Window {
 
         select.removeAllItems();
 
+        Map<String, Object> items = new TreeMap<String, Object>();
+
         if (ParamType.ENTITY.equals(typeSelect.getValue())) {
             for (MetaClass metaClass : getMetaClasses()) {
                 if(metaClass.getJavaClass().getAnnotation(javax.persistence.Entity.class) != null){
-                    select.addItem(metaClass);
-                    select.setItemCaption(metaClass,
-                            MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName()));
+                    items.put(metaClass.getName() + " (" + MessageUtils.getEntityCaption(metaClass) + ")", metaClass);
                 }
+            }
+            for (Map.Entry<String, Object> entry : items.entrySet()) {
+                select.addItem(entry.getValue());
+                select.setItemCaption(entry.getValue(), entry.getKey());
             }
             if (param != null && Param.Type.ENTITY.equals(param.getType())) {
                 Class javaClass = param.getJavaClass();
@@ -377,8 +383,11 @@ public class CustomConditionEditDlg extends Window {
 
         } else if (ParamType.ENUM.equals(typeSelect.getValue())) {
             for (Class enumClass : getEnums()) {
-                select.addItem(enumClass);
-                select.setItemCaption(enumClass, MessageProvider.getMessage(enumClass, enumClass.getSimpleName()));
+                items.put(enumClass.getSimpleName() + " (" + MessageProvider.getMessage(enumClass, enumClass.getSimpleName()) + ")", enumClass);
+            }
+            for (Map.Entry<String, Object> entry : items.entrySet()) {
+                select.addItem(entry.getValue());
+                select.setItemCaption(entry.getValue(), entry.getKey());
             }
             if (param != null && Param.Type.ENUM.equals(param.getType())) {
                 Class javaClass = param.getJavaClass();
