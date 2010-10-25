@@ -36,7 +36,7 @@
                     <field id="middleName"/>
                     <field id="position"/>
                     <field id="email">
-                        <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"/>
+                        <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator" message="msg://invalidValue"/>
                     </field>
                     <field id="permissionsLookupField" caption="msg://permissions" custom="true"/>
                 </column>

@@ -200,12 +200,15 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         for (Element validatorElement : validatorElements) {
             final String className = validatorElement.attributeValue("class");
+            final String message = validatorElement.attributeValue("message");
             final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
 
             try {
-                final Constructor<Field.Validator> constructor = aClass.getConstructor(Element.class);
+                final Constructor<Field.Validator> constructor = StringUtils.isBlank(message) ?
+                        aClass.getConstructor(Element.class) : aClass.getConstructor(Element.class, String.class);
                 try {
-                    final Field.Validator validator = constructor.newInstance(validatorElement);
+                    final Field.Validator validator = StringUtils.isBlank(message) ? constructor.
+                            newInstance(validatorElement) : constructor.newInstance(validatorElement, messagesPack);
                     component.addValidator(field, validator);
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
