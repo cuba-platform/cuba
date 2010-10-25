@@ -261,7 +261,7 @@ create table SEC_USER_SETTING (
     USER_ID varchar(36),
     CLIENT_TYPE char(1),
     NAME varchar(255),
-    VALUE longvarchar,    
+    VALUE longvarchar,
     primary key (ID)
 );
 
@@ -476,64 +476,64 @@ INSERT INTO sec_filter (id,create_ts,created_by,version,update_ts,updated_by,del
 CREATE TABLE report_band_definition
 (
   id varchar(36),
-  create_ts timestamp without time zone,
+  create_ts timestamp,
   created_by character varying(50),
   "version" integer,
-  update_ts timestamp without time zone,
+  update_ts timestamp,
   updated_by character varying(50),
-  delete_ts timestamp without time zone,
+  delete_ts timestamp,
   deleted_by character varying(50),
   query character varying(255),
-  parent_definition_id uuid,
+  parent_definition_id varchar(36),
   "name" character varying(255),
   orientation integer DEFAULT 0,
   "position" integer DEFAULT 0,
-  CONSTRAINT report_band_definition_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_report_band_definition_to_report_band_definition FOREIGN KEY (parent_definition_id)
-      REFERENCES report_band_definition (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  PRIMARY KEY (id)
 );
 
+alter table report_band_definition add CONSTRAINT fk_report_band_definition_to_report_band_definition FOREIGN KEY (parent_definition_id)
+      REFERENCES report_band_definition (id)
+      on delete no action on update no action;
 --------------------------------------------------------------------------------------------------------------
 
 CREATE TABLE report_report
 (
   id varchar(36),
-  create_ts timestamp without time zone,
+  create_ts timestamp,
   created_by character varying(50),
   "version" integer,
-  update_ts timestamp without time zone,
+  update_ts timestamp,
   updated_by character varying(50),
-  delete_ts timestamp without time zone,
+  delete_ts timestamp,
   deleted_by character varying(50),
   "name" character varying(255),
-  root_definition_id uuid,
-  template_path text,
+  root_definition_id varchar(36),
+  template_path longvarchar,
   report_output_type integer DEFAULT 0,
   is_custom boolean DEFAULT false,
   custom_class character varying,
   linked_entity character varying,
-  template_file_id uuid,
+  template_file_id varchar(36),
   report_type integer,
-  CONSTRAINT report_report_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_report_report_to_report_band_definition FOREIGN KEY (root_definition_id)
-      REFERENCES report_band_definition (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  PRIMARY KEY (id)
 );
 
+alter table report_report add CONSTRAINT fk_report_report_to_report_band_definition FOREIGN KEY (root_definition_id)
+      REFERENCES report_band_definition (id)
+      on delete no action on update no action;
 --------------------------------------------------------------------------------------------------------------
 
 CREATE TABLE report_input_parameter
 (
   id varchar(36),
-  create_ts timestamp without time zone,
+  create_ts timestamp,
   created_by character varying(50),
   "version" integer,
-  update_ts timestamp without time zone,
+  update_ts timestamp,
   updated_by character varying(50),
-  delete_ts timestamp without time zone,
+  delete_ts timestamp,
   deleted_by character varying(50),
-  report_id uuid,
+  report_id varchar(36),
   "type" integer,
   "name" character varying(255),
   alias character varying(100),
@@ -541,35 +541,37 @@ CREATE TABLE report_input_parameter
   class_name character varying,
   from_browser boolean,
   required boolean DEFAULT false,
-  position integer default 0,
+  "position" integer default 0,
   meta_class varchar(255),
-  CONSTRAINT repor_input_parameter_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_repor_input_parameter_to_report_report FOREIGN KEY (report_id)
-      REFERENCES report_report (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  PRIMARY KEY (id)
 );
+
+alter table report_input_parameter add CONSTRAINT fk_repor_input_parameter_to_report_report FOREIGN KEY (report_id)
+      REFERENCES report_report (id)
+      on delete no action on update no action;
 
 --------------------------------------------------------------------------------------------------------------
 
 CREATE TABLE report_data_set
 (
   id varchar(36),
-  create_ts timestamp without time zone,
+  create_ts timestamp,
   created_by character varying(50),
   "version" integer,
-  update_ts timestamp without time zone,
+  update_ts timestamp,
   updated_by character varying(50),
-  delete_ts timestamp without time zone,
+  delete_ts timestamp,
   deleted_by character varying(50),
   "name" character varying(255),
-  "text" text,
+  "text" longvarchar,
   "type" integer,
-  band_definition uuid,
-  CONSTRAINT report_data_set_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_report_data_set_to_report_band_definition FOREIGN KEY (band_definition)
-      REFERENCES report_band_definition (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  band_definition varchar(36),
+  PRIMARY KEY (id)
 );
+
+alter table report_data_set add CONSTRAINT fk_report_data_set_to_report_band_definition FOREIGN KEY (band_definition)
+      REFERENCES report_band_definition (id)
+      on delete no action on update no action;
 
 --------------------------------------------------------------------------------------------------------------
 
@@ -591,38 +593,40 @@ foreign key (ROLE_ID) references SEC_ROLE(ID);
 CREATE TABLE report_report_screen
 (
   id varchar(36),
-  create_ts timestamp without time zone,
+  create_ts timestamp,
   created_by character varying(50),
   "version" integer,
-  update_ts timestamp without time zone,
+  update_ts timestamp,
   updated_by character varying(50),
-  delete_ts timestamp without time zone,
+  delete_ts timestamp,
   deleted_by character varying(50),
-  report_id uuid,
+  report_id varchar(36),
   screen_id character varying(255),
-  CONSTRAINT report_report_screen_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_report_report_screen_to_report_report FOREIGN KEY (report_id)
-      REFERENCES report_report (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  PRIMARY KEY (id)
 );
+
+alter table report_report_screen add CONSTRAINT fk_report_report_screen_to_report_report FOREIGN KEY (report_id)
+      REFERENCES report_report (id)
+      on delete no action on update no action;
 
 --------------------------------------------------------------------------------------------------------------
 
 CREATE TABLE report_value_format
 (
   id varchar(36),
-  create_ts timestamp without time zone,
+  create_ts timestamp,
   created_by character varying(50),
   "version" integer,
-  update_ts timestamp without time zone,
+  update_ts timestamp,
   updated_by character varying(50),
-  delete_ts timestamp without time zone,
+  delete_ts timestamp,
   deleted_by character varying(50),
-  report_id uuid,
+  report_id varchar(36),
   "name" character varying(255),
   format character varying(255),
-  CONSTRAINT report_value_format_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_report_value_format_to_report_report FOREIGN KEY (report_id)
-      REFERENCES report_report (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  PRIMARY KEY (id)
 );
+
+alter table report_value_format add CONSTRAINT fk_report_value_format_to_report_report FOREIGN KEY (report_id)
+      REFERENCES report_report (id)
+      on delete no action on update no action;
