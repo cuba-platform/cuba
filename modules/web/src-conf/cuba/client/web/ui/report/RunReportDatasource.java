@@ -10,19 +10,22 @@
  */
 package cuba.client.web.ui.report;
 
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.ReportScreen;
-import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.Instance;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class RunReportDatasource extends CollectionDatasourceImpl {
     private static final long serialVersionUID = -4470826840980416614L;
@@ -51,30 +54,51 @@ public class RunReportDatasource extends CollectionDatasourceImpl {
         }
     }
 
-    private void applySecurityPolicies(User user, String screen) {
-        final List<Report> reports = new ArrayList<Report>(data.values());
+    private List<Report> checkRoles(User user, List<Report> reports) {
+        List<Report> filter = new ArrayList<Report>();
         data.clear();
         for (Report report : reports) {
             List<Role> reportRoles = report.getRoles();
             if (reportRoles == null || reportRoles.size() == 0) {
-                data.put(report.getId(), report);
+                filter.add(report);
                 attachListener((Instance) report);
             } else {
                 Set<UserRole> userRoles = user.getUserRoles();
-                List<ReportScreen> reportScreens = report.getReportScreens();
-                List<String> reportScreensAliases = new ArrayList<String>();
-                for (ReportScreen reportScreen : reportScreens) {
-                    reportScreensAliases.add(reportScreen.getScreenId());
-                }
-
                 for (UserRole userRole : userRoles) {
-                    if (((reportScreensAliases.contains(screen) || reportScreensAliases.size() == 0) && reportRoles.contains(userRole.getRole())) || Boolean.TRUE.equals(userRole.getRole().getSuperRole())) {
-                        data.put(report.getId(), report);
-                        attachListener((Instance) report);
+                    if (reportRoles.contains(userRole.getRole()) ||
+                            Boolean.TRUE.equals(userRole.getRole().getSuperRole())) {
+                        filter.add(report);
                         break;
                     }
                 }
             }
+        }
+        return filter;
+    }
+
+    private List<Report> checkScreens(User user, List<Report> reports, String screen) {
+        List<Report> filter = new ArrayList<Report>();
+        for (Report report : reports) {
+            List<ReportScreen> reportScreens = report.getReportScreens();
+            List<String> reportScreensAliases = new ArrayList<String>();
+            for (ReportScreen reportScreen : reportScreens) {
+                reportScreensAliases.add(reportScreen.getScreenId());
+            }
+
+            if ((reportScreensAliases.contains(screen) || reportScreensAliases.size() == 0))
+                filter.add(report);
+        }
+        return filter;
+    }
+
+    private void applySecurityPolicies(User user, String screen) {
+        final List<Report> reports = new ArrayList<Report>(data.values());
+        data.clear();
+        List<Report> filter = checkRoles(user, reports);
+        filter = checkScreens(user,filter,screen);
+        for (Report report : filter) {
+            data.put(report.getId(), report);
+            attachListener((Instance) report);     
         }
     }
 }
