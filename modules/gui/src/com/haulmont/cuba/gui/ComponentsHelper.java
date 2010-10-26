@@ -18,6 +18,8 @@ import java.util.Arrays;
  * Utility class to work for GenericUI components
  */
 public abstract class ComponentsHelper {
+    public static final String[] UNIT_SYMBOLS = { "px", "pt", "pc", "em", "ex",
+            "mm", "cm", "in", "%" };
 
     /**
      * Visit all components below the specified container
@@ -105,5 +107,17 @@ public abstract class ComponentsHelper {
             }
         }
         return sb.toString();
+    }
+
+    public static String getComponentWidth(Component c) {
+        float width = c.getWidth();
+        int widthUnit = c.getWidthUnits();
+        return width + UNIT_SYMBOLS[widthUnit];
+    }
+
+    public static String getComponentHeigth(Component c) {
+        float height = c.getHeight();
+        int heightUnit = c.getHeightUnits();
+        return height + UNIT_SYMBOLS[heightUnit];
     }
 }

@@ -161,6 +161,18 @@ public class WebWindow
         }
     }
 
+    public void setMargin(boolean enable) {
+        if (component instanceof Layout.MarginHandler) {
+            ((Layout.MarginHandler) component).setMargin(new Layout.MarginInfo(enable));
+        }
+    }
+
+    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        if (component instanceof Layout.MarginHandler) {
+            ((Layout.MarginHandler) component).setMargin(new Layout.MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {

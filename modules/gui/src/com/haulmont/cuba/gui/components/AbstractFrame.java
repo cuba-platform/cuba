@@ -276,4 +276,12 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
     public void setSpacing(boolean enabled) {
         frame.setSpacing(enabled);
     }
+
+    public void setMargin(boolean enable) {
+        frame.setMargin(enable);
+    }
+
+    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        frame.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
+    }
 }

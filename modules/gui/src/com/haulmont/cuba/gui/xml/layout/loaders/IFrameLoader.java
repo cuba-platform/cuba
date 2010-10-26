@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -59,8 +60,8 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
 
         loadAlign(component, element);
 
-        loadHeight(component, element, "-1px");
-        loadWidth(component, element);
+        loadHeight(component, element, ComponentsHelper.getComponentHeigth(component));
+        loadWidth(component, element, ComponentsHelper.getComponentWidth(component));
 
         if (context.getFrame() != null)
             component.setFrame(context.getFrame());

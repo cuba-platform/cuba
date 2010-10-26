@@ -42,6 +42,10 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         loadExpandLayout(window, layoutElement);
         loadSubComponentsAndExpand(window, layoutElement);
         loadSpacing(window, layoutElement);
+        loadMargin(window, layoutElement);
+        loadWidth(window, layoutElement);
+        loadHeight(window, layoutElement);
+        loadStyleName(window, layoutElement);
 
         loadTimers(factory, window, element);
 
