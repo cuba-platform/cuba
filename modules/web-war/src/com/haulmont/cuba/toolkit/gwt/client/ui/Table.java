@@ -921,9 +921,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.setStyleAttribute(captionContainer, "width", "");
                 setWidth("");
             } else {
-                DOM.setStyleAttribute(captionContainer, "width", (w
-                        - DRAG_WIDGET_WIDTH - 4)
-                        + "px");
+                int width = w - DRAG_WIDGET_WIDTH - 4;
+                DOM.setStyleAttribute(captionContainer, "width", (width > 0 ? width + "px" : ""));
                 setWidth(w + "px");
             }
         }
