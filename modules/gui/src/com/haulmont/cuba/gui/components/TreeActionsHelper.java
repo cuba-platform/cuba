@@ -54,10 +54,11 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
             Entity parentItem = datasource.getItem();
 
             //datasource.getItem() may contain deleted item
-            if (!datasource.containsItem(parentItem.getId())) {
+            if(parentItem != null && !datasource.containsItem(parentItem.getId()))
+            {
                 parentItem = null;
             }
-//            if (parentItem == null) return;
+            // if (parentItem == null) return;
 
             final Entity item = dataservice.<Entity>newInstance(datasource.getMetaClass());
             ((Instance) item).setValue(hierarchyProperty, parentItem);
