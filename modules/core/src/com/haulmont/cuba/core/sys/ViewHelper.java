@@ -134,6 +134,10 @@ public class ViewHelper
                         EntityManager em = PersistenceProvider.getEntityManager();
                         Entity entity = (Entity) value;
                         value = em.find(entity.getClass(), entity.getId());
+                        if (value == null) {
+                            // the instance is most probably deleted
+                            continue;
+                        }
                         instance.setValue(property.getName(), value);
                     }
                     __fetchInstance((Instance) value, propertyView, visited);
