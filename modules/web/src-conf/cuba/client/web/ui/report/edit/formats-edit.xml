@@ -22,9 +22,9 @@
         <vbox margin="true" stylename="edit-area">
             <fieldGroup id="formatFields" datasource="valuesFormatsDs">
                 <column flex="1">
-                    <field id="valueName" required="true" caption="msg://valuesFormats.name" />
+                    <field id="valueName" required="true" caption="msg://valuesFormats.name"  requiredMessage="msg://valueNameMsg"/>
                     <field id="formatString" required="true"  caption="msg://valuesFormats.format"
-                           maxLength="255" custom="true"/>
+                           maxLength="255" custom="true" requiredMessage="msg://formatStringMsg"/>
                 </column>
             </fieldGroup>
         </vbox>
