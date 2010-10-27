@@ -636,6 +636,8 @@ public class WebWindow
 
         private boolean commitActionPerformed;
 
+        private boolean commitAndCloseButtonExists = false;
+
         public Entity getItem() {
             return item;
         }
@@ -647,7 +649,8 @@ public class WebWindow
                 @Override
                 public String getCaption() {
                     final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                    return MessageProvider.getMessage(messagesPackage, "actions.Ok");
+                    if (commitAndCloseButtonExists) return MessageProvider.getMessage(messagesPackage, "actions.Apply");
+                    else return MessageProvider.getMessage(messagesPackage, "actions.Ok");
                 }
 
                 @Override
@@ -711,7 +714,7 @@ public class WebWindow
         public Window wrapBy(Class<Window> aClass) {
             final Window.Editor window = (Window.Editor) super.wrapBy(aClass);
             final Component commitAndCloseButton = WebComponentsHelper.findComponent(window, WINDOW_COMMIT_AND_CLOSE);
-
+            if (commitAndCloseButton!=null) commitAndCloseButtonExists = true; 
             final Action commitAction = getAction(WINDOW_COMMIT);
             ((ActionWrapper) commitAction).setAction(new AbstractAction(WINDOW_COMMIT) {
                 @Override
@@ -721,7 +724,7 @@ public class WebWindow
                 }
 
                 public void actionPerform(Component component) {
-                    if (commitAndCloseButton == null) {
+                    if (!commitAndCloseButtonExists) {
                         window.commitAndClose();
                     } else {
                         if (window.commit()) {
@@ -734,7 +737,7 @@ public class WebWindow
                 }
             });
 
-            if (commitAndCloseButton != null) {
+            if (commitAndCloseButtonExists) {
                 final Action commitAndCloseAction = getAction(WINDOW_COMMIT_AND_CLOSE);
                 ((ActionWrapper) commitAndCloseAction).setAction(new AbstractAction(WINDOW_COMMIT_AND_CLOSE) {
                     @Override
