@@ -18,13 +18,7 @@ import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.ReportValueFormat;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.tools.*;
-
-import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
-import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
-
 import com.sun.star.container.NoSuchElementException;
-import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XDispatchHelper;
 import com.sun.star.io.IOException;
@@ -44,6 +38,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
+import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
+import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
 
 public class DocFormatter extends AbstractFormatter {
     private OOOConnection connection;
@@ -91,7 +89,7 @@ public class DocFormatter extends AbstractFormatter {
         if (ReportOutputType.PDF.equals(reportOutputType)) {
             filterName = "writer_pdf_Export";
         } else {
-            filterName = "writer8";
+            filterName = "MS Word 97";
         }
         saveXComponent(xComponent, ooos, filterName);
         closeXComponent(xComponent);
