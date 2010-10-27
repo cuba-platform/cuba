@@ -133,3 +133,19 @@
 * html .v-slider-vertical .v-slider-handle {
 	margin: 0 -1px;
 }
+
+
+.v-slider-feedback {
+	padding: 2px 5px;
+	background: #fff;
+	color: #1E3146;
+	font-size: 11px;
+	line-height: 13px;
+	font-weight: normal;
+	font-family: verdana, Arial, Helvetica, sans-serif;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	margin: -2px 0 0 2px;
+	/*text-shadow: 0 1px 0 #000;*/
+}

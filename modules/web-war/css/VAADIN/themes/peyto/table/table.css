@@ -61,7 +61,6 @@
 	display: block;
 	height: 23px;
 	float: right;
-	/*background: #CBDAE9 repeat-y 50% 50%;*/
     border-right: #CBDAE9 1px solid;
 	cursor: col-resize;
 }
@@ -237,11 +236,6 @@
 	height: 25px;
 	margin: -2px 0;
 }
-
-.v-table-cell-content .v-label {
-    color: inherit;
-}
-
 
 .v-table-column-selector {
 	background: transparent url(img/table-header-bg.png) repeat-x;
@@ -438,7 +432,9 @@
     height: 16px;
 }
 
-.v-table div {
-    font: inherit;
-    color: inherit;
+.v-table div,
+.v-table .v-button-caption,
+.v-table .v-button-link .v-button-caption{
+    font-size: 11px;
+    color: #1E3146;
 }
