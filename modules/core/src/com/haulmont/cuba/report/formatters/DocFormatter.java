@@ -196,21 +196,40 @@ public class DocFormatter extends AbstractFormatter {
     private String formatString(Object value, String valueName) {
         String valueString = "";
         HashMap<String, ReportValueFormat> formats = rootBand.getValuesFormats();
-        if ((formats != null) && (value != null)) {
-            if (formats.containsKey(valueName)) {
-                String formatString = formats.get(valueName).getFormatString();
-                if (value instanceof Number) {
-                    DecimalFormat decimalFormat = new DecimalFormat(formatString);
-                    valueString = decimalFormat.format(value);
-                } else if (value instanceof Date) {
-                    SimpleDateFormat dateformat = new SimpleDateFormat(formatString);
-                    valueString = dateformat.format(value);
-                } else
-                    valueString = value.toString();
-            }
-            else
-                valueString = value.toString();
+        if (value != null) {
+            if (formats != null) {
+                if (formats.containsKey(valueName)) {
+                    String formatString = formats.get(valueName).getFormatString();
+                    if (value instanceof Number) {
+                        DecimalFormat decimalFormat = new DecimalFormat(formatString);
+                        valueString = decimalFormat.format(value);
+                    } else if (value instanceof Date) {
+                        SimpleDateFormat dateformat = new SimpleDateFormat(formatString);
+                        valueString = dateformat.format(value);
+                    } else
+                        valueString = value.toString();
+                } else {
+                    if (value instanceof Date)
+                        valueString = defaultDateFormat(value);
+                    else
+                        valueString = value.toString();
+                }
+            } else if (value instanceof Date)
+                valueString = defaultDateFormat(value);
         }
+        return valueString;
+    }
+
+    private String defaultDateFormat(Object value) {
+        String valueString = "";
+        String defaultDateFormat = "dd.MM.yyyy";
+        if (value != null)
+            if (value instanceof Date) {
+                SimpleDateFormat dateformat = new SimpleDateFormat(defaultDateFormat);
+                dateformat.applyPattern(defaultDateFormat);
+                valueString = dateformat.format(value);
+            } else
+                valueString = value.toString();
         return valueString;
     }
 
@@ -246,7 +265,7 @@ public class DocFormatter extends AbstractFormatter {
 
                 String fullParamName = band.getFullName() + "." + paramName.toString();
                 Object parameter = band.getParameter(paramName.toString());
-                String valueString = formatString(parameter,fullParamName);
+                String valueString = formatString(parameter, fullParamName);
                 o.setString(valueString);
             }
         } catch (Exception ex) {
