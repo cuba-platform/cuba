@@ -26,6 +26,7 @@
         </xs:sequence>
         <xs:attribute type="xs:string" name="id" use="optional"/>
         <xs:attribute type="openTypeType" name="openType" use="optional"/>
+        <xs:attribute type="xs:boolean" name="resizable" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="paramType">
