@@ -240,7 +240,7 @@ public class WebWindowManager extends WindowManager {
                         }
                     }
                 }
-                
+
                 component = showWindowNewTab(window, caption, description, appWindow);
                 break;
 
@@ -342,7 +342,7 @@ public class WebWindowManager extends WindowManager {
             for (final Component c : components) {
                 layout.addComponent(c);
             }
-        }                                                                                       
+        }
 
         final Component component = WebComponentsHelper.getComposition(window);
         component.setSizeFull();
@@ -510,13 +510,18 @@ public class WebWindowManager extends WindowManager {
                 window.close("close", true);
             }
         });
+
         if (getDialogParams().getWidth() != null)
             win.setWidth(getDialogParams().getWidth().floatValue(), Sizeable.UNITS_PIXELS);
         else
             win.setWidth(600, Sizeable.UNITS_PIXELS);
+
+        if (getDialogParams().getResizable() != null) {
+            win.setResizable(Boolean.valueOf(getDialogParams().getResizable()));
+        }
+
         getDialogParams().reset();
 
-//        win.setResizable(false);
         win.setModal(true);
 
         if (!app.getAppWindow().getChildWindows().contains(win)) {

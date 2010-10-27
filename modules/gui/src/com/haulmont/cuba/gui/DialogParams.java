@@ -18,6 +18,7 @@ public class DialogParams implements Serializable {
 
     private Integer width;
     private Integer height;
+    private Boolean resizable;
 
     public DialogParams() {
     }
@@ -40,9 +41,19 @@ public class DialogParams implements Serializable {
         return this;
     }
 
+    public Boolean getResizable() {
+        return resizable;
+    }
+
+    public DialogParams setResizable(Boolean resizable) {
+        this.resizable = resizable;
+        return this;
+    }
+
     public DialogParams reset() {
         this.height = null;
         this.width = null;
+        resizable = null;
         return this;
     }
 }
