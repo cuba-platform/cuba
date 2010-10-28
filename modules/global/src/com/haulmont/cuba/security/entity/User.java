@@ -44,22 +44,22 @@ public class User extends StandardEntity
     private String password;
 
     @Column(name = "NAME", length = 100)
-    private String name;
+    private String name = "" ;
 
     @Column(name = "FIRST_NAME", length = 100)
-    private String firstName;
+    private String firstName = "";
 
     @Column(name = "LAST_NAME", length = 100)
-    private String lastName;
+    private String lastName = "";
 
     @Column(name = "MIDDLE_NAME", length = 100)
-    private String middleName;
+    private String middleName = "";
 
     @Column(name = "POSITION_", length = 100)
-    private String position;
+    private String position = "";
 
     @Column(name = "EMAIL", length = 100)
-    private String email;
+    private String email = "";
 
     @Column(name = "LANGUAGE_", length = 10)
     private String language;
