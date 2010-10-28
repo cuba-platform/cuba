@@ -20,10 +20,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.report.Report;
-import com.haulmont.cuba.report.ReportOutputType;
-import com.haulmont.cuba.report.ReportScreen;
-import com.haulmont.cuba.report.ReportType;
+import com.haulmont.cuba.report.*;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
@@ -56,7 +53,23 @@ public class ReportHelper {
             }
         }
     }
-    
+
+    public static void runReport(Report report, Window window, final String paramAlias, final Object paramValue) {
+        if (report != null) {
+            List<ReportInputParameter> params = report.getInputParameters();
+            if (params != null && params.size() > 1) {
+                window.openWindow("report$inputParameters", WindowManager.OpenType.DIALOG,
+                        Collections.<String, Object>singletonMap("report", report));
+            } else {
+                if (params != null && params.size() == 1) {
+                    ReportHelper.printReport(report,
+                            Collections.<String, Object>singletonMap(paramAlias, paramValue));
+                } else
+                    ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
+            }
+        }
+    }
+
     public static void printReport(Report report, Map<String, Object> params) {
         printReport(report, "report", params);
     }
@@ -168,28 +181,29 @@ public class ReportHelper {
         params.put("reportType", reportType.getId());
         params.put("screen", window.getId());
 
-        if (checkReportsForStart(window,javaClassName,reportType)) {
+        if (checkReportsForStart(window, paramAlias, paramValue, javaClassName, reportType)) {
             window.openLookup("report$Report.run", new Window.Lookup.Handler() {
                 public void handleLookup(Collection items) {
                     if (items != null && items.size() > 0) {
                         Report report = (Report) items.iterator().next();
                         report = window.getDsContext().getDataService().reload(report, "report.edit");
-                        runReport(report,window);
+                        runReport(report, window, paramAlias, paramValue);
                     }
                 }
             }, WindowManager.OpenType.DIALOG, params);
         }
     }
 
-    private static boolean checkReportsForStart(final Window window,String javaClassName,ReportType reportType){
+    private static boolean checkReportsForStart(final Window window, final String paramAlias, final Object paramValue,
+                                                String javaClassName, ReportType reportType) {
         boolean result = false;
         LoadContext lContext = new LoadContext(Report.class);
         lContext.setView("report.edit");
         String queryStr = "select r from report$Report r left join r.inputParameters ip where " +
-            "(ip.className like :param$javaClassName or :param$javaClassName is null) and (r.reportType = :param$reportType)";
+                "(ip.className like :param$javaClassName or :param$javaClassName is null) and (r.reportType = :param$reportType)";
         LoadContext.Query query = new LoadContext.Query(queryStr);
         query.addParameter("param$javaClassName", javaClassName);
-        query.addParameter("param$reportType",reportType);
+        query.addParameter("param$reportType", reportType);
         lContext.setQuery(query);
 
         DsContext dsContext = window.getDsContext();
@@ -197,12 +211,12 @@ public class ReportHelper {
         reports = applySecurityPolicies(UserSessionClient.getUserSession().getUser(), window.getId(), reports);
         if (reports.size() == 1) {
             Report report = reports.get(0);
-            runReport(report, window);
+            window.getDsContext().getDataService().reload(report, "report.edit");
+            runReport(report, window, paramAlias, paramValue);
         } else if (reports.size() == 0) {
             String msg = MessageProvider.getMessage(ReportHelper.class, "report.notFoundReports");
             window.showNotification(msg, IFrame.NotificationType.HUMANIZED);
-        }
-        else
+        } else
             result = true;
         return result;
     }
