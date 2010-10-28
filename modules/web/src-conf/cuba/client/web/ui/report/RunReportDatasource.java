@@ -17,15 +17,12 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.report.Report;
-import com.haulmont.cuba.report.ReportScreen;
-import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.web.app.ui.report.ReportHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class RunReportDatasource extends CollectionDatasourceImpl {
     private static final long serialVersionUID = -4470826840980416614L;
@@ -54,48 +51,10 @@ public class RunReportDatasource extends CollectionDatasourceImpl {
         }
     }
 
-    private List<Report> checkRoles(User user, List<Report> reports) {
-        List<Report> filter = new ArrayList<Report>();
-        data.clear();
-        for (Report report : reports) {
-            List<Role> reportRoles = report.getRoles();
-            if (reportRoles == null || reportRoles.size() == 0) {
-                filter.add(report);
-                attachListener((Instance) report);
-            } else {
-                Set<UserRole> userRoles = user.getUserRoles();
-                for (UserRole userRole : userRoles) {
-                    if (reportRoles.contains(userRole.getRole()) ||
-                            Boolean.TRUE.equals(userRole.getRole().getSuperRole())) {
-                        filter.add(report);
-                        break;
-                    }
-                }
-            }
-        }
-        return filter;
-    }
-
-    private List<Report> checkScreens(User user, List<Report> reports, String screen) {
-        List<Report> filter = new ArrayList<Report>();
-        for (Report report : reports) {
-            List<ReportScreen> reportScreens = report.getReportScreens();
-            List<String> reportScreensAliases = new ArrayList<String>();
-            for (ReportScreen reportScreen : reportScreens) {
-                reportScreensAliases.add(reportScreen.getScreenId());
-            }
-
-            if ((reportScreensAliases.contains(screen) || reportScreensAliases.size() == 0))
-                filter.add(report);
-        }
-        return filter;
-    }
-
     private void applySecurityPolicies(User user, String screen) {
         final List<Report> reports = new ArrayList<Report>(data.values());
         data.clear();
-        List<Report> filter = checkRoles(user, reports);
-        filter = checkScreens(user,filter,screen);
+        List<Report> filter = ReportHelper.applySecurityPolicies(user,screen,reports);
         for (Report report : filter) {
             data.put(report.getId(), report);
             attachListener((Instance) report);     

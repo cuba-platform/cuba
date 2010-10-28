@@ -11,16 +11,23 @@
 package com.haulmont.cuba.web.app.ui.report;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.ReportOutputType;
+import com.haulmont.cuba.report.ReportScreen;
 import com.haulmont.cuba.report.ReportType;
 import com.haulmont.cuba.report.app.ReportService;
+import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
 
 import java.io.IOException;
@@ -29,6 +36,7 @@ import java.util.List;
 
 public class ReportHelper {
     static HashMap<ReportOutputType, ExportFormat> exportFormats = new HashMap<ReportOutputType, ExportFormat>();
+
     static {
         exportFormats.put(ReportOutputType.XLS, ExportFormat.XLS);
         exportFormats.put(ReportOutputType.DOC, ExportFormat.DOC);
@@ -38,17 +46,28 @@ public class ReportHelper {
     private ReportHelper() {
     }
 
+    public static void runReport(Report report, Window window) {
+        if (report != null) {
+            if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
+                window.openWindow("report$inputParameters", WindowManager.OpenType.DIALOG,
+                        Collections.<String, Object>singletonMap("report", report));
+            } else {
+                ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
+            }
+        }
+    }
+    
     public static void printReport(Report report, Map<String, Object> params) {
         printReport(report, "report", params);
     }
 
     public static void printReport(Report report, String name, Map<String, Object> params) {
         ReportOutputType reportOutputType = report.getReportOutputType();
-        Iterator iterator  = exportFormats.entrySet().iterator();
+        Iterator iterator = exportFormats.entrySet().iterator();
         boolean find = false;
         Map.Entry<ReportOutputType, ExportFormat> item = null;
-        while (iterator.hasNext() && !find){
-            item = (Map.Entry<ReportOutputType, ExportFormat>)iterator.next();
+        while (iterator.hasNext() && !find) {
+            item = (Map.Entry<ReportOutputType, ExportFormat>) iterator.next();
             find = item.getKey().equals(reportOutputType);
         }
         if (find)
@@ -59,7 +78,7 @@ public class ReportHelper {
         else if (ReportOutputType.DOC.equals(reportOutputType))
             printReport(report, params, ReportOutputType.DOC, ExportFormat.DOC);
         else if (ReportOutputType.PDF.equals(reportOutputType))
-            printReport(report, params, ReportOutputType.PDF, ExportFormat.PDF);  
+            printReport(report, params, ReportOutputType.PDF, ExportFormat.PDF);
         */
     }
 
@@ -72,39 +91,6 @@ public class ReportHelper {
         catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /* This method ignores report's security settings*/
-    @Deprecated
-    public static void createRunReportWithSingleObjectButton(Button runReportButton, final Window frame, final Table table) {
-        final String javaClassName = table.getDatasource().getMetaClass().getJavaClass().getCanonicalName();
-        runReportButton.setAction(new AbstractAction(frame.getMessage("runReport")) {
-            public void actionPerform(Component component) {
-                final Entity entity = table.getSingleSelected();
-                if (entity != null)
-                    frame.openLookup("report$Report.run", new Window.Lookup.Handler() {
-
-                        public void handleLookup(Collection items) {
-                            if (items != null && items.size() > 0) {
-                                Report report = (Report) items.iterator().next();
-                                report = frame.getDsContext().getDataService().reload(report, "report.edit");
-                                if (report != null) {
-                                    if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
-                                        HashMap<String, Object> params = new HashMap<String, Object>();
-                                        params.put("report", report);
-                                        params.put("entity", entity);
-                                        frame.openWindow("report$inputParameters", WindowManager.OpenType.DIALOG, params);
-                                    } else {
-                                        ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
-                                    }
-                                }
-                            }
-                        }
-                    }, WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("javaClassName", javaClassName));
-                else
-                    frame.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
-            }
-        });
     }
 
     public static AbstractAction createRunReportButton(String captionId, final Window window) {
@@ -182,15 +168,83 @@ public class ReportHelper {
         params.put("reportType", reportType.getId());
         params.put("screen", window.getId());
 
-        window.openLookup("report$Report.run", new Window.Lookup.Handler() {
-            public void handleLookup(Collection items) {
-                if (items != null && items.size() > 0) {
-                    Report report = (Report) items.iterator().next();
-                    report = window.getDsContext().getDataService().reload(report, "report.edit");
-                    ReportHelper.printReport(report, Collections.<String, Object>singletonMap(paramAlias, paramValue));
+        if (checkReportsForStart(window,javaClassName,reportType)) {
+            window.openLookup("report$Report.run", new Window.Lookup.Handler() {
+                public void handleLookup(Collection items) {
+                    if (items != null && items.size() > 0) {
+                        Report report = (Report) items.iterator().next();
+                        report = window.getDsContext().getDataService().reload(report, "report.edit");
+                        runReport(report,window);
+                    }
                 }
-            }
-        }, WindowManager.OpenType.DIALOG, params);
+            }, WindowManager.OpenType.DIALOG, params);
+        }
     }
 
+    private static boolean checkReportsForStart(final Window window,String javaClassName,ReportType reportType){
+        boolean result = false;
+        LoadContext lContext = new LoadContext(Report.class);
+        lContext.setView("report.edit");
+        String queryStr = "select r from report$Report r left join r.inputParameters ip where " +
+            "(ip.className like :param$javaClassName or :param$javaClassName is null) and (r.reportType = :param$reportType)";
+        LoadContext.Query query = new LoadContext.Query(queryStr);
+        query.addParameter("param$javaClassName", javaClassName);
+        query.addParameter("param$reportType",reportType);
+        lContext.setQuery(query);
+
+        DsContext dsContext = window.getDsContext();
+        List<Report> reports = dsContext.getDataService().loadList(lContext);
+        reports = applySecurityPolicies(UserSessionClient.getUserSession().getUser(), window.getId(), reports);
+        if (reports.size() == 1) {
+            Report report = reports.get(0);
+            runReport(report, window);
+        } else if (reports.size() == 0) {
+            String msg = MessageProvider.getMessage(ReportHelper.class, "report.notFoundReports");
+            window.showNotification(msg, IFrame.NotificationType.HUMANIZED);
+        }
+        else
+            result = true;
+        return result;
+    }
+
+    private static List<Report> checkRoles(User user, List<Report> reports) {
+        List<Report> filter = new ArrayList<Report>();
+        for (Report report : reports) {
+            List<Role> reportRoles = report.getRoles();
+            if (reportRoles == null || reportRoles.size() == 0) {
+                filter.add(report);
+            } else {
+                Set<UserRole> userRoles = user.getUserRoles();
+                for (UserRole userRole : userRoles) {
+                    if (reportRoles.contains(userRole.getRole()) ||
+                            Boolean.TRUE.equals(userRole.getRole().getSuperRole())) {
+                        filter.add(report);
+                        break;
+                    }
+                }
+            }
+        }
+        return filter;
+    }
+
+    private static List<Report> checkScreens(User user, List<Report> reports, String screen) {
+        List<Report> filter = new ArrayList<Report>();
+        for (Report report : reports) {
+            List<ReportScreen> reportScreens = report.getReportScreens();
+            List<String> reportScreensAliases = new ArrayList<String>();
+            for (ReportScreen reportScreen : reportScreens) {
+                reportScreensAliases.add(reportScreen.getScreenId());
+            }
+
+            if ((reportScreensAliases.contains(screen) || reportScreensAliases.size() == 0))
+                filter.add(report);
+        }
+        return filter;
+    }
+
+    public static List<Report> applySecurityPolicies(User user, String screen, List<Report> reports) {
+        List<Report> filter = checkRoles(user, reports);
+        filter = checkScreens(user, filter, screen);
+        return filter;
+    }
 }

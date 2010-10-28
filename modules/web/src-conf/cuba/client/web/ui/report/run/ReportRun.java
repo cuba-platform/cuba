@@ -1,12 +1,10 @@
 package cuba.client.web.ui.report.run;
 
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.web.app.ui.report.ReportHelper;
-import com.haulmont.cuba.gui.components.*;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class ReportRun extends BasicBrowser {
@@ -17,20 +15,13 @@ public class ReportRun extends BasicBrowser {
     @Override
     protected void init(Map<String, Object> params) {
         super.init(params);
-
         final Table reportsTable = getComponent("table");
         Button runReport = getComponent("runReport");
-        runReport.setAction(new AbstractAction("runReport") {
+        runReport.setAction(new AbstractAction("") {
             public void actionPerform(Component component) {
                 Report report = reportsTable.getSingleSelected();
                 report = getDsContext().getDataService().reload(report, "report.edit");
-                if (report != null) {
-                    if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
-                        openWindow("report$inputParameters", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("report", report));
-                    } else {
-                        ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
-                    }
-                }
+                ReportHelper.runReport(report,ReportRun.this);
             }
         });
         if (params.get("param$screen") != null) runReport.setVisible(false);//this is print form or run report 
