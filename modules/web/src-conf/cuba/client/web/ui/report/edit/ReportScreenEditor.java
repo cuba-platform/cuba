@@ -42,20 +42,24 @@ public class ReportScreenEditor extends AbstractEditor {
     protected void init(Map<String, Object> params) {
         super.init(params);
 
-        LookupField screenLookupField = getComponent("screenId");
+        final LookupField screenLookupField = getComponent("screenId");
         Collection<WindowInfo> windowInfoCollection = AppConfig.getInstance().getWindowConfig().getWindows();
-        Map<String,Object> screens = new HashMap<String,Object>();
+        Map<String, Object> screens = new HashMap<String, Object>();
         for (WindowInfo windowInfo : windowInfoCollection) {
             String id = windowInfo.getId();
             String menuId = "menu-config." + id;
-            String localeMsg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),menuId);
+            String localeMsg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), menuId);
             String title = menuId.equals(localeMsg) ? id : id + " ( " + localeMsg + " )";
-            screens.put(title,id);
+            screens.put(title, id);
         }
         screenLookupField.setOptionsMap(screens);
         screenLookupField.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                reportScreen.setScreenId(value != null ? value.toString() : null);
+                if (value != null) {
+                    String valueStr = value != null ? value.toString() : null;
+                    reportScreen.setScreenId(valueStr);
+                } else
+                    reportScreen.setScreenId(null);
             }
         });
 
