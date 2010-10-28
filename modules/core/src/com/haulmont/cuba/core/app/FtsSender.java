@@ -26,4 +26,6 @@ public interface FtsSender {
     void emptyQueue(String entityName);
 
     void emptyQueue();
+
+    void initDefault();
 }
