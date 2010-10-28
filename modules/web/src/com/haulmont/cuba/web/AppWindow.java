@@ -121,6 +121,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected String messagePack;
 
+    private NativeSelect substUserSelect;
+
     public AppWindow(Connection connection) {
         super();
 
@@ -475,7 +477,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         titleLayout.addComponent(userLabel);
         titleLayout.setComponentAlignment(userLabel, Alignment.MIDDLE_RIGHT);
 
-        final NativeSelect substUserSelect = new NativeSelect();
+        substUserSelect = new NativeSelect();
         substUserSelect.setNullSelectionAllowed(false);
         substUserSelect.setImmediate(true);
         substUserSelect.setStyleName("select-label");
@@ -713,6 +715,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             com.vaadin.ui.Component component = (com.vaadin.ui.Component) target;
             component.setParent(null);
         }
+    }
+    /**
+     *
+     * @return
+     */
+    public NativeSelect getSubstUserSelect() {
+        return substUserSelect;
     }
 
     private class ChangeSubstUserAction extends AbstractAction {
