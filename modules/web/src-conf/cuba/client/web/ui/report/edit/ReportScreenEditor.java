@@ -10,20 +10,19 @@
  */
 package cuba.client.web.ui.report.edit;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.report.ReportScreen;
 
-import java.util.Map;
 import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ReportScreenEditor extends AbstractEditor {
     private static final long serialVersionUID = -5176428889018585775L;
@@ -45,15 +44,15 @@ public class ReportScreenEditor extends AbstractEditor {
 
         LookupField screenLookupField = getComponent("screenId");
         Collection<WindowInfo> windowInfoCollection = AppConfig.getInstance().getWindowConfig().getWindows();
-        List<String> screenAliases = new ArrayList<String>();
+        Map<String,Object> screens = new HashMap<String,Object>();
         for (WindowInfo windowInfo : windowInfoCollection) {
             String id = windowInfo.getId();
             String menuId = "menu-config." + id;
             String localeMsg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),menuId);
             String title = menuId.equals(localeMsg) ? id : id + " ( " + localeMsg + " )";
-            screenAliases.add(title);
+            screens.put(title,id);
         }
-        screenLookupField.setOptionsList(screenAliases);
+        screenLookupField.setOptionsMap(screens);
         screenLookupField.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 reportScreen.setScreenId(value != null ? value.toString() : null);
