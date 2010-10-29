@@ -12,22 +12,18 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
 
 public class ParamEditor extends CustomComponent implements Condition.Listener {
 
     private Condition condition;
-    private HorizontalLayout layout;
+    private CssLayout layout;
     private Component field;
 
     public ParamEditor(final Condition condition, boolean showOperation) {
         this.condition = condition;
 
-        layout = new HorizontalLayout();
-        layout.setSpacing(true);
+        layout = new CssLayout();
         layout.setSizeFull();
         setCompositionRoot(layout);
 
