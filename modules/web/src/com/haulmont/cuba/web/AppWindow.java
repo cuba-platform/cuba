@@ -726,6 +726,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private class ChangeSubstUserAction extends AbstractAction {
         private AbstractSelect substUserSelect;
+        private boolean bypass = false;
 
         protected ChangeSubstUserAction(AbstractSelect substUserSelect) {
             super("changeSubstUserAction");
@@ -738,6 +739,29 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
 
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+
+            ////////////////////////////////////
+            /////    Check deleted user    /////
+            ////////////////////////////////////
+            User checkUser = (User) substUserSelect.getValue();
+            LoadContext ctx = new LoadContext(User.class).setId(checkUser.getId());
+            if(!bypass)
+                if(null == ServiceLocator.getDataService().load(ctx)) {
+                    showNotification(
+                                        MessageProvider.formatMessage(
+                                                                        getMessagesPack(),
+                                                                        "userDeleteMsg",
+                                                                        checkUser.getName()
+                                                                     ),
+                                        Window.Notification.TYPE_WARNING_MESSAGE
+                                    );
+                    UserSession userSession = App.getInstance().getConnection().getSession();
+                    substUserSelect.setValue(userSession.getCurrentOrSubstitutedUser());
+
+                    bypass = true;
+                    return;
+                }
+            
             App app = App.getInstance();
             for (com.haulmont.cuba.gui.components.Window window : app.getWindowManager().getOpenWindows()) {
                 if (window instanceof WebWindow.Editor) {
@@ -780,6 +804,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             User newUser = (User) event.getProperty().getValue();
             UserSession userSession = App.getInstance().getConnection().getSession();
             User oldUser = userSession.getSubstitutedUser() == null ? userSession.getUser() : userSession.getSubstitutedUser();
+
             if (!oldUser.equals(newUser)) {
                 String name = StringUtils.isBlank(newUser.getName()) ? newUser.getLogin() : newUser.getName();
                 App.getInstance().getWindowManager().showOptionDialog(
