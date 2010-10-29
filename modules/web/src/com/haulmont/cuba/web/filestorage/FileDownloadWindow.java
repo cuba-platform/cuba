@@ -10,89 +10,62 @@
  */
 package com.haulmont.cuba.web.filestorage;
 
-import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.FileTypesHelper;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.vaadin.terminal.DownloadStream;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.app.FileDownloadHelper;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.FileResource;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.VerticalLayout;
 
-import java.io.*;
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-
-import org.apache.commons.io.FileUtils;
 
 public class FileDownloadWindow extends FileWindow {
 
     public FileDownloadWindow(String windowName, FileDescriptor fd) {
         super(windowName, fd);
+        initUI();
     }
 
     public FileDownloadWindow(String windowName, File f) {
         super(windowName, f);
+        initUI();
     }
 
     @Override
-    public DownloadStream handleURI(URL context, String relativeUri) {
-        DownloadStream downloadStream = new FileDownloadStream(new ByteArrayInputStream(getFileData()),
-                FileTypesHelper.getMIMEType("." + getExtension()), getFileName());
-
-        return downloadStream;
+    protected void close() {
+        //Hack the situation when a user are refreshing the window
     }
 
-    protected String getFileName() {
+    private void initUI() {
+        final VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setSizeFull();
+        mainLayout.setMargin(false);
+        mainLayout.setSpacing(false);
+
+        final Embedded embedded = new Embedded();
+        embedded.setSizeFull();
         if (fd != null) {
-            try {
-                return URLEncoder.encode(fd.getName(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
+            embedded.setSource(new ExternalResource(createURL()));
         } else if (f != null) {
-            return f.getName();
+            embedded.setSource(new FileResource(f, App.getInstance()));
         } else {
-            throw new RuntimeException("file descriptor and file are null");
+            throw new RuntimeException("there is no resourse for display");
         }
+        embedded.setType(Embedded.TYPE_BROWSER);
+        mainLayout.addComponent(embedded);
+
+        setContent(mainLayout);
     }
 
-    protected byte[] getFileData() {
-        if (fd != null) {
-            FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
-            try {
-                return fss.loadFile(fd);
-            } catch (FileStorageException e) {
-                log.error("Unable to download file", e);
-                throw new RuntimeException(e);
-            }
-        } else if (f != null){
-            try {
-                return FileUtils.readFileToByteArray(f);
-            } catch (IOException e) {
-                log.error("Unable to download file", e);
-                throw new RuntimeException(e);
-            }
-        } else {
-            throw new RuntimeException("file descriptor and file are null");
-        }
-    }
-
-    protected String getExtension() {
-        if (fd != null) {
-            return fd.getExtension();
-        } else if (f != null){
-            int i = f.getName().lastIndexOf(".");
-            return i > 0 ? f.getName().substring(i, f.getName().length()) : "txt";
-        } else {
-            throw new RuntimeException("file descriptor and file are null");
-        }
-    }
-
-    public class FileDownloadStream extends DownloadStream implements Closeable {
-        public FileDownloadStream(InputStream stream, String contentType, String fileName) {
-            super(stream, contentType, fileName);
-        }
-
-        public void close() throws IOException {
+    protected URL createURL() {
+        try {
+            App app = App.getInstance();
+            return new URL(app.getURL() + FileDownloadHelper.makeUrl(fd, true));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
