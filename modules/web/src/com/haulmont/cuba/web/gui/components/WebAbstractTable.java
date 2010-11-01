@@ -1202,8 +1202,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public void applyPresentationAsDefault(Object id) {
         if (isUsePresentations()) {
             Presentation p = presentations.getPresentation(id);
-            presentations.setDefault(p);
-            applyPresentation(p);
+            if (p != null) {
+                presentations.setDefault(p);
+                applyPresentation(p);
+            }
         } else {
             throw new UnsupportedOperationException("Component doesn't use presentations");
         }
