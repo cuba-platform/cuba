@@ -82,6 +82,8 @@ public class App extends Application
     protected Map<Window, WindowTimers> windowTimers = new HashMap<Window, WindowTimers>();
     protected Map<Timer, Window> timerWindow = new HashMap<Timer, Window>();
 
+    private boolean stopTimers = false;
+
     protected transient Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
     private static volatile boolean viewsDeployed;
@@ -536,7 +538,7 @@ public class App extends Application
                 }
 
                 public void onStopTimer(Timer timer) {
-                    Window window = timerWindow.get(timer);
+                    Window window = timerWindow.remove(timer);
                     if (window != null)
                     {
                         WindowTimers wt = windowTimers.get(window);
@@ -572,6 +574,7 @@ public class App extends Application
                 timer.stopTimer();
             }
         }
+        stopTimers = true;
     }
 
     /**
@@ -595,11 +598,19 @@ public class App extends Application
      * @return collection of timers that applied for the current window
      */
     public Collection<Timer> getAppTimers(Window currentWindow) {
-        WindowTimers wt = windowTimers.get(currentWindow);
-        if (wt != null) {
-            return Collections.unmodifiableSet(wt.timers);
+        if (stopTimers) {
+            try {
+                return Collections.unmodifiableSet(timerWindow.keySet());
+            } finally {
+                stopTimers = false;
+            }
         } else {
-            return Collections.emptySet();
+            WindowTimers wt = windowTimers.get(currentWindow);
+            if (wt != null) {
+                return Collections.unmodifiableSet(wt.timers);
+            } else {
+                return Collections.emptySet();
+            }
         }
     }
 
