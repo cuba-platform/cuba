@@ -27,11 +27,10 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class WebLookupField
-    extends
+        extends
         WebAbstractOptionsField<FilterSelect>
-    implements
-        LookupField, Component.Wrapper
-{
+        implements
+        LookupField, Component.Wrapper {
     private Object nullOption;
     private FilterMode filterMode;
     private NewOptionHandler newOptionHandler;
@@ -88,6 +87,8 @@ public class WebLookupField
             if (optionsDatasource != null) {
                 return optionsDatasource.getItemId((Entity) value);
             } else {
+                if ((optionsList != null) || (optionsMap != null))
+                    return value;
                 return (value instanceof Entity) ? ((Entity) value).getId() : value;
             }
         }
@@ -95,7 +96,9 @@ public class WebLookupField
 
     protected <T> T getValueFromKey(Object key) {
         if (key == null) return null;
-        if (key instanceof Enum) { return (T)key; }
+        if (key instanceof Enum) {
+            return (T) key;
+        }
 
         Object v;
         if (optionsDatasource != null) {
@@ -128,7 +131,7 @@ public class WebLookupField
     @Override
     public <T> T getValue() {
         final Object key = super.getValue();
-        return (T)getValueFromKey(key);
+        return (T) getValueFromKey(key);
     }
 
     @Override
