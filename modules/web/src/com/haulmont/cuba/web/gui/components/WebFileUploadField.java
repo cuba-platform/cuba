@@ -39,6 +39,8 @@ public class WebFileUploadField
                 return outputStream;
             }
         });
+        // Set single click upload functional
+        component.setImmediate(true);
         component.setAction("");
 
         component.addListener(new Upload.StartedListener() {
