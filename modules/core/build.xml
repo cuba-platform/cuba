@@ -5,15 +5,18 @@
 	<property name="project.dir" location="../.."/>
 	<property name="root.dir" location="${project.dir}/.."/>
 
-    <property name="src-serv.dir" location="src-serv"/>
     <property name="src-conf.dir" location="src-conf"/>
 
 	<property name="module.name" value="core"/>
 	<property name="module.jar" value="cuba-core.jar"/>
     <property name="module.test.jar" value="cuba-test.jar"/>
 
-	<property file="${root.dir}/build.properties"/>
-	<import file="${root.dir}/build-inc-mod.xml"/>
+	<property file="${root.dir}/build-script/build.properties"/>
+	<import file="${root.dir}/build-script/build-inc-mod.xml"/>
+
+    <fileset id="bali-jars" dir="${root.dir}/bali/build">
+        <include name="*.jar"/>
+    </fileset>
 
     <fileset id="chile-jars" dir="${root.dir}/chile/build">
         <include name="*.jar"/>
@@ -23,6 +26,7 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="jdbc-lib-fs"/>
+        <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/deploymarker"/>
@@ -32,6 +36,7 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="test-lib-fs"/>
+        <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/${module.name}"/>

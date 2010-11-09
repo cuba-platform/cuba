@@ -8,8 +8,12 @@
 	<property name="module.name" value="global"/>
 	<property name="module.jar" value="cuba-global.jar"/>
 
-    <property file="${root.dir}/build.properties"/>
-    <import file="${root.dir}/build-inc-mod.xml"/>
+    <property file="${root.dir}/build-script/build.properties"/>
+    <import file="${root.dir}/build-script/build-inc-mod.xml"/>
+
+    <fileset id="bali-jars" dir="${root.dir}/bali/build">
+        <include name="*.jar"/>
+    </fileset>
 
     <fileset id="chile-jars" dir="${root.dir}/chile/build">
         <include name="*.jar"/>
@@ -17,18 +21,21 @@
 
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
+        <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
     </path>
 
     <path id="test-compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="test-lib-fs"/>
+        <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/${module.name}"/>
     </path>
 
     <path id="enhance-cp">
         <fileset refid="common-lib-fs"/>
+        <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/${module.name}"/>
         <pathelement location="${test.out.dir}/${module.name}"/>

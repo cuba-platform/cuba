@@ -8,8 +8,12 @@
 	<property name="module.name" value="gui"/>
 	<property name="module.jar" value="cuba-gui.jar"/>
 
-    <property file="${root.dir}/build.properties"/>
-    <import file="${root.dir}/build-inc-mod.xml"/>
+    <property file="${root.dir}/build-script/build.properties"/>
+    <import file="${root.dir}/build-script/build-inc-mod.xml"/>
+
+    <fileset id="bali-jars" dir="${root.dir}/bali/build">
+        <include name="*.jar"/>
+    </fileset>
 
     <fileset id="chile-jars" dir="${root.dir}/chile/build">
         <include name="*.jar"/>
@@ -18,6 +22,7 @@
     <path id="compile-cp">
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
+        <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
     </path>
@@ -26,6 +31,7 @@
         <fileset refid="common-lib-fs"/>
         <fileset refid="server-lib-fs"/>
         <fileset refid="test-lib-fs"/>
+        <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${test.out.dir}/core"/>

@@ -17,6 +17,7 @@
     <orderEntry type="module" module-name="gui" />
     <orderEntry type="module" module-name="web-war" />
     <orderEntry type="library" name="groovy" level="application" />
+    <orderEntry type="library" name="bali" level="project" />
   </component>
 </module>
 

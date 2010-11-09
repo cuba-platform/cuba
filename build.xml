@@ -6,8 +6,8 @@
 
     <property file="local.build.properties"/>
     <property file="build.properties"/>
-	<property file="${root.dir}/build.properties"/>
-	<import file="${root.dir}/build-inc-prj.xml"/>
+	<property file="${root.dir}/build-script/build.properties"/>
+	<import file="${root.dir}/build-script/build-inc-prj.xml"/>
 	<property file="lib.properties"/>
 
     <property name="chile.build.dir" location="${root.dir}/chile/build"/>
@@ -36,79 +36,78 @@
 	<target name="install-lib">
 		<!-- tomcat -->
 		<ext:install-tomcat version="${tomcat.version}" toDir="${tomcat.dir}"/>
+        <copy todir="${tomcat.dir}">
+            <fileset dir="etc/tomcat" includes="**/*"/>
+        </copy>
         <!-- common libs -->
-        <ext:install-lib name="commons-codec" version="${commons-codec.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="commons-io" version="${commons-io.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="commons-pool" version="${commons-pool.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="commons-cli" version="${commons-cli.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="freemarker" version="${freemarker.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="perf4j" version="${perf4j.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="groovy" version="${groovy.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="asm" version="${asm.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="openjpa" version="${openjpa.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="serp" version="${serp.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="google-collect" version="${google-collect.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="antlr" artifactId="antlr" version="${antlr.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="asm" artifactId="asm" version="${asm.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="commons-codec" artifactId="commons-codec" version="${commons-codec.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="commons-pool" artifactId="commons-pool" version="${commons-pool.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="commons-cli" artifactId="commons-cli" version="${commons-cli.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.freemarker" artifactId="freemarker" version="${freemarker.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.perf4j" artifactId="perf4j" version="${perf4j.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="openjpa" version="${openjpa.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="net.sourceforge.serp" artifactId="serp" version="${serp.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="com.google.collections" artifactId="google-collections" version="${google-collect.version}" toDir="${lib.common.dir}"/>
 
-        <ext:install-lib name="aopalliance" version="${aopalliance.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="aspectjrt" version="${aspectjrt.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="aspectjweaver" version="${aspectjweaver.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="springframework.beans" version="${springframework.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="springframework.context" version="${springframework.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="springframework.core" version="${springframework.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="springframework.asm" version="${springframework.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="springframework.expression" version="${springframework.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="springframework.aop" version="${springframework.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.aspectj" artifactId="aspectjrt" version="${aspectjrt.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.aspectj" artifactId="aspectjweaver" version="${aspectjweaver.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-beans" version="${springframework.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-context" version="${springframework.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-aop" version="${springframework.version}" toDir="${lib.common.dir}"/>
 
-        <ext:install-lib name="antlr" version="${antlr.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="xercesImpl" version="${xercesImpl.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="jaxen" version="${jaxen.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="xerces" artifactId="xercesImpl" version="${xercesImpl.version}" toDir="${lib.common.dir}"/>
+        <!--<ext:install-lib name="jaxen" version="${jaxen.version}" toDir="${lib.common.dir}"/>-->
 
 		<!-- server libs -->
-        <ext:install-lib name="vaadin" version="${vaadin.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="jcifs" version="${jcifs.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="jespa" version="${jespa.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="dashlayout" version="${dashlayout.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="popupbutton" version="${popupbutton.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="vaadin" version="${vaadin.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="jcifs" version="${jcifs.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="jespa" version="${jespa.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="dashlayout" version="${dashlayout.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="popupbutton" version="${popupbutton.version}" toDir="${lib.server.dir}"/>
 
-        <ext:install-lib name="springframework.jdbc" version="${springframework.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="springframework.orm" version="${springframework.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="springframework.transaction" version="${springframework.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="springframework.context.support" version="${springframework.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-jdbc" version="${springframework.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-orm" version="${springframework.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-tx" version="${springframework.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-context-support" version="${springframework.version}" toDir="${lib.server.dir}"/>
 
-        <ext:install-lib name="jgroups" version="${jgroups.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.apache.commons" artifactId="commons-compress" version="${commons-compress.version}" toDir="${lib.server.dir}"/>
 
-        <ext:install-lib name="servlet-api" version="${servlet-api.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="jcommon" version="${jcommon.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="jfreechart" version="${jfreechart.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="jgroups" artifactId="jgroups" version="${jgroups.version}" toDir="${lib.server.dir}"/>
+
+        <ext:install-lib groupId="org.apache.tomcat" artifactId="servlet-api" version="${servlet-api.version}" toDir="${lib.server.dir}"/>
+
+        <ext:install-lib groupId="jfree" artifactId="jcommon" version="${jcommon.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="jfree" artifactId="jfreechart" version="${jfreechart.version}" toDir="${lib.server.dir}"/>
 
         <!-- gwt libs -->
-        <ext:install-lib name="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
-        <ext:install-lib name="gwt-dev" version="${gwt-dev.version}" toDir="${lib.gwt.dir}"/>
+        <ext:install-lib groupId="com.google.gwt" artifactId="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
+        <ext:install-lib groupId="com.google.gwt" artifactId="gwt-dev" version="${gwt-dev.version}" toDir="${lib.gwt.dir}"/>
 
         <!-- jdbc -->
-        <ext:install-lib name="hsqldb" version="${hsqldb.version}" toDir="${lib.jdbc.dir}"/>
-        <ext:install-lib name="postgresql" version="${postgresql.version}" toDir="${lib.jdbc.dir}"/>
+        <ext:install-lib groupId="hsqldb" artifactId="hsqldb" version="${hsqldb.version}" toDir="${lib.jdbc.dir}"/>
+        <ext:install-lib groupId="postgresql" artifactId="postgresql" version="${postgresql.version}" toDir="${lib.jdbc.dir}"/>
 
-        <!-- jasper -->
-        <ext:install-lib name="jasperreports" version="${jasperreports.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="commons-digester" version="${commons-digester.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="commons-beanutils" version="${commons-beanutils.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="poi" version="${poi.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib name="iText" version="${iText.version}" toDir="${lib.common.dir}"/>
+        <!-- reporting -->
+        <ext:install-lib groupId="jasperreports" artifactId="jasperreports" version="${jasperreports.version}" toDir="${lib.common.dir}"/>
+
+        <ext:install-lib groupId="commons-digester" artifactId="commons-digester" version="${commons-digester.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="commons-beanutils" artifactId="commons-beanutils" version="${commons-beanutils.version}" toDir="${lib.server.dir}"/>
+
+        <ext:install-lib groupId="org.apache.poi" artifactId="poi" version="${poi.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="com.lowagie" artifactId="itext" version="${itext.version}" toDir="${lib.common.dir}"/>
 
         <!--Open Office-->
-        <ext:install-lib name="bootstrapconnector" version="${openoffice.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="unoil" version="${openoffice.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="jurt" version="${openoffice.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="juh" version="${openoffice.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="ridl" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="ooo-bootstrapconnector" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.openoffice" artifactId="unoil" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.openoffice" artifactId="jurt" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.openoffice" artifactId="juh" version="${openoffice.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="org.openoffice" artifactId="ridl" version="${openoffice.version}" toDir="${lib.server.dir}"/>
 
         <!--XStream-->
-        <ext:install-lib name="xstream" version="${xstream.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib name="xpp3" version="${xpp3.version}" toDir="${lib.server.dir}"/>
-
-        <!--Zip tools-->
-        <ext:install-lib name="commons-compress" version="${commons-compress.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="xstream" version="${xstream.version}" toDir="${lib.server.dir}"/>
+        <ext:install-lib groupId="xpp3" artifactId="xpp3_min" version="${xpp3.version}" toDir="${lib.server.dir}"/>
 	</target>
 	
 	<target name="compile">
@@ -227,41 +226,5 @@
     <target name="clean-build-deploy" depends="clean,build,deploy"/>
 
     <target name="clean-build-deploy-start" depends="clean,build,deploy,start"/>
-
-    <target name="output">
-        <!--<mkdir dir="${output.replace.dir}/deploy"/>-->
-        <!--<mkdir dir="${output.replace.dir}/conf"/>-->
-        <!--<mkdir dir="${output.merge.dir}/deploy"/>-->
-        <!--<mkdir dir="${output.merge.dir}/conf"/>-->
-
-        <!--<copy todir="${output.replace.dir}/deploy">-->
-            <!--<fileset dir="build">-->
-                <!--<include name="*.jar"/>-->
-                <!--<include name="*.war"/>-->
-                <!--<include name="21cuba-core-service.xml"/>-->
-                <!--<exclude name="cuba-core-test.jar"/>-->
-                <!--<exclude name="web-toolkit.jar"/>-->
-            <!--</fileset>-->
-        <!--</copy>-->
-
-        <!--<copy todir="${output.merge.dir}/deploy">-->
-            <!--<fileset dir="build">-->
-                <!--<include name="cuba-ds.xml"/>-->
-            <!--</fileset>-->
-        <!--</copy>-->
-
-        <!--<copy todir="${output.replace.dir}/conf">-->
-            <!--<fileset dir="build/conf">-->
-                <!--<include name="cuba/**/*"/>-->
-            <!--</fileset>-->
-        <!--</copy>-->
-
-        <!--<copy todir="${output.merge.dir}/conf">-->
-            <!--<fileset dir="build/conf">-->
-                <!--<include name="jboss-log4j.xml"/>-->
-                <!--<include name="system.properties"/>-->
-            <!--</fileset>-->
-        <!--</copy>-->
-    </target>
 
 </project>

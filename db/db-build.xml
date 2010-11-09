@@ -4,8 +4,8 @@
     <property name="project.dir" location=".."/>
     <property name="root.dir" location="${project.dir}/.."/>
 
-    <import file="${root.dir}/build-inc-prj.xml"/>
-	<property file="${root.dir}/build.properties"/>
+    <import file="${root.dir}/build-script/build-inc-prj.xml"/>
+	<property file="${root.dir}/build-script/build.properties"/>
     <property file="${project.dir}/build.properties"/>
 
     <property name="sql.dir" location="init/sql"/>
