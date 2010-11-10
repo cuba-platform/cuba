@@ -64,7 +64,7 @@ public class AppContextLoader implements ServletContextListener {
 
             AppContext.startContext();
             log.info("AppContext initialized");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Error initializing application", e);
             throw new RuntimeException(e);
         }

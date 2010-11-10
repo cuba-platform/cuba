@@ -51,11 +51,14 @@
         <ext:install-lib groupId="net.sourceforge.serp" artifactId="serp" version="${serp.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="com.google.collections" artifactId="google-collections" version="${google-collect.version}" toDir="${lib.common.dir}"/>
 
+        <ext:install-lib groupId="aopalliance" artifactId="aopalliance" version="${aopalliance.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.aspectj" artifactId="aspectjrt" version="${aspectjrt.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.aspectj" artifactId="aspectjweaver" version="${aspectjweaver.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-beans" version="${springframework.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-context" version="${springframework.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-aop" version="${springframework.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-asm" version="${springframework.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-expression" version="${springframework.version}" toDir="${lib.common.dir}"/>
 
         <ext:install-lib groupId="xerces" artifactId="xercesImpl" version="${xercesImpl.version}" toDir="${lib.common.dir}"/>
         <!--<ext:install-lib name="jaxen" version="${jaxen.version}" toDir="${lib.common.dir}"/>-->

@@ -587,7 +587,7 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/openjpa-1.2.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/google-collections-1.0-rc5.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/perf4j-0.9.10.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/itext-2.1.0.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/iText-2.1.0.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/poi-3.6.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/spring-core-3.0.0.RELEASE.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/spring-aop-3.0.0.RELEASE.jar!/" />
