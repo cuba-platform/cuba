@@ -44,7 +44,7 @@
             </hbox>
             <table id="table" editable="false" multiselect="true">
                 <columns>
-                    <column id="name" caption="msg://name"/>
+                    <column id="name" caption="msg://report.name"/>
                 </columns>
                 <rows datasource="reportDs"/>
             </table>

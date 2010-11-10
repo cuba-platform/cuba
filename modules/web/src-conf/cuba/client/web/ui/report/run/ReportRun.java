@@ -17,7 +17,7 @@ public class ReportRun extends BasicBrowser {
         super.init(params);
         final Table reportsTable = getComponent("table");
         Button runReport = getComponent("runReport");
-        runReport.setAction(new AbstractAction("") {
+        runReport.setAction(new AbstractAction("runReport") {
             public void actionPerform(Component component) {
                 Report report = reportsTable.getSingleSelected();
                 report = getDsContext().getDataService().reload(report, "report.edit");

@@ -6,7 +6,6 @@
         caption="msg://reportBrowser"
         >
 
-
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app/ui/report/report.views.xml"/>
     </metadataContext>
@@ -34,11 +33,11 @@
     <layout expand="table-panel">
         <vbox id="table-panel" expand="table" spacing="true">
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button id="runReport"/>
+                <button id="runReport" />
             </hbox>
             <table id="table" editable="false">
                 <columns>
-                    <column id="name" caption="msg://name"/>
+                    <column id="name" caption="msg://report.name"/>
                 </columns>
                 <rows datasource="reportDs"/>
             </table>
