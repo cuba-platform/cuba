@@ -17,23 +17,23 @@ import com.haulmont.cuba.report.formatters.xls.Area;
 import com.haulmont.cuba.report.formatters.xls.AreaAlign;
 import com.haulmont.cuba.report.formatters.xls.Cell;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ddf.EscherClientAnchorRecord;
+import org.apache.poi.ddf.EscherRecord;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
-import org.apache.poi.hssf.record.PaletteRecord;
 import org.apache.poi.hssf.record.EscherAggregate;
+import org.apache.poi.hssf.record.PaletteRecord;
 import org.apache.poi.hssf.record.formula.AreaPtg;
 import org.apache.poi.hssf.record.formula.Ptg;
 import org.apache.poi.hssf.record.formula.RefPtg;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ddf.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
 public class XLSFormatter extends AbstractFormatter {
     private HSSFWorkbook templateWorkbook;
@@ -57,7 +57,7 @@ public class XLSFormatter extends AbstractFormatter {
 
         cloneWorkbookStyles();
         copyAllPictures();
-
+        
         for (int sheetNumber = 0; sheetNumber < templateWorkbook.getNumberOfSheets(); sheetNumber++) {
             cloneSheet(sheetNumber);
         }
@@ -398,6 +398,7 @@ public class XLSFormatter extends AbstractFormatter {
                 HSSFRow resultRow;
                 if (templateCell.getRowIndex() != currentRowNum) { //create new row
                     resultRow = resultSheet.createRow(rownum++);
+                    resultRow.setHeight(templateCell.getRow().getHeight());
                     resultRows.add(resultRow);
 
                     currentRowNum = templateCell.getRowIndex();

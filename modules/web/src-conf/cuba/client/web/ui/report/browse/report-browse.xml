@@ -33,9 +33,9 @@
     <layout expand="table-panel">
         <vbox id="table-panel" expand="table" spacing="true">
             <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button action="table.create" caption="msg://create" icon="icons/create.png"/>
-                <button action="table.edit" caption="msg://edit" icon="icons/edit.png"/>
-                <button action="table.remove" caption="msg://remove" icon="icons/remove.png"/>
+                <button action="table.create" icon="icons/create.png"/>
+                <button action="table.edit" icon="icons/edit.png"/>
+                <button action="table.remove" icon="icons/remove.png"/>
                 <label/>
                 <button id="import"/>
                 <button id="export"/>

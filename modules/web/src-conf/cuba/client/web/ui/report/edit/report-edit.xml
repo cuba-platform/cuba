@@ -20,8 +20,6 @@
             <collectionDatasource id="rolesDs" property="roles"/>
             <collectionDatasource id="reportScreensDs" property="reportScreens"/>
         </datasource>
-        <collectionDatasource id='bandDefinitionDs' class='com.haulmont.cuba.report.BandDefinition' view='_minimal'/>
-
         <hierarchicalDatasource id="treeDs" class="com.haulmont.cuba.report.BandDefinition" view="report.edit">
             <datasourceClass>cuba.client.web.ui.report.BandDefinitionsDatasource</datasourceClass>
         </hierarchicalDatasource>
