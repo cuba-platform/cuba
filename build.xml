@@ -4,9 +4,9 @@
 
 	<property name="root.dir" location=".."/>
 
-    <property file="local.build.properties"/>
+    <property file="${root.dir}/build-script/local.build.properties"/>
+    <property file="${root.dir}/build-script/build.properties"/>
     <property file="build.properties"/>
-	<property file="${root.dir}/build-script/build.properties"/>
 	<import file="${root.dir}/build-script/build-inc-prj.xml"/>
 	<property file="lib.properties"/>
 
