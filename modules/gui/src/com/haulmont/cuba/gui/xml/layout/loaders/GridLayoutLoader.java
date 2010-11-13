@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.QuasiComponent;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
@@ -125,7 +126,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         return component;
     }
 
-    protected void loadSubComponents(GridLayout component, Element element, int row) {
+    protected void loadSubComponents(GridLayout component, Element element, int row) throws InstantiationException, IllegalAccessException {
         final LayoutLoader loader = new LayoutLoader(context, factory, config);
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
@@ -156,7 +157,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         }
     }
 
-    private void addSubComponent(GridLayout grid, Component subComponent, int c1, int r1, int c2, int r2) {
+    private void addSubComponent(GridLayout grid, Component subComponent, int c1, int r1, int c2, int r2) throws IllegalAccessException, InstantiationException {
         if (subComponent instanceof QuasiComponent) {
             Collection<Component> realComponents = ((QuasiComponent) subComponent).getRealComponents();
             if (realComponents.size() == 1) {
@@ -164,7 +165,9 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
                 grid.remove(comp);
                 grid.add(comp, c1, r1, c2, r2);
             } else {
-                throw new UnsupportedOperationException("Invalid nested components count");
+                Label label = factory.createComponent("label");
+                grid.add(label, c1, r1, c2, r2);
+//                throw new UnsupportedOperationException("Invalid nested components count");
             }
         } else {
             grid.add(subComponent, c1, r1, c2, r2);
