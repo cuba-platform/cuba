@@ -82,6 +82,9 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         attachListener((Instance) item);
 
         data.put(item.getId(), item);
+        
+        if (size != null)
+            size++;
 
         if (sortInfos != null)
             sortInMemory();
@@ -99,6 +102,9 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
         data.remove(item.getId());
         detachListener((Instance) item);
+
+        if (size != null && size > 0)
+            size--;
 
         deleted(item);
 
