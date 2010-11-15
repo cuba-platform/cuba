@@ -908,8 +908,8 @@
     <xs:complexType name="tableType">
         <xs:sequence>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
-            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="tableColumnsType" />
-            <xs:element name="rows" minOccurs="1">
+            <xs:element name="columns" minOccurs="0" maxOccurs="1" type="tableColumnsType" />
+            <xs:element name="rows" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="datasource" type="xs:string" use="required"/>
                     <xs:attribute name="headerMode" type="headerMode" use="optional"/>

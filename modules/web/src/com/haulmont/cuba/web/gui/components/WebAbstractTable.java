@@ -18,11 +18,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -58,6 +56,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
@@ -351,10 +350,23 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         final Collection<MetaPropertyPath> columns;
         if (this.columns.isEmpty()) {
-            columns = null;
-        } else {
-            columns = this.columns.keySet();
+            Collection<MetaPropertyPath> paths = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+            for (MetaPropertyPath metaPropertyPath : paths) {
+                MetaProperty property = metaPropertyPath.getMetaProperty();
+                if (!property.getRange().getCardinality().isMany() && !MetadataHelper.isSystem(property)) {
+                    Table.Column column = new Table.Column(metaPropertyPath);
+
+                    column.setCaption(MessageUtils.getPropertyCaption(property));
+                    column.setType(metaPropertyPath.getRangeJavaClass());
+
+                    Element element = DocumentHelper.createElement("column");
+                    column.setXmlDescriptor(element);
+
+                    addColumn(column);
+                }
+            }
         }
+        columns = this.columns.keySet();
 
         final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, columns);
 
