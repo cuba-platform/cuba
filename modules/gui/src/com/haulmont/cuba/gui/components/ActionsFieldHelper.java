@@ -14,7 +14,10 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -96,6 +99,13 @@ public class ActionsFieldHelper {
                             MessageProvider.getMessage(ActionsFieldHelper.class,"ActionsFieldHelper.openMsg"),
                             IFrame.NotificationType.HUMANIZED);
                     return;
+                }
+
+                if (entity != null) {
+                    LoadContext ctx = new LoadContext(entity.getClass());
+                    ctx.setId(entity.getId());
+                    ctx.setView(View.MINIMAL);
+                    entity = ServiceLocator.getDataService().load(ctx);
                 }
 
                 if (entity != null) {
