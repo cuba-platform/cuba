@@ -328,6 +328,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
 
         public void actionPerform(Component component) {
+            if(!isEnabled()) return;
             final Set selected = ListActionsHelper.this.component.getSelected();
             if (!selected.isEmpty()) {
                 final String messagesPackage = AppConfig.getInstance().getMessagesPack();
