@@ -290,13 +290,22 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     public void replaceItem(T item) {
-        for (T t : __getCollection()) {
+        Collection<T> collection = __getCollection();
+        for (T t : collection) {
             if (t.equals(item)) {
-                __getCollection().remove(item);
-                __getCollection().add(item);
+                collection.remove(item);
+                collection.add(item);
+
+                if (item.equals(this.item)) {
+                    this.item = item;
+                }
+
                 break;
             }
         }
+        if (sortInfos != null)
+            doSort();
+
         forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
@@ -412,17 +421,18 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected void doSort() {
-        if (__getCollection() == null) return;
+        Collection<T> collection = __getCollection();
+        if (collection == null)
+            return;
+
         final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
-        if (__getCollection() != null) {
-            @SuppressWarnings({"unchecked"})
-            List<T> list = new LinkedList<T>(__getCollection());
-            Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
-            __getCollection().clear();
-            __getCollection().addAll(list);
-        }
+        @SuppressWarnings({"unchecked"})
+        List<T> list = new LinkedList<T>(collection);
+        Collections.sort(list, new EntityComparator<T>(propertyPath, asc));
+        collection.clear();
+        collection.addAll(list);
     }
 
     public K firstItemId() {
