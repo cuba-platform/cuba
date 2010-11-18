@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -37,6 +38,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     protected Map<com.haulmont.cuba.gui.components.Field.Validator, Validator> validators =
             new HashMap<com.haulmont.cuba.gui.components.Field.Validator, Validator>();
 
+    protected DsManager dsManager;
+
     public Datasource getDatasource() {
         return datasource;
     }
@@ -48,6 +51,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
+        dsManager = new DsManager(datasource, this);
+
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyEx(property);
         try {
@@ -57,14 +62,14 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
             throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
         }
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath), dsManager);
         component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
 
         setRequired(metaProperty.isMandatory());
     }
 
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths);
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
+        return new ItemWrapper(datasource, propertyPaths, dsManager);
     }
 
     public boolean isRequired() {

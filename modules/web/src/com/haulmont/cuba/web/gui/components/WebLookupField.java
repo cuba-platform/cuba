@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -165,7 +166,7 @@ public class WebLookupField
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
-        component.setContainerDataSource(new DsWrapper(datasource, true));
+        component.setContainerDataSource(new DsWrapper(datasource, true, dsManager));
 
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
@@ -194,20 +195,20 @@ public class WebLookupField
 
     private class DsWrapper extends CollectionDsWrapper implements com.vaadin.data.Container.Ordered {
 
-        public DsWrapper(CollectionDatasource datasource) {
-            super(datasource);
+        public DsWrapper(CollectionDatasource datasource, DsManager dsManager) {
+            super(datasource, dsManager);
         }
 
-        public DsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
-            super(datasource, autoRefresh);
+        public DsWrapper(CollectionDatasource datasource, boolean autoRefresh, DsManager dsManager) {
+            super(datasource, autoRefresh, dsManager);
         }
 
-        public DsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties);
+        public DsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
+            super(datasource, properties, dsManager);
         }
 
-        public DsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
-            super(datasource, properties, autoRefresh);
+        public DsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh, DsManager dsManager) {
+            super(datasource, properties, autoRefresh, dsManager);
         }
 
         @Override

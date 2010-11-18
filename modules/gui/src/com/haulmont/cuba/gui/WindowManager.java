@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
@@ -82,7 +81,7 @@ public abstract class WindowManager implements Serializable {
 
     public synchronized UserSettingService getSettingService() {
         if (settingService == null) {
-            settingService = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
+            settingService = ServiceLocator.lookup(UserSettingService.NAME);
         }
         return settingService;
     }
@@ -436,6 +435,52 @@ public abstract class WindowManager implements Serializable {
         return (T) window;
     }
 
+    public <T extends IFrame> T openFrame(
+            Window window,
+            Component parent,
+            WindowInfo windowInfo
+    ) {
+        //Parameters can be useful later
+        final Map<String, Object> params =
+                createParametersMap(
+                        windowInfo,
+                        Collections.<String,Object>emptyMap()
+                );
+
+        String src = windowInfo.getTemplate();
+
+        ComponentLoaderContext context = new ComponentLoaderContext(window.getDsContext(), params);
+
+        final LayoutLoader loader =
+                new LayoutLoader(context, createComponentFactory(), LayoutLoaderConfig.getFrameLoaders());
+        loader.setLocale(getLocale());
+        loader.setMessagesPack(window.getMessagesPack());
+
+        InputStream stream = null;
+        if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled()) {
+            stream = ScriptingProvider.getResourceAsStream(src);
+        }
+        if (stream == null) {
+            stream = getClass().getResourceAsStream(src);
+            if (stream == null) {
+                throw new RuntimeException("Bad template path: " + src);
+            }
+        }
+
+        final IFrame component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
+        if (component.getMessagesPack() == null) {
+            component.setMessagesPack(window.getMessagesPack());
+        }
+
+        component.setFrame(window);
+        context.setFrame(component);
+        context.executeLazyTasks();
+
+        showFrame(parent, component);
+
+        return (T) component;
+    }
+
     protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
         final Map<String, Object> map = new HashMap<String, Object>(params.size());
 
@@ -493,6 +538,8 @@ public abstract class WindowManager implements Serializable {
     protected abstract void showWindow(Window window, String caption, OpenType openType);
 
     protected abstract void showWindow(Window window, String caption, String description, OpenType openType);
+
+    protected abstract void showFrame(Component parent, IFrame frame);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

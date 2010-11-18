@@ -140,6 +140,10 @@
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
                         <xs:attribute name="expandLayout" type="xs:string" use="optional"/>
                         <xs:attribute name="spacing" type="xs:string" use="optional"/>
+                        <xs:attribute name="margin" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
@@ -186,6 +190,7 @@
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="margin" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:boolean"/>
+                        <xs:attribute name="visible" type="xs:string"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="hbox">
@@ -202,6 +207,7 @@
                         <xs:attribute name="align" type="align" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:boolean"/>
+                        <xs:attribute name="visible" type="xs:string"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="scrollbox">

@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.ChartDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.toolkit.ui.charts.ChartComponent;
 
 import java.util.Collection;
@@ -29,6 +30,8 @@ public abstract class WebAbstractChart<T extends ChartComponent>
         implements Chart
 {
     private CollectionDatasource datasource;
+
+    protected DsManager dsManager;
 
     protected Map<MetaPropertyPath, String> columns = new LinkedHashMap<MetaPropertyPath, String>();
 
@@ -77,9 +80,10 @@ public abstract class WebAbstractChart<T extends ChartComponent>
                 props.add(getRowCaptionPropertyId());
             }
 
-            CollectionDsWrapper dsWrapper = createContainerDatasource(datasource, props);
-
             this.datasource = datasource;
+            this.dsManager = new DsManager(datasource, this);
+
+            CollectionDsWrapper dsWrapper = createContainerDatasource(datasource, props, dsManager);
 
             component.setContainerDataSource(dsWrapper);
 
@@ -91,9 +95,10 @@ public abstract class WebAbstractChart<T extends ChartComponent>
 
     protected CollectionDsWrapper createContainerDatasource(
             CollectionDatasource datasource,
-            Collection<MetaPropertyPath> props
+            Collection<MetaPropertyPath> props,
+            DsManager dsManager
     ) {
-        return new CollectionDsWrapper(datasource, props, true);
+        return new CollectionDsWrapper(datasource, props, true, this.dsManager);
     }
 
     public MetaPropertyPath getRowCaptionPropertyId() {

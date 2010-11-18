@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.WidgetsTree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 
 public class WebWidgetsTree
@@ -24,6 +25,8 @@ public class WebWidgetsTree
 {
 
     private String hierarchyProperty;
+
+    protected DsManager dsManager;
 
     private static final long serialVersionUID = 8256179252367394044L;
 
@@ -39,9 +42,10 @@ public class WebWidgetsTree
 
     public void setDatasource(HierarchicalDatasource datasource) {
         this.datasource = datasource;
+        this.dsManager = new DsManager(datasource, this);
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
 
-        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
+        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource, dsManager);
         component.setContainerDataSource(wrapper);
     }
 

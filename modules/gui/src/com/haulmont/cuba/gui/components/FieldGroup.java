@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
@@ -44,6 +43,12 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
 
     boolean isEnabled(Field field);
     void setEnabled(Field field, boolean enabled);
+
+    boolean isVisible(Field field);
+    void setVisible(Field field, boolean visible);
+
+    Object getFieldValue(Field field);
+    void setFieldValue(Field field, Object value);
 
     void setCaptionAlignment(FieldCaptionAlignment captionAlignment);
 

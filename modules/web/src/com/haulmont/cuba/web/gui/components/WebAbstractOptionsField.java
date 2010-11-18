@@ -16,10 +16,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.EnumerationContainer;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.ObjectContainer;
+import com.haulmont.cuba.web.gui.data.*;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 
@@ -41,6 +38,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
+        dsManager = new DsManager(datasource, this);
+
         final MetaClass metaClass = datasource.getMetaClass();
         this.metaProperty = metaClass.getProperty(property);
         if (metaProperty == null)
@@ -49,7 +48,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         setMultiSelect(metaProperty.getRange().getCardinality().isMany());
 
         final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
-        final ItemWrapper wrapper = new ItemWrapper(datasource, Collections.singleton(propertyPath));
+        final ItemWrapper wrapper = new ItemWrapper(datasource, Collections.singleton(propertyPath), dsManager);
         final Property itemProperty = wrapper.getItemProperty(propertyPath);
 
         component.setPropertyDataSource(itemProperty);
@@ -174,7 +173,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
-        component.setContainerDataSource(new CollectionDsWrapper(datasource, true));
+        component.setContainerDataSource(new CollectionDsWrapper(datasource, true, dsManager));
 
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));

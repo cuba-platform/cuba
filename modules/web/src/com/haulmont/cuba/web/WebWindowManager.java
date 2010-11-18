@@ -638,6 +638,28 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
+    public void showFrame(com.haulmont.cuba.gui.components.Component parent, IFrame frame) {
+        if (parent instanceof com.haulmont.cuba.gui.components.Component.Container) {
+            com.haulmont.cuba.gui.components.Component.Container container =
+                    (com.haulmont.cuba.gui.components.Component.Container) parent;
+            for (com.haulmont.cuba.gui.components.Component c : container.getComponents()) {
+                if (c instanceof com.haulmont.cuba.gui.components.Component.Disposable) {
+                    com.haulmont.cuba.gui.components.Component.Disposable disposable =
+                            (com.haulmont.cuba.gui.components.Component.Disposable) c;
+                    if (!disposable.isDisposed()) {
+                        disposable.dispose();
+                    }
+                }
+                container.remove(c);
+            }
+            container.add(frame);
+        } else {
+            throw new IllegalStateException(
+                    "Parent component must be com.haulmont.cuba.gui.components.Component.Container"
+            );
+        }
+    }
+
     private void showStartupScreen(AppWindow appWindow) {
         if (getTabs().size() == 0) {
             appWindow.getMainLayout().removeAllComponents();

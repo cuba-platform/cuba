@@ -39,6 +39,7 @@ import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
@@ -59,7 +60,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import javax.persistence.TemporalType;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -100,6 +100,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Presentations presentations;
     protected TablePresentations tablePresentations;
+
+    protected DsManager dsManager;
 
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
@@ -368,9 +370,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
         columns = this.columns.keySet();
 
-        final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, columns);
-
         this.datasource = datasource;
+        this.dsManager = new DsManager(datasource, this);
+
+        final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, columns, dsManager);
 
         component.setContainerDataSource(containerDatasource);
 
@@ -442,7 +445,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         if (aggregationCells != null) {
-            getDatasource().addListener(createAggregationDatasourceListener());
+            dsManager.addListener(createAggregationDatasourceListener());
         }
 
         setVisibleColumns(columnsOrder);
@@ -457,7 +460,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
+    protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager);
 
     protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
         component.setVisibleColumns(columnsOrder.toArray());
@@ -741,8 +744,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         private ValueChangeListener calcListener;
         private static final long serialVersionUID = -7942046867909695346L;
 
-        public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-            super(item, propertyPath);
+        public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+            super(item, propertyPath, dsManager);
         }
 
         @Override

@@ -46,24 +46,30 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     private static Log log = LogFactory.getLog(CollectionDsWrapper.class);
 
-    public CollectionDsWrapper(CollectionDatasource datasource) {
-        this(datasource, false);
+    protected DsManager dsManager;
+    
+    private static final long serialVersionUID = 1440434590495905389L;
+
+    public CollectionDsWrapper(CollectionDatasource datasource, DsManager dsManager) {
+        this(datasource, false, dsManager);
     }
 
-    public CollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-        this(datasource, properties, false);
+    public CollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
+        this(datasource, properties, false, dsManager);
     }
 
-    public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
-        this(datasource, null, autoRefresh);
+    public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh, DsManager dsManager) {
+        this(datasource, null, autoRefresh, dsManager);
     }
 
     public CollectionDsWrapper(
             CollectionDatasource datasource,
-                Collection<MetaPropertyPath> properties,
-                    boolean autoRefresh)
-    {
+            Collection<MetaPropertyPath> properties,
+            boolean autoRefresh,
+            DsManager dsManager
+    ) {
         this.datasource = datasource;
+        this.dsManager = dsManager;
         this.autoRefresh = autoRefresh;
         this.persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
 
@@ -76,7 +82,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             this.properties.addAll(properties);
         }
 
-        datasource.addListener(createDatasourceListener());
+        dsManager.addListener(createDatasourceListener());
     }
 
     protected DatasourceListener createDatasourceListener() {
@@ -149,7 +155,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     protected ItemWrapper createItemWrapper(Object item) {
-        return new ItemWrapper(item, properties);
+        return new ItemWrapper(item, properties, dsManager);
     }
 
     public Collection getContainerPropertyIds() {

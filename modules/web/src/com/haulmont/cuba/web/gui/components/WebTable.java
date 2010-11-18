@@ -16,10 +16,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.*;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -72,10 +69,10 @@ public class WebTable
         setSortable(true);
     }
 
-    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
+    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager) {
         return datasource instanceof CollectionDatasource.Sortable && isSortable() ?
-            new SortableTableDsWrapper(datasource, columns) :
-            new TableDsWrapper(datasource, columns);
+            new SortableTableDsWrapper(datasource, columns, dsManager) :
+            new TableDsWrapper(datasource, columns, dsManager);
     }
 
     protected class TableDsWrapper extends CollectionDsWrapper
@@ -83,12 +80,12 @@ public class WebTable
 
         private List<Object> aggregationProperties = null;
 
-        public TableDsWrapper(CollectionDatasource datasource) {
-            super(datasource);
+        public TableDsWrapper(CollectionDatasource datasource, DsManager dsManager) {
+            super(datasource, dsManager);
         }
 
-        public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties);
+        public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
+            super(datasource, properties, dsManager);
         }
 
         @Override
@@ -107,10 +104,10 @@ public class WebTable
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties) {
+            return new ItemWrapper(item, properties, dsManager) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                    return new TablePropertyWrapper(item, propertyPath);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+                    return new TablePropertyWrapper(item, propertyPath, dsManager);
                 }
             };
         }
@@ -155,12 +152,12 @@ public class WebTable
 
         private List<Object> aggregationProperties = null;
 
-        public SortableTableDsWrapper(CollectionDatasource datasource) {
-            super(datasource, true);
+        public SortableTableDsWrapper(CollectionDatasource datasource, DsManager dsManager) {
+            super(datasource, true, dsManager);
         }
 
-        public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties, true);
+        public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
+            super(datasource, properties, true, dsManager);
         }
 
         @Override
@@ -179,10 +176,10 @@ public class WebTable
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties) {
+            return new ItemWrapper(item, properties, dsManager) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                    return new TablePropertyWrapper(item, propertyPath);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+                    return new TablePropertyWrapper(item, propertyPath, dsManager);
                 }
             };
         }

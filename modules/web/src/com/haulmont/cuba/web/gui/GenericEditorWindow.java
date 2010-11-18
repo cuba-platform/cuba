@@ -100,7 +100,7 @@ public class GenericEditorWindow
 //        final Collection<MetaProperty> properties = getProperties(item);
         final Collection<MetaPropertyPath> propertyPaths = MetadataHelper.getPropertyPaths(metaClass);
 
-        form.setItemDataSource(new ItemWrapper(item, propertyPaths));
+        form.setItemDataSource(new ItemWrapper(item, propertyPaths, null));
         form.setVisibleItemProperties(propertyPaths);
 
         for (MetaPropertyPath propertyPath : propertyPaths) {

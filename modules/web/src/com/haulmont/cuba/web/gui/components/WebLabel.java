@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -40,6 +41,8 @@ public class WebLabel
     protected MetaPropertyPath metaPropertyPath;
 
     protected Formatter formatter;
+
+    protected DsManager dsManager;
 
     public WebLabel() {
         component = new com.vaadin.ui.Label();
@@ -71,20 +74,21 @@ public class WebLabel
 
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
+        this.dsManager = new DsManager(datasource, this);
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyEx(property);
         metaProperty = metaPropertyPath.getMetaProperty();
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath), dsManager);
         component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
     }
 
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
+        return new ItemWrapper(datasource, propertyPaths, dsManager) {
             @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                return new PropertyWrapper(item, propertyPath) {
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+                return new PropertyWrapper(item, propertyPath, dsManager) {
                     @Override
                     public String toString() {
                         if (formatter != null) {

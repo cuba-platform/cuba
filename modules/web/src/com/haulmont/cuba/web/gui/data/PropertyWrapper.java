@@ -31,16 +31,17 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
 
     private static final long serialVersionUID = 5863216328152195113L;
 
-    public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+    public PropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
         this.item = item;
         this.propertyPath = propertyPath;
         if (item instanceof Datasource) {
-            ((Datasource) item).addListener(new DatasourceListener<Entity>() {
+            dsManager.addListener(new DatasourceListener<Entity>() {
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                     fireValueChangeEvent();
                 }
 
-                public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {}
+                public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
+                }
 
                 public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                     fireValueChangeEvent();
@@ -75,11 +76,11 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
         final Instance instance = getInstance();
         if (instance == null) throw new IllegalStateException("Instance is null");
-        
+
         InstanceUtils.setValueEx(instance, propertyPath.getPath(), valueOf(newValue));
     }
 
-    protected Object valueOf(Object newValue) throws Property.ConversionException{
+    protected Object valueOf(Object newValue) throws Property.ConversionException {
         final Range range = propertyPath.getRange();
         if (range == null) {
             return newValue;
@@ -120,7 +121,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
             } else {
                 return range.asDatatype().format(value);
             }
-        } else if (range.isEnum()){
+        } else if (range.isEnum()) {
             String nameKey = value.getClass().getSimpleName() + "." + value.toString();
             return MessageProvider.getMessage(value.getClass(), nameKey);
         } else {

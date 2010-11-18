@@ -20,10 +20,7 @@ import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.TreeTableDatasource;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.gui.data.*;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.vaadin.data.Item;
@@ -93,8 +90,8 @@ public class WebTreeTable
     }
 
     protected CollectionDsWrapper createContainerDatasource(
-            CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
-        return new TreeTableDsWrapper((HierarchicalDatasource) datasource);
+            CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager) {
+        return new TreeTableDsWrapper((HierarchicalDatasource) datasource, dsManager);
     }
 
     public void expandAll() {
@@ -129,8 +126,8 @@ public class WebTreeTable
 
         private List<Object> aggregationProperties = null;
 
-        public TreeTableDsWrapper(HierarchicalDatasource datasource) {
-            super(datasource);
+        public TreeTableDsWrapper(HierarchicalDatasource datasource, DsManager dsManager) {
+            super(datasource, dsManager);
             treeTableDatasource  = (datasource instanceof TreeTableDatasource);
         }
 
@@ -150,10 +147,10 @@ public class WebTreeTable
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties) {
+            return new ItemWrapper(item, properties, dsManager) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                    return new TablePropertyWrapper(item, propertyPath);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+                    return new TablePropertyWrapper(item, propertyPath, dsManager);
                 }
             };
         }

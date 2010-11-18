@@ -179,19 +179,19 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
     }
 
     protected void fireCreateEvent(Entity entity) {
-        for (Listener listener: listeners) {
+        for (Listener listener : listeners) {
             listener.entityCreated(entity);
         }
     }
 
     protected void fireEditEvent(Entity entity) {
-        for (Listener listener: listeners) {
+        for (Listener listener : listeners) {
             listener.entityEdited(entity);
         }
     }
 
     protected void fireRemoveEvent(Set<Entity> entities) {
-        for (Listener listener: listeners) {
+        for (Listener listener : listeners) {
             listener.entityRemoved(entities);
         }
     }
@@ -278,7 +278,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         void entityRemoved(Set<Entity> entity);
     }
 
-    private class RefreshAction extends AbstractAction {
+    protected class RefreshAction extends AbstractAction {
 
         private ValueProvider valueProvider;
 
@@ -306,7 +306,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
-    private class RemoveAction extends AbstractAction {
+    protected class RemoveAction extends AbstractAction {
         private final boolean autocommit;
 
         public RemoveAction(boolean autocommit) {
@@ -336,59 +336,66 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
                         MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
                         MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
                         IFrame.MessageType.CONFIRMATION,
-                        new Action[]{new AbstractAction("ok") {
-                            public String getCaption() {
-                                return MessageProvider.getMessage(messagesPackage, "actions.Ok");
-                            }
+                        new Action[]{
+                                new AbstractAction("ok") {
+                                    public String getCaption() {
+                                        return MessageProvider.getMessage(messagesPackage, "actions.Ok");
+                                    }
 
-                            public boolean isEnabled() {
-                                return true;
-                            }
+                                    public boolean isEnabled() {
+                                        return true;
+                                    }
 
-                            @Override
-                            public String getIcon() {
-                                return "icons/ok.png";
-                            }
+                                    @Override
+                                    public String getIcon() {
+                                        return "icons/ok.png";
+                                    }
 
-                            public void actionPerform(Component component) {
-                                @SuppressWarnings({"unchecked"})
-                                final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
-                                for (Object item : selected) {
-                                    ds.removeItem((Entity) item);
-                                }
+                                    public void actionPerform(Component component) {
+                                        doRemove(selected, autocommit);
+                                        fireRemoveEvent(selected);
+                                    }
+                                }, new AbstractAction("cancel") {
+                                    public String getCaption() {
+                                        return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
+                                    }
 
-                                if (autocommit) {
-                                    try {
-                                        ds.commit();
-                                    } catch (RuntimeException e) {
-                                        ds.refresh();
-                                        throw e;
+                                    public boolean isEnabled() {
+                                        return true;
+                                    }
+
+                                    @Override
+                                    public String getIcon() {
+                                        return "icons/cancel.png";
+                                    }
+
+                                    public void actionPerform(Component component) {
                                     }
                                 }
-                                fireRemoveEvent(selected);
-                            }
-                        }, new AbstractAction("cancel") {
-                            public String getCaption() {
-                                return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
-                            }
+                        }
+                );
+            }
+        }
 
-                            public boolean isEnabled() {
-                                return true;
-                            }
+        protected void doRemove(Set selected, boolean autocommit) {
+            @SuppressWarnings({"unchecked"})
+            final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
+            for (Object item : selected) {
+                ds.removeItem((Entity) item);
+            }
 
-                            @Override
-                            public String getIcon() {
-                                return "icons/cancel.png";
-                            }
-
-                            public void actionPerform(Component component) {
-                            }
-                        }});
+            if (this.autocommit) {
+                try {
+                    ds.commit();
+                } catch (RuntimeException e) {
+                    ds.refresh();
+                    throw e;
+                }
             }
         }
     }
 
-    private class FilterApplyAction extends AbstractAction {
+    protected class FilterApplyAction extends AbstractAction {
         public FilterApplyAction() {
             super("apply");
         }
@@ -403,7 +410,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
-    private class FilterClearAction extends AbstractAction {
+    protected class FilterClearAction extends AbstractAction {
         private final String containerName;
 
         public FilterClearAction(String containerName) {
@@ -430,7 +437,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
-    private class AddAction extends AbstractAction {
+    protected class AddAction extends AbstractAction {
         private final String captionKey;
         private final Window.Lookup.Handler handler;
         private final WindowManager.OpenType openType;

@@ -15,7 +15,10 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.QueryTransformer;
+import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.gui.MetadataHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.gui.WebWindow;
@@ -153,7 +156,7 @@ public class LazyLoadingTableScreen extends WebWindow
             log.debug("getItem : " + itemId);
 
             Server server = (Server) data.get(itemId);
-            return server == null ? null : new ItemWrapper(server, MetadataHelper.toPropertyPaths(properties));
+            return server == null ? null : new ItemWrapper(server, MetadataHelper.toPropertyPaths(properties), null);
         }
 
         public Collection getContainerPropertyIds() {

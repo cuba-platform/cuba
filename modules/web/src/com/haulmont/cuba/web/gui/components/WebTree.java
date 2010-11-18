@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
@@ -34,6 +35,8 @@ public class WebTree
     private String captionProperty;
     
     private static final long serialVersionUID = -5838850934944507736L;
+
+    protected DsManager dsManager;
 
     public WebTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.Tree();
@@ -135,13 +138,14 @@ public class WebTree
     public void setDatasource(HierarchicalDatasource datasource)
     {
         this.datasource = datasource;
+        this.dsManager = new DsManager(datasource, this);
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
 
         // if showProperty is null, the Tree will use itemId.toString
         MetaProperty metaProperty = hierarchyProperty == null ? null : datasource.getMetaClass().getProperty(hierarchyProperty);
         component.setItemCaptionPropertyId(metaProperty);
 
-        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
+        HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource, dsManager);
         component.setContainerDataSource(wrapper);
 
         if (UserSessionClient.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {

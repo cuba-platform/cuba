@@ -22,10 +22,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.*;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.vaadin.data.Item;
@@ -122,8 +119,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         return new GroupAggregationDatasourceListener();
     }
 
-    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
-        return new GroupTableDsWrapper(datasource, columns);
+    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager) {
+        return new GroupTableDsWrapper(datasource, columns, dsManager);
     }
 
     @Override
@@ -193,13 +190,13 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         private Object first;
         private Object last;
 
-        public GroupTableDsWrapper(CollectionDatasource datasource) {
-            super(datasource, true);
+        public GroupTableDsWrapper(CollectionDatasource datasource, DsManager dsManager) {
+            super(datasource, true, dsManager);
             groupDatasource = datasource instanceof GroupDatasource;
         }
 
-        public GroupTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties, true);
+        public GroupTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
+            super(datasource, properties, true, dsManager);
             groupDatasource = datasource instanceof GroupDatasource;
         }
 
@@ -219,10 +216,10 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties) {
+            return new ItemWrapper(item, properties, dsManager) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-                    return new TablePropertyWrapper(item, propertyPath);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+                    return new TablePropertyWrapper(item, propertyPath, dsManager);
                 }
             };
         }
