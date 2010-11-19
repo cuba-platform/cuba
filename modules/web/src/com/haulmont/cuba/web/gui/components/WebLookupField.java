@@ -166,7 +166,8 @@ public class WebLookupField
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
-        component.setContainerDataSource(new DsWrapper(datasource, true, dsManager));
+        this.optionsDsManager = new DsManager(datasource, this);
+        component.setContainerDataSource(new DsWrapper(datasource, true, optionsDsManager));
 
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));

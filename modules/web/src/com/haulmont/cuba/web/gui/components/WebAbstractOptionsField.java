@@ -35,6 +35,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
 
+    protected DsManager optionsDsManager;
+
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -173,7 +175,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
-        component.setContainerDataSource(new CollectionDsWrapper(datasource, true, dsManager));
+        this.optionsDsManager = new DsManager(datasource, this);
+        component.setContainerDataSource(new CollectionDsWrapper(datasource, true, optionsDsManager));
 
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
