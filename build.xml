@@ -10,6 +10,7 @@
 	<import file="${root.dir}/build-script/build-inc-prj.xml"/>
 	<property file="lib.properties"/>
 
+    <property name="bali.build.dir" location="${root.dir}/chile/build"/>
     <property name="chile.build.dir" location="${root.dir}/chile/build"/>
     <property name="build.dir" location="build"/>
     <property name="target.dir" location="target"/>
@@ -141,6 +142,7 @@
 
         <property name="webapp.dir" value="${target.dir}/${app.name}/WEB-INF/lib"/>
         <copy todir="${webapp.dir}/WEB-INF/lib">
+            <fileset dir="${bali.build.dir}" includes="*.jar"/>
             <fileset dir="${chile.build.dir}" includes="*.jar"/>
             <fileset dir="${build.dir}">
                 <include name="*.jar"/>
