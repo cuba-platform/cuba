@@ -623,7 +623,9 @@ public class XLSFormatter extends AbstractFormatter {
 
     public List<HSSFClientAnchor> getAllAnchors(HSSFSheet sheet) {
         List<HSSFClientAnchor> pictures = new ArrayList<HSSFClientAnchor>();
-        List<EscherRecord> escherRecords = getEscherAggregate(sheet).getEscherRecords();
+        EscherAggregate escherAggregate = getEscherAggregate(sheet);
+        if (escherAggregate == null) return Collections.emptyList();
+        List<EscherRecord> escherRecords = escherAggregate.getEscherRecords();
         searchForAnchors(escherRecords, pictures);
         return pictures;
     }
