@@ -118,41 +118,6 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         return false;
     }
 
-    @Override
-    public void addItem(T item) throws UnsupportedOperationException {
-        super.addItem(item);
-
-        //Create a new node for the item
-        Node<T> node = new Node<T>(item);
-        nodes.put(item.getId(), node);
-
-        //Adds the node into the tree
-        K parentItemId;
-        if (getItem() == null) {
-            Iterator<K> it = getRootItemIds().iterator();
-            parentItemId = it.next();
-        } else {
-            parentItemId = getItem().getId();
-        }
-        Node<T> parentNode = nodes.get(parentItemId);
-        parentNode.addChild(node);
-    }
-
-    @Override
-    public void removeItem(T item) throws UnsupportedOperationException {
-        super.removeItem(item);
-
-        //Remove item node from the tree
-        Node<T> node = nodes.remove(item.getId());
-
-        Node<T> parentNode = node.getParent();
-        if (parentNode != null) {
-            parentNode.getChildren().remove(node);
-        } else {
-            tree.getRootNodes().remove(node);
-        }
-    }
-
     public boolean hasChildren(K itemId) {
         final Node<T> node = nodes.get(itemId);
         return node != null && !node.getChildren().isEmpty();
