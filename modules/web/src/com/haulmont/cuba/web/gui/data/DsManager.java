@@ -37,12 +37,15 @@ public class DsManager {
     }
 
     public void dispose() {
+/*
+//todo gorodnov: fix it
         if (listeners != null) {
             for (final DatasourceListener listener : listeners) {
                 datasource.removeListener(listener);
             }
             listeners = null;
         }
+*/
     }
 
     public Collection<DatasourceListener> getListeners() {
