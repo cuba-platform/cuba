@@ -16,7 +16,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;

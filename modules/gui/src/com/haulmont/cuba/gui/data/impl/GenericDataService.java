@@ -11,8 +11,8 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.MetadataHelper;
-import com.haulmont.cuba.gui.PropertyVisitor;
+import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.PropertyVisitor;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;

@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.core.global.PropertyVisitor;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.UserRole;

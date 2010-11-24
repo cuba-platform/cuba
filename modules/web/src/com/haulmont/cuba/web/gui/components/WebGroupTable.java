@@ -17,7 +17,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;

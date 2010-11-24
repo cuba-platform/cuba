@@ -17,7 +17,7 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.TableActionsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;

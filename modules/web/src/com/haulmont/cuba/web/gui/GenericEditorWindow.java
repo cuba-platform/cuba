@@ -18,7 +18,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;

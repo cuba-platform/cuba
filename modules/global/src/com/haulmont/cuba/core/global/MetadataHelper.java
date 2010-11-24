@@ -2,47 +2,35 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 29.12.2008 17:18:11
+ *
+ * Author: chernov
+ * Created: 22.11.2010 14:43:00
+ *
  * $Id$
  */
-package com.haulmont.cuba.gui;
+package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.global.PropertyVisitor;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewProperty;
-
-import javax.persistence.CascadeType;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
-import javax.persistence.ManyToMany;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.io.InputStream;
-
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-/**
- * Metadata utility methods for use on GenericUI layer
- *
- * @deprecated need to use {@link com.haulmont.cuba.core.global.MetadataHelper}
- */
-@Deprecated
-public class MetadataHelper {
+import javax.persistence.CascadeType;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.*;
 
+public abstract class MetadataHelper {
     public static Class getTypeClass(MetaProperty metaProperty) {
         if (metaProperty == null)
             throw new IllegalArgumentException("MetaProperty is null");
-        
+
         final Range range = metaProperty.getRange();
         if (range.isDatatype()) {
             return range.asDatatype().getJavaClass();

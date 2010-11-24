@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;

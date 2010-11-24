@@ -13,7 +13,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.*;

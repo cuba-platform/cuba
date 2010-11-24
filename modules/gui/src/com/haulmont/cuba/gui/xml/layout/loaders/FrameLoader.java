@@ -11,7 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;

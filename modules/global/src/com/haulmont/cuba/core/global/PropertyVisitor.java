@@ -2,29 +2,24 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 16.07.2009 19:19:04
+ *
+ * Author: chernov
+ * Created: 22.11.2010 14:43:50
  *
  * $Id$
  */
-package com.haulmont.cuba.gui;
+package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 
 /**
  * Visitor used by {@link MetadataHelper#walkProperties(com.haulmont.chile.core.model.Instance, PropertyVisitor)}
- *
- * @deprecated need to use {@link com.haulmont.cuba.core.global.PropertyVisitor}
  */
-@Deprecated
 public interface PropertyVisitor {
-
     /**
      * @param instance visiting instance
      * @param property visiting property
      */
     void visit(Instance instance, MetaProperty property);
-
 }

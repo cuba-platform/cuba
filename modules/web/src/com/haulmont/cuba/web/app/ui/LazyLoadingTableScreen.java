@@ -19,7 +19,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.gui.MetadataHelper;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
