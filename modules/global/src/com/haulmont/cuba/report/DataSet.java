@@ -22,7 +22,7 @@ public class DataSet extends HardDeleteEntity {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "TEXT", length = 5000)
+    @Column(name = "TEXT")
     private String text;
 
     @Column(name = "TYPE")
