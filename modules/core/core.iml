@@ -16,6 +16,7 @@
     <orderEntry type="module" module-name="global" />
     <orderEntry type="library" name="groovy" level="application" />
     <orderEntry type="library" name="bali" level="project" />
+    <orderEntry type="library" name="jdbc" level="project" />
   </component>
 </module>
 

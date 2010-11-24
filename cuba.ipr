@@ -607,11 +607,11 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/serp-1.13.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-collections-3.2.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/commons-logging-1.1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.7.5.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/asm-3.2.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/xercesImpl-2.7.1.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/spring-context-3.0.0.RELEASE.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/spring-beans-3.0.0.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/groovy-1.7.5.20101124.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
@@ -635,12 +635,12 @@
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-cli-1.2-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-codec-1.3-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/aspectjrt-1.6.6-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/common/src/groovy-1.7.5-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/aspectjweaver-1.6.6-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/commons-collections-3.2.1-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/itext-2.1.0-sources.jar!/rups" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/itext-2.1.0-sources.jar!/core" />
         <root url="jar://$PROJECT_DIR$/../lib/common/src/itext-2.1.0-sources.jar!/rtf" />
+        <root url="jar://$PROJECT_DIR$/../lib/common/src/groovy-1.7.5.20101124-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="test">
@@ -686,6 +686,14 @@
       <SOURCES>
         <root url="file://$PROJECT_DIR$/../bali/src" />
       </SOURCES>
+    </library>
+    <library name="jdbc">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../lib/jdbc/postgresql-9.0-801.jdbc4.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/jdbc/hsqldb-1.8.0.10.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
     </library>
   </component>
 </project>
