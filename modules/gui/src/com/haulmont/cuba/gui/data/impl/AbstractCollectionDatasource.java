@@ -71,14 +71,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (State.VALID.equals(state)) {
             Object prevItem = this.item;
 
-            final MetaClass metaClass = getMetaClass();
-            final Class javaClass = metaClass.getJavaClass();
-
-            if (!ObjectUtils.equals(prevItem, item) || 
-                    (Versioned.class.isAssignableFrom(javaClass)) &&
-                            !ObjectUtils.equals(
-                                    prevItem == null ? null : ((Versioned) prevItem).getVersion(),
-                                    item == null ? null : ((Versioned) item).getVersion()))
+            if (prevItem != item)
             {
                 if (item instanceof Instance) {
                     final MetaClass aClass = ((Instance) item).getMetaClass();

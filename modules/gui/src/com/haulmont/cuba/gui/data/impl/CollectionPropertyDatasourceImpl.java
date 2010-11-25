@@ -156,7 +156,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (State.VALID.equals(getState())) {
             Object prevItem = this.item;
 
-            if (!ObjectUtils.equals(prevItem, item)) {
+            if (prevItem != item) {
 
                 if (item instanceof Instance) {
                     final MetaClass aClass = ((Instance) item).getMetaClass();
