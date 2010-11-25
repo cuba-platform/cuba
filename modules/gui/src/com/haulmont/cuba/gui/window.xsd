@@ -601,12 +601,19 @@
                 <xs:element name="upload">
                     <xs:complexType>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
-
                         <xs:attribute name="width" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
+                <xs:element name="multiupload">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
 
                 <xs:element name="tree">
                     <xs:complexType>
@@ -887,6 +894,7 @@
             <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
             <xs:element name="editable" minOccurs="0" maxOccurs="1"/>
             <xs:element name="calculatable" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="required" minOccurs="0" maxOccurs="1"/>
             <xs:element name="aggregation" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:sequence>
@@ -903,6 +911,8 @@
         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
         <xs:attribute name="clickAction" type="xs:string" use="optional"/>
         <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="required" type="xs:boolean" use="optional"/>
+        <xs:attribute name="requiredMessage" type="xs:string" use="optional"/>
         <xs:attribute name="visible" type="xs:boolean" use="optional"/>
         <xs:attribute name="width" type="xs:integer" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
@@ -916,8 +926,8 @@
     <xs:complexType name="tableType">
         <xs:sequence>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
-            <xs:element name="columns" minOccurs="0" maxOccurs="1" type="tableColumnsType" />
-            <xs:element name="rows" minOccurs="1" maxOccurs="1">
+            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="tableColumnsType" />
+            <xs:element name="rows" minOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="datasource" type="xs:string" use="required"/>
                     <xs:attribute name="headerMode" type="headerMode" use="optional"/>

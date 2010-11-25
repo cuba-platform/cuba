@@ -10,7 +10,8 @@
 package com.haulmont.cuba.gui.components;
 
 public interface FileUploadField 
-        extends Component, Component.HasCaption, Component.Expandable, Component.BelongToFrame
+        extends Component, Component.HasCaption, Component.Expandable,
+                Component.BelongToFrame
 {
     interface Listener {
         class Event {
@@ -36,7 +37,9 @@ public interface FileUploadField
 
     String getFilePath();
     String getFileName();
+
     boolean isUploading();
+
     byte[] getBytes();
     long getBytesRead();
     void release();

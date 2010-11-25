@@ -11,14 +11,25 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
 import com.haulmont.cuba.web.toolkit.Timer;
-import com.haulmont.cuba.web.toolkit.ui.charts.*;
+import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
+import com.haulmont.cuba.web.toolkit.ui.charts.ChartDataProvider;
+import com.haulmont.cuba.web.toolkit.ui.charts.ChartDataProviderFactory;
+import com.haulmont.cuba.web.toolkit.ui.charts.ChartException;
+import com.haulmont.cuba.web.toolkit.ui.charts.ChartImplementation;
 import com.vaadin.Application;
 import com.vaadin.external.org.apache.commons.fileupload.*;
+import com.vaadin.external.org.apache.commons.fileupload.FileItemIterator;
+import com.vaadin.external.org.apache.commons.fileupload.FileItemStream;
+import com.vaadin.external.org.apache.commons.fileupload.FileUpload;
+import com.vaadin.external.org.apache.commons.fileupload.FileUploadBase;
+import com.vaadin.external.org.apache.commons.fileupload.FileUploadException;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.Paintable;
 import com.vaadin.terminal.UploadStream;
@@ -31,6 +42,13 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Window;
+
+import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.ProgressListener;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -93,7 +111,7 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     @Override
     protected boolean handleVariables(Request request, Response response,
-            Callback callback, Application application2, Window window)
+                                      Callback callback, Application application2, Window window)
             throws IOException, InvalidUIDLSecurityKeyException {
         boolean success = true;
         int contentLength = request.getContentLength();
@@ -150,7 +168,7 @@ public class CubaCommunicationManager extends CommunicationManager {
                         Map<String, Object> m;
                         if (nextVariable != null
                                 && variable[VAR_PID]
-                                        .equals(nextVariable[VAR_PID])) {
+                                .equals(nextVariable[VAR_PID])) {
                             // we have more than one value changes in row for
                             // one variable owner, collect em in HashMap
                             m = new HashMap<String, Object>();
@@ -167,7 +185,7 @@ public class CubaCommunicationManager extends CommunicationManager {
                         // collect following variable changes for this owner
                         while (nextVariable != null
                                 && variable[VAR_PID]
-                                        .equals(nextVariable[VAR_PID])) {
+                                .equals(nextVariable[VAR_PID])) {
                             i++;
                             variable = nextVariable;
                             if (i + 1 < variableRecords.length) {
@@ -437,6 +455,88 @@ public class CubaCommunicationManager extends CommunicationManager {
         } else {
             System.err.println(String.format("Warning: non-existent chart component, VAR_PID=%s",
                     chartId));
+        }
+    }
+
+
+    /**
+     * Set response status to SC_UNAUTHORIZED
+     *
+     * @param response
+     */
+    protected void accessDenied(HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    /**
+     * Set response status to SC_INTERNAL_SERVER_ERROR
+     *
+     * @param response
+     */
+    protected void internalError(HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Set response status to SC_BAD_REQUEST
+     *
+     * @param response
+     */
+    protected void badRequest(HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    /**
+     * Handle multiple file upload
+     *
+     * @param request  HTTP request
+     * @param response HTTP response
+     */
+    public synchronized void handleMultiUpload(HttpServletRequest request, HttpServletResponse response,
+                                               App app) {
+        try {
+            if (request.getSession() == null)
+                accessDenied(response);
+            else {
+                if (ServletFileUpload.isMultipartContent(request)) {
+                    UserSession userSession = app.getConnection().getSession();
+                    if (userSession == null) {
+                        internalError(response);
+                        return;
+                    }
+
+                    WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+
+                    org.apache.commons.fileupload.FileItemFactory factory = new DiskFileItemFactory();
+                    ServletFileUpload upload = new ServletFileUpload(factory);
+
+                    String controlPid = request.getParameter("pid");
+                    if (controlPid != null) {
+                        // Get server-side component
+                        final MultiUpload uploadComponent = (MultiUpload) idPaintableMap.get(controlPid);
+                        if (uploadComponent != null) {
+                            
+                            org.apache.commons.fileupload.FileItemIterator iterator = upload.getItemIterator(request);
+                            boolean find = false;
+                            final HttpServletResponse fResponse = response;
+                            while (iterator.hasNext() && (!find)) {
+                                org.apache.commons.fileupload.FileItemStream itemStream = iterator.next();
+                                if (!itemStream.isFormField()) {
+                                    uploadComponent.uploadingFile(itemStream, request.getContentLength());
+                                    find = true;
+                                }
+                            }
+                        }
+
+                        response.setStatus(HttpServletResponse.SC_OK);
+                    } else
+                        badRequest(response);
+                } else
+                    badRequest(response);
+            }
+        } catch (Exception e) {
+            log.error("Unexpected error: ", e);
+            internalError(response);
         }
     }
 }

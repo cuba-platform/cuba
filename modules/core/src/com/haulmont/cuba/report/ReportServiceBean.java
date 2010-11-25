@@ -24,8 +24,6 @@ import com.haulmont.cuba.report.formatters.DocFormatter;
 import com.haulmont.cuba.report.formatters.Formatter;
 import com.haulmont.cuba.report.formatters.XLSFormatter;
 import com.haulmont.cuba.report.loaders.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

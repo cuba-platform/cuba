@@ -13,6 +13,8 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 
+import java.io.File;
+
 public interface FileStorageService {
 
     String NAME = "cuba_FileStorageService";
@@ -25,4 +27,12 @@ public interface FileStorageService {
     void removeFile(FileDescriptor fileDescr) throws FileStorageException;
 
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
+
+    /**
+     * Relocate existing file to storage
+     *
+     * @param fileDescr
+     * @param file
+     */
+    void putFile(FileDescriptor fileDescr, File file) throws FileStorageException;
 }

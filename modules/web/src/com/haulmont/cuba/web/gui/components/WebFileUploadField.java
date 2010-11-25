@@ -13,6 +13,8 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.UIDL;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -94,6 +96,7 @@ public class WebFileUploadField
     }
 
 */
+
     public String getFilePath() {
         return fileName;
     }

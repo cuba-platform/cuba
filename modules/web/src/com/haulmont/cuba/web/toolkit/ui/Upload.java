@@ -17,7 +17,7 @@ import com.vaadin.terminal.PaintTarget;
 public class Upload extends com.vaadin.ui.Upload {
 
     private String action;
-
+    
     public Upload(String caption, Receiver uploadReceiver) {
         super(caption, uploadReceiver);
     }

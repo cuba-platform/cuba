@@ -18,6 +18,7 @@ package com.vaadin.terminal.gwt.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
 import com.haulmont.cuba.toolkit.gwt.client.ui.*;
 import com.vaadin.terminal.gwt.client.ui.*;
 
@@ -119,12 +120,16 @@ public class DefaultWidgetSet implements WidgetSet {
             } else {
                 return IScrollTable.class;
             }
-        } else if (widgetClass == VMenuBar.class && uidl.hasAttribute("vertical")) {
+        } else if (widgetClass == VUpload.class){
+            if (uidl.hasAttribute("multiple") && (uidl.getBooleanAttribute("multiple") == true)){
+                return VSwfUpload.class;
+            }
+        }
+        else if (widgetClass == VMenuBar.class && uidl.hasAttribute("vertical")) {
             return VerticalMenuBar.class;
         }
 
         return widgetClass;
-
     }
 
     public boolean isCorrectImplementation(Widget currentWidget, UIDL uidl,

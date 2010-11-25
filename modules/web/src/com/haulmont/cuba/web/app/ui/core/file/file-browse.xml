@@ -26,6 +26,7 @@
             <button action="files.edit" icon="icons/edit.png"/>
             <button action="files.remove" icon="icons/remove.png"/>
             <button action="files.excel" icon="icons/excel.png"/>
+            <button id="multiupload" icon="icons/copy.png"/>
         </buttonsPanel>
         <table id="files" editable="false">
             <columns>

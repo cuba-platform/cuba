@@ -71,6 +71,8 @@
         <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="dashlayout" version="${dashlayout.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="popupbutton" version="${popupbutton.version}" toDir="${lib.server.dir}"/>
 
+        <ext:install-lib groupId="commons-fileupload" artifactId="commons-fileupload" version="${commons-fileupload.version}" toDir="${lib.server.dir}"/>
+
         <ext:install-lib groupId="org.springframework" artifactId="spring-jdbc" version="${springframework.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-orm" version="${springframework.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-tx" version="${springframework.version}" toDir="${lib.server.dir}"/>

@@ -92,6 +92,10 @@ public class FileEditor extends AbstractEditor {
 
     @Override
     public void commitAndClose() {
+        FileMultiUploadField mUploader = getComponent("multiUpload");
+        if (mUploader.getUploadsMap().size() > 1)
+            System.out.print("OLOLO");
+        
         if (needSave) {
             saveFile();
         }

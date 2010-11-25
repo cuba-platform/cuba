@@ -18,4 +18,7 @@
         <item id="feedback"/>
         <item id="logWindow"/>
     </menu>
+    <menu id="test">
+        <item id="multiupload"/>    
+    </menu>
 </menu-config>

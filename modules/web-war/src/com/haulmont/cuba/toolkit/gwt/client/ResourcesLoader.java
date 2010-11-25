@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.toolkit.gwt.client.charts;
+package com.haulmont.cuba.toolkit.gwt.client;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.HeadElement;

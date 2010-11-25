@@ -36,13 +36,14 @@ public class ApplicationConfiguration {
     private String appUri;
     private JavaScriptObject versionInfo;
     private String windowName;
+    private String sessionId;
     private String communicationErrorCaption;
     private String communicationErrorMessage;
     private String communicationErrorUrl;
     private boolean useDebugIdInDom = true;
     private boolean usePortletURLs = false;
     private String portletUidlURLBase;
-    private String themeReleaseTimestamp;
+    private String themeReleaseTimestamp = "1111"; //todo fix the conf loading
 
     private HashMap<String, String> unknownComponents;
 
@@ -63,6 +64,10 @@ public class ApplicationConfiguration {
 
     public String getRootPanelId() {
         return id;
+    }
+
+    public String getSessionId() {
+        return sessionId;
     }
 
     /**
@@ -123,6 +128,7 @@ public class ApplicationConfiguration {
             }
             this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::appUri = uri;
             this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::pathInfo = jsobj.pathInfo;
+            this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::sessionId = jsobj.sessionId;
             this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::themeUri = jsobj.themeUri;
             if(jsobj.windowName) {
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::windowName = jsobj.windowName;
@@ -148,14 +154,11 @@ public class ApplicationConfiguration {
             $wnd.alert("Vaadin app failed to initialize: " + this.id);
         }
 
-        if ($wnd.vaadin.themeReleaseTimestamp) {
-            this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::themeReleaseTimestamp = $wnd.vaadin.themeReleaseTimestamp;
-        }
 
      }-*/;
 
     /**
-     * Inits the ApplicationConfiguration by reading the DOM and instantiating
+     * Inits the ApplicationConfiguration by reading the DOM and instantiating                  
      * ApplicationConnections accordingly. Call {@link #startNextApplication()}
      * to actually start the applications.
      *

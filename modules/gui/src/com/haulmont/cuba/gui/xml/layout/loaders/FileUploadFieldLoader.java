@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.xml.layout.*;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public class FileUploadFieldLoader extends ComponentLoader{
@@ -20,21 +21,21 @@ public class FileUploadFieldLoader extends ComponentLoader{
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        FileUploadField component = factory.createComponent("upload");
+        Component component = factory.createComponent(element.getName());
         
         loadId(component, element);
         loadVisible(component, element);
-
+     
         loadStyleName(component, element);
 
         loadHeight(component, element);
         loadWidth(component, element);
         
-        loadCaption(component, element);
+        loadCaption((Component.HasCaption) component, element);
 
-        loadExpandable(component, element);
+        loadExpandable((Component.Expandable)component, element);
 
-        assignFrame(component);
+        assignFrame((Component.BelongToFrame)component);
 
         return component;
     }

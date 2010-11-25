@@ -134,4 +134,6 @@
     <screen id="jmxcontrol$OperationResult"
             template="/cuba/client/web/ui/jmxcontrol/inspect/operation/operation-result.xml"/>
 
+    <screen id="multiupload" template="/com/haulmont/cuba/web/app/ui/core/file/multiupload.xml"/>
+
 </screen-config>

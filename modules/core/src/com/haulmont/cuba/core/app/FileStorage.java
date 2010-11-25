@@ -125,6 +125,26 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         }
     }
 
+    public void putFile(FileDescriptor fileDescr, File file) throws FileStorageException {
+        checkNotNull(fileDescr, "No file descriptor");
+        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
+        checkNotNull(file, "No file");
+
+        File dir = getStorageDir(fileDescr.getCreateDate());
+
+        File destFile = new File(dir, fileDescr.getFileName());
+        if (destFile.exists()) {
+            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+        }
+
+        try {
+            file.renameTo(destFile);
+            writeLog(fileDescr, file);
+        } catch (Exception e) {
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
+        }
+    }
+
     private File getStorageDir(Date createDate) {
         String storageDir = ConfigProvider.getConfig(FileStorageConfig.class).getFileStorageDir();
         if (StringUtils.isBlank(storageDir)) {

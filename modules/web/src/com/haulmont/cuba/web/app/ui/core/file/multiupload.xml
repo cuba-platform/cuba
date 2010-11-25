@@ -1,0 +1,34 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.core.file.MultiUploader"
+        datasource="filesDs"
+        messagesPack="com.haulmont.cuba.web.app.ui.core.file"
+        caption="msg://editorCaption">
+
+    <dsContext>
+        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse">
+            <datasourceClass>com.haulmont.cuba.web.app.ui.core.file.MultiuploadsDatasource</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+    <#assign width = 360>
+    <#assign height = 300>
+    <layout expand="windowActions">
+        <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
+            <hbox height="30" spacing="true">
+                <multiupload id="multiUpload" height="25px" width="90px"/>
+                <button action="uploadsTable.remove" icon="icons/remove.png"/>
+            </hbox>
+
+            <table id="uploadsTable" editable="true" width="${width}" height="${height}">
+                <columns>
+                    <column id="name" caption="msg://name" editable="true" width="170"
+                            required="true" requiredMessage="msg://notNullFileNames"/>
+                    <column id="extension" caption="msg://extension" editable="false" width="70"/>
+                    <column id="size" caption="msg://size" editable="false" width="100"/>
+                </columns>
+                <rows datasource="filesDs"/>
+            </table>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

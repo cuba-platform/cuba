@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.web.gui.WebFileMultiUploadField;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.gui.components.*;
@@ -59,6 +60,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("pickerField", WebPickerField.class);
         classes.put("optionsGroup", WebOptionsGroup.class);
         classes.put("upload", WebFileUploadField.class);
+        classes.put("multiupload", WebFileMultiUploadField.class);
         classes.put("split", WebSplitPanel.class);
         classes.put("tree", WebTree.class);
         classes.put("tabsheet", WebTabsheet.class);
