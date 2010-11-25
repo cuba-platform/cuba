@@ -259,6 +259,7 @@
                                     <xs:attribute name="caption" type="xs:string" use="required" default="msg://"/>
                                     <xs:attribute name="enable" type="xs:string" use="optional"/>
                                     <xs:attribute name="lazy" type="xs:boolean" use="optional"/>
+                                    <xs:attribute name="margin" type="xs:boolean" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
@@ -894,6 +895,7 @@
                     <xs:attribute name="type" type="aggregation" use="required"/>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="visible" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="caption" type="xs:string" use="optional"
