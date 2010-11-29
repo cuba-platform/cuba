@@ -89,6 +89,13 @@ public class WebFileMultiUploadField extends
                     listener.queueUploadComplete();
             }
         });
+        uploader.addListener(new MultiUpload.FileErrorHandler(){
+            // On upload error
+            public void errorNotify(String fileName, String message, int errorCode) {
+                for (UploadListener listener : listeners)
+                    listener.errorNotify(fileName, message, errorCode);    
+            }
+        });
 
         component = uploader;
     }

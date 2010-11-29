@@ -17,8 +17,6 @@ import com.haulmont.cuba.gui.components.ValueProvider;
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Paintable;
-import com.vaadin.terminal.gwt.client.ui.VUpload;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
 import org.apache.commons.fileupload.FileItemStream;
@@ -46,6 +44,10 @@ public class MultiUpload extends AbstractComponent {
         void queueUploadComplete();
     }
 
+    public interface FileErrorHandler extends Serializable {
+        void errorNotify(String fileName, String message, int errorCode);
+    }
+
     private List<FileUploadStartListener> fileStartListeners = new ArrayList<FileUploadStartListener>();
 
     private List<FileUploadCompleteListener> fileCompleteListeners = new ArrayList<FileUploadCompleteListener>();
@@ -53,6 +55,8 @@ public class MultiUpload extends AbstractComponent {
     private List<QueueCompleteListener> queueCompleteListeners = new ArrayList<QueueCompleteListener>();
 
     private List<FileProgressListener> fileProgressListeners = new ArrayList<FileProgressListener>();
+
+    private List<FileErrorHandler> fileErrorListeners = new ArrayList<FileErrorHandler>();
 
     private ValueProvider valueProvider = null;
 
@@ -68,6 +72,19 @@ public class MultiUpload extends AbstractComponent {
         if (variables.containsKey("queueUploadComplete")) {
             for (QueueCompleteListener listener : queueCompleteListeners)
                 listener.queueUploadComplete();
+        }
+        if (variables.containsKey("uploadError")) {
+            try {
+                Object[] errorVariables = (Object[]) variables.get("uploadError");
+                String message = errorVariables[1].toString();
+                String file = errorVariables[0].toString();
+                int errorCode = Integer.parseInt(errorVariables[2].toString());
+                for (FileErrorHandler listener : fileErrorListeners)
+                    listener.errorNotify(file, message, errorCode);
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
         }
     }
 
@@ -145,6 +162,14 @@ public class MultiUpload extends AbstractComponent {
 
     public void removeListener(QueueCompleteListener queueCompleteListener) {
         queueCompleteListeners.remove(queueCompleteListener);
+    }
+
+    public void addListener(FileErrorHandler errorListener) {
+        fileErrorListeners.add(errorListener);
+    }
+
+    public void removeListener(FileErrorHandler errorListener) {
+        fileErrorListeners.remove(errorListener);
     }
 
     // Get|Set value provider

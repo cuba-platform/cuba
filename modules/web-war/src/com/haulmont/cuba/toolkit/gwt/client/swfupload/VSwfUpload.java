@@ -48,7 +48,7 @@ public class VSwfUpload extends FormPanel implements Paintable {
 
     public void updateFromUIDL(UIDL uidl, final ApplicationConnection client) {
         paintableId = uidl.getId();
-        
+
         this.client = client;
 
         injectJs();
@@ -98,7 +98,7 @@ public class VSwfUpload extends FormPanel implements Paintable {
                 opts.set("file_queue_limit", fileQueueLimit);
 
                 // Set debug mode
-                opts.set("debug", false);
+                opts.set("debug", true);
                 uri = client.getThemeUri();
                 // Appearance properties
                 opts.set("button_image_url", uri + (uri.endsWith("/") ? "" : "/") +
@@ -114,8 +114,14 @@ public class VSwfUpload extends FormPanel implements Paintable {
 
                 // Add event handlers
                 applyJsObjectByName(opts, "file_dialog_complete_handler", "fileDialogComplete");
-                applyJsObjectByName(opts, "upload_error_handler", "uploadError");
 
+                // Add error handler
+                String notifierId = "UploadErrorHandler_" + paintableId;
+                addErrorHandler(notifierId);
+                applyJsObjectByName(opts, "upload_error_handler", notifierId);
+                applyJsObjectByName(opts, "file_queue_error_handler", notifierId);
+
+                // Add complete handler                
                 String refresherId = "MultiUploadRefresher_" + paintableId;
                 addRefresher(refresherId);
                 applyJsObjectByName(opts, "queue_complete_handler", refresherId);
@@ -135,6 +141,17 @@ public class VSwfUpload extends FormPanel implements Paintable {
     public void refreshServerSide() {
         client.updateVariable(paintableId, "queueUploadComplete", 1, true);
     }
+
+    public void errorNotify(String file, String message, int errorCode) {
+        client.updateVariable(paintableId, "uploadError", new String[]{file, message, String.valueOf(errorCode)}, true);
+    }
+
+    private native void addErrorHandler(String optionName)/*-{
+        var swfu = this;
+        $wnd[optionName] = function uploadError(file, errorCode, message){
+            swfu.@com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload::errorNotify(Ljava/lang/String;Ljava/lang/String;I)(file.name,message,errorCode);
+        }; 
+    }-*/;
 
     private native void addRefresher(String optionName)/*-{
         var swfu = this;
