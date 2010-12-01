@@ -98,7 +98,7 @@ public class VSwfUpload extends FormPanel implements Paintable {
                 opts.set("file_queue_limit", fileQueueLimit);
 
                 // Set debug mode
-                opts.set("debug", true);
+                opts.set("debug", false);
                 uri = client.getThemeUri();
                 // Appearance properties
                 opts.set("button_image_url", uri + (uri.endsWith("/") ? "" : "/") +
