@@ -44,7 +44,8 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
                 }
 
                 public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                    fireValueChangeEvent();
+                    if (property.equals(PropertyWrapper.this.propertyPath.toString()))
+                        fireValueChangeEvent();
                 }
             });
         }
