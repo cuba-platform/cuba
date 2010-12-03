@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.filter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import org.dom4j.Element;
@@ -88,6 +89,7 @@ public class QueryFilter {
                 params.add(entry.getKey());
         }
 
+        query = TemplateHelper.processTemplate(query, paramValues);
         QueryTransformer transformer = QueryTransformerFactory.createTransformer(query, targetEntity);
 
         if (isActual(root, params)) {
