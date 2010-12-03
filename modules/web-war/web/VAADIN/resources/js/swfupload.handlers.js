@@ -12,7 +12,7 @@ var swfUploadHelper = {
     create : function(opts) {
         return new SWFUpload(opts);
     }
-};
+}
 
 function uploadError(file, errorCode, message) {
     try {

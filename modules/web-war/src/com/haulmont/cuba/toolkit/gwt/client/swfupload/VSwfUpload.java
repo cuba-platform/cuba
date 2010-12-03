@@ -21,7 +21,8 @@ import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 
-public class VSwfUpload extends FormPanel implements Paintable {
+public class
+        VSwfUpload extends FormPanel implements Paintable {
     private String paintableId;
     private ApplicationConnection client;
     private Timer t;
@@ -81,6 +82,7 @@ public class VSwfUpload extends FormPanel implements Paintable {
 
         SwfUploadAPI.onReady(new Runnable() {
             public void run() {
+                initPrototype();
                 String uri = client.getAppUri();
 
                 Options opts = Options.create();
@@ -162,6 +164,10 @@ public class VSwfUpload extends FormPanel implements Paintable {
 
     private static native void applyJsObjectByName(Options opts, String propertyName, String objectName) /*-{
         opts[propertyName] = $wnd[objectName];
+    }-*/;
+
+    private static native void initPrototype() /*-{
+        $wnd.initSWFUploadPrototype();
     }-*/;
 
     private static native void showUpload(String varName, Options opts) /*-{
