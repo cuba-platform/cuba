@@ -13,7 +13,7 @@ import org.dom4j.Element;
 
 public class EmailValidator extends PatternValidator {
 
-    static private String sDomen = "[a-zA-Z][a-zA-Z[0-9]\u005F\u002E\u002D]*[a-z||A-Z||0-9]";
+    static private String sDomen = "[a-zA-Z[0-9]][a-zA-Z[0-9]\u005F\u002E\u002D]*[a-z||A-Z||0-9]";
     static private String sDomen2 = "([a-zA-Z]){2,4}";
 
     private static final long serialVersionUID = -4082731133028995753L;
