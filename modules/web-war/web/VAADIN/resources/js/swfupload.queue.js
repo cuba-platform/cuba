@@ -52,8 +52,8 @@ function initSWFUploadPrototype() {
 		    	stats = this.getStats();
 		    }
 	    };
-	    
-	    /*
+
+        /*
     	SWFUpload.queue.uploadStartHandler = function (file) {
 	    	var returnValue;
 		    if (typeof(this.queueSettings.user_upload_start_handler) === "function") {
@@ -66,8 +66,7 @@ function initSWFUploadPrototype() {
 		    this.queueSettings.queue_cancelled_flag = !returnValue;
 
 		    return returnValue;
-    	};
-    	*/
+    	};       */
 
 	    SWFUpload.queue.uploadCompleteHandler = function (file) {
 		    var user_upload_complete_handler = this.queueSettings.user_upload_complete_handler;
@@ -76,10 +75,10 @@ function initSWFUploadPrototype() {
 		    if (file.filestatus === SWFUpload.FILE_STATUS.COMPLETE) {
 			    this.queueSettings.queue_upload_count++;
 		    }
-            /*
+
 		    if (typeof(user_upload_complete_handler) === "function") {
-		    	continueUpload = (user_upload_complete_handler.call(this, file) === false) ? false : true;
-		    } else */
+		    	continueUpload = true; //(user_upload_complete_handler.call(this, file) === false) ? false : true;
+		    } else
 		    if (file.filestatus === SWFUpload.FILE_STATUS.QUEUED) {
 			    // If the file was stopped and re-queued don't restart the upload
 			    continueUpload = false;

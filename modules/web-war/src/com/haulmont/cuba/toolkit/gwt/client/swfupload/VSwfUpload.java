@@ -11,6 +11,7 @@
 package com.haulmont.cuba.toolkit.gwt.client.swfupload;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -28,9 +29,29 @@ public class
     private Timer t;
 
     private Element uploadButton = DOM.createSpan();
+    private Element progressDiv = DOM.createDiv();
 
     public VSwfUpload() {
         DOM.appendChild(getElement(), uploadButton);
+
+        progressDiv.setAttribute("style","");
+        progressDiv.getStyle().setPosition(Style.Position.ABSOLUTE);
+        progressDiv.getStyle().setZIndex(2000);
+
+        progressDiv.getStyle().setProperty("left","50%");
+        progressDiv.getStyle().setProperty("top","50%");
+        progressDiv.getStyle().setProperty("width","250px");
+
+        progressDiv.getStyle().setMarginLeft(-125, Style.Unit.PX);
+        progressDiv.getStyle().setMarginTop(-150, Style.Unit.PX);
+        progressDiv.getStyle().setBackgroundColor("#eaeef2");
+        progressDiv.getStyle().setBorderColor("#4e7bb3");
+        progressDiv.getStyle().setBorderStyle(Style.BorderStyle.SOLID);
+        progressDiv.getStyle().setBorderWidth(2, Style.Unit.PX);
+        progressDiv.getStyle().setVisibility(Style.Visibility.HIDDEN);
+        progressDiv.getStyle().setDisplay(Style.Display.NONE);
+
+        DOM.appendChild(getElement(), progressDiv);
     }
 
     private static String getValueFromUIDL(UIDL uidl, String attribute, String defaultValue) {
@@ -49,6 +70,9 @@ public class
 
     public void updateFromUIDL(UIDL uidl, final ApplicationConnection client) {
         paintableId = uidl.getId();
+
+        uploadButton.setId(paintableId + "_upload");
+        progressDiv.setId(paintableId + "_progress");
 
         this.client = client;
 
@@ -78,11 +102,9 @@ public class
 
         final String controlPid = paintableId.toString();
 
-        uploadButton.setId(paintableId + "_upload");
-
         SwfUploadAPI.onReady(new Runnable() {
             public void run() {
-                initPrototype();
+                initSwfUploadObjects();
                 String uri = client.getAppUri();
 
                 Options opts = Options.create();
@@ -99,6 +121,11 @@ public class
                 opts.set("file_upload_limit", fileUploadLimit);
                 opts.set("file_queue_limit", fileQueueLimit);
 
+                // Set custom settings
+                Options customOpts = Options.create();
+                customOpts.set("progressTarget", progressDiv.getId());
+                opts.set("custom_settings", customOpts);
+
                 // Set debug mode
                 opts.set("debug", false);
                 uri = client.getThemeUri();
@@ -114,8 +141,26 @@ public class
                 opts.set("button_text_style",
                         ".swfupload {font-size: 12px; font-family: verdana,Tahoma,sans-serif; }");
 
+                /*
+                Handlers list
+
+                file_queued_handler : fileQueued,
+				file_queue_error_handler : fileQueueError,
+				file_dialog_complete_handler : fileDialogComplete,
+				upload_start_handler : uploadStart,
+				upload_progress_handler : uploadProgress,
+				upload_error_handler : uploadError,
+				upload_success_handler : uploadSuccess,
+				upload_complete_handler : uploadComplete,
+				queue_complete_handler : queueComplete					
+                */
+
                 // Add event handlers
                 applyJsObjectByName(opts, "file_dialog_complete_handler", "fileDialogComplete");
+                applyJsObjectByName(opts, "upload_start_handler", "uploadStart");
+                applyJsObjectByName(opts, "upload_progress_handler", "uploadProgress");
+                applyJsObjectByName(opts, "upload_complete_handler", "uploadComplete");
+                applyJsObjectByName(opts, "upload_success_handler", "uploadSuccess");
 
                 // Add error handler
                 String notifierId = "UploadErrorHandler_" + paintableId;
@@ -136,6 +181,7 @@ public class
     protected void injectJs() {
         if (!ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.js")) {
             ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.queue.js");
+            ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.fileprogress.js");
             ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.handlers.js");
         }
     }
@@ -158,6 +204,7 @@ public class
     private native void addRefresher(String optionName)/*-{
         var swfu = this;
         $wnd[optionName] = function(numFilesUploaded){
+		    
             swfu.@com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload::refreshServerSide()();
         };
     }-*/;
@@ -166,8 +213,9 @@ public class
         opts[propertyName] = $wnd[objectName];
     }-*/;
 
-    private static native void initPrototype() /*-{
+    private static native void initSwfUploadObjects() /*-{
         $wnd.initSWFUploadPrototype();
+        $wnd.initSWFUploadProgress();
     }-*/;
 
     private static native void showUpload(String varName, Options opts) /*-{
