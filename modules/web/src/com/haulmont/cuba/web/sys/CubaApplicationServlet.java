@@ -354,7 +354,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
             String timestamp = releaseTimestamp();
             page.write(timestamp == null ? "" : "?" + timestamp);
         }
-        page.write("\" laguage=\"javascript\"> </script>");
+        page.write("\" language=\"javascript\"> </script>");
     }
 
     @Override

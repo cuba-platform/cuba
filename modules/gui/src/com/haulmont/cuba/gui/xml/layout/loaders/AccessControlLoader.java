@@ -12,7 +12,9 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -21,11 +23,24 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class AccessControlLoader extends ContainerLoader {
+
+    private static final Set<String> enabledActions = new HashSet<String>() {{
+        add("excel");
+        add("windowclose");
+        add("cancel");
+    }};
+
+    /**
+     * If actionId contains <key> then action.caption will be replaced with message <value>
+     * key - string, containing in action Id
+     * value - message name.
+     */
+    private static  final HashMap<String, String> renamingActions = new HashMap<String, String>(){{
+       put("edit","actions.View");
+    }};
 
     public AccessControlLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
@@ -82,14 +97,21 @@ public class AccessControlLoader extends ContainerLoader {
         return accessControl;
     }
 
-    protected void applyToComponent(Component component, boolean editable, 
-                                    AbstractAccessData data, Collection<Component> components)
-    {
+    protected void applyToComponent(Component component, boolean editable,
+                                    AbstractAccessData data, Collection<Component> components) {
         if (component instanceof Component.Editable && !editable) {
             ((Component.Editable) component).setEditable(false);
         }
+
         if (component instanceof Button && !editable) {
             context.addLazyTask(new AccessControlLoaderLazyTask(component));
+        }
+
+        if (component instanceof Component.HasButtonsPanel && !editable) {
+            Collection<Component> buttons = new ArrayList<Component>(((Component.HasButtonsPanel) component).getButtonsPanel().getButtons());
+            for (Component button : buttons) {
+                applyToComponent(button, editable, data, buttons);
+            }
         }
 
         if (data != null) {
@@ -153,9 +175,21 @@ public class AccessControlLoader extends ContainerLoader {
         }
 
         public void execute(Context context, IFrame frame) {
+
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
             component.setEnabled(false);
-            if (component instanceof Component.ActionOwner)
-                ((Component.ActionOwner) component).getAction().setEnabled(false);
+            if (component instanceof Component.ActionOwner) {
+                Action action = ((Component.ActionOwner) component).getAction();
+                if (renamingActions.containsKey(action.getId().toLowerCase())) {
+                    action.setEnabled(true);
+                    ((Button) component).setCaption(MessageProvider.getMessage(messagesPackage, renamingActions.get(action.getId().toLowerCase())));
+                } else if (enabledActions.contains(action.getId().toLowerCase())) {
+                    action.setEnabled(true);
+                } else {
+                    action.setEnabled(false);
+                }
+
+            }
         }
     }
 }

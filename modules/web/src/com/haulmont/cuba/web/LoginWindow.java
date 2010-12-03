@@ -288,7 +288,7 @@ public class LoginWindow extends Window implements Action.Handler {
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 ActiveDirectoryHelper.authenticate(login, (String) passwordField.getValue(), loc);
-                connection.loginActiveDirectory(login, locale);
+                ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
                 String passwd = loginByRememberMe
                         ? (String) passwordField.getValue()

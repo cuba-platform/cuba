@@ -512,9 +512,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                                 ((WebWindow.Editor)window).releaseLock();
                             }
                         }
-                        connection.logout();
-                        String url = ActiveDirectoryHelper.useActiveDirectory() ? "login" : "";
-                        open(new ExternalResource(App.getInstance().getURL() + url));
+                        String redirectionUrl = connection.logout();
+                        open(new ExternalResource(App.getInstance().getURL() + redirectionUrl));
                     }
                 }
         );

@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.EntityFactory;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
@@ -96,7 +97,7 @@ public class PropertyDatasourceImpl<T extends Entity>
 
     public View getView() {
         final ViewProperty property = ds.getView().getProperty(metaProperty.getName());
-        return property == null ? null : MetadataProvider.getViewRepository().getView(getMetaClass(),property.getView().getName());
+        return property == null ? null : MetadataProvider.getViewRepository().getView(getMetaClass(), property.getView().getName());
     }
 
     public DsContext getDsContext() {
@@ -115,7 +116,14 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public void setItem(T item) {
-        throw new UnsupportedOperationException();
+        if (getItem() != null) {
+            InstanceUtils.copy((Instance) item, (Instance) getItem());
+            itemToUpdate.add(item);
+        } else {
+            final Instance parentItem = (Instance) ds.getItem();
+            parentItem.setValue(metaProperty.getName(), item);
+        }
+        setModified(true);
     }
 
     public void invalidate() {

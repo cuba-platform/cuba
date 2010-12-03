@@ -10,10 +10,12 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.GlobalUtils;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.exception.*;
 import com.haulmont.cuba.web.gui.WebTimer;
@@ -52,8 +54,8 @@ import java.util.regex.Pattern;
  * Specific application should inherit from this class and set derived class name
  * in <code>application</code> servlet parameter of <code>web.xml</code>
  */
-public class App extends Application
-        implements ConnectionListener, ApplicationContext.TransactionListener, HttpServletRequestListener {
+public abstract class App extends Application
+        implements ApplicationContext.TransactionListener, HttpServletRequestListener {
     private static final long serialVersionUID = -3435976475534930050L;
 
     public static final Pattern WIN_PATTERN = Pattern.compile("win([0-9]{1,4})");
@@ -73,11 +75,9 @@ public class App extends Application
 
     private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
 
-    private transient ThreadLocal<String> currentWindowName = new ThreadLocal<String>();
+    protected transient ThreadLocal<String> currentWindowName = new ThreadLocal<String>();
 
-    private boolean principalIsWrong;
-
-    private LinkHandler linkHandler;
+    protected LinkHandler linkHandler;
 
     protected Map<Window, WindowTimers> windowTimers = new HashMap<Window, WindowTimers>();
     protected Map<Timer, Window> timerWindow = new HashMap<Timer, Window>();
@@ -98,10 +98,9 @@ public class App extends Application
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
 
-    public App() {
+    protected App() {
         appLog = new AppLog();
-        connection = new Connection();
-        connection.addListener(this);
+        connection = createConnection();
         windowManager = createWindowManager();
         exceptionHandlers = new ExceptionHandlers(this);
         cookies = new AppCookies() {
@@ -135,32 +134,15 @@ public class App extends Application
         return msgs;
     }
 
+    protected abstract boolean loginOnStart(HttpServletRequest request);
+
+    protected abstract Connection createConnection();
+
     /**
      * Can be overridden in descendant to create an application-specific {@link WebWindowManager}
      */
     protected WebWindowManager createWindowManager() {
         return new WebWindowManager(this);
-    }
-
-    public void init() {
-        log.debug("Initializing application");
-
-        AppConfig.getInstance().addGroovyImport(PersistenceHelper.class);
-
-        ApplicationContext appContext = getContext();
-        appContext.addTransactionListener(this);
-
-        LoginWindow window = createLoginWindow();
-        setMainWindow(window);
-
-        if (!viewsDeployed) {
-            deployViews();
-            viewsDeployed = true;
-        }
-
-        String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
-        if (themeName == null) themeName = THEME_NAME;
-        setTheme(themeName);
     }
 
     /**
@@ -193,12 +175,11 @@ public class App extends Application
         }
     }
 
-    /**
-     * Should be overridden in descendant to create an application-specific login window
-     */
-    protected LoginWindow createLoginWindow() {
-        LoginWindow window = new LoginWindow(this, connection);
-        return window;
+    protected void checkDeployedViews() {
+        if (!viewsDeployed) {
+            deployViews();
+            viewsDeployed = true;
+        }
     }
 
     /**
@@ -255,57 +236,7 @@ public class App extends Application
         return appLog;
     }
 
-    public void connectionStateChanged(Connection connection) throws LoginException {
-        if (connection.isConnected()) {
-            log.debug("Creating AppWindow");
-
-            stopTimers();
-
-            for (Object win : new ArrayList(getWindows())) {
-                removeWindow((Window) win);
-            }
-
-            String name = currentWindowName.get();
-            if (name == null)
-                name = createWindowName(true);
-
-            Window window = getWindow(name);
-
-            setMainWindow(window);
-            currentWindowName.set(window.getName());
-
-            initExceptionHandlers(true);
-
-            if (linkHandler != null) {
-                linkHandler.handle();
-                linkHandler = null;
-            }
-        }
-        else {
-            log.debug("Closing all windows");
-            getWindowManager().closeAll();
-
-            stopTimers();
-
-            for (Object win : new ArrayList(getWindows())) {
-                removeWindow((Window) win);
-            }
-
-            String name = currentWindowName.get();
-            if (name == null)
-                name = createWindowName(false);
-
-            Window window = createLoginWindow();
-            window.setName(name);
-            setMainWindow(window);
-
-            currentWindowName.set(window.getName());
-
-            initExceptionHandlers(false);
-        }
-    }
-
-    private String createWindowName(boolean main) {
+    protected String createWindowName(boolean main) {
         String name = main ? AppContext.getProperty("cuba.web.mainWindowName") : AppContext.getProperty("cuba.web.loginWindowName");
         if (StringUtils.isBlank(name))
             name = GlobalUtils.generateWebWindowName();
@@ -339,32 +270,6 @@ public class App extends Application
             exceptionHandlers.handle(event);
             getAppLog().log(event);
         }
-    }
-
-    @Override
-    public Window getWindow(String name) {
-        Window window = super.getWindow(name);
-
-        // it does not exist yet, create it.
-        if (window == null) {
-            if (connection.isConnected()) {
-                final AppWindow appWindow = createAppWindow();
-                appWindow.setName(name);
-                addWindow(appWindow);
-
-                connection.addListener(appWindow);
-
-                return appWindow;
-            } else {
-                final Window loginWindow = createLoginWindow();
-                loginWindow.setName(name);
-                addWindow(loginWindow);
-
-                return loginWindow;
-            }
-        }
-
-        return window;
     }
 
     public void transactionStart(Application application, Object transactionData) {
@@ -406,25 +311,6 @@ public class App extends Application
         }
 
         processExternalLink(request, requestURI);
-    }
-
-    protected boolean loginOnStart(HttpServletRequest request) {
-        if (request.getUserPrincipal() != null
-                && !principalIsWrong
-                && ActiveDirectoryHelper.useActiveDirectory()) {
-            String userName = request.getUserPrincipal().getName();
-            log.debug("Trying to login ActiveDirectory as " + userName);
-            try {
-                connection.loginActiveDirectory(userName, request.getLocale());
-                principalIsWrong = false;
-
-                return true;
-            } catch (LoginException e) {
-                principalIsWrong = true;
-            }
-        }
-
-        return false;
     }
 
     public static boolean auxillaryUrl(String uri) {
@@ -567,7 +453,7 @@ public class App extends Application
         }
     }
 
-    private void stopTimers() {
+    protected void stopTimers() {
         Set<Timer> timers = new HashSet<Timer>(timerWindow.keySet());
         for (final Timer timer : timers) {
             if (timer != null && !timer.isStopped()) {

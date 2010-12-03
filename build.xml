@@ -87,6 +87,9 @@
         <ext:install-lib groupId="jfree" artifactId="jcommon" version="${jcommon.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="jfree" artifactId="jfreechart" version="${jfreechart.version}" toDir="${lib.server.dir}"/>
 
+        <!-- CAS -->
+        <ext:install-lib groupId="org.jasig.cas" artifactId="cas-client-core" version="${cas.version}" toDir="${lib.server.dir}"/>
+
         <!-- gwt libs -->
         <ext:install-lib groupId="com.google.gwt" artifactId="gwt-user" version="${gwt-user.version}" toDir="${lib.gwt.dir}"/>
         <ext:install-lib groupId="com.google.gwt" artifactId="gwt-dev" version="${gwt-dev.version}" toDir="${lib.gwt.dir}"/>
