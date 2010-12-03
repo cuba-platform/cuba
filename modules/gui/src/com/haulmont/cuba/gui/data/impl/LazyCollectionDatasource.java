@@ -322,10 +322,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
                 boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
                 MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
 
-                if (propertyPath.get().length > 1)
-                    throw new UnsupportedOperationException();
-
-                transformer.replaceOrderBy(propertyPath.getMetaProperty().getName(), !asc);
+                transformer.replaceOrderBy(propertyPath.toString(), !asc);
                 String jpqlQuery = transformer.getResult();
 
                 q.setQueryString(jpqlQuery);
