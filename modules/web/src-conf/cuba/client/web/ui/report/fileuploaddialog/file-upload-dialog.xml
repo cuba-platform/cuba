@@ -12,6 +12,6 @@
     </dsContext>
 
     <layout>
-        <hbox><upload id="fileUpload"/></hbox>
+        <hbox><upload id="fileUpload"/> <hbox/></hbox>
     </layout>
 </window>
