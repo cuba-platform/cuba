@@ -180,13 +180,15 @@ public class AccessControlLoader extends ContainerLoader {
             component.setEnabled(false);
             if (component instanceof Component.ActionOwner) {
                 Action action = ((Component.ActionOwner) component).getAction();
-                if (renamingActions.containsKey(action.getId().toLowerCase())) {
-                    action.setEnabled(true);
-                    ((Button) component).setCaption(MessageProvider.getMessage(messagesPackage, renamingActions.get(action.getId().toLowerCase())));
-                } else if (enabledActions.contains(action.getId().toLowerCase())) {
-                    action.setEnabled(true);
-                } else {
-                    action.setEnabled(false);
+                if (action != null) {
+                    if (renamingActions.containsKey(action.getId().toLowerCase())) {
+                        action.setEnabled(true);
+                        ((Button) component).setCaption(MessageProvider.getMessage(messagesPackage, renamingActions.get(action.getId().toLowerCase())));
+                    } else if (enabledActions.contains(action.getId().toLowerCase())) {
+                        action.setEnabled(true);
+                    } else {
+                        action.setEnabled(false);
+                    }
                 }
 
             }
