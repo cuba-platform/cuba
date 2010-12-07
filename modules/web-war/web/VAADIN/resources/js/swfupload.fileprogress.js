@@ -26,27 +26,27 @@ function FileProgress(file, targetID) {
 		//this.fileProgressElement.className = "progressContainer";
 
 
-		var progressCancel = document.createElement("span");
+		//var progressCancel = document.createElement("span");
 		//progressCancel.className = "progressCancel";
 		//progressCancel.href = "#";
 		//progressCancel.style.visibility = "hidden";
-		progressCancel.appendChild(document.createTextNode(" "));
+		//progressCancel.appendChild(document.createTextNode(" "));
 
-		var progressText = document.createElement("div");
+		var progressText = document.createElement("span");
 		//progressText.className = "progressName";
 		progressText.appendChild(document.createTextNode(file.name));
 
-		var progressBar = document.createElement("div");
+		//var progressBar = document.createElement("span");
 		//progressBar.className = "progressBarInProgress";
 
-		var progressStatus = document.createElement("div");
+		var progressStatus = document.createElement("span");
 		//progressStatus.className = "progressBarStatus";
 		progressStatus.innerHTML = "&nbsp;";
 
-		this.fileProgressElement.appendChild(progressCancel);
+		//this.fileProgressElement.appendChild(progressCancel);
 		this.fileProgressElement.appendChild(progressText);
 		this.fileProgressElement.appendChild(progressStatus);
-		this.fileProgressElement.appendChild(progressBar);
+		//this.fileProgressElement.appendChild(progressBar);
 
 		this.fileProgressWrapper.appendChild(this.fileProgressElement);
 
@@ -76,11 +76,11 @@ function initSWFUploadProgress(){
     FileProgress.prototype.reset = function () {
 	    // this.fileProgressElement.className = "progressContainer";
 
-	    this.fileProgressElement.childNodes[2].innerHTML = "&nbsp;";
+	    this.fileProgressElement.childNodes[1].innerHTML = "&nbsp;";
         // this.fileProgressElement.childNodes[2].className = "progressBarStatus";
 	
 	    // this.fileProgressElement.childNodes[3].className = "progressBarInProgress";
-	    this.fileProgressElement.childNodes[3].style.width = "0%";
+	    // this.fileProgressElement.childNodes[3].style.width = "0%";
 	
 	    this.appear();
     };
@@ -88,7 +88,7 @@ function initSWFUploadProgress(){
     FileProgress.prototype.setProgress = function (percentage) {
 	   // this.fileProgressElement.className = "progressContainer green";
 	   // this.fileProgressElement.childNodes[3].className = "progressBarInProgress";
-	    this.fileProgressElement.childNodes[3].style.width = percentage + "%";
+	   // this.fileProgressElement.childNodes[3].style.width = percentage + "%";
 
 	    this.targetElement.style.visibility = "visible";
 		this.targetElement.style.display = "block";
@@ -99,7 +99,7 @@ function initSWFUploadProgress(){
     FileProgress.prototype.setComplete = function () {
 	   // this.fileProgressElement.className = "progressContainer blue";
 	   // this.fileProgressElement.childNodes[3].className = "progressBarComplete";
-	    this.fileProgressElement.childNodes[3].style.width = "";
+	   // this.fileProgressElement.childNodes[3].style.width = "";
 
 	    var oSelf = this;
     	this.setTimer(setTimeout(function () {
@@ -110,7 +110,7 @@ function initSWFUploadProgress(){
     FileProgress.prototype.setError = function () {
 	   // this.fileProgressElement.className = "progressContainer red";
 	   // this.fileProgressElement.childNodes[3].className = "progressBarError";
-	    this.fileProgressElement.childNodes[3].style.width = "";
+	   // this.fileProgressElement.childNodes[3].style.width = "";
 
     	var oSelf = this;
     	this.setTimer(setTimeout(function () {
@@ -121,26 +121,27 @@ function initSWFUploadProgress(){
     FileProgress.prototype.setCancelled = function () {
 	   // this.fileProgressElement.className = "progressContainer";
 	   // this.fileProgressElement.childNodes[3].className = "progressBarError";
-	    this.fileProgressElement.childNodes[3].style.width = "";
+	   // this.fileProgressElement.childNodes[3].style.width = "";
 
 	    var oSelf = this;
 	    this.setTimer(setTimeout(function () {
 	    	oSelf.disappear();
 	    }, 2000));
     };
+    
     FileProgress.prototype.setStatus = function (status) {
-	    this.fileProgressElement.childNodes[2].innerHTML = status;
+	    this.fileProgressElement.childNodes[1].innerHTML = status;
     };
 
     // Show/Hide the cancel button
     FileProgress.prototype.toggleCancel = function (show, swfUploadInstance) {
-	    this.fileProgressElement.childNodes[0].style.visibility = show ? "visible" : "hidden";
+	    //this.fileProgressElement.childNodes[0].style.visibility = show ? "visible" : "hidden";
 	    if (swfUploadInstance) {
 		    var fileID = this.fileProgressID;
-	    	this.fileProgressElement.childNodes[0].onclick = function () {
+	    	/*this.fileProgressElement.childNodes[0].onclick = function () {
 		    	swfUploadInstance.cancelUpload(fileID);
 			    return false;
-	    	};
+	    	};*/
 	    }
     };
 
@@ -206,15 +207,12 @@ function initSWFUploadProgress(){
 	    if (this.height > 0 || this.opacity > 0) {
 	    	var oSelf = this;
 	    	oSelf.disappear();
-		    /*
+
 		    this.setTimer(setTimeout(function () {
 		    	oSelf.disappear();
-	    	}, rate)); */
+	    	}, rate));
 	    } else {
 		    this.fileProgressWrapper.style.display = "none";
-
-	        this.targetElement.style.visibility = "hidden";
-		    this.targetElement.style.display = "none";
 
 		    this.setTimer(null);
 	    }

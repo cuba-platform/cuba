@@ -11,6 +11,8 @@
 package com.haulmont.cuba.toolkit.gwt.client.swfupload;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -33,6 +35,15 @@ public class
 
     public VSwfUpload() {
         DOM.appendChild(getElement(), uploadButton);
+        createProgress();
+        DOM.appendChild(getElement(), progressDiv);
+    }
+
+    private void createProgress(){
+        NodeList<Node> nodes = progressDiv.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++){
+            progressDiv.removeChild(nodes.getItem(i));
+        }
 
         progressDiv.setAttribute("style","");
         progressDiv.getStyle().setPosition(Style.Position.ABSOLUTE);
@@ -50,8 +61,6 @@ public class
         progressDiv.getStyle().setBorderWidth(2, Style.Unit.PX);
         progressDiv.getStyle().setVisibility(Style.Visibility.HIDDEN);
         progressDiv.getStyle().setDisplay(Style.Display.NONE);
-
-        DOM.appendChild(getElement(), progressDiv);
     }
 
     private static String getValueFromUIDL(UIDL uidl, String attribute, String defaultValue) {
@@ -187,12 +196,21 @@ public class
     }
 
     public void refreshServerSide() {
+        //alert("lol!");
+        createProgress();
+
         client.updateVariable(paintableId, "queueUploadComplete", 1, true);
     }
 
     public void errorNotify(String file, String message, int errorCode) {
+        createProgress();
+        
         client.updateVariable(paintableId, "uploadError", new String[]{file, message, String.valueOf(errorCode)}, true);
     }
+
+    private native void alert(String msg)/*-{
+        $wnd.alert(msg);
+    }-*/;
 
     private native void addErrorHandler(String optionName)/*-{
         var swfu = this;
