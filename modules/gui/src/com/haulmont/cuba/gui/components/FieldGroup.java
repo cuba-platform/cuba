@@ -25,6 +25,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
     void addField(Field field, int col);
     void removeField(Field field);
 
+    Datasource getDatasource();
     void setDatasource(Datasource datasource);
 
     boolean isRequired(Field field);
@@ -58,6 +59,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
     float getColumnExpandRatio(int col);
     void setColumnExpandRatio(int col, float ratio);
 
+    void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator);
     void addCustomField(Field field, CustomFieldGenerator fieldGenerator);
 
     void addListener(ExpandListener listener);

@@ -162,6 +162,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         layout.setCaptionAlignment(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
     }
 
+    public void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        addCustomField(field, fieldGenerator);
+    }
+
     public void addCustomField(final Field field, final CustomFieldGenerator fieldGenerator) {
         if (!field.isCustom()) {
             throw new IllegalStateException(String.format("Field '%s' must by custom", field.getId()));
@@ -215,6 +222,10 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 return f;
             }
         });
+    }
+
+    public Datasource getDatasource() {
+        return datasource;
     }
 
     public void setDatasource(Datasource datasource) {

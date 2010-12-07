@@ -93,11 +93,11 @@
         <pathelement location="${prod.out.dir}/web"/>
         <pathelement location="${prod.out.dir}/web-war"/>
         <pathelement location="${java.src.dir}"/>
-        <pathelement location="${lib.server.dir}/vaadin-${vaadin.version}.jar"/>
-        <pathelement location="${lib.server.dir}/dashlayout-${dashlayout.version}.jar"/>
-        <pathelement location="${lib.server.dir}/popupbutton-${popupbutton.version}.jar"/>
-        <pathelement location="${lib.gwt.dir}/gwt-user-${gwt-user.version}.jar"/>
-        <pathelement location="${lib.gwt.dir}/gwt-dev-${gwt-dev.version}.jar"/>
+        <pathelement location="${lib.server.dir}/vaadin.jar"/>
+        <pathelement location="${lib.server.dir}/dashlayout.jar"/>
+        <pathelement location="${lib.server.dir}/popupbutton.jar"/>
+        <pathelement location="${lib.gwt.dir}/gwt-user.jar"/>
+        <pathelement location="${lib.gwt.dir}/gwt-dev.jar"/>
     </path>
 
     <target name="build-gwt" if="do-build-gwt">

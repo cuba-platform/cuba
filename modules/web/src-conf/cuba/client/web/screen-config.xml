@@ -1,4 +1,4 @@
-<screen-config>
+<screen-config xmlns="http://www.haulmont.com/schema/cuba/gui/screen-config.xsd">
 
     <screen id="tableTest"
             class="com.haulmont.cuba.web.app.ui.LazyLoadingTableScreen"/>

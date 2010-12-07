@@ -50,7 +50,7 @@
         <ext:install-lib groupId="org.perf4j" artifactId="perf4j" version="${perf4j.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="openjpa" version="${openjpa.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="net.sourceforge.serp" artifactId="serp" version="${serp.version}" toDir="${lib.common.dir}"/>
-        <ext:install-lib groupId="com.google.collections" artifactId="google-collections" version="${google-collect.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="com.google.guava" artifactId="guava" version="${guava.version}" toDir="${lib.common.dir}"/>
 
         <ext:install-lib groupId="aopalliance" artifactId="aopalliance" version="${aopalliance.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.aspectj" artifactId="aspectjrt" version="${aspectjrt.version}" toDir="${lib.common.dir}"/>
