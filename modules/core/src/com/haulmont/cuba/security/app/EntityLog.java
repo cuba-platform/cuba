@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -285,7 +286,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         } else if (value instanceof Date) {
             return Datatypes.getInstance().get(Date.class).format((Date) value);
         } else {
-            return value.toString();
+            return StringUtils.abbreviate(value.toString(), EntityLogAttr.VALUE_LEN - 3);
         }
     }
 }
