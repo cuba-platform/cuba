@@ -984,7 +984,8 @@ public class WebWindow
                             final FieldGroup fieldGroup = (FieldGroup) impl;
                             for (final Object propId : fieldGroup.getItemPropertyIds()) {
                                 final Field f = fieldGroup.getField(propId);
-                                validateField(f, problems);
+                                if (f.isVisible() && f.isEnabled() && !f.isReadOnly())
+                                    validateField(f, problems);
                             }
                         } else {
                             validateField(impl, problems);
