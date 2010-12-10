@@ -303,7 +303,8 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                     field = new WebTextField();
                     setListenerToField(field, instance, Integer.class);
                     field.addValidator(new IntegerValidator());
-                    field.setValue(Datatypes.getInstance().get(Integer.class).parse(val));
+                    //field.setValue(Datatypes.getInstance().get(Integer.class).parse(val));
+                    field.setValue(val);
                     break;
                 }
                 case DICTIONARY:

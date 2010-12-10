@@ -14,10 +14,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -56,6 +53,8 @@ public class WebPickerField
 
     private String lookupScreen;
 
+    protected ValueProvider valueProvider;
+
     public WebPickerField() {
         component = new PickerFieldComponent();
         component.addListener(new Button.ClickListener() {
@@ -78,7 +77,9 @@ public class WebPickerField
                                 __setValue(item);
                             }
                         }
-                    }, WindowManager.OpenType.THIS_TAB);
+                    },
+                            WindowManager.OpenType.THIS_TAB,
+                            valueProvider != null ? valueProvider.getParameters() : Collections.EMPTY_MAP);
                 }
             }
         });
@@ -208,6 +209,14 @@ public class WebPickerField
 
     public void setClearButtonIcon(String iconName) {
         component.setClearButtonIcon(new ThemeResource(iconName));
+    }
+
+    public ValueProvider getValueProvider() {
+        return valueProvider;
+    }
+
+    public void setValueProvider(ValueProvider valueProvider) {
+        this.valueProvider = valueProvider;
     }
 
     public class PickerFieldComponent extends CustomComponent implements com.vaadin.ui.Field {
