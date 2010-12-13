@@ -45,6 +45,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Tree;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -102,7 +103,8 @@ public class FoldersPane extends VerticalLayout {
         boolean nowVisible;
         UserSettingHelper.FoldersState state = UserSettingHelper.loadFoldersState();
         if (state == null) {
-            nowVisible = false;
+            String visible = AppContext.getProperty("cuba.foldersPane.new.visible");
+            nowVisible = visible != null ? Boolean.parseBoolean(visible) : false;
             String paneWidthStr = AppContext.getProperty("cuba.foldersPane.width");
             horizontalSplitPos = paneWidthStr == null ? DEFAULT_PANE_WIDTH : Integer.parseInt(paneWidthStr);
             verticalSplitPos = DEFAULT_VERT_SPLIT_POS;
