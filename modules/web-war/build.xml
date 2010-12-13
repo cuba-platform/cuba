@@ -7,6 +7,7 @@
 
     <property name="module.name" value="web-war"/>
 
+    <property file="${root.dir}/build-script/local.build.properties"/>
     <property file="${root.dir}/build-script/build.properties"/>
     <import file="${root.dir}/build-script/build-inc-mod.xml"/>
     <property file="${project.dir}/lib.properties"/>

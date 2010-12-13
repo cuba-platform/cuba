@@ -63,6 +63,7 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("textField", TextFieldLoader.class);
         config.register("textArea", TextAreaLoader.class);
         config.register("dateField", DateFieldLoader.class);
+        config.register("timeField", TimeFieldLoader.class);
         config.register("lookupField", LookupFieldLoader.class);
         config.register("pickerField", PickerFieldLoader.class);
         config.register("optionsGroup", OptionsGroupLoader.class);

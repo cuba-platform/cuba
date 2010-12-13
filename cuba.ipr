@@ -85,6 +85,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
           <option name="INDENT_SIZE" value="4" />
@@ -94,6 +95,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="xml">
           <option name="INDENT_SIZE" value="4" />
@@ -103,6 +105,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
       </value>
     </option>
@@ -221,6 +224,7 @@
           <option name="IGNORE_DEPRECATED" value="false" />
           <option name="IGNORE_JAVADOC_PERIOD" value="true" />
           <option name="IGNORE_DUPLICATED_THROWS" value="false" />
+          <option name="IGNORE_POINT_TO_ITSELF" value="false" />
           <option name="myAdditionalJavadocTags" value="" />
         </inspection_tool>
         <inspection_tool class="JpaQlInspection" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -433,6 +437,9 @@
       <module fileurl="file://$PROJECT_DIR$/modules/web-war/web-war.iml" filepath="$PROJECT_DIR$/modules/web-war/web-war.iml" />
     </modules>
   </component>
+  <component name="ProjectResources">
+    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
@@ -528,6 +535,15 @@
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
+    <library name="bali">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../bali/build/bali.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../bali/src" />
+      </SOURCES>
+    </library>
     <library name="chile">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../chile/build/chile-core.jar!/" />
@@ -540,26 +556,10 @@
         <root url="NullVirtualFilePointer" />
       </SOURCES>
     </library>
-    <library name="server">
-      <CLASSES>
-        <root url="file://$PROJECT_DIR$/../lib/server" />
-      </CLASSES>
+    <library name="client">
+      <CLASSES />
       <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/cas-client-core-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-tx-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-orm-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/xpp3_min-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/ooo-bootstrapconnector-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/jgroups-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-jdbc-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-context-support-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-compress-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-beanutils-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-fileupload-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-digester-sources.jar!/" />
-      </SOURCES>
-      <jarDirectory url="file://$PROJECT_DIR$/../lib/server" recursive="false" />
+      <SOURCES />
     </library>
     <library name="common">
       <CLASSES>
@@ -599,21 +599,6 @@
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/../lib/common" recursive="false" />
     </library>
-    <library name="test">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../lib/test/junit.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../lib/jdbc/hsqldb.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../lib/test/src/junit-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="client">
-      <CLASSES />
-      <JAVADOC />
-      <SOURCES />
-    </library>
     <library name="gwt">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/../lib/gwt" />
@@ -625,15 +610,6 @@
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/../lib/gwt" recursive="false" />
     </library>
-    <library name="bali">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../bali/build/bali.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../bali/src" />
-      </SOURCES>
-    </library>
     <library name="jdbc">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../lib/jdbc/postgresql.jar!/" />
@@ -642,6 +618,38 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../lib/jdbc/src/postgresql-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="server">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/../lib/server" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/cas-client-core-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-tx-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-orm-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/xpp3_min-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/ooo-bootstrapconnector-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/jgroups-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-jdbc-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-context-support-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-compress-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-beanutils-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-fileupload-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-digester-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/server/vaadin.jar!/" />
+      </SOURCES>
+      <jarDirectory url="file://$PROJECT_DIR$/../lib/server" recursive="false" />
+    </library>
+    <library name="test">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../lib/test/junit.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../lib/jdbc/hsqldb.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../lib/test/src/junit-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

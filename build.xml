@@ -125,7 +125,15 @@
 		</antcall>
 	</target>
 		
-	<target name="build">
+    <target name="init-release-number">
+		<tstamp>
+			<format property="release.timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
+		</tstamp>
+		<echo message="${release.number}" file="modules/global/src/com/haulmont/cuba/core/global/release.number"/>
+		<echo message="${release.timestamp}" file="modules/global/src/com/haulmont/cuba/core/global/release.timestamp"/>
+	</target>
+
+	<target name="build" depends="init-release-number">
 		<antcall target="delegate" inheritAll="false">
 			<param name="target" value="build-module"/>
 		</antcall>

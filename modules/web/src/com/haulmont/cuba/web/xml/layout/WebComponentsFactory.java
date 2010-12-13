@@ -56,6 +56,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("treeTable", WebTreeTable.class);
         classes.put("groupTable", WebGroupTable.class);
         classes.put("dateField", WebDateField.class);
+        classes.put("timeField", WebTimeField.class);
         classes.put("lookupField", WebLookupField.class);
         classes.put("pickerField", WebPickerField.class);
         classes.put("optionsGroup", WebOptionsGroup.class);
