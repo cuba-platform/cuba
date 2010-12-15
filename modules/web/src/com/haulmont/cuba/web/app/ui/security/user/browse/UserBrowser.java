@@ -9,9 +9,13 @@
  */
 package com.haulmont.cuba.web.app.ui.security.user.browse;
 
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.rpt.ReportHelper;
 import com.haulmont.cuba.web.rpt.ReportOutput;
@@ -49,6 +53,18 @@ public class UserBrowser extends AbstractLookup
         helper.createCreateAction();
         helper.createEditAction();
         helper.createRemoveAction();
+        final Action removeAction = table.getAction("remove");
+        table.getDatasource().addListener(new DsListenerAdapter() {
+            @Override
+            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                super.itemChanged(ds, prevItem, item);
+                User user = (User) item;
+                if (removeAction != null)
+                    removeAction.setEnabled(!(UserSessionClient.getUserSession().getUser().equals(user) ||
+                            UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().equals(user)));
+            }
+        });
+
         helper.createExcelAction(new WebExportDisplay());
 
         helper.addListener(new TableActionsHelper.Listener() {
