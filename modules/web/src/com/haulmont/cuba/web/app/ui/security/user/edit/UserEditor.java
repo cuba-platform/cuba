@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
@@ -241,6 +242,19 @@ public class UserEditor extends AbstractEditor {
     }
 
     private boolean _commit() {
+        DatasourceImplementation rolesDs = (DatasourceImplementation) rolesTable.getDatasource();
+        if (rolesTable.getDatasource().isModified()) {
+            CommitContext ctx = new CommitContext(Collections.emptyList(), rolesDs.getItemsToDelete());
+            getDsContext().getDataService().commit(ctx);
+
+            ArrayList modifiedRoles = new ArrayList(rolesDs.getItemsToCreate());
+            modifiedRoles.addAll(rolesDs.getItemsToUpdate());
+            rolesDs.commited(Collections.<Entity, Entity>emptyMap());
+            for (Object userRole : modifiedRoles) {
+                rolesDs.modified((Entity) userRole);
+            }
+        }
+
         boolean isNew = PersistenceHelper.isNew(userDs.getItem());
         if (isNew) {
             String passw = passwField.getValue();
