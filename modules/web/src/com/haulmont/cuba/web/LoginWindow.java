@@ -30,6 +30,9 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Locale;
 import java.util.Map;
@@ -211,7 +214,16 @@ public class LoginWindow extends Window implements Action.Handler {
         String rememberMeCookie = app.getCookieValue(COOKIE_REMEMBER_ME);
         if (Boolean.parseBoolean(rememberMeCookie)) {
             rememberMe.setValue(true);
-            loginField.setValue(app.getCookieValue(COOKIE_LOGIN));
+
+            String login;
+            String encodedLogin = app.getCookieValue(COOKIE_LOGIN);
+            try {
+                login = URLDecoder.decode(encodedLogin, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                login = encodedLogin;
+            }
+
+            loginField.setValue(login);
             passwordField.setValue(app.getCookieValue(COOKIE_PASSWORD));
             loginByRememberMe = true;
 
@@ -332,7 +344,14 @@ public class LoginWindow extends Window implements Action.Handler {
                     String login = (String) loginField.getValue();
                     String password = (String) passwordField.getValue();
 
-                    app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(login));
+                    String encodedLogin;
+                    try {
+                        encodedLogin = URLEncoder.encode(login, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        encodedLogin = login;
+                    }
+
+                    app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(encodedLogin));
                     app.addCookie(COOKIE_PASSWORD, DigestUtils.md5Hex(password));
                 }
             } else {
