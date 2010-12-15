@@ -124,6 +124,12 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         return action;
     }
 
+    public Action createExcludeAction(final boolean autocommit, final boolean confirm) {
+        Action action = new ExcludeAction(autocommit, confirm);
+        component.addAction(action);
+        return action;
+    }
+
     public Action createFilterApplyAction(final String componentId) {
         Action action = new FilterApplyAction();
         ((Button) frame.getComponent(componentId)).setAction(action);
@@ -382,6 +388,102 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
             final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
             for (Object item : selected) {
                 ds.removeItem((Entity) item);
+            }
+
+            if (this.autocommit) {
+                try {
+                    ds.commit();
+                } catch (RuntimeException e) {
+                    ds.refresh();
+                    throw e;
+                }
+            }
+        }
+    }
+
+    protected class ExcludeAction extends AbstractAction {
+        private final boolean autocommit;
+        private final boolean confirm;
+
+        public ExcludeAction(boolean autocommit, boolean confirm) {
+            super("exclude");
+            this.autocommit = autocommit;
+            this.confirm = confirm;
+        }
+
+        public String getCaption() {
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, "actions.Exclude");
+        }
+
+        public boolean isManyToMany() {
+            return metaProperty != null && metaProperty.getRange() != null && metaProperty.getRange().getCardinality() != null && metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY;
+        }
+
+        public boolean isEnabled() {
+            return super.isEnabled() && (isManyToMany() || userSession.isEntityOpPermitted(metaClass, EntityOp.DELETE));
+        }
+
+        public void actionPerform(Component component) {
+            if(!isEnabled()) return;
+            final Set selected = ListActionsHelper.this.component.getSelected();
+            if (!selected.isEmpty()) {
+                if (confirm) {
+                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                    frame.showOptionDialog(
+                            MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
+                            MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
+                            IFrame.MessageType.CONFIRMATION,
+                            new Action[]{
+                                    new AbstractAction("ok") {
+                                        public String getCaption() {
+                                            return MessageProvider.getMessage(messagesPackage, "actions.Ok");
+                                        }
+
+                                        public boolean isEnabled() {
+                                            return true;
+                                        }
+
+                                        @Override
+                                        public String getIcon() {
+                                            return "icons/ok.png";
+                                        }
+
+                                        public void actionPerform(Component component) {
+                                            doExclude(selected, autocommit);
+                                            fireRemoveEvent(selected);
+                                        }
+                                    }, new AbstractAction("cancel") {
+                                        public String getCaption() {
+                                            return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
+                                        }
+
+                                        public boolean isEnabled() {
+                                            return true;
+                                        }
+
+                                        @Override
+                                        public String getIcon() {
+                                            return "icons/cancel.png";
+                                        }
+
+                                        public void actionPerform(Component component) {
+                                        }
+                                    }
+                            }
+                    );
+                } else {
+                    doExclude(selected, autocommit);
+                    fireRemoveEvent(selected);
+                }
+            }
+        }
+
+        protected void doExclude(Set selected, boolean autocommit) {
+            @SuppressWarnings({"unchecked"})
+            final CollectionDatasource ds = ListActionsHelper.this.component.getDatasource();
+            for (Object item : selected) {
+                ds.excludeItem((Entity) item);
             }
 
             if (this.autocommit) {

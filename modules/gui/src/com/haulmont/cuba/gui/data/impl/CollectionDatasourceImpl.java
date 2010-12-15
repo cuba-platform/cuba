@@ -266,6 +266,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    public void excludeItem(T item) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
     public void modifyItem(T item) {
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {

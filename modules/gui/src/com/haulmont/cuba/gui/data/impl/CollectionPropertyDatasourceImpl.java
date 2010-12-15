@@ -263,6 +263,22 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    public void excludeItem(T item) throws UnsupportedOperationException {
+        checkState();
+        __getCollection().remove(item);
+
+        MetaProperty inverseProperty = metaProperty.getInverse();
+        if (inverseProperty == null)
+            throw new UnsupportedOperationException("No inverse property for " + metaProperty);
+
+        ((Instance) item).setValue(inverseProperty.getName(), null);
+
+        // detach listener only after setting value to the link property
+        detachListener((Instance) item);
+
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+    }
+
     public void modifyItem(T item) {
         for (T t : __getCollection()) {
             if (t.equals(item)) {
