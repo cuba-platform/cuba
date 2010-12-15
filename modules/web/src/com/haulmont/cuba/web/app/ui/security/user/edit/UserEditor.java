@@ -336,6 +336,7 @@ public class UserEditor extends AbstractEditor {
         public void actionPerform(Component component) {
             Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
             final CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
+            if (ds.getItem() == null) return;
             Window window = openEditor("sec$Role.edit", ds.getItem().getRole(), WindowManager.OpenType.THIS_TAB);
             window.addListener(new CloseListener() {
                 public void windowClosed(String actionId) {
