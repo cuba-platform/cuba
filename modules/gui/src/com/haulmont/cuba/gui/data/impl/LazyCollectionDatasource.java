@@ -112,7 +112,15 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     public void excludeItem(T item) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        checkState();
+
+        data.remove(item.getId());
+        detachListener((Instance) item);
+
+        if (size != null && size > 0)
+            size--;
+
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     public void modifyItem(T item) {

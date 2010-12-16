@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
@@ -267,7 +268,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     public void excludeItem(T item) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        checkState();
+
+        data.remove(item.getId());
+        detachListener((Instance) item);
+
+        forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
     public void modifyItem(T item) {
