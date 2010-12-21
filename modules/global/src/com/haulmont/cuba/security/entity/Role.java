@@ -30,7 +30,7 @@ import java.util.Set;
  */
 @Entity(name = "sec$Role")
 @Table(name = "SEC_ROLE")
-@NamePattern("%s|name")
+@NamePattern("%s [%s]|locName,name")
 public class Role extends StandardEntity
 {
     private static final long serialVersionUID = -4889116218059626402L;
