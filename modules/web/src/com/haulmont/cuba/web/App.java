@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -65,6 +66,12 @@ public abstract class App extends Application
     private static Log log = LogFactory.getLog(App.class);
 
     public static final String THEME_NAME = "peyto";
+
+    public static final String LAST_REQUEST_PARAMS_ATTR = "lastRequestParams";
+
+    public static final String LAST_REQUEST_ACTION_ATTR = "lastRequestAction";
+
+    public static final List<String> ACTION_NAMES = Arrays.asList("open", "login");
 
     protected Connection connection;
     private WebWindowManager windowManager;
@@ -296,9 +303,12 @@ public abstract class App extends Application
 
         setupCurrentWindowName(requestURI);
 
+        String action = (String) request.getSession().getAttribute(LAST_REQUEST_ACTION_ATTR);
+
         if (!connection.isConnected() &&
-                !(requestURI.endsWith("/login") || auxillaryUrl(requestURI))) {
-            if (loginOnStart(request)) setupCurrentWindowName(requestURI);
+                !(("login".equals(action)) || auxillaryUrl(requestURI))) {
+            if (loginOnStart(request))
+                setupCurrentWindowName(requestURI);
         }
 
         if (connection.isConnected()) {
@@ -343,12 +353,13 @@ public abstract class App extends Application
     }
 
     private void processExternalLink(HttpServletRequest request, String requestURI) {
-        if (requestURI.endsWith("/open") && !auxillaryUrl(requestURI)) {
-            Map<String, String> params = new HashMap<String, String>();
-            Enumeration parameterNames = request.getParameterNames();
-            while (parameterNames.hasMoreElements()) {
-                String name = (String) parameterNames.nextElement();
-                params.put(name, request.getParameter(name));
+        String action = (String) request.getSession().getAttribute(LAST_REQUEST_ACTION_ATTR);
+
+        if ("open".equals(action) && !auxillaryUrl(requestURI)) {
+            Map<String, String> params = (Map<String, String>) request.getSession().getAttribute(LAST_REQUEST_PARAMS_ATTR);
+            if (params == null) {
+                log.warn("Unable to process the external link: lastRequestParams not found in session");
+                return;
             }
             LinkHandler linkHandler = new LinkHandler(this, params);
             if (connection.isConnected())
@@ -375,6 +386,10 @@ public abstract class App extends Application
         }
 
         WebSecurityUtils.clearSecurityAssociation();
+
+        HttpSession httpSession = ((HttpServletRequest) transactionData).getSession();
+        httpSession.setAttribute(LAST_REQUEST_ACTION_ATTR, null);
+        httpSession.setAttribute(LAST_REQUEST_PARAMS_ATTR, null);
 
         if (log.isTraceEnabled()) {
             log.trace("requestEnd: [@" + Integer.toHexString(System.identityHashCode(transactionData)) + "]");

@@ -28,8 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.util.Date;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.regex.Matcher;
 
 public class CubaApplicationServlet extends ApplicationServlet {
@@ -66,9 +65,12 @@ public class CubaApplicationServlet extends ApplicationServlet {
         boolean needRedirect = parts.length > 0 && !App.auxillaryUrl(requestURI) &&
                 (request.getParameter("multiupload") == null);
 
+        String action = null;
+
         if (needRedirect) {
             String lastPart = parts[parts.length - 1];
-            needRedirect = contextName.equals(lastPart) || "open".equals(lastPart) || "login".equals(lastPart);
+            action = App.ACTION_NAMES.contains(lastPart) ? lastPart : null;
+            needRedirect = contextName.equals(lastPart) || action != null;
             if (needRedirect) {
                 for (String part : parts) {
                     Matcher m = App.WIN_PATTERN.matcher(part);
@@ -86,18 +88,22 @@ public class CubaApplicationServlet extends ApplicationServlet {
                 sb.append(parts[i]);
                 if (parts[i].equals(contextName)) {
                     sb.append("/").append(GlobalUtils.generateWebWindowName());
+                    break;
                 }
                 if (i < parts.length - 1)
                     sb.append("/");
             }
-            if (request.getParameterNames().hasMoreElements())
-                sb.append("?");
-            Enumeration parameterNames = request.getParameterNames();
-            while (parameterNames.hasMoreElements()) {
-                String param = (String) parameterNames.nextElement();
-                sb.append(param).append("=").append(request.getParameter(param));
-                if (parameterNames.hasMoreElements())
-                    sb.append("&");
+            if (action != null) {
+                request.getSession().setAttribute(App.LAST_REQUEST_ACTION_ATTR, action);
+            }
+            if (request.getParameterNames().hasMoreElements()) {
+                Map<String, String> params = new HashMap<String, String>();
+                Enumeration parameterNames = request.getParameterNames();
+                while (parameterNames.hasMoreElements()) {
+                    String name = (String) parameterNames.nextElement();
+                    params.put(name, request.getParameter(name));
+                }
+                request.getSession().setAttribute(App.LAST_REQUEST_PARAMS_ATTR, params);
             }
             response.sendRedirect(sb.toString());
         } else {
@@ -129,7 +135,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
                 handleServiceException(request, response, application, e);
             }
         } else if ((requestType == RequestType.FILE_UPLOAD) &&
-                (request.getMethod() == "POST") &&
+                ("POST".equals(request.getMethod())) &&
                 (request.getParameter("multiupload") != null)) {
             Application application = null;
             try {

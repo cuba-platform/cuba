@@ -22,10 +22,8 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.exception.AccessDeniedHandler;
 import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
-import com.vaadin.terminal.ExternalResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -80,10 +78,6 @@ public class LinkHandler implements Serializable {
                             getParamsMap());
                 }
             }
-
-            AppWindow appWindow = App.getInstance().getAppWindow();
-            appWindow.open(new ExternalResource(appWindow.getURL()));
-            
         } catch (AccessDeniedException e) {
             new AccessDeniedHandler().handle(e, app);
         } catch (NoSuchScreenException e) {
