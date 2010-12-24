@@ -144,6 +144,7 @@ public class ScriptingProviderImpl extends ScriptingProvider {
         } finally {
             if (script != null)
                 try {
+                    script.setBinding(null); // free memory
                     getPool(layer).returnObject(text, script);
                 } catch (Exception e) {
                     log.warn("Error returning object into the pool", e);
