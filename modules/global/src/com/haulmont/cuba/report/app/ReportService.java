@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.report.app;
 
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.ReportOutputType;
@@ -22,6 +23,8 @@ public interface ReportService {
     String NAME = "report_ReportService";
 
     byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params) throws IOException;
+
+    FileDescriptor createAndSaveReport(Report report, Map<String, Object> params, String fileName) throws IOException;
 
     Report reloadReport(Report report);
 

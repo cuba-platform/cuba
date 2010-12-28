@@ -14,9 +14,12 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.CustomFormatter;
@@ -93,6 +96,38 @@ public class ReportServiceBean implements ReportService {
 
     public byte[] exportReports(Collection<Report> reports) throws IOException, FileStorageException {
         return ImportExportHelper.exportReports(reports);
+    }
+
+    public FileDescriptor createAndSaveReport(Report report, Map<String, Object> params, String fileName) throws IOException {
+        report = reloadEntity(report, "_local");
+
+        byte[] reportData = createReport(report, report.getReportOutputType(), params);
+
+        FileDescriptor file = new FileDescriptor();
+        file.setCreateDate(TimeProvider.currentTimestamp());
+        String ext = report.getReportOutputType().toString().toLowerCase();
+        file.setName(fileName + "." + ext);
+        file.setExtension(ext);
+        file.setSize(reportData.length);
+
+        try {
+            FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
+            mbean.saveFile(file, reportData);
+        }
+        catch (FileStorageException e) {
+            throw new IOException(e);
+        }
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            em.persist(file);
+            tx.commit();
+        }
+        finally {
+            tx.end();
+        }
+        return file;
     }
 
     public Collection<Report> importReports(byte[] zipBytes) throws IOException, FileStorageException {
