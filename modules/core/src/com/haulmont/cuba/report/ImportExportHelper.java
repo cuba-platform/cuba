@@ -40,6 +40,24 @@ import java.util.zip.CRC32;
 public class ImportExportHelper {
     private static final String ENCODING = "CP866";
 
+    public static byte[] loadAndCompress(Collection<FileDescriptor> files) throws IOException, FileStorageException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(byteArrayOutputStream);
+        zipOutputStream.setMethod(ZipArchiveOutputStream.DEFLATED);
+        zipOutputStream.setEncoding(ENCODING);
+
+        FileStorageAPI fileStorage = Locator.lookup(FileStorageAPI.NAME);
+        for (FileDescriptor fileDescriptor: files) {
+            byte[] bytes = fileStorage.loadFile(fileDescriptor);
+            ArchiveEntry singleReportEntry = newStoredEntry(replaceForbiddenCharacters(fileDescriptor.getName()), bytes);
+            zipOutputStream.putArchiveEntry(singleReportEntry);
+            zipOutputStream.write(bytes);
+            zipOutputStream.closeArchiveEntry();
+        }
+        zipOutputStream.close();
+        return byteArrayOutputStream.toByteArray();
+    }
+
     public static byte[] exportReports(Collection<Report> reports) throws IOException, FileStorageException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
