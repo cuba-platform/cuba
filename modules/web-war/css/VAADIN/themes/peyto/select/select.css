@@ -68,6 +68,14 @@
     overflow: hidden;
 }
 
+.v-filterselect.v-readonly {
+    height: 24px;
+    white-space: nowrap;
+    text-align: left; /* Force default alignment */
+    background: #fff url(img/bg-left-filter-readonly.png) no-repeat;
+    overflow: hidden;
+}
+
 .v-filterselect .v-icon {
     float: left;
 }
@@ -81,6 +89,12 @@
     margin: 0;
     padding: 0;
     font-size: 8pt;
+}
+
+.v-app .v-filterselect .v-filterselect-input-readonly,
+.v-window .v-filterselect .v-filterselect-input-readonly,
+.v-popupview-popup .v-filterselect .v-filterselect-input-readonly {
+    background: #fff url(img/bg-center-filter-readonly.png) no-repeat right top;
 }
 
 .v-ie .v-app .v-filterselect .v-filterselect-input,
