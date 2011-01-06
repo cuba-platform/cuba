@@ -143,6 +143,9 @@ public class MessageUtils {
      */
     public static String getMessageRef(MetaClass metaClass, String propertyName) {
         MetaProperty property = metaClass.getProperty(propertyName);
+        if (property == null) {
+            throw new RuntimeException("Property " + propertyName + " is wrong for metaclass " + metaClass);
+        }
         return getMessageRef(property);
     }
 
