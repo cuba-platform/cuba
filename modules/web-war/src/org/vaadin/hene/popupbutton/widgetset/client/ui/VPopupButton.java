@@ -3,10 +3,6 @@ package org.vaadin.hene.popupbutton.widgetset.client.ui;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
@@ -130,7 +126,7 @@ public class VPopupButton extends VButton implements Container,
 	    }
 	}-*/;
 
-	private class LayoutPopup extends VOverlay implements HasClickHandlers {
+	private class LayoutPopup extends VOverlay {
 
 		public static final String CLASSNAME = VPopupButton.CLASSNAME
 				+ "-popup";
@@ -142,19 +138,9 @@ public class VPopupButton extends VButton implements Container,
 		public LayoutPopup() {
 			super(false, false, true);
 			setStyleName(CLASSNAME);
-            this.sinkEvents(Event.ONMOUSEDOWN);
-
-            addClickHandler(new ClickHandler() {
-                public void onClick(ClickEvent event) {
-                    if (autoClose && getWidget().getElement().cast() != event.getNativeEvent().getEventTarget()) {
-                        hidePopup();
-                        updateState(false, true);
-                    }
-                }
-            });
 		}
 
-        public void updateFromUIDL(final UIDL uidl) {
+		public void updateFromUIDL(final UIDL uidl) {
 			if (Util.isCached(uidl.getChildUIDL(0))) {
 				return;
 			}
@@ -184,20 +170,25 @@ public class VPopupButton extends VButton implements Container,
 		@Override
 		protected void onPreviewNativeEvent(NativePreviewEvent event) {
 			Element target = Element
-					.as(event.getNativeEvent().getEventTarget());
-			switch (event.getTypeInt()) {
-			case Event.ONCLICK:
-				if (isOrHasChildOfButton(target)) {
-					updateState(false, true);
-				}
-				break;
-			case Event.ONMOUSEDOWN:
-				if (!isOrHasChildOfPopup(target)
-						&& !isOrHasChildOfConsole(target)
-						&& !isOrHasChildOfButton(target)) {
-					updateState(false, true);
-				}
-				break;
+                    .as(event.getNativeEvent().getEventTarget());
+            switch (event.getTypeInt()) {
+                case Event.ONCLICK:
+                    if (isOrHasChildOfButton(target)) {
+                        updateState(false, true);
+                    } else if (autoClose && target instanceof com.google.gwt.user.client.Element &&
+                            Util.findWidget((com.google.gwt.user.client.Element) target,
+                                    VButton.class) instanceof VButton) {
+                        updateState(false, true);
+                    }
+
+                    break;
+                case Event.ONMOUSEDOWN:
+                    if (!isOrHasChildOfPopup(target)
+                            && !isOrHasChildOfConsole(target)
+                            && !isOrHasChildOfButton(target)) {
+                        updateState(false, true);
+                    }
+                    break;
 			case Event.ONKEYPRESS:
 				if (isOrHasChildOfPopup(target)) {
 					// Catch children that use keyboard, so we can unfocus them
@@ -315,11 +306,7 @@ public class VPopupButton extends VButton implements Container,
 		public void updateShadowSizeAndPosition() {
 			super.updateShadowSizeAndPosition();
 		}
-
-        public HandlerRegistration addClickHandler(ClickHandler handler) {
-            return addDomHandler(handler, ClickEvent.getType());
-        }
-    }
+	}
 
 	public RenderSpace getAllocatedSpace(Widget child) {
 		Size popupExtra = calculatePopupExtra();
