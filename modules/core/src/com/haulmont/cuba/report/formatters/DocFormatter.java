@@ -137,7 +137,10 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper) throws com.sun.star.uno.Exception {
-        ClipBoardHelper.clear();
+        boolean displayDeviceUnavailable = ConfigProvider.getConfig(ServerConfig.class).getDisplayDeviceUnavailable();
+        if (!displayDeviceUnavailable) {
+            ClipBoardHelper.clear();
+        }
         int startRow = xTextTable.getRows().getCount() - 1;
         for (int i = 0; i < parentBand.getChildren().size(); i++) {
             if (name.equals(parentBand.getChildren().get(i).getName())) {

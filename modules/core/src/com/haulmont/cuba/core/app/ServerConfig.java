@@ -87,6 +87,11 @@ public interface ServerConfig extends Config {
     @Property("cuba.reporting.openoffice.path")
     String getOpenOfficePath();
 
-
+    /*
+     * Set it to true if you're using openoffice reporting formatter on a *nix server without X server running
+     */
+    @Property("cuba.reporting.displayDeviceUnavailable")
+    @DefaultBoolean(false)
+    boolean getDisplayDeviceUnavailable();
 
 }

@@ -312,7 +312,7 @@
                 <xs:element name="runtimePropertyGrid">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="columns">
+                            <xs:element name="columns" minOccurs="0">
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="column" minOccurs="1" maxOccurs="unbounded">
@@ -621,7 +621,7 @@
                             <xs:element name="treechildren" minOccurs="1" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:attribute name="datasource" type="xs:string" use="required"/>
-                                    <!--<xs:attribute name="hierarchyProperty" type="xs:string" use="required"/>-->
+                                    <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
                                     <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
