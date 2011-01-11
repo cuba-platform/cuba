@@ -357,6 +357,10 @@ public class WebPickerField
         }
 
         public Object getValue() {
+            Property property = getPropertyDataSource();
+            if (property != null) {
+                return property.getValue();
+            }
             return field.getValue();
         }
 
