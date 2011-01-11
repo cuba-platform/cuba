@@ -1,20 +1,33 @@
-function fileQueued(file) {
-	try {
-		var progress = new FileProgress(file, this.customSettings.progressTarget);
-		progress.setStatus("Pending...");
-		progress.toggleCancel(true, this);
+function setProgress(progress, text){
+    progress.style.visibility = "visible";
+    progress.style.display = "table";
+    progress.style.height = "50px";
+    progress.style.textAlign = "center";
 
-	} catch (ex) {
-		this.debug(ex);
-	}
+    removeChilds(progress);
+
+    var progressText = document.createElement("div");
+    progressText.setAttribute("style","");
+    progressText.style.display = "table-cell";
+    progressText.style.verticalAlign = "middle";
+
+    progressText.appendChild(document.createTextNode(text));
+    progress.appendChild(progressText);
+}
+
+function removeChilds(element){
+    if ( element.hasChildNodes() )
+        while ( element.childNodes.length >= 1 )
+            element.removeChild( element.firstChild );
+}
+
+function fileQueued(file) {
 
 }
 
 function fileDialogComplete(numFilesSelected, numFilesQueued) {
 	try {
 		if (numFilesSelected > 0) {
-			//document.getElementById(this.customSettings.cancelButtonId).disabled = false;
-            /* I want auto start the upload and I can do that here */
 		    this.startUpload();
 		}
 	} catch (ex)  {
@@ -24,14 +37,8 @@ function fileDialogComplete(numFilesSelected, numFilesQueued) {
 
 function uploadStart(file) {
 	try {
-		/* I don't want to do any file validation or anything,  I'll just update the UI and
-		return true to indicate that the upload should start.
-		It's important to update the UI here because in Linux no uploadProgress events are called. The best
-		we can do is say we are uploading.
-		 */
-		var progress = new FileProgress(file, this.customSettings.progressTarget);
-		//progress.setStatus("Uploading...");
-		progress.toggleCancel(true, this);
+        var progress = document.getElementById(this.customSettings.progressTarget);
+        setProgress(progress,file.name);
 	}
 	catch (ex) {}
 
@@ -41,10 +48,8 @@ function uploadStart(file) {
 function uploadProgress(file, bytesLoaded, bytesTotal) {
 	try {
 		var percent = Math.ceil((bytesLoaded / bytesTotal) * 100);
-
-		var progress = new FileProgress(file, this.customSettings.progressTarget);
-		progress.setProgress(percent);
-		progress.setStatus(" ... ");
+        var progress = document.getElementById(this.customSettings.progressTarget);
+        setProgress(progress,file.name + " " + percent + "%");
 	} catch (ex) {
 		this.debug(ex);
 	}
@@ -52,11 +57,8 @@ function uploadProgress(file, bytesLoaded, bytesTotal) {
 
 function uploadSuccess(file, serverData) {
 	try {
-		var progress = new FileProgress(file, this.customSettings.progressTarget);
-		progress.setComplete();
-		progress.setStatus(" ... OK");
-		progress.toggleCancel(false);
-
+        var progress = document.getElementById(this.customSettings.progressTarget);
+        setProgress(progress,file.name + " OK");
 	} catch (ex) {
 		this.debug(ex);
 	}

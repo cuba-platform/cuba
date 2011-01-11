@@ -18,6 +18,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.xml.client.Document;
 import com.haulmont.cuba.toolkit.gwt.client.Properties;
 import com.haulmont.cuba.toolkit.gwt.client.ResourcesLoader;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -28,39 +29,44 @@ public class
         VSwfUpload extends FormPanel implements Paintable {
     private String paintableId;
     private ApplicationConnection client;
-    private Timer t;
 
     private Element uploadButton = DOM.createSpan();
     private Element progressDiv = DOM.createDiv();
 
     public VSwfUpload() {
         DOM.appendChild(getElement(), uploadButton);
-        createProgress();
-        DOM.appendChild(getElement(), progressDiv);
+        initProgressWindow();
+        Element parentDoc = (Element) getElement().getOwnerDocument().getElementsByTagName("body").getItem(0);
+        DOM.appendChild(parentDoc,progressDiv);
     }
 
-    private void createProgress(){
+    private void initProgressWindow(){
         NodeList<Node> nodes = progressDiv.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++){
             progressDiv.removeChild(nodes.getItem(i));
         }
 
-        progressDiv.setAttribute("style","");
-        progressDiv.getStyle().setPosition(Style.Position.ABSOLUTE);
-        progressDiv.getStyle().setZIndex(2000);
+        progressDiv.setAttribute("style", "");
+        progressDiv.getStyle().setPosition(Style.Position.FIXED);
+        progressDiv.getStyle().setPadding(10,Style.Unit.PX);
 
         progressDiv.getStyle().setProperty("left","50%");
         progressDiv.getStyle().setProperty("top","50%");
-        progressDiv.getStyle().setProperty("width","250px");
+
+        progressDiv.getStyle().setHeight(50,Style.Unit.PX);
+        progressDiv.getStyle().setWidth(250,Style.Unit.PX);
 
         progressDiv.getStyle().setMarginLeft(-125, Style.Unit.PX);
-        progressDiv.getStyle().setMarginTop(-150, Style.Unit.PX);
+        progressDiv.getStyle().setMarginTop(-25, Style.Unit.PX);
         progressDiv.getStyle().setBackgroundColor("#eaeef2");
         progressDiv.getStyle().setBorderColor("#4e7bb3");
+        progressDiv.getStyle().setOverflow(Style.Overflow.VISIBLE);
         progressDiv.getStyle().setBorderStyle(Style.BorderStyle.SOLID);
         progressDiv.getStyle().setBorderWidth(2, Style.Unit.PX);
         progressDiv.getStyle().setVisibility(Style.Visibility.HIDDEN);
         progressDiv.getStyle().setDisplay(Style.Display.NONE);
+
+        progressDiv.getStyle().setZIndex(2000);
     }
 
     private static String getValueFromUIDL(UIDL uidl, String attribute, String defaultValue) {
@@ -151,17 +157,17 @@ public class
                         ".swfupload {font-size: 12px; font-family: verdana,Tahoma,sans-serif; }");
 
                 /*
-                Handlers list
+                    SWF Handlers list
 
-                file_queued_handler : fileQueued,
-				file_queue_error_handler : fileQueueError,
-				file_dialog_complete_handler : fileDialogComplete,
-				upload_start_handler : uploadStart,
-				upload_progress_handler : uploadProgress,
-				upload_error_handler : uploadError,
-				upload_success_handler : uploadSuccess,
-				upload_complete_handler : uploadComplete,
-				queue_complete_handler : queueComplete					
+                    file_queued_handler           : fileQueued
+                    file_queue_error_handler      : fileQueueError
+                    file_dialog_complete_handler  : fileDialogComplete
+                    upload_start_handler          : uploadStart
+                    upload_progress_handler       : uploadProgress
+                    upload_error_handler          : uploadError
+                    upload_success_handler        : uploadSuccess
+                    upload_complete_handler       : uploadComplete
+                    queue_complete_handler        : queueComplete
                 */
 
                 // Add event handlers
@@ -172,15 +178,16 @@ public class
                 applyJsObjectByName(opts, "upload_success_handler", "uploadSuccess");
 
                 // Add error handler
-                String notifierId = "UploadErrorHandler_" + paintableId;
-                addErrorHandler(notifierId);
-                applyJsObjectByName(opts, "upload_error_handler", notifierId);
-                applyJsObjectByName(opts, "file_queue_error_handler", notifierId);
+//                String notifierId = "UploadErrorHandler_" + paintableId;
+                addErrorHandler(opts, "upload_error_handler");
+                addErrorHandler(opts, "file_queue_error_handler");
+                /*applyJsObjectByName(opts, "upload_error_handler", notifierId);
+                applyJsObjectByName(opts, "file_queue_error_handler", notifierId);*/
 
                 // Add complete handler                
-                String refresherId = "MultiUploadRefresher_" + paintableId;
-                addRefresher(refresherId);
-                applyJsObjectByName(opts, "queue_complete_handler", refresherId);
+//                String refresherId = "MultiUploadRefresher_" + paintableId;
+                addRefresher(opts, "queue_complete_handler");
+//                applyJsObjectByName(opts, "queue_complete_handler", refresherId);
 
                 showUpload("varUpload_" + paintableId, opts);
             }
@@ -196,14 +203,13 @@ public class
     }
 
     public void refreshServerSide() {
-        //alert("lol!");
-        createProgress();
+        initProgressWindow();
 
         client.updateVariable(paintableId, "queueUploadComplete", 1, true);
     }
 
     public void errorNotify(String file, String message, int errorCode) {
-        createProgress();
+        initProgressWindow();
         
         client.updateVariable(paintableId, "uploadError", new String[]{file, message, String.valueOf(errorCode)}, true);
     }
@@ -212,17 +218,16 @@ public class
         $wnd.alert(msg);
     }-*/;
 
-    private native void addErrorHandler(String optionName)/*-{
+    private native void addErrorHandler(Options opts, String optionName)/*-{
         var swfu = this;
-        $wnd[optionName] = function uploadError(file, errorCode, message){
+        opts[optionName] = function uploadError(file, errorCode, message){
             swfu.@com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload::errorNotify(Ljava/lang/String;Ljava/lang/String;I)(file.name,message,errorCode);
         }; 
     }-*/;
 
-    private native void addRefresher(String optionName)/*-{
+    private native void addRefresher(Options opts, String optionName)/*-{
         var swfu = this;
-        $wnd[optionName] = function(numFilesUploaded){
-		    
+        opts[optionName] = function(numFilesUploaded){
             swfu.@com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload::refreshServerSide()();
         };
     }-*/;
@@ -238,6 +243,10 @@ public class
 
     private static native void showUpload(String varName, Options opts) /*-{
         $wnd[varName] = $wnd.swfUploadHelper.create(opts);
+    }-*/;
+
+    private static native Node appendProgressWindow(Node node)/*-{
+        document.getElementsByTagName("body")[0].appendChild(node);
     }-*/;
 
     public static class Options extends Properties {
