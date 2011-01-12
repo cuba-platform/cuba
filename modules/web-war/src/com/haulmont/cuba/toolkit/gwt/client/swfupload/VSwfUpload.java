@@ -178,16 +178,11 @@ public class
                 applyJsObjectByName(opts, "upload_success_handler", "uploadSuccess");
 
                 // Add error handler
-//                String notifierId = "UploadErrorHandler_" + paintableId;
                 addErrorHandler(opts, "upload_error_handler");
                 addErrorHandler(opts, "file_queue_error_handler");
-                /*applyJsObjectByName(opts, "upload_error_handler", notifierId);
-                applyJsObjectByName(opts, "file_queue_error_handler", notifierId);*/
 
-                // Add complete handler                
-//                String refresherId = "MultiUploadRefresher_" + paintableId;
+                // Add complete handler
                 addRefresher(opts, "queue_complete_handler");
-//                applyJsObjectByName(opts, "queue_complete_handler", refresherId);
 
                 showUpload("varUpload_" + paintableId, opts);
             }
@@ -197,7 +192,6 @@ public class
     protected void injectJs() {
         if (!ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.js")) {
             ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.queue.js");
-            ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.fileprogress.js");
             ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.handlers.js");
         }
     }
