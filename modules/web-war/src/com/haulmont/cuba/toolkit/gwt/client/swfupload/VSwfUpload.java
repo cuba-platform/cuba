@@ -220,7 +220,7 @@ public class
 
     private native void addErrorHandler(Options opts, String optionName)/*-{
         var swfu = this;
-        opts[optionName] = function uploadError(file, errorCode, message){
+        opts[optionName] = function(file, errorCode, message){
             swfu.@com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload::errorNotify(Ljava/lang/String;Ljava/lang/String;I)(file.name,message,errorCode);
         }; 
     }-*/;
@@ -238,7 +238,6 @@ public class
 
     private static native void initSwfUploadObjects() /*-{
         $wnd.initSWFUploadPrototype();
-        $wnd.initSWFUploadProgress();
     }-*/;
 
     private static native void showUpload(String varName, Options opts) /*-{

@@ -28,9 +28,9 @@ function initSWFUploadPrototype() {
 	    		this.queueSettings.queue_upload_count = 0;
 
 		    	this.queueSettings.user_upload_complete_handler = this.settings.upload_complete_handler;
-			    this.queueSettings.user_upload_start_handler = this.settings.upload_start_handler;
+//			    this.queueSettings.user_upload_start_handler = this.settings.upload_start_handler;
 			    this.settings.upload_complete_handler = SWFUpload.queue.uploadCompleteHandler;
-    			this.settings.upload_start_handler = SWFUpload.queue.uploadStartHandler;
+//    			this.settings.upload_start_handler = SWFUpload.queue.uploadStartHandler;
 
 		    	this.settings.queue_complete_handler = this.settings.queue_complete_handler || null;
 		    };
@@ -38,7 +38,7 @@ function initSWFUploadPrototype() {
 
     	SWFUpload.prototype.startUpload = function (fileID) {
     		this.queueSettings.queue_cancelled_flag = false;
-    		this.setButtonDisabled(true);
+//    		this.setButtonDisabled(true);
 	    	this.callFlash("StartUpload", [fileID]);
 	    };
 
@@ -93,7 +93,7 @@ function initSWFUploadPrototype() {
     			} else if (this.queueSettings.queue_cancelled_flag === false) {
 		    		this.queueEvent("queue_complete_handler", [this.queueSettings.queue_upload_count]);
 	    			this.queueSettings.queue_upload_count = 0;
-    		        this.setButtonDisabled(false);
+//    		        this.setButtonDisabled(false);
 			    } else {
 				    this.queueSettings.queue_cancelled_flag = false;
     				this.queueSettings.queue_upload_count = 0;
