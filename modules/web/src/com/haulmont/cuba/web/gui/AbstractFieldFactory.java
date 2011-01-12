@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
+import com.haulmont.cuba.web.gui.components.WebTimeField;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
@@ -37,6 +38,7 @@ import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
 import java.util.Collection;
+import java.util.Date;
 
 public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
@@ -48,6 +50,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     public com.vaadin.ui.Field createField(Item item, Object propertyId, com.vaadin.ui.Component uiContext) {
         if (item != null && propertyId != null) {
             final com.vaadin.ui.Field field;
+            com.haulmont.cuba.gui.components.Field cubaField = null;
             MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
 
             final Range range = propertyPath.getRange();
@@ -57,11 +60,12 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     if (optionsDatasource != null) {
                         final WebLookupField lookupField = new WebLookupField();
                         lookupField.setOptionsDatasource(optionsDatasource);
-
+                        cubaField = lookupField;
                         field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
                     } else {
                         final WebPickerField pickerField = new WebPickerField();
                         pickerField.setMetaClass(range.asClass());
+                        cubaField = pickerField;
                         field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(pickerField);
                     }
                 } else if (range.isEnum()) {
@@ -71,11 +75,19 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     lookupField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
                     lookupField.setOptionsList(range.asEnumeration().getValues());
 
+                    cubaField = lookupField;
                     field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
                 } else {
                     Class<?> type = item.getItemProperty(propertyId).getType();
                     if (Boolean.class.isAssignableFrom(type)) {
                         field = new CheckBox();
+                    } else if (Date.class.isAssignableFrom(type) && "timeField".equals(fieldType(propertyPath))) {
+                        final WebTimeField timeField = new WebTimeField();
+                        //todo gorodnov: support field own datasource
+                        timeField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
+
+                        cubaField = timeField;
+                        field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(timeField);
                     } else {
                         field = super.createField(item, propertyId, uiContext);
                     }
@@ -87,7 +99,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
                     propertyPath.toString()));
 
-            initField(field, propertyPath, true);
+            initField(field, cubaField, propertyPath, true);
 
             return field;
         } else {
@@ -133,24 +145,24 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
                 propertyPath.toString()));
 
-        initField(field, propertyPath, false);
+        initField(field, null, propertyPath, false);
 
         return field;
     }
 
-    protected void initField(final com.vaadin.ui.Field field, MetaPropertyPath propertyPath, boolean validationVisible) {
+    protected void initField(final com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath, boolean validationVisible) {
         if (field instanceof com.vaadin.ui.AbstractField) {
             ((com.vaadin.ui.AbstractField) field).setImmediate(true);
         }
 
-        initCommon(field, propertyPath);
+        initCommon(field, cubaField, propertyPath);
 
-        initRequired(field, propertyPath);
+        initRequired(field, cubaField, propertyPath);
 
-        initValidators(field, propertyPath, validationVisible);
+        initValidators(field, cubaField, propertyPath, validationVisible);
     }
 
-    protected void initCommon(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
+    protected void initCommon(com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath) {
         if (field instanceof TextField) {
             ((TextField) field).setNullRepresentation("");
             field.setWidth("100%");
@@ -166,14 +178,14 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         }
     }
 
-    protected void initRequired(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
+    protected void initRequired(com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath) {
         boolean required = required(propertyPath);
         field.setRequired(required);
         if (required)
             field.setRequiredError(requiredMessage(propertyPath));
     }
 
-    protected void initValidators(final com.vaadin.ui.Field field, MetaPropertyPath propertyPath, boolean validationVisible) {
+    protected void initValidators(final com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath, boolean validationVisible) {
         Collection<Field.Validator> validators = getValidators(propertyPath);
         if (validators != null) {
             for (final Field.Validator validator : validators) {
@@ -282,4 +294,6 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     protected abstract Formatter getFormatter(MetaPropertyPath propertyPath);
 
     protected abstract String getFormat(MetaPropertyPath propertyPath);
+
+    protected abstract String fieldType(MetaPropertyPath propertyPath);
 }

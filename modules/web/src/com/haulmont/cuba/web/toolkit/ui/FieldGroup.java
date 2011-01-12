@@ -12,14 +12,13 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroup;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("serial")
 @ClientWidget(VFieldGroup.class)
@@ -90,6 +89,47 @@ public class FieldGroup extends Form {
                 setExpanded(false);
 
                 fireCollapseListeners();
+            }
+        }
+    }
+
+    public void setItemDataSource(Item newDataSource, Collection propertyIds) {
+
+        if (layout instanceof GridLayout) {
+            GridLayout gl = (GridLayout) layout;
+            if (gridlayoutCursorX == -1) {
+                // first setItemDataSource, remember initial cursor
+                gridlayoutCursorX = gl.getCursorX();
+                gridlayoutCursorY = gl.getCursorY();
+            } else {
+                // restore initial cursor
+                gl.setCursorX(gridlayoutCursorX);
+                gl.setCursorY(gridlayoutCursorY);
+            }
+        }
+
+        // Removes all fields first from the form
+        removeAllProperties();
+
+        // Sets the datasource
+        itemDatasource = newDataSource;
+
+        // If the new datasource is null, just set null datasource
+        if (itemDatasource == null) {
+            return;
+        }
+
+        // Adds all the properties to this form
+        for (final Iterator i = propertyIds.iterator(); i.hasNext();) {
+            final Object id = i.next();
+            final Property property = itemDatasource.getItemProperty(id);
+            if (id != null && property != null) {
+                final Field f = fieldFactory.createField(itemDatasource, id,
+                        this);
+                if (f != null) {
+                    if (f.getPropertyDataSource() == null) f.setPropertyDataSource(property);
+                    addField(id, f);
+                }
             }
         }
     }

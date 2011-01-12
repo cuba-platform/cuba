@@ -19,14 +19,13 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -52,7 +51,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -1082,8 +1081,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         @Override
-        protected void initCommon(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
-            super.initCommon(field, propertyPath);
+        protected String fieldType(MetaPropertyPath propertyPath) {
+            return null; //todo gorodnov: implement this method
+        }
+
+        @Override
+        protected void initCommon(com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath) {
+            super.initCommon(field, cubaField, propertyPath);
 
             final Table.Column column = columns.get(propertyPath);
             final MetaProperty metaProperty;

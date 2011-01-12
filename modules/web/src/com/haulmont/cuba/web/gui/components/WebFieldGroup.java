@@ -18,10 +18,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -36,7 +35,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
@@ -47,9 +46,10 @@ import org.dom4j.Element;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.List;
 
 public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements com.haulmont.cuba.gui.components.FieldGroup {
-    
+
     private static final long serialVersionUID = 768889467060419241L;
 
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();
@@ -140,7 +140,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     public void removeField(Field field) {
-        if (fields.remove(field.getId()) != null)  {
+        if (fields.remove(field.getId()) != null) {
             Integer col = fieldsColumn.get(field.getId());
 
             final List<Field> fields = columnFields.get(col);
@@ -189,18 +189,18 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
                 MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(id);
                 if (propertyPath != null) {
-                   c = fieldGenerator.generateField(ds, propertyId);
-                   f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
+                    c = fieldGenerator.generateField(ds, propertyId);
+                    f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
 
-                   if (f.getPropertyDataSource() == null) {
-                       if (field.getDatasource() != null) {
-                           final ItemWrapper dsWrapper = createDatasourceWrapper(ds,
-                                   Collections.<MetaPropertyPath>singleton(propertyPath), dsManager);
-                           f.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
-                       } else {
-                           f.setPropertyDataSource(itemWrapper.getItemProperty(propertyPath));
-                       }
-                   }
+                    if (f.getPropertyDataSource() == null) {
+                        if (field.getDatasource() != null) {
+                            final ItemWrapper dsWrapper = createDatasourceWrapper(ds,
+                                    Collections.<MetaPropertyPath>singleton(propertyPath), dsManager);
+                            f.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
+                        } else {
+                            f.setPropertyDataSource(itemWrapper.getItemProperty(propertyPath));
+                        }
+                    }
                 } else {
                     c = fieldGenerator.generateField(null, null);
                     f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
@@ -573,9 +573,14 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         @Override
-        protected void initCommon(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
+        protected void initCommon(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField, MetaPropertyPath propertyPath) {
             final Field fieldConf = getField(propertyPath.toString());
-            if (field instanceof TextField) {
+            if ("timeField".equals(fieldType(propertyPath))) {
+                String s = fieldConf.getXmlDescriptor().attributeValue("showSeconds");
+                if (Boolean.valueOf(s)) {
+                    ((TimeField) cubaField).setShowSeconds(true);
+                }
+            } else if (field instanceof TextField) {
                 ((TextField) field).setNullRepresentation("");
                 if (fieldConf != null) {
                     initTextField((TextField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
@@ -591,7 +596,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     initDateField((DateField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
             } else if (field instanceof CheckBox) {
-                ((CheckBox) field).setLayoutCaption(true); 
+                ((CheckBox) field).setLayoutCaption(true);
             }
 
             if (fieldConf != null && fieldConf.getWidth() != null) {
@@ -648,7 +653,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         @Override
-        protected void initValidators(com.vaadin.ui.Field field, MetaPropertyPath propertyPath, boolean validationVisible) {
+        protected void initValidators(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField, MetaPropertyPath propertyPath, boolean validationVisible) {
             //do nothing
         }
 
@@ -683,6 +688,18 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             if (field != null) {
                 Element formatterElement = field.getXmlDescriptor().element("formatter");
                 return formatterElement.attributeValue("format");
+            }
+            return null;
+        }
+
+        @Override
+        protected String fieldType(MetaPropertyPath propertyPath) {
+            Field field = fields.get(propertyPath.toString());
+            if (field != null) {
+                String fieldType = field.getXmlDescriptor().attributeValue("field");
+                if (!StringUtils.isEmpty(fieldType)) {
+                    return fieldType;
+                }
             }
             return null;
         }
@@ -728,8 +745,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                             window.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
                                 public void windowClosed(String actionId) {
                                     if (com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID.equals(actionId)
-                                            && window instanceof com.haulmont.cuba.gui.components.Window.Editor)
-                                    {
+                                            && window instanceof com.haulmont.cuba.gui.components.Window.Editor) {
                                         Object item = ((com.haulmont.cuba.gui.components.Window.Editor) window).getItem();
                                         if (item instanceof Entity) {
                                             entity.setValueEx(fieldConf.getId(), item);
