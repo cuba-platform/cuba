@@ -498,24 +498,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             titleLayout.setComponentAlignment(userNameLabel, Alignment.MIDDLE_RIGHT);
         }
 
-        Button logoutBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
-                new Button.ClickListener() {
-                    private static final long serialVersionUID = 4885156177472913997L;
-
-                    public void buttonClick(Button.ClickEvent event) {
-                        if (foldersPane != null) {
-                            foldersPane.savePosition();
-                        }
-                        App app = App.getInstance();
-                        for (com.haulmont.cuba.gui.components.Window window : app.getWindowManager().getOpenWindows()) {
-                            if (window instanceof WebWindow.Editor) {
-                                ((WebWindow.Editor)window).releaseLock();
-                            }
-                        }
-                        String redirectionUrl = connection.logout();
-                        open(new ExternalResource(App.getInstance().getURL() + redirectionUrl));
-                    }
-                }
+        Button logoutBtn = new Button(
+                MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
+                new LogoutBtnClickListener()
         );
         logoutBtn.setStyleName("white-border");
         logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
@@ -715,17 +700,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             component.setParent(null);
         }
     }
-    /**
-     *
-     * @return
-     */
-    public NativeSelect getSubstUserSelect() {
-        return substUserSelect;
+
+    private void revertToCurrentUser() {
+        UserSession us = App.getInstance().getConnection().getSession();
+        substUserSelect.select(us.getCurrentOrSubstitutedUser());
     }
 
     private class ChangeSubstUserAction extends AbstractAction {
         private AbstractSelect substUserSelect;
-        private boolean bypass = false;
 
         protected ChangeSubstUserAction(AbstractSelect substUserSelect) {
             super("changeSubstUserAction");
@@ -738,37 +720,29 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
 
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-
-            ////////////////////////////////////
-            /////    Check deleted user    /////
-            ////////////////////////////////////
-            User checkUser = (User) substUserSelect.getValue();
-            LoadContext ctx = new LoadContext(User.class).setId(checkUser.getId());
-            if(!bypass)
-                if(null == ServiceLocator.getDataService().load(ctx)) {
-                    showNotification(
-                                        MessageProvider.formatMessage(
-                                                                        getMessagesPack(),
-                                                                        "userDeleteMsg",
-                                                                        checkUser.getName()
-                                                                     ),
+            final App app = App.getInstance();
+            app.getWindowManager().checkModificationsAndCloseAll(
+                    new Runnable() {
+                        public void run() {
+                            app.getWindowManager().closeAll();
+                            User user = (User) substUserSelect.getValue();
+                            try {
+                                app.getConnection().substituteUser(user);
+                            } catch (javax.persistence.NoResultException e) {
+                                showNotification(
+                                        MessageProvider.formatMessage(getMessagesPack(), "userDeleteMsg", user.getName()),
                                         Window.Notification.TYPE_WARNING_MESSAGE
-                                    );
-                    UserSession userSession = App.getInstance().getConnection().getSession();
-                    substUserSelect.setValue(userSession.getCurrentOrSubstitutedUser());
-
-                    bypass = true;
-                    return;
-                }
-            
-            App app = App.getInstance();
-            for (com.haulmont.cuba.gui.components.Window window : app.getWindowManager().getOpenWindows()) {
-                if (window instanceof WebWindow.Editor) {
-                    ((WebWindow.Editor)window).releaseLock();
-                }
-            }
-            app.getWindowManager().closeAll();
-            app.getConnection().substituteUser((User) substUserSelect.getValue());
+                                );
+                                revertToCurrentUser();
+                            }
+                        }
+                    },
+                    new Runnable() {
+                        public void run() {
+                            revertToCurrentUser();
+                        }
+                    }
+            );
         }
     }
 
@@ -786,8 +760,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
 
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-            UserSession us = App.getInstance().getConnection().getSession();
-            substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
+            revertToCurrentUser();
         }
     }
 
@@ -949,6 +922,26 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         public interface TabCloseHandler extends Serializable {
             void onClose(TabSheet tabSheet, Component tabContent);
+        }
+    }
+
+    private class LogoutBtnClickListener implements Button.ClickListener {
+
+        private static final long serialVersionUID = 4885156177472913997L;
+
+        public void buttonClick(Button.ClickEvent event) {
+            if (foldersPane != null) {
+                foldersPane.savePosition();
+            }
+            App.getInstance().getWindowManager().checkModificationsAndCloseAll(
+                    new Runnable() {
+                        public void run() {
+                            String redirectionUrl = connection.logout();
+                            open(new ExternalResource(App.getInstance().getURL() + redirectionUrl));
+                        }
+                    },
+                    null
+            );
         }
     }
 }

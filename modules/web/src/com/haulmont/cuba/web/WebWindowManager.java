@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
@@ -25,6 +26,7 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
@@ -40,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 
 public class WebWindowManager extends WindowManager {
 
@@ -555,10 +558,55 @@ public class WebWindowManager extends WindowManager {
         getWindowOpenMode().remove(window);
     }
 
+    public void checkModificationsAndCloseAll(final Runnable runIfOk, final Runnable runIfCancel) {
+        boolean modified = false;
+        for (Window window : getOpenWindows()) {
+            window.saveSettings();
+            if (window.getDsContext() != null && window.getDsContext().isModified()) {
+                modified = true;
+            }
+        }
+        if (modified) {
+            showOptionDialog(
+                    MessageProvider.getMessage(WebWindow.class, "closeUnsaved.caption"),
+                    MessageProvider.getMessage(WebWindow.class, "closeUnsaved"),
+                    IFrame.MessageType.WARNING,
+                    new Action[]{
+                            new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.Yes")) {
+                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    if (runIfOk != null)
+                                        runIfOk.run();
+                                }
+                                @Override
+                                public String getIcon() {
+                                    return "icons/ok.png";
+                                }
+                            },
+                            new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.No")) {
+                                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    if (runIfCancel != null)
+                                        runIfCancel.run();
+                                }
+                                @Override
+                                public String getIcon() {
+                                    return "icons/cancel.png";
+                                }
+                            }
+                    }
+            );
+        } else {
+            runIfOk.run();
+        }
+    }
+
     public void closeAll() {
         List<Map.Entry<Window, WindowOpenMode>> entries = new ArrayList(getWindowOpenMode().entrySet());
         for (int i = entries.size() - 1; i >= 0; i--) {
-            closeWindow(entries.get(i).getKey(), entries.get(i).getValue());
+            Window window = entries.get(i).getKey();
+            if (window instanceof WebWindow.Editor) {
+                ((WebWindow.Editor)window).releaseLock();
+            }
+            closeWindow(window, entries.get(i).getValue());
         }
         getWindowOpenMode().clear();
 
@@ -778,7 +826,9 @@ public class WebWindowManager extends WindowManager {
             button.addListener(new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
-                    app.getAppWindow().removeWindow(window);
+                    AppWindow appWindow = app.getAppWindow();
+                    if (appWindow != null) // possible appWindow is null after logout
+                        appWindow.removeWindow(window);
                 }
             });
             if (action.getIcon() != null) {
@@ -808,7 +858,7 @@ public class WebWindowManager extends WindowManager {
         for (com.vaadin.ui.Window childWindow : new ArrayList<com.vaadin.ui.Window>(mainWindow.getChildWindows())) {
             if (name.equals(childWindow.getName())) {
                 String msg = new StrBuilder("Another " + name + " window exists, removing it\n")
-                        .appendWithSeparators(Thread.currentThread().getStackTrace(), "\n")
+                        //.appendWithSeparators(Thread.currentThread().getStackTrace(), "\n")
                         .toString();
                 log.warn(msg);
                 mainWindow.removeWindow(childWindow);

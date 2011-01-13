@@ -141,6 +141,8 @@ public class LoginWorkerBean implements LoginWorker
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             User user = em.find(User.class, substitutedUser.getId());
+            if (user == null)
+                throw new javax.persistence.NoResultException("User not found");
 
             UserSession session = UserSessionManager.getInstance().updateSession(currentSession, user);
 

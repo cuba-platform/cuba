@@ -147,6 +147,14 @@ public class AbstractWindow extends AbstractFrame
         }
     }
 
+    public void saveSettings() {
+        if (frame instanceof Window) {
+            ((Window) frame).saveSettings();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     public Settings getSettings() {
         if (frame instanceof Window) {
             return ((Window) frame).getSettings();

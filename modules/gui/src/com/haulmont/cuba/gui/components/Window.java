@@ -30,6 +30,9 @@ public interface Window extends Serializable, IFrame, Component.HasCaption, Comp
     /** Apply user settings to all components of this window */
     void applySettings(Settings settings);
 
+    /** Save this window user settings if they have been changed */
+    void saveSettings();
+
     /** Get this window user settings */
     Settings getSettings();
 

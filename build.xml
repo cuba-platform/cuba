@@ -241,8 +241,6 @@
         <antcall target="start"/>
     </target>
 
-    <target name="clean-build-deploy" depends="clean,build,deploy"/>
-
-    <target name="clean-build-deploy-start" depends="clean,build,deploy,start"/>
+    <target name="clean-build" depends="clean,build"/>
 
 </project>

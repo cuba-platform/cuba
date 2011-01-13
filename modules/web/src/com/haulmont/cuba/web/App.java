@@ -207,7 +207,11 @@ public abstract class App extends Application
     public AppWindow getAppWindow() {
         String name = currentWindowName.get();
         //noinspection deprecation
-        return (AppWindow) (name == null ? getMainWindow() : getWindow(name));
+        Window window = name == null ? getMainWindow() : getWindow(name);
+        if (window instanceof AppWindow)
+            return (AppWindow) window;
+        else
+            return null;
     }
 
     /**

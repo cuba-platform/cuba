@@ -547,6 +547,17 @@ public class WebWindow
             return false;
         }
 
+        saveSettings();
+
+        windowManager.close(this);
+        boolean res = onClose(actionId);
+        if (res && doAfterClose != null) {
+            doAfterClose.run();
+        }
+        return res;
+    }
+
+    public void saveSettings() {
         ComponentsHelper.walkComponents(
                 this,
                 new ComponentVisitor() {
@@ -573,12 +584,6 @@ public class WebWindow
         if (settings != null) {
             settings.commit();
         }
-        windowManager.close(this);
-        boolean res = onClose(actionId);
-        if (res && doAfterClose != null) {
-            doAfterClose.run();
-        }
-        return res;
     }
 
     public String getCaption() {
