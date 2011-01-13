@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 public class JavaClassLoader extends URLClassLoader {
     private static final String PATH_SEPARATOR = System.getProperty("path.separator");
     private static final String IMPORT_PATTERN = "import .+?;";
+    private static final String IMPORT_STATIC_PATTERN = "import static .+?;";
 
     private static class TimestampClass {
         Class clazz;
@@ -122,8 +123,10 @@ public class JavaClassLoader extends URLClassLoader {
     }
 
     private void removeTimestampClass(String name, Map<String, TimestampClass> removed) {
-        removed.put(name, compiled.get(name));
-        compiled.remove(name);
+        TimestampClass current = compiled.remove(name);
+        if (current != null) {
+            removed.put(name, current);
+        }
     }
 
     private boolean validSource(String className) {
@@ -174,6 +177,12 @@ public class JavaClassLoader extends URLClassLoader {
         List<String> dependencies = getMatchedStrings(src, IMPORT_PATTERN);
         for (String currentDependence : dependencies) {
             String dependenceName = currentDependence.replaceAll("import", "").replaceAll(";", "").trim();
+            addDependence(importedClassNames, dependenceName);
+        }
+
+        dependencies = getMatchedStrings(src, IMPORT_STATIC_PATTERN);
+        for (String currentDependence : dependencies) {
+            String dependenceName = currentDependence.replaceAll("import", "").replaceAll("static", "").replaceAll("\\.[\\w|\\d|_]+?;", "").replaceAll("\\.\\*;", "").trim();
             addDependence(importedClassNames, dependenceName);
         }
         return importedClassNames;
@@ -233,7 +242,13 @@ public class JavaClassLoader extends URLClassLoader {
             clazz = (Class) compiledClasses.get(name);
             return clazz;
         } catch (Exception e) {
-            compiled.putAll(removed);//return removed class back if compilation fails
+            for (Map.Entry<String, TimestampClass> entry : removed.entrySet()) {
+                String key = entry.getKey();
+                TimestampClass value = entry.getValue();
+                if (key != null && value != null) {
+                    compiled.put(key, value);
+                }
+            }
             throw new RuntimeException(e);
         }
     }
