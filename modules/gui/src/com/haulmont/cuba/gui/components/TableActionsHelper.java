@@ -43,6 +43,12 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
         return action;
     }
 
+    public Action createCreateAction(final ValueProvider valueProvider, final WindowManager.OpenType openType, String actionMessage) {
+        AbstractAction action = new CreateAction(valueProvider, openType, actionMessage);
+        component.addAction(action);
+        return action;
+    }
+
     public Action createExcelAction(final ExportDisplay display) {
         AbstractAction action = new ExcelAction(display);
         component.addAction(action);
@@ -58,16 +64,23 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
     private class CreateAction extends AbstractAction {
         private final ValueProvider valueProvider;
         private final WindowManager.OpenType openType;
+        private String actionMessage;
 
         public CreateAction(ValueProvider valueProvider, WindowManager.OpenType openType) {
             super("create");
             this.valueProvider = valueProvider;
             this.openType = openType;
+            this.actionMessage = "actions.Create";
+        }
+
+        public CreateAction(ValueProvider valueProvider, WindowManager.OpenType openType, String actionMessage) {
+            this(valueProvider, openType);
+            this.actionMessage = actionMessage;
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-            return MessageProvider.getMessage(messagesPackage, "actions.Create");
+            final String    messagesPackage = AppConfig.getInstance().getMessagesPack();
+            return MessageProvider.getMessage(messagesPackage, actionMessage);
         }
 
         public boolean isEnabled() {
