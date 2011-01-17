@@ -32,6 +32,7 @@
         <class>com.haulmont.cuba.security.entity.FilterEntity</class>
         <class>com.haulmont.cuba.security.entity.SearchFolder</class>
         <class>com.haulmont.cuba.security.entity.Presentation</class>
+        <class>com.haulmont.cuba.security.entity.TabHistory</class>
 
         <class>com.haulmont.cuba.report.HardDeleteEntity</class>
         <class>com.haulmont.cuba.report.DataSet</class>

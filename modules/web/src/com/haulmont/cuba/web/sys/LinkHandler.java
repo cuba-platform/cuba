@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.exception.AccessDeniedHandler;
 import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -105,6 +106,8 @@ public class LinkHandler implements Serializable {
                 Entity entity = loadEntityInstance(info);
                 if (entity != null)
                     params.put(name, entity);
+            } else if (Boolean.TRUE.toString().equals(value) || Boolean.FALSE.toString().equals(value)) {
+                params.put(name, BooleanUtils.toBoolean(value));
             } else {
                 params.put(name, value);
             }

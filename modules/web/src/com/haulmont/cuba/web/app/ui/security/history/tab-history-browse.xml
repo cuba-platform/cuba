@@ -1,0 +1,30 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.security.history.TabHistoryBrowse"
+        messagesPack="com.haulmont.cuba.web.app.ui.security.history"
+        caption="msg://cardHistoryBrowse.caption"
+        datasource="tabHistoryDs"
+        >
+
+    <dsContext>                                           
+        <collectionDatasource id="tabHistoryDs" class="com.haulmont.cuba.security.entity.TabHistory" view="browse">
+            <query>
+                <![CDATA[select th from sec$TabHistory th where th.creator.id = :session$userId 
+                order by th.createTs desc]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox id="histotyPane" expand="historyTable" margin="true" spacing="true">
+            <!--button id="copy"/-->
+            <table id="historyTable" editable="false" sortable="true" multiselect="true">
+                <columns>
+                    <column id="caption" caption="msg://cardHistoryBrowse.name"/>
+                    <column id="createTs" caption="msg://cardHistoryBrowse.createTs"/>
+                </columns>
+                <rows datasource="tabHistoryDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

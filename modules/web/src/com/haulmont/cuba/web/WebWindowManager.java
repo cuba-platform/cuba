@@ -10,12 +10,10 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.SilentException;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentVisitor;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.app.TabHistoryService;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -27,6 +25,7 @@ import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.security.entity.TabHistory;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
@@ -72,6 +71,8 @@ public class WebWindowManager extends WindowManager {
     private String baseModalWindowCaption = "";
 
     private Stack<ModalContentWithCaption> modalWindowStack = new Stack<ModalContentWithCaption>();
+
+    private TabHistoryService tabHistoryService;
 
     private static class ModalContentWithCaption implements Serializable{
         String caption;
@@ -223,6 +224,10 @@ public class WebWindowManager extends WindowManager {
 
         window.setCaption(caption);
         window.setDescription(description);
+
+        if (window.getFrame() != null && !(window.getFrame() instanceof Window.Lookup)) {
+            addTabHistory(window, caption);
+        }
 
         switch (type) {
             case NEW_TAB:
@@ -719,6 +724,56 @@ public class WebWindowManager extends WindowManager {
 
     protected ComponentsFactory createComponentFactory() {
         return new WebComponentsFactory();
+    }
+
+    protected void addTabHistory(Window window, String caption){
+        String windowId = window.getFrame().getId();
+        if ("sec$TabHistory.browse".equals(windowId)
+                || windowId.startsWith("jmxcontrol") && !windowId.equals("jmxcontrol$DisplayMbeans")) return;
+        TabHistory tabHistory = EntityFactory.create(TabHistory.class);
+        tabHistory.setCaption(caption);
+        tabHistory.setCreator(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+        tabHistory.setUrl(makeLink(window));
+        if (tabHistoryService == null) {
+            tabHistoryService = ServiceLocator.lookup(TabHistoryService.NAME);
+        }
+        if (tabHistoryService.getCurrentUserTabHistoryCount() > TabHistoryService.MAX_BUFFER) {
+            tabHistoryService.deleteEndTabHistory();
+        }
+        tabHistoryService.saveTabHistoryEntity(tabHistory);
+    }
+
+    protected String makeLink(Window window) {
+        GlobalConfig c = ConfigProvider.getConfig(GlobalConfig.class);
+        Entity entity = null;
+        if (window.getFrame() instanceof WebWindow.Editor)
+            entity = ((WebWindow.Editor) window.getFrame()).getItem();
+        String url = "http://" + c.getWebHostName() + ":" + c.getWebPort() + "/" + c.getWebContextName() + "/open?" +
+                "screen=" + window.getFrame().getId();
+        if (entity != null) {
+            String item = MetadataProvider.getSession().getClass(entity.getClass()).getName() + "-" + entity.getId();
+            url += "&" + "item=" + item + "&" + "params=item:" + item;
+        }
+        Map<String, Object> params = window.getContext().getParams();
+        StringBuilder sb = new StringBuilder();
+        if (params != null) {
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                Object value = param.getValue();
+                if (value instanceof String /*|| value instanceof Integer || value instanceof Double*/
+                        || value instanceof Boolean) {
+                    sb.append(",").append(param.getKey()).append(":").append(value.toString());
+                }
+            }
+        }
+        if (sb.length() > 0) {
+            if (entity != null) {
+                url += sb.toString();
+            } else {
+                url += "&params=" + sb.deleteCharAt(0).toString();
+            }
+        }
+
+        return url;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

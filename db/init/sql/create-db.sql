@@ -630,3 +630,17 @@ CREATE TABLE report_value_format
 alter table report_value_format add CONSTRAINT fk_report_value_format_to_report_report FOREIGN KEY (report_id)
       REFERENCES report_report (id)
       on delete no action on update no action;
+
+------------------------------------------------------------------------------------------------------------
+
+create table SEC_TAB_HISTORY (
+	ID uuid,
+	CREATE_TS timestamp,
+	CREATED_BY varchar(50),
+	CREATOR_ID uuid,
+	CAPTION varchar(255),
+	URL varchar(4000),
+	primary key (ID)
+);
+
+alter table SEC_TAB_HISTORY add constraint FK_SEC_HISTORY_USER foreign key (CREATOR_ID) references SEC_USER (ID);

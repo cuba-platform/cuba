@@ -81,4 +81,8 @@
         <property name="user" view="app"/>
         <property name="autoSave"/>
     </view>
+
+    <view class="com.haulmont.cuba.security.entity.TabHistory" name="browse" extends="_local">
+        <property name="creator" view="_minimal"/>
+    </view>
 </views>
