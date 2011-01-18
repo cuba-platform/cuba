@@ -17,7 +17,7 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.ReportValueFormat;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
-import com.haulmont.cuba.report.formatters.tools.*;
+import com.haulmont.cuba.report.formatters.oo.*;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XDispatchHelper;
@@ -39,9 +39,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.haulmont.cuba.report.formatters.tools.ODTHelper.*;
-import static com.haulmont.cuba.report.formatters.tools.ODTTableHelper.*;
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
+import static com.haulmont.cuba.report.formatters.oo.ODTHelper.*;
+import static com.haulmont.cuba.report.formatters.oo.ODTTableHelper.*;
+import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.*;
 
 public class DocFormatter extends AbstractFormatter {
     private OOOConnection connection;

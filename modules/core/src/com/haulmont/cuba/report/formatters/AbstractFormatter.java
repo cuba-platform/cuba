@@ -42,7 +42,7 @@ public abstract class AbstractFormatter implements Formatter {
         }
     }
 
-    protected String insertBandDataToString(Band band, String resultStr) {
+    public static String insertBandDataToString(Band band, String resultStr) {
         List<String> parametersToInsert = new ArrayList<String>();
         Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = namePattern.matcher(resultStr);
@@ -57,11 +57,11 @@ public abstract class AbstractFormatter implements Formatter {
         return resultStr;
     }
 
-    protected String unwrapParameterName(String nameWisAlias) {
-        return nameWisAlias.replaceAll("[\\$|\\{|\\}]", "");
+    public static String unwrapParameterName(String nameWithAlias) {
+        return nameWithAlias.replaceAll("[\\$|\\{|\\}]", "");
     }
 
-    protected String inlineParameterValue(String template, String parameterName, String value) {
+    public static String inlineParameterValue(String template, String parameterName, String value) {
         return template.replaceAll("\\$\\{" + parameterName + "\\}", value);
     }
 }

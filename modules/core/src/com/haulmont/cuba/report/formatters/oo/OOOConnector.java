@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.report.formatters.tools;
+package com.haulmont.cuba.report.formatters.oo;
 
 import com.sun.star.comp.helper.BootstrapException;
 import com.sun.star.uno.XComponentContext;

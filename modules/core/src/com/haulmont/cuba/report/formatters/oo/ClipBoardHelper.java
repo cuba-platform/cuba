@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.report.formatters.tools;
+package com.haulmont.cuba.report.formatters.oo;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;

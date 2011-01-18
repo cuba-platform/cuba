@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.report.formatters.tools;
+package com.haulmont.cuba.report.formatters.oo;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.FileStorageService;
@@ -32,8 +32,8 @@ import com.sun.star.util.XReplaceable;
 
 import java.io.File;
 
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXCloseable;
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.asXStorable;
+import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.asXCloseable;
+import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.asXStorable;
 
 public class ODTHelper {
 

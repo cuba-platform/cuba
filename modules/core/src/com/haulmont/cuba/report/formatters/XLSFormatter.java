@@ -16,9 +16,9 @@ import com.haulmont.cuba.report.Orientation;
 import com.haulmont.cuba.report.formatters.xls.Area;
 import com.haulmont.cuba.report.formatters.xls.AreaAlign;
 import com.haulmont.cuba.report.formatters.xls.Cell;
-import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ddf.EscherClientAnchorRecord;
-import org.apache.poi.ddf.EscherRecord;
+import static com.haulmont.cuba.report.formatters.xls.HSSFCellHelper.*;
+import static com.haulmont.cuba.report.formatters.xls.HSSFPicturesHelper.getAllAnchors;
+import static com.haulmont.cuba.report.formatters.xls.HSSFRangeHelper.*;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.record.EscherAggregate;
 import org.apache.poi.hssf.record.PaletteRecord;
@@ -42,14 +42,18 @@ public class XLSFormatter extends AbstractFormatter {
     private int rownum;
     private int colnum;
     private int rowsAddedByVerticalBand = 0;
+    private int rowsAddedByHorizontalBand = 0;
 
     private HSSFWorkbook resultWorkbook;
     private Map<String, List<CellRangeAddress>> mergeRegionsForRangeNames = new HashMap<String, List<CellRangeAddress>>();
     private Map<HSSFSheet, HSSFSheet> templateToResultSheetsMapping = new HashMap<HSSFSheet, HSSFSheet>();
+    private Map<String, Bounds> templateBounds = new HashMap<String, Bounds>();
 
     private Map<Area, List<Area>> areasDependency = new LinkedHashMap<Area, List<Area>>();
     private List<Integer> orderedPicturesId = new ArrayList<Integer>();
+    private Map<String, EscherAggregate> sheetToEscherAggregate = new HashMap<String, EscherAggregate>();
 
+    private AreaDependencyHelper areaDependencyHelper = new AreaDependencyHelper();
 
     public XLSFormatter(FileDescriptor template) throws IOException {
         templateWorkbook = new HSSFWorkbook(getFileInputStream(template));
@@ -57,7 +61,7 @@ public class XLSFormatter extends AbstractFormatter {
 
         cloneWorkbookStyles();
         copyAllPictures();
-        
+
         for (int sheetNumber = 0; sheetNumber < templateWorkbook.getNumberOfSheets(); sheetNumber++) {
             cloneSheet(sheetNumber);
         }
@@ -66,50 +70,169 @@ public class XLSFormatter extends AbstractFormatter {
         colnum = 0;
     }
 
-    /**
-     * Clones sheet with number sheetNumber from template workbook to result
-     *
-     * @param sheetNumber number of sheet to be copied
-     */
-    private void cloneSheet(int sheetNumber) {
-        HSSFSheet templateSheet = templateWorkbook.getSheetAt(sheetNumber);
-        initMergeRegions(templateSheet);
-        HSSFSheet resultSheet = resultWorkbook.createSheet();
-        templateToResultSheetsMapping.put(templateSheet, resultSheet);
-        int lastColNum = -1;
-        // todo: find better way
-        for (int rowNum = 0; rowNum <= templateSheet.getLastRowNum(); rowNum++) {
-            HSSFRow row = templateSheet.getRow(rowNum);
-            int rowColNum = (row != null) ? row.getLastCellNum() : -1;
-            lastColNum = Math.max(rowColNum, lastColNum);
+    public byte[] createDocument(Band rootBand) {
+        for (Band childBand : rootBand.getChildren()) {
+            writeBand(childBand);
         }
-        for (int i = 0; i < lastColNum; i++)
-            resultSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));
 
-        resultSheet.setDisplayGridlines(templateSheet.isDisplayGridlines());
-        resultWorkbook.setSheetName(sheetNumber, templateWorkbook.getSheetName(sheetNumber));
+        for (Map.Entry<Area, List<Area>> entry : areasDependency.entrySet()) {
+            Area original = entry.getKey();
+
+            for (Area dependent : entry.getValue()) {
+                updateBandFormula(original, dependent);
+            }
+        }
+
+        for (int sheetNumber = 0; sheetNumber < templateWorkbook.getNumberOfSheets(); sheetNumber++) {
+            HSSFSheet templateSheet = templateWorkbook.getSheetAt(sheetNumber);
+            HSSFSheet resultSheet = resultWorkbook.getSheetAt(sheetNumber);
+
+            copyPicturesOnSheet(templateSheet, resultSheet);
+        }
+
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            resultWorkbook.write(byteArrayOutputStream);
+            byte[] result = byteArrayOutputStream.toByteArray();
+            byteArrayOutputStream.close();
+            return result;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void writeBand(Band band) {
+        String rangeName = band.getName();
+        HSSFSheet templateSheet = getTemplateSheetForRangeName(templateWorkbook, rangeName);
+
+        if (templateSheet != currentTemplateSheet) { //todo: reimplement. store rownum for each sheet.
+            currentTemplateSheet = templateSheet;
+            rownum = 0;
+        }
+
+        HSSFSheet resultSheet = templateToResultSheetsMapping.get(templateSheet);
+
+        if (Orientation.HORIZONTAL.equals(band.getOrientation())) {
+            rownum += rowsAddedByVerticalBand;
+            rownum += rowsAddedByHorizontalBand;
+            rowsAddedByVerticalBand = 0;
+            rowsAddedByHorizontalBand = 0;
+            colnum = 0;
+            writeHorizontalBand(band, templateSheet, resultSheet);
+        } else {
+            rowsAddedByVerticalBand = writeVerticalBand(band, templateSheet, resultSheet);
+        }
     }
 
     /**
-     * Clones styles for cells and palette from template workbook
+     * Method writes horizontal band
+     * Note: Only one band for row is supported. Now we think that many bands for row aren't usable.
+     *
+     * @param band          - band to write
+     * @param templateSheet - template sheet
+     * @param resultSheet   - result sheet
      */
-    private void cloneWorkbookStyles() {
-        HSSFCellStyle cellStyle = resultWorkbook.createCellStyle();
-        cellStyle.cloneStyleFrom(templateWorkbook.createCellStyle());
+    private void writeHorizontalBand(Band band, HSSFSheet templateSheet, HSSFSheet resultSheet) {
+        String rangeName = band.getName();
+        AreaReference templateRange = getAreaForRange(templateWorkbook, rangeName);
+        CellReference[] crefs = templateRange.getAllReferencedCells();
 
-        HSSFPalette customPalette = templateWorkbook.getCustomPalette();
-        for (short i = PaletteRecord.FIRST_COLOR_INDEX; i < PaletteRecord.FIRST_COLOR_INDEX + PaletteRecord.STANDARD_PALETTE_SIZE; i++) {
-            HSSFColor color = customPalette.getColor(i);
-            if (color == null) continue;
+        CellReference topLeft, bottomRight;
+        AreaReference resultRange;
 
-            short[] colors = color.getTriplet();
-            resultWorkbook.getCustomPalette().setColorAtIndex(i, (byte) colors[0], (byte) colors[1], (byte) colors[2]);
+        if (crefs != null) {
+            addRangeBounds(band, crefs);
+
+            ArrayList<HSSFRow> resultRows = new ArrayList<HSSFRow>();
+
+            int currentRowNum = -1;
+            int currentRowCount = -1;
+            int currentColumnCount = 0;
+            int offset = 0;
+
+            topLeft = new CellReference(rownum, 0);
+            copyMergeRegions(resultSheet, rangeName, rownum, getCellFromReference(crefs[0], templateSheet).getColumnIndex());
+
+            for (CellReference cellRef : crefs) {
+                HSSFCell templateCell = getCellFromReference(cellRef, templateSheet);
+                HSSFRow resultRow;
+                if (templateCell.getRowIndex() != currentRowNum) { //create new row
+                    resultRow = resultSheet.createRow(rownum + rowsAddedByHorizontalBand);
+                    rowsAddedByHorizontalBand += 1;
+                    resultRow.setHeight(templateCell.getRow().getHeight());
+                    resultRows.add(resultRow);
+
+                    currentRowNum = templateCell.getRowIndex();
+                    currentRowCount++;
+                    currentColumnCount = 0;
+                    offset = templateCell.getColumnIndex();
+                } else {                                          // or write cell to current row
+                    resultRow = resultRows.get(currentRowCount);
+                    currentColumnCount++;
+                }
+
+                copyCellFromTemplate(templateCell, resultRow, offset + currentColumnCount, band);
+            }
+
+            bottomRight = new CellReference(rownum + rowsAddedByHorizontalBand - 1, offset + currentColumnCount);
+            resultRange = new AreaReference(topLeft, bottomRight);
+
+            areaDependencyHelper.addDependency(new Area(band.getName(), AreaAlign.HORIZONTAL, templateRange),
+                    new Area(band.getName(), AreaAlign.HORIZONTAL, resultRange));
         }
-
-        List<HSSFPictureData> pictures = templateWorkbook.getAllPictures();
-        for (HSSFPictureData picture : pictures) {
-            resultWorkbook.addPicture(picture.getData(), picture.getFormat());
+        for (Band child : band.getChildren()) {
+            writeBand(child);
         }
+    }
+
+    /**
+     * Method writes vertical band
+     * Note: no child support for vertical band ;)
+     *
+     * @param band          - band to write
+     * @param templateSheet - template sheet
+     * @param resultSheet   - result sheet
+     * @return number of inserted rows
+     */
+    private int writeVerticalBand(Band band, HSSFSheet templateSheet, HSSFSheet resultSheet) {
+        String rangeName = band.getName();
+        CellReference[] crefs = getRangeContent(templateWorkbook, rangeName);
+
+        if (crefs != null) {
+            addRangeBounds(band, crefs);
+
+            colnum = colnum == 0 ? getCellFromReference(crefs[0], templateSheet).getColumnIndex() : colnum;
+            copyMergeRegions(resultSheet, rangeName, rownum, colnum);
+
+            int firstRow = crefs[0].getRow();
+            int firstColumn = crefs[0].getCol();
+
+            for (CellReference cref : crefs) {//create necessary rows
+                int currentRow = cref.getRow();
+                final int rowOffset = currentRow - firstRow;
+                if (!rowExists(resultSheet, rownum + rowOffset)) {
+                    resultSheet.createRow(rownum + rowOffset);
+                }
+            }
+
+            for (CellReference cref : crefs) {
+                int currentRow = cref.getRow();
+                int currentColumn = cref.getCol();
+                final int rowOffset = currentRow - firstRow;
+                final int columnOffset = currentColumn - firstColumn;
+
+                HSSFCell templateCell = getCellFromReference(cref, templateSheet);
+                copyCellFromTemplate(templateCell, resultSheet.getRow(rownum + rowOffset), colnum + columnOffset, band);
+            }
+
+            colnum += crefs[crefs.length - 1].getCol() - firstColumn + 1;
+
+
+            final Bounds thiBandBounds = templateBounds.get(band.getName());
+            final Bounds parentBandBounds = templateBounds.get(band.getParentBand().getName());
+            return thiBandBounds.verticalOffset(parentBandBounds);
+        }
+        return 0;
     }
 
     /**
@@ -161,314 +284,61 @@ public class XLSFormatter extends AbstractFormatter {
         }
     }
 
-    private boolean isMergeRegionInsideNamedRange(Integer rangeFirstRow, Integer rangeFirstColumn, Integer rangeLastRow, Integer rangeLastColumn, Integer regionFirstRow, Integer regionFirstColumn, Integer regionLastRow, Integer regionLastColumn) {
-        return regionFirstColumn >= rangeFirstColumn && regionFirstColumn <= rangeLastColumn &&
-                regionLastColumn >= rangeFirstColumn && regionLastColumn <= rangeLastColumn &&
-                regionFirstRow >= rangeFirstRow && regionFirstRow <= rangeLastRow &&
-                regionLastRow >= rangeFirstRow && regionLastRow <= rangeLastRow;
+    /**
+     * Clones sheet with number sheetNumber from template workbook to result
+     *
+     * @param sheetNumber number of sheet to be copied
+     */
+    private void cloneSheet(int sheetNumber) {
+        HSSFSheet templateSheet = templateWorkbook.getSheetAt(sheetNumber);
+        initMergeRegions(templateSheet);
+        HSSFSheet resultSheet = resultWorkbook.createSheet();
+        templateToResultSheetsMapping.put(templateSheet, resultSheet);
+        int lastColNum = -1;
+        // todo: find better way
+        for (int rowNum = 0; rowNum <= templateSheet.getLastRowNum(); rowNum++) {
+            HSSFRow row = templateSheet.getRow(rowNum);
+            int rowColNum = (row != null) ? row.getLastCellNum() : -1;
+            lastColNum = Math.max(rowColNum, lastColNum);
+        }
+        for (int i = 0; i < lastColNum; i++)
+            resultSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));
+
+        resultSheet.setDisplayGridlines(templateSheet.isDisplayGridlines());
+        resultWorkbook.setSheetName(sheetNumber, templateWorkbook.getSheetName(sheetNumber));
     }
 
-    private boolean isNamedRangeInsideMergeRegion(Integer rangeFirstRow, Integer rangeFirstColumn, Integer rangeLastRow, Integer rangeLastColumn, Integer regionFirstRow, Integer regionFirstColumn, Integer regionLastRow, Integer regionLastColumn) {
-        return regionFirstColumn <= rangeFirstColumn && regionFirstColumn <= rangeLastColumn &&
-                regionLastColumn >= rangeFirstColumn && regionLastColumn >= rangeLastColumn &&
-                regionFirstRow <= rangeFirstRow && regionFirstRow <= rangeLastRow &&
-                regionLastRow >= rangeFirstRow && regionLastRow >= rangeLastRow;
-    }
+    /**
+     * Clones styles for cells and palette from template workbook
+     */
+    private void cloneWorkbookStyles() {
+        HSSFCellStyle cellStyle = resultWorkbook.createCellStyle();
+        cellStyle.cloneStyleFrom(templateWorkbook.createCellStyle());
 
-    public byte[] createDocument(Band rootBand) {
-        for (Band childBand : rootBand.getChildren()) {
-            writeBand(childBand);
+        HSSFPalette customPalette = templateWorkbook.getCustomPalette();
+        for (short i = PaletteRecord.FIRST_COLOR_INDEX; i < PaletteRecord.FIRST_COLOR_INDEX + PaletteRecord.STANDARD_PALETTE_SIZE; i++) {
+            HSSFColor color = customPalette.getColor(i);
+            if (color == null) continue;
+
+            short[] colors = color.getTriplet();
+            resultWorkbook.getCustomPalette().setColorAtIndex(i, (byte) colors[0], (byte) colors[1], (byte) colors[2]);
         }
 
-        for (Map.Entry<Area, List<Area>> entry : areasDependency.entrySet()) {
-            Area original = entry.getKey();
-
-            for (Area dependent : entry.getValue()) {
-                updateBandFormula(original, dependent);
-            }
-        }
-
-        for (int sheetNumber = 0; sheetNumber < templateWorkbook.getNumberOfSheets(); sheetNumber++) {
-            HSSFSheet templateSheet = templateWorkbook.getSheetAt(sheetNumber);
-            HSSFSheet resultSheet = resultWorkbook.getSheetAt(sheetNumber);
-
-            copyPicturesOnSheet(templateSheet, resultSheet);
-        }
-
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            resultWorkbook.write(byteArrayOutputStream);
-            byte[] result = byteArrayOutputStream.toByteArray();
-            byteArrayOutputStream.close();
-            return result;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private void copyAllPictures() {
         List<HSSFPictureData> pictures = templateWorkbook.getAllPictures();
         for (HSSFPictureData picture : pictures) {
-            orderedPicturesId.add(resultWorkbook.addPicture(picture.getData(), picture.getFormat()));
-        }
-    }
-
-    private void updateBandFormula(Area original, Area dependent) {
-        HSSFSheet templateSheet = getTemplateSheetForRangeName(original.getName());
-        HSSFSheet resultSheet = templateToResultSheetsMapping.get(templateSheet);
-
-        AreaReference area = dependent.toAreaReference();
-        for (CellReference cell : area.getAllReferencedCells()) {
-            HSSFCell resultCell = getCellFromReference(cell, resultSheet);
-
-            if (resultCell.getCellType() != HSSFCell.CELL_TYPE_FORMULA) continue;
-
-            Ptg[] ptgs = HSSFFormulaParser.parse(resultCell.getCellFormula(), templateWorkbook);
-
-            for (Ptg ptg : ptgs) {
-                if (ptg instanceof AreaPtg)
-                    updateAreaPtg((AreaPtg) ptg);
-                else if (ptg instanceof RefPtg)
-                    updateRefPtg(original, dependent, (RefPtg) ptg);
-            }
-
-            String calculatedFormula = HSSFFormulaParser.toFormulaString(templateWorkbook, ptgs);
-            resultCell.setCellFormula(calculatedFormula);
-        }
-    }
-
-    private void copyPicturesOnSheet(HSSFSheet templateSheet, HSSFSheet resultSheet) {
-        List<HSSFClientAnchor> list = getAllAnchors(templateSheet);
-        HSSFPatriarch workingPatriarch = resultSheet.createDrawingPatriarch();
-
-        int i = 0;
-        for (HSSFClientAnchor anchor : list) {
-            Cell topLeft = getCellFromTemplate(new Cell(anchor.getCol1(), anchor.getRow1()));
-            anchor.setCol1(topLeft.getCol());
-            anchor.setRow1(topLeft.getRow());
-
-            Cell bottomRight = getCellFromTemplate(new Cell(anchor.getCol2(), anchor.getRow2()));
-            anchor.setCol2(bottomRight.getCol());
-            anchor.setRow2(bottomRight.getRow());
-
-            workingPatriarch.createPicture(anchor, orderedPicturesId.get(i++));
-        }
-    }
-
-    protected void updateCell(Cell cell) {
-        Area areaReference = getAreaByCoordinate(cell.getCol(), cell.getRow());
-        List<Area> dependent = areasDependency.get(areaReference);
-
-        if (dependent != null && !dependent.isEmpty()) {
-            Area destination = dependent.get(0);
-
-            int col = cell.getCol() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
-            int row = cell.getRow() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
-
-            cell.setCol(col);
-            cell.setRow(row);
-        }
-    }
-
-    protected Cell getCellFromTemplate(Cell cell) {
-        Cell newCell = new Cell(cell);
-        updateCell(newCell);
-        return newCell;
-    }
-
-    private void updateRefPtg(Area originalContainingArea, Area dependentContainingArea, RefPtg current) {
-        Area areaReference = getAreaByCoordinate(current.getColumn(), current.getRow());
-
-        if (areaReference == null) return;
-
-        Area destination;
-        if (areaReference.equals(originalContainingArea)) destination = dependentContainingArea;
-        else {
-            List<Area> dependent = areasDependency.get(areaReference);
-            if (dependent == null || dependent.isEmpty()) return;
-            destination = dependent.get(0);
-        }
-
-        int col = current.getColumn() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
-        int row = current.getRow() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
-
-        current.setColumn(col);
-        current.setRow(row);
-    }
-
-    private void updateAreaPtg(AreaPtg current) {
-        Area areaReference = getAreaByCoordinate(current.getFirstColumn(), current.getFirstRow());
-
-        List<Area> dependent = areasDependency.get(areaReference);
-
-        if (dependent == null || dependent.isEmpty()) return;
-
-        if (areaReference.getAlign() == AreaAlign.HORIZONTAL) {
-            int minRow = Integer.MAX_VALUE;
-            int maxRow = -1;
-            for (Area currentArea : dependent) {
-                int rowMin = currentArea.getTopLeft().getRow();
-                int rowMax = currentArea.getBottomRight().getRow();
-
-                if (rowMin < minRow) minRow = rowMin;
-                if (rowMax > maxRow) maxRow = rowMax;
-            }
-
-            current.setFirstRow(minRow);
-            current.setLastRow(maxRow);
-        } else {
-            int minCol = Integer.MAX_VALUE;
-            int maxCol = -1;
-            for (Area currentArea : dependent) {
-                int colMin = currentArea.getTopLeft().getCol();
-                int colMax = currentArea.getBottomRight().getCol();
-
-                if (colMin < minCol) minCol = colMax;
-                if (colMax > maxCol) maxCol = colMax;
-            }
-
-            current.setFirstColumn(minCol);
-            current.setLastColumn(maxCol);
-        }
-    }
-
-    private Area getAreaByCoordinate(int col, int row) {
-        for (Area areaReference : areasDependency.keySet()) {
-            if (areaReference.getTopLeft().getCol() > col) continue;
-            if (areaReference.getTopLeft().getRow() > row) continue;
-            if (areaReference.getBottomRight().getCol() < col) continue;
-            if (areaReference.getBottomRight().getRow() < row) continue;
-
-            return areaReference;
-        }
-
-        return null;
-    }
-
-    private void writeBand(Band childBand) {
-        String rangeName = childBand.getName();
-        HSSFSheet templateSheet = getTemplateSheetForRangeName(rangeName);
-
-        if (templateSheet != currentTemplateSheet) { //todo: reimplement. store rownum for each sheet.
-            currentTemplateSheet = templateSheet;
-            rownum = 0;
-        }
-
-        HSSFSheet resultSheet = templateToResultSheetsMapping.get(templateSheet);
-
-        if (Orientation.HORIZONTAL.equals(childBand.getOrientation())) {
-            rownum += rowsAddedByVerticalBand;
-            rowsAddedByVerticalBand = 0;
-            colnum = 0;
-            writeHorizontalBand(childBand, templateSheet, resultSheet);
-        } else {
-            rowsAddedByVerticalBand = writeVerticalBand(childBand, templateSheet, resultSheet);
+            resultWorkbook.addPicture(picture.getData(), picture.getFormat());
         }
     }
 
     /**
-     * Method writes horizontal band
-     * Note: Only one band for row is supported. Now we think that many bands for row aren't usable.
+     * copies template cell to result row into result column. Fills this cell with data from band
      *
-     * @param band          - band to write
-     * @param templateSheet - template sheet
-     * @param resultSheet   - result sheet
+     * @param templateCell - template cell
+     * @param resultRow    - result row
+     * @param resultColumn - result column
+     * @param band         - band
      */
-    private void writeHorizontalBand(Band band, HSSFSheet templateSheet, HSSFSheet resultSheet) {
-        String rangeName = band.getName();
-        AreaReference templateRange = getAreaForRange(templateWorkbook, rangeName);
-        CellReference[] crefs = templateRange.getAllReferencedCells();
-
-        CellReference topLeft, bottomRight;
-        AreaReference resultRange;
-
-        if (crefs != null) {
-            ArrayList<HSSFRow> resultRows = new ArrayList<HSSFRow>();
-
-            int currentRowNum = -1;
-            int currentRowCount = -1;
-            int currentColumnCount = 0;
-            int offset = 0;
-
-            topLeft = new CellReference(rownum, 0);
-            copyMergeRegions(resultSheet, rangeName, rownum, getCellFromReference(crefs[0], templateSheet).getColumnIndex());
-
-            for (CellReference cellRef : crefs) {
-                HSSFCell templateCell = getCellFromReference(cellRef, templateSheet);
-                HSSFRow resultRow;
-                if (templateCell.getRowIndex() != currentRowNum) { //create new row
-                    resultRow = resultSheet.createRow(rownum++);
-                    resultRow.setHeight(templateCell.getRow().getHeight());
-                    resultRows.add(resultRow);
-
-                    currentRowNum = templateCell.getRowIndex();
-                    currentRowCount++;
-                    currentColumnCount = 0;
-                    offset = templateCell.getColumnIndex();
-                } else {                                          // or write cell to current row
-                    resultRow = resultRows.get(currentRowCount);
-                    currentColumnCount++;
-                }
-
-                copyCellFromTemplate(resultRow, offset + currentColumnCount, templateCell, band);
-            }
-
-            bottomRight = new CellReference(rownum - 1, offset + currentColumnCount);
-            resultRange = new AreaReference(topLeft, bottomRight);
-
-            addDependency(new Area(band.getName(), AreaAlign.HORIZONTAL, templateRange),
-                    new Area(band.getName(), AreaAlign.HORIZONTAL, resultRange));
-        }
-        for (Band child : band.getChildren()) {
-            writeBand(child);
-        }
-    }
-
-    private void addDependency(Area main, Area dependent) {
-        List<Area> set = areasDependency.get(main);
-
-        if (set == null) {
-            set = new ArrayList<Area>();
-            areasDependency.put(main, set);
-        }
-
-        set.add(dependent);
-    }
-
-    /**
-     * Method writes vertical band
-     * Note: no child support for vertical band ;)
-     *
-     * @param band          - band to write
-     * @param templateSheet - template sheet
-     * @param resultSheet   - result sheet
-     * @return number of inserted rows
-     */
-    private int writeVerticalBand(Band band, HSSFSheet templateSheet, HSSFSheet resultSheet) {
-        String rangeName = band.getName();
-        CellReference[] crefs = getRangeContent(rangeName);
-
-        if (crefs != null) {
-            colnum = colnum == 0 ? getCellFromReference(crefs[0], templateSheet).getColumnIndex() : colnum;
-            copyMergeRegions(resultSheet, rangeName, rownum, colnum);
-            for (int i = 0; i < crefs.length; i++) {
-                if (!rowExists(resultSheet, rownum + i)) {
-                    resultSheet.createRow(rownum + i);
-                }
-            }
-
-            for (int i = 0; i < crefs.length; i++) {
-                HSSFCell templateCell = getCellFromReference(crefs[i], templateSheet);
-                copyCellFromTemplate(resultSheet.getRow(rownum + i), colnum, templateCell, band);
-            }
-
-            colnum++;
-            return crefs.length;
-        }
-        return 0;
-    }
-
-    private void copyCellFromTemplate(HSSFRow resultRow, int resultColumn, HSSFCell templateCell, Band band) {
+    private void copyCellFromTemplate(HSSFCell templateCell, HSSFRow resultRow, int resultColumn, Band band) {
         if (templateCell == null) return;
 
         HSSFCell resultCell = resultRow.createCell(resultColumn);
@@ -482,104 +352,6 @@ public class XLSFormatter extends AbstractFormatter {
             resultCell.setCellFormula(inlineBandDataToCellString(templateCell, band));
         else
             resultCell.setCellValue(new HSSFRichTextString(inlineBandDataToCellString(templateCell, band)));
-    }
-
-    protected boolean isOneValueCell(HSSFCell cell) {
-        boolean result = true;
-        if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-            String value = cell.getRichStringCellValue().getString();
-
-            if (value.lastIndexOf("${") != 0)
-                result = false;
-            else
-                result = value.indexOf("}") == value.length() - 1;
-        }
-        return result;
-    }
-
-    private void updateValueCell(Band band, HSSFCell templateCell, HSSFCell resultCell) {
-        String parameterName = templateCell.toString();
-        parameterName = unwrapParameterName(parameterName);
-
-        if (StringUtils.isEmpty(parameterName)) return;
-
-        if (!band.getData().containsKey(parameterName)) {
-            resultCell.setCellValue(templateCell.getRichStringCellValue());
-            return;
-        }
-
-        Object parameterValue = band.getData().get(parameterName);
-
-        if (parameterValue == null)
-            resultCell.setCellType(HSSFCell.CELL_TYPE_BLANK);
-        else if (parameterValue instanceof Number)
-            resultCell.setCellValue(((Number) parameterValue).doubleValue());
-        else if (parameterValue instanceof Boolean)
-            resultCell.setCellValue((Boolean) parameterValue);
-        else if (parameterValue instanceof Date)
-            resultCell.setCellValue((Date) parameterValue);
-        else resultCell.setCellValue(new HSSFRichTextString(parameterValue.toString()));
-    }
-
-    /**
-     * Inlines band data to cell.
-     * No formatting supported now.
-     *
-     * @param cell - cell to inline data
-     * @param band - data source
-     * @return string with inlined band data
-     */
-    private String inlineBandDataToCellString(HSSFCell cell, Band band) {
-        String resultStr = "";
-        if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-            HSSFRichTextString richString = cell.getRichStringCellValue();
-            if (richString != null) resultStr = richString.getString();
-        } else {
-            if (cell.toString() != null) resultStr = cell.toString();
-        }
-
-        if (!"".equals(resultStr)) return insertBandDataToString(band, resultStr);
-
-        return "";
-    }
-
-    //--------------------------Excel methods-------------------------------------//
-
-    private boolean rowExists(HSSFSheet sheet, int rowNumber) {
-        return sheet.getRow(rowNumber) != null;
-    }
-
-    private HSSFCell getCellFromReference(CellReference cref, HSSFSheet templateSheet) {
-        return getCellFromReference(templateSheet, cref.getCol(), cref.getRow());
-    }
-
-    private HSSFCell getCellFromReference(HSSFSheet templateSheet, int colIndex, int rowIndex) {
-        HSSFRow row = templateSheet.getRow(rowIndex);
-        row = row == null ? templateSheet.createRow(rowIndex) : row;
-        HSSFCell cell = row.getCell(colIndex);
-        cell = cell == null ? row.createCell(colIndex) : cell;
-        return cell;
-    }
-
-    private CellReference[] getRangeContent(String rangeName) {
-        return getAreaForRange(templateWorkbook, rangeName).getAllReferencedCells();
-    }
-
-    private AreaReference getAreaForRange(HSSFWorkbook workbook, String rangeName) {
-        int rangeNameIdx = workbook.getNameIndex(rangeName);
-        if (rangeNameIdx == -1) return null;
-
-        HSSFName aNamedRange = workbook.getNameAt(rangeNameIdx);
-        return new AreaReference(aNamedRange.getReference());
-    }
-
-    private HSSFSheet getTemplateSheetForRangeName(String rangeName) {
-        int rangeNameIdx = templateWorkbook.getNameIndex(rangeName);
-        if (rangeNameIdx == -1) return null;
-
-        HSSFName aNamedRange = templateWorkbook.getNameAt(rangeNameIdx);
-        String sheetName = aNamedRange.getSheetName();
-        return templateWorkbook.getSheet(sheetName);
     }
 
     /**
@@ -620,46 +392,59 @@ public class XLSFormatter extends AbstractFormatter {
                 }
     }
 
-
-    public List<HSSFClientAnchor> getAllAnchors(HSSFSheet sheet) {
-        List<HSSFClientAnchor> pictures = new ArrayList<HSSFClientAnchor>();
-        EscherAggregate escherAggregate = getEscherAggregate(sheet);
-        if (escherAggregate == null) return Collections.emptyList();
-        List<EscherRecord> escherRecords = escherAggregate.getEscherRecords();
-        searchForAnchors(escherRecords, pictures);
-        return pictures;
+    /**
+     * This method adds range bounds to cache. Key is bandName
+     *
+     * @param band  - band
+     * @param crefs - range
+     */
+    private void addRangeBounds(Band band, CellReference[] crefs) {
+        if (templateBounds.containsKey(band.getName()))
+            return;
+        Bounds bounds = new Bounds(crefs[0].getRow(), crefs[0].getCol(), crefs[crefs.length - 1].getRow(), crefs[crefs.length - 1].getCol());
+        templateBounds.put(band.getName(), bounds);
     }
 
-    private void searchForAnchors(List escherRecords, List<HSSFClientAnchor> pictures) {
-        Iterator recordIter = escherRecords.iterator();
-        HSSFClientAnchor anchor = null;
-        while (recordIter.hasNext()) {
-            Object obj = recordIter.next();
-            if (obj instanceof EscherRecord) {
-                EscherRecord escherRecord = (EscherRecord) obj;
-                if (escherRecord instanceof EscherClientAnchorRecord) {
-                    EscherClientAnchorRecord anchorRecord = (EscherClientAnchorRecord) escherRecord;
-                    if (anchor == null) anchor = new HSSFClientAnchor();
-                    anchor.setDx1(anchorRecord.getDx1());
-                    anchor.setDx2(anchorRecord.getDx2());
-                    anchor.setDy1(anchorRecord.getDy1());
-                    anchor.setDy2(anchorRecord.getDy2());
-                    anchor.setRow1(anchorRecord.getRow1());
-                    anchor.setRow2(anchorRecord.getRow2());
-                    anchor.setCol1(anchorRecord.getCol1());
-                    anchor.setCol2(anchorRecord.getCol2());
-                }
-                // Recursive call.
-                searchForAnchors(escherRecord.getChildRecords(), pictures);
+    private void updateBandFormula(Area original, Area dependent) {
+        HSSFSheet templateSheet = getTemplateSheetForRangeName(templateWorkbook, original.getName());
+        HSSFSheet resultSheet = templateToResultSheetsMapping.get(templateSheet);
+
+        AreaReference area = dependent.toAreaReference();
+        for (CellReference cell : area.getAllReferencedCells()) {
+            HSSFCell resultCell = getCellFromReference(cell, resultSheet);
+
+            if (resultCell.getCellType() != HSSFCell.CELL_TYPE_FORMULA) continue;
+
+            Ptg[] ptgs = HSSFFormulaParser.parse(resultCell.getCellFormula(), templateWorkbook);
+
+            for (Ptg ptg : ptgs) {
+                if (ptg instanceof AreaPtg)
+                    areaDependencyHelper.updateAreaPtg((AreaPtg) ptg);
+                else if (ptg instanceof RefPtg)
+                    areaDependencyHelper.updateRefPtg(original, dependent, (RefPtg) ptg);
             }
+
+            String calculatedFormula = HSSFFormulaParser.toFormulaString(templateWorkbook, ptgs);
+            resultCell.setCellFormula(calculatedFormula);
         }
-        if (anchor != null)
-            pictures.add(anchor);
     }
 
+    /**
+     * Copies all pictures from template workbook to result workbook
+     */
+    private void copyAllPictures() {
+        List<HSSFPictureData> pictures = templateWorkbook.getAllPictures();
+        for (HSSFPictureData picture : pictures) {
+            orderedPicturesId.add(resultWorkbook.addPicture(picture.getData(), picture.getFormat()));
+        }
+    }
 
-    private Map<String, EscherAggregate> sheetToEscherAggregate = new HashMap<String, EscherAggregate>();
-
+    /**
+     * Returns EscherAggregate from sheet
+     *
+     * @param sheet - HSSFSheet
+     * @return - EscherAggregate from sheet
+     */
     private EscherAggregate getEscherAggregate(HSSFSheet sheet) {
         EscherAggregate agg = sheetToEscherAggregate.get(sheet.getSheetName());
         if (agg == null) {
@@ -667,5 +452,165 @@ public class XLSFormatter extends AbstractFormatter {
             sheetToEscherAggregate.put(sheet.getSheetName(), agg);
         }
         return agg;
+    }
+
+    /**
+     * Copies all pictures from template sheet to result sheet
+     *
+     * @param templateSheet - template sheet
+     * @param resultSheet   - result sheet
+     */
+    private void copyPicturesOnSheet(HSSFSheet templateSheet, HSSFSheet resultSheet) {
+        List<HSSFClientAnchor> list = getAllAnchors(getEscherAggregate(templateSheet));
+        HSSFPatriarch workingPatriarch = resultSheet.createDrawingPatriarch();
+
+        int i = 0;
+        for (HSSFClientAnchor anchor : list) {
+            Cell topLeft = areaDependencyHelper.getCellFromTemplate(new Cell(anchor.getCol1(), anchor.getRow1()));
+            anchor.setCol1(topLeft.getCol());
+            anchor.setRow1(topLeft.getRow());
+
+            Cell bottomRight = areaDependencyHelper.getCellFromTemplate(new Cell(anchor.getCol2(), anchor.getRow2()));
+            anchor.setCol2(bottomRight.getCol());
+            anchor.setRow2(bottomRight.getRow());
+
+            workingPatriarch.createPicture(anchor, orderedPicturesId.get(i++));
+        }
+    }
+
+    private boolean rowExists(HSSFSheet sheet, int rowNumber) {
+        return sheet.getRow(rowNumber) != null;
+    }
+
+    /* In this class colected all methods which works with area's dependencies */
+    private class AreaDependencyHelper {
+        void updateCell(Cell cell) {
+            Area areaReference = areaDependencyHelper.getAreaByCoordinate(cell.getCol(), cell.getRow());
+            List<Area> dependent = areasDependency.get(areaReference);
+
+            if (dependent != null && !dependent.isEmpty()) {
+                Area destination = dependent.get(0);
+
+                int col = cell.getCol() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
+                int row = cell.getRow() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
+
+                cell.setCol(col);
+                cell.setRow(row);
+            }
+        }
+
+        Cell getCellFromTemplate(Cell cell) {
+            Cell newCell = new Cell(cell);
+            updateCell(newCell);
+            return newCell;
+        }
+
+
+        /**
+         * Adds area dependency for formula calculations
+         *
+         * @param main      -
+         * @param dependent -
+         */
+        private void addDependency(Area main, Area dependent) {
+            List<Area> set = areasDependency.get(main);
+
+            if (set == null) {
+                set = new ArrayList<Area>();
+                areasDependency.put(main, set);
+            }
+            set.add(dependent);
+        }
+
+        void updateRefPtg(Area originalContainingArea, Area dependentContainingArea, RefPtg current) {
+            Area areaReference = getAreaByCoordinate(current.getColumn(), current.getRow());
+
+            if (areaReference == null) return;
+
+            Area destination;
+            if (areaReference.equals(originalContainingArea)) destination = dependentContainingArea;
+            else {
+                List<Area> dependent = areasDependency.get(areaReference);
+                if (dependent == null || dependent.isEmpty()) return;
+                destination = dependent.get(0);
+            }
+
+            int col = current.getColumn() - areaReference.getTopLeft().getCol() + destination.getTopLeft().getCol();
+            int row = current.getRow() - areaReference.getTopLeft().getRow() + destination.getTopLeft().getRow();
+
+            current.setColumn(col);
+            current.setRow(row);
+        }
+
+        void updateAreaPtg(AreaPtg current) {
+            Area areaReference = getAreaByCoordinate(current.getFirstColumn(), current.getFirstRow());
+
+            List<Area> dependent = areasDependency.get(areaReference);
+
+            if (dependent == null || dependent.isEmpty()) return;
+
+            if (areaReference.getAlign() == AreaAlign.HORIZONTAL) {
+                int minRow = Integer.MAX_VALUE;
+                int maxRow = -1;
+                for (Area currentArea : dependent) {
+                    int rowMin = currentArea.getTopLeft().getRow();
+                    int rowMax = currentArea.getBottomRight().getRow();
+
+                    if (rowMin < minRow) minRow = rowMin;
+                    if (rowMax > maxRow) maxRow = rowMax;
+                }
+
+                current.setFirstRow(minRow);
+                current.setLastRow(maxRow);
+            } else {
+                int minCol = Integer.MAX_VALUE;
+                int maxCol = -1;
+                for (Area currentArea : dependent) {
+                    int colMin = currentArea.getTopLeft().getCol();
+                    int colMax = currentArea.getBottomRight().getCol();
+
+                    if (colMin < minCol) minCol = colMax;
+                    if (colMax > maxCol) maxCol = colMax;
+                }
+
+                current.setFirstColumn(minCol);
+                current.setLastColumn(maxCol);
+            }
+        }
+
+        Area getAreaByCoordinate(int col, int row) {
+            for (Area areaReference : areasDependency.keySet()) {
+                if (areaReference.getTopLeft().getCol() > col) continue;
+                if (areaReference.getTopLeft().getRow() > row) continue;
+                if (areaReference.getBottomRight().getCol() < col) continue;
+                if (areaReference.getBottomRight().getRow() < row) continue;
+
+                return areaReference;
+            }
+
+            return null;
+        }
+    }
+
+    private static class Bounds {
+        public final int row0;
+        public final int column0;
+        public final int row1;
+        public final int column1;
+
+        private Bounds(int row0, int column0, int row1, int column1) {
+            this.row0 = row0;
+            this.column0 = column0;
+            this.row1 = row1;
+            this.column1 = column1;
+        }
+
+        public int verticalOffset(Bounds bounds) {
+            if (bounds.row1 <= row0) {
+                return row1 - row0;
+            } else {
+                return row1 - bounds.row1;
+            }
+        }
     }
 }

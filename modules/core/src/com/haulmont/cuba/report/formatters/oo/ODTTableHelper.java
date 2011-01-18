@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.report.formatters.tools;
+package com.haulmont.cuba.report.formatters.oo;
 
-import static com.haulmont.cuba.report.formatters.tools.ODTHelper.copy;
-import static com.haulmont.cuba.report.formatters.tools.ODTHelper.paste;
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
+import static com.haulmont.cuba.report.formatters.oo.ODTHelper.copy;
+import static com.haulmont.cuba.report.formatters.oo.ODTHelper.paste;
+import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.*;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameAccess;
 import com.sun.star.frame.XController;

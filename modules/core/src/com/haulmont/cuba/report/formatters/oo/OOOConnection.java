@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.report.formatters.tools;
+package com.haulmont.cuba.report.formatters.oo;
 
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
@@ -17,7 +17,7 @@ import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
 
-import static com.haulmont.cuba.report.formatters.tools.ODTUnoConverter.*;
+import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.*;
 
 public class OOOConnection {
     private XComponentContext xComponentContext;

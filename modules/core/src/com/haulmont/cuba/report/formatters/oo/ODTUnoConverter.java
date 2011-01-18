@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.report.formatters.tools;
+package com.haulmont.cuba.report.formatters.oo;
 
 import com.sun.star.container.XEnumerationAccess;
 import com.sun.star.frame.*;

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.report.formatters.tools;
+package com.haulmont.cuba.report.formatters.oo;
 
 import com.sun.star.io.BufferSizeExceededException;
 import com.sun.star.io.NotConnectedException;
