@@ -46,6 +46,8 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
     protected boolean refreshOnResumeRequired;
 
+    protected boolean disableLoad;
+
     public LazyCollectionDatasource(
             DsContext dsContext, com.haulmont.cuba.gui.data.DataService dataservice,
                 String id, MetaClass metaClass, String viewName)
@@ -321,6 +323,9 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     protected void loadNextChunk(boolean all) {
+        if (disableLoad)
+            return;
+
         StopWatch sw = new Log4JStopWatch("LCDS " + id);
 
         getSize(); // ensure size is loaded
@@ -437,5 +442,15 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             refresh();
         }
         refreshOnResumeRequired = false;
+    }
+
+    @Override
+    protected void forceCollectionChanged(CollectionDatasourceListener.Operation operation) {
+        disableLoad = true;
+        try {
+            super.forceCollectionChanged(operation);
+        } finally {
+            disableLoad = false;
+        }
     }
 }
