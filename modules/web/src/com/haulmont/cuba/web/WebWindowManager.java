@@ -226,7 +226,7 @@ public class WebWindowManager extends WindowManager {
         window.setDescription(description);
 
         if (window.getFrame() != null && !(window.getFrame() instanceof Window.Lookup)) {
-            addTabHistory(window, caption);
+            addTabHistory(window, caption, type);
         }
 
         switch (type) {
@@ -726,10 +726,11 @@ public class WebWindowManager extends WindowManager {
         return new WebComponentsFactory();
     }
 
-    protected void addTabHistory(Window window, String caption){
+    protected void addTabHistory(Window window, String caption, OpenType openType){
         String windowId = window.getFrame().getId();
         if ("sec$TabHistory.browse".equals(windowId)
-                || windowId.startsWith("jmxcontrol") && !windowId.equals("jmxcontrol$DisplayMbeans")) return;
+                || windowId.startsWith("jmxcontrol") && !windowId.equals("jmxcontrol$DisplayMbeans")
+                || OpenType.DIALOG.equals(openType)) return;
         TabHistory tabHistory = EntityFactory.create(TabHistory.class);
         tabHistory.setCaption(caption);
         tabHistory.setCreator(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
