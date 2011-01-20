@@ -25,6 +25,8 @@ import java.util.Map;
 
 public class SettingsWindow extends AbstractWindow {
 
+    private boolean changeThemeEnabled = true;
+
     public SettingsWindow(IFrame frame) {
         super(frame);
     }
@@ -37,6 +39,10 @@ public class SettingsWindow extends AbstractWindow {
     }
 
     protected void init(Map<String, Object> params) {
+        Boolean changeThemeEnabledParam = (Boolean) params.get("changeThemeEnabled");
+        if (changeThemeEnabledParam != null) {
+            changeThemeEnabled = changeThemeEnabledParam;
+        }
         AppWindow.Mode mode = UserSettingHelper.loadAppWindowMode();
         final String msgTabbed = getMessage("modeTabbed");
         final String msgSingle = getMessage("modeSingle");
@@ -57,6 +63,7 @@ public class SettingsWindow extends AbstractWindow {
         } else {
             theme.setValue(themePeyto);
         }
+        theme.setEditable(changeThemeEnabled);
 
         Button changePasswBtn = getComponent("changePassw");
         final User user = UserSessionClient.getUserSession().getUser();
@@ -76,7 +83,9 @@ public class SettingsWindow extends AbstractWindow {
         okBtn.setAction(
                 new AbstractAction("ok") {
                     public void actionPerform(Component component) {
-                        UserSettingHelper.saveAppWindowTheme(theme.<String>getValue());
+                        if (changeThemeEnabled) {
+                            UserSettingHelper.saveAppWindowTheme(theme.<String>getValue());
+                        }
                         AppWindow.Mode m = modeOptions.getValue() == msgTabbed ? AppWindow.Mode.TABBED : AppWindow.Mode.SINGLE;
                         UserSettingHelper.saveAppWindowMode(m);
                         showNotification(getMessage("modeChangeNotification"), IFrame.NotificationType.HUMANIZED);
