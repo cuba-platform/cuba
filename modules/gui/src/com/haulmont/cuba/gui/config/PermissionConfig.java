@@ -13,10 +13,7 @@ package com.haulmont.cuba.gui.config;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaModel;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.MethodsCache;
 import com.haulmont.cuba.core.app.ResourceRepositoryService;
@@ -159,10 +156,17 @@ public class PermissionConfig {
         entities = new Tree<Target>(root);
 
         Session session = MetadataProvider.getSession();
-        for (MetaModel model : session.getModels()) {
+        List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
+        Collections.sort(modelList, new MetadataObjectAlphabetComparator());
+
+        for (MetaModel model: modelList) {
             Node<Target> modelNode = new Node<Target>(new Target("model:" + model.getName(), model.getName(), null));
             root.addChild(modelNode);
-            for (MetaClass metaClass : model.getClasses()) {
+
+            List<MetaClass> classList = new ArrayList<MetaClass>(model.getClasses());
+            Collections.sort(classList, new MetadataObjectAlphabetComparator());
+
+            for (MetaClass metaClass: classList) {
                 String name = metaClass.getName();
                 if (name.contains("$")) {
                     Node<Target> node = new Node<Target>(new Target("entity:" + name, name, name));
@@ -275,8 +279,11 @@ public class PermissionConfig {
 
         final String value = entityTarget.getValue();
 
+        List<MetaProperty> propertyList = new ArrayList<MetaProperty>(metaClass.getProperties());
+        Collections.sort(propertyList, new MetadataObjectAlphabetComparator());
+
         List<Target> result = new ArrayList<Target>();
-        for (MetaProperty metaProperty : metaClass.getProperties()) {
+        for (MetaProperty metaProperty : propertyList) {
             result.add(new Target(id + ":" + metaProperty.getName(), metaProperty.getName(), value + ":" + metaProperty.getName()));
         }
 
@@ -288,5 +295,14 @@ public class PermissionConfig {
      */
     public Tree<Target> getSpecific() {
         return specific;
+    }
+
+    private class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {
+        public int compare(MetadataObject o1, MetadataObject o2) {
+            String n1 = o1 != null ? o1.getName() : null;
+            String n2 = o2 != null ? o2.getName() : null;
+
+            return n1 != null ? n1.compareTo(n2) : -1;
+        }
     }
 }
