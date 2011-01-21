@@ -641,6 +641,6 @@ create table SEC_TAB_HISTORY (
 	CAPTION varchar(255),
 	URL varchar(4000),
 	primary key (ID)
-);
+)^
 
-alter table SEC_TAB_HISTORY add constraint FK_SEC_HISTORY_USER foreign key (CREATOR_ID) references SEC_USER (ID);
+alter table SEC_TAB_HISTORY add constraint FK_SEC_HISTORY_USER foreign key (CREATOR_ID) references SEC_USER (ID)^
