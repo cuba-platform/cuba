@@ -318,9 +318,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                         final ItemWrapper dsWrapper = createDatasourceWrapper(fieldConf.getDatasource(),
                                 Collections.<MetaPropertyPath>singleton(propertyPath), dsManager);
 
-                        field = fieldFactory.createField(dsWrapper, fieldConf.getId(), component);
+                        field = fieldFactory.createField(dsWrapper, propertyPath, component);
 
-                        if (field != null && dsWrapper.getItemProperty(fieldConf.getId()) != null) {
+                        if (field != null && dsWrapper.getItemProperty(propertyPath) != null) {
                             field.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
                             component.addField(fieldConf.getId(), field);
                         }
