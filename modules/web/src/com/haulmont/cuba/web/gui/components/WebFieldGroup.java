@@ -17,12 +17,16 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -218,6 +222,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     f.setWidth(field.getWidth());
                 }
 
+                applyPermissions(c);
+
                 return f;
             }
         });
@@ -294,6 +300,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 com.vaadin.ui.Field field;
 
                 final String clickAction = fieldConf.getXmlDescriptor().attributeValue("clickAction");
+                Datasource fieldDs;
                 if (datasource != null && fieldConf.getDatasource() == null) {
                     if (!StringUtils.isEmpty(clickAction)) {
                         field = createField(datasource, fieldConf);
@@ -301,6 +308,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     } else {
                         field = component.getField(id);
                     }
+                    fieldDs = datasource;
                 } else if (fieldConf.getDatasource() != null) {
                     if (!StringUtils.isEmpty(clickAction)) {
                         field = createField(fieldConf.getDatasource(), fieldConf);
@@ -317,6 +325,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                             component.addField(fieldConf.getId(), field);
                         }
                     }
+                    fieldDs = fieldConf.getDatasource();
                 } else {
                     throw new IllegalStateException(String.format("Unable to get datasource for field '%s'", id));
                 }
@@ -324,8 +333,41 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 if (field != null && fieldConf.getCaption() != null) {
                     field.setCaption(fieldConf.getCaption());
                 }
+
+                applyPermissions(fieldConf, fieldDs);
             }
         }
+    }
+
+    private void applyPermissions(Component c) {
+        if (c instanceof DatasourceComponent) {
+            DatasourceComponent dsComponent = (DatasourceComponent) c;
+            MetaProperty metaProperty = dsComponent.getMetaProperty();
+
+            if (metaProperty != null) {
+                boolean editable = isEditPermitted(metaProperty);
+                dsComponent.setEditable(dsComponent.isEditable() && editable);
+            }
+        }
+    }
+
+    private void applyPermissions(Field fieldConf, Datasource datasource) {
+        MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(fieldConf.getId());
+        if (propertyPath != null) {
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
+
+            boolean editable = isEditPermitted(metaProperty);
+            editable = editable && isEditable(fieldConf);
+            setEditable(fieldConf, editable);
+        }
+    }
+
+    private boolean isEditPermitted(MetaProperty metaProperty) {
+        MetaClass metaClass = metaProperty.getDomain();
+        UserSession userSession = UserSessionClient.getUserSession();
+        return (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
+                && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
     }
 
     private int rowsCount() {
