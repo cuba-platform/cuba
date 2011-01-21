@@ -132,7 +132,10 @@ public abstract class VOptionGroupBase extends Composite implements Paintable, F
         this.client = client;
         id = uidl.getId();
 
-        if (client.updateComponent(this, uidl, true)) {
+        boolean manageCaption = !uidl.hasAttribute("manageCaption")
+                || uidl.getBooleanAttribute("manageCaption");
+
+        if (client.updateComponent(this, uidl, manageCaption)) {
             return;
         }
 

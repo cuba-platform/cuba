@@ -30,8 +30,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
 
     boolean isRequired(Field field);
     void setRequired(Field field, boolean required, String message);
+    boolean isRequired(String fieldId);
+    void setRequired(String fieldId, boolean required, String message);
 
     void addValidator(Field field, com.haulmont.cuba.gui.components.Field.Validator validator);
+    void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator);
 
     boolean isCollapsable();
     void setCollapsable(boolean collapsable);
@@ -41,15 +44,23 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
 
     boolean isEditable(Field field);
     void setEditable(Field field, boolean editable);
+    boolean isEditable(String fieldId);
+    void setEditable(String fieldId, boolean editable);
 
     boolean isEnabled(Field field);
     void setEnabled(Field field, boolean enabled);
+    boolean isEnabled(String fieldId);
+    void setEnabled(String fieldId, boolean enabled);
 
     boolean isVisible(Field field);
     void setVisible(Field field, boolean visible);
+    boolean isVisible(String fieldId);
+    void setVisible(String fieldId, boolean visible);
 
     Object getFieldValue(Field field);
     void setFieldValue(Field field, Object value);
+    Object getFieldValue(String fieldId);
+    void setFieldValue(String fieldId, Object value);
 
     void setCaptionAlignment(FieldCaptionAlignment captionAlignment);
 

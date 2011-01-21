@@ -19,7 +19,6 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -35,7 +34,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
@@ -372,6 +371,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        addValidator(field, validator);
+    }
+
     public boolean isExpanded() {
         return component.isExpanded();
     }
@@ -427,6 +433,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    public boolean isRequired(String fieldId) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        return isRequired(field);
+    }
+
+    public void setRequired(String fieldId, boolean required, String message) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        setRequired(field, required, message);
+    }
+
     public boolean isEditable(Field field) {
         return !readOnlyFields.contains(field);
     }
@@ -441,6 +461,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    public void setEditable(String fieldId, boolean editable) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        setEditable(field, editable);
+    }
+
+    public boolean isEditable(String fieldId) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        return isEditable(field);
+    }
+
     public boolean isEnabled(Field field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isEnabled();
@@ -449,6 +483,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     public void setEnabled(Field field, boolean enabled) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setEnabled(enabled);
+    }
+
+    public boolean isEnabled(String fieldId) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        return isEnabled(field);
+    }
+
+    public void setEnabled(String fieldId, boolean enabled) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        setEnabled(field, enabled);
     }
 
     public boolean isVisible(Field field) {
@@ -461,6 +509,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         f.setVisible(visible);
     }
 
+    public boolean isVisible(String fieldId) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        return isVisible(field);
+    }
+
+    public void setVisible(String fieldId, boolean visible) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        setVisible(field, visible);
+    }
+
     public Object getFieldValue(Field field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.getValue();
@@ -469,6 +531,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     public void setFieldValue(Field field, Object value) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setValue(value);
+    }
+
+    public Object getFieldValue(String fieldId) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        return getFieldValue(field);
+    }
+
+    public void setFieldValue(String fieldId, Object value) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        setFieldValue(field, value);
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {

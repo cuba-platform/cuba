@@ -261,6 +261,12 @@ public class WebWindow
         return App.getInstance().getWindowManager().<T>openFrame(wrapper, parent, windowInfo);
     }
 
+    public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+        return App.getInstance().getWindowManager().<T>openFrame(wrapper, parent, windowInfo, params);
+    }
+
     public void showMessageDialog(String title, String message, MessageType messageType) {
         App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
     }

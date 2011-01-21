@@ -153,10 +153,9 @@ public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLa
     <T extends Window> T openLookup(
             String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType);
 
-    <T extends IFrame> T openFrame(
-            Component parent,
-            String windowAlias
-    );
+    <T extends IFrame> T openFrame(Component parent, String windowAlias);
+
+    <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

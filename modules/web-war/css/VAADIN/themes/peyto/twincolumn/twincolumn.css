@@ -1,5 +1,6 @@
 .twincolumn {
     white-space: nowrap;
+    overflow: hidden;
 }
 
 .twincolumn-listBox {

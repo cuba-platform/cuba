@@ -211,6 +211,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
         return frame.<T>openFrame(parent, windowAlias);
     }
 
+    public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+        return frame.<T>openFrame(parent, windowAlias, params);
+    }
+
     public void showMessageDialog(String title, String message, MessageType messageType) {
         frame.showMessageDialog(title, message, messageType);
     }

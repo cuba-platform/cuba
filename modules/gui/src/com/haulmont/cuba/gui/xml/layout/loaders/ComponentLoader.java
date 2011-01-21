@@ -160,7 +160,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
 
         if (!StringUtils.isEmpty(enable) && isBoolean(enable)) {
-            component.setEnabled(Boolean.valueOf(enable));
+            component.setEnabled(evaluateBoolean(enable));
         }
     }
 

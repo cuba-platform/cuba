@@ -96,6 +96,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     loadValidators(component, field);
                     loadRequired(component, field);
                     loadEditable(component, field);
+                    loadEnabled(component, field);
                 }
             }
         });
@@ -238,6 +239,14 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         final String editable = element.attributeValue("editable");
         if (!StringUtils.isEmpty(editable)) {
             component.setEditable(field, BooleanUtils.toBoolean(editable));
+        }
+    }
+
+    protected void loadEnabled(FieldGroup component, FieldGroup.Field field) {
+        Element element = field.getXmlDescriptor();
+        final String enabled = element.attributeValue("enabled");
+        if (!StringUtils.isEmpty(enabled)) {
+            component.setEnabled(field, BooleanUtils.toBoolean(enabled));
         }
     }
 

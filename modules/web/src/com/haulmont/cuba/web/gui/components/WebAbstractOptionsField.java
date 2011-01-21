@@ -50,7 +50,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         setMultiSelect(metaProperty.getRange().getCardinality().isMany());
 
         final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
-        final ItemWrapper wrapper = new ItemWrapper(datasource, Collections.singleton(propertyPath), dsManager);
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath), dsManager);
         final Property itemProperty = wrapper.getItemProperty(propertyPath);
 
         component.setPropertyDataSource(itemProperty);

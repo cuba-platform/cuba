@@ -10,17 +10,20 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TwinColumn;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.gui.data.DsManager;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.Resource;
 import com.vaadin.ui.AbstractSelect;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class WebTwinColumn
         extends
@@ -69,6 +72,53 @@ public class WebTwinColumn
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
         component.setMultiSelect(true);
+    }
+
+    @Override
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
+        return new ItemWrapper(datasource, propertyPaths, dsManager) {
+            private static final long serialVersionUID = 5362825971897808953L;
+
+            @Override
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+                return new CollectionPropertyWrapper(item, propertyPath, dsManager);
+            }
+        };
+    }
+
+    public class CollectionPropertyWrapper extends PropertyWrapper {
+        private static final long serialVersionUID = -7658086655306380094L;
+
+        public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+            super(item, propertyPath, dsManager);
+        }
+
+        @Override
+        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+            Class propertyType = propertyPath.getMetaProperty().getJavaType();
+            if (Set.class.isAssignableFrom(propertyType)) {
+                if (newValue == null) {
+                    newValue = new HashSet();
+                } else {
+                    if (newValue instanceof Collection) {
+                        newValue = new HashSet((Collection) newValue);
+                    } else {
+                        newValue = Collections.singleton(newValue);
+                    }
+                }
+            } else if (List.class.isAssignableFrom(propertyType)) {
+                if (newValue == null) {
+                    newValue = new ArrayList();
+                } else {
+                    if (newValue instanceof Collection) {
+                        newValue = new ArrayList((Collection) newValue);
+                    } else {
+                        newValue = Collections.singletonList(newValue);
+                    }
+                }
+            }
+            super.setValue(newValue);
+        }
     }
 
     @Override

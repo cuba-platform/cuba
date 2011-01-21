@@ -441,12 +441,17 @@ public abstract class WindowManager implements Serializable {
             Component parent,
             WindowInfo windowInfo
     ) {
+        return (T) openFrame(window, parent, windowInfo, Collections.<String, Object>emptyMap());
+    }
+
+    public <T extends IFrame> T openFrame(
+            Window window,
+            Component parent,
+            WindowInfo windowInfo,
+            Map<String, Object> params
+    ) {
         //Parameters can be useful later
-        final Map<String, Object> params =
-                createParametersMap(
-                        windowInfo,
-                        Collections.<String,Object>emptyMap()
-                );
+        params = createParametersMap(windowInfo, params);
 
         String src = windowInfo.getTemplate();
 

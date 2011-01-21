@@ -27,6 +27,8 @@ public class TwinColumnSelect extends TwinColSelect {
 
     private boolean nativeSelect;
 
+    private boolean layoutCaption = true;
+
     @Override
     protected int paintOptions(PaintTarget target, String[] selectedKeys, int keyIndex, Object id, String key, String caption, Resource icon) throws PaintException {
         target.startTag("so");
@@ -54,6 +56,12 @@ public class TwinColumnSelect extends TwinColSelect {
     }
 
     @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        super.paintContent(target);
+        target.addAttribute("manageCaption", isLayoutCaption());
+    }
+
+    @Override
     protected String getComponentType() {
         return nativeSelect ? "nativetwincolumn" : "twincoluumn";
     }
@@ -73,6 +81,15 @@ public class TwinColumnSelect extends TwinColSelect {
 
     public void setNativeSelect(boolean nativeSelect) {
         this.nativeSelect = nativeSelect;
+        requestRepaint();
+    }
+
+    public boolean isLayoutCaption() {
+        return layoutCaption;
+    }
+
+    public void setLayoutCaption(boolean layoutCaption) {
+        this.layoutCaption = layoutCaption;
         requestRepaint();
     }
 
