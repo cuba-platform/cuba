@@ -152,7 +152,9 @@ public class FieldGroup extends Form {
         currentY = row;
 
         super.addField(propertyId, field);
-        field.setReadOnly(isReadOnly());
+        if (isReadOnly() != field.isReadOnly() && isReadOnly()) {
+            field.setReadOnly(isReadOnly());
+        }
 
         if (row < getRows()) {
             currentY++;
