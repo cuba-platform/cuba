@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
@@ -18,12 +17,12 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -199,27 +198,27 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     protected void loadValidators(FieldGroup component, FieldGroup.Field field) {
         final List<Element> validatorElements = field.getXmlDescriptor().elements("validator");
 
-        for (Element validatorElement : validatorElements) {
-            final String className = validatorElement.attributeValue("class");
-            final String message = validatorElement.attributeValue("message");
-            final Class<Field.Validator> aClass = ReflectionHelper.getClass(className);
-
-            try {
-                final Constructor<Field.Validator> constructor = StringUtils.isBlank(message) ?
-                        aClass.getConstructor(Element.class) : aClass.getConstructor(Element.class, String.class);
-                try {
-                    final Field.Validator validator = StringUtils.isBlank(message) ? constructor.
-                            newInstance(validatorElement) : constructor.newInstance(validatorElement, messagesPack);
+        if (!validatorElements.isEmpty()) {
+            for (Element validatorElement : validatorElements) {
+                final Field.Validator validator = loadValidator(validatorElement);
+                if (validator != null) {
                     component.addValidator(field, validator);
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
                 }
-            } catch (NoSuchMethodException e) {
-                try {
-                    final Field.Validator validator = aClass.newInstance();
-                    component.addValidator(field, validator);
-                } catch (Exception e1) {
-                    throw new RuntimeException(e1);
+            }
+        } else {
+            Datasource ds;
+            if (field.getDatasource() == null) {
+                ds = component.getDatasource();
+            } else {
+                ds = field.getDatasource();
+            }
+            if (ds != null) {
+                MetaPropertyPath metaPropertyPath = ds.getMetaClass().getPropertyPath(field.getId());
+                if (metaPropertyPath != null) {
+                    Field.Validator validator = getDefaultValidator(metaPropertyPath.getMetaProperty());
+                    if (validator != null) {
+                        component.addValidator(field, validator);
+                    }
                 }
             }
         }

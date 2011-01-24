@@ -9,19 +9,32 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.validators.DateValidator;
+import com.haulmont.cuba.gui.components.validators.DoubleValidator;
+import com.haulmont.cuba.gui.components.validators.IntegerValidator;
+import com.haulmont.cuba.gui.components.validators.ScriptValidator;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.util.Locale;
@@ -30,6 +43,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected Locale locale;
     protected String messagesPack;
     protected Context context;
+
+    private static Log log = LogFactory.getLog(ComponentLoader.class);
 
     protected ComponentLoader(Context context) {
         this.context = context;
@@ -261,5 +276,61 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (!StringUtils.isEmpty(icon)) {
             component.setIcon(loadResourceString(icon));
         }
+    }
+
+    protected Field.Validator loadValidator(Element validatorElement) {
+        final String className = validatorElement.attributeValue("class");
+        final String scriptPath = validatorElement.attributeValue("script");
+        final String script = validatorElement.getText();
+
+        Field.Validator validator = null;
+
+        if (StringUtils.isNotBlank(scriptPath) || StringUtils.isNotBlank(script)) {
+            validator = new ScriptValidator(validatorElement, getMessagesPack());
+        } else {
+            final Class<Field.Validator> aClass = ScriptingProvider.loadClass(className);
+            if (!StringUtils.isBlank(getMessagesPack()))
+                try {
+                    validator = ReflectionHelper.newInstance(aClass, validatorElement, getMessagesPack());
+                } catch (NoSuchMethodException e) {
+                    //
+                }
+            if (validator == null) {
+                try {
+                    validator = ReflectionHelper.newInstance(aClass, validatorElement);
+                } catch (NoSuchMethodException e) {
+                    try {
+                        validator = ReflectionHelper.newInstance(aClass);
+                    } catch (NoSuchMethodException e1) {
+                        //
+                    }
+                }
+            }
+            if (validator == null) {
+                log.warn("Validator class " + aClass + " has no supported constructors");
+            }
+        }
+        return validator;
+    }
+
+    protected Field.Validator getDefaultValidator(MetaProperty property) {
+        Field.Validator validator = null;
+        if (property.getRange().isDatatype()) {
+            Datatype<Object> dt = property.getRange().asDatatype();
+            Datatypes datatypes = Datatypes.getInstance();
+            if (dt.equals(datatypes.get(IntegerDatatype.NAME)) || dt.equals(datatypes.get(LongDatatype.NAME))) {
+                validator = new IntegerValidator(
+                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                                "validation.invalidNumber"));
+            } else if (dt.equals(datatypes.get(DoubleDatatype.NAME)) || dt.equals(datatypes.get(BigDecimalDatatype.NAME))) {
+                validator = new DoubleValidator(
+                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                                "validation.invalidNumber"));
+            } else if (dt.equals(datatypes.get(DateDatatype.NAME))) {
+                validator = new DateValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                        "validation.invalidDate"));
+            }
+        }
+        return validator;
     }
 }
