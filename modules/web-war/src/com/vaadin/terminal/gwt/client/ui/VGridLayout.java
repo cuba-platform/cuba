@@ -214,9 +214,6 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
 
         rendering = false;
         sizeChangedDuringRendering = false;
-
-        boolean needsRelativeSizeCheck = false;
-
     }
 
     private static int[] cloneArray(int[] toBeCloned) {
@@ -395,17 +392,19 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
 
     protected void layoutCells() {
         int x = 0;
-        int y = 0;
+        int maxHeight = 0;
         for (int i = 0; i < cells.length; i++) {
-            y = 0;
+            int y = 0;
             for (int j = 0; j < cells[i].length; j++) {
                 Cell cell = cells[i][j];
-                if (cell != null) {
+                if (!(cell == null || cell.cc == null || !cell.cc.isAttached())) {
+                    if (!cell.cc.isVisible()) continue;
                     cell.layout(x, y);
                 }
                 y += rowHeights[j] + spacingPixelsVertical;
             }
             x += columnWidths[i] + spacingPixelsHorizontal;
+            maxHeight = Math.max(maxHeight, y);
         }
 
         if ("".equals(width)) {
@@ -416,7 +415,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         }
         int canvasHeight;
         if ("".equals(height)) {
-            canvasHeight = y - spacingPixelsVertical;
+            canvasHeight = maxHeight - spacingPixelsVertical;
         } else {
             canvasHeight = getOffsetHeight() - marginTopAndBottom;
         }
