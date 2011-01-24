@@ -222,7 +222,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                     component.addValidator(column, validator);
                 }
             }
-        } else {
+        } else if (column.isEditable()) {
             MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
             Field.Validator validator = getDefaultValidator(propertyPath.getMetaProperty());
             if (validator != null) {
