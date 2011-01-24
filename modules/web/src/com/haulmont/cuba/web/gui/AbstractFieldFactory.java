@@ -22,10 +22,7 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebLookupField;
-import com.haulmont.cuba.web.gui.components.WebPickerField;
-import com.haulmont.cuba.web.gui.components.WebTimeField;
+import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
@@ -81,13 +78,17 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     Class<?> type = item.getItemProperty(propertyId).getType();
                     if (Boolean.class.isAssignableFrom(type)) {
                         field = new CheckBox();
-                    } else if (Date.class.isAssignableFrom(type) && "timeField".equals(fieldType(propertyPath))) {
-                        final WebTimeField timeField = new WebTimeField();
-                        //todo gorodnov: support field own datasource
-                        timeField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
+                    } else if (Date.class.isAssignableFrom(type)) {
+                        if ("timeField".equals(fieldType(propertyPath))) {
+                            final WebTimeField timeField = new WebTimeField();
+                            //todo gorodnov: support field own datasource
+                            timeField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
 
-                        cubaField = timeField;
-                        field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(timeField);
+                            cubaField = timeField;
+                            field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(timeField);
+                        } else {
+                            field = new com.haulmont.cuba.web.toolkit.ui.DateField();
+                        }
                     } else {
                         field = super.createField(item, propertyId, uiContext);
                     }
@@ -132,8 +133,11 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
                 field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
             } else {
-                if (Boolean.class.isAssignableFrom(range.<Object>asDatatype().getJavaClass())) {
+                Class<Object> type = range.<Object>asDatatype().getJavaClass();
+                if (Boolean.class.isAssignableFrom(type)) {
                     field = new CheckBox();
+                } else if (Date.class.isAssignableFrom(type)) {
+                    field = new com.haulmont.cuba.web.toolkit.ui.DateField();
                 } else {
                     field = super.createField(container, itemId, propertyId, uiContext);
                 }
