@@ -33,6 +33,9 @@ public interface ComponentLoader extends Serializable {
 
         IFrame getFrame();
         void setFrame(IFrame frame);
+
+        Context getParent();
+        void setParent(Context parent);
     }
 
     public interface LazyTask extends Serializable {

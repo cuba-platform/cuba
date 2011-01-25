@@ -68,6 +68,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 dsContext == null ? parentContext.getDsContext() : dsContext,
                 params);
         newContext.setFrame(component);
+        newContext.setParent(parentContext);
         setContext(newContext);
 
         assignXmlDescriptor(component, element);
