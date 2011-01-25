@@ -761,9 +761,6 @@ public class GroupTable extends Table implements GroupTableContainer {
     }
 
     protected String formatGroupPropertyValue(Object groupId, Object groupValue) {
-        if (groupValue == null) {
-            return "";
-        }
         return groupPropertyValueFormatter != null
                 ? groupPropertyValueFormatter.format(groupId, groupValue)
                 : groupValue.toString();
