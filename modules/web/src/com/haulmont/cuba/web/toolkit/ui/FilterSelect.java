@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+
+ * Author: Nikolay Gorodnov
+ * Created: 19.06.2009 18:13:08
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.terminal.PaintException;
@@ -8,10 +18,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-/**
- * User: Nikolay Gorodnov
- * Date: 19.06.2009
- */
 @SuppressWarnings("serial")
 public class FilterSelect extends Select {
 
@@ -27,6 +33,12 @@ public class FilterSelect extends Select {
         if (fixedTextBoxWidth) {
             target.addAttribute("fixedTextBoxWidth", true);
         }
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        super.setRequired(required);
+        setNullSelectionAllowed(!required);
     }
 
     public boolean isFixedTextBoxWidth() {
