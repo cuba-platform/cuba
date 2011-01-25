@@ -678,6 +678,7 @@
                         <xs:attribute name="height" type="xs:string" use="optional"/>
                         <xs:attribute name="pagingMode" type="xs:string" use="optional"/>
                         <xs:attribute name="aggregatable" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="presentations" type="xs:boolean" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="filter">
