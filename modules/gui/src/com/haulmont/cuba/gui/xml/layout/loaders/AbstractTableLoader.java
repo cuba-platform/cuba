@@ -226,7 +226,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
             Field.Validator validator = getDefaultValidator(propertyPath.getMetaProperty());
             if (validator != null) {
-                component.addValidator(validator);
+                component.addValidator(column, validator);
             }
         }
     }
