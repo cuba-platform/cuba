@@ -763,7 +763,7 @@ public class GroupTable extends Table implements GroupTableContainer {
     protected String formatGroupPropertyValue(Object groupId, Object groupValue) {
         return groupPropertyValueFormatter != null
                 ? groupPropertyValueFormatter.format(groupId, groupValue)
-                : groupValue.toString();
+                : (groupValue == null ? "" : groupValue.toString());
     }
 
     public boolean hasGroups() {
