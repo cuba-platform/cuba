@@ -11,6 +11,7 @@ import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.dd.*;
+import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +21,7 @@ import java.util.Set;
 /**
  *
  */
-public class VTree extends FlowPanel implements Paintable, VHasDropHandler, TextSelectionManager {
+public class VTree extends SimplePanel implements Paintable, VHasDropHandler, TextSelectionManager {
 
     public static final String CLASSNAME = "v-tree";
 
@@ -57,9 +58,15 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
     private boolean doubleClickMode = false;
 
+    private FlowPanel content = new FlowPanel();
+
+    private CellBasedLayout.Spacing borderPaddings = null;
+
     public VTree() {
         super();
         setStyleName(CLASSNAME);
+        setWidget(content);
+        content.setStyleName(CLASSNAME + "-content");
     }
 
     protected void updateActionMap(UIDL c) {
@@ -116,7 +123,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
         isNullSelectionAllowed = uidl.getBooleanAttribute("nullselect");
 
-        clear();
+        content.clear();
 
         TreeNode childTree = null;
         for (final Iterator i = uidl.getChildIterator(); i.hasNext();) {
@@ -129,7 +136,7 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
                 continue;
             }
             childTree = createTreeNode(childUidl);
-            this.add(childTree);
+            content.add(childTree);
             childTree.updateFromUIDL(childUidl, client);
         }
 
@@ -145,6 +152,48 @@ public class VTree extends FlowPanel implements Paintable, VHasDropHandler, Text
 
         rendering = false;
 
+    }
+
+    @Override
+    public void setWidth(String width) {
+        if (isAttached() && borderPaddings == null) {
+            detectBorderPaddings();
+        }
+        super.setWidth(width);
+        if (isAttached()) {
+            int w = getOffsetWidth();
+            super.setWidth((w - 2 * borderPaddings.hSpacing) + "px");
+        }
+    }
+
+    @Override
+    public void setHeight(String height) {
+        if (isAttached() && borderPaddings == null) {
+            detectBorderPaddings();
+        }
+        super.setHeight(height);
+        if (isAttached()) {
+            int h = getOffsetHeight();
+            super.setHeight((h - 2 * borderPaddings.vSpacing) + "px");
+        }
+    }
+
+    private void detectBorderPaddings() {
+        if (borderPaddings == null) {
+            Element el = getElement();
+            DOM.setStyleAttribute(el, "overflow", "hidden");
+            DOM.setStyleAttribute(el, "width", "0px");
+            DOM.setStyleAttribute(el, "height", "0px");
+
+            int w = el.getOffsetWidth();
+            int h = el.getOffsetHeight();
+
+            borderPaddings = new CellBasedLayout.Spacing(w, h);
+
+            DOM.setStyleAttribute(el, "overflow", "");
+            DOM.setStyleAttribute(el, "width", "");
+            DOM.setStyleAttribute(el, "height", "");
+        }
     }
 
     protected TreeNode createTreeNode(UIDL childUidl) {

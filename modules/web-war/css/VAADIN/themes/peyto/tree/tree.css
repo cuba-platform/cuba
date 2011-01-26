@@ -1,8 +1,13 @@
 .v-tree {
 	text-align: left;
     background: #FFF;
-    padding: 5px;
 	border: 1px solid #71a4d5;
+    overflow: auto;
+}
+
+.v-tree-content {
+    margin: 5px;
+    overflow: hidden;
 }
 
 .v-tree-node {
