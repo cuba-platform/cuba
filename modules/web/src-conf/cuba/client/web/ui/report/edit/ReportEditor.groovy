@@ -47,6 +47,8 @@ import com.haulmont.cuba.gui.ServiceLocator
 import com.haulmont.cuba.gui.components.ValueProvider
 
 import com.haulmont.chile.core.model.MetaPropertyPath
+import com.haulmont.cuba.gui.components.Tree
+import org.apache.commons.lang.StringUtils
 
 public class ReportEditor extends AbstractEditor {
 
@@ -63,6 +65,9 @@ public class ReportEditor extends AbstractEditor {
       definition.setName("Root")
       report.setRootBandDefinition(definition)
     }
+    if (!StringUtils.isEmpty(this.report.name)) {
+        caption = MessageProvider.formatMessage(getClass(), 'reportEditor.format', this.report.name)
+    }
 
     templateDescriptor = report.templateFileDescriptor;
     if (templateDescriptor)
@@ -72,7 +77,8 @@ public class ReportEditor extends AbstractEditor {
     customClass.setEnabled(report.getIsCustom())
 
 
-    getDsContext().get('treeDs').refresh()
+    bandTree.datasource.refresh()
+    bandTree.expandTree()
   }
 
   private Button templatePath;
@@ -82,6 +88,8 @@ public class ReportEditor extends AbstractEditor {
   private Report report;
   private FileUploadField uploadTemplate;
   private com.haulmont.cuba.core.entity.FileDescriptor oldTemplateDescriptor
+
+  private Tree bandTree
 
   protected void init(Map<String, Object> params) {
     super.init(params);
@@ -202,6 +210,7 @@ public class ReportEditor extends AbstractEditor {
   Datasource treeDs;
 
   private def initGeneral() {
+    bandTree = (Tree) getComponent('generalFrame.serviceTree')
     treeDs = getDsContext().get('treeDs')
     View bandDefinitionView = MetadataProvider.getViewRepository().getView(BandDefinition.class, "report.edit")
     DataService dataService = getDsContext().getDataService()
