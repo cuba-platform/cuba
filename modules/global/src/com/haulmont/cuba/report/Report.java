@@ -51,18 +51,18 @@ public class Report extends HardDeleteEntity {
     @OnDelete(value = DeletePolicy.CASCADE)
     private FileDescriptor templateFileDescriptor;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @OnDelete(value = DeletePolicy.CASCADE)
     @Aggregation
     @OrderBy("position")
     private List<ReportInputParameter> inputParameters;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @OnDelete(value = DeletePolicy.CASCADE)
     @Aggregation
     private List<ReportValueFormat> valuesFormats;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @OnDelete(value = DeletePolicy.CASCADE)
     @Aggregation
     private List<ReportScreen> reportScreens;
