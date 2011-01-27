@@ -113,14 +113,10 @@ public class XLSFormatter extends AbstractFormatter {
         HSSFSheet resultSheet = templateToResultSheetsMapping.get(templateSheet);
 
         if (Orientation.HORIZONTAL.equals(band.getOrientation())) {
-            rownum += rowsAddedByVerticalBand;
-            rownum += rowsAddedByHorizontalBand;
-            rowsAddedByVerticalBand = 0;
-            rowsAddedByHorizontalBand = 0;
             colnum = 0;
             writeHorizontalBand(band, templateSheet, resultSheet);
         } else {
-            rowsAddedByVerticalBand = writeVerticalBand(band, templateSheet, resultSheet);
+            writeVerticalBand(band, templateSheet, resultSheet);
         }
     }
 
@@ -180,9 +176,15 @@ public class XLSFormatter extends AbstractFormatter {
             areaDependencyHelper.addDependency(new Area(band.getName(), AreaAlign.HORIZONTAL, templateRange),
                     new Area(band.getName(), AreaAlign.HORIZONTAL, resultRange));
         }
+
         for (Band child : band.getChildren()) {
             writeBand(child);
         }
+
+        rownum += rowsAddedByHorizontalBand;
+        rowsAddedByHorizontalBand = 0;
+        rownum += rowsAddedByVerticalBand;
+        rowsAddedByVerticalBand = 0;
     }
 
     /**
@@ -194,15 +196,19 @@ public class XLSFormatter extends AbstractFormatter {
      * @param resultSheet   - result sheet
      * @return number of inserted rows
      */
-    private int writeVerticalBand(Band band, HSSFSheet templateSheet, HSSFSheet resultSheet) {
+    private void writeVerticalBand(Band band, HSSFSheet templateSheet, HSSFSheet resultSheet) {
         String rangeName = band.getName();
         CellReference[] crefs = getRangeContent(templateWorkbook, rangeName);
 
         if (crefs != null) {
             addRangeBounds(band, crefs);
 
+            Bounds thisBounds = templateBounds.get(band.getName());
+            Bounds parentBounds = templateBounds.get(band.getParentBand().getName());
+            int localRowNum = parentBounds != null ? rownum + thisBounds.row0 - parentBounds.row0 : rownum;
+
             colnum = colnum == 0 ? getCellFromReference(crefs[0], templateSheet).getColumnIndex() : colnum;
-            copyMergeRegions(resultSheet, rangeName, rownum, colnum);
+            copyMergeRegions(resultSheet, rangeName, localRowNum, colnum);
 
             int firstRow = crefs[0].getRow();
             int firstColumn = crefs[0].getCol();
@@ -210,8 +216,9 @@ public class XLSFormatter extends AbstractFormatter {
             for (CellReference cref : crefs) {//create necessary rows
                 int currentRow = cref.getRow();
                 final int rowOffset = currentRow - firstRow;
-                if (!rowExists(resultSheet, rownum + rowOffset)) {
-                    resultSheet.createRow(rownum + rowOffset);
+                if (!rowExists(resultSheet, localRowNum + rowOffset)) {
+                    resultSheet.createRow(localRowNum + rowOffset);
+                    rowsAddedByVerticalBand++;
                 }
             }
 
@@ -222,17 +229,11 @@ public class XLSFormatter extends AbstractFormatter {
                 final int columnOffset = currentColumn - firstColumn;
 
                 HSSFCell templateCell = getCellFromReference(cref, templateSheet);
-                copyCellFromTemplate(templateCell, resultSheet.getRow(rownum + rowOffset), colnum + columnOffset, band);
+                copyCellFromTemplate(templateCell, resultSheet.getRow(localRowNum + rowOffset), colnum + columnOffset, band);
             }
 
             colnum += crefs[crefs.length - 1].getCol() - firstColumn + 1;
-
-
-            final Bounds thiBandBounds = templateBounds.get(band.getName());
-            final Bounds parentBandBounds = templateBounds.get(band.getParentBand().getName());
-            return thiBandBounds.verticalOffset(parentBandBounds);
         }
-        return 0;
     }
 
     /**
@@ -606,8 +607,8 @@ public class XLSFormatter extends AbstractFormatter {
         }
 
         public int verticalOffset(Bounds bounds) {
-            if (bounds.row1 <= row0) {
-                return row1 - row0;
+            if (bounds == null || bounds.row1 <= row0) {
+                return row1 - row0 + 1;
             } else {
                 return row1 - bounds.row1;
             }
