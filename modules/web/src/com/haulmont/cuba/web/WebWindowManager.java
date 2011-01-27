@@ -506,12 +506,14 @@ public class WebWindowManager extends WindowManager {
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
+/*
         // surrond window layout with outer layout to prevent double painting
         VerticalLayout outerLayout = new VerticalLayout();
         outerLayout.addComponent(layout);
         outerLayout.setExpandRatio(layout, 1);
+*/
 
-        win.setContent(outerLayout);
+        win.setContent(layout);
 
         win.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
@@ -519,16 +521,22 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        if (getDialogParams().getWidth() != null)
-            win.setWidth(getDialogParams().getWidth().floatValue(), Sizeable.UNITS_PIXELS);
+        final DialogParams dialogParams = getDialogParams();
+        if (dialogParams.getWidth() != null)
+            win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.UNITS_PIXELS);
         else
             win.setWidth(600, Sizeable.UNITS_PIXELS);
 
-        if (getDialogParams().getResizable() != null) {
-            win.setResizable(Boolean.valueOf(getDialogParams().getResizable()));
+        if (dialogParams.getHeight() != null) {
+            win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.UNITS_PIXELS);
+            win.getContent().setHeight("100%");
         }
 
-        getDialogParams().reset();
+        if (dialogParams.getResizable() != null) {
+            win.setResizable(Boolean.valueOf(dialogParams.getResizable()));
+        }
+
+        dialogParams.reset();
 
         win.setModal(true);
 

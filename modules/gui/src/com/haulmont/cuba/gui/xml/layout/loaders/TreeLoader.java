@@ -39,6 +39,9 @@ public class TreeLoader extends ComponentLoader
         loadId(component, element);
         loadVisible(component, element);
 
+        loadHeight(component, element);
+        loadWidth(component, element);
+
         loadStyleName(component, element);
 
         Element itemsElem = element.element("treechildren");
