@@ -35,7 +35,7 @@ public class JpqlDataDataLoader extends AbstractDbDataLoader {
             outputParameters = parseQueryOutputParametersNames(query);
 
             query = query.replaceAll("(?i)as [\\w|\\d|_|\\s]+,", ",");//replaces [as alias_name] entries except last
-            query = query.replaceAll("(?i)as [\\w|\\d|_]+ ", " ");//replaces last [as alias_name] entry
+            query = query.replaceAll("(?i)as [\\w|\\d|_]+ *", " ");//replaces last [as alias_name] entry
 
             Query select = insertParameters(query, parentBand, DataSetType.JPQL);
             queryResult = select.getResultList();
