@@ -620,6 +620,27 @@
     cursor: default; 
 }
 
+.v-table-row-overdue  .v-table-cell-content,
+.v-table-row-overdue  .v-table-cell-content .v-label,
+.v-table-row-overdue  .v-table-cell-content .v-button-link .v-button-caption,
+.v-table-row-overdue  .v-table-cell-content .v-popupview {
+    color: #FF0000;
+}
+
+.v-table-row-overdue1  .v-table-cell-content,
+.v-table-row-overdue1  .v-table-cell-content .v-label,
+.v-table-row-overdue1  .v-table-cell-content .v-button-link .v-button-caption,
+.v-table-row-overdue1  .v-table-cell-content .v-popupview {
+    color: #FF0000;
+}
+
+.v-table-row-overdue2  .v-table-cell-content,
+.v-table-row-overdue2  .v-table-cell-content .v-label,
+.v-table-row-overdue2  .v-table-cell-content .v-button-link .v-button-caption,
+.v-table-row-overdue2  .v-table-cell-content .v-popupview {
+    color: #FFA600;
+}
+
 /*
  * End of thesis styles
  */
