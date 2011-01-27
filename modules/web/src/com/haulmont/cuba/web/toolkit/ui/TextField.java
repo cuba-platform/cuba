@@ -60,4 +60,10 @@ public class TextField extends com.vaadin.ui.TextField implements Action.Contain
             actionManager.setViewer(this);
         }
     }
+
+    @Override
+    public void setNullRepresentation(String nullRepresentation) {
+        super.setNullRepresentation(nullRepresentation);
+        requestRepaint();
+    }
 }
