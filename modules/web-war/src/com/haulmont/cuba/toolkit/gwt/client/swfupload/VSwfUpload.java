@@ -66,7 +66,7 @@ public class
         progressDiv.getStyle().setVisibility(Style.Visibility.HIDDEN);
         progressDiv.getStyle().setDisplay(Style.Display.NONE);
 
-        progressDiv.getStyle().setZIndex(2000);
+        progressDiv.getStyle().setZIndex(15000);
     }
 
     private static String getValueFromUIDL(UIDL uidl, String attribute, String defaultValue) {
