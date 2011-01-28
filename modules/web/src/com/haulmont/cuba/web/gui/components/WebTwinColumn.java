@@ -179,7 +179,7 @@ public class WebTwinColumn
     @Override
     protected <T> T getValueFromKey(Object key) {
         if (key instanceof Collection) {
-            final Set<Object> set = new HashSet<Object>();
+            final Set<Object> set = new LinkedHashSet<Object>();
             for (Object o : (Collection) key) {
                 Object t = getValue(o);
                 set.add(t);
