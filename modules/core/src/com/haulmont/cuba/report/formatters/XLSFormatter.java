@@ -234,6 +234,14 @@ public class XLSFormatter extends AbstractFormatter {
 
             colnum += crefs[crefs.length - 1].getCol() - firstColumn + 1;
         }
+
+        if ("Root".equals(band.getParentBand().getName())) {
+            List<Band> sameBands = band.getParentBand().getChildrenByName(band.getName());
+            if (sameBands.size() > 0 && sameBands.get(sameBands.size() - 1) == band) {//check if this vertical band is last   
+                rownum += rowsAddedByVerticalBand;
+                rowsAddedByVerticalBand = 0;
+            }
+        }
     }
 
     /**

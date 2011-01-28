@@ -20,7 +20,7 @@ public class Band {
     private int level;
     private Orientation orientation = Orientation.HORIZONTAL;
     private Set<String> bandDefinitionNames = null;
-    private HashMap<String,ReportValueFormat> valuesFormats = null;
+    private HashMap<String, ReportValueFormat> valuesFormats = null;
 
     public Band(String name, int level, Band parentBand, Orientation orientation) {
         this.name = name;
@@ -97,10 +97,10 @@ public class Band {
         this.orientation = orientation;
     }
 
-    public String getFullName(){
+    public String getFullName() {
         String fullName = name;
         Band upBand = parentBand;
-        while ((upBand != null) && (upBand.level > 1)){
+        while ((upBand != null) && (upBand.level > 1)) {
             fullName = upBand.getName() + "." + fullName;
             upBand = upBand.parentBand;
         }
@@ -133,6 +133,22 @@ public class Band {
         return null;
     }
 
+    public List<Band> getChildrenByName(String bandName) {
+        if (bandName == null) {
+            throw new NullPointerException("Parameter bandName can not be null.");
+        }
+
+        List<Band> children = new ArrayList<Band>();
+        if (getChildren() != null) {
+            for (Band child : getChildren()) {
+                if (bandName.equals(child.getName())) {
+                    children.add(child);
+                }
+            }
+        }
+        return children;
+    }
+
     public Set<String> getBandDefinitionNames() {
         return bandDefinitionNames;
     }
@@ -141,11 +157,11 @@ public class Band {
         this.bandDefinitionNames = bandDefinitionNames;
     }
 
-    public HashMap<String,ReportValueFormat> getValuesFormats(){
+    public HashMap<String, ReportValueFormat> getValuesFormats() {
         return valuesFormats;
     }
 
-    public void setValuesFormats(HashMap<String,ReportValueFormat> valuesFormats){
+    public void setValuesFormats(HashMap<String, ReportValueFormat> valuesFormats) {
         this.valuesFormats = valuesFormats;
     }
 }
