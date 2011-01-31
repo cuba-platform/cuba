@@ -307,7 +307,18 @@ public class DsBuilder {
             }
             datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         } else {
-            throw new UnsupportedOperationException("HierarchicalDatasource can not be PropertyDatasource");
+            if (dsClass == null) {
+                datasource = new HierarchicalPropertyDatasourceImpl(id, master, property);
+            } else {
+                try {
+                    Constructor constructor = dsClass.getConstructor(
+                            String.class, Datasource.class, String.class);
+                    datasource = (HierarchicalDatasource) constructor.newInstance(
+                            id, master, property);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         return datasource;
     }

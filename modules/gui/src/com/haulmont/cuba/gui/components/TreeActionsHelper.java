@@ -1,12 +1,15 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -70,18 +73,29 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
                 }
             }
 
+            Datasource parentDs = null;
+            if (datasource instanceof PropertyDatasource) {
+                MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
+                if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
+                    parentDs = datasource;
+                }
+            }
+            final Datasource pDs = parentDs;
+
             Map<String, Object> params = valueProvider.getParameters() != null ?
                     valueProvider.getParameters() : Collections.<String, Object>emptyMap();
 
-            final Window window = frame.openEditor(windowID, item, openType, params);
+            final Window window = frame.openEditor(windowID, item, openType, params, parentDs);
             window.addListener(new Window.CloseListener() {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                         Object item = ((Window.Editor) window).getItem();
                         if (item instanceof Entity) {
-                            boolean modified = datasource.isModified();
-                            datasource.addItem((Entity) item);
-                            ((DatasourceImplementation) datasource).setModified(modified);
+                            if (pDs == null) {
+                                boolean modified = datasource.isModified();
+                                datasource.addItem((Entity) item);
+                                ((DatasourceImplementation) datasource).setModified(modified);
+                            }
                             fireCreateEvent((Entity) item);
                         }
                     }

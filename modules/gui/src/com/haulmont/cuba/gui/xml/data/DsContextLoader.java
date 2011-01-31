@@ -249,6 +249,13 @@ public class DsContextLoader {
             final String property = ds.attributeValue("property");
             context.register(loadGroupDatasource(ds, datasource, property));
         }
+
+        //noinspection unchecked
+        elements = element.elements("hierarchicalDatasource");
+        for (Element ds : elements) {
+            final String property = ds.attributeValue("property");
+            context.register(loadHierarchicalDatasource(ds, datasource, property));
+        }
     }
 
     private Datasource loadDatasource(Element element, Datasource ds, String property) {
@@ -303,6 +310,43 @@ public class DsContextLoader {
 
         return datasource;
     }
+
+    private Datasource loadHierarchicalDatasource(Element element, Datasource ds, String property) {
+            final String id = element.attributeValue("id");
+            final String hierarchyProperty = element.attributeValue("hierarchyProperty");
+            final MetaClass metaClass = ds.getMetaClass();
+            final MetaProperty metaProperty = metaClass.getProperty(property);
+            if (metaProperty == null) {
+                throw new IllegalStateException(
+                        String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
+            }
+
+            builder.reset().setMetaClass(metaClass).setId(id).setMaster(ds).setProperty(property);
+
+            final HierarchicalDatasource datasource;
+
+            final Element datasourceClassElement = element.element("datasourceClass");
+
+            if (datasourceClassElement != null) {
+                final String datasourceClass = datasourceClassElement.getText();
+                if (StringUtils.isEmpty(datasourceClass))
+                    throw new IllegalStateException("Datasource class is not specified");
+
+                final Class<HierarchicalDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+                datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
+            } else {
+                datasource = builder.buildHierarchicalDatasource();
+            }
+
+            if (!StringUtils.isEmpty(hierarchyProperty)) {
+                datasource.setHierarchyPropertyName(hierarchyProperty);
+            }
+            loadDatasources(element, datasource);
+
+            return datasource;
+        }
+
+
 
     private Datasource loadGroupDatasource(Element element, Datasource ds, String property) {
         final String id = element.attributeValue("id");
