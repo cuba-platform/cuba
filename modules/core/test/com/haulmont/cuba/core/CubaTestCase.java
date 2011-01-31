@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -113,9 +112,17 @@ public abstract class CubaTestCase extends TestCase
     }
 
     protected void initAppContext() {
-        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(new String[]
-                {"cuba-spring.xml", "test-spring.xml"});
+        List<String> contextFiles = getTestAppContextFiles();
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(
+                contextFiles.toArray(new String[contextFiles.size()]));
         AppContext.setApplicationContext(appContext);
+    }
+
+    protected List<String> getTestAppContextFiles() {
+        List<String> files = new ArrayList<String>();
+        files.add("cuba-spring.xml");
+        files.add("test-spring.xml");
+        return files;
     }
 
     protected void initTxManager() throws NamingException {
