@@ -14,7 +14,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -47,8 +46,7 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
     private Map<String, UIDL> optionsUidl;
 
     private class TwinColListBox extends FocusPanel implements HasDoubleClickHandlers, ClickHandler,
-            KeyDownHandler, KeyUpHandler
-    {
+            KeyDownHandler, KeyUpHandler {
 
         private FlowPanel container = new FlowPanel();
 
@@ -80,22 +78,24 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
 
         class Option {
             String key;
-            String value;
+            String caption;
+            String desc;
             String icon;
             boolean selected;
 
-            Option(String key, String value, String icon) {
+            Option(String key, String caption, String desc, String icon) {
                 this.key = key;
-                this.value = value;
+                this.caption = caption;
+                this.desc = desc;
                 this.icon = icon;
             }
         }
 
         class RenderedOption extends Widget implements HasClickHandlers {
-            RenderedOption(String text, String icon) {
+            RenderedOption(String caption, String desc, String icon) {
                 setElement(DOM.createDiv());
 
-                DOM.setInnerHTML(getElement(), buildHtmlSnippet(text, icon));
+                DOM.setInnerHTML(getElement(), buildHtmlSnippet(caption, desc, icon));
 
                 setStylePrimaryName(CLASSNAME + "-listBox-opt");
                 if (icon != null && !"".equals(icon)) {
@@ -105,7 +105,7 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
                 Tools.textSelectionEnable(getElement(), false);
             }
 
-            private String buildHtmlSnippet(String text, String icon) {
+            private String buildHtmlSnippet(String caption, String desc, String icon) {
                 boolean hasIcon = icon != null && !"".equals(icon);
 
                 final StringBuffer sb = new StringBuffer();
@@ -114,8 +114,12 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
                             .append(icon)
                             .append("\" alt=\"\" class=\"v-icon\" />");
                 }
-                sb.append("<div class=\"").append(CLASSNAME).append("-label\">")
-                        .append(Util.escapeHTML(text))
+                sb.append("<div class=\"").append(CLASSNAME).append("-label\"");
+                if (desc != null) {
+                    sb.append(" title=\"").append(Util.escapeHTML(desc)).append("\"");
+                }
+                sb.append(">")
+                        .append(Util.escapeHTML(caption))
                         .append("</div>");
                 if (hasIcon) {
                     sb.append("<div style=\"clear:both;width:0px;height:0px;\"></div>");
@@ -292,7 +296,7 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
             if (height != null) {
                 this.height = height;
                 if ("".equals(height)) {
-                    height = visibleItemsHeight(DEFAULT_ITEM_COUNT) + "px"; 
+                    height = visibleItemsHeight(DEFAULT_ITEM_COUNT) + "px";
                 }
                 if (isAttached()) {
                     super.setHeight(height);
@@ -305,7 +309,7 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
 
         private int getOptionHeight() {
             if (optionHeight == -1) {
-                addItem("ABC", "", null);
+                addItem("ABC", "", "", null);
                 optionHeight = (container.getOffsetHeight() - getDecoBorderPaddingsHeight()) / getItemCount();
                 removeItem(getItemCount() - 1);
             }
@@ -318,10 +322,10 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
             }
         }
 
-        void addItem(String caption, String key, String icon) {
-            Option opt = new Option(key, caption, icon);
+        void addItem(String caption, String desc, String key, String icon) {
+            Option opt = new Option(key, caption, desc, icon);
             options.add(opt);
-            RenderedOption renderedOption = new RenderedOption(caption, icon);
+            RenderedOption renderedOption = new RenderedOption(caption, desc, icon);
             renderedOption.addClickHandler(this);
             container.add(renderedOption);
             renderedOptions.put(opt, renderedOption);
@@ -377,12 +381,17 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
             }
         }
 
-        String getItemText(int optionIndex) {
+        String getItemCaption(int optionIndex) {
             assert optionIndex >= 0 && options.size() > optionIndex;
             Option opt = options.get(optionIndex);
-            return opt.value;
+            return opt.caption;
         }
 
+        String getItemDesc(int optionIndex) {
+            assert optionIndex >= 0 && options.size() > optionIndex;
+            Option opt = options.get(optionIndex);
+            return opt.desc;
+        }
 
         public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
             return addDomHandler(handler, DoubleClickEvent.getType());
@@ -459,8 +468,12 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
                 if (optionUidl.hasAttribute("icon")) {
                     icon = client.translateVaadinUri(optionUidl.getStringAttribute("icon"));
                 }
-                selections.addItem(optionUidl.getStringAttribute("caption"),
-                        key, icon);
+                selections.addItem(
+                        optionUidl.getStringAttribute("caption"),
+                        optionUidl.hasAttribute("desc") ? optionUidl.getStringAttribute("desc") : null,
+                        key,
+                        icon
+                );
                 if (optionUidl.hasAttribute("style")) {
                     selections.setOptionClassName(selectedOptions, optionUidl.getStringAttribute("style"));
                 }
@@ -470,8 +483,12 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
                 if (optionUidl.hasAttribute("icon")) {
                     icon = client.translateVaadinUri(optionUidl.getStringAttribute("icon"));
                 }
-                options.addItem(optionUidl.getStringAttribute("caption"),
-                        key, icon);
+                options.addItem(
+                        optionUidl.getStringAttribute("caption"),
+                        optionUidl.hasAttribute("desc") ? optionUidl.getStringAttribute("desc") : null,
+                        key,
+                        icon
+                );
                 if (optionUidl.hasAttribute("style")) {
                     options.setOptionClassName(availableOptions, optionUidl.getStringAttribute("style"));
                 }
@@ -568,7 +585,12 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
 
                 // Move selection to another column
                 final String value = selections.getValue(selectionIndex);
-                options.addItem(selections.getItemText(selectionIndex), value, selections.getItemIcon(selectionIndex));
+                options.addItem(
+                        selections.getItemCaption(selectionIndex),
+                        selections.getItemDesc(selectionIndex),
+                        value,
+                        selections.getItemIcon(selectionIndex)
+                );
                 UIDL optionUidl = optionsUidl.get(value);
                 if (optionUidl.hasAttribute("style")) {
                     options.setOptionClassName(options.getItemCount() - 1, optionUidl.getStringAttribute("style"));
@@ -591,7 +613,12 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
 
                 // Move selection to another column
                 final String value = options.getValue(optionIndex);
-                selections.addItem(options.getItemText(optionIndex), value, options.getItemIcon(optionIndex));
+                selections.addItem(
+                        options.getItemCaption(optionIndex),
+                        options.getItemDesc(optionIndex),
+                        value,
+                        options.getItemIcon(optionIndex)
+                );
                 UIDL optionUidl = optionsUidl.get(value);
                 if (optionUidl.hasAttribute("style")) {
                     selections.setOptionClassName(selections.getItemCount() - 1, optionUidl.getStringAttribute("style"));
@@ -640,7 +667,9 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
         DOM.setStyleAttribute(getElement(), "position", "relative");
         int buttonsWidth = buttons.getOffsetWidth();
         int w = (getOffsetWidth() - buttonsWidth) / 2;
-        if (w < 0) { w = 0; }
+        if (w < 0) {
+            w = 0;
+        }
         options.setWidth(w + "px");
         selections.setWidth(w + "px");
         widthSet = true;

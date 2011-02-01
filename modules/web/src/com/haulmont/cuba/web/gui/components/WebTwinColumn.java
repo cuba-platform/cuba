@@ -162,6 +162,15 @@ public class WebTwinColumn
         component.setRows(rows);
     }
 
+    @Override
+    public void setDescriptionProperty(String descriptionProperty) {
+        super.setDescriptionProperty(descriptionProperty);
+        component.setShowOptionsDescriptions(descriptionProperty != null);
+        if (optionsDatasource != null) {
+            component.setItemDescriptionPropertyId(optionsDatasource.getMetaClass().getProperty(descriptionProperty));
+        }
+    }
+
     public void setStyleProvider(final StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
         if (styleProvider != null) {

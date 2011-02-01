@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.toolkit.gwt.client.ui.VTwinColumnSelect;
+import com.vaadin.data.Property;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
@@ -19,11 +20,20 @@ import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.TwinColSelect;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("serial")
 @ClientWidget(VTwinColumnSelect.class)
 public class TwinColumnSelect extends TwinColSelect {
 
     private OptionStyleGenerator styleGenerator;
+
+    private boolean showOptionsDescriptions = false;
+
+    private Map<Object, String> itemDescriptions;
+
+    private Object itemDescriptionPropertyId;
 
     private boolean nativeSelect;
 
@@ -45,6 +55,9 @@ public class TwinColumnSelect extends TwinColSelect {
             target.addAttribute("selected", true);
             selectedKeys[keyIndex++] = key;
         }
+        if (isShowOptionsDescriptions()) {
+            target.addAttribute("desc", getItemDescription(id));
+        }
         if (styleGenerator != null) {
             String style = styleGenerator.generateStyle(this, id, selected);
             if (!StringUtils.isEmpty(style)) {
@@ -59,6 +72,9 @@ public class TwinColumnSelect extends TwinColSelect {
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
         target.addAttribute("manageCaption", isLayoutCaption());
+        if (showOptionsDescriptions) {
+            target.addAttribute("optionsDesc", true);
+        }
     }
 
     @Override
@@ -91,6 +107,50 @@ public class TwinColumnSelect extends TwinColSelect {
     public void setLayoutCaption(boolean layoutCaption) {
         this.layoutCaption = layoutCaption;
         requestRepaint();
+    }
+
+    public boolean isShowOptionsDescriptions() {
+        return showOptionsDescriptions;
+    }
+
+    public void setShowOptionsDescriptions(boolean showOptionsDescriptions) {
+        this.showOptionsDescriptions = showOptionsDescriptions;
+        requestRepaint();
+    }
+
+    public Object getItemDescriptionPropertyId() {
+        return itemDescriptionPropertyId;
+    }
+
+    public void setItemDescriptionPropertyId(Object itemDescriptionPropertyId) {
+        this.itemDescriptionPropertyId = itemDescriptionPropertyId;
+        requestRepaint();
+    }
+
+    public void setItemDescription(Object itemId, String desc) {
+        if (itemId == null) return;
+        if (itemDescriptions == null) {
+            itemDescriptions = new HashMap<Object, String>();
+        }
+        itemDescriptions.put(itemId, desc);
+        requestRepaint();
+    }
+
+    public String getItemDescription(Object itemId) {
+        if (itemId == null) return null;
+
+        String desc = null;
+        if (getItemDescriptionPropertyId() != null) {
+            final Property p = getContainerProperty(itemId,
+                    getItemDescriptionPropertyId());
+            if (p != null) {
+                desc = p.toString();
+            }
+        } else if (itemDescriptions != null) {
+            desc = itemDescriptions.get(itemId);
+        }
+
+        return desc == null ? "" : desc;
     }
 
     public interface OptionStyleGenerator {

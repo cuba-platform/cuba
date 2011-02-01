@@ -218,6 +218,10 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     }
                 }
 
+                if (f.getDescription() == null && field.getDescription() != null) {
+                    f.setDescription(field.getDescription());
+                }
+
                 if (f.getWidth() == -1f && field.getWidth() != null) {
                     f.setWidth(field.getWidth());
                 }
