@@ -10,12 +10,12 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.FileUploadField;
-import com.haulmont.cuba.gui.xml.layout.*;
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
 
 public class FileUploadFieldLoader extends ComponentLoader{
+    private static final long serialVersionUID = 5698387638929530175L;
+
     public FileUploadFieldLoader(Context context) {
         super(context);
     }
@@ -32,6 +32,7 @@ public class FileUploadFieldLoader extends ComponentLoader{
         loadWidth(component, element);
         
         loadCaption((Component.HasCaption) component, element);
+        loadDescription((Component.HasCaption) component, element);
 
         loadExpandable((Component.Expandable)component, element);
 

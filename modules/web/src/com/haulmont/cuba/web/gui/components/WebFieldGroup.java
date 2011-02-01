@@ -330,8 +330,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     throw new IllegalStateException(String.format("Unable to get datasource for field '%s'", id));
                 }
 
-                if (field != null && fieldConf.getCaption() != null) {
-                    field.setCaption(fieldConf.getCaption());
+                if (field != null) {
+                    if (fieldConf.getCaption() != null) {
+                        field.setCaption(fieldConf.getCaption());
+                    }
+                    if (fieldConf.getDescription() != null) {
+                        field.setDescription(fieldConf.getDescription());
+                    }
                 }
 
                 applyPermissions(fieldConf, fieldDs);

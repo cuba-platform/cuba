@@ -11,14 +11,16 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -41,20 +43,6 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         loadId(component, element);
 
         loadVisible(component, element);
-        loadEditable(component, element);
-        loadEnable(component, element);
-
-        loadStyleName(component, element);
-
-        loadCaption(component, element);
-
-        loadHeight(component, element);
-        loadWidth(component, element);
-
-        loadCollapsable(component, element);
-        loadExpandable(component, element);
-
-        loadCaptionAlignment(component, element);
 
         final Datasource ds = loadDatasource(element);
         if (element.elements("column").isEmpty()) {
@@ -85,8 +73,22 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 colIndex++;
             }
         }
-
         component.setDatasource(ds);
+
+        loadEditable(component, element);
+        loadEnable(component, element);
+
+        loadStyleName(component, element);
+
+        loadCaption(component, element);
+
+        loadHeight(component, element);
+        loadWidth(component, element);
+
+        loadCollapsable(component, element);
+        loadExpandable(component, element);
+
+        loadCaptionAlignment(component, element);
 
         context.addLazyTask(new LazyTask() {
             public void execute(Context context, IFrame frame) {
@@ -233,11 +235,64 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    protected void loadEditable(FieldGroup component, FieldGroup.Field field) {
-        Element element = field.getXmlDescriptor();
+    @Override
+    protected void loadEditable(Component component, Element element) {
+        FieldGroup fieldGroup = (FieldGroup) component;
+        if (fieldGroup.getDatasource() != null) {
+            MetaClass metaClass = fieldGroup.getDatasource().getMetaClass();
+            UserSession userSession = UserSessionClient.getUserSession();
+            boolean editable = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                    || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE));
+            if (!editable) {
+                ((Component.Editable) component).setEditable(false);
+                return;
+            }
+        }
         final String editable = element.attributeValue("editable");
         if (!StringUtils.isEmpty(editable)) {
-            component.setEditable(field, BooleanUtils.toBoolean(editable));
+            fieldGroup.setEditable(BooleanUtils.toBoolean(editable));
+        }
+    }
+
+    protected void loadEditable(FieldGroup component, FieldGroup.Field field) {
+        if (field.isCustom()) {
+            Element element = field.getXmlDescriptor();
+            final String editable = element.attributeValue("editable");
+            if (!StringUtils.isEmpty(editable)) {
+                component.setEditable(field, BooleanUtils.toBoolean(editable));
+            }
+        } else {
+            if (component.isEditable()) {
+                Datasource ds;
+                if (component.getDatasource() != null && field.getDatasource() == null) {
+                    ds = component.getDatasource();
+                } else if (field.getDatasource() != null) {
+                    ds = field.getDatasource();
+                } else {
+                    throw new IllegalStateException(String.format("Unable to get datasource for field '%s'",
+                            field.getId()));
+                }
+                MetaClass metaClass = ds.getMetaClass();
+                MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+
+                UserSession userSession = UserSessionClient.getUserSession();
+                boolean b = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                        || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
+                        && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+
+                if (!b) {
+                    component.setEditable(field, false);
+                    return;
+                }
+
+                Element element = field.getXmlDescriptor();
+                final String editable = element.attributeValue("editable");
+                if (!StringUtils.isEmpty(editable)) {
+                    component.setEditable(field, BooleanUtils.toBoolean(editable));
+                }
+            } else {
+                component.setEditable(field, false);
+            }
         }
     }
 
@@ -245,7 +300,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         Element element = field.getXmlDescriptor();
         final String enabled = element.attributeValue("enabled");
         if (!StringUtils.isEmpty(enabled)) {
-            component.setEnabled(field, BooleanUtils.toBoolean(enabled));
+            component.setEnabled(field, component.isEnabled() && BooleanUtils.toBoolean(enabled));
         }
     }
 

@@ -46,6 +46,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
         loadStyleName(component, element);
 
         loadCaption(component, element);
+        loadDescription(component, element);
 
         loadValidators(component, element);
         loadRequired(component, element);
