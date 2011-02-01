@@ -10,7 +10,7 @@
 	<import file="${root.dir}/build-script/build-inc-prj.xml"/>
 	<property file="lib.properties"/>
 
-    <property name="bali.build.dir" location="${root.dir}/chile/build"/>
+    <property name="bali.build.dir" location="${root.dir}/bali/build"/>
     <property name="chile.build.dir" location="${root.dir}/chile/build"/>
     <property name="build.dir" location="build"/>
     <property name="target.dir" location="target"/>
@@ -167,7 +167,7 @@
             </fileset>
             <fileset dir="${lib.server.dir}">
                 <include name="*.jar"/>
-                <exclude name="servlet-api-1.0.jar"/>
+                <exclude name="servlet-api.jar"/>
             </fileset>
         </copy>
     </target>
