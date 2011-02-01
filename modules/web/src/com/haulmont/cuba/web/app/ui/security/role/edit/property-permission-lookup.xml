@@ -1,9 +1,9 @@
 <window
-    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    caption="msg://property-permissions"
-    class="com.haulmont.cuba.web.app.ui.security.role.edit.PropertyPermissionsLookup"
-    lookupComponent="permissions"
->
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        caption="msg://property-permissions"
+        class="com.haulmont.cuba.web.app.ui.security.role.edit.PropertyPermissionsLookup"
+        lookupComponent="permissions"
+        >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app.views.xml"/>
@@ -12,18 +12,18 @@
 
     <dsContext>
         <hierarchicalDatasource
-            id="entities"
-            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
-            view="role.edit"
-        >
+                id="entities"
+                class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+                view="role.edit"
+                >
             <datasourceClass>com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource</datasourceClass>
         </hierarchicalDatasource>
 
         <collectionDatasource
-            id="permissions"
-            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
-            view="role.edit"
-        >
+                id="permissions"
+                class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+                view="role.edit"
+                >
             <datasourceClass>com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource</datasourceClass>
             <query>
                 <![CDATA[
@@ -41,20 +41,18 @@
         <vbox expand="split" spacing="true">
             <label id="permissionsType" stylename="h2"/>
             <split id="split" orientation="horizontal" pos="30">
-                <scrollbox height="100%" width="100%">
-                    <vbox>
-                        <tree id="permissions-tree">
-                            <treechildren datasource="entities" captionProperty="caption"/>
-                        </tree>
-                    </vbox>
-                </scrollbox>
+                <vbox>
+                    <tree id="permissions-tree">
+                        <treechildren datasource="entities" captionProperty="caption"/>
+                    </tree>
+                </vbox>
                 <vbox>
                     <optionsGroup
-                        id="permissions"
-                        optionsDatasource="permissions"
-                        multiselect="true"
-                        captionProperty="caption"
-                    />
+                            id="permissions"
+                            optionsDatasource="permissions"
+                            multiselect="true"
+                            captionProperty="caption"
+                            />
                 </vbox>
             </split>
         </vbox>

@@ -1,9 +1,9 @@
 <window
-    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-    caption="msg://screen-permissions"
-    class="com.haulmont.cuba.web.app.ui.security.role.edit.ScreenPermissionsLookup"
-    lookupComponent="permissions-tree"
->
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        caption="msg://screen-permissions"
+        class="com.haulmont.cuba.web.app.ui.security.role.edit.ScreenPermissionsLookup"
+        lookupComponent="permissions-tree"
+        >
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/web/app.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app.views.xml"/>
@@ -12,10 +12,10 @@
 
     <dsContext>
         <hierarchicalDatasource
-            id="permissions"
-            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
-            view="role.edit"
-        >
+                id="permissions"
+                class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+                view="role.edit"
+                >
             <datasourceClass>com.haulmont.cuba.gui.security.ScreenPermissionTargetsDatasource</datasourceClass>
         </hierarchicalDatasource>
     </dsContext>
@@ -24,13 +24,11 @@
         <vbox expand="split" spacing="true">
             <label id="permissionsType" stylename="h2"/>
             <split id="split" orientation="horizontal" pos="30">
-                <scrollbox height="100%" width="100%">
-                    <vbox>
-                        <widgetsTree id="permissions-tree">
-                            <items datasource="permissions"/>
-                        </widgetsTree>
-                    </vbox>
-                </scrollbox>
+                <vbox>
+                    <widgetsTree id="permissions-tree">
+                        <items datasource="permissions"/>
+                    </widgetsTree>
+                </vbox>
             </split>
             <hbox margin="true" spacing="true">
                 <button id="checkAll" icon="icons/checkAll.png"/>

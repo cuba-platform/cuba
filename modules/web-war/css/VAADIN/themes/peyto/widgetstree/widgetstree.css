@@ -1,6 +1,7 @@
 .widgets-tree {
     text-align: left;
     background: #fff;
+    overflow: auto;
 }
 
 .widgets-tree .v-tree-node {
