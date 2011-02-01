@@ -10,8 +10,10 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.vaadin.data.Property;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.Resource;
 import com.vaadin.ui.Select;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +25,12 @@ public class FilterSelect extends Select {
 
     private boolean fixedTextBoxWidth = false;
 
+    private boolean showOptionsDescriptions = false;
+
+    private Map<Object, String> itemDescriptions;
+
+    private Object itemDescriptionPropertyId;
+
     private int fetched;
 
     private static Log log = LogFactory.getLog(FilterSelect.class);
@@ -32,6 +40,9 @@ public class FilterSelect extends Select {
         super.paintContent(target);
         if (fixedTextBoxWidth) {
             target.addAttribute("fixedTextBoxWidth", true);
+        }
+        if (showOptionsDescriptions) {
+            target.addAttribute("optionsDesc", true);
         }
     }
 
@@ -47,10 +58,55 @@ public class FilterSelect extends Select {
 
     public void setFixedTextBoxWidth(boolean fixedTextBoxWidth) {
         this.fixedTextBoxWidth = fixedTextBoxWidth;
+        requestRepaint();
+    }
+
+    public boolean isShowOptionsDescriptions() {
+        return showOptionsDescriptions;
+    }
+
+    public void setShowOptionsDescriptions(boolean showOptionsDescriptions) {
+        this.showOptionsDescriptions = showOptionsDescriptions;
+        requestRepaint();
+    }
+
+    public Object getItemDescriptionPropertyId() {
+        return itemDescriptionPropertyId;
+    }
+
+    public void setItemDescriptionPropertyId(Object itemDescriptionPropertyId) {
+        this.itemDescriptionPropertyId = itemDescriptionPropertyId;
+        requestRepaint();
+    }
+
+    public void setItemDescription(Object itemId, String desc) {
+        if (itemId == null) return;
+        if (itemDescriptions == null) {
+            itemDescriptions = new HashMap<Object, String>();
+        }
+        itemDescriptions.put(itemId, desc);
+        requestRepaint();
+    }
+
+    public String getItemDescription(Object itemId) {
+        if (itemId == null) return null;
+
+        String desc = null;
+        if (getItemDescriptionPropertyId() != null) {
+            final Property p = getContainerProperty(itemId,
+                    getItemDescriptionPropertyId());
+            if (p != null) {
+                desc = p.toString();
+            }
+        } else if (itemDescriptions != null) {
+            desc = itemDescriptions.get(itemId);
+        }
+
+        return desc == null ? "" : desc;
     }
 
     public void disablePaging() {
-        this.pageLength = 200;
+        setPageLength(0);
     }
 
     @Override
@@ -69,7 +125,7 @@ public class FilterSelect extends Select {
                 filteredOptions = new LinkedList();
                 valueFound = false;
 
-                int count = (currentPage + 1) * pageLength;
+                int count = (currentPage + 1) * getPageLength();
 
                 Object itemId = ((Ordered) items).firstItemId();
                 if (itemId != null) {
@@ -171,5 +227,30 @@ public class FilterSelect extends Select {
             return items.size();
         } else
             return filteredOptions.size();
+    }
+
+    @Override
+    protected int paintOptions(
+            PaintTarget target, String[] selectedKeys, int keyIndex,
+            Object id, String key, String caption, Resource icon
+    ) throws PaintException {
+        target.startTag("so");
+        if (icon != null) {
+            target.addAttribute("icon", icon);
+        }
+        target.addAttribute("caption", caption);
+        if (id != null && id.equals(getNullSelectionItemId())) {
+            target.addAttribute("nullselection", true);
+        }
+        if (isShowOptionsDescriptions()) {
+            target.addAttribute("desc", getItemDescription(id));
+        }
+        target.addAttribute("key", key);
+        if (isSelected(id) && keyIndex < selectedKeys.length) {
+            target.addAttribute("selected", true);
+            selectedKeys[keyIndex++] = key;
+        }
+        target.endTag("so");
+        return keyIndex;
     }
 }

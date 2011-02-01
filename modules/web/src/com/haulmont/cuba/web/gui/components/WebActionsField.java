@@ -141,6 +141,14 @@ public class WebActionsField
         lookupField.setOptionsMap(map);
     }
 
+    public String getDescriptionProperty() {
+        return lookupField.getDescriptionProperty();
+    }
+
+    public void setDescriptionProperty(String descProperty) {
+        lookupField.setDescriptionProperty(descProperty);
+    }
+
     @Override
     public void setEditable(boolean editable) {
         super.setEditable(editable);

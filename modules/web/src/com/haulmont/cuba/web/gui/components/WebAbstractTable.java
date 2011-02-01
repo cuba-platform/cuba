@@ -1086,6 +1086,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         @Override
+        protected Element getXmlDescriptor(MetaPropertyPath propertyPath) {
+            Table.Column column = columns.get(propertyPath);
+            return column.getXmlDescriptor();
+        }
+
+        @Override
         protected void initCommon(com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath) {
             super.initCommon(field, cubaField, propertyPath);
 

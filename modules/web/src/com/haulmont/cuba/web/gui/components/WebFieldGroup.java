@@ -821,6 +821,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             }
             return null;
         }
+
+        @Override
+        protected Element getXmlDescriptor(MetaPropertyPath propertyPath) {
+            Field field = fields.get(propertyPath.toString());
+            return field != null ? field.getXmlDescriptor() : null;
+        }
     }
 
     private com.vaadin.ui.Field createField(final Datasource datasource, final Field fieldConf) {

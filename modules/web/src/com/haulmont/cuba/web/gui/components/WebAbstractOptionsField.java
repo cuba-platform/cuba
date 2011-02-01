@@ -34,6 +34,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
+    protected String descriptionProperty;
 
     protected DsManager optionsDsManager;
 
@@ -159,6 +160,15 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         if (optionsDatasource != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));
         }
+    }
+
+    public String getDescriptionProperty() {
+        return descriptionProperty;
+    }
+
+    public void setDescriptionProperty(String descriptionProperty) {
+        this.descriptionProperty = descriptionProperty;
+        //todo gorodnov: support description for all option fields
     }
 
     public List getOptionsList() {

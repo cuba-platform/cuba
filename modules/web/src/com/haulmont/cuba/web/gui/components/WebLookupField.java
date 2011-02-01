@@ -190,6 +190,15 @@ public class WebLookupField
         this.newOptionHandler = newItemHandler;
     }
 
+    @Override
+    public void setDescriptionProperty(String descriptionProperty) {
+        super.setDescriptionProperty(descriptionProperty);
+        component.setShowOptionsDescriptions(descriptionProperty != null);
+        if (optionsDatasource != null) {
+            component.setItemDescriptionPropertyId(optionsDatasource.getMetaClass().getProperty(descriptionProperty));
+        }
+    }
+
     public void disablePaging() {
         component.disablePaging();
     }

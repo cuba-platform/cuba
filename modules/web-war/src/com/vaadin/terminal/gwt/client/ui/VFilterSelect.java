@@ -38,6 +38,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         private final String key;
         private final String caption;
         private String iconUri;
+        private String desc;
 
         public FilterSelectSuggestion(UIDL uidl) {
             key = uidl.getStringAttribute("key");
@@ -45,6 +46,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             if (uidl.hasAttribute("icon")) {
                 iconUri = client.translateVaadinUri(uidl
                         .getStringAttribute("icon"));
+            }
+            if (showOptionsDesc && uidl.hasAttribute("desc")) {
+                desc = uidl.getStringAttribute("desc");
             }
         }
 
@@ -55,8 +59,12 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 sb.append(iconUri);
                 sb.append("\" alt=\"\" class=\"v-icon\" />");
             }
-            sb.append("<span>" + Util.escapeHTML(caption) + "</span>");
+            sb.append("<span" + getDescriptionSnippet() + ">" + Util.escapeHTML(caption) + "</span>");
             return sb.toString();
+        }
+
+        private String getDescriptionSnippet() {
+            return desc != null ? " title=\"" +Util.escapeHTML(desc) + "\"" : "";
         }
 
         public String getReplacementString() {
@@ -604,6 +612,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     private int openerWidth = -1;
 
+    private boolean showOptionsDesc = false;
+
     public VFilterSelect() {
         selectedItemIcon.setStyleName("v-icon");
         selectedItemIcon.addLoadHandler(new LoadHandler() {
@@ -722,6 +732,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         currentSuggestions.clear();
         final UIDL options = uidl.getChildUIDL(0);
         totalMatches = uidl.getIntAttribute("totalMatches");
+
+        showOptionsDesc = uidl.hasAttribute("optionsDesc") && uidl.getBooleanAttribute("optionsDesc");
 
         String captions = inputPrompt;
 

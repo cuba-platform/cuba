@@ -865,7 +865,6 @@
         <xs:attribute name="editable" type="xs:string" use="optional"/>
         <xs:attribute name="requiredMessage" type="xs:string" use="optional"/>
         <xs:attribute name="visible" type="xs:string" use="optional"/>
-        <xs:attribute name="editable" type="xs:string" use="optional"/>
         <xs:attribute name="enabled" type="xs:string" use="optional"/>
         <xs:attribute name="width" type="xs:string" use="optional"/>
         <xs:attribute name="custom" type="xs:string" use="optional"/>
@@ -878,6 +877,8 @@
         <xs:attribute name="rows" type="xs:int" use="optional"/>
         <xs:attribute name="clickAction" type="xs:string" use="optional"/>
         <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+        <xs:attribute name="descriptionProperty" type="xs:string" use="optional"/>
         <xs:attribute name="field" type="xs:string" use="optional"/>
         <xs:attribute name="showSeconds" type="xs:string" use="optional"/>
     </xs:complexType>

@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -57,6 +58,18 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     if (optionsDatasource != null) {
                         final WebLookupField lookupField = new WebLookupField();
                         lookupField.setOptionsDatasource(optionsDatasource);
+
+                        Element xmlDescriptor = getXmlDescriptor(propertyPath);
+                        if (xmlDescriptor != null) {
+                            if (!StringUtils.isEmpty(xmlDescriptor.attributeValue("captionProperty"))) {
+                                lookupField.setCaptionProperty(xmlDescriptor.attributeValue("captionProperty"));
+                                lookupField.setCaptionMode(CaptionMode.PROPERTY);
+                            }
+                            if (!StringUtils.isEmpty(xmlDescriptor.attributeValue("descriptionProperty"))) {
+                                lookupField.setDescriptionProperty(xmlDescriptor.attributeValue("descriptionProperty"));
+                            }
+                        }
+
                         cubaField = lookupField;
                         field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
                     } else if ("textField".equals(fieldType(propertyPath))) {
@@ -302,4 +315,6 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     protected abstract String getFormat(MetaPropertyPath propertyPath);
 
     protected abstract String fieldType(MetaPropertyPath propertyPath);
+
+    protected abstract Element getXmlDescriptor(MetaPropertyPath propertyPath);
 }
