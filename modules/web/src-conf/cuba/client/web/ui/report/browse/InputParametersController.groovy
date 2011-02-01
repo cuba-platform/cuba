@@ -88,7 +88,7 @@ public class InputParametersController extends AbstractWindow {
                         }
                     }
             ]
-            printReportButton.action = new ActionAdapter(getMessage('input.printReport'), printReport)
+            printReportButton.action = new ActionAdapter('input.printReport', messagesPack, printReport)
         }
     }
 

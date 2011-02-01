@@ -164,8 +164,8 @@ public class ReportEditor extends AbstractEditor {
             }
     ]
 
-    upButton.action = new ActionAdapter(getMessage('generalFrame.up'), up)
-    downButton.action = new ActionAdapter(getMessage('generalFrame.down'), down)
+    upButton.action = new ActionAdapter('generalFrame.up', messagesPack, up)
+    downButton.action = new ActionAdapter('generalFrame.down', messagesPack, down)
   }
 
   private def initValuesFormats() {
@@ -357,12 +357,12 @@ public class ReportEditor extends AbstractEditor {
     ] as FileUploadField.Listener;
 
     uploadTemplate.addListener(uploadListener);
-    createBandDefinitionButton.action = new ActionAdapter(getMessage('generalFrame.createBandDefinition'), createBandDefinition)
-    editBandDefinitionButton.action = new ActionAdapter(getMessage('generalFrame.editBandDefinition'), editBandDefinition)
-    removeBandDefinitionButton.action = new ActionAdapter(getMessage('generalFrame.removeBandDefinition'), removeBandDefinition)
-    upButton.action = new ActionAdapter(getMessage('generalFrame.up'), up)
-    downButton.action = new ActionAdapter(getMessage('generalFrame.down'), down)
-    templatePath.action = new ActionAdapter(getMessage('report.template'), showLink)
+    createBandDefinitionButton.action = new ActionAdapter('generalFrame.createBandDefinition', messagesPack, createBandDefinition)
+    editBandDefinitionButton.action = new ActionAdapter('generalFrame.editBandDefinition', messagesPack, editBandDefinition)
+    removeBandDefinitionButton.action = new ActionAdapter('generalFrame.removeBandDefinition', messagesPack, removeBandDefinition)
+    upButton.action = new ActionAdapter('generalFrame.up', messagesPack, up)
+    downButton.action = new ActionAdapter('generalFrame.down', messagesPack, down)
+    templatePath.action = new ActionAdapter('report.template', messagesPack, showLink)
   }
 
   private void saveFile(com.haulmont.cuba.core.entity.FileDescriptor fd, FileUploadField uploadField) {
