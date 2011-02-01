@@ -23,9 +23,10 @@
         </collectionDatasource>
     </dsContext>
     <#assign width = 400>
+    <#assign rwidth = 500>
     <layout expand="box">
 
-        <vbox id="box" margin="true" stylename="edit-area" spacing="true" expand="dataSets">
+        <vbox id="box" margin="true" stylename="edit-area" spacing="true" expand="split">
             <grid spacing="true" expandable="false">
                 <columns>
                     <column flex="1"/>
@@ -51,17 +52,52 @@
 
             <hbox spacing="true">
                 <button action="dataSets.create" icon="icons/create.png"/>
-                <button action="dataSets.edit" icon="icons/edit.png"/>
+                <!--<button action="dataSets.edit" icon="icons/edit.png"/>-->
                 <button action="dataSets.remove" icon="icons/remove.png"/>
             </hbox>
-            <table id="dataSets" editable="true">
-                <columns>
-                    <column id="name" caption="msg://dataSet.name"/>
-                    <column id="type" caption="msg://dataSet.type"/>
-                    <!--<column id="text" caption="msg://dataSet.text"/>-->
-                </columns>
-                <rows datasource="dataSetsDs"/>
-            </table>
+            <split id="split" orientation="horizontal" pos="40">
+                <vbox margin="false;true;false;false">
+                    <table id="dataSets" editable="true">
+                        <columns>
+                            <column id="name" caption="msg://dataSet.name"/>
+                            <column id="type" caption="msg://dataSet.type"/>
+                            <!--<column id="text" caption="msg://dataSet.text"/>-->
+                        </columns>
+                        <rows datasource="dataSetsDs"/>
+                    </table>
+                </vbox>
+                <vbox margin="false;false;false;true" expand="space">
+                    <groupBox>
+                        <caption label="msg://dataSet.properties"/>
+                        <grid spacing="true" expandable="false">
+                            <columns>
+                                <column flex="1"/>
+                                <column flex="1"/>
+                                <column flex="1"/>
+                            </columns>
+                            <rows>
+                                <row>
+                                    <label value="msg://dataSet.name"/>
+                                    <textField id="datasetName" datasource="dataSetsDs" property="name" width="${rwidth}"
+                                               required="true" requiredMessage="msg://dataSet.nameMsg"/>
+                                </row>
+                                <row>
+                                    <label value="msg://dataSet.type"/>
+                                    <lookupField id="type" datasource="dataSetsDs" property="type" width="${rwidth}"
+                                               required="true" requiredMessage="msg://dataSet.typeMsg"/>
+                                </row>
+                                <row>
+                                    <label id="dataSet_text" value="msg://dataSet.text"/>
+                                    <textField id="text" datasource="dataSetsDs" property="text"
+                                               rows="25" cols="60"/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </groupBox>
+                    <hbox id="space"> </hbox>
+                </vbox>
+            </split>
+
         </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>

@@ -59,8 +59,8 @@
                     </vbox>
                 </groupBox>
                 <!-- Splitter -->
-                <groupBox height="${treeHeight}" width="${treeWidth}" stylename="edit-area">
-                    <vbox expand="bandsVBox" spacing="true" margin="true">
+                <groupBox stylename="edit-area">
+                    <vbox expand="serviceTree" spacing="true" margin="true">
                         <label value="msg://report.bands" stylename="h2"/>
 
                         <hbox spacing="true" margin="true">
@@ -71,20 +71,14 @@
                             <button id="down" icon="icons/down.png"/>
                         </hbox>
 
-                        <vbox id="bandsVBox">
-                            <scrollbox id="scroll" height="${treeHeight}" width="${treeWidth}">
-                                <vbox id="vbox" height="${treeHeight}" width="${treeWidth}">
-                                    <tree id="serviceTree">
-                                        <treechildren datasource="treeDs" captionProperty="name"/>
-                                    </tree>
-                                </vbox>
-                            </scrollbox>
-                        </vbox>
+                        <tree id="serviceTree">
+                            <treechildren datasource="treeDs" captionProperty="name"/>
+                        </tree>
                     </vbox>
                 </groupBox>
             </split>
             <!-- Vertical split -->
-            <hbox width="100%" spacing="true">
+            <hbox width="100%" spacing="true" margin="false;true;true;true">
                 <iframe src="/cuba/client/web/ui/report/edit/tabs/parameters.xml" id="parametersFrame"/>
                 <iframe src="/cuba/client/web/ui/report/edit/tabs/formats.xml" id="formatsFrame"/>
             </hbox>

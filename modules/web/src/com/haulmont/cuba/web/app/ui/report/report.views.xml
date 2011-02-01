@@ -2,7 +2,7 @@
     <view entity="report$BandDefinition" name="report.edit" extends="_local">
         <property name="parentBandDefinition" view="_local"/>
         <property name="childrenBandDefinitions" view="_local"/>
-        <property name="dataSets" view="_local"/>
+        <property name="dataSets" view="report.edit"/>
     </view>
 
     <view entity="report$Report" name="report.edit" extends="_local">

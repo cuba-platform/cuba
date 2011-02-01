@@ -13,15 +13,25 @@ package cuba.client.web.ui.report.definition.edit
 import com.haulmont.cuba.gui.components.AbstractEditor
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.gui.components.IFrame
-import com.haulmont.cuba.gui.components.Button
 import com.haulmont.cuba.gui.components.Component
 import com.haulmont.cuba.report.BandDefinition
-import com.haulmont.cuba.report.DataSet
-import com.haulmont.cuba.gui.data.CollectionDatasource
-import com.haulmont.cuba.gui.components.ActionAdapter
 import com.haulmont.cuba.gui.components.Table
 import com.haulmont.cuba.gui.components.TableActionsHelper
-import com.haulmont.cuba.gui.components.ValueProvider
+import com.haulmont.cuba.gui.components.LookupField
+import com.haulmont.cuba.gui.components.TextField
+import com.haulmont.cuba.gui.components.Label
+import com.haulmont.cuba.report.DataSetType
+import com.haulmont.cuba.gui.data.ValueListener
+import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.components.ActionAdapter
+import com.haulmont.cuba.report.DataSet
+import com.haulmont.cuba.core.global.MessageProvider
+import com.haulmont.cuba.gui.AppConfig
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
+import com.haulmont.cuba.gui.data.Datasource
+import com.haulmont.cuba.gui.UserSessionClient
+import com.haulmont.cuba.security.entity.EntityOp
+import com.haulmont.cuba.report.Orientation
 
 public class BandDefinitionEditor extends AbstractEditor {
 
@@ -33,7 +43,9 @@ public class BandDefinitionEditor extends AbstractEditor {
         BandDefinition definition = (BandDefinition) item
         definition.setParentBandDefinition(parentDefinition)
         definition.position = position ?: definition.position
+        if (!definition.orientation) { definition.orientation = Orientation.HORIZONTAL }
         super.setItem(definition);
+        selectFirstDataset()
     }
 
     private BandDefinition parentDefinition
@@ -46,15 +58,68 @@ public class BandDefinitionEditor extends AbstractEditor {
 
         Table table = getComponent('dataSets')
         TableActionsHelper tah = new TableActionsHelper(this, table)
-        tah.createCreateAction([
-                getValues: {
-                    return ['bandDefinition': getItem()]
-                },
-                getParameters: {
-                    return [:]
-                }
-        ] as ValueProvider)
-        tah.createEditAction()
         tah.createRemoveAction(false)
+
+        table.addAction(new ActionAdapter('create', [
+                actionPerform: {
+                    Component component ->
+                    DataSet dataset = new DataSet()
+                    dataset.bandDefinition = (BandDefinition) item
+                    dataset.name = dataset.bandDefinition.name ?: 'dataset'
+                    dataset.type = DataSetType.GROOVY
+                    table.datasource.addItem(dataset)
+                },
+                getCaption: {
+                    MessageProvider.getMessage(AppConfig.instance.messagesPack, 'actions.Create')
+                },
+                isEnabled: {
+                    UserSessionClient.userSession.isEntityOpPermitted(table.datasource.metaClass, EntityOp.CREATE)
+                }
+        ]))
+
+        initDataSetControls()
+    }
+
+    def initDataSetControls() {
+        LookupField lookupField = getComponent('type')
+        TextField textField = getComponent('text')
+        TextField nameField = getComponent('datasetName')
+        Label label = getComponent('dataSet_text')
+
+        lookupField.addListener(
+                [
+                        valueChanged: {Object source, String property, Object prevValue, Object value ->
+                            [textField, label].each {Component c -> c.visible = !(value && [DataSetType.SINGLE, DataSetType.MULTI].contains(value))}
+                        }
+                ] as ValueListener
+        )
+
+        def enableDatasetControls = {
+            boolean value ->
+            [lookupField, textField, nameField].each {it.enabled = value}
+        }
+
+        Table datasets = getComponent('dataSets')
+        CollectionDatasource ds = datasets.datasource
+        ds.addListener([
+                itemChanged: {
+                    Datasource ds1, Entity prevItem, Entity item1 ->
+                    enableDatasetControls(item1 != null)
+                }
+        ] as DsListenerAdapter)
+
+        enableDatasetControls(false)
+    }
+
+    def selectFirstDataset() {
+        Table datasets = getComponent('dataSets')
+        CollectionDatasource ds = datasets.datasource
+        ds.refresh()
+        if (!ds.itemIds.empty) {
+            def item = ds.getItem(ds.itemIds.iterator().next())
+            def set = new HashSet();
+            set.add(item)
+            datasets.setSelected(set)
+        }
     }
 }
