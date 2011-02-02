@@ -506,14 +506,12 @@ public class WebWindowManager extends WindowManager {
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
-/*
         // surrond window layout with outer layout to prevent double painting
         VerticalLayout outerLayout = new VerticalLayout();
         outerLayout.addComponent(layout);
         outerLayout.setExpandRatio(layout, 1);
-*/
 
-        win.setContent(layout);
+        win.setContent(outerLayout);
 
         win.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
