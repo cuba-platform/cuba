@@ -1126,6 +1126,16 @@ public class WebWindow
         }
 
         @Override
+        public void expandLayout(boolean expandLayout) {
+            if (expandLayout) {
+                component.setSizeFull();
+            } else {
+                component.setWidth("100%");
+                component.setHeight("-1px");
+            }
+        }
+
+        @Override
         protected com.vaadin.ui.Component createLayout() {
             final VerticalLayout form = new VerticalActionsLayout();
 
@@ -1136,7 +1146,6 @@ public class WebWindow
             okbar.setStyleName("Window-actionsPane");
             okbar.setMargin(true, false, false, false);
             okbar.setSpacing(true);
-            okbar.setWidth("100%");
 
             final String messagesPackage = AppConfig.getInstance().getMessagesPack();
             final Button selectButton = WebComponentsHelper.createButton();
@@ -1159,10 +1168,6 @@ public class WebWindow
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);
-
-            final WebVBoxLayout vBoxLayout = new WebVBoxLayout();
-            okbar.addComponent(vBoxLayout);
-            okbar.setExpandRatio(vBoxLayout, 1);
 
             form.addComponent(contaiter);
             form.addComponent(okbar);
