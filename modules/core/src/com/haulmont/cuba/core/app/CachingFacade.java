@@ -11,11 +11,9 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.app.EntityLogMBean;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
@@ -49,7 +47,8 @@ public class CachingFacade implements CachingFacadeMBean {
 
     public void clearStorageTempDirectory() {
         try {
-            ServerConfig config = (ServerConfig) ConfigProvider.getConfig(ServerConfig.class);
+            FileUploadingApi uploadingApi = Locator.lookup(FileUploadingApi.NAME);
+            ServerConfig config = ConfigProvider.getConfig(ServerConfig.class);
             File dir = new File(config.getServerTempDir());
             File[] files = dir.listFiles();
             Date currentDate = TimeProvider.currentTimestamp();
@@ -58,11 +57,14 @@ public class CachingFacade implements CachingFacadeMBean {
                 Calendar calendar = new GregorianCalendar();
                 calendar.setTime(fileDate);
                 calendar.add(Calendar.DAY_OF_YEAR, 2);
-                if (currentDate.compareTo(calendar.getTime()) > 0)
-                    file.delete();
+                if (currentDate.compareTo(calendar.getTime()) > 0) {
+                    uploadingApi.deleteFileLink(file.getAbsolutePath());
+                    if (!file.delete())
+                        throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
+                }
             }
         } catch (Exception ex) {
-            LogFactory.getLog(getClass()).error(ex.getMessage(),ex);
+            LogFactory.getLog(getClass()).error(ex.getMessage(), ex);
         }
     }
 }

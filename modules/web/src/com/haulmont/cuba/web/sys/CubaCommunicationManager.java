@@ -11,7 +11,6 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.UserSession;
@@ -25,11 +24,6 @@ import com.haulmont.cuba.web.toolkit.ui.charts.ChartException;
 import com.haulmont.cuba.web.toolkit.ui.charts.ChartImplementation;
 import com.vaadin.Application;
 import com.vaadin.external.org.apache.commons.fileupload.*;
-import com.vaadin.external.org.apache.commons.fileupload.FileItemIterator;
-import com.vaadin.external.org.apache.commons.fileupload.FileItemStream;
-import com.vaadin.external.org.apache.commons.fileupload.FileUpload;
-import com.vaadin.external.org.apache.commons.fileupload.FileUploadBase;
-import com.vaadin.external.org.apache.commons.fileupload.FileUploadException;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.Paintable;
 import com.vaadin.terminal.UploadStream;
@@ -42,13 +36,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Window;
-
-import org.apache.commons.fileupload.*;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.ProgressListener;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -518,7 +507,6 @@ public class CubaCommunicationManager extends CommunicationManager {
                             
                             org.apache.commons.fileupload.FileItemIterator iterator = upload.getItemIterator(request);
                             boolean find = false;
-                            final HttpServletResponse fResponse = response;
                             while (iterator.hasNext() && (!find)) {
                                 org.apache.commons.fileupload.FileItemStream itemStream = iterator.next();
                                 if (!itemStream.isFormField()) {

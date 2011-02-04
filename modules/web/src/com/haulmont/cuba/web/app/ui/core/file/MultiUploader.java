@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -24,6 +23,8 @@ import java.util.*;
 import java.util.List;
 
 public class MultiUploader extends AbstractEditor {
+
+    private static final long serialVersionUID = 8050367710436521429L;
 
     private FileMultiUploadField uploadField = null;
     private Button okBtn;
@@ -61,13 +62,10 @@ public class MultiUploader extends AbstractEditor {
                 okBtn.setEnabled(true);
                 FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
-                Iterator<Map.Entry<UUID, String>> iterator = uploads.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<UUID, String> item = iterator.next();
+                for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
+                    FileDescriptor fDesc = uploader.getFileDescriptor(upload.getKey(), upload.getValue());
 
-                    FileDescriptor fDesc = uploader.getFileDescriptor(item.getKey(), item.getValue());
-
-                    descriptors.put(fDesc, item.getKey());
+                    descriptors.put(fDesc, upload.getKey());
                     filesDs.addItem(fDesc);
                 }
                 uploads.clear();
@@ -98,25 +96,32 @@ public class MultiUploader extends AbstractEditor {
         }
     }
 
-    public static int safeLongToInt(long l) {
-        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException
-                    (l + " cannot be cast to int without changing its value.");
+    @Override
+    public boolean close(String actionId) {
+        if (!COMMIT_ACTION_ID.equals(actionId)) {
+            FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+            for (Map.Entry<FileDescriptor, UUID> upload : descriptors.entrySet()) {
+                try {
+                    uploadService.deleteFile(upload.getValue());
+                } catch (FileStorageException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
-        return (int) l;
+        return super.close(actionId);
     }
 
     private void saveFile() {
         FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
+        FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
         try {
             // Relocate the file from temporary storage to permanent
             Collection ids = filesDs.getItemIds();
-            Iterator iter = ids.iterator();
-            while (iter.hasNext()) {
-                FileDescriptor fDesc = (FileDescriptor) filesDs.getItem(iter.next());
+            for (Object id : ids) {
+                FileDescriptor fDesc = (FileDescriptor) filesDs.getItem(id);
                 UUID fileId = descriptors.get(fDesc);
                 fss.putFile(fDesc, uploader.getFile(fileId));
+                uploader.deleteFile(fileId);
                 files.add(fDesc);
             }
         } catch (FileStorageException e) {

@@ -10,26 +10,28 @@
  */
 package com.haulmont.cuba.core.app;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.View;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.net.URLEncoder;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @ManagedBean(FileStorageAPI.NAME)
 public class FileStorage implements FileStorageMBean, FileStorageAPI {
@@ -138,9 +140,13 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         }
 
         try {
-            file.renameTo(destFile);
+            if (!file.renameTo(destFile))
+                throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
             writeLog(fileDescr, file);
-        } catch (Exception e) {
+        } catch (FileStorageException ex){
+            throw ex;
+        }
+        catch (Exception e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
         }
     }
