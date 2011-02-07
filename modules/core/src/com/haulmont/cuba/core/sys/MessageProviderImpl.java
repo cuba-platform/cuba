@@ -83,7 +83,8 @@ public class MessageProviderImpl extends MessageProvider
             msg = searchClasspath(pack, key, locale);
         }
         if (msg == null) {
-            log.warn("Resource '" + makeCacheKey(pack, key, locale) + "' not found");
+            if (log.isTraceEnabled())
+                log.trace("Resource '" + makeCacheKey(pack, key, locale) + "' not found");
             return key;
         } else
             return msg;

@@ -73,6 +73,8 @@ public abstract class App extends Application
 
     public static final List<String> ACTION_NAMES = Arrays.asList("open", "login");
 
+    public static final String USER_SESSION_ATTR = "userSessionId";
+
     protected Connection connection;
     private WebWindowManager windowManager;
 
@@ -374,6 +376,18 @@ public abstract class App extends Application
     }
 
     public void transactionEnd(Application application, Object transactionData) {
+        HttpServletRequest request = (HttpServletRequest) transactionData;
+        if (connection.isConnected()) {
+            UserSession userSession = connection.getSession();
+            if (userSession != null) {
+                request.getSession().setAttribute(USER_SESSION_ATTR, userSession);
+            } else {
+                request.getSession().setAttribute(USER_SESSION_ATTR, null);
+            }
+        } else {
+            request.getSession().setAttribute(USER_SESSION_ATTR, null);
+        }
+
         Long start = requestStartTimes.remove(transactionData);
         if (start != null) {
             long t = System.currentTimeMillis() - start;
