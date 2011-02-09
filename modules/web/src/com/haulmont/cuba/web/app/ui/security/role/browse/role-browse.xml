@@ -1,6 +1,7 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.cuba.web.app.ui.security.role.browse.RoleBrowser"
+        messagesPack="com.haulmont.cuba.web.app.ui.security.role.browse"
         lookupComponent="roles"
         caption="msg://caption"
         >
@@ -21,6 +22,7 @@
                     <button action="roles.edit" icon="icons/edit.png"/>
                     <button action="roles.remove" icon="icons/remove.png"/>
                     <button action="roles.excel" icon="icons/excel.png"/>
+                    <button action="roles.assignToUsers"/>
                 </buttonsPanel>
                 <columns>
                     <column id="name" caption="msg://role.name"/>

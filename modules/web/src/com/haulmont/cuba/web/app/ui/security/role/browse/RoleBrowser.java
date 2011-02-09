@@ -11,12 +11,19 @@
 package com.haulmont.cuba.web.app.ui.security.role.browse;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
 
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 public class RoleBrowser extends AbstractLookup {
 
@@ -34,6 +41,56 @@ public class RoleBrowser extends AbstractLookup {
         helper.createEditAction();
         helper.createRemoveAction();
         helper.createExcelAction(new WebExportDisplay());
+
+        table.addAction(new AbstractAction("assignToUsers") {
+            public void actionPerform(Component component) {
+                if (table.getSelected() == null) {
+                    showNotification(getMessage("selectRole.msg"), NotificationType.HUMANIZED);
+                    return;
+                }
+                final Role role = (Role) table.getSelected().iterator().next();
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("multiSelect", "true");
+                openLookup("sec$User.lookup", new Handler() {
+                    public void handleLookup(Collection items) {
+                        if (items == null) return;
+                        List<Entity> toCommit = new ArrayList<Entity>();
+                        for (Object item : items) {
+                            User user = (User) item;
+                            LoadContext ctx = new LoadContext(UserRole.class).setView("user.edit");
+                            LoadContext.Query query = ctx.setQueryString("select ur from sec$UserRole ur where ur.user.id = :user");
+                            query.addParameter("user", user);
+                            List<UserRole> userRoles = ServiceLocator.getDataService().loadList(ctx);
+
+                            boolean roleExist = false;
+                            for (UserRole userRole : userRoles) {
+                                if (role.equals(userRole.getRole())) {
+                                    roleExist = true;
+                                    break;
+                                }
+                            }
+                            if (!roleExist) {
+                                UserRole ur = new UserRole();
+                                ur.setUser(user);
+                                ur.setRole(role);
+                                toCommit.add(ur);
+                            }
+                        }
+
+                        if (!toCommit.isEmpty()) {
+                            ServiceLocator.getDataService().commit(new CommitContext(toCommit));
+                        }
+
+                        showNotification(getMessage("rolesAssigned.msg"), NotificationType.HUMANIZED);
+                    }
+                }, WindowManager.OpenType.THIS_TAB, params);
+            }
+
+            @Override
+            public String getCaption() {
+                return getMessage("assignToUsers");
+            }
+        });
 
         table.refresh();
 
