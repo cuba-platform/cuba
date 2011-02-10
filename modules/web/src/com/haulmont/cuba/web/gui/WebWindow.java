@@ -811,8 +811,10 @@ public class WebWindow
                 item = (Entity) InstanceUtils.copy((Instance) item);
             } else {
                 if (!PersistenceHelper.isNew(item)) {
+                    String useSecurityConstraintsParam = (String) getContext().getParams().get("useSecurityConstraints");
+                    boolean useSecurityConstraints = !("false".equals(useSecurityConstraintsParam));
                     final DataService dataservice = ds.getDataService();
-                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
+                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecurityConstraints);
                 }
             }
 

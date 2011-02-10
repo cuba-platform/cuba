@@ -23,6 +23,8 @@ public interface DataService extends com.haulmont.cuba.core.app.DataService {
 
     <A extends Entity> A reload(A entity, View view, MetaClass metaClass);
 
+    <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityCostraints);
+
     <A extends Entity> A commit(A entity, View view);
 
     void remove(Entity entity);

@@ -48,10 +48,15 @@ public class GenericDataService implements DataService, Serializable {
     }
 
     public <A extends Entity> A reload(A entity, View view, MetaClass metaClass) {
+        return reload(entity, view, metaClass, true);
+    }
+
+    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityCostraints) {
         if (metaClass == null) {
             metaClass = MetadataProvider.getSession().getClass(entity.getClass());
         }
         final LoadContext context = new LoadContext(metaClass);
+        context.setUseSecurityConstraints(useSecurityCostraints);
         context.setId(entity.getId());
         context.setView(view);
 
