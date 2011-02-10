@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
@@ -86,20 +88,22 @@ public class FileDownloadServlet extends HttpServlet {
             response.setHeader("Content-Disposition", (attach ? "attachment" : "inline")
                     + "; filename=" + fileName);
 
-            byte[] data;
-            FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
+            FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
+            InputStream is = null;
+            ServletOutputStream os = null;
             try {
-                data = fss.loadFile(fd);
+                is = fss.openFileInputStream(fd);
+                os = response.getOutputStream();
+                IOUtils.copy(is, os);
+                os.flush();
             } catch (FileStorageException e) {
                 log.error("Unable to download file", e);
                 error(response);
-                return;
+            } finally {
+                if (is != null) is.close();
+                if (os != null) os.close();
             }
 
-            ServletOutputStream os = response.getOutputStream();
-            os.write(data, 0, data.length);
-            os.flush();
-            os.close();
         } finally {
             WebSecurityUtils.clearSecurityAssociation();
         }

@@ -25,11 +25,11 @@ public class StaticContentHttpFilter implements Filter {
             throws IOException, ServletException
     {
         HttpSession session = ((HttpServletRequest) servletRequest).getSession();
-//        if (session.getAttribute("userSessionId") != null) {
+        if (session.getAttribute("userSessionId") != null) {
             filterChain.doFilter(servletRequest, servletResponse);
-//        } else {
-//            ((HttpServletResponse) servletResponse).sendError(HttpServletResponse.SC_FORBIDDEN, "");
-//        }
+        } else {
+            ((HttpServletResponse) servletResponse).sendError(HttpServletResponse.SC_FORBIDDEN, "");
+        }
     }
 
     public void destroy() {

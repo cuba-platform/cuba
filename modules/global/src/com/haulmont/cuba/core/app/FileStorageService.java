@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 
 import java.io.File;
+import java.io.InputStream;
 
 public interface FileStorageService {
 
@@ -25,6 +26,8 @@ public interface FileStorageService {
     void saveFile(FileDescriptor fileDescr, byte[] data) throws FileStorageException;
 
     void removeFile(FileDescriptor fileDescr) throws FileStorageException;
+
+    InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException;
 
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
 

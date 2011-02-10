@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.InputStream;
 
 @Service(FileStorageService.NAME)
 public class FileStorageServiceBean implements FileStorageService {
@@ -28,6 +29,11 @@ public class FileStorageServiceBean implements FileStorageService {
     public void removeFile(FileDescriptor fileDescr) throws FileStorageException {
         FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
         mbean.removeFile(fileDescr);
+    }
+
+    public InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException {
+        FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
+        return mbean.openFileInputStream(fileDescr);
     }
 
     public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {

@@ -26,6 +26,8 @@ public interface FileStorageAPI {
 
     void removeFile(FileDescriptor fileDescr) throws FileStorageException;    
 
+    InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException;
+
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
 
     /**

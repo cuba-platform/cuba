@@ -23,10 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -110,7 +107,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, "Unable to delete file " + file.getAbsolutePath());
     }
 
-    public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {
+    public InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException {
         checkNotNull(fileDescr, "No file descriptor");
         checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
 
@@ -121,9 +118,18 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
             throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, file.getAbsolutePath());
 
         try {
-            return FileUtils.readFileToByteArray(file);
+            return FileUtils.openInputStream(file);
         } catch (IOException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
+        }
+    }
+
+    public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {
+        InputStream inputStream = openFileInputStream(fileDescr);
+        try {
+            return IOUtils.toByteArray(inputStream);
+        } catch (IOException e) {
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getFileName(), e);
         }
     }
 

@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,7 +99,13 @@ public class StaticContentServlet extends HttpServlet {
                 os = new GZIPOutputStream(resp.getOutputStream(), bufferSize);
             } else
                 os = resp.getOutputStream();
-            transferStreams(url.openStream(), os);
+            InputStream is = url.openStream();
+            try {
+                IOUtils.copy(is, os);
+            } finally {
+                is.close();
+                os.close();
+            }
         }
 
         public void respondHead(HttpServletResponse resp) {
@@ -231,15 +239,4 @@ public class StaticContentServlet extends HttpServlet {
 
     protected static final int bufferSize = 4 * 1024;
 
-    protected static void transferStreams(InputStream is, OutputStream os) throws IOException {
-        try {
-            byte[] buf = new byte[bufferSize];
-            int bytesRead;
-            while ((bytesRead = is.read(buf)) != -1)
-                os.write(buf, 0, bytesRead);
-        } finally {
-            is.close();
-            os.close();
-        }
-    }
 }
