@@ -35,6 +35,16 @@ public class FileUploadServiceBean implements FileUploadService {
         return uploadingApi.saveFile(stream, listener);
     }
 
+    public UUID createEmptyFile() throws FileStorageException {
+        FileUploadingApi uploadingApi = Locator.lookup(FileUploadingApi.NAME);
+        return uploadingApi.createEmptyFile();
+    }
+
+    public UUID getNewDescriptor() throws FileStorageException {
+        FileUploadingApi uploadingApi = Locator.lookup(FileUploadingApi.NAME);
+        return uploadingApi.getNewDescriptor();
+    }
+
     public File getFile(UUID fileId) {
         FileUploadingApi uploadingApi = Locator.lookup(FileUploadingApi.NAME);
         return uploadingApi.getFile(fileId);

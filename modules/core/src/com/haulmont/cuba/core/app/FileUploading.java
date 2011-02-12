@@ -111,6 +111,45 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
         return uuid;
     }
 
+    public UUID createEmptyFile() throws FileStorageException {
+        UUID uuid = UUID.randomUUID();
+        String tempDir = ConfigProvider.getConfig(ServerConfig.class).getServerTempDir();
+        File dir = new File(tempDir);
+        File file = new File(dir, uuid.toString());
+        try {
+            if (file.exists()) {
+                throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+            }
+            if (file.createNewFile())
+                tempFiles.put(uuid, file);
+            else
+                throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+        } catch (FileStorageException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+        }
+        return uuid;
+    }
+
+    public UUID getNewDescriptor() throws FileStorageException {
+        UUID uuid = UUID.randomUUID();
+        String tempDir = ConfigProvider.getConfig(ServerConfig.class).getServerTempDir();
+        File dir = new File(tempDir);
+        File file = new File(dir, uuid.toString());
+        try {
+            if (file.exists()) {
+                throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+            }
+            tempFiles.put(uuid, file);
+        } catch (FileStorageException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+        }
+        return uuid;
+    }
+
     public File getFile(UUID fileId) {
         if (tempFiles.containsKey(fileId))
             return tempFiles.get(fileId);

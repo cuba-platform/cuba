@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -25,6 +26,15 @@ public interface FileUploadingApi {
 
     public UUID saveFile(InputStream stream, FileUploadService.UploadProgressListener listener)
             throws FileStorageException ;
+
+    public UUID createEmptyFile() throws FileStorageException;
+
+    /**
+     * Get new File() in temp directory without create them
+     * @return
+     * @throws FileStorageException
+     */
+    public UUID getNewDescriptor() throws FileStorageException;
 
     public File getFile(UUID fileId) ;
 

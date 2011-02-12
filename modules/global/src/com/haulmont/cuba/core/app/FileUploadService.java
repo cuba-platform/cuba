@@ -47,6 +47,20 @@ public interface FileUploadService {
             throws FileStorageException;
 
     /**
+     * Create empty file in temp directory
+     * @return
+     * @throws FileStorageException
+     */
+    public UUID createEmptyFile() throws FileStorageException;
+
+    /**
+     * Get new File() in temp directory without create them
+     * @return
+     * @throws FileStorageException
+     */
+    public UUID getNewDescriptor() throws FileStorageException;
+
+    /**
      * Get file by Id
      *
      * @param fileId File identity
