@@ -82,9 +82,9 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     }
                 } else if (range.isEnum()) {
                     final WebLookupField lookupField = new WebLookupField();
-                    if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
+//                    if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
 
-                    lookupField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
+                    lookupField.setDatasource(getDatasource(), propertyPath.toString());
                     lookupField.setOptionsList(range.asEnumeration().getValues());
 
                     cubaField = lookupField;
@@ -238,17 +238,21 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
     protected void initTextField(com.vaadin.ui.TextField field, MetaProperty metaProperty, Element xmlDescriptor) {
         final String cols = xmlDescriptor.attributeValue("cols");
-        final String rows = xmlDescriptor.attributeValue("rows");
-        final String maxLength = xmlDescriptor.attributeValue("maxLength");
-
         if (!StringUtils.isEmpty(cols)) {
             field.setColumns(Integer.valueOf(cols));
         }
+        final String rows = xmlDescriptor.attributeValue("rows");
         if (!StringUtils.isEmpty(rows)) {
             field.setRows(Integer.valueOf(rows));
         }
+        final String maxLength = xmlDescriptor.attributeValue("maxLength");
         if (!StringUtils.isEmpty(maxLength)) {
             field.setMaxLength(Integer.valueOf(maxLength));
+        } else {
+            Integer len = (Integer) metaProperty.getAnnotations().get("length");
+            if (len != null) {
+                field.setMaxLength(len);
+            }
         }
     }
 
