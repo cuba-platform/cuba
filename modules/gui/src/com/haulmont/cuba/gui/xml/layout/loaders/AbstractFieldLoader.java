@@ -10,6 +10,8 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -67,8 +69,17 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
             component.setRequired(BooleanUtils.toBoolean(required));
         }
         String msg = element.attributeValue("requiredMessage");
-        if (msg != null)
+        if (msg != null) {
             component.setRequiredMessage(loadResourceString(msg));
+        } else if (component.isRequired()) {
+            component.setRequiredMessage(
+                    MessageProvider.formatMessage(
+                            messagesPack,
+                            "validation.required.defaultMsg",
+                            MessageUtils.getPropertyCaption(component.getMetaProperty())
+                    )
+            );
+        }
     }
 
     protected void loadValidators(Field component, Element element) {

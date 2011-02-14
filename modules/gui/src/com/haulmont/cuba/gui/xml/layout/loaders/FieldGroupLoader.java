@@ -13,8 +13,13 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -217,7 +222,11 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             if (ds != null) {
                 MetaPropertyPath metaPropertyPath = ds.getMetaClass().getPropertyPath(field.getId());
                 if (metaPropertyPath != null) {
-                    Field.Validator validator = getDefaultValidator(metaPropertyPath.getMetaProperty());
+                    MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
+                    Field.Validator validator = null;
+                    if (!"timeField".equals(field.getXmlDescriptor().attributeValue("field"))) {
+                        validator = getDefaultValidator(metaProperty); //In this case we no need to use validator
+                    }
                     if (validator != null) {
                         component.addValidator(field, validator);
                     }
@@ -231,6 +240,15 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         final String required = element.attributeValue("required");
         if (!StringUtils.isEmpty(required)) {
             String requiredMsg = element.attributeValue("requiredMessage");
+            if (StringUtils.isEmpty(requiredMsg)) {
+                MetaClass metaClass = metaClass(component, field);
+                MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+                requiredMsg = MessageProvider.formatMessage(
+                        messagesPack,
+                        "validation.required.defaultMsg",
+                        MessageUtils.getPropertyCaption(metaProperty)
+                );
+            }
             component.setRequired(field, BooleanUtils.toBoolean(required), loadResourceString(requiredMsg));
         }
     }
@@ -263,16 +281,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             }
         } else {
             if (component.isEditable()) {
-                Datasource ds;
-                if (component.getDatasource() != null && field.getDatasource() == null) {
-                    ds = component.getDatasource();
-                } else if (field.getDatasource() != null) {
-                    ds = field.getDatasource();
-                } else {
-                    throw new IllegalStateException(String.format("Unable to get datasource for field '%s'",
-                            field.getId()));
-                }
-                MetaClass metaClass = ds.getMetaClass();
+                MetaClass metaClass = metaClass(component, field);
                 MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
 
                 UserSession userSession = UserSessionClient.getUserSession();
@@ -294,6 +303,20 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 component.setEditable(field, false);
             }
         }
+    }
+
+    private MetaClass metaClass(FieldGroup component, FieldGroup.Field field) {
+        if (field.isCustom()) return null;
+        Datasource datasource;
+        if (field.getDatasource() != null) {
+            datasource = field.getDatasource();
+        } else if (component.getDatasource() != null) {
+            datasource = component.getDatasource();
+        } else {
+            throw new IllegalStateException(String.format("Unable to get datasource for field '%s'",
+                    field.getId()));
+        }
+        return datasource.getMetaClass();
     }
 
     protected void loadEnabled(FieldGroup component, FieldGroup.Field field) {
