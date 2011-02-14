@@ -11,7 +11,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -44,15 +43,17 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         dsManager = new DsManager(datasource, this);
 
         final MetaClass metaClass = datasource.getMetaClass();
-        this.metaProperty = metaClass.getProperty(property);
-        if (metaProperty == null)
-            throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
+        metaPropertyPath = metaClass.getPropertyPath(property);
+        try {
+            metaProperty = metaPropertyPath.getMetaProperty();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
+        }
 
         setMultiSelect(metaProperty.getRange().getCardinality().isMany());
 
-        final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath), dsManager);
-        final Property itemProperty = wrapper.getItemProperty(propertyPath);
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath), dsManager);
+        final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
         component.setPropertyDataSource(itemProperty);
 
