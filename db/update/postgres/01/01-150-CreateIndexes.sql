@@ -1,10 +1,10 @@
 -- $Id$
 -- Description:
 
-create index idx_sec_constraint_group on sec_constraint (group_id)^
+create index IDX_SEC_CONSTRAINT_GROUP on SEC_CONSTRAINT (GROUP_ID)^
 
-create index idx_sec_session_attr_group on sec_session_attr (group_id)^
+create index IDX_SEC_SESSION_ATTR_GROUP on SEC_SESSION_ATTR (GROUP_ID)^
 
-create index idx_sec_search_folder_user on sec_search_folder (user_id)^
+create index IDX_SEC_SEARCH_FOLDER_USER on SEC_SEARCH_FOLDER (USER_ID)^
 
-create index idx_sec_presentation_component_user on sec_presentation (component, user_id)^
+create index IDX_SEC_PRESENTATION_COMPONENT_USER on SEC_PRESENTATION (COMPONENT, USER_ID)^

@@ -12,7 +12,7 @@ package com.haulmont.cuba.web.app.ui.security.history;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.security.entity.TabHistory;
+import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.core.entity.Entity;
@@ -20,11 +20,11 @@ import com.haulmont.cuba.web.sys.LinkHandler;
 
 import java.util.*;
 
-public class TabHistoryBrowse extends AbstractWindow{
+public class ScreenHistoryBrowse extends AbstractWindow{
 
     protected Table historyTable;
 
-    public TabHistoryBrowse(IFrame frame) {
+    public ScreenHistoryBrowse(IFrame frame) {
         super(frame);
     }
 
@@ -41,7 +41,7 @@ public class TabHistoryBrowse extends AbstractWindow{
 //        Button copyButton = (Button)getComponent("copy");
 //        copyButton.setAction(new AbstractAction("copy"){
 //            public void actionPerform(Component component) {
-//                TabHistory tabHistory = historyTable.getSingleSelected();
+//                ScreenHistoryEntity tabHistory = historyTable.getSingleSelected();
 //                if (tabHistory == null) return;
 //                String url = tabHistory.getUrl();
 //                App.getInstance().getAppWindow().executeJavaScript("$.copy(\"" + url + "\")");
@@ -50,9 +50,9 @@ public class TabHistoryBrowse extends AbstractWindow{
     }
 
     private void openUrl(Entity entity) {
-        TabHistory tabHistory = (TabHistory) entity;
+        ScreenHistoryEntity screenHistoryEntity = (ScreenHistoryEntity) entity;
         Map<String, String> paramsScreen = new HashMap<String, String>();
-        String url = tabHistory.getUrl();
+        String url = screenHistoryEntity.getUrl();
         url = url.substring(url.indexOf("\u003f") + 1);
         paramsScreen.put("local", "true");
         String[] params =  url.split("&");

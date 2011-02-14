@@ -56,7 +56,7 @@ public interface EntityManager
      * @param primaryKey
      * @return the found entity instance or null if the entity does not exist
      * @throws IllegalArgumentException if the first argument does
-     * not denote an entity type or the second argument is not a valid type for that entity’s primary key
+     * not denote an entity type or the second argument is not a valid type for that entity's primary key
      */
     <T extends Entity> T find(Class<T> entityClass, Object primaryKey);
 
@@ -72,7 +72,7 @@ public interface EntityManager
      * @param primaryKey
      * @return the found entity instance
      * @throws IllegalArgumentException if the first argument does
-     * not denote an entity type or the second argument is not a valid type for that entity’s primary key
+     * not denote an entity type or the second argument is not a valid type for that entity's primary key
      * @throws javax.persistence.EntityNotFoundException if the entity state cannot be accessed
      */
     <T extends Entity> T getReference(Class<T> entityClass, Object primaryKey);

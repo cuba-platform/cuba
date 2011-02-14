@@ -12,7 +12,6 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.app.TabHistoryService;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
@@ -24,8 +23,8 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.security.entity.TabHistory;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
@@ -34,14 +33,13 @@ import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.List;
 
 public class WebWindowManager extends WindowManager {
 
@@ -71,8 +69,6 @@ public class WebWindowManager extends WindowManager {
     private String baseModalWindowCaption = "";
 
     private Stack<ModalContentWithCaption> modalWindowStack = new Stack<ModalContentWithCaption>();
-
-    private TabHistoryService tabHistoryService;
 
     private static class ModalContentWithCaption implements Serializable{
         String caption;
@@ -225,8 +221,8 @@ public class WebWindowManager extends WindowManager {
         window.setCaption(caption);
         window.setDescription(description);
 
-        if (window.getFrame() != null && !(window.getFrame() instanceof Window.Lookup)) {
-            addTabHistory(window, caption, type);
+        if (window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !type.equals(OpenType.DIALOG)) {
+            saveScreenHistory(window, caption);
         }
 
         switch (type) {
@@ -730,22 +726,14 @@ public class WebWindowManager extends WindowManager {
         return new WebComponentsFactory();
     }
 
-    protected void addTabHistory(Window window, String caption, OpenType openType){
-        String windowId = window.getFrame().getId();
-        if ("sec$TabHistory.browse".equals(windowId)
-                || windowId.startsWith("jmxcontrol") && !windowId.equals("jmxcontrol$DisplayMbeans")
-                || OpenType.DIALOG.equals(openType)) return;
-        TabHistory tabHistory = EntityFactory.create(TabHistory.class);
-        tabHistory.setCaption(caption);
-        tabHistory.setCreator(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
-        tabHistory.setUrl(makeLink(window));
-        if (tabHistoryService == null) {
-            tabHistoryService = ServiceLocator.lookup(TabHistoryService.NAME);
-        }
-        if (tabHistoryService.getCurrentUserTabHistoryCount() > TabHistoryService.MAX_BUFFER) {
-            tabHistoryService.deleteEndTabHistory();
-        }
-        tabHistoryService.saveTabHistoryEntity(tabHistory);
+    protected void saveScreenHistory(Window window, String caption){
+        ScreenHistoryEntity screenHistoryEntity = EntityFactory.create(ScreenHistoryEntity.class);
+        screenHistoryEntity.setCaption(caption);
+        screenHistoryEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+        screenHistoryEntity.setUrl(makeLink(window));
+
+        CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
+        ServiceLocator.getDataService().commit(cc);
     }
 
     protected String makeLink(Window window) {

@@ -212,6 +212,7 @@
         <task:scheduled ref="cuba_Heartbeat" method="beat" fixed-rate="1000"/>
         <task:scheduled ref="cuba_LockManager" method="expireLocks" fixed-rate="60000"/>
         <task:scheduled ref="cuba_CachingFacade" method="clearStorageTempDirectory" cron="0 0 0 * * 2,4,6"/>
+        <task:scheduled ref="cuba_ScreenHistory" method="cleanup" fixed-delay="60000"/>
     </task:scheduled-tasks>
 
     <!-- Email setup -->

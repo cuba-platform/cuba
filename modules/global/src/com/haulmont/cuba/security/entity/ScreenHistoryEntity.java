@@ -13,14 +13,15 @@ package com.haulmont.cuba.security.entity;
 import javax.persistence.*;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 
-@javax.persistence.Entity(name = "sec$TabHistory")
-@Table(name = "SEC_TAB_HISTORY")
-public class TabHistory extends BaseUuidEntity {
+@javax.persistence.Entity(name = "sec$ScreenHistory")
+@Table(name = "SEC_SCREEN_HISTORY")
+public class ScreenHistoryEntity extends BaseUuidEntity {
+
     private static final long serialVersionUID = 1L;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CREATOR_ID")
-    private User creator;
+    @JoinColumn(name = "USER_ID")
+    private User user;
 
     @Column(name = "CAPTION", length = 255)
     private String caption;
@@ -28,12 +29,12 @@ public class TabHistory extends BaseUuidEntity {
     @Column(name = "URL", length = 4000)
     private String url;
 
-    public User getCreator() {
-        return creator;
+    public User getUser() {
+        return user;
     }
 
-    public void setCreator(User creator) {
-        this.creator = creator;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getCaption() {

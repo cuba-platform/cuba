@@ -1,16 +1,16 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.web.app.ui.security.history.TabHistoryBrowse"
+        class="com.haulmont.cuba.web.app.ui.security.history.ScreenHistoryBrowse"
         messagesPack="com.haulmont.cuba.web.app.ui.security.history"
         caption="msg://cardHistoryBrowse.caption"
-        datasource="tabHistoryDs"
+        datasource="historyDs"
         >
 
     <dsContext>                                           
-        <collectionDatasource id="tabHistoryDs" class="com.haulmont.cuba.security.entity.TabHistory" view="browse">
+        <collectionDatasource id="historyDs" class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" view="browse">
             <query>
-                <![CDATA[select th from sec$TabHistory th where th.creator.id = :session$userId 
-                order by th.createTs desc]]>
+                <![CDATA[select h from sec$ScreenHistory h where h.user.id = :session$userId
+                order by h.createTs desc]]>
             </query>
         </collectionDatasource>
     </dsContext>
@@ -23,7 +23,7 @@
                     <column id="caption" caption="msg://cardHistoryBrowse.name"/>
                     <column id="createTs" caption="msg://cardHistoryBrowse.createTs"/>
                 </columns>
-                <rows datasource="tabHistoryDs"/>
+                <rows datasource="historyDs"/>
             </table>
         </vbox>
     </layout>

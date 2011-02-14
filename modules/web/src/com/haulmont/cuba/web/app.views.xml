@@ -82,7 +82,7 @@
         <property name="autoSave"/>
     </view>
 
-    <view class="com.haulmont.cuba.security.entity.TabHistory" name="browse" extends="_local">
-        <property name="creator" view="_minimal"/>
+    <view class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" name="browse" extends="_local">
+        <property name="user" view="_minimal"/>
     </view>
 </views>
