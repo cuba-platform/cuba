@@ -32,8 +32,8 @@
 
     <layout expand="table-panel">
         <vbox id="table-panel" expand="table" spacing="true">
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button id="runReport" />
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true;false;true;false">
+                <button id="runReport" action="table.runReport" icon="icons/run.png"/>
             </hbox>
             <table id="table" editable="false">
                 <columns>
