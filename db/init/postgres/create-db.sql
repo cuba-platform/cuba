@@ -644,7 +644,7 @@ create table SEC_SCREEN_HISTORY (
 	primary key (ID)
 )^
 
-alter table SEC_SCREEN_HISTORY add constraint FK_SEC_HISTORY_USER foreign key (CREATOR_ID) references SEC_USER (ID)^
+alter table SEC_SCREEN_HISTORY add constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
