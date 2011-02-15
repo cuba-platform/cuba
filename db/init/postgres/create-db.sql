@@ -634,17 +634,17 @@ CREATE TABLE report_value_format
 
 ------------------------------------------------------------------------------------------------------------
 
-create table SEC_TAB_HISTORY (
+create table SEC_SCREEN_HISTORY (
 	ID uuid,
 	CREATE_TS timestamp,
 	CREATED_BY varchar(50),
-	CREATOR_ID uuid,
+	USER_ID uuid,
 	CAPTION varchar(255),
 	URL varchar(4000),
 	primary key (ID)
 )^
 
-alter table SEC_TAB_HISTORY add constraint FK_SEC_HISTORY_USER foreign key (CREATOR_ID) references SEC_USER (ID)^
+alter table SEC_SCREEN_HISTORY add constraint FK_SEC_HISTORY_USER foreign key (CREATOR_ID) references SEC_USER (ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
