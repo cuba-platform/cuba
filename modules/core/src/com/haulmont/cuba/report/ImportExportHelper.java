@@ -105,8 +105,9 @@ public class ImportExportHelper {
             ArchiveEntry zipEntryTemplate = newStoredEntry(fd.getName(), fileBytes);
             zipOutputStream.putArchiveEntry(zipEntryTemplate);
             zipOutputStream.write(fileBytes);
-            zipOutputStream.closeArchiveEntry();
         }
+
+        zipOutputStream.closeArchiveEntry();
         zipOutputStream.close();
         return byteArrayOutputStream.toByteArray();
     }
