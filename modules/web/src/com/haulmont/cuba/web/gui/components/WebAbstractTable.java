@@ -786,21 +786,22 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         @Override
         public String toString() {
             final Table.Column column = WebAbstractTable.this.columns.get(propertyPath);
-            if (column != null && column.getXmlDescriptor() != null) {
-                String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
+            if (column != null) {
                 if (column.getFormatter() != null) {
                     return column.getFormatter().format(getValue());
-                } else if (!StringUtils.isEmpty(captionProperty)) {
-                    final Object value = getValue();
-                    return this.propertyPath.getRange().isDatatype() ?
-                            this.propertyPath.getRange().asDatatype().format(value) :
-                            value == null ? null : String.valueOf(((Instance) value).getValue(captionProperty));
-                } else {
-                    return super.toString();
+                } else if (column.getXmlDescriptor() != null) {
+                    String captionProperty = column.getXmlDescriptor().attributeValue("captionProperty");
+                    if (!StringUtils.isEmpty(captionProperty)) {
+                        final Object value = getValue();
+                        return this.propertyPath.getRange().isDatatype() ?
+                                this.propertyPath.getRange().asDatatype().format(value) :
+                                value != null
+                                        ? String.valueOf(((Instance) value).getValue(captionProperty))
+                                        : null;
+                    }
                 }
-            } else {
-                return super.toString();
             }
+            return super.toString();
         }
     }
 
