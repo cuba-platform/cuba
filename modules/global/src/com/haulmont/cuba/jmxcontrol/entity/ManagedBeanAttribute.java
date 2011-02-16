@@ -13,6 +13,7 @@ package com.haulmont.cuba.jmxcontrol.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 
 import java.lang.reflect.Array;
 
@@ -41,19 +42,7 @@ public class ManagedBeanAttribute extends AbstractNotPersistentEntity {
 
     @MetaProperty
     public String getValueString() {
-        if (value == null) {
-            return null;
-        }
-
-        if (value.getClass().isArray()) {
-            StringBuilder b = new StringBuilder();
-            for (int i = 0; i < Array.getLength(value); i++) {
-                Object o = Array.get(value, i);
-                b.append(String.valueOf(o)).append("\n");                
-            }
-            return b.toString();
-        }
-        return value.toString();
+        return AttributeHelper.convertToString(value);
     }
 
     public ManagedBeanInfo getMbean() {

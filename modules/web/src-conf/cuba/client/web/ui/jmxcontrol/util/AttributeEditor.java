@@ -11,6 +11,7 @@
 package cuba.client.web.ui.jmxcontrol.util;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.WebCheckBox;
 import com.haulmont.cuba.web.gui.components.WebTextField;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;

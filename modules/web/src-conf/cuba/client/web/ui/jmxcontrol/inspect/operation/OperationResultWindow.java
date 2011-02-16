@@ -13,7 +13,7 @@ package cuba.client.web.ui.jmxcontrol.inspect.operation;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLabel;
-import cuba.client.web.ui.jmxcontrol.util.AttributeHelper;
+import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 
 import java.util.Map;
 

@@ -21,7 +21,7 @@ import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperation;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperationParameter;
 import com.haulmont.cuba.web.gui.components.*;
 import cuba.client.web.ui.jmxcontrol.util.AttributeEditor;
-import cuba.client.web.ui.jmxcontrol.util.AttributeHelper;
+import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
