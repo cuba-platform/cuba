@@ -23,13 +23,13 @@ public class WebAbstractPanel extends Panel
         implements com.haulmont.cuba.gui.components.Layout, Component.Container, Component.Expandable, Component.BelongToFrame
 {
     private String id;
-    private Component component;
+    protected Component component;
     private Alignment alignment = Alignment.TOP_LEFT;
 
     private boolean expandable = true;
 
     private IFrame frame;
-    
+
     private static final long serialVersionUID = -1826985432510393176L;
 
     public void add(Component component) {
