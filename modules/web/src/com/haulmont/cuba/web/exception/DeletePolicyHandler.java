@@ -24,18 +24,29 @@ public class DeletePolicyHandler extends AbstractExceptionHandler<DeletePolicyEx
     }
 
     protected void doHandle(DeletePolicyException t, App app) {
-        Matcher matcher = Pattern.compile("there are references from (.*)")
-                .matcher(t.getMessage());
-        String localizedEntityName = "";
-        if (matcher.find()) {
-            String entityName = matcher.group(1);
-            MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
+        String localizedEntityName;
+        MetaClass metaClass = recognizeMetaClass(t);
+        if (metaClass != null) {
+            String entityName = metaClass.getName();
             localizedEntityName = MessageProvider.getMessage(metaClass.getJavaClass(),
                     entityName.substring(entityName.lastIndexOf("$") + 1));
+        } else {
+            localizedEntityName = "";
         }
         String msg = MessageProvider.getMessage(getClass(), "deletePolicy.message");
         String references = MessageProvider.getMessage(getClass(), "deletePolicy.references.message");
         app.getAppWindow().showNotification(msg + "<br>" + references + " \"" + localizedEntityName + "\"",
                 Window.Notification.TYPE_ERROR_MESSAGE);
+    }
+
+    protected MetaClass recognizeMetaClass(DeletePolicyException e) {
+        Matcher matcher = Pattern.compile("there are references from (.*)")
+                .matcher(e.getMessage());
+        if (matcher.find()) {
+            String entityName = matcher.group(1);
+            return MetadataProvider.getSession().getClass(entityName);
+        } else {
+            return null;
+        }
     }
 }
