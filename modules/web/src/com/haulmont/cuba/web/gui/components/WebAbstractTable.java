@@ -179,6 +179,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setAggregatable(aggregatable);
     }
 
+    public void setShowTotalAggregation(boolean showAggregation) {
+        component.setShowTotalAggregation(showAggregation);
+    }
+
+    public boolean isShowTotalAggregation() {
+        return component.isShowTotalAggregation();
+    }
+
     @Override
     public Component getComposition() {
         return componentComposition;

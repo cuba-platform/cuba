@@ -142,6 +142,10 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         String aggregatable = element.attributeValue("aggregatable");
         if (!StringUtils.isEmpty(aggregatable)) {
             component.setAggregatable(BooleanUtils.toBoolean(aggregatable));
+            String showTotalAggregation = element.attributeValue("showTotalAggregation");
+            if (!StringUtils.isEmpty(showTotalAggregation)) {
+                component.setShowTotalAggregation(BooleanUtils.toBoolean(showTotalAggregation));
+            }
         }
     }
 

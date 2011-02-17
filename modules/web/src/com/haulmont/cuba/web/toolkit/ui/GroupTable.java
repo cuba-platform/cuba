@@ -190,7 +190,7 @@ public class GroupTable extends Table implements GroupTableContainer {
 
         boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
                 && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
-        if (reqFirstRowToPaint == -1 && hasAggregation) {
+        if (reqFirstRowToPaint == -1 && hasAggregation && isShowTotalAggregation()) {
             paintAggregationRow(target, ((AggregationContainer) items).aggregate(new Context(allItemIds())));
         }
 

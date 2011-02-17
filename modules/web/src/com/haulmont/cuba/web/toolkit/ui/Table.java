@@ -45,6 +45,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     private boolean textSelectionEnabled;
 
+    private boolean showTotalAggregation = true;
+
     public enum PagingMode {
         PAGE,
         SCROLLING
@@ -435,7 +437,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         target.addAttribute("vcolorder", visibleColOrder.toArray());
 
         if (reqFirstRowToPaint == -1 && items instanceof AggregationContainer && isAggregatable()
-                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty()) {
+                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty() && isShowTotalAggregation()) {
             paintAggregationRow(target, ((AggregationContainer) items).aggregate(new Context(items.getItemIds())));
         }
 
@@ -1106,6 +1108,15 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     public void setTextSelectionEnabled(boolean textSelectionEnabled) {
         this.textSelectionEnabled = textSelectionEnabled;
+        requestRepaint();
+    }
+
+    public boolean isShowTotalAggregation() {
+        return showTotalAggregation;
+    }
+
+    public void setShowTotalAggregation(boolean showTotalAggregation) {
+        this.showTotalAggregation = showTotalAggregation;
         requestRepaint();
     }
 

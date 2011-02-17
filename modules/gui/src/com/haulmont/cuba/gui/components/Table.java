@@ -45,6 +45,9 @@ public interface Table
     void setAggregatable(boolean aggregatable);
     boolean isAggregatable();
 
+    void setShowTotalAggregation(boolean showAggregation);
+    boolean isShowTotalAggregation();
+
     void sortBy(Object propertyId, boolean ascending);
 
     public class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
