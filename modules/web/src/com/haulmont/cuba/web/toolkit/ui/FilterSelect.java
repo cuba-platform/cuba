@@ -126,6 +126,7 @@ public class FilterSelect extends Select {
                 valueFound = false;
 
                 int count = (currentPage + 1) * getPageLength();
+                count = Math.max(count, fetched);
 
                 Object itemId = ((Ordered) items).firstItemId();
                 if (itemId != null) {
@@ -134,7 +135,8 @@ public class FilterSelect extends Select {
                     if (value == null || value.equals(prevItemId))
                         valueFound = true;
 
-                    for (int i = 0; i < count; i++) {
+                    fetched = 0;
+                    for (int i = 0; i < count - 1; i++) {
                         itemId = ((Ordered) items).nextItemId(prevItemId);
                         if (itemId == null)
                             break;
@@ -142,17 +144,19 @@ public class FilterSelect extends Select {
                         if (value == null || value.equals(itemId))
                             valueFound = true;
                         prevItemId = itemId;
+                        fetched++;
                     }
                 }
             } else {
                 log.trace("getFilteredOptions (container: " + items +  "): loading all itemIds");
                 filteredOptions = new LinkedList(getItemIds());
+                fetched = filteredOptions.size();
             }
 
-            fetched = Math.max(fetched, filteredOptions.size());
-
             if (!valueFound && value != null) {
-                log.trace("getFilteredOptions (container: " + items +  "): value is not in filteredOptions, adding it");
+                log.trace("getFilteredOptions (container: " + items + "): value is not in filteredOptions, adding it");
+                if (filteredOptions.size() >= getPageLength())
+                    ((LinkedList) filteredOptions).removeLast();
                 filteredOptions.add(value);
             }
             
