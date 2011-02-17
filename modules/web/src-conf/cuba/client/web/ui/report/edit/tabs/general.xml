@@ -5,71 +5,69 @@
     <layout expand="vSplit" expandLayout="true">
         <split orientation="vertical" expandable="true" id="vSplit" pos="70">
             <split orientation="horizontal" id="split">
-                <groupBox>
-                    <vbox margin="true" expandable="false">
-                        <grid spacing="true">
-                            <columns>
-                                <column flex="1"/>
-                                <column flex="1"/>
-                                <column flex="1"/>
-                            </columns>
-                            <rows>
-                                <!--<row>
-                                    <label value="msg://report.generalParameters" stylename="h2"/>
-                                </row>-->
-                                <row>
-                                    <label value="msg://report.name"/>
-                                    <textField id="name" datasource="reportDs" property="name"
-                                               width="${width}" required="true"
-                                               requiredMessage="msg://report.nameMsg"/>
-                                </row>
-                                <row>
-                                    <label value="msg://report.reportType"/>
-                                    <lookupField id="reportType" datasource="reportDs" property="reportType"
-                                                 width="${width}" required="true"
-                                                 requiredMessage="msg://report.reportTypeMsg"/>
-                                </row>
-                                <row>
-                                    <label value="msg://report.reportOutputType"/>
-                                    <lookupField id="reportOutputType" datasource="reportDs"
-                                                 property="reportOutputType"
-                                                 width="${width}" required="true"
-                                                 requiredMessage="msg://report.reportOutputTypeMsg"/>
-                                </row>
-                                <row>
-                                    <label value="msg://report.template"/>
-                                    <hbox spacing="true">
-                                        <button id="templatePath" stylename="link"/>
-                                        <upload id="uploadTemplate" width="${treeWidth}"/>
-                                    </hbox>
+                <groupBox stylename="edit-area">
+                    <grid spacing="true" expandable="false">
+                        <columns>
+                            <column flex="1"/>
+                            <column flex="1"/>
+                            <column flex="1"/>
+                        </columns>
+                        <rows>
+                            <!--<row>
+                                <label value="msg://report.generalParameters" stylename="h2"/>
+                            </row>-->
+                            <row>
+                                <label value="msg://report.name"/>
+                                <textField id="name" datasource="reportDs" property="name"
+                                           width="${width}" required="true"
+                                           requiredMessage="msg://report.nameMsg"/>
+                            </row>
+                            <row>
+                                <label value="msg://report.reportType"/>
+                                <lookupField id="reportType" datasource="reportDs" property="reportType"
+                                             width="${width}" required="true"
+                                             requiredMessage="msg://report.reportTypeMsg"/>
+                            </row>
+                            <row>
+                                <label value="msg://report.reportOutputType"/>
+                                <lookupField id="reportOutputType" datasource="reportDs"
+                                             property="reportOutputType"
+                                             width="${width}" required="true"
+                                             requiredMessage="msg://report.reportOutputTypeMsg"/>
+                            </row>
+                            <row>
+                                <label value="msg://report.template"/>
+                                <hbox spacing="true">
+                                    <button id="templatePath" stylename="link"/>
+                                    <upload id="uploadTemplate" width="${treeWidth}"/>
+                                </hbox>
 
-                                </row>
-                                <row>
-                                    <label value="msg://report.isCustom"/>
-                                    <checkBox id="isCustom" datasource="reportDs" property="isCustom"
-                                              width="${width}"/>
-                                </row>
-                                <row>
-                                    <label value="msg://report.customClass"/>
-                                    <textField id="customClass" datasource="reportDs" property="customClass"
-                                               width="${width}"/>
-                                </row>
-                            </rows>
-                        </grid>
-                    </vbox>
+                            </row>
+                            <row>
+                                <label value="msg://report.isCustom"/>
+                                <checkBox id="isCustom" datasource="reportDs" property="isCustom"
+                                          width="${width}"/>
+                            </row>
+                            <row>
+                                <label value="msg://report.customClass"/>
+                                <textField id="customClass" datasource="reportDs" property="customClass"
+                                           width="${width}"/>
+                            </row>
+                        </rows>
+                    </grid>
                 </groupBox>
                 <!-- Splitter -->
-                <groupBox stylename="edit-area">
-                    <vbox expand="serviceTree" spacing="true" margin="true">
+                <groupBox stylename="edit-area" expand="treeBox">
+                    <vbox id="treeBox" expand="serviceTree" spacing="true">
                         <label value="msg://report.bands" stylename="h2"/>
 
-                        <hbox spacing="true" margin="true">
+                        <buttonsPanel>
                             <button id="createBandDefinition" icon="icons/create.png"/>
                             <button id="editBandDefinition" icon="icons/edit.png"/>
                             <button id="removeBandDefinition" icon="icons/remove.png"/>
                             <button id="up" icon="icons/up.png"/>
                             <button id="down" icon="icons/down.png"/>
-                        </hbox>
+                        </buttonsPanel>
 
                         <tree id="serviceTree">
                             <treechildren datasource="treeDs" captionProperty="name"/>

@@ -41,6 +41,8 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
 
     public WebGroupBox() {
         VerticalActionsLayout container = new VerticalActionsLayout();
+        container.setSpacing(true);
+        container.setSizeFull();
         setContent(container);
         container.addActionHandler(new com.vaadin.event.Action.Handler() {
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
