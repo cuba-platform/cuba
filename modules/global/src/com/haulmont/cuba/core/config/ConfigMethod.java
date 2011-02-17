@@ -90,7 +90,7 @@ public abstract class ConfigMethod
      * Supported configuration method factories.
      */
     private static final Factory[] CONFIG_METHOD_FACTORIES = {
-            ConfigGetter.FACTORY, ConfigSetter.FACTORY, ConfigApplyDefaults.FACTORY
+            ConfigGetter.FACTORY, ConfigSetter.FACTORY
     };
 
     /**

@@ -28,10 +28,4 @@ package com.haulmont.cuba.core.config;
  */
 public interface Config
 {
-
-    /**
-     * Apply the default values of all configuration fields specified in
-     * this interface that have defaults.
-     */
-    public void applyDefaults();
 }
