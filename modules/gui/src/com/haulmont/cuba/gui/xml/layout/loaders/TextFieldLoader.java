@@ -54,6 +54,8 @@ public class TextFieldLoader extends AbstractFieldLoader {
             component.setDatatype(datatype);
         }
 
+        component.setFormatter(loadFormatter(element));
+
         return component;
     }
 }

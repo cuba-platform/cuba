@@ -16,6 +16,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
@@ -114,9 +115,9 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
                 String formatStr;
                 TemporalType tt = (TemporalType) propertyPath.getMetaProperty().getAnnotations().get("temporal");
                 if (TemporalType.DATE.equals(tt)) {
-                    formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
+                    formatStr = MessageUtils.getDateFormat();
                 } else {
-                    formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
+                    formatStr = MessageUtils.getDateTimeFormat();
                 }
                 return new SimpleDateFormat(formatStr).format(value);
             } else {

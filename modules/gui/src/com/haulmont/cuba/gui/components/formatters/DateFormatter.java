@@ -11,6 +11,7 @@
 package com.haulmont.cuba.gui.components.formatters;
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
@@ -39,10 +40,10 @@ public class DateFormatter implements Formatter<Date> {
             Table.Column.FormatterType ftype = Table.Column.FormatterType.valueOf(type);
             switch (ftype) {
                 case DATE:
-                    format = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
+                    format = MessageUtils.getDateFormat();
                     break;
                 case DATETIME:
-                    format = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
+                    format = MessageUtils.getDateTimeFormat();
                     break;
                 default:
                     throw new RuntimeException("Illegal formatter type value");

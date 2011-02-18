@@ -608,6 +608,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                         Field field = fields.get(propertyPath.toString());
                         return !isEditable(field);
                     }
+
+                    @Override
+                    public String toString() {
+                        Object value = getValue();
+                        if (value == null) return null;
+                        Field field = fields.get(propertyPath.toString());
+                        if (field.getFormatter() != null) {
+                            if (value instanceof Instance) {
+                                value = ((Instance) value).getInstanceName();
+                            }
+                            return field.getFormatter().format(value);
+                        }
+                        return super.toString();
+                    }
                 };
             }
         };
