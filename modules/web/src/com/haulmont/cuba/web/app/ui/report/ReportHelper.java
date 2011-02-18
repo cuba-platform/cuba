@@ -55,6 +55,10 @@ public class ReportHelper {
     }
 
     public static void runReport(Report report, Window window, final String paramAlias, final Object paramValue) {
+        runReport(report, window, paramAlias, paramValue, null);
+    }
+
+    public static void runReport(Report report, Window window, final String paramAlias, final Object paramValue, final String name) {
         if (report != null) {
             List<ReportInputParameter> params = report.getInputParameters();
             if (params != null && params.size() > 1) {
@@ -62,10 +66,18 @@ public class ReportHelper {
                         Collections.<String, Object>singletonMap("report", report));
             } else {
                 if (params != null && params.size() == 1) {
-                    ReportHelper.printReport(report,
-                            Collections.<String, Object>singletonMap(paramAlias, paramValue));
-                } else
-                    ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
+                    if (name == null)
+                        ReportHelper.printReport(report,
+                                Collections.<String, Object>singletonMap(paramAlias, paramValue));
+                    else
+                        ReportHelper.printReport(report, name,
+                                Collections.<String, Object>singletonMap(paramAlias, paramValue));
+                } else {
+                    if (name == null)
+                        ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
+                    else
+                        ReportHelper.printReport(report, name, Collections.<String, Object>emptyMap());
+                }
             }
         }
     }
@@ -137,12 +149,16 @@ public class ReportHelper {
     }
 
     public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor) {
+        return createPrintformFromEditorAction(captionId, editor, null);
+    }
+
+    public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor, final String name) {
         return new AbstractAction(captionId) {
             public void actionPerform(Component component) {
                 final Entity entity = editor.getItem();
                 if (entity != null) {
                     final String javaClassName = entity.getClass().getCanonicalName();
-                    openRunReportScreen(editor, "entity", entity, javaClassName, ReportType.PRINT_FORM);
+                    openRunReportScreen(editor, "entity", entity, javaClassName, ReportType.PRINT_FORM, name);
                 } else
                     editor.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"), IFrame.NotificationType.HUMANIZED);
             }
@@ -176,6 +192,10 @@ public class ReportHelper {
     }
 
     private static void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue, String javaClassName, ReportType reportType) {
+        openRunReportScreen(window, paramAlias, paramValue, javaClassName, reportType, null);
+    }
+
+    private static void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue, String javaClassName, ReportType reportType, final String name) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("javaClassName", javaClassName);
         params.put("reportType", reportType.getId());
@@ -187,7 +207,7 @@ public class ReportHelper {
                     if (items != null && items.size() > 0) {
                         Report report = (Report) items.iterator().next();
                         report = window.getDsContext().getDataService().reload(report, "report.edit");
-                        runReport(report, window, paramAlias, paramValue);
+                        runReport(report, window, paramAlias, paramValue, name);
                     }
                 }
             }, WindowManager.OpenType.DIALOG, params);
