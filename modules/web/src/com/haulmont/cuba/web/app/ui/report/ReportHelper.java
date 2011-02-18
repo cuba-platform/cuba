@@ -201,7 +201,7 @@ public class ReportHelper {
         params.put("reportType", reportType.getId());
         params.put("screen", window.getId());
 
-        if (checkReportsForStart(window, paramAlias, paramValue, javaClassName, reportType)) {
+        if (checkReportsForStart(window, paramAlias, paramValue, javaClassName, reportType, name)) {
             window.openLookup("report$Report.run", new Window.Lookup.Handler() {
                 public void handleLookup(Collection items) {
                     if (items != null && items.size() > 0) {
@@ -216,6 +216,11 @@ public class ReportHelper {
 
     private static boolean checkReportsForStart(final Window window, final String paramAlias, final Object paramValue,
                                                 String javaClassName, ReportType reportType) {
+        return checkReportsForStart(window, paramAlias, paramValue, javaClassName, reportType, null);
+    }
+
+    private static boolean checkReportsForStart(final Window window, final String paramAlias, final Object paramValue,
+                                                String javaClassName, ReportType reportType, final String name) {
         boolean result = false;
         LoadContext lContext = new LoadContext(Report.class);
         lContext.setView("report.edit");
@@ -232,7 +237,7 @@ public class ReportHelper {
         if (reports.size() == 1) {
             Report report = reports.get(0);
             window.getDsContext().getDataService().reload(report, "report.edit");
-            runReport(report, window, paramAlias, paramValue);
+            runReport(report, window, paramAlias, paramValue, name);
         } else if (reports.size() == 0) {
             String msg = MessageProvider.getMessage(ReportHelper.class, "report.notFoundReports");
             window.showNotification(msg, IFrame.NotificationType.HUMANIZED);
