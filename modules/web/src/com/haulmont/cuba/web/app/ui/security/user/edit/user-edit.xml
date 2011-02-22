@@ -30,8 +30,7 @@
                 <column flex="1" width="250px">
                     <field id="login" required="true" requiredMessage="msg://loginMsg"/>
                     <field id="passw" custom="true" visible="PersistenceHelper.isNew(param_item)"
-                           caption="msg://password"
-                           requiredMessage="msg://passwMsg"/>
+                           caption="msg://password"/>
                     <field id="lastName"/>
                     <field id="middleName"/>
                     <field id="position"/>
@@ -43,8 +42,7 @@
                 <column flex="3" width="250px">
                     <field id="group" required="true" requiredMessage="msg://groupMsg"/>
                     <field id="confirmPassw" custom="true" visible="PersistenceHelper.isNew(param_item)"
-                           caption="msg://confirmPassword"
-                           requiredMessage="msg://confirmPasswMsg"/>
+                           caption="msg://confirmPassword"/>
                     <field id="firstName"/>
                     <field id="name"/>
                     <field id="language" custom="true"/>
