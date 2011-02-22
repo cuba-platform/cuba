@@ -668,6 +668,7 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
+                            <xs:element name="rowsCount" minOccurs="0" maxOccurs="1" type="rowsCountType"/>
                             <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="groupTableColumnsType" />
                             <xs:element name="rows" minOccurs="1">
                                 <xs:complexType>
