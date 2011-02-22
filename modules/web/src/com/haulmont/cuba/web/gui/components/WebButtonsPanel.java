@@ -44,31 +44,36 @@ public class WebButtonsPanel extends WebHBoxLayout
         final Collection<Component> components = getComponents();
         final Collection<com.haulmont.cuba.gui.components.Button> buttons = new ArrayList<Button>(components.size());
         for (final Component component : components) {
-            buttons.add((Button) component);
+            if (component instanceof Button)
+                buttons.add((Button) component);
         }
         return buttons;
     }
 
     public com.haulmont.cuba.gui.components.Button getButton(String id) {
-        return getComponent(id);
+        Component component = getComponent(id);
+        if (component instanceof Button)
+            return (Button) component;
+        else
+            return null;
     }
 
     @Override
     public void add(Component component) {
-        if (component instanceof com.haulmont.cuba.gui.components.Button) {
+//        if (component instanceof com.haulmont.cuba.gui.components.Button) {
             super.add(component);
-        } else {
-            throw new IllegalArgumentException("Component is not a button");
-        }
+//        } else {
+//            throw new IllegalArgumentException("Component is not a button");
+//        }
     }
 
     @Override
     public void remove(Component component) {
-        if (component instanceof com.haulmont.cuba.gui.components.Button) {
+//        if (component instanceof com.haulmont.cuba.gui.components.Button) {
             super.remove(component);
-        } else {
-            throw new IllegalArgumentException("Component is not a button");
-        }
+//        } else {
+//            throw new IllegalArgumentException("Component is not a button");
+//        }
     }
 
     @Override
