@@ -34,6 +34,9 @@ public class FilterLoader extends ComponentLoader {
         loadVisible(filter, element);
         loadStyleName(filter, element);
 
+        String useMaxResults = element.attributeValue("useMaxResults");
+        filter.setUseMaxResults(useMaxResults == null || Boolean.valueOf(useMaxResults));
+
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
             CollectionDatasource ds = context.getDsContext().get(datasource);

@@ -17,9 +17,15 @@ public interface PersistenceManagerAPI
 {
     String NAME = "cuba_PersistenceManager";
 
+    /** True if this database table supports soft deletion */
     boolean isSoftDeleteFor(String table);
 
+    /** Whether to use a lazy collection datasource for this entity, based on current statistics */
     boolean useLazyCollection(String entityName);
 
+    /** Limit rows fetched for UI components in 'normal' conditions */
+    int getFetchUI(String entityName);
+
+    /** The absolute maximum number of rows that can be fetched for UI components */
     int getMaxFetchUI(String entityName);
 }

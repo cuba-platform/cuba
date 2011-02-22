@@ -236,14 +236,14 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     protected void checkMaxFetchUI(CollectionDatasource ds) {
-        String entityName = ds.getMetaClass().getName();
-        if (ds.size() >= persistenceManager.getMaxFetchUI(entityName)) {
-            log.debug("MaxFetchUI threshold exceeded for " + entityName);
-            String msg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "maxFetchUIExceeded");
-            App app = App.getInstance();
-            app.getAppLog().debug(entityName + ": " + msg);
-            app.getWindowManager().showNotification(msg, IFrame.NotificationType.HUMANIZED);
-        }
+//        String entityName = ds.getMetaClass().getName();
+//        if (ds.size() >= persistenceManager.getMaxFetchUI(entityName)) {
+//            log.debug("MaxFetchUI threshold exceeded for " + entityName);
+//            String msg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "maxFetchUIExceeded");
+//            App app = App.getInstance();
+//            app.getAppLog().debug(entityName + ": " + msg);
+//            app.getWindowManager().showNotification(msg, IFrame.NotificationType.HUMANIZED);
+//        }
     }
 
     protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {

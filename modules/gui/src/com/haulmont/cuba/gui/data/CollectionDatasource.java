@@ -216,6 +216,17 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         boolean isCompletelyLoaded();
     }
 
+    /**
+     * CollectionDatasource supporting counting records in database
+     * @param <T> type of entity
+     * @param <K> type of entity ID
+     */
+    interface SupportsCount<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
+
+        /** Returns count of records in datatabase for the current query and filter */
+        int getCount();
+    }
+
     interface Suspendable<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
         boolean isSuspended();

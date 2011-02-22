@@ -27,6 +27,11 @@ public class QueryFilter {
     private final Condition root;
     private final String targetEntity;
 
+    public QueryFilter(Condition condition, String targetEntity) {
+        this.targetEntity = targetEntity;
+        root = condition;
+    }
+
     public QueryFilter(Element element, String targetEntity) {
         this.targetEntity = targetEntity;
         if (element.elements().isEmpty())
@@ -48,6 +53,10 @@ public class QueryFilter {
         root = new LogicalCondition(LogicalOp.AND);
         root.getConditions().add(src1.root);
         root.getConditions().add(src2.root);
+    }
+
+    public Condition getRoot() {
+        return root;
     }
 
     private Condition createCondition(Element element) {

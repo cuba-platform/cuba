@@ -76,6 +76,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("tokenList", WebTokenList.class);
         classes.put("widgetsTree", WebWidgetsTree.class);
         classes.put("twinColumn", WebTwinColumn.class);
+        classes.put("rowsCount", WebRowsCount.class);
 
         //JFree charts
         classes.put("jfree@pieChart", WebJFreePieChart.class);

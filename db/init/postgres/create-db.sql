@@ -69,6 +69,7 @@ create table SYS_ENTITY_STATISTICS (
     UPDATED_BY varchar(50),
     NAME varchar(50),
     INSTANCE_COUNT bigint,
+    FETCH_UI integer,
     MAX_FETCH_UI integer,
     LAZY_COLLECTION_THRESHOLD integer,
     primary key (ID)

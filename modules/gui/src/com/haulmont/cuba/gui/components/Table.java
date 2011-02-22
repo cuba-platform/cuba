@@ -50,6 +50,9 @@ public interface Table
 
     void sortBy(Object propertyId, boolean ascending);
 
+    RowsCount getRowsCount();
+    void setRowsCount(RowsCount rowsCount);
+
     public class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
 
         private static final long serialVersionUID = -8462478820056909896L;

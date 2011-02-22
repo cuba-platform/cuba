@@ -18,10 +18,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Versioned;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.TemplateHelper;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.*;
@@ -46,13 +43,14 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         CollectionDatasource<T, K>
 {
     protected String query;
-    private QueryFilter filter;
+    protected QueryFilter filter;
     protected int maxResults;
     protected ParameterInfo[] queryParameters;
     protected boolean softDeletion;
     protected ComponentValueListener componentValueListener;
     private boolean refreshOnComponentValueChange;
     protected Sortable.SortInfo<MetaPropertyPath>[] sortInfos;
+    protected Map<String, Object> savedParameters;
 
     private static Log log = LogFactory.getLog(AbstractCollectionDatasource.class);
 
@@ -429,6 +427,23 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 q = context.setQueryString("select e from " + metaClass.getName() + " e");
         }
         return q;
+    }
+
+    public int getCount() {
+        LoadContext context = new LoadContext(metaClass);
+        LoadContext.Query q = createLoadContextQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
+        if (q == null)
+            return 0;
+
+        QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
+        transformer.replaceWithCount();
+        String jpqlQuery = transformer.getResult();
+        q.setQueryString(jpqlQuery);
+
+        List res = dataservice.loadList(context);
+        int count = res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
+
+        return count;
     }
 
     private class ComponentValueListener implements ValueListener {

@@ -34,14 +34,15 @@
                 </filter>
             </vbox>
             <vbox id="table-panel" expand="users" spacing="true">
-                <buttonsPanel align="MIDDLE_LEFT">
-                    <button action="users.create" icon="icons/create.png"/>
-                    <button action="users.edit" icon="icons/edit.png"/>
-                    <button action="users.remove" icon="icons/remove.png"/>
-                    <button action="users.changePassw" icon="icons/change-pass.png"/>
-                    <button action="users.excel" icon="icons/excel.png"/>
-                </buttonsPanel>
                 <table id="users" editable="false" presentations="true">
+                    <buttonsPanel align="MIDDLE_LEFT">
+                        <button action="users.create" icon="icons/create.png"/>
+                        <button action="users.edit" icon="icons/edit.png"/>
+                        <button action="users.remove" icon="icons/remove.png"/>
+                        <button action="users.changePassw" icon="icons/change-pass.png"/>
+                        <button action="users.excel" icon="icons/excel.png"/>
+                    </buttonsPanel>
+                    <rowsCount/>
                     <columns>
                         <column id="login"/>
                         <column id="name"/>

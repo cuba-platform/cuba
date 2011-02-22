@@ -723,6 +723,7 @@
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="applyTo" type="xs:string" use="optional"/>
+                        <xs:attribute name="useMaxResults" type="xs:boolean" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
@@ -979,6 +980,7 @@
     <xs:complexType name="tableType">
         <xs:sequence>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
+            <xs:element name="rowsCount" minOccurs="0" maxOccurs="1" type="rowsCountType"/>
             <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="tableColumnsType" />
             <xs:element name="rows" minOccurs="1">
                 <xs:complexType>
@@ -1049,6 +1051,9 @@
         <xs:attribute name="stylename" type="xs:string" use="optional"/>
         <xs:attribute name="providerClass" type="xs:string" use="optional"/>
         <xs:attribute name="expandable" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="rowsCountType">
     </xs:complexType>
 
     <xs:complexType name="buttonType">

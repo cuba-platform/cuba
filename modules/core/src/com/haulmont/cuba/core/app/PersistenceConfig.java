@@ -18,9 +18,13 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
 @Source(type = SourceType.DATABASE)
 public interface PersistenceConfig extends Config {
 
-    @DefaultInt(200)
+    @DefaultInt(100)
     int getDefaultLazyCollectionThreshold();
     void setDefaultLazyCollectionThreshold(int value);
+
+    @DefaultInt(100)
+    int getDefaultFetchUI();
+    void setDefaultFetchUI(int value);
 
     @DefaultInt(10000)
     int getDefaultMaxFetchUI();

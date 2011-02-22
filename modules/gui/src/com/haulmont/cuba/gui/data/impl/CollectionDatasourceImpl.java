@@ -23,6 +23,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.filter.Condition;
+import com.haulmont.cuba.gui.filter.DenyingClause;
+import com.haulmont.cuba.gui.filter.LogicalCondition;
+import com.haulmont.cuba.gui.filter.LogicalOp;
 import org.apache.commons.collections.map.LinkedMap;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
@@ -35,11 +39,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     implements
         CollectionDatasource.Sortable<T, K>,
         CollectionDatasource.Aggregatable<T, K>,
-        CollectionDatasource.Suspendable<T, K>
+        CollectionDatasource.Suspendable<T, K>,
+        CollectionDatasource.SupportsCount<T, K>
 {
     protected LinkedMap data = new LinkedMap();
-
-    private Map<String, Object> savedParameters;
 
     private boolean inRefresh;
 
@@ -315,6 +318,23 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         clearCommitLists();
     }
 
+    protected boolean needLoading() {
+        if (filter != null) {
+            if (filter.getRoot() instanceof DenyingClause)
+                return false;
+            if ((filter.getRoot() instanceof LogicalCondition)
+                    && ((LogicalCondition) filter.getRoot()).getOperation().equals(LogicalOp.AND))
+            {
+                for (Condition condition : filter.getRoot().getConditions()) {
+                    if (condition instanceof DenyingClause) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     protected void loadData(Map<String, Object> params) {
         StopWatch sw = new Log4JStopWatch("CDS " + id);
 
@@ -323,24 +343,26 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
         data.clear();
 
-        final LoadContext context = new LoadContext(metaClass);
+        if (needLoading()) {
+            final LoadContext context = new LoadContext(metaClass);
 
-        LoadContext.Query q = createLoadContextQuery(context, params);
-        if (q == null)
-            return;
+            LoadContext.Query q = createLoadContextQuery(context, params);
+            if (q == null)
+                return;
 
-        if (maxResults > 0) {
-            q.setMaxResults(maxResults);
-        }
+            if (maxResults > 0) {
+                q.setMaxResults(maxResults);
+            }
 
-        context.setView(view);
-        context.setSoftDeletion(isSoftDeletion());
+            context.setView(view);
+            context.setSoftDeletion(isSoftDeletion());
 
-        final Collection<T> entities = dataservice.loadList(context);
+            final Collection<T> entities = dataservice.loadList(context);
 
-        for (T entity : entities) {
-            data.put(entity.getId(), entity);
-            attachListener((Instance) entity);
+            for (T entity : entities) {
+                data.put(entity.getId(), entity);
+                attachListener((Instance) entity);
+            }
         }
 
         sw.stop();

@@ -33,6 +33,9 @@ public class EntityStatistics extends BaseUuidEntity implements Updatable {
     @Column(name = "INSTANCE_COUNT")
     private Long instanceCount;
 
+    @Column(name = "FETCH_UI")
+    private Integer fetchUI;
+
     @Column(name = "MAX_FETCH_UI")
     private Integer maxFetchUI;
 
@@ -69,6 +72,14 @@ public class EntityStatistics extends BaseUuidEntity implements Updatable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getFetchUI() {
+        return fetchUI;
+    }
+
+    public void setFetchUI(Integer fetchUI) {
+        this.fetchUI = fetchUI;
     }
 
     public Integer getMaxFetchUI() {

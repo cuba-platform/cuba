@@ -82,9 +82,6 @@ public interface WebConfig extends Config
     @Property("cuba.AppConfig.themeName")
     String getAppWindowTheme();
 
-    @DefaultInt(100)
-    int getBrowserMaxResults();
-
     @Default("default")
     String getAppWindowWallpaper();
 

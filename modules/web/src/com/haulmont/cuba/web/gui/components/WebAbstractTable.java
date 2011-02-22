@@ -25,7 +25,10 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -51,7 +54,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -65,6 +68,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
+
+import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
@@ -92,7 +97,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected CompositionLayout componentComposition;
 
+    protected HorizontalLayout topPanel;
+
     protected ButtonsPanel buttonsPanel;
+
+    protected RowsCount rowsCount;
 
     protected Map<Table.Column, Object> aggregationCells = null;
 
@@ -168,6 +177,27 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             component.setSortAscending(ascending);
             component.setSortContainerPropertyId(propertyId);
             component.sort();
+        }
+    }
+
+    public RowsCount getRowsCount() {
+        return rowsCount;
+    }
+
+    public void setRowsCount(RowsCount rowsCount) {
+        if (this.rowsCount != null && topPanel != null) {
+            topPanel.removeComponent(WebComponentsHelper.unwrap(this.rowsCount));
+        }
+        this.rowsCount = rowsCount;
+        if (rowsCount != null) {
+            if (topPanel == null) {
+                topPanel = new HorizontalLayout();
+                topPanel.setWidth("100%");
+                componentComposition.addComponentAsFirst(topPanel);
+            }
+            Component rc = WebComponentsHelper.unwrap(rowsCount);
+            topPanel.addComponent(rc);
+            topPanel.setComponentAlignment(rc, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
         }
     }
 
@@ -466,6 +496,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
             action.setDatasource(datasource);
         }
+
+        if (rowsCount != null)
+            rowsCount.setDatasource(datasource);
     }
 
     protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager);
@@ -673,12 +706,17 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     public void setButtonsPanel(ButtonsPanel panel) {
-        if (buttonsPanel != null) {
-            componentComposition.removeComponent(WebComponentsHelper.unwrap(buttonsPanel));
+        if (buttonsPanel != null && topPanel != null) {
+            topPanel.removeComponent(WebComponentsHelper.unwrap(buttonsPanel));
         }
         buttonsPanel = panel;
         if (panel != null) {
-            componentComposition.addComponentAsFirst(WebComponentsHelper.unwrap(panel));
+            if (topPanel == null) {
+                topPanel = new HorizontalLayout();
+                topPanel.setWidth("100%");
+                componentComposition.addComponentAsFirst(topPanel);
+            }
+            topPanel.addComponent(WebComponentsHelper.unwrap(panel));
         }
     }
 

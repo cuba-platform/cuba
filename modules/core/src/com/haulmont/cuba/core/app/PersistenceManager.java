@@ -44,7 +44,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * PersistentConfig MBean implementation.
  * <p>
  * This MBean is intended for reading on startup and caching database metadata information,
- * mainly to support soft delete functionality;
+ * mainly to support soft delete functionality and entity statistics
  */
 @ManagedBean(PersistenceManagerAPI.NAME)
 public class PersistenceManager extends ManagementBean implements PersistenceManagerMBean, PersistenceManagerAPI
@@ -152,6 +152,14 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
             int threshold = es.getLazyCollectionThreshold() != null ? es.getLazyCollectionThreshold() : config.getDefaultLazyCollectionThreshold();
             return es.getInstanceCount() > threshold;
         }
+    }
+
+    public int getFetchUI(String entityName) {
+        EntityStatistics es = getStatisticsCache().get(entityName);
+        if (es != null && es.getFetchUI() != null)
+            return es.getFetchUI();
+        else
+            return config.getDefaultFetchUI();
     }
 
     public int getMaxFetchUI(String entityName) {

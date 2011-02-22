@@ -69,6 +69,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             component.setRowHeaderMode(Table.RowHeaderMode.valueOf(rowHeaderMode));
         }
 
+        Window window = ComponentsHelper.getWindow(component);
+        if (!(window instanceof Window.Lookup))
+            loadButtonsPanel(component, element);
+
+        loadRowsCount(component, element); // must be before datasource setting
+
         final String datasource = rowsElement.attributeValue("datasource");
 
         if (!StringUtils.isBlank(datasource)) {
@@ -112,11 +118,21 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             }
         }
 
-        Window window = ComponentsHelper.getWindow(component);
-        if (!(window instanceof Window.Lookup))
-            loadButtonsPanel(component, element);
-
         return component;
+    }
+
+    protected void loadRowsCount(T table, Element element) {
+        Element rowsCountEl = element.element("rowsCount");
+        if (rowsCountEl != null) {
+            try {
+                RowsCount rowsCount = factory.createComponent("rowsCount");
+                table.setRowsCount(rowsCount);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     protected List<Table.Column> loadColumns(Table component, Element columnsElement, CollectionDatasource ds) {

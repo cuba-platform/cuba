@@ -16,8 +16,8 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 public interface Filter
         extends Component.Container, Component.BelongToFrame,
         Component.HasXmlDescriptor, Component.HasSettings {
-    CollectionDatasource getDatasource();
 
+    CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 
     void setFilterEntity(FilterEntity filterEntity);
@@ -30,7 +30,6 @@ public interface Filter
     void loadFiltersAndApplyDefault();
 
     void setUseMaxResults(boolean useMaxResults);
-
     boolean getUseMaxResults();
 
     void setApplyTo(Component component);

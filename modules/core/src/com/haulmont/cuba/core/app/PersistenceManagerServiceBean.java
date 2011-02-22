@@ -24,6 +24,10 @@ public class PersistenceManagerServiceBean implements PersistenceManagerService 
         return pm.useLazyCollection(entityName);
     }
 
+    public int getFetchUI(String entityName) {
+        return pm.getFetchUI(entityName);
+    }
+
     public int getMaxFetchUI(String entityName) {
         return pm.getMaxFetchUI(entityName);
     }

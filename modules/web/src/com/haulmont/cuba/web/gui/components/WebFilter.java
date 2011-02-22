@@ -11,12 +11,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
@@ -32,6 +31,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
@@ -51,7 +51,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -60,7 +59,6 @@ import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.vaadin.hene.popupbutton.PopupButton;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -72,6 +70,8 @@ public class WebFilter
         extends WebAbstractComponent<VerticalLayout> implements Filter
 {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.web.gui.components.filter";
+
+    private PersistenceManagerService persistenceManager;
 
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
@@ -93,16 +93,15 @@ public class WebFilter
     private FoldersPane foldersPane;
 
     private boolean useMaxResults;
-
-    private Label maxResultsLabel;
-    private TextField maxResultsField;
-    private HorizontalLayout maxResultsPanel;
+    private CheckBox maxResultsCb;
 
     private Component applyTo;
 
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
 
     public WebFilter() {
+        persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
+
         component = new VerticalLayout();
         component.setMargin(true);
         component.setStyleName("generic-filter");
@@ -153,29 +152,18 @@ public class WebFilter
         });
         topLayout.addComponent(defaultCb);
 
-        component.addComponent(topLayout);
+        maxResultsCb = new CheckBox();
+        maxResultsCb.setImmediate(true);
+        maxResultsCb.setVisible(false);
+        maxResultsCb.setValue(true);
+        topLayout.addComponent(maxResultsCb);
 
-        createMaxResultsLayout();
-        component.addComponent(maxResultsPanel);
+        component.addComponent(topLayout);
 
         createParamsLayout();
         component.addComponent(paramsLayout);
 
         updateControls();
-    }
-
-    private void createMaxResultsLayout() {
-        maxResultsPanel = new HorizontalLayout();
-        maxResultsPanel.setSpacing(true);
-        maxResultsPanel.setMargin(true, false, false, false);
-        maxResultsPanel.setVisible(false);
-
-        maxResultsLabel = new Label(MessageProvider.getMessage(MESSAGES_PACK, "filter.maxResults"));
-        maxResultsPanel.addComponent(maxResultsLabel);
-
-        maxResultsField = new TextField();
-        maxResultsField.setWidth("50px");
-        maxResultsPanel.addComponent(maxResultsField);
     }
 
     private void fillActions() {
@@ -206,38 +194,16 @@ public class WebFilter
     public void apply() {
         applyDatasourceFilter();
 
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
-        final int MAX_DEFAULT = webConfig.getBrowserMaxResults();
-        int maxSize = MAX_DEFAULT;
         if (useMaxResults) {
-            Datatype intType = Datatypes.getInstance().get("int");
-            try {
-                String strValue = (String) maxResultsField.getValue();
-                if (StringUtils.isEmpty(strValue)) {
-                    strValue = String.valueOf(MAX_DEFAULT);
-                    maxResultsField.setValue(strValue);
-                }
-                int value = (Integer) intType.parse(strValue);
-                if (value >= 0) {
-                    maxSize = value;
-                }
-            }
-            catch (ParseException e) {
-            }
-        } else {
-            maxSize = 0;
+            int maxResults;
+            if (BooleanUtils.isTrue((Boolean) maxResultsCb.getValue()))
+                maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+            else
+                maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
+            datasource.setMaxResults(maxResults);
         }
-        datasource.setMaxResults(maxSize);
 
         datasource.refresh();
-
-        if (useMaxResults) {
-            int size = datasource.size();
-            if (datasource.getMaxResults() != 0 && size >= maxSize) {
-                String message = String.format(MessageProvider.getMessage(MESSAGES_PACK, "messages.tooManyResults"), maxSize);
-                App.getInstance().getAppWindow().showNotification(message, com.vaadin.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE);
-            }
-        }
     }
 
     private void applyDatasourceFilter() {
@@ -405,7 +371,8 @@ public class WebFilter
 
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
-        maxResultsPanel.setVisible(useMaxResults);
+        if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"))
+            maxResultsCb.setVisible(useMaxResults);
     }
 
     public boolean getUseMaxResults() {
@@ -575,6 +542,21 @@ public class WebFilter
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
+
+        // set initial denying condition to get empty datasource before explicit filter applying
+        QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
+        if (dsQueryFilter != null) {
+            queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+        }
+        datasource.setQueryFilter(queryFilter);
+
+        if (datasource instanceof CollectionDatasource.Lazy) {
+            setUseMaxResults(false);
+
+        } else {
+            int maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+            maxResultsCb.setCaption(MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(), "filter.maxResults", maxResults));
+        }
     }
 
     private void switchToUse() {
@@ -583,14 +565,12 @@ public class WebFilter
         updateControls();
         component.removeComponent(editLayout);
         createParamsLayout();
-        component.addComponent(maxResultsPanel);
         component.addComponent(paramsLayout);
     }
 
     private void switchToEdit() {
         editing = true;
         updateControls();
-        component.removeComponent(maxResultsPanel);
         component.removeComponent(paramsLayout);
         createEditLayout();
         component.addComponent(editLayout);
@@ -804,7 +784,7 @@ public class WebFilter
                 MessageProvider.getMessage(MESSAGES_PACK, "deleteDlg.title"),
                 MessageProvider.getMessage(MESSAGES_PACK, "deleteDlg.msg"),
                 IFrame.MessageType.CONFIRMATION,
-                new Action[] {
+                new Action[]{
                         new DialogAction(DialogAction.Type.YES) {
                             @Override
                             public void actionPerform(Component component) {
@@ -852,6 +832,9 @@ public class WebFilter
                 window.setDescription(descr);
                 App.getInstance().getWindowManager().setCurrentWindowCaption(window.getCaption(), descr);
             }
+
+            if (useMaxResults)
+                maxResultsCb.setValue(true);
         }
     }
 

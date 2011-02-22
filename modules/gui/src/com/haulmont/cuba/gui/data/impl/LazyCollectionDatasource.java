@@ -38,8 +38,6 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
     protected int chunk = 50;
 
-    private Map<String, Object> savedParameters;
-
     private boolean inRefresh;
 
     protected boolean suspended;
@@ -214,18 +212,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             return 0;
 
         if (size == null) {
-            LoadContext context = new LoadContext(metaClass);
-            LoadContext.Query q = createLoadContextQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
-            if (q == null)
-                return 0;
-
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
-            transformer.replaceWithCount();
-            String jpqlQuery = transformer.getResult();
-            q.setQueryString(jpqlQuery);
-
-            List res = dataservice.loadList(context);
-            int realSize = res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
+            int realSize = getCount();
             if (maxResults == 0)
                 size = realSize;
             else

@@ -438,3 +438,11 @@
     font-size: 11px;
     color: #1E3146;
 }
+
+.table-rows-count .v-label {
+    padding-top: 8px;
+}
+
+.table-rows-count .v-button-wrap {
+    padding-top: 10px;
+}
