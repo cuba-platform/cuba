@@ -71,7 +71,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
         String msg = element.attributeValue("requiredMessage");
         if (msg != null) {
             component.setRequiredMessage(loadResourceString(msg));
-        } else if (component.isRequired()) {
+        } else if (component.isRequired() && component.getDatasource() != null) {
             component.setRequiredMessage(
                     MessageProvider.formatMessage(
                             messagesPack,

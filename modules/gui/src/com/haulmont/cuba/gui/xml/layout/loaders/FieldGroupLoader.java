@@ -242,12 +242,14 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             String requiredMsg = element.attributeValue("requiredMessage");
             if (StringUtils.isEmpty(requiredMsg)) {
                 MetaClass metaClass = metaClass(component, field);
-                MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
-                requiredMsg = MessageProvider.formatMessage(
-                        messagesPack,
-                        "validation.required.defaultMsg",
-                        MessageUtils.getPropertyCaption(metaProperty)
-                );
+                if (metaClass != null) {
+                    MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+                    requiredMsg = MessageProvider.formatMessage(
+                            messagesPack,
+                            "validation.required.defaultMsg",
+                            MessageUtils.getPropertyCaption(metaProperty)
+                    );
+                }
             }
             component.setRequired(field, BooleanUtils.toBoolean(required), loadResourceString(requiredMsg));
         }
