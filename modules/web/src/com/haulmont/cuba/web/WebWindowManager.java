@@ -967,7 +967,11 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void setDebugId(Component component, String id) {
-        component.setDebugId(generateDebugId(id));
+        if (ConfigProvider.getConfig(GlobalConfig.class).getAllowIdSuffix()) {
+            component.setDebugId(generateDebugId(id));
+        } else {
+            component.setDebugId(id);
+        }
     }
 
     private String generateDebugId(String id) {
