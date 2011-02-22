@@ -104,6 +104,14 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         config.setDefaultLazyCollectionThreshold(value);
     }
 
+    public int getDefaultFetchUI() {
+        return config.getDefaultFetchUI();
+    }
+
+    public void setDefaultFetchUI(int value) {
+        config.setDefaultFetchUI(value);
+    }
+
     public int getDefaultMaxFetchUI() {
         return config.getDefaultMaxFetchUI();
     }

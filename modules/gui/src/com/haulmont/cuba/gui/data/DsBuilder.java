@@ -171,15 +171,7 @@ public class DsBuilder {
     }
 
     public DsBuilder setFetchMode(CollectionDatasource.FetchMode fetchMode) {
-        if (CollectionDatasource.FetchMode.LAZY.equals(fetchMode)) {
-            if (metaClass == null)
-                throw new IllegalStateException("MetaClass is not set");
-
-            boolean lazy = persistenceManager.useLazyCollection(metaClass.getName());
-            this.fetchMode = lazy ? CollectionDatasource.FetchMode.LAZY : CollectionDatasource.FetchMode.ALL;
-        } else {
-            this.fetchMode = fetchMode;
-        }
+        this.fetchMode = fetchMode;
         return this;
     }
 
@@ -286,7 +278,19 @@ public class DsBuilder {
     }
 
     private CollectionDatasource.FetchMode resolvedFetchMode() {
-        return fetchMode != null ? fetchMode : CollectionDatasource.FetchMode.ALL;
+        CollectionDatasource.FetchMode fm;
+        if (fetchMode == null) {
+            fm = CollectionDatasource.FetchMode.ALL;
+        } else if (CollectionDatasource.FetchMode.AUTO.equals(fetchMode)) {
+            if (metaClass == null)
+                throw new IllegalStateException("MetaClass is not set");
+
+            boolean lazy = persistenceManager.useLazyCollection(metaClass.getName());
+            fm = lazy ? CollectionDatasource.FetchMode.LAZY : CollectionDatasource.FetchMode.ALL;
+        } else {
+            fm = fetchMode;
+        }
+        return fm;
     }
 
     public HierarchicalDatasource buildHierarchicalDatasource() {

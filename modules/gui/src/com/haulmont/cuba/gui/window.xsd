@@ -418,6 +418,7 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="ALL"/>
             <xs:enumeration value="LAZY"/>
+            <xs:enumeration value="AUTO"/>
         </xs:restriction>
     </xs:simpleType>
 

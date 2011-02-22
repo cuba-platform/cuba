@@ -20,6 +20,9 @@ public interface PersistenceManagerMBean
     int getDefaultLazyCollectionThreshold();
     void setDefaultLazyCollectionThreshold(int value);
 
+    int getDefaultFetchUI();
+    void setDefaultFetchUI(int value);
+
     int getDefaultMaxFetchUI();
     void setDefaultMaxFetchUI(int value);
 

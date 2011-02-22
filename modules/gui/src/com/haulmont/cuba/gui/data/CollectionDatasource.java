@@ -30,7 +30,9 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         /** Datasource will load all data at once */
         ALL,
         /** Datasource will try to load data by chunks per UI component request */
-        LAZY
+        LAZY,
+        /** ALL or LAZY will be choosen on the basis of PersistenceManager statistics */
+        AUTO
     }
 
     /** Get item by ID */
