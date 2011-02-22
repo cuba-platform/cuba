@@ -79,6 +79,13 @@ public interface GlobalConfig extends Config {
     boolean getTestMode();
 
     /**
+     * Allows generating of unique suffixes for Ids in testing mode
+     */
+    @Property("cuba.allowIdSuffix")
+    @DefaultBoolean(false)
+    boolean getAllowIdSuffix();
+
+    /**
      * Enable class and resource loading by Groovy
      */
     @Property("cuba.groovyClassLoaderEnabled")
