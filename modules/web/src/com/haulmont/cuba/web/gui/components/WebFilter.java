@@ -117,6 +117,7 @@ public class WebFilter
         select.setNullSelectionAllowed(true);
         select.setImmediate(true);
         select.addListener(new SelectListener());
+        App.getInstance().getWindowManager().setDebugId(select, "genericFilterSelect");
         topLayout.addComponent(select);
 
         applyBtn = WebComponentsHelper.createButton("icons/search.png");
@@ -126,6 +127,7 @@ public class WebFilter
                 apply();
             }
         });
+        App.getInstance().getWindowManager().setDebugId(applyBtn, "genericFilterApplyBtn");
         topLayout.addComponent(applyBtn);
 
         actions = new WebPopupButton();
