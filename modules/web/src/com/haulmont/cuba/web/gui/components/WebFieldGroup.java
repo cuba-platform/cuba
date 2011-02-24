@@ -103,6 +103,18 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         component.addListener(new ExpandCollapseListener());
     }
 
+    @Override
+    public void setDebugId(String id) {
+        super.setDebugId(id);
+        final List<Field> fieldConfs = getFields();
+        for (final Field fieldConf : fieldConfs) {
+            com.vaadin.ui.Field field = component.getField(fieldConf.getId());
+            if (field != null) {
+                field.setDebugId(id + ":" + fieldConf.getId());
+            }
+        }
+    }
+
     public List<Field> getFields() {
         return new ArrayList<Field>(fields.values());
     }
