@@ -49,6 +49,8 @@ import com.haulmont.cuba.gui.components.ValueProvider
 import com.haulmont.chile.core.model.MetaPropertyPath
 import com.haulmont.cuba.gui.components.Tree
 import org.apache.commons.lang.StringUtils
+import com.haulmont.cuba.gui.components.TreeActionsHelper
+import com.haulmont.cuba.gui.components.Action
 
 public class ReportEditor extends AbstractEditor {
 
@@ -272,6 +274,7 @@ public class ReportEditor extends AbstractEditor {
     def removeBandDefinition = [
             actionPerform: {Component component ->
               BandDefinition definition = (BandDefinition) treeDs.getItem()
+              removeBandFromChilds(report.getRootBandDefinition(),definition)
               if (definition) dataService.remove(definition)
               treeDs.refresh()
             }
@@ -326,11 +329,12 @@ public class ReportEditor extends AbstractEditor {
 
     def uploadListener = [
             uploadStarted: {Event event ->
-              uploadTemplate.setEnabled(false);
+              uploadTemplate.setEnabled(false)
             },
 
             uploadFinished: {Event event ->
-              uploadTemplate.setEnabled(true);
+              uploadTemplate.setEnabled(true)
+              treeDs.refresh()
             },
 
             uploadSucceeded: {Event event ->
@@ -363,6 +367,18 @@ public class ReportEditor extends AbstractEditor {
     upButton.action = new ActionAdapter('generalFrame.up', messagesPack, up)
     downButton.action = new ActionAdapter('generalFrame.down', messagesPack, down)
     templatePath.action = new ActionAdapter('report.template', messagesPack, showLink)
+  }
+
+  private void removeBandFromChilds(BandDefinition rootBand, BandDefinition band){
+      List<BandDefinition> defs = rootBand.getChildrenBandDefinitions()
+      if (defs.contains(band))
+        defs.remove(band)
+      else
+      {
+        for (BandDefinition childBand : defs){
+            removeBandFromChilds(childBand,band)
+        }
+      }
   }
 
   private void saveFile(com.haulmont.cuba.core.entity.FileDescriptor fd, FileUploadField uploadField) {
