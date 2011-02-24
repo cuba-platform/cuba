@@ -79,6 +79,13 @@ public interface GlobalConfig extends Config {
     boolean getTestMode();
 
     /**
+     * Used to support automatic testing. Contains a name of request parameter
+     * that marks a request from an automatic testing tool, for example jMeter. 
+     */
+    @Property("cuba.testModeParamName")
+    String getTestModeParamName();
+
+    /**
      * Allows generating of unique suffixes for Ids in testing mode
      */
     @Property("cuba.allowIdSuffix")

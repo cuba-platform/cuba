@@ -103,6 +103,8 @@ public abstract class App extends Application
 
     private AppCookies cookies;
 
+    protected boolean testModeRequest = false;
+
     static {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
@@ -129,10 +131,14 @@ public abstract class App extends Application
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
         this.response = response;
         cookies.updateCookies(request);
+        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+            String paramName = ConfigProvider.getConfig(GlobalConfig.class).getTestModeParamName();
+            testModeRequest = (paramName == null || request.getParameter(paramName) != null); 
+        }
     }
 
     public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
-        //do nothing
+        testModeRequest = false;
     }
 
     public static Application.SystemMessages getSystemMessages() {
@@ -575,5 +581,9 @@ public abstract class App extends Application
 
     public void setCookiesEnabled(boolean cookiesEnabled) {
         cookies.setCookiesEnabled(cookiesEnabled);
+    }
+
+    public boolean isTestModeRequest() {
+        return testModeRequest;
     }
 }

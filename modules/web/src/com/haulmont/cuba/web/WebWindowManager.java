@@ -937,20 +937,22 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected void initDebugIds(final Window window) {
-        com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
-            public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
-                final String id = window.getId() + "." + name;
-                if (ConfigProvider.getConfig(GlobalConfig.class).getAllowIdSuffix()) {
-                    component.setDebugId(generateDebugId(id));
-                } else {
-                    if (component.getId() != null) {
-                        component.setDebugId(id);
-                    } else {
+        if (app.isTestModeRequest()) {
+            com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
+                public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
+                    final String id = window.getId() + "." + name;
+                    if (ConfigProvider.getConfig(GlobalConfig.class).getAllowIdSuffix()) {
                         component.setDebugId(generateDebugId(id));
+                    } else {
+                        if (component.getId() != null) {
+                            component.setDebugId(id);
+                        } else {
+                            component.setDebugId(generateDebugId(id));
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -967,10 +969,12 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void setDebugId(Component component, String id) {
-        if (ConfigProvider.getConfig(GlobalConfig.class).getAllowIdSuffix()) {
-            component.setDebugId(generateDebugId(id));
-        } else {
-            component.setDebugId(id);
+        if (app.isTestModeRequest()) {
+            if (ConfigProvider.getConfig(GlobalConfig.class).getAllowIdSuffix()) {
+                component.setDebugId(generateDebugId(id));
+            } else {
+                component.setDebugId(id);
+            }
         }
     }
 
