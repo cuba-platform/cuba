@@ -17,10 +17,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LockInfo;
-import com.haulmont.cuba.core.global.LockNotSupported;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
@@ -1097,6 +1094,8 @@ public class WebWindow
 
         private Component lookupComponent;
         private VerticalLayout contaiter;
+        private Button selectButton;
+        private Button cancelButton;
 
         public com.haulmont.cuba.gui.components.Component getLookupComponent() {
             return lookupComponent;
@@ -1150,14 +1149,13 @@ public class WebWindow
             okbar.setSpacing(true);
 
             final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-            final Button selectButton = WebComponentsHelper.createButton();
+            selectButton = WebComponentsHelper.createButton();
             selectButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Select"));
             selectButton.setIcon(new ThemeResource("icons/ok.png"));
             selectButton.addListener(new SelectAction(this));
             selectButton.setStyleName("Window-actionButton");
-//            selectButton.setDebugId("selectButton");
 
-            final Button cancelButton = WebComponentsHelper.createButton();
+            cancelButton = WebComponentsHelper.createButton();
             cancelButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Cancel"));
             cancelButton.addListener(new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
@@ -1166,7 +1164,6 @@ public class WebWindow
             });
             cancelButton.setStyleName("Window-actionButton");
             cancelButton.setIcon(new ThemeResource("icons/cancel.png"));
-//            cancelButton.setDebugId("cancelButton");
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);
@@ -1179,6 +1176,17 @@ public class WebWindow
             form.setComponentAlignment(okbar, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
             return form;
+        }
+
+        @Override
+        public void setId(String id) {
+            super.setId(id);
+
+            if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+                WebWindowManager windowManager = App.getInstance().getWindowManager();
+                windowManager.setDebugId(selectButton, id + ".selectButton");
+                windowManager.setDebugId(cancelButton, id + ".cancelButton");
+            }
         }
     }
 }
