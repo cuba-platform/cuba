@@ -14,16 +14,19 @@ import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.gwt.client.ui.VMenuBar;
-import com.vaadin.ui.ClientWidget;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Stack;
 
 @SuppressWarnings("serial")
 public class MenuBar extends com.vaadin.ui.MenuBar {
 
     private Map<MenuItem, String> shortcuts;
     private boolean vertical;
+
+    private Map<MenuItem, String> debugIds;
 
     public MenuBar() {
         shortcuts = new HashMap<MenuItem, String>();
@@ -54,6 +57,20 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
 
     public void clearShortcut(MenuItem item) {
         shortcuts.remove(item);
+    }
+
+    public void setDebugId(MenuItem item, String id) {
+        if (debugIds == null) {
+            debugIds = new HashMap<MenuItem, String>();
+        }
+        debugIds.put(item, id);
+    }
+
+    public String getDebugId(MenuItem item) {
+        if (debugIds != null) {
+            return debugIds.get(item);
+        }
+        return null;
     }
 
     @Override
@@ -133,6 +150,10 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
                 }
             }
             //***************************
+
+            if (debugIds != null && debugIds.containsKey(item)) {
+                target.addAttribute("debugId", debugIds.get(item));
+            }
 
             if (item.hasChildren()) {
                 for (com.vaadin.ui.MenuBar.MenuItem child : item.getChildren()) {

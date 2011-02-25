@@ -132,7 +132,7 @@ public class VMenuBar extends Widget implements Paintable,
             }
             itemHTML.append(moreItemUIDL.getStringAttribute("text")).append("</div>");
 
-            moreItem = new CustomMenuItem(itemHTML.toString(), emptyCommand, "");
+            moreItem = new CustomMenuItem(itemHTML.toString(), emptyCommand, "", null);
         }
 
         UIDL uidlItems = uidl.getChildUIDL(1);
@@ -181,7 +181,13 @@ public class VMenuBar extends Widget implements Paintable,
                 };
             }
 
-            currentItem = currentMenu.addItem(itemHTML.toString(), cmd, shortcut);
+            currentItem = currentMenu.addItem(
+                    itemHTML.toString(),
+                    cmd,
+                    shortcut,
+                    item.hasAttribute("debugId")
+                            ? Util.escapeHTML(item.getStringAttribute("debugId")) : null
+            );
 
             if (item.hasAttribute("stylename")) {
                 currentItem.addStyleName(item.getStringAttribute("stylename"));
@@ -319,8 +325,8 @@ public class VMenuBar extends Widget implements Paintable,
      *            items command
      * @return the item created
      */
-    public CustomMenuItem addItem(String html, Command cmd, String shortcut) {
-        CustomMenuItem item = new CustomMenuItem(html, cmd, shortcut);
+    public CustomMenuItem addItem(String html, Command cmd, String shortcut, String id) {
+        CustomMenuItem item = new CustomMenuItem(html, cmd, shortcut, id);
         addItem(item);
         return item;
     }
@@ -628,9 +634,11 @@ public class VMenuBar extends Widget implements Paintable,
 
         private static final String shortcutClassSel = "menuitem-shortcut-selected";
 
-        public CustomMenuItem(String html, Command cmd, String shortcut) {
+        public CustomMenuItem(String html, Command cmd, String shortcut, String id) {
             setElement(DOM.createTD());
-
+            if (id != null) {
+                DOM.setElementAttribute(getElement(), "id", id);
+            }
             setHTML(html);
             setCommand(cmd);
             setSelected(false);

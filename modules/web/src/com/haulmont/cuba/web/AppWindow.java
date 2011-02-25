@@ -33,9 +33,7 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
@@ -541,7 +539,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return null;
     }
 
-    private void createShortcut(MenuItem item, MenuBar.MenuItem menuItem) {
+    private void createShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
         if (item.getShortcut() != null) {
             MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
             this.addAction(shortcut);
@@ -559,8 +557,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         final UserSession session = connection.getSession();
         if (item.isPermitted(session)) {
             MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
-            createShortcut(item, menuItem);
+            createShortcut(menuItem, item);
             createSubMenu(menuItem, item, session);
+            createDebugIds(menuItem, item);
             if (isMenuItemEmpty(menuItem)) {
                 menuBar.removeItem(menuItem);
             }
@@ -573,19 +572,27 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 if (child.getChildren().isEmpty()) {
                     if (child.isPermitted(session)) {
                         MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
-                        createShortcut(child, menuItem);
+                        createShortcut(menuItem, child);
+                        createDebugIds(menuItem, child);
                     }
                 } else {
                     if (child.isPermitted(session)) {
                         MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
-                        createShortcut(child, menuItem);
+                        createShortcut(menuItem, child);
                         createSubMenu(menuItem, child, session);
+                        createDebugIds(menuItem, child);
                         if (isMenuItemEmpty(menuItem)) {
                             vItem.removeChild(menuItem);
                         }
                     }
                 }
             }
+        }
+    }
+
+    private void createDebugIds(MenuBar.MenuItem menuItem, MenuItem conf) {
+        if (menuBar.getDebugId() != null) {
+            menuBar.setDebugId(menuItem, menuBar.getDebugId() + ":" + conf.getId());
         }
     }
 
