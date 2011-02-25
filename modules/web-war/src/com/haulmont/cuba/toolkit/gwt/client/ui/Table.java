@@ -17,13 +17,11 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.ui.Focusable;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.Action;
 import com.vaadin.terminal.gwt.client.ui.ActionOwner;
-import com.vaadin.terminal.gwt.client.ui.Icon;
 import com.vaadin.terminal.gwt.client.ui.TreeAction;
 
 import java.util.*;
@@ -2614,66 +2612,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         lazyUnregistryBag.clear();
     }
 
-    class ActionButtonsPanel extends SimplePanel {
-
-        private Map<Element, String> buttonKeys = new HashMap<Element, String>();
-
-        private Element buttonsContainer = DOM.createDiv();
-
-        public ActionButtonsPanel() {
-            setStyleName(CLASSNAME + "-buttons");
-            DOM.setElementProperty(buttonsContainer, "className", CLASSNAME + "-buttons-container");
-
-            DOM.appendChild(getContainerElement(), buttonsContainer);
-
-            DOM.sinkEvents(buttonsContainer, Event.ONCLICK);
-        }
-
-        public void updateFromUIDL(UIDL uidl) {
-            if (!buttonKeys.isEmpty()) {
-                buttonKeys.clear();
-                Tools.removeChildren(buttonsContainer);
-            }
-
-            for (Iterator it = uidl.getChildIterator(); it.hasNext();) {
-                final UIDL buttonUIDL = (UIDL) it.next();
-                Element buttonElement;
-                if (buttonUIDL.hasAttribute("icon")) {
-                    Icon iconButton = new Icon(client);
-                    iconButton.setUri(buttonUIDL.getStringAttribute("icon"));
-                    buttonElement = iconButton.getElement();
-                } else {
-                    buttonElement = DOM.createDiv();
-                }
-                if (buttonUIDL.hasAttribute("caption")) {
-                    buttonElement.setTitle(buttonUIDL.getStringAttribute("caption"));
-                }
-                DOM.setElementProperty(buttonElement, "className", CLASSNAME + "-button");
-                final Element wrap = DOM.createDiv();
-                DOM.setElementProperty(wrap, "className", CLASSNAME + "-button-wrap");
-                DOM.appendChild(wrap, buttonElement);
-                DOM.appendChild(buttonsContainer, wrap);
-
-                buttonKeys.put(buttonElement, buttonUIDL.getStringAttribute("key"));
-            }
-        }
-
-        @Override
-        public void onBrowserEvent(Event event) {
-            if (event != null) {
-                switch (DOM.eventGetType(event)) {
-                    case Event.ONCLICK:
-                        final Element targetElement = DOM.eventGetTarget(event);
-                        if (buttonKeys.get(targetElement) != null) {
-                            client.updateVariable(paintableId, "actionButton", buttonKeys.get(targetElement),
-                                    true);
-                        }
-                        break;
-                }
-            }
-        }
-    }
-
     protected class AggregationRow extends FlowPanel implements Container {
 
         protected boolean initialized = false;
@@ -2934,8 +2872,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     /**
      * Removes a key from a range if the key is found in a selected range
      *
-     * @param key
-     *            The key to remove
+     * @param row
+     *            row to remove
      */
     private void removeRowFromUnsentSelectionRanges(ITableBody.ITableRow row) {
         Collection<SelectionRange> newRanges = null;

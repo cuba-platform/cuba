@@ -19,8 +19,7 @@ package com.vaadin.terminal.gwt.client.ui;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.*;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -280,6 +279,19 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
 
         rowRequestHandler.cancel();
 
+        if (BrowserInfo.get().isChrome()) {
+            Widget w = this;
+            Container container;
+            while ((container = Util.getLayout(w)) != null) {
+                w = (Widget) container;
+                if (w instanceof VTabsheet) {
+                    ApplicationConnection.getConsole().log("OnScroll: Run tabsheet overflowAuto fix");
+                    ((VTabsheet) w).runWebkitOverflowAutoFix();
+                    break;
+                }
+            }
+        }
+
         // fix headers horizontal scrolling
         tHead.setHorizontalScrollPosition(scrollLeft);
 
@@ -357,7 +369,6 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                     + pageLength + pageLength * CACHE_RATE) - lastRendered));
             rowRequestHandler.deferRowFetch();
         }
-
     }
 
     private void announceScrollPosition() {

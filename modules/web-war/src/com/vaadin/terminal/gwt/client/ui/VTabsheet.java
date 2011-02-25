@@ -1024,4 +1024,9 @@ public class VTabsheet extends VTabsheetBase {
             tp.remove(index);
         }
     }
+
+    public void runWebkitOverflowAutoFix() {
+        tp.runWebkitOverflowAutoFix();
+    }
+
 }

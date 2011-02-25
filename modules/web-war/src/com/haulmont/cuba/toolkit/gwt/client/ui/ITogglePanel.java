@@ -17,8 +17,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.vaadin.terminal.gwt.client.*;
-import com.vaadin.terminal.gwt.client.ui.VTabsheetPanel;
 import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
+import com.vaadin.terminal.gwt.client.ui.VTabsheetPanel;
 
 import java.util.Set;
 
