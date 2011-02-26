@@ -25,8 +25,10 @@ public class ValueFormatEditor extends BasicEditor {
             "##,##0",
             "#,##0.###",
             "#,##0.##",
-            "dd/MM/yyyy HH:mm"
+            "dd/MM/yyyy HH:mm",
+            "${image:WxH>}"
     };
+    private static final long serialVersionUID = 3406588486315509607L;
 
     FilterSelect fSelect = null;
 
@@ -41,6 +43,8 @@ public class ValueFormatEditor extends BasicEditor {
         // Add default format strings to combobox
         FieldGroup.Field f = fields.getField("formatString");
         fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+            private static final long serialVersionUID = -8103880026038352529L;
+
             public Component generateField(Datasource datasource, Object propertyId) {
                 final WebLookupField lookupField = new WebLookupField();
                 fSelect = (FilterSelect) WebComponentsHelper.unwrap(lookupField);
@@ -53,6 +57,8 @@ public class ValueFormatEditor extends BasicEditor {
                 select.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT);
                 select.setNewItemsAllowed(true);
                 select.setNewItemHandler(new AbstractSelect.NewItemHandler() {
+                    private static final long serialVersionUID = 655813124996141640L;
+
                     public void addNewItem(String newItemCaption) {
                         select.addItem(newItemCaption);
                         select.setItemCaption(newItemCaption, newItemCaption);

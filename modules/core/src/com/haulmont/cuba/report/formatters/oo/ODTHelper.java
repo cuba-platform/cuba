@@ -37,6 +37,8 @@ import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.asXStorable
 
 public class ODTHelper {
 
+    private static final String SEARCH_REGULAR_EXPRESSION = "SearchRegularExpression";
+
     public static XInputStream getXInputStream(FileDescriptor fileDescriptor) {
         FileStorageService fss = Locator.lookup(FileStorageService.NAME);
         try {
@@ -92,9 +94,10 @@ public class ODTHelper {
 
     public static void saveAsDocument(XComponent xComponent, String path, PropertyValue[] props) throws java.io.IOException, IOException {
         File newFile = new File(path);
-        newFile.createNewFile();
-        XStorable xStorable = asXStorable(xComponent);
-        xStorable.storeToURL(pathToUrl(path), props);
+        if (newFile.createNewFile()) {
+            XStorable xStorable = asXStorable(xComponent);
+            xStorable.storeToURL(pathToUrl(path), props);
+        }
     }
 
     public static long replaceInDocument(XTextDocument xTextDocument, String searchString, String replaceString, boolean isRegexp) {
@@ -108,9 +111,8 @@ public class ODTHelper {
         PropertyValue[] aReplaceArgs = new PropertyValue[0];
 
         try {
-            if (isRegexp) {
-                xRepDesc.setPropertyValue("SearchRegularExpression", true);
-            }
+            if (isRegexp)
+                xRepDesc.setPropertyValue(SEARCH_REGULAR_EXPRESSION, true);
 
             // set our sequence with one property value as ReplaceAttribute
             XPropertyReplace xPropRepl = (XPropertyReplace) UnoRuntime.queryInterface(
@@ -123,10 +125,9 @@ public class ODTHelper {
         return xReplaceable.replaceAll(xRepDesc);
     }
 
-    /*
-    *  Utility method. Converts path to url
-    */
-
+    /**
+     *  Utility method. Converts path to url
+     */
     public static String pathToUrl(String sURL) throws java.io.IOException {
         java.io.File sourceFile = new java.io.File(sURL);
         StringBuffer sTmp = new StringBuffer("file:///");

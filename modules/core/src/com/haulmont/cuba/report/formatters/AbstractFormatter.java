@@ -12,22 +12,26 @@ package com.haulmont.cuba.report.formatters;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.FileStorageService;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.report.Band;
-import org.apache.commons.lang.RandomStringUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AbstractFormatter implements Formatter {
-    public static final String UNIVERSAL_ALIAS_PATTERN = "\\$\\{[a-z|A-Z|0-9|\\_|\\.]+?\\}";
-    public static final String ALIAS_WITH_BAND_NAME_PATTERN = "\\$\\{[a-z|A-Z|0-9|\\_]+?\\.[a-z|A-Z|0-9|\\_|\\.]+?\\}";
+    public static final String UNIVERSAL_ALIAS_PATTERN = "\\$\\{[a-z|A-Z|а-я|А-Я|0-9|_|\\.]+?\\}";
+    public static final String ALIAS_WITH_BAND_NAME_PATTERN = "\\$\\{[a-z|A-Z|а-я|А-Я|0-9|_]+?\\.[a-z|A-Z|0-9|_|\\.]+?\\}";
+
+    protected static Pattern namePattern;
+
+    static {
+        namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
+    }
 
     public abstract byte[] createDocument(Band rootBand);
 
@@ -44,7 +48,6 @@ public abstract class AbstractFormatter implements Formatter {
 
     public static String insertBandDataToString(Band band, String resultStr) {
         List<String> parametersToInsert = new ArrayList<String>();
-        Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = namePattern.matcher(resultStr);
         while (matcher.find()) {
             parametersToInsert.add(unwrapParameterName(matcher.group()));

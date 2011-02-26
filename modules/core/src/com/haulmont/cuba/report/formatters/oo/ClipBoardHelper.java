@@ -11,12 +11,11 @@
 package com.haulmont.cuba.report.formatters.oo;
 
 import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.datatransfer.*;
 
-// Using system clipboard
+/**
+ * Using system clipboard
+ */
 public final class ClipBoardHelper {
 
     public static String text() throws Exception {
@@ -40,14 +39,14 @@ public final class ClipBoardHelper {
                     throw new UnsupportedFlavorException(flavor);
                 }
             }, null);
-        } catch (IllegalStateException e) { }
+        } catch (IllegalStateException ignored) { }
     }
 
     public static void copy(String toCopy) {
         clipboard().setContents(new StringSelection(toCopy), null);
     }
 
-    private static java.awt.datatransfer.Clipboard clipboard() {
+    private static Clipboard clipboard() {
         return Toolkit.getDefaultToolkit().getSystemClipboard();
     }
 

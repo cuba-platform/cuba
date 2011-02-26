@@ -10,7 +10,11 @@
  */
 package com.haulmont.cuba.report.formatters.exception;
 
-public class FailedToConnectToOpenOfficeException extends DocReportFormatterException {
+import com.haulmont.cuba.report.exception.ReportFormatterException;
+
+public class FailedToConnectToOpenOfficeException extends ReportFormatterException {
+    private static final long serialVersionUID = -131512314730709035L;
+
     public FailedToConnectToOpenOfficeException() {
     }
 

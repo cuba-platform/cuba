@@ -13,6 +13,8 @@ package com.haulmont.cuba.report.formatters.oo;
 import static com.haulmont.cuba.report.formatters.oo.ODTHelper.copy;
 import static com.haulmont.cuba.report.formatters.oo.ODTHelper.paste;
 import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.*;
+
+import com.google.common.collect.Lists;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameAccess;
 import com.sun.star.frame.XController;
@@ -30,11 +32,15 @@ import com.sun.star.text.XTextTableCursor;
 import com.sun.star.uno.Any;
 import com.sun.star.uno.Type;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ODTTableHelper {
 
-    public static String[] getTablesNames(XComponent xComponent) {
+    public static List<String> getTablesNames(XComponent xComponent) {
         XNameAccess tables = asXTextTablesSupplier(xComponent).getTextTables();
-        return tables.getElementNames();
+        return Lists.newArrayList(tables.getElementNames());
     }
 
     public static XTextTable getTableByName(XComponent xComponent, String tableName) throws NoSuchElementException, WrappedTargetException {
@@ -95,9 +101,9 @@ public class ODTTableHelper {
     }
 
     //delete nonexistent symbols from cell text
-    public static String preformatCellText(String cellText){
+    public static String preformatCellText(String cellText) {
         if (cellText != null)
-            return cellText.replace("\r","");
+            return cellText.replace("\r", "");
         else
             return cellText;
     }

@@ -10,8 +10,12 @@
  */
 package com.haulmont.cuba.report.formatters.oo;
 
+import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XEnumerationAccess;
+import com.sun.star.container.XNameContainer;
+import com.sun.star.drawing.XShape;
 import com.sun.star.frame.*;
+import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.table.XCellRange;
 import com.sun.star.text.*;
@@ -38,6 +42,22 @@ public class ODTUnoConverter {
 
     public static XCloseable asXCloseable(Object o) {
         return (XCloseable) UnoRuntime.queryInterface(XCloseable.class, o);
+    }
+
+    public static XPropertySet asXPropertySet(Object o) {
+        return (XPropertySet) UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, o);
+    }
+
+    public static XNameContainer asXNameContainer(Object o) {
+        return (XNameContainer) UnoRuntime.queryInterface(com.sun.star.container.XNameContainer.class, o);
+    }
+
+    public static XShape asXShape(Object o) {
+        return (XShape) UnoRuntime.queryInterface(com.sun.star.drawing.XShape.class, o);
+    }
+
+    public static XMultiServiceFactory asXMultiServiceFactory(Object o) {
+        return (XMultiServiceFactory) UnoRuntime.queryInterface(com.sun.star.lang.XMultiServiceFactory.class, o);
     }
 
     public static XTextDocument asXTextDocument(Object o) {

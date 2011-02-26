@@ -17,7 +17,10 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.ReportValueFormat;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.formatters.exception.FailedToConnectToOpenOfficeException;
 import com.haulmont.cuba.report.formatters.oo.*;
+import com.haulmont.cuba.report.formatters.doctags.ImageTagHandler;
+import com.haulmont.cuba.report.formatters.doctags.TagHandler;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XDispatchHelper;
@@ -27,11 +30,9 @@ import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.table.XCell;
 import com.sun.star.text.*;
-import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XReplaceable;
 import com.sun.star.util.XSearchDescriptor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -44,20 +45,30 @@ import static com.haulmont.cuba.report.formatters.oo.ODTTableHelper.*;
 import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.*;
 
 public class DocFormatter extends AbstractFormatter {
+
+    private static final String SEARCH_REGULAR_EXPRESSION = "SearchRegularExpression";
+    private static final String ROOT_BAND_NAME = "Root";
+
+    private static Map<Pattern, TagHandler> tagHandlers = new HashMap<Pattern, TagHandler>();
+    static {
+        // Tags for value formatters
+        tagHandlers.put(
+                Pattern.compile("\\$\\{image:([0-9]+?)x([0-9]+?)\\}", Pattern.CASE_INSENSITIVE),
+                new ImageTagHandler());
+    }
+
     private OOOConnection connection;
     private Band rootBand;
     private FileDescriptor templateFileDescriptor;
     private ReportOutputType reportOutputType;
     private XComponent xComponent;
 
-    private Log log = LogFactory.getLog(DocFormatter.class);
-
     public DocFormatter(FileDescriptor templateFileDescriptor, ReportOutputType reportOutputType) {
         String openOfficePath = ConfigProvider.getConfig(ServerConfig.class).getOpenOfficePath();
         try {
             connection = OOOConnector.createConnection(openOfficePath);
         } catch (Exception ex) {
-            throw new RuntimeException("Please check OpenOffice path: " + openOfficePath);
+            throw new FailedToConnectToOpenOfficeException("Please check OpenOffice path: " + openOfficePath);
         }
         this.templateFileDescriptor = templateFileDescriptor;
         this.reportOutputType = reportOutputType;
@@ -97,7 +108,7 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillTables() throws com.sun.star.uno.Exception {
-        List<String> tablesNames = new ArrayList<String>(Arrays.asList(getTablesNames(xComponent)));
+        List<String> tablesNames = getTablesNames(xComponent);
         tablesNames.retainAll(rootBand.getBandDefinitionNames());
 
         XDispatchHelper xDispatchHelper = connection.createXDispatchHelper();
@@ -126,7 +137,7 @@ public class DocFormatter extends AbstractFormatter {
         try {
             for (int i = 0; i < xTextTable.getColumns().getCount(); i++) {
                 String templateText = asXText(ODTTableHelper.getXCell(xTextTable, i, lastrow)).getString();
-                if (Pattern.compile(UNIVERSAL_ALIAS_PATTERN).matcher(templateText).find()) {
+                if (namePattern.matcher(templateText).find()) {
                     return true;
                 }
             }
@@ -136,7 +147,8 @@ public class DocFormatter extends AbstractFormatter {
         return false;
     }
 
-    private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper) throws com.sun.star.uno.Exception {
+    private void fillTable(String name, Band parentBand, XTextTable xTextTable, XDispatchHelper xDispatchHelper)
+            throws com.sun.star.uno.Exception {
         boolean displayDeviceUnavailable = ConfigProvider.getConfig(ServerConfig.class).getDisplayDeviceUnavailable();
         if (!displayDeviceUnavailable) {
             ClipBoardHelper.clear();
@@ -157,7 +169,8 @@ public class DocFormatter extends AbstractFormatter {
         deleteLastRow(xTextTable);
     }
 
-    private void fillRow(Band band, XTextTable xTextTable, int row) throws com.sun.star.lang.IndexOutOfBoundsException, NoSuchElementException, WrappedTargetException {
+    private void fillRow(Band band, XTextTable xTextTable, int row)
+            throws com.sun.star.lang.IndexOutOfBoundsException, NoSuchElementException, WrappedTargetException {
         int colCount = xTextTable.getColumns().getCount();
         for (int col = 0; col < colCount; col++) {
             fillCell(band, getXCell(xTextTable, col, row));
@@ -165,10 +178,10 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillCell(Band band, XCell xCell) throws NoSuchElementException, WrappedTargetException {
-        String bandFullName = band.getFullName();
+//        String bandFullName = band.getFullName();
         String cellText = preformatCellText(asXText(xCell).getString());
         List<String> parametersToInsert = new ArrayList<String>();
-        Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
+//        Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = namePattern.matcher(cellText);
         while (matcher.find()) {
             parametersToInsert.add(unwrapParameterName(matcher.group()));
@@ -177,20 +190,20 @@ public class DocFormatter extends AbstractFormatter {
             XText xText = asXText(xCell);
             XTextCursor xTextCursor = xText.createTextCursor();
 
+//            Object value = band.getData().get(parameterName);
+//            String valueStr = formatString(value, bandFullName + "." + parameterName);
+
             String paramStr = "${" + parameterName + "}";
             int index = cellText.indexOf(paramStr);
-
             while (index >= 0) {
                 xTextCursor.gotoStart(false);
                 xTextCursor.goRight((short) (index + paramStr.length()), false);
                 xTextCursor.goLeft((short) paramStr.length(), true);
 
-                Object value = band.getData().get(parameterName);
-                String valueStr = formatString(value, bandFullName + "." + parameterName);
-
-                xText.insertString(xTextCursor, valueStr, true);
-
+//                xText.insertString(xTextCursor, valueStr, true);
+                insertValue(xText, xTextCursor, band, parameterName);
                 cellText = preformatCellText(xText.getString());
+
                 index = cellText.indexOf(paramStr);
             }
         }
@@ -237,42 +250,64 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     /**
-     * Replaces all aliases (${bandname.paramname} in document text).
-     * If there is not appropriate band or alias is bad - throws RuntimeException
+     * Replaces all aliases ${bandname.paramname} in document text.
+     *
+     * @throws ReportFormatterException If there is not appropriate band or alias is bad
      */
     private void replaceAllAliasesInDocument() {
         XTextDocument xTextDocument = asXTextDocument(xComponent);
-        XReplaceable xReplaceable = (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
+        XReplaceable xReplaceable = asXReplaceable(xTextDocument);
         XSearchDescriptor searchDescriptor = xReplaceable.createSearchDescriptor();
         searchDescriptor.setSearchString(ALIAS_WITH_BAND_NAME_PATTERN);
         try {
-            searchDescriptor.setPropertyValue("SearchRegularExpression", true);
+            searchDescriptor.setPropertyValue(SEARCH_REGULAR_EXPRESSION, true);
             XIndexAccess indexAccess = xReplaceable.findAll(searchDescriptor);
             for (int i = 0; i < indexAccess.getCount(); i++) {
-                XTextRange o = asXTextRange(indexAccess.getByIndex(i));
-                String alias = unwrapParameterName(o.getString());
+                XTextRange textRange = asXTextRange(indexAccess.getByIndex(i));
+                String alias = unwrapParameterName(textRange.getString());
                 String[] parts = alias.split("\\.");
 
                 if (parts == null || parts.length < 2)
-                    throw new ReportFormatterException("Bad alias : " + o.getString());
+                    throw new ReportFormatterException("Bad alias : " + textRange.getString());
 
                 String bandName = parts[0];
-                Band band = bandName.equals("Root") ? rootBand : rootBand.getChildByName(bandName);
+                Band band = bandName.equals(ROOT_BAND_NAME) ? rootBand : rootBand.getChildByName(bandName);
 
-                if (band == null) throw new ReportFormatterException("No band for alias : " + alias);
-                StringBuffer paramName = new StringBuffer();
-                for (int j = 1; j < parts.length; j++) {
-                    paramName.append(parts[j]);
-                    if (j != parts.length - 1) paramName.append(".");
-                }
+                if (band == null)
+                    throw new ReportFormatterException("No band for alias : " + alias);
 
-                String fullParamName = band.getFullName() + "." + paramName.toString();
-                Object parameter = band.getParameter(paramName.toString());
-                String valueString = formatString(parameter, fullParamName);
-                o.setString(valueString);
+                String paramName = StringUtils.join(parts, '.', 1, parts.length);
+                insertValue(textRange.getText(), textRange, band, paramName);
             }
         } catch (Exception ex) {
             throw new ReportFormatterException(ex);
+        }
+    }
+
+    private void insertValue(XText text, XTextRange textRange, Band band, String paramName) {
+        String fullParamName = band.getFullName() + "." + paramName;
+        Object paramValue = band.getParameter(paramName);
+
+        HashMap<String, ReportValueFormat> formats = rootBand.getValuesFormats();
+        try {
+            boolean handled = false;
+            if ((formats != null) && (formats.containsKey(fullParamName))) {
+                // Handle doctags
+                for (Map.Entry<Pattern, TagHandler> tagHandler : tagHandlers.entrySet()) {
+                    Matcher matcher = tagHandler.getKey().matcher(formats.get(fullParamName).getFormatString());
+                    if (matcher.find()) {
+                        TagHandler handler = tagHandler.getValue();
+                        handler.handleTag(xComponent, text, textRange, paramValue.toString(), matcher);
+                        handled = true;
+                    }
+                }
+            }
+            if (!handled) {
+                String valueString = formatString(paramValue, fullParamName);
+                text.insertString(textRange, valueString, true);
+            }
+        } catch (Exception ex) {
+            throw new ReportFormatterException("Insert data error");
         }
     }
 
