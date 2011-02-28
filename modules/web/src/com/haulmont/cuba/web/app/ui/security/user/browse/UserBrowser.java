@@ -14,18 +14,14 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.rpt.ReportHelper;
-import com.haulmont.cuba.web.rpt.ReportOutput;
+import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.web.app.ui.security.user.edit.UserEditor;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
 import com.haulmont.cuba.core.entity.Entity;
-import com.vaadin.ui.NativeSelect;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 public class UserBrowser extends AbstractLookup {
 
@@ -77,6 +73,31 @@ public class UserBrowser extends AbstractLookup {
         if ("true".equals(multiSelect)) {
             table.setMultiSelect(true);
         }
+
+        table.addAction(
+                new AbstractAction("copy"){
+                    public void actionPerform(Component component){
+                        if (!table.getSelected().isEmpty()){
+                            User selectedUser = (User) table.getSelected().iterator().next();
+                            selectedUser = getDsContext().getDataService().reload(selectedUser, "user.edit");
+                            User newUser = new User();
+                            if(selectedUser.getUserRoles()!=null){
+                                Set<UserRole> roles = new HashSet<UserRole>();
+                                for(UserRole oldRole : selectedUser.getUserRoles()){
+                                    UserRole role = new UserRole();
+                                    role.setUser(newUser);
+                                    role.setRole(oldRole.getRole());
+                                    roles.add(role);
+                                }
+                                newUser.setUserRoles(roles);
+                            }
+                            newUser.setGroup(selectedUser.getGroup());
+                            UserEditor editor = openEditor("sec$User.edit", newUser, WindowManager.OpenType.THIS_TAB);
+                            editor.initCopy();
+                        }
+                    }
+                }
+        );
 //        getDsContext().get("users").refresh();
     }
 }

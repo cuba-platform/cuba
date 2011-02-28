@@ -38,6 +38,7 @@
                     <buttonsPanel align="MIDDLE_LEFT">
                         <button action="users.create" icon="icons/create.png"/>
                         <button action="users.edit" icon="icons/edit.png"/>
+                        <button action="users.copy" icon="icons/copy.png"/>
                         <button action="users.remove" icon="icons/remove.png"/>
                         <button action="users.changePassw" icon="icons/change-pass.png"/>
                         <button action="users.excel" icon="icons/excel.png"/>

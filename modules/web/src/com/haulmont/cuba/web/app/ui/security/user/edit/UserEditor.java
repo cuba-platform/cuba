@@ -285,6 +285,13 @@ public class UserEditor extends AbstractEditor {
         }
     }
 
+    public void initCopy() {
+        CollectionDatasource<UserRole, UUID> rolesDs = getDsContext().get("roles");
+        for (UUID id : rolesDs.getItemIds()) {
+            ((DatasourceImplementation)rolesDs).modified(rolesDs.getItem(id));
+        }
+    }
+
     private class AddRoleAction extends AbstractAction {
 
         public AddRoleAction() {
