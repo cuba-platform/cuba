@@ -77,6 +77,8 @@ public class GroupBrowser extends AbstractWindow {
             public void actionPerform(Component component) {
                 final Set<User> selected = users.getSelected();
                 if (!selected.isEmpty()) {
+                    getDialogParams().setResizable(false);
+                    getDialogParams().setHeight(400);
                     openLookup("sec$Group.lookup", new Lookup.Handler() {
                         public void handleLookup(Collection items) {
                             if (items.size() == 1) {
