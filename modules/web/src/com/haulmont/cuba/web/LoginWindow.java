@@ -41,7 +41,7 @@ import java.util.Map;
  * Login window.
  * <p/>
  * Specific application should inherit from this class and create appropriate
- * instance in {@link App#createLoginWindow()} method
+ * instance in {@link DefaultApp#createLoginWindow()} method
  */
 @SuppressWarnings("serial")
 public class LoginWindow extends Window implements Action.Handler {
@@ -103,16 +103,12 @@ public class LoginWindow extends Window implements Action.Handler {
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setStyleName("mainLayout");
 
-        VerticalLayout centerLayout = new VerticalLayout();
-        centerLayout.setWidth(formWidth + "px");
-        centerLayout.setHeight(formHeight + "px");
-        centerLayout.setStyleName("centerLayout");
-
         Form form = new Form(new FormLayout());
         form.setStyleName("loginForm");
-        centerLayout.addComponent(form);
+        form.setWidth("-1px");
         FormLayout formLayout = (FormLayout) form.getLayout();
         formLayout.setSpacing(true);
+        formLayout.setWidth("-1px");
 
         Label label = new Label(MessageProvider.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc));
         label.setWidth("-1px");
@@ -120,21 +116,22 @@ public class LoginWindow extends Window implements Action.Handler {
 
         Embedded logoImage = getLogoImage(app);
 
-        VerticalLayout wrap = new VerticalLayout();
-        wrap.setStyleName("loginBottom");
-        wrap.setMargin(false);
-        wrap.setWidth(formWidth + "px");
-        wrap.setHeight(formHeight + "px");
-        if (label.getValue() != null && !StringUtils.isBlank((String) label.getValue()))  {
-            wrap.addComponent(label);
-            wrap.setComponentAlignment(label, Alignment.BOTTOM_CENTER);
+        VerticalLayout centerLayout = new VerticalLayout();
+        centerLayout.setStyleName("loginBottom");
+        centerLayout.setMargin(true, false, false, false);
+        centerLayout.setSpacing(false);
+        centerLayout.setWidth(formWidth + "px");
+        centerLayout.setHeight(formHeight + "px");
+        if (!StringUtils.isBlank((String) label.getValue()))  {
+            centerLayout.addComponent(label);
+            centerLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
         }
         if (logoImage != null) {
-            wrap.addComponent(logoImage);
-            wrap.setComponentAlignment(logoImage, Alignment.BOTTOM_CENTER);
+            centerLayout.addComponent(logoImage);
+            centerLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_CENTER);
         }
-        wrap.addComponent(form);
-        centerLayout.addComponent(wrap);
+        centerLayout.addComponent(form);
+        centerLayout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
 
         loginField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginField", loc));
         form.addField("loginField", loginField);
@@ -174,7 +171,6 @@ public class LoginWindow extends Window implements Action.Handler {
         mainLayout.addComponent(centerLayout);
         mainLayout.setSizeFull();
         mainLayout.setComponentAlignment(centerLayout, Alignment.MIDDLE_CENTER);
-        setContent(mainLayout);
 
         initFields(app);
         loginField.focus();
@@ -204,7 +200,7 @@ public class LoginWindow extends Window implements Action.Handler {
 
 
     protected void initUI(App app) {
-        initStandartUI(app, 310, 200, 125, true);
+        initStandartUI(app, 310, -1, 125, true);
     }
 
     protected void initRememberMe(final App app) {
