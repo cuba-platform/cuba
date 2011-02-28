@@ -591,7 +591,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     private void createDebugIds(MenuBar.MenuItem menuItem, MenuItem conf) {
-        if (menuBar.getDebugId() != null) {
+        if (menuBar.getDebugId() != null && !conf.isSeparator()) {
             menuBar.setDebugId(menuItem, menuBar.getDebugId() + ":" + conf.getId());
         }
     }

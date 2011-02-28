@@ -97,4 +97,8 @@ public class MenuItem implements Serializable
     public void setShortcut(ShortcutAction.KeyCombination shortcut) {
         this.shortcut = shortcut;
     }
+
+    public boolean isSeparator() {
+        return "-".equals(id); //todo: This is a temp solution. Need o use <separator> element in menu-config.xml to define separator in menu
+    }
 }

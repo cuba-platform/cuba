@@ -24,10 +24,14 @@ import com.vaadin.terminal.gwt.client.Util;
 public class VMenuBar extends Widget implements Paintable,
         CloseHandler<PopupPanel> {
 
-    /** Set the CSS class name to allow styling. */
+    /**
+     * Set the CSS class name to allow styling.
+     */
     public static final String CLASSNAME = "v-menubar";
 
-    /** For server connections **/
+    /**
+     * For server connections *
+     */
     protected String uidlId;
     protected ApplicationConnection client;
 
@@ -40,7 +44,9 @@ public class VMenuBar extends Widget implements Paintable,
     // associated
     protected static final Command emptyCommand = null;
 
-    /** Widget fields **/
+    /**
+     * Widget fields *
+     */
     protected boolean subMenu;
     protected ArrayList<CustomMenuItem> items;
     protected Element containerElement;
@@ -89,7 +95,7 @@ public class VMenuBar extends Widget implements Paintable,
     /**
      * This method must be implemented to update the client-side component from
      * UIDL data received from server.
-     *
+     * <p/>
      * This method is called when the page is loaded for the first time, and
      * every time UI changes in the component are received from the server.
      */
@@ -127,7 +133,7 @@ public class VMenuBar extends Widget implements Paintable,
             if (moreItemUIDL.hasAttribute("icon")) {
                 itemHTML.append("<img src=\""
                         + client.translateVaadinUri(moreItemUIDL
-                                .getStringAttribute("icon"))
+                        .getStringAttribute("icon"))
                         + "\" align=\"left\" />");
             }
             itemHTML.append(moreItemUIDL.getStringAttribute("text")).append("</div>");
@@ -169,6 +175,9 @@ public class VMenuBar extends Widget implements Paintable,
 
             itemHTML.append("</div>");
 
+            final String debugId = item.hasAttribute("debugId")
+                    ? Util.escapeHTML(item.getStringAttribute("debugId")) : null;
+
             Command cmd = null;
 
             if (itemHasCommand) {
@@ -176,7 +185,11 @@ public class VMenuBar extends Widget implements Paintable,
                 // item's id-number
                 cmd = new Command() {
                     public void execute() {
-                        hostReference.onMenuClick(itemId);
+                        if (debugId == null) {
+                            hostReference.onMenuClick(itemId);
+                        } else {
+                            hostReference.onMenuClick_debugMode(debugId);
+                        }
                     }
                 };
             }
@@ -185,8 +198,7 @@ public class VMenuBar extends Widget implements Paintable,
                     itemHTML.toString(),
                     cmd,
                     shortcut,
-                    item.hasAttribute("debugId")
-                            ? Util.escapeHTML(item.getStringAttribute("debugId")) : null
+                    debugId
             );
 
             if (item.hasAttribute("stylename")) {
@@ -257,8 +269,7 @@ public class VMenuBar extends Widget implements Paintable,
      * This is called by the items in the menu and it communicates the
      * information to the server
      *
-     * @param clickedItemId
-     *            id of the item that was clicked
+     * @param clickedItemId id of the item that was clicked
      */
     public void onMenuClick(int clickedItemId) {
         // Updating the state to the server can not be done before
@@ -268,6 +279,12 @@ public class VMenuBar extends Widget implements Paintable,
             // Communicate the user interaction parameters to server. This call
             // will initiate an AJAX request to the server.
             client.updateVariable(uidlId, "clickedId", clickedItemId, true);
+        }
+    }
+
+    public void onMenuClick_debugMode(String id) {
+        if (uidlId != null && client != null) {
+            client.updateVariable(uidlId, "clickedDebugId", id, true);
         }
     }
 
@@ -319,10 +336,8 @@ public class VMenuBar extends Widget implements Paintable,
     /**
      * Add a new item to this menu
      *
-     * @param html
-     *            items text
-     * @param cmd
-     *            items command
+     * @param html items text
+     * @param cmd  items command
      * @return the item created
      */
     public CustomMenuItem addItem(String html, Command cmd, String shortcut, String id) {
@@ -376,6 +391,7 @@ public class VMenuBar extends Widget implements Paintable,
      * com.google.gwt.user.client.ui.Widget#onBrowserEvent(com.google.gwt.user
      * .client.Event)
      */
+
     @Override
     public void onBrowserEvent(Event e) {
         super.onBrowserEvent(e);
@@ -393,17 +409,17 @@ public class VMenuBar extends Widget implements Paintable,
         if (targetItem != null) {
             switch (DOM.eventGetType(e)) {
 
-            case Event.ONCLICK:
-                itemClick(targetItem);
-                break;
+                case Event.ONCLICK:
+                    itemClick(targetItem);
+                    break;
 
-            case Event.ONMOUSEOVER:
-                itemOver(targetItem);
-                break;
+                case Event.ONMOUSEOVER:
+                    itemOver(targetItem);
+                    break;
 
-            case Event.ONMOUSEOUT:
-                itemOut(targetItem);
-                break;
+                case Event.ONMOUSEOUT:
+                    itemOut(targetItem);
+                    break;
             }
         }
     }
@@ -618,9 +634,7 @@ public class VMenuBar extends Widget implements Paintable,
     }
 
     /**
-     *
      * A class to hold information on menu items
-     *
      */
     private class CustomMenuItem extends UIObject implements HasHTML {
 

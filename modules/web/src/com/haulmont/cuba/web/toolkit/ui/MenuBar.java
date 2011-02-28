@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.vaadin.terminal.PaintException;
@@ -26,7 +28,7 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
     private Map<MenuItem, String> shortcuts;
     private boolean vertical;
 
-    private Map<MenuItem, String> debugIds;
+    private BiMap<MenuItem, String> debugIds;
 
     public MenuBar() {
         shortcuts = new HashMap<MenuItem, String>();
@@ -61,7 +63,7 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
 
     public void setDebugId(MenuItem item, String id) {
         if (debugIds == null) {
-            debugIds = new HashMap<MenuItem, String>();
+            debugIds = HashBiMap.create();
         }
         debugIds.put(item, id);
     }
@@ -71,6 +73,19 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
             return debugIds.get(item);
         }
         return null;
+    }
+
+    @Override
+    public void changeVariables(Object source, Map<String, Object> variables) {
+
+        if (variables.containsKey("clickedDebugId")) {
+            MenuItem clickedItem  = debugIds.inverse().get(variables.get("clickedDebugId"));
+            if (clickedItem != null && clickedItem.isEnabled()) {
+                clickedItem.getCommand().menuSelected(clickedItem);
+            }
+        }
+
+        super.changeVariables(source, variables);
     }
 
     @Override
