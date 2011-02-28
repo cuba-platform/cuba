@@ -23,6 +23,7 @@ import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.Action;
 import com.vaadin.terminal.gwt.client.ui.ActionOwner;
 import com.vaadin.terminal.gwt.client.ui.TreeAction;
+import com.vaadin.terminal.gwt.client.ui.VTabsheet;
 
 import java.util.*;
 
@@ -288,6 +289,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         updateFromUIDL(uidl);
 
+        runWebkitOverflowAutoFix();
     }
 
     protected void updateFromUIDL(UIDL uidl) {
@@ -2892,6 +2894,21 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         }
         if (newRanges != null) {
             selectedRowRanges.addAll(newRanges);
+        }
+    }
+
+    protected void runWebkitOverflowAutoFix() {
+        if (BrowserInfo.get().getWebkitVersion() > 0) {
+            Widget w = this;
+            Container container;
+            while ((container = Util.getLayout(w)) != null) {
+                w = (Widget) container;
+                if (w instanceof VTabsheet) {
+                    ApplicationConnection.getConsole().log("Run overflow auto fix");
+                    ((VTabsheet) w).runWebkitOverflowAutoFix();
+                    break;
+                }
+            }
         }
     }
 }
