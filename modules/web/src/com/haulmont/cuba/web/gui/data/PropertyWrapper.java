@@ -17,7 +17,8 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.formatters.NumberFormatter;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.vaadin.data.Property;
@@ -111,18 +112,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
 
         final Range range = propertyPath.getRange();
         if (range.isDatatype()) {
-            if (range.asDatatype().equals(Datatypes.getInstance().get(Date.class))) {
-                String formatStr;
-                TemporalType tt = (TemporalType) propertyPath.getMetaProperty().getAnnotations().get("temporal");
-                if (TemporalType.DATE.equals(tt)) {
-                    formatStr = MessageUtils.getDateFormat();
-                } else {
-                    formatStr = MessageUtils.getDateTimeFormat();
-                }
-                return new SimpleDateFormat(formatStr).format(value);
-            } else {
-                return range.asDatatype().format(value);
-            }
+            return formatDatatype(value, range);
         } else if (range.isEnum()) {
             String nameKey = value.getClass().getSimpleName() + "." + value.toString();
             return MessageProvider.getMessage(value.getClass(), nameKey);
@@ -131,6 +121,26 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
                 return ((Instance) value).getInstanceName();
             else
                 return value.toString();
+        }
+    }
+
+    protected String formatDatatype(final Object value, Range range) {
+        if (range.asDatatype().equals(Datatypes.getInstance().get(Date.class))) {
+            String formatStr;
+            TemporalType tt = (TemporalType) propertyPath.getMetaProperty().getAnnotations().get("temporal");
+            if (TemporalType.DATE.equals(tt)) {
+                formatStr = MessageUtils.getDateFormat();
+            } else {
+                formatStr = MessageUtils.getDateTimeFormat();
+            }
+            return new SimpleDateFormat(formatStr).format(value);
+        } else {
+            Class datatypeClass = range.asDatatype().getJavaClass();
+            if (Number.class.isAssignableFrom(datatypeClass)) {
+                Formatter formatter = new NumberFormatter();
+                return formatter.format(value);
+            }
+            return value.toString();
         }
     }
 }

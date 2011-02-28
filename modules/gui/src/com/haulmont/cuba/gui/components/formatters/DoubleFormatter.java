@@ -11,35 +11,16 @@
 
 package com.haulmont.cuba.gui.components.formatters;
 
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.Formatter;
 import org.dom4j.Element;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-
-public class DoubleFormatter implements Formatter<Double> {
-    private Element element;
+/**
+ * @deprecated Need to use {@link com.haulmont.cuba.gui.components.formatters.NumberFormatter} class
+ */
+@Deprecated
+public class DoubleFormatter extends NumberFormatter {
+    private static final long serialVersionUID = 5002355442398684447L;
 
     public DoubleFormatter(Element element) {
-        this.element = element;
-    }
-
-    public String format(Double value) {
-        if (value == null) {
-            return null;
-        }
-        String format = element.attributeValue("format");
-        if (format == null) {
-            return value.toString();
-        } else {
-            if (format.startsWith("msg://")) {
-                format = MessageProvider.getMessage(
-                        AppConfig.getInstance().getMessagesPack(), format.substring(6, format.length()));
-            }
-            DecimalFormat df = new DecimalFormat(format);
-            return df.format(new BigDecimal(value));
-        }
+        super(element);
     }
 }

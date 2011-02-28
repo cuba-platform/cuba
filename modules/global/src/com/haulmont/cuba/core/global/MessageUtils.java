@@ -18,6 +18,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
 /**
  * Utility class to get localized messages by references defined in XML descriptors
  */
@@ -31,6 +34,18 @@ public class MessageUtils {
     public static final String MARK = "msg://";
 
     private static String messagePack;
+
+    private static char defaultDecimalSeparator;
+    private static char defaultGroupingSeparator;
+    private static String defaultNumberFormat;
+
+    static {
+        DecimalFormat format = new DecimalFormat();
+        DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
+        defaultDecimalSeparator = symbols.getDecimalSeparator();
+        defaultGroupingSeparator = symbols.getGroupingSeparator();
+        defaultNumberFormat = format.toPattern();
+    }
 
     public static void setMessagePack(String messagePack) {
         MessageUtils.messagePack = messagePack;
@@ -61,14 +76,54 @@ public class MessageUtils {
      * Returns global DecimalSeparator char set for the application in the main message pack
      */
     public static char getNumberDecimalSeparator() {
-        return MessageProvider.getMessage(messagePack, "numberDecimalSeparator").charAt(0);
+        String s = MessageProvider.getMessage(messagePack, "numberDecimalSeparator");
+        if ("numberDecimalSeparator".equals(s)) {
+            return defaultDecimalSeparator;
+        }
+        return s.charAt(0);
     }
 
     /**
      * Returns global GroupingSeparator char set for the application in the main message pack
      */
     public static char getNumberGroupingSeparator() {
-        return MessageProvider.getMessage(messagePack, "numberGroupingSeparator").charAt(0);
+        String s = MessageProvider.getMessage(messagePack, "numberGroupingSeparator");
+        if ("numberGroupingSeparator".equals(s)) {
+            return defaultGroupingSeparator;
+        }
+        return s.charAt(0);
+    }
+
+    public static String getIntegerFormat() {
+        String s = MessageProvider.getMessage(messagePack, "integerFormat");
+        if ("integerFormat".equals(s)) {
+            return defaultNumberFormat;
+        }
+        return s;
+    }
+
+    public static String getLongFormat() {
+        String s = MessageProvider.getMessage(messagePack, "longFormat");
+        if ("longFormat".equals(s)) {
+            return defaultNumberFormat;
+        }
+        return s;
+    }
+
+    public static String getDoubleFormat() {
+        String s = MessageProvider.getMessage(messagePack, "doubleFormat");
+        if ("doubleFormat".equals(s)) {
+            return defaultNumberFormat;
+        }
+        return s;
+    }
+
+    public static String getBigDecimalFormat() {
+        String s = MessageProvider.getMessage(messagePack, "bigDecimalFormat");
+        if ("bigDecimalFormat".equals(s)) {
+            return defaultNumberFormat;
+        }
+        return s;
     }
 
     /**
