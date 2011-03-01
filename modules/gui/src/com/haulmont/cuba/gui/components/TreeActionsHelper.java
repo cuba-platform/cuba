@@ -99,6 +99,7 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
                             fireCreateEvent((Entity) item);
                         }
                     }
+                    fireChildWindowClosedEvent(window);
                 }
             });
         }

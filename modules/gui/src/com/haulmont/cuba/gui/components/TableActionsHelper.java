@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 
-public class TableActionsHelper extends ListActionsHelper<Table>{
+public class TableActionsHelper extends ListActionsHelper<Table> {
 
     private static final long serialVersionUID = -8710627236049217204L;
 
@@ -79,7 +79,7 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
         }
 
         public String getCaption() {
-            final String    messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, actionMessage);
         }
 
@@ -139,6 +139,7 @@ public class TableActionsHelper extends ListActionsHelper<Table>{
                             fireCreateEvent((Entity) item);
                         }
                     }
+                    fireChildWindowClosedEvent(window);
                 }
             });
         }

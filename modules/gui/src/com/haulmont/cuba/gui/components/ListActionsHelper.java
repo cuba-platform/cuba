@@ -24,6 +24,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
     protected MetaProperty metaProperty;
 
     protected java.util.List<Listener> listeners;
+    protected java.util.List<WindowListener> windowListeners;
 
     ListActionsHelper(IFrame frame, T component) {
         if (component == null) {
@@ -38,6 +39,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
             metaProperty = ((PropertyDatasource) ds).getProperty();
         }
         listeners = new ArrayList<Listener>();
+        windowListeners = new ArrayList<WindowListener>();
     }
 
     public Action createCreateAction() {
@@ -196,6 +198,12 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
+    protected void fireChildWindowClosedEvent(Window window) {
+        for (WindowListener listener : windowListeners) {
+            listener.childWindowClosed(window);
+        }
+    }
+
     protected void fireRemoveEvent(Set<Entity> entities) {
         for (Listener listener : listeners) {
             listener.entityRemoved(entities);
@@ -208,8 +216,18 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
+    public void addListener(WindowListener listener) {
+        if (!windowListeners.contains(listener)) {
+            windowListeners.add(listener);
+        }
+    }
+
     public void removeListener(Listener listener) {
         listeners.remove(listener);
+    }
+
+    public void removeListener(WindowListener listener) {
+        windowListeners.remove(listener);
     }
 
     protected class EditAction extends AbstractAction {
@@ -270,6 +288,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
                                 fireEditEvent((Entity) item);
                             }
                         }
+                        fireChildWindowClosedEvent(window);
                     }
                 });
             }
@@ -282,6 +301,11 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         void entityEdited(Entity entity);
 
         void entityRemoved(Set<Entity> entity);
+
+    }
+
+    public static interface WindowListener extends Serializable {
+        void childWindowClosed(Window window);
     }
 
     protected class RefreshAction extends AbstractAction {

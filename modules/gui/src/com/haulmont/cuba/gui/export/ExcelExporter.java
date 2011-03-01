@@ -18,6 +18,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -137,7 +138,7 @@ public class ExcelExporter {
             throw new RuntimeException(e);
         }
 
-        String fileName = datasource.getMetaClass().getName();
+        String fileName = MessageUtils.getEntityCaption(datasource.getMetaClass());
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName, ExportFormat.XLS);
     }
 

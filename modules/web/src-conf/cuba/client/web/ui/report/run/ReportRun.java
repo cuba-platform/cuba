@@ -25,7 +25,7 @@ public class ReportRun extends AbstractLookup {
         reportsTable = getComponent("table");
         Button runReport = getComponent("runReport");
 
-        reportsTable.addAction(new AbstractAction(RUN_ACTION_ID) {
+        AbstractAction runAction = new AbstractAction(RUN_ACTION_ID) {
             private static final long serialVersionUID = 8363252904120435825L;
 
             public void actionPerform(Component component) {
@@ -35,7 +35,9 @@ public class ReportRun extends AbstractLookup {
                     ReportHelper.runReport(report, ReportRun.this);
                 }
             }
-        });
+        };
+        reportsTable.addAction(runAction);
+        reportsTable.setItemClickAction(runAction);
 
         if (params.get("param$screen") != null) runReport.setVisible(false);//this is print form or run report 
         if (params.get("param$user") == null) params.put("param$user", UserSessionClient.getUserSession().getUser());

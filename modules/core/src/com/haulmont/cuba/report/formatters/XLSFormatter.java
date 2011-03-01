@@ -20,6 +20,7 @@ import static com.haulmont.cuba.report.formatters.xls.HSSFCellHelper.*;
 import static com.haulmont.cuba.report.formatters.xls.HSSFPicturesHelper.getAllAnchors;
 import static com.haulmont.cuba.report.formatters.xls.HSSFRangeHelper.*;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
+import org.apache.poi.hssf.model.Sheet;
 import org.apache.poi.hssf.record.EscherAggregate;
 import org.apache.poi.hssf.record.PaletteRecord;
 import org.apache.poi.hssf.record.formula.AreaPtg;
@@ -311,9 +312,39 @@ public class XLSFormatter extends AbstractFormatter {
             lastColNum = Math.max(rowColNum, lastColNum);
         }
         for (int i = 0; i < lastColNum; i++)
-            resultSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));
+            resultSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));       
 
         resultSheet.setDisplayGridlines(templateSheet.isDisplayGridlines());
+
+        // copy orientation, margins, etc
+
+        HSSFPrintSetup templatePintSetup = templateSheet.getPrintSetup();
+        HSSFPrintSetup resultPrintSetup = resultSheet.getPrintSetup();
+        resultPrintSetup.setNoOrientation(templatePintSetup.getNoOrientation());
+        resultPrintSetup.setLandscape(templatePintSetup.getLandscape());
+        resultPrintSetup.setHeaderMargin(templatePintSetup.getHeaderMargin());
+        resultPrintSetup.setFooterMargin(templatePintSetup.getFooterMargin());
+        resultPrintSetup.setScale(templatePintSetup.getScale());
+        resultPrintSetup.setPaperSize(templatePintSetup.getPaperSize());
+        resultPrintSetup.setFitHeight(templatePintSetup.getFitHeight());
+        resultPrintSetup.setFitWidth(templatePintSetup.getFitWidth());
+        resultPrintSetup.setLeftToRight(templatePintSetup.getLeftToRight());
+        resultPrintSetup.setHResolution(templatePintSetup.getHResolution());
+        resultPrintSetup.setVResolution(templatePintSetup.getVResolution());
+        resultPrintSetup.setUsePage(templatePintSetup.getUsePage());
+        resultPrintSetup.setCopies(templatePintSetup.getCopies());
+        resultPrintSetup.setDraft(templatePintSetup.getDraft());
+        resultPrintSetup.setNoColor(templatePintSetup.getNoColor());
+        resultPrintSetup.setNotes(templatePintSetup.getNotes());
+        resultPrintSetup.setPageStart(templatePintSetup.getPageStart());
+        resultPrintSetup.setOptions(templatePintSetup.getOptions());
+        resultPrintSetup.setValidSettings(templatePintSetup.getValidSettings());
+
+        resultSheet.setMargin(Sheet.LeftMargin, templateSheet.getMargin(Sheet.LeftMargin));
+        resultSheet.setMargin(Sheet.RightMargin, templateSheet.getMargin(Sheet.RightMargin));
+        resultSheet.setMargin(Sheet.TopMargin, templateSheet.getMargin(Sheet.TopMargin));
+        resultSheet.setMargin(Sheet.BottomMargin, templateSheet.getMargin(Sheet.BottomMargin));
+
         resultWorkbook.setSheetName(sheetNumber, templateWorkbook.getSheetName(sheetNumber));
     }
 
@@ -337,6 +368,8 @@ public class XLSFormatter extends AbstractFormatter {
         for (HSSFPictureData picture : pictures) {
             resultWorkbook.addPicture(picture.getData(), picture.getFormat());
         }
+
+
     }
 
     /**
