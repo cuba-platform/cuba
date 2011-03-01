@@ -39,7 +39,7 @@
                                 <label value="msg://report.template"/>
                                 <hbox spacing="true">
                                     <button id="templatePath" stylename="link"/>
-                                    <upload id="uploadTemplate" width="${treeWidth}"/>
+                                    <upload id="uploadTemplate"/>
                                 </hbox>
 
                             </row>

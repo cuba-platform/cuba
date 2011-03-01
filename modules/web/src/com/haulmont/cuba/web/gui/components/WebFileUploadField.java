@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.UIDL;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -22,11 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WebFileUploadField
-    extends
+        extends
         WebAbstractComponent<Upload>
-    implements
-        FileUploadField
-{
+        implements
+        FileUploadField {
     protected String fileName;
     protected byte[] bytes;
     protected ByteArrayOutputStream outputStream;
@@ -34,13 +34,17 @@ public class WebFileUploadField
 
     public WebFileUploadField() {
         String caption = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "Upload");
-        component = new Upload(caption, new Upload.Receiver() {
-            public OutputStream receiveUpload(String filename, String MIMEType) {
-                fileName = filename;
-                outputStream = new ByteArrayOutputStream();
-                return outputStream;
-            }
-        });
+        component = new Upload(
+                /* Fixes caption rendering.
+                * If caption == "", the VerticalLayout reserves an empty space */
+                StringUtils.isEmpty(caption) ? null : caption,
+                new Upload.Receiver() {
+                    public OutputStream receiveUpload(String filename, String MIMEType) {
+                        fileName = filename;
+                        outputStream = new ByteArrayOutputStream();
+                        return outputStream;
+                    }
+                });
         // Set single click upload functional
         component.setImmediate(true);
         component.setAction("");
@@ -103,7 +107,7 @@ public class WebFileUploadField
 
     public String getFileName() {
         String[] strings = fileName.split("[/\\\\]");
-        return strings[strings.length-1];
+        return strings[strings.length - 1];
     }
 
     public boolean isUploading() {
