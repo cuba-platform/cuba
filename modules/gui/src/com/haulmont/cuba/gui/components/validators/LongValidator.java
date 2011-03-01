@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -23,6 +22,8 @@ public class LongValidator implements Field.Validator {
     protected String message;
     protected String messagesPack;
     protected String onlyPositive;
+
+    private static final long serialVersionUID = -1312187225804302418L;
 
     public LongValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
@@ -42,18 +43,15 @@ public class LongValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Long i = (Long) Datatypes.getInstance().get("long").parse((String) value);
-                result = checkPositive(i);
+                Number num = ValidationHelper.parseNumber((String) value, MessageUtils.getLongFormat());
+                result = checkPositive(num.longValue());
             }
             catch (ParseException e) {
                 result = false;
             }
         }
-        else if (value instanceof Long) {
-            result = checkPositive((Long) value);
-        }
         else {
-            result = false;
+            result = value instanceof Long && checkPositive((Long) value);
         }
         if (!result) {
             String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";

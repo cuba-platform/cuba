@@ -10,12 +10,11 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.AppConfig;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
@@ -42,26 +41,20 @@ public class IntegerValidator implements Field.Validator {
     }
 
     private boolean checkIntegerOnPositive(Integer value) {
-        if (ObjectUtils.equals("true", onlyPositive)) {
-            return value.intValue() >= 0;
-        } else {
-            return true;
-        }
+        return !ObjectUtils.equals("true", onlyPositive) || value >= 0;
     }
 
     public void validate(Object value) throws ValidationException {
         boolean result;
         if (value instanceof String) {
             try {
-                Integer i = Datatypes.getInstance().get(Integer.class).parse((String) value);
-                result = checkIntegerOnPositive(i);
+                Number num = ValidationHelper.parseNumber((String) value, MessageUtils.getIntegerFormat());
+                result = checkIntegerOnPositive(num.intValue());
             } catch (ParseException e) {
                 result = false;
             }
-        } else if (value instanceof Integer) {
-            result = checkIntegerOnPositive((Integer) value);
         } else {
-            result = false;
+            result = value instanceof Integer && checkIntegerOnPositive((Integer) value);
         }
         if (!result) {
             String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";

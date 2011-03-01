@@ -10,21 +10,22 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.gui.AppConfig;
 import org.dom4j.Element;
 
-import java.text.ParseException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 
 public class DoubleValidator implements Field.Validator {
 
     protected String message;
     protected String messagesPack;
+
+    private static final long serialVersionUID = 7129516061104979525L;
 
     public DoubleValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
@@ -43,16 +44,15 @@ public class DoubleValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Datatypes.getInstance().get(Double.class).parse((String) value);
+                ValidationHelper.parseNumber((String) value, MessageUtils.getDoubleFormat());
                 result = true;
             } catch (ParseException e) {
                 result = false;
             }
-        } else if ((value instanceof Double) || (value instanceof BigDecimal)) {
-            result = true;
         } else {
-            result = false;
+            result = (value instanceof Double) || (value instanceof BigDecimal);
         }
+
         if (!result) {
             String msg = message != null ? MessageUtils.loadString(messagesPack, message) : "Invalid value '%s'";
             throw new ValidationException(String.format(msg, value));

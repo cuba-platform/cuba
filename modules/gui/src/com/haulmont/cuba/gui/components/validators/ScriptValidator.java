@@ -10,16 +10,15 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
+import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-
-import java.util.Map;
-import java.util.HashMap;
-
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ScriptValidator implements Field.Validator {
     private String script;
