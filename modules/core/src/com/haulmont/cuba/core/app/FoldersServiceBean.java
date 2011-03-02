@@ -46,7 +46,7 @@ public class FoldersServiceBean implements FoldersService {
                     try {
                         if (!StringUtils.isBlank(folder.getVisibilityScript())) {
                             binding.setVariable("folder", folder);
-                            Boolean visible = ScriptingProvider.runGroovyScript(folder.getVisibilityScript(), binding);
+                            Boolean visible = runScript(folder.getVisibilityScript(), binding);
                             if (BooleanUtils.isFalse(visible))
                                 continue;
                         }
@@ -54,13 +54,13 @@ public class FoldersServiceBean implements FoldersService {
                             String variable = "style";
                             binding.setVariable("folder", folder);
                             binding.setVariable(variable, null);
-                            Number qty = ScriptingProvider.runGroovyScript(folder.getQuantityScript(), binding);
-                            folder.setItemStyle((String)binding.getVariable(variable));
+                            Number qty = runScript(folder.getQuantityScript(), binding);
+                            folder.setItemStyle((String) binding.getVariable(variable));
                             folder.setQuantity(qty == null ? null : qty.intValue());
                         }
                     } catch (Exception e) {
                         log.warn("Unable to evaluate AppFolder scripts", e);
-                        continue;
+                        //continue;
                     }
 
                     folder.getParent(); // fetch parent
@@ -73,6 +73,17 @@ public class FoldersServiceBean implements FoldersService {
         } finally {
             tx.end();
         }
+    }
+
+    private <T> T runScript(String script, Binding binding) {
+        Object result;
+        script = StringUtils.trim(script);
+        if (script.indexOf(".groovy") == script.length() - ".groovy".length()) {
+            result = ScriptingProvider.runGroovyScript(script, binding);
+        } else {
+            result = ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.CORE, script, binding);
+        }
+        return (T) result;
     }
 
     public List<AppFolder> reloadAppFolders(List<AppFolder> folders) {
@@ -88,8 +99,8 @@ public class FoldersServiceBean implements FoldersService {
                             String variable = "style";
                             binding.setVariable("folder", folder);
                             binding.setVariable(variable, null);
-                            Number qty = ScriptingProvider.runGroovyScript(folder.getQuantityScript(), binding);
-                            folder.setItemStyle((String)binding.getVariable(variable));
+                            Number qty = runScript(folder.getQuantityScript(), binding);
+                            folder.setItemStyle((String) binding.getVariable(variable));
                             folder.setQuantity(qty == null ? null : qty.intValue());
                         }
                     } catch (Exception e) {

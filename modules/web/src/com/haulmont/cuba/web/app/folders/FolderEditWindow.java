@@ -22,21 +22,24 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
 
 public class FolderEditWindow extends Window {
 
-    private Folder folder;
-    private String messagesPack;
-    private TextField nameField;
-    private TextField doubleNameField;
-    private Select parentSelect;
-    private TextField sortOrderField;
-    private Select presentation;
-    private CheckBox globalCb;
-    private Runnable commitHandler;
+    protected Folder folder;
+    protected String messagesPack;
+    protected TextField nameField;
+    protected TextField doubleNameField;
+    protected Select parentSelect;
+    protected TextField sortOrderField;
+    protected Select presentation;
+    protected CheckBox globalCb;
+    protected Runnable commitHandler;
+    protected VerticalLayout layout;
+    protected Button okBtn;
 
     public FolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
         super();
@@ -48,7 +51,7 @@ public class FolderEditWindow extends Window {
 
         setWidth(300, Sizeable.UNITS_PIXELS);
 
-        VerticalLayout layout = new VerticalLayout();
+        layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(true);
 
@@ -64,7 +67,7 @@ public class FolderEditWindow extends Window {
         doubleNameField = new TextField();
         doubleNameField.setCaption(getMessage("folders.folderEditWindow.doubleNameField"));
         doubleNameField.setWidth(250, Sizeable.UNITS_PIXELS);
-        doubleNameField.setValue(folder.getDoubleName());
+        doubleNameField.setValue(StringUtils.trimToEmpty(folder.getDoubleName()));
         layout.addComponent(doubleNameField);
 
         parentSelect = new Select();
@@ -113,9 +116,22 @@ public class FolderEditWindow extends Window {
         buttonsLayout.setSpacing(true);
         layout.addComponent(buttonsLayout);
 
-        Button okBtn = new Button(getMessage("actions.Ok"));
-        okBtn.addListener(new Button.ClickListener() {
+        okBtn = new Button(getMessage("actions.Ok"));
+        initButtonOkListener();
+        buttonsLayout.addComponent(okBtn);
+
+        Button cancelBtn = new Button(getMessage("actions.Cancel"));
+        cancelBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
+                close();
+            }
+        });
+        buttonsLayout.addComponent(cancelBtn);
+    }
+
+    protected void initButtonOkListener(){
+        okBtn.addListener(new Button.ClickListener() {
+             public void buttonClick(Button.ClickEvent event) {
                 FolderEditWindow.this.folder.setName((String) nameField.getValue());
                 FolderEditWindow.this.folder.setDoubleName((String) doubleNameField.getValue());
 
@@ -159,18 +175,9 @@ public class FolderEditWindow extends Window {
                 close();
             }
         });
-        buttonsLayout.addComponent(okBtn);
-
-        Button cancelBtn = new Button(getMessage("actions.Cancel"));
-        cancelBtn.addListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                close();
-            }
-        });
-        buttonsLayout.addComponent(cancelBtn);
     }
 
-    private void fillParentSelect() {
+    protected void fillParentSelect() {
         parentSelect.removeAllItems();
 
         String root = getMessage("folders.searchFoldersRoot");
@@ -198,7 +205,7 @@ public class FolderEditWindow extends Window {
         }
     }
 
-    private String getMessage(String key) {
+    protected String getMessage(String key) {
         return MessageProvider.getMessage(messagesPack, key);
     }
 }

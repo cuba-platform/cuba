@@ -117,7 +117,7 @@ public class FoldersPane extends VerticalLayout {
         showFolders(nowVisible);
 
         MenuBar.MenuItem firstItem = getFirstMenuItem(menuBar);
-        
+
         menuItem = menuBar.addItemBefore(getMenuItemCaption(),
                 getMenuItemIcon(),
                 createMenuBarCommand(),
@@ -382,10 +382,10 @@ public class FoldersPane extends VerticalLayout {
 
         appFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
         appFoldersTree.setDoubleClickMode(true);
-        appFoldersTree.setItemStyleGenerator(new Tree.ItemStyleGenerator(){
+        appFoldersTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
             public String getStyle(Object itemId) {
-                Folder folder =((Folder)itemId);
-                return folder != null? folder.getItemStyle() :"";
+                Folder folder = ((Folder) itemId);
+                return folder != null ? folder.getItemStyle() : "";
             }
         });
 
@@ -446,7 +446,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected String getMenuItemCaption() {
-        return ""; 
+        return "";
     }
 
     protected String getDefaultMenuItemCaption() {
@@ -474,14 +474,14 @@ public class FoldersPane extends VerticalLayout {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("disableAutoRefresh", true);
-        if(!StringUtils.isBlank(folder.getCode()))
-            params.put("description", MessageProvider.getMessage(messagesPack, folder.getCode()+".doubleName"));
-        else if(folder instanceof AppFolder)
+        if (!StringUtils.isBlank(folder.getCode()))
+            params.put("description", MessageProvider.getMessage(messagesPack, folder.getCode() + ".doubleName"));
+        else if (folder instanceof AppFolder)
             params.put("description", MessageProvider.getMessage(messagesPack, folder.getName()));
-        else if(!StringUtils.isBlank(folder.getDoubleName()))
+        else if (!StringUtils.isBlank(folder.getDoubleName()))
             params.put("description", folder.getDoubleName());
         else
-            params.put("description",folder.getName());
+            params.put("description", folder.getName());
         params.put("disableApplySettings", true);
 
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
@@ -498,7 +498,7 @@ public class FoldersPane extends VerticalLayout {
             filterEntity.setComponentId(folder.getFilterComponentId());
             if (folder instanceof AppFolder)
                 filterEntity.setName(((AppFolder) folder).getLocName());
-            else if(folder.getCode() == null)
+            else if (folder.getCode() == null)
                 filterEntity.setName(folder.getName());
             else
                 filterEntity.setName(folder.getCaption());
@@ -583,10 +583,16 @@ public class FoldersPane extends VerticalLayout {
         }
 
         public Action[] getActions(Object target, Object sender) {
-            if (target instanceof Folder)
-                return new Action[]{new OpenAction()};
-            else
+            if (target instanceof Folder) {
+                if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global")) {
+                    return new Action[]{new OpenAction(), new CreateAction(true), new EditAction(), new RemoveAction()};
+                } else {
+                    return new Action[]{new OpenAction()};
+                }
+
+            } else {
                 return null;
+            }
         }
 
         public void handleAction(Action action, Object sender, Object target) {
@@ -602,16 +608,16 @@ public class FoldersPane extends VerticalLayout {
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof SearchFolder) {
                 if (StringUtils.isBlank(((SearchFolder) target).getFilterComponentId()))
-                    return new Action[]{new CreateAction(), new EditAction(), new RemoveAction()};
-                else{
-                    if(((SearchFolder) target).getCode() == null)
-                        return new Action[]{new OpenAction(), new CreateAction(), new EditAction(), new RemoveAction()};
+                    return new Action[]{new CreateAction(false), new EditAction(), new RemoveAction()};
+                else {
+                    if (((SearchFolder) target).getCode() == null)
+                        return new Action[]{new OpenAction(), new CreateAction(false), new EditAction(), new RemoveAction()};
                     else
-                        return new Action[]{new OpenAction(), new CreateAction()};
+                        return new Action[]{new OpenAction(), new CreateAction(false)};
                 }
 
             } else
-                return new Action[]{new CreateAction()};
+                return new Action[]{new CreateAction(false)};
         }
     }
 
@@ -638,22 +644,27 @@ public class FoldersPane extends VerticalLayout {
 
     protected class CreateAction extends FolderAction {
 
-        public CreateAction() {
+        private boolean isAppFolder;
+
+        public CreateAction(boolean isAppFolder) {
             super(MessageProvider.getMessage(messagesPack, "folders.createFolderAction"));
+            this.isAppFolder = isAppFolder;
         }
 
         public void perform(final Folder folder) {
-            final SearchFolder newFolder = new SearchFolder();
+
+            final Folder newFolder = isAppFolder ? (new AppFolder()) : (new SearchFolder());
             newFolder.setName("");
             newFolder.setDoubleName("");
             newFolder.setParent(folder);
-            newFolder.setUser(UserSessionClient.getUserSession().getUser());
-            final FolderEditWindow window = new FolderEditWindow(true, newFolder, null, new Runnable() {
-                public void run() {
-                    saveFolder(newFolder);
-                    refreshFolders();
-                }
-            });
+            final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, true, newFolder, null,
+                    new Runnable() {
+                        public void run() {
+                            saveFolder(newFolder);
+                            refreshFolders();
+                        }
+                    });
+
             window.addListener(new com.vaadin.ui.Window.CloseListener() {
                 public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                     App.getInstance().getAppWindow().removeWindow(window);
@@ -670,13 +681,25 @@ public class FoldersPane extends VerticalLayout {
         }
 
         public void perform(final Folder folder) {
-
-            final FolderEditWindow window = new FolderEditWindow(false, folder, null, new Runnable() {
-                public void run() {
-                    saveFolder(folder);
-                    refreshFolders();
-                }
-            });
+            final FolderEditWindow window;
+            if (folder instanceof SearchFolder) {
+                window = new FolderEditWindow(false, folder, null, new Runnable() {
+                    public void run() {
+                        saveFolder(folder);
+                        refreshFolders();
+                    }
+                });
+            } else {
+                if (folder instanceof AppFolder) {
+                    window = new AppFolderEditWindow(false, folder, null, new Runnable() {
+                        public void run() {
+                            saveFolder(folder);
+                            refreshFolders();
+                        }
+                    });
+                } else
+                    return;
+            }
             window.addListener(new com.vaadin.ui.Window.CloseListener() {
                 public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                     App.getInstance().getAppWindow().removeWindow(window);

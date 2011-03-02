@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.ConfigProvider;
@@ -42,6 +43,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
+import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
@@ -69,8 +71,7 @@ import java.util.regex.Pattern;
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 public class WebFilter
-        extends WebAbstractComponent<VerticalLayout> implements Filter
-{
+        extends WebAbstractComponent<VerticalLayout> implements Filter {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.web.gui.components.filter";
 
     private PersistenceManagerService persistenceManager;
@@ -104,6 +105,7 @@ public class WebFilter
     private WebConfig config = ConfigProvider.getConfig(WebConfig.class);
 
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
+    private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
 
     private String mainMessagesPack = AppConfig.getInstance().getMessagesPack();
 
@@ -224,7 +226,12 @@ public class WebFilter
         }
 
         if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
-            actions.addAction(new SaveAsFolderAction());
+            actions.addAction(new SaveAsFolderAction(false));
+        if (checkGlobalAppFolderPermission()) {
+            if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null) {
+                actions.addAction(new SaveAsFolderAction(true));
+            }
+        }
     }
 
     public void apply() {
@@ -366,7 +373,7 @@ public class WebFilter
 
         Element e = settings.get(name).element("defaultFilter");
         if (e != null) {
-            String defIdStr =  e.attributeValue("id");
+            String defIdStr = e.attributeValue("id");
             if (!StringUtils.isBlank(defIdStr)) {
                 UUID defaultId = null;
                 try {
@@ -387,8 +394,8 @@ public class WebFilter
                                     select.setValue(filter);
                                     updateControls();
                                     apply();
-                                    if(filterEntity != null)
-                                        if(filterEntity.getCode() != null){
+                                    if (filterEntity != null)
+                                        if (filterEntity.getCode() != null) {
                                             window.setDescription(MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode()));
                                         } else
                                             window.setDescription(filterEntity.getName());
@@ -446,7 +453,7 @@ public class WebFilter
                 if (filter.getCode() == null)
                     captions.put(filter, filter.getName());
                 else {
-                    captions.put(filter, MessageProvider.getMessage(mainMessagesPack,filter.getCode()));
+                    captions.put(filter, MessageProvider.getMessage(mainMessagesPack, filter.getCode()));
                 }
             }
         }
@@ -470,7 +477,7 @@ public class WebFilter
 
     private String getCurrentFilterCaption() {
         String name;
-        if(filterEntity != null)
+        if (filterEntity != null)
             if (filterEntity.getCode() == null)
                 name = InstanceUtils.getInstanceName((Instance) filterEntity);
             else {
@@ -480,10 +487,10 @@ public class WebFilter
             name = "";
         AbstractSearchFolder folder = filterEntity.getFolder();
         if (folder != null) {
-            if(!StringUtils.isBlank(folder.getDoubleName()))
+            if (!StringUtils.isBlank(folder.getDoubleName()))
                 name = folder.getDoubleName();
-            else if(!StringUtils.isBlank(folder.getCode()))
-                name = MessageProvider.getMessage(mainMessagesPack, folder.getCode()+".doubleName");
+            else if (!StringUtils.isBlank(folder.getCode()))
+                name = MessageProvider.getMessage(mainMessagesPack, folder.getCode() + ".doubleName");
             name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
         }
         return name;
@@ -513,10 +520,10 @@ public class WebFilter
         List<FilterEntity> filters = ds.loadList(ctx);
         for (FilterEntity filter : filters) {
             select.addItem(filter);
-            if(filter.getCode() == null)
+            if (filter.getCode() == null)
                 select.setItemCaption(filter, filter.getName());
-            else{
-                select.setItemCaption(filter, MessageProvider.getMessage(mainMessagesPack,filter.getCode()));
+            else {
+                select.setItemCaption(filter, MessageProvider.getMessage(mainMessagesPack, filter.getCode()));
             }
         }
     }
@@ -550,13 +557,13 @@ public class WebFilter
         List<String> names = new ArrayList<String>();
         Map<String, Locale> locales = config.getAvailableLocales();
         for (Object id : select.getItemIds()) {
-            if (id != filterEntity){
-                FilterEntity fe = (FilterEntity)id;
-                if(fe.getCode() == null)
+            if (id != filterEntity) {
+                FilterEntity fe = (FilterEntity) id;
+                if (fe.getCode() == null)
                     names.add(fe.getName());
-                else{
-                    for(Map.Entry<String,Locale> locale : locales.entrySet()){
-                        names.add(MessageProvider.getMessage(mainMessagesPack,fe.getCode(),locale.getValue()));
+                else {
+                    for (Map.Entry<String, Locale> locale : locales.entrySet()) {
+                        names.add(MessageProvider.getMessage(mainMessagesPack, fe.getCode(), locale.getValue()));
                     }
                 }
             }
@@ -627,6 +634,10 @@ public class WebFilter
             defaultCb.setValue(false);
     }
 
+    private boolean checkGlobalAppFolderPermission() {
+        return UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
+    }
+
     private boolean checkGlobalFilterPermission() {
         if (filterEntity == null || filterEntity.getUser() != null)
             return true;
@@ -661,7 +672,7 @@ public class WebFilter
     public <T extends Component> T getComponent(String id) {
         String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1)
-            return (T)getOwnComponent(id);
+            return (T) getOwnComponent(id);
         else
             throw new UnsupportedOperationException("Filter contains only one level of subcomponents");
     }
@@ -726,23 +737,24 @@ public class WebFilter
         applyTo = component;
     }
 
-    private void saveAsFolder() {
-        final SearchFolder folder = new SearchFolder();
-        if(filterEntity.getCode() == null){
+    private void saveAsFolder(boolean isAppFolder) {
+        final AbstractSearchFolder folder = isAppFolder ? (new AppFolder()) : (new SearchFolder());
+        if (filterEntity.getCode() == null) {
             folder.setName(filterEntity.getName());
             folder.setDoubleName(filterEntity.getName());
-        }else{
+        } else {
             String name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
             folder.setName(name);
             folder.setDoubleName(name);
         }
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(filterEntity.getXml());
-        if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
-            folder.setUser(filterEntity.getUser());
-        else
-            folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
-
+        if (!isAppFolder) {
+            if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+                ((SearchFolder) folder).setUser(filterEntity.getUser());
+            else
+                ((SearchFolder) folder).setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+        }
         Presentations presentations;
         if (applyTo != null && applyTo instanceof HasPresentations) {
             final HasPresentations presentationsOwner = (HasPresentations) applyTo;
@@ -752,55 +764,66 @@ public class WebFilter
             presentations = null;
         }
 
-        final FolderEditWindow window = new FolderEditWindow(false, folder,
-                presentations,
-                new Runnable() {
-                    public void run() {
-                        SearchFolder savedFolder = saveFolder(folder);
-                        filterEntity.setFolder(savedFolder);
-                        if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
-                            deleteFilterEntity();
-                        select.setItemCaption(filterEntity, getCurrentFilterCaption());
-
-                        // search for existing folders with the same name
-//                        boolean found = false;
-//                        Collection<SearchFolder> folders = foldersPane.getSearchFolders();
-//                        for (final SearchFolder existingFolder : folders) {
-//                            if (ObjectUtils.equals(existingFolder.getName(), folder.getName())) {
-//                                found = true;
-//                                App.getInstance().getWindowManager().showOptionDialog(
-//                                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dialogs.Confirmation"),
-//                                        MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderConfirmUpdate"),
-//                                        IFrame.MessageType.CONFIRMATION,
-//                                        new Action[] {
-//                                                new DialogAction(DialogAction.Type.YES) {
-//                                                    @Override
-//                                                    public void actionPerform(Component component) {
-//                                                        // update existing folder
-//                                                        existingFolder.setFilterComponentId(folder.getFilterComponentId());
-//                                                        existingFolder.setFilterXml(folder.getFilterXml());
-//                                                        saveFolder(existingFolder);
-//                                                    }
-//                                                },
-//                                                new DialogAction(DialogAction.Type.NO) {
-//                                                    @Override
-//                                                    public void actionPerform(Component component) {
-//                                                        // create new folder
-//                                                        saveFolder(folder);
-//                                                    }
-//                                                }
-//                                        }
-//                                );
-//                            }
-//                        }
-//                        if (!found) {
-                            // create new folder
-//                            saveFolder(folder);
-//                        }
-                    }
+        Runnable commitHandler;
+        if (isAppFolder) {
+            commitHandler = new Runnable() {
+                public void run() {
+                    AppFolder savedFolder = saveAppFolder((AppFolder) folder);
+                    filterEntity.setFolder(savedFolder);
+                    if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+                        deleteFilterEntity();
+                    select.setItemCaption(filterEntity, getCurrentFilterCaption());
                 }
-        );
+            };
+        } else {
+            commitHandler = new Runnable() {
+                public void run() {
+                    SearchFolder savedFolder = saveFolder((SearchFolder) folder);
+                    filterEntity.setFolder(savedFolder);
+                    if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+                        deleteFilterEntity();
+                    select.setItemCaption(filterEntity, getCurrentFilterCaption());
 
+                    // search for existing folders with the same name
+                    //                        boolean found = false;
+                    //                        Collection<SearchFolder> folders = foldersPane.getSearchFolders();
+                    //                        for (final SearchFolder existingFolder : folders) {
+                    //                            if (ObjectUtils.equals(existingFolder.getName(), folder.getName())) {
+                    //                                found = true;
+                    //                                App.getInstance().getWindowManager().showOptionDialog(
+                    //                                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dialogs.Confirmation"),
+                    //                                        MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderConfirmUpdate"),
+                    //                                        IFrame.MessageType.CONFIRMATION,
+                    //                                        new Action[] {
+                    //                                                new DialogAction(DialogAction.Type.YES) {
+                    //                                                    @Override
+                    //                                                    public void actionPerform(Component component) {
+                    //                                                        // update existing folder
+                    //                                                        existingFolder.setFilterComponentId(folder.getFilterComponentId());
+                    //                                                        existingFolder.setFilterXml(folder.getFilterXml());
+                    //                                                        saveFolder(existingFolder);
+                    //                                                    }
+                    //                                                },
+                    //                                                new DialogAction(DialogAction.Type.NO) {
+                    //                                                    @Override
+                    //                                                    public void actionPerform(Component component) {
+                    //                                                        // create new folder
+                    //                                                        saveFolder(folder);
+                    //                                                    }
+                    //                                                }
+                    //                                        }
+                    //                                );
+                    //                            }
+                    //                        }
+                    //                        if (!found) {
+                    // create new folder
+                    //                            saveFolder(folder);
+                    //                        }
+                }
+            };
+        }
+
+        final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, false, folder, presentations, commitHandler);
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 App.getInstance().getAppWindow().removeWindow(window);
@@ -811,6 +834,12 @@ public class WebFilter
 
     private SearchFolder saveFolder(SearchFolder folder) {
         SearchFolder savedFolder = (SearchFolder) foldersPane.saveFolder(folder);
+        foldersPane.refreshFolders();
+        return savedFolder;
+    }
+
+    private AppFolder saveAppFolder(AppFolder folder) {
+        AppFolder savedFolder = (AppFolder) foldersPane.saveFolder(folder);
         foldersPane.refreshFolders();
         return savedFolder;
     }
@@ -925,8 +954,11 @@ public class WebFilter
 
     private class SaveAsFolderAction extends AbstractAction {
 
-        protected SaveAsFolderAction() {
-            super("saveAsFolderAction");
+        private boolean isAppFolder;
+
+        protected SaveAsFolderAction(boolean isAppFolder) {
+            super(isAppFolder ? ("saveAsAppFolderAction") : ("saveAsFolderAction"));
+            this.isAppFolder = isAppFolder;
         }
 
         @Override
@@ -935,7 +967,7 @@ public class WebFilter
         }
 
         public void actionPerform(Component component) {
-            saveAsFolder();
+            saveAsFolder(isAppFolder);
         }
     }
 
@@ -954,8 +986,7 @@ public class WebFilter
             if (value instanceof String
                     && !StringUtils.isEmpty((String) value)
                     && !((String) value).contains("%")
-                    && !((String) value).startsWith(ParametersHelper.CASE_INSENSITIVE_MARKER))
-            {
+                    && !((String) value).startsWith(ParametersHelper.CASE_INSENSITIVE_MARKER)) {
                 // try to wrap value for case-insensitive "like" search
                 if (condition instanceof PropertyCondition) {
                     PropertyCondition.Op op = ((PropertyCondition) condition).getOperator();
