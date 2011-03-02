@@ -19,8 +19,10 @@ import com.vaadin.ui.themes.BaseTheme;
 public class RowsCount extends CustomComponent {
 
     private HorizontalLayout layout;
+    private Button prevButton;
+    private Button nextButton;
     private Label label;
-    private Button link;
+    private Button countButton;
 
     public RowsCount() {
         layout = new HorizontalLayout();
@@ -29,12 +31,20 @@ public class RowsCount extends CustomComponent {
 
         setCompositionRoot(layout);
 
+        prevButton = new Button("<");
+        prevButton.setStyleName("change-page");
+        layout.addComponent(prevButton);
+
         label = new Label();
         layout.addComponent(label);
 
-        link = new Button("[?]");
-        link.setStyleName(BaseTheme.BUTTON_LINK);
-        layout.addComponent(link);
+        countButton = new Button("[?]");
+        countButton.setStyleName(BaseTheme.BUTTON_LINK);
+        layout.addComponent(countButton);
+
+        nextButton = new Button(">");
+        nextButton.setStyleName("change-page");
+        layout.addComponent(nextButton);
 
         layout.setWidth("-1px");
         setWidth("-1px");
@@ -44,7 +54,15 @@ public class RowsCount extends CustomComponent {
         return label;
     }
 
-    public Button getLink() {
-        return link;
+    public Button getCountButton() {
+        return countButton;
+    }
+
+    public Button getPrevButton() {
+        return prevButton;
+    }
+
+    public Button getNextButton() {
+        return nextButton;
     }
 }

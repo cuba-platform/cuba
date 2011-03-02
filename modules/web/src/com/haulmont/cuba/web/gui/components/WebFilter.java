@@ -46,11 +46,13 @@ import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.data.Property;
+import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -94,10 +96,16 @@ public class WebFilter
 
     private boolean useMaxResults;
     private CheckBox maxResultsCb;
+    private TextField maxResultsField;
+    private AbstractOrderedLayout maxResultsLayout;
 
     private Component applyTo;
 
+    private WebConfig config = ConfigProvider.getConfig(WebConfig.class);
+
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
+
+    private String mainMessagesPack = AppConfig.getInstance().getMessagesPack();
 
     public WebFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
@@ -121,7 +129,7 @@ public class WebFilter
         topLayout.addComponent(select);
 
         applyBtn = WebComponentsHelper.createButton("icons/search.png");
-        applyBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Apply"));
+        applyBtn.setCaption(MessageProvider.getMessage(mainMessagesPack, "actions.Apply"));
         applyBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 apply();
@@ -154,11 +162,8 @@ public class WebFilter
         });
         topLayout.addComponent(defaultCb);
 
-        maxResultsCb = new CheckBox();
-        maxResultsCb.setImmediate(true);
-        maxResultsCb.setVisible(false);
-        maxResultsCb.setValue(true);
-        topLayout.addComponent(maxResultsCb);
+        initMaxResultsLayout();
+        topLayout.addComponent(maxResultsLayout);
 
         component.addComponent(topLayout);
 
@@ -166,6 +171,35 @@ public class WebFilter
         component.addComponent(paramsLayout);
 
         updateControls();
+    }
+
+    private void initMaxResultsLayout() {
+        maxResultsLayout = new HorizontalLayout();
+        maxResultsLayout.setSpacing(true);
+
+        maxResultsCb = new CheckBox(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label1"));
+        maxResultsCb.setImmediate(true);
+        maxResultsCb.setValue(true);
+        maxResultsCb.addListener(
+                new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent event) {
+                        maxResultsField.setEnabled(BooleanUtils.isTrue((Boolean) maxResultsCb.getValue()));
+                    }
+                }
+        );
+        maxResultsLayout.addComponent(maxResultsCb);
+
+        maxResultsField = new TextField();
+        maxResultsField.setImmediate(true);
+        maxResultsField.setMaxLength(4);
+        maxResultsField.setWidth(40, UNITS_PIXELS);
+        maxResultsField.setInvalidAllowed(false);
+        maxResultsField.addValidator(
+                new IntegerValidator(MessageProvider.getMessage(mainMessagesPack, "validation.invalidNumber")));
+        maxResultsLayout.addComponent(maxResultsField);
+
+        Label maxResultsLabel2 = new Label(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label2"));
+        maxResultsLayout.addComponent(maxResultsLabel2);
     }
 
     private void fillActions() {
@@ -199,11 +233,13 @@ public class WebFilter
         if (useMaxResults) {
             int maxResults;
             if (BooleanUtils.isTrue((Boolean) maxResultsCb.getValue()))
-                maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+                maxResults = Integer.valueOf((String) maxResultsField.getValue());  //persistenceManager.getFetchUI(datasource.getMetaClass().getName());
             else
                 maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
             datasource.setMaxResults(maxResults);
         }
+        if (datasource instanceof CollectionDatasource.SupportsPaging)
+            ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
         datasource.refresh();
     }
@@ -353,8 +389,7 @@ public class WebFilter
                                     apply();
                                     if(filterEntity != null)
                                         if(filterEntity.getCode() != null){
-                                            String mp = AppConfig.getInstance().getMessagesPack();
-                                            window.setDescription(MessageProvider.getMessage(mp, filterEntity.getCode()));
+                                            window.setDescription(MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode()));
                                         } else
                                             window.setDescription(filterEntity.getName());
                                     else
@@ -373,8 +408,8 @@ public class WebFilter
 
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
-        if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"))
-            maxResultsCb.setVisible(useMaxResults);
+        maxResultsLayout.setVisible(useMaxResults
+                && UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
     }
 
     public boolean getUseMaxResults() {
@@ -411,8 +446,7 @@ public class WebFilter
                 if (filter.getCode() == null)
                     captions.put(filter, filter.getName());
                 else {
-                    String mp = AppConfig.getInstance().getMessagesPack();
-                    captions.put(filter, MessageProvider.getMessage(mp,filter.getCode()));
+                    captions.put(filter, MessageProvider.getMessage(mainMessagesPack,filter.getCode()));
                 }
             }
         }
@@ -440,8 +474,7 @@ public class WebFilter
             if (filterEntity.getCode() == null)
                 name = InstanceUtils.getInstanceName((Instance) filterEntity);
             else {
-                String mp = AppConfig.getInstance().getMessagesPack();
-                name = MessageProvider.getMessage(mp, filterEntity.getCode());
+                name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
             }
         else
             name = "";
@@ -450,8 +483,7 @@ public class WebFilter
             if(!StringUtils.isBlank(folder.getDoubleName()))
                 name = folder.getDoubleName();
             else if(!StringUtils.isBlank(folder.getCode()))
-                name = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
-                        folder.getCode()+".doubleName");
+                name = MessageProvider.getMessage(mainMessagesPack, folder.getCode()+".doubleName");
             name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
         }
         return name;
@@ -484,8 +516,7 @@ public class WebFilter
             if(filter.getCode() == null)
                 select.setItemCaption(filter, filter.getName());
             else{
-                String mp = AppConfig.getInstance().getMessagesPack();
-                select.setItemCaption(filter, MessageProvider.getMessage(mp,filter.getCode()));
+                select.setItemCaption(filter, MessageProvider.getMessage(mainMessagesPack,filter.getCode()));
             }
         }
     }
@@ -517,8 +548,7 @@ public class WebFilter
         editLayout.setSpacing(true);
 
         List<String> names = new ArrayList<String>();
-        String mp = AppConfig.getInstance().getMessagesPack();
-        Map<String, Locale> locales = ConfigProvider.getConfig(WebConfig.class).getAvailableLocales();
+        Map<String, Locale> locales = config.getAvailableLocales();
         for (Object id : select.getItemIds()) {
             if (id != filterEntity){
                 FilterEntity fe = (FilterEntity)id;
@@ -526,7 +556,7 @@ public class WebFilter
                     names.add(fe.getName());
                 else{
                     for(Map.Entry<String,Locale> locale : locales.entrySet()){
-                        names.add(MessageProvider.getMessage(mp,fe.getCode(),locale.getValue()));
+                        names.add(MessageProvider.getMessage(mainMessagesPack,fe.getCode(),locale.getValue()));
                     }
                 }
             }
@@ -545,19 +575,23 @@ public class WebFilter
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
 
-        // set initial denying condition to get empty datasource before explicit filter applying
-        QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
-        if (dsQueryFilter != null) {
-            queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+        if (config.getGenericFilterManualApplyRequired()) {
+            // set initial denying condition to get empty datasource before explicit filter applying
+            QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
+            if (dsQueryFilter != null) {
+                queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+            }
+            datasource.setQueryFilter(queryFilter);
         }
-        datasource.setQueryFilter(queryFilter);
 
         if (datasource instanceof CollectionDatasource.Lazy) {
             setUseMaxResults(false);
 
         } else {
             int maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
-            maxResultsCb.setCaption(MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(), "filter.maxResults", maxResults));
+            maxResultsField.setValue(String.valueOf(maxResults));
+
+            datasource.setMaxResults(maxResults);
         }
     }
 
@@ -698,7 +732,7 @@ public class WebFilter
             folder.setName(filterEntity.getName());
             folder.setDoubleName(filterEntity.getName());
         }else{
-            String name = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), filterEntity.getCode());
+            String name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
             folder.setName(name);
             folder.setDoubleName(name);
         }
@@ -825,8 +859,7 @@ public class WebFilter
                 String descr;
                 if (filterEntity != null)
                     if (filterEntity.getCode() != null) {
-                        String mp = AppConfig.getInstance().getMessagesPack();
-                        descr = MessageProvider.getMessage(mp, filterEntity.getCode());
+                        descr = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
                     } else
                         descr = filterEntity.getName();
                 else

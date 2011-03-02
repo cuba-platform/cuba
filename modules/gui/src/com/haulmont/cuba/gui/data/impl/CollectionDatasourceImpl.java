@@ -11,13 +11,10 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -40,7 +37,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         CollectionDatasource.Sortable<T, K>,
         CollectionDatasource.Aggregatable<T, K>,
         CollectionDatasource.Suspendable<T, K>,
-        CollectionDatasource.SupportsCount<T, K>
+        CollectionDatasource.SupportsPaging<T, K>
 {
     protected LinkedMap data = new LinkedMap();
 
@@ -60,6 +57,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected boolean suspended;
 
     protected boolean refreshOnResumeRequired;
+
+    protected int firstResult;
+
+    protected boolean sortOnDb = ConfigProvider.getConfig(GlobalConfig.class).getCollectionDatasourceDbSortEnabled();
 
     /**
      * This constructor is invoked by DsContextLoader, so inheritors must contain a constructor
@@ -195,12 +196,21 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (!Arrays.equals(this.sortInfos, sortInfos)) {
             //noinspection unchecked
             this.sortInfos = sortInfos;
-            doSort();
+            if (data.size() > 0) {
+                if (!sortOnDb || containsAllDataFromDb()) {
+                    doSort();
+                } else {
+                    refresh();
+                }
+            }
         }
     }
 
+    protected boolean containsAllDataFromDb() {
+        return firstResult == 0 && data.size() < maxResults;
+    }
+
     protected void doSort() {
-        @SuppressWarnings({"unchecked"})
         List<T> list = new ArrayList<T>(data.values());
         Collections.sort(list, createEntityComparator());
         data.clear();
@@ -350,6 +360,21 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             if (q == null)
                 return;
 
+            if (sortInfos != null && sortOnDb) {
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
+
+                boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+                MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+
+                transformer.replaceOrderBy(propertyPath.toString(), !asc);
+                String jpqlQuery = transformer.getResult();
+
+                q.setQueryString(jpqlQuery);
+            }
+
+            if (firstResult > 0)
+                q.setFirstResult(firstResult);
+
             if (maxResults > 0) {
                 q.setMaxResults(maxResults);
             }
@@ -393,5 +418,13 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (wasSuspended && !suspended && refreshOnResumeRequired) {
             refresh();
         }
+    }
+
+    public int getFirstResult() {
+        return firstResult;
+    }
+
+    public void setFirstResult(int startPosition) {
+        this.firstResult = startPosition;
     }
 }

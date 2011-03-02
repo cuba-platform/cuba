@@ -85,4 +85,6 @@ public interface WebConfig extends Config
     @Default("default")
     String getAppWindowWallpaper();
 
+    @DefaultBoolean(true)
+    boolean getGenericFilterManualApplyRequired();
 }

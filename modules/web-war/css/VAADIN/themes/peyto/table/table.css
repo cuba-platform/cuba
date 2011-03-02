@@ -446,3 +446,15 @@
 .table-rows-count .v-button-wrap {
     padding-top: 10px;
 }
+
+.table-rows-count .v-button-change-page {
+    height: 17px;
+    margin-top: 8px;
+}
+
+.table-rows-count .v-button-change-page .v-button-wrap {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 17px;
+    line-height: 17px;
+}

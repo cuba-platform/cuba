@@ -22,6 +22,14 @@ public class WebRowsCount
         implements RowsCount
 {
     private CollectionDatasource datasource;
+    private boolean refreshing;
+
+    private enum State {
+        FIRST_COMPLETE,     // "63 rows"
+        FIRST_INCOMPLETE,   // "1-100 rows of [?] >"
+        MIDDLE,             // "< 101-200 rows of [?] >"
+        LAST                // "< 201-252 rows"
+    }
 
     public WebRowsCount() {
         component = new com.haulmont.cuba.web.toolkit.ui.RowsCount();
@@ -43,22 +51,66 @@ public class WebRowsCount
                         }
                     }
             );
-            component.getLink().addListener(
+            component.getCountButton().addListener(
                     new Button.ClickListener() {
                         public void buttonClick(Button.ClickEvent event) {
                             onLinkClick();
                         }
                     }
             );
+            component.getPrevButton().addListener(
+                    new Button.ClickListener() {
+                        public void buttonClick(Button.ClickEvent event) {
+                            onPrevClick();
+                        }
+                    }
+            );
+            component.getNextButton().addListener(
+                    new Button.ClickListener() {
+                        public void buttonClick(Button.ClickEvent event) {
+                            onNextClick();
+                        }
+                    }
+            );
+        }
+    }
+
+    private void onPrevClick() {
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging))
+            return;
+
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        int newStart = ds.getFirstResult() - ds.getMaxResults();
+        ds.setFirstResult(newStart < 0 ? 0 : newStart);
+        refreshing = true;
+        try {
+            ds.refresh();
+        } finally {
+            refreshing = false;
+        }
+    }
+
+    private void onNextClick() {
+        if (!(datasource instanceof CollectionDatasource.SupportsPaging))
+            return;
+
+        CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        ds.setFirstResult(ds.getFirstResult() + ds.getMaxResults());
+
+        refreshing = true;
+        try {
+            ds.refresh();
+        } finally {
+            refreshing = false;
         }
     }
 
     private void onLinkClick() {
-        if (datasource == null || !(datasource instanceof CollectionDatasource.SupportsCount))
+        if (datasource == null || !(datasource instanceof CollectionDatasource.SupportsPaging))
             return;
 
-        int count = ((CollectionDatasource.SupportsCount) datasource).getCount();
-        component.getLink().setCaption(String.valueOf(count));
+        int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
+        component.getCountButton().setCaption(String.valueOf(count));
     }
 
     private void onCollectionChanged() {
@@ -67,19 +119,66 @@ public class WebRowsCount
 
         String msgKey;
         int size = datasource.size();
-        if (size == 0 || size != datasource.getMaxResults() || !(datasource instanceof CollectionDatasource.SupportsCount)) {
-            msgKey = "table.rowsCount.msg2";
-            component.getLink().setVisible(false);
+        int start = 0;
+
+        State state;
+        if (datasource instanceof CollectionDatasource.SupportsPaging) {
+            CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+            if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
+                state = State.FIRST_COMPLETE;
+            } else if (size == ds.getMaxResults() && ds.getFirstResult() == 0) {
+                state = State.FIRST_INCOMPLETE;
+            } else if (size == ds.getMaxResults() && ds.getFirstResult() > 0) {
+                state = State.MIDDLE;
+                start = ds.getFirstResult();
+            } else if (size < ds.getMaxResults() && ds.getFirstResult() > 0) {
+                state = State.LAST;
+                start = ds.getFirstResult();
+            } else
+                state = State.FIRST_COMPLETE;
         } else {
-            msgKey = "table.rowsCount.msg1";
-            component.getLink().setVisible(true);
+            state = State.FIRST_COMPLETE;
+        }
+
+        String countValue;
+        switch (state) {
+            case FIRST_COMPLETE:
+                component.getCountButton().setVisible(false);
+                component.getPrevButton().setVisible(false);
+                component.getNextButton().setVisible(false);
+                msgKey = "table.rowsCount.msg2";
+                countValue = String.valueOf(size);
+                break;
+            case FIRST_INCOMPLETE:
+                component.getCountButton().setVisible(true);
+                component.getPrevButton().setVisible(false);
+                component.getNextButton().setVisible(true);
+                msgKey = "table.rowsCount.msg1";
+                countValue = "1-" + size;
+                break;
+            case MIDDLE:
+                component.getCountButton().setVisible(true);
+                component.getPrevButton().setVisible(true);
+                component.getNextButton().setVisible(true);
+                msgKey = "table.rowsCount.msg1";
+                countValue = (start + 1) + "-" + (start + size);
+                break;
+            case LAST:
+                component.getCountButton().setVisible(false);
+                component.getPrevButton().setVisible(true);
+                component.getNextButton().setVisible(false);
+                msgKey = "table.rowsCount.msg2";
+                countValue = (start + 1) + "-" + (start + size);
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
 
         String messagesPack = AppConfig.getInstance().getMessagesPack();
-        component.getLabel().setValue(MessageProvider.formatMessage(messagesPack, msgKey, size));
+        component.getLabel().setValue(MessageProvider.formatMessage(messagesPack, msgKey, countValue));
 
-        if (component.getLink().isVisible()) {
-            component.getLink().setCaption(MessageProvider.getMessage(messagesPack, "table.rowsCount.msg3"));
+        if (component.getCountButton().isVisible() && !refreshing) {
+            component.getCountButton().setCaption(MessageProvider.getMessage(messagesPack, "table.rowsCount.msg3"));
         }
     }
 }

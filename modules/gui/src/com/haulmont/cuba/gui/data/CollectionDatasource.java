@@ -219,14 +219,18 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     }
 
     /**
-     * CollectionDatasource supporting counting records in database
+     * CollectionDatasource that supports counting records in database and loading by pages
      * @param <T> type of entity
      * @param <K> type of entity ID
      */
-    interface SupportsCount<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
+    interface SupportsPaging<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
 
         /** Returns count of records in datatabase for the current query and filter */
         int getCount();
+
+        /**  */
+        int getFirstResult();
+        void setFirstResult(int startPosition);
     }
 
     interface Suspendable<T extends Entity<K>, K> extends CollectionDatasource<T, K> {

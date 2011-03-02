@@ -106,4 +106,9 @@ public interface GlobalConfig extends Config {
     @Property("cuba.userSessionExpirationTimeoutSec")
     @DefaultInt(1800)
     int getUserSessionExpirationTimeoutSec();
+
+
+    @Property("cuba.collectionDatasourceDbSortEnabled")
+    @DefaultBoolean(true)
+    boolean getCollectionDatasourceDbSortEnabled();
 }
