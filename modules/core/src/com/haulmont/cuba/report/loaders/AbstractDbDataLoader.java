@@ -24,6 +24,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AbstractDbDataLoader implements DataLoader {
+    private static final String QUERY_END = "%%END%%";
+    private static final String OUTPUT_PARAMS_PATTERN = "as ([\\w|\\d|_]+\\b)[\\s]*[,|from|" + QUERY_END + "]";
+
     protected Map<String, Object> params = new HashMap<String, Object>();
 
     protected AbstractDbDataLoader(Map<String, Object> params) {
@@ -33,12 +36,15 @@ public abstract class AbstractDbDataLoader implements DataLoader {
     public abstract List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand);
 
     protected List<String> parseQueryOutputParametersNames(String query) {
-        // todo: Trouble with parsing output fields 
         ArrayList<String> result = new ArrayList<String>();
-        Pattern namePattern = Pattern.compile("(?i)as [\\w|\\d|_]+", Pattern.CASE_INSENSITIVE);
+        query += QUERY_END;
+        Pattern namePattern = Pattern.compile(OUTPUT_PARAMS_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = namePattern.matcher(query);
+
         while (matcher.find()) {
-            result.add(matcher.group().replaceFirst("(?i)as", "").trim());
+            String group = matcher.group(matcher.groupCount());
+            if (group != null)
+                result.add(group.trim());
         }
         return result;
     }
@@ -58,8 +64,9 @@ public abstract class AbstractDbDataLoader implements DataLoader {
                     outputParameters.put(parametersNames.get(i), value);
                 }
             } else {
-                outputParameters.put(parametersNames.get(0), (_resultRecord instanceof PGobject) ? UUID.fromString(((PGobject) _resultRecord).getValue())
-                                                                                                   : _resultRecord);//todo: do we need to support another postgres objects?
+                outputParameters.put(parametersNames.get(0),
+                        (_resultRecord instanceof PGobject) ? UUID.fromString(((PGobject) _resultRecord).getValue())
+                        : _resultRecord);//todo: do we need to support another postgres objects?
             }
             outputData.add(outputParameters);
         }
@@ -77,10 +84,12 @@ public abstract class AbstractDbDataLoader implements DataLoader {
 
         ArrayList<Object> values = new ArrayList<Object>();
         int i = 1;
-        for (Map.Entry<String, Object> entry : currentParams.entrySet()) {//replaces ${alias} marks with ? and remembers their positions
+        for (Map.Entry<String, Object> entry : currentParams.entrySet()) {
+            //replaces ${alias} marks with ? and remembers their positions
             String alias = "${" + entry.getKey() + "}";
             String regexp = "\\$\\{" + entry.getKey() + "\\}";
-            String deleteRegexp = "(?i)(and)?(or)? ?[\\w|\\d|\\.|\\_]+ ?(=|>=|<=|like) ?\\$\\{" + entry.getKey() + "\\}";//todo: another regexp to remove parameter
+            //todo: another regexp to remove parameter
+            String deleteRegexp = "(?i)(and)?(or)? ?[\\w|\\d|\\.|\\_]+ ?(=|>=|<=|like) ?\\$\\{" + entry.getKey() + "\\}";
 
             if (entry.getValue() == null) {
                 query = query.replaceAll(deleteRegexp, "");
@@ -96,7 +105,8 @@ public abstract class AbstractDbDataLoader implements DataLoader {
         boolean inserted = values.size() > 0;
         EntityManager em = PersistenceProvider.getEntityManager();
         Query select = DataSetType.SQL.equals(dataSetType) ? em.createNativeQuery(query) : em.createQuery(query);
-        if (inserted) {//insert parameters to their position
+        if (inserted) {
+            //insert parameters to their position
             i = 1;
             for (Object value : values) {
                 select.setParameter(i++, value instanceof Entity ? ((Entity) value).getId() : value);
