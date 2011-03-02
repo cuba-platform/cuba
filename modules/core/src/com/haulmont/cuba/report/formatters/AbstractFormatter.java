@@ -24,8 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AbstractFormatter implements Formatter {
-    public static final String UNIVERSAL_ALIAS_PATTERN = "\\$\\{[a-z|A-Z|а-я|А-Я|0-9|_|\\.]+?\\}";
-    public static final String ALIAS_WITH_BAND_NAME_PATTERN = "\\$\\{[a-z|A-Z|а-я|А-Я|0-9|_]+?\\.[a-z|A-Z|0-9|_|\\.]+?\\}";
+    public static final String UNIVERSAL_ALIAS_PATTERN = "\\$\\{[a-z|A-Z|0-9|_|\\.]+?\\}";
+    public static final String ALIAS_WITH_BAND_NAME_PATTERN = "\\$\\{[a-z|A-Z|0-9|_]+?\\.[a-z|A-Z|0-9|_|\\.]+?\\}";
 
     protected static Pattern namePattern;
 

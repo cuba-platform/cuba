@@ -16,7 +16,11 @@ import com.sun.star.container.XNameContainer;
 import com.sun.star.drawing.XShape;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
-import com.sun.star.text.*;
+import com.sun.star.text.HoriOrientation;
+import com.sun.star.text.XText;
+import com.sun.star.text.XTextContent;
+import com.sun.star.text.XTextRange;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -44,32 +48,34 @@ public class ImageTagHandler implements TagHandler {
      */
     public void handleTag(XComponent xComponent, XText destination, XTextRange textRange,
                           String paramValue, Matcher paramsMatcher) throws Exception {
-        int width = Integer.parseInt(paramsMatcher.group(1));
-        int height = Integer.parseInt(paramsMatcher.group(2));
+        if (!StringUtils.isEmpty(paramValue)) {
+            int width = Integer.parseInt(paramsMatcher.group(1));
+            int height = Integer.parseInt(paramsMatcher.group(2));
 
-        XMultiServiceFactory xFactory = asXMultiServiceFactory(xComponent);
-        Object oBitmapTable = xFactory.createInstance(DRAWING_BITMAP_TABLE);
-        XNameContainer xContainer = asXNameContainer(oBitmapTable);
-        String fieldName = UUID.randomUUID().toString();
-        xContainer.insertByName(fieldName, paramValue);
+            XMultiServiceFactory xFactory = asXMultiServiceFactory(xComponent);
+            Object oBitmapTable = xFactory.createInstance(DRAWING_BITMAP_TABLE);
+            XNameContainer xContainer = asXNameContainer(oBitmapTable);
+            String fieldName = UUID.randomUUID().toString();
+            xContainer.insertByName(fieldName, paramValue);
 
-        Object oImage = xFactory.createInstance(TEXT_GRAPHIC_OBJECT);
-        String internalImageURL = (String) xContainer.getByName(fieldName);
+            Object oImage = xFactory.createInstance(TEXT_GRAPHIC_OBJECT);
+            String internalImageURL = (String) xContainer.getByName(fieldName);
 
-        XPropertySet imageProperties = asXPropertySet(oImage);
-        imageProperties.setPropertyValue("GraphicURL", internalImageURL);
-        imageProperties.setPropertyValue("HoriOrient", HoriOrientation.NONE);
-        imageProperties.setPropertyValue("VertOrient", HoriOrientation.NONE);
-        imageProperties.setPropertyValue("HoriOrientPosition", 0);
-        imageProperties.setPropertyValue("VertOrientPosition", 0);
+            XPropertySet imageProperties = asXPropertySet(oImage);
+            imageProperties.setPropertyValue("GraphicURL", internalImageURL);
+            imageProperties.setPropertyValue("HoriOrient", HoriOrientation.NONE);
+            imageProperties.setPropertyValue("VertOrient", HoriOrientation.NONE);
+            imageProperties.setPropertyValue("HoriOrientPosition", 0);
+            imageProperties.setPropertyValue("VertOrientPosition", 0);
 
-        XTextContent xTextContent = asXTextContent(oImage);
-        destination.insertTextContent(textRange, xTextContent, true);
+            XTextContent xTextContent = asXTextContent(oImage);
+            destination.insertTextContent(textRange, xTextContent, true);
 
-        Size aActualSize = (Size) imageProperties.getPropertyValue("ActualSize");
-        aActualSize.Height = height * IMAGE_FACTOR;
-        aActualSize.Width = width * IMAGE_FACTOR;
-        XShape xShape = asXShape(oImage);
-        xShape.setSize(aActualSize);
+            Size aActualSize = (Size) imageProperties.getPropertyValue("ActualSize");
+            aActualSize.Height = height * IMAGE_FACTOR;
+            aActualSize.Width = width * IMAGE_FACTOR;
+            XShape xShape = asXShape(oImage);
+            xShape.setSize(aActualSize);
+        }
     }
 }

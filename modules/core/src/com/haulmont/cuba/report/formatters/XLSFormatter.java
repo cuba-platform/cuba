@@ -246,18 +246,19 @@ public class XLSFormatter extends AbstractFormatter {
     }
 
     /**
-     * Method creates mapping [rangeName -> List<CellRangeAddress>]. List contains all merge regions for this named range
-     *
-     * @param currentSheet - sheet which contains merge regions
-     *                     <p/>
-     *                     todo: if merged regions writes wrong - look on methods isMergeRegionInsideNamedRange & isNamedRangeInsideMergeRegion
-     *                     todo: how to recognize if merge region must be copied with named range
+     * <p>
+     * Method creates mapping [rangeName -> List< CellRangeAddress >]. <br/>
+     * List contains all merge regions for this named range
+     * </p>
+     * todo: if merged regions writes wrong - look on methods isMergeRegionInsideNamedRange & isNamedRangeInsideMergeRegion
+     * todo: how to recognize if merge region must be copied with named range
+     * @param currentSheet Sheet which contains merge regions
      */
     private void initMergeRegions(HSSFSheet currentSheet) {
         int rangeNumber = templateWorkbook.getNumberOfNames();
         for (int i = 0; i < rangeNumber; i++) {
             HSSFName aNamedRange = templateWorkbook.getNameAt(i);
-            AreaReference aref = new AreaReference(aNamedRange.getReference());
+            AreaReference aref = new AreaReference(aNamedRange.getRefersToFormula());
             Integer rangeFirstRow = aref.getFirstCell().getRow();
             Integer rangeFirstColumn = (int) aref.getFirstCell().getCol();
             Integer rangeLastRow = aref.getLastCell().getRow();
@@ -409,7 +410,7 @@ public class XLSFormatter extends AbstractFormatter {
         if (rangeNameIdx == -1) return;
 
         HSSFName aNamedRange = templateWorkbook.getNameAt(rangeNameIdx);
-        AreaReference aref = new AreaReference(aNamedRange.getReference());
+        AreaReference aref = new AreaReference(aNamedRange.getRefersToFormula());
         int column = aref.getFirstCell().getCol();
         int row = aref.getFirstCell().getRow();
 
@@ -524,7 +525,9 @@ public class XLSFormatter extends AbstractFormatter {
         return sheet.getRow(rowNumber) != null;
     }
 
-    /* In this class colected all methods which works with area's dependencies */
+    /**
+     *  In this class colected all methods which works with area's dependencies
+     */
     private class AreaDependencyHelper {
         void updateCell(Cell cell) {
             Area areaReference = areaDependencyHelper.getAreaByCoordinate(cell.getCol(), cell.getRow());
@@ -547,12 +550,11 @@ public class XLSFormatter extends AbstractFormatter {
             return newCell;
         }
 
-
         /**
          * Adds area dependency for formula calculations
          *
-         * @param main      -
-         * @param dependent -
+         * @param main Main area
+         * @param dependent Dependent area
          */
         private void addDependency(Area main, Area dependent) {
             List<Area> set = areasDependency.get(main);
