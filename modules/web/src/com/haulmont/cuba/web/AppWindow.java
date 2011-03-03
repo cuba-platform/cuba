@@ -503,8 +503,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         logoutBtn.setStyleName("white-border");
         logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
         //logoutBtn.setIcon(new ThemeResource("images/logout.png"));
-        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode())
-            logoutBtn.setDebugId("logoutBtn");
+        App.getInstance().getWindowManager()
+                .setDebugId(logoutBtn, "logoutBtn");
 
         titleLayout.addComponent(logoutBtn);
         titleLayout.setComponentAlignment(logoutBtn, Alignment.MIDDLE_RIGHT);

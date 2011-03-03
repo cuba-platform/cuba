@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.web.ui;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
@@ -72,8 +70,8 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             });
             closeBtn.setIcon(new ThemeResource("images/close.gif"));
             closeBtn.setStyleName("closetab-button");
-            if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode())
-                closeBtn.setDebugId("closeBtn");
+            App.getInstance().getWindowManager()
+                    .setDebugId(closeBtn, "closeBtn");
         }
 
         HorizontalLayout enclosingLayout = new HorizontalLayout();

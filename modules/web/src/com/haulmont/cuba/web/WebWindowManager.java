@@ -498,9 +498,7 @@ public class WebWindowManager extends WindowManager {
         }
 
 //        win.setName(window.getId());
-        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
-            win.setDebugId(window.getId());
-        }
+        setDebugId(win, window.getId());
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
@@ -798,7 +796,7 @@ public class WebWindowManager extends WindowManager {
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setName("cuba-message-dialog");
-        window.setDebugId("cuba-message-dialog");
+        setDebugId(window, "cuba-message-dialog");
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
@@ -840,7 +838,7 @@ public class WebWindowManager extends WindowManager {
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setName("cuba-option-dialog");
-        window.setDebugId("cuba-option-dialog");
+        setDebugId(window, "cuba-option-dialog");
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
@@ -888,7 +886,7 @@ public class WebWindowManager extends WindowManager {
                 button.setIcon(new ThemeResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
-            button.setDebugId(action.getId());
+            setDebugId(button, action.getId());
             buttonsContainer.addComponent(button);
         }
 
