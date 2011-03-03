@@ -16,27 +16,18 @@ import javax.persistence.*;
 @Table(name = "REPORT_VALUE_FORMAT")
 public class ReportValueFormat extends HardDeleteEntity {
 
+    private static final long serialVersionUID = 680180375698449946L;
+
     @Column(name = "NAME")
     private String valueName;
 
     @Column(name = "FORMAT")
     private String formatString;
 
-    //@Column(name = "POSITION")
-    //private Integer position;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REPORT_ID")
     private Report report;
 
-   /* public Integer getPosition() {
-        return position;
-    }
-
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-*/
     public Report getReport() {
         return report;
     }

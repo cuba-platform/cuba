@@ -297,7 +297,7 @@ public class DocFormatter extends AbstractFormatter {
                     Matcher matcher = tagHandler.getKey().matcher(formats.get(fullParamName).getFormatString());
                     if (matcher.find()) {
                         TagHandler handler = tagHandler.getValue();
-                        handler.handleTag(xComponent, text, textRange, paramValue.toString(), matcher);
+                        handler.handleTag(xComponent, text, textRange, paramValue, matcher);
                         handled = true;
                     }
                 }

@@ -23,6 +23,7 @@ public interface TagHandler {
     /**
      * Insert image in Doc document
      *
+     *
      * @param xComponent    Document object
      * @param destination   Text
      * @param textRange     Place for insert
@@ -31,5 +32,5 @@ public interface TagHandler {
      * @throws Exception
      */
     public void handleTag(XComponent xComponent, XText destination, XTextRange textRange,
-                          String paramValue, Matcher paramsMatcher) throws Exception;
+                          Object paramValue, Matcher paramsMatcher) throws Exception;
 }
