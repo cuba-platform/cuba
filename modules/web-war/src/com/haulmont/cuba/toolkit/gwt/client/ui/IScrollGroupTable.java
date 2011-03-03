@@ -331,7 +331,7 @@ public class IScrollGroupTable extends IScrollTable {
 
         @Override
         protected IScrollTableRow createRow(UIDL uidl) {
-            IScrollTableRow row  = createRowInstance(uidl);
+            IScrollTableRow row = createRowInstance(uidl);
             for (int i = 0; i < visibleColOrder.length; i++) {
                 setRowColWidth(row, i, IScrollGroupTable.this.getColWidth(getColKeyByIndex(i)));
             }
@@ -406,8 +406,7 @@ public class IScrollGroupTable extends IScrollTable {
         private void applyWidth(Element tr, int colIndex, int w) {
             Element td = DOM.getChild(tr, colIndex);
             if (DOM.getChildCount(td) > 0) {
-                DOM.setStyleAttribute(DOM.getFirstChild(td), "width",
-                        (w - CELL_CONTENT_PADDING) + "px");
+                setWidthDependsOnStyle(DOM.getFirstChild(td), w);
             }
             DOM.setStyleAttribute(td, "width", w + "px");
         }
@@ -420,8 +419,7 @@ public class IScrollGroupTable extends IScrollTable {
             DOM.setElementPropertyInt(tr, "_cellWidth", w);
 
             Element td = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
-            DOM.setStyleAttribute(DOM.getFirstChild(td), "width",
-                    (w - CELL_CONTENT_PADDING) + "px");
+            setWidthDependsOnStyle(DOM.getFirstChild(td), w);
             DOM.setStyleAttribute(td, "width", w + "px");
         }
 
@@ -481,7 +479,7 @@ public class IScrollGroupTable extends IScrollTable {
 
                 while (colIndex < visibleColOrder.length && !visibleColOrder[colIndex].equals(colKey)) { //draw empty cells
                     Element td = DOM.createTD();
-                    DOM.setElementProperty(td, "className", CLASSNAME + "-cell");
+                    Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
                     DOM.appendChild(getElement(), td);
                     colIndex++;
                 }
@@ -515,42 +513,37 @@ public class IScrollGroupTable extends IScrollTable {
                         hasCells = false;
                     }
                 } else {
-                    //todo handle error!!!
+                    throw new RuntimeException("Unexpected error");
                 }
             }
 
             public void addCell(String text, char align, String style, int col,
-                    boolean textIsHTML, boolean paintGroup) {
+                                boolean textIsHTML, boolean paintGroup) {
                 // String only content is optimized by not using Label widget
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
-                String classNameTd = CLASSNAME + "-cell";
-                String className = CLASSNAME + "-cell-content";
+
+                Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
+                Tools.setStylePrimaryName(container, CLASSNAME + "-cell-content");
                 if (allowMultiStingCells) {
-                    classNameTd += " " + CLASSNAME + "-cell-wrap";
+                    Tools.addStyleName(td, CLASSNAME + "-cell-wrap");
                 }
-                String classNameTdExt = null;
                 if (style != null && !style.equals("")) {
-                    className += " " + CLASSNAME + "-cell-content-" + style;
-                    classNameTdExt = CLASSNAME + "-cell-" + style;
+                    Tools.addStyleDependentName(td, style);
+                    Tools.addStyleDependentName(container, style);
                 }
-                if (classNameTdExt != null) {
-                    classNameTd += " " + classNameTdExt;
-                }
-                DOM.setElementProperty(td, "className", classNameTd);
-                DOM.setElementProperty(container, "className", className);
 
                 Element contentDiv = container;
                 if (paintGroup) {
                     //create "+" cell
                     Element groupDiv = DOM.createDiv();
                     DOM.setInnerHTML(groupDiv, "&nbsp;");
-                    DOM.setElementProperty(groupDiv, "className", CLASSNAME + "-group-cell");
-                    DOM.appendChild(container,  groupDiv);
+                    Tools.setStyleName(groupDiv, CLASSNAME + "-group-cell");
+                    DOM.appendChild(container, groupDiv);
 
                     contentDiv = DOM.createDiv();
-                    DOM.setElementProperty(contentDiv, "className", CLASSNAME  + "-float");
-                    DOM.appendChild(container,  contentDiv);
+                    Tools.setStyleName(contentDiv, CLASSNAME + "-float");
+                    DOM.appendChild(container, contentDiv);
                 }
 
                 setCellText(contentDiv, text, textIsHTML);
@@ -572,7 +565,7 @@ public class IScrollGroupTable extends IScrollTable {
                 final Element targetElement = DOM.eventGetTarget(event);
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
-                        if (BrowserInfo.get().isChrome() && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
+                        if (BrowserInfo.get().getWebkitVersion() > 0 && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
                             focusPanel.setFocus(true);
                         }
                         handleClickEvent(event);

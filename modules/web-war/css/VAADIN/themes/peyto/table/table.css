@@ -140,8 +140,7 @@
 }
 
 .v-table-cell-content {
-    padding: 4px 0 5px 5px;
-    margin-right: 3px;
+    padding: 4px 3px 5px 5px;
 	line-height: 15px;
 }
 

@@ -16,6 +16,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.RenderInformation;
 import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.UIDL;
 
@@ -134,8 +135,7 @@ public class IPageTreeTable extends IPageTable {
                     innerWidth -= ((row.getLevel() + 1) * LEVEL_STEP_SIZE);
                 }
             }
-            DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
-                    (innerWidth - CELL_CONTENT_PADDING) + "px");
+            setWidthDependsOnStyle(DOM.getFirstChild(cell), innerWidth);
             DOM.setStyleAttribute(cell, "width", w + "px");
         }
 
@@ -197,21 +197,16 @@ public class IPageTreeTable extends IPageTable {
                 // String only content is optimized by not using Label widget
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
-                String classNameTd = CLASSNAME + "-cell";
-                String className = CLASSNAME + "-cell-content";
+
+                Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
+                initCellStylePaddingBorders(Tools.setStylePrimaryName(container, CLASSNAME + "-cell-content"));
                 if (allowMultiStingCells) {
-                    classNameTd += " " + CLASSNAME + "-cell-wrap";
+                    Tools.addStyleName(td, CLASSNAME + "-cell-wrap");
                 }
-                String classNameTdExt = null;
                 if (style != null && !style.equals("")) {
-                    className += " " + CLASSNAME + "-cell-content-" + style;
-                    classNameTdExt = CLASSNAME + "-cell-" + style;
+                    Tools.addStyleDependentName(td, style);
+                    initCellStylePaddingBorders(Tools.addStyleDependentName(container, style));
                 }
-                if (classNameTdExt != null) {
-                    classNameTd += " " + classNameTdExt;
-                }
-                DOM.setElementProperty(td, "className", classNameTd);
-                DOM.setElementProperty(container, "className", className);
 
                 Element contentDiv = container;
 
@@ -222,7 +217,7 @@ public class IPageTreeTable extends IPageTable {
                         DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
                                 + "px");
 
-                        DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
+                        Tools.setStyleName(contentDiv, CLASSNAME + "-float");
                         DOM.appendChild(container, groupCell);
                         DOM.appendChild(container, contentDiv);
                     } else {
@@ -244,22 +239,16 @@ public class IPageTreeTable extends IPageTable {
             public void addCell(Widget w, char align, String style, int col) {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
-                String classNameTd = CLASSNAME + "-cell";
-                String className = CLASSNAME + "-cell-content";
-                if (allowMultiStingCells) {
-                    classNameTd += " " + CLASSNAME + "-cell-wrap";
-                }
-                String classNameTdExt = null;
-                if (style != null && !style.equals("")) {
-                    className += " " + CLASSNAME + "-cell-content-" + style;
-                    classNameTdExt = CLASSNAME + "-cell-" + style;
-                }
-                if (classNameTdExt != null) {
-                    classNameTd += " " + classNameTdExt;
-                }
-                DOM.setElementProperty(td, "className", classNameTd);
-                DOM.setElementProperty(container, "className", className);
 
+                Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
+                initCellStylePaddingBorders(Tools.setStylePrimaryName(container, CLASSNAME + "-cell-content"));
+                if (allowMultiStingCells) {
+                    Tools.addStyleName(td, CLASSNAME + "-cell-wrap");
+                }
+                if (style != null && !style.equals("")) {
+                    Tools.addStyleDependentName(td, style);
+                    initCellStylePaddingBorders(Tools.addStyleDependentName(container, style));
+                }
 
                 Element contentDiv = container;
 
@@ -269,7 +258,7 @@ public class IPageTreeTable extends IPageTable {
                         wrapCell = DOM.createDiv();
 
                         contentDiv = DOM.createDiv();
-                        DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
+                        Tools.setStyleName(contentDiv, CLASSNAME + "-float");
                         DOM.appendChild(wrapCell, groupCell);
                         DOM.appendChild(wrapCell, contentDiv);
 
@@ -289,7 +278,7 @@ public class IPageTreeTable extends IPageTable {
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                if (BrowserInfo.get().isChrome()) {
+                if (BrowserInfo.get().getWebkitVersion() > 0) {
                     DOM.setElementPropertyBoolean(td, "__cell", true);
                     DOM.setElementPropertyBoolean(container, "__cell", true);
                 }
@@ -315,15 +304,18 @@ public class IPageTreeTable extends IPageTable {
                 int i = getColIndexOf(child);
                 HeaderCell headerCell = tHead.getHeaderCell(i);
                 if (headerCell != null) {
-                    if (initializedAndAttached) {
-                        w = headerCell.getWidth() - CELL_CONTENT_PADDING;
-                    } else {
-                        // header offset width is not absolutely correct value,
-                        // but
-                        // a best guess (expecting similar content in all
-                        // columns ->
-                        // if one component is relative width so are others)
-                        w = headerCell.getOffsetWidth() - CELL_CONTENT_PADDING;
+                    RenderInformation.Size paddingBorders = getElementPaddingBorders(DOM.getParent(child.getElement()));
+                    if (paddingBorders != null) {
+                        if (initializedAndAttached) {
+                            w = headerCell.getWidth() - paddingBorders.getWidth();
+                        } else {
+                            // header offset width is not absolutely correct value,
+                            // but
+                            // a best guess (expecting similar content in all
+                            // columns ->
+                            // if one component is relative width so are others)
+                            w = headerCell.getOffsetWidth() - paddingBorders.getWidth();
+                        }
                     }
                 }
 
@@ -342,7 +334,7 @@ public class IPageTreeTable extends IPageTable {
 
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
-                        if (BrowserInfo.get().isChrome() && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
+                        if (BrowserInfo.get().getWebkitVersion() > 0 && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
                             focusPanel.setFocus(true);
                         }
 
@@ -383,7 +375,7 @@ public class IPageTreeTable extends IPageTable {
             protected Element createGroupContainer() {
                 Element groupContainer = DOM.createDiv();
                 DOM.setInnerHTML(groupContainer, "&nbsp;");
-                DOM.setElementProperty(groupContainer, "className", CLASSNAME + "-group-cell");
+                Tools.setStyleName(groupContainer, CLASSNAME + "-group-cell");
                 return groupContainer;
             }
 
@@ -408,19 +400,18 @@ public class IPageTreeTable extends IPageTable {
                 final Element td = DOM.createTD();
                 DOM.setElementAttribute(td, "colSpan", String.valueOf(columnCount));
 
-                String classNameTd = CLASSNAME + "-cell";
+                Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
                 if (allowMultiStingCells) {
-                    classNameTd += " " + CLASSNAME + "-cell-wrap";
+                    Tools.addStyleName(td, CLASSNAME + "-cell-wrap");
                 }
-                DOM.setElementProperty(td, "className", classNameTd);
 
                 final Element container = DOM.createDiv();
-                DOM.setElementProperty(container, "className", CLASSNAME + "-caption-row-content");
+                Tools.setStylePrimaryName(container, CLASSNAME + "-caption-row-content");
                 if (groupCell != null) {
                     final Element contentDiv = DOM.createDiv();
                     DOM.setStyleAttribute(container, "marginLeft", getLevel() * LEVEL_STEP_SIZE
                             + "px");
-                    DOM.setElementProperty(contentDiv, "className", CLASSNAME + "-float");
+                    Tools.setStyleName(contentDiv, CLASSNAME + "-float");
                     DOM.setInnerText(contentDiv, uidl.getStringAttribute("rowCaption"));
                     DOM.appendChild(container, groupCell);
                     DOM.appendChild(container, contentDiv);

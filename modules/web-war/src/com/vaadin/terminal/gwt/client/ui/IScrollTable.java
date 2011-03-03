@@ -19,7 +19,8 @@ package com.vaadin.terminal.gwt.client.ui;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.UIDL;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -689,8 +690,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                 final Element cell = DOM.getChild(row.getElement(), i);
                 final int w = IScrollTable.this
                         .getColWidth(getColKeyByIndex(i));
-                DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
-                        (w - CELL_CONTENT_PADDING) + "px");
+                setWidthDependsOnStyle(DOM.getFirstChild(cell), w);
                 DOM.setStyleAttribute(cell, "width", w + "px");
             }
             return row;

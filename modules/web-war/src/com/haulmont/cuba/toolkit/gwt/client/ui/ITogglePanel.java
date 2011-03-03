@@ -10,12 +10,15 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.ComplexPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
 import com.vaadin.terminal.gwt.client.ui.VTabsheetPanel;
@@ -228,7 +231,7 @@ public class ITogglePanel extends ComplexPanel implements Container, ClickHandle
 
     private void runHacks() {
         //Fix issue with height in Safari and Chrome
-        if (BrowserInfo.get().isSafari() || BrowserInfo.get().isChrome()) {
+        if (BrowserInfo.get().getWebkitVersion() > 0) {
             if (height == null || "".equals(height)) {
                 Widget widget = widgetsPanel.getWidget(widgetsPanel.getVisibleWidget());
                 int h = widget.getOffsetHeight();

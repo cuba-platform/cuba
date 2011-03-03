@@ -32,13 +32,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     public static final String CLASSNAME = "v-table";
     public static final String CLASSNAME_SELECTION_FOCUS = CLASSNAME + "-focus";
 
-    /**
-     * Amount of padding inside one table cell (this is reduced from the
-     * "cellContent" element's width). You may override this in your own
-     * widgetset.
-     */
-    public static final int CELL_CONTENT_PADDING = 8;
-
     public static final char ALIGN_CENTER = 'c';
     public static final char ALIGN_LEFT = 'b';
     public static final char ALIGN_RIGHT = 'e';
@@ -124,6 +117,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected boolean textSelectionEnabled;
 
+    protected Map<String, RenderInformation.Size> stylePaddingBorders = new HashMap<String, RenderInformation.Size>();
+
     /**
      * Represents a select range of rows
      */
@@ -156,6 +151,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
          *
          * @see java.lang.Object#toString()
          */
+
         @Override
         public String toString() {
             return startRow.getKey() + "-" + length;
@@ -191,8 +187,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         private int getEndIndex() {
             return startRow.getIndex() + length - 1;
         }
-
-    };
+    }
 
     private final HashSet<SelectionRange> selectedRowRanges = new HashSet<SelectionRange>();
 
@@ -226,7 +221,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         focusPanel.add(bodyContainer);
         focusPanel.addKeyDownHandler(this);
         focusPanel.addKeyUpHandler(this);
-        DOM.setElementProperty(focusPanel.getElement(), "className", CLASSNAME + "-focuspanel");        
+        DOM.setElementProperty(focusPanel.getElement(), "className", CLASSNAME + "-focuspanel");
     }
 
     public void onKeyDown(KeyDownEvent event) {
@@ -406,6 +401,35 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected abstract void updateBody(UIDL uidl);
 
     protected abstract boolean updateImmediate();
+
+    protected void initCellStylePaddingBorders(String style) {
+        if (!stylePaddingBorders.containsKey(style)) {
+            stylePaddingBorders.put(style, RenderInformation.Size.UNDEFINED);
+        }
+    }
+
+    protected void setWidthDependsOnStyle(Element el, int w) {
+        RenderInformation.Size paddingBorders = getElementPaddingBorders(el);
+        if (paddingBorders != null) {
+            DOM.setStyleAttribute(el, "width", (w - paddingBorders.getWidth()) + "px");
+        } else {
+            DOM.setStyleAttribute(el, "width", w + "px");
+        }
+    }
+
+    protected RenderInformation.Size getElementPaddingBorders(Element el) {
+        String[] styles = Tools.getStyleNames(el);
+        String style = styles[styles.length - 1];
+        RenderInformation.Size paddingBorders = stylePaddingBorders.get(style);
+        if (paddingBorders != null && isAttached()) {
+            if (paddingBorders == RenderInformation.Size.UNDEFINED) {
+                paddingBorders = Tools.definePaddingBorders(el);
+                stylePaddingBorders.put(style, paddingBorders);
+            }
+            return paddingBorders;
+        }
+        return null;
+    }
 
     protected boolean isSelectable() {
         return selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
@@ -1506,7 +1530,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                                 "offsetHeight");
 
                         clickedSelector = presentationSelector;
-                        
+
                         popup.showAt(left, top);
                     }
                 } finally {
@@ -1575,6 +1599,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         /*
          * Returns columns as Action array for column select popup
          */
+
         public Action[] getActions() {
             if (clickedSelector == columnSelector) {
                 return getColumnSelectionActions();
@@ -1636,6 +1661,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         /*
          * Returns column alignments for visible columns
          */
+
         public char[] getColumnAlignments() {
             final Iterator it = visibleCells.iterator();
             final char[] aligns = new char[visibleCells.size()];
@@ -1760,8 +1786,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             for (int i = 0; i < rows; i++) {
                 final Element cell = DOM.getChild(DOM.getChild(tBody, i),
                         colIndex);
-                DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
-                        (w - CELL_CONTENT_PADDING) + "px");
+                setWidthDependsOnStyle(DOM.getFirstChild(cell), w);
                 DOM.setStyleAttribute(cell, "width", w + "px");
             }
         }
@@ -1807,9 +1832,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             protected Map widgetColumns = null;
 
             private int index;
-            private static final String ROW_CLASSNAME_EVEN = CLASSNAME + "-row";
-            private static final String ROW_CLASSNAME_ODD = CLASSNAME
-                    + "-row-odd";
 
             protected ITableRow() {
                 rowKey = 0;
@@ -1875,15 +1897,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
              */
             public void setIndex(int indexInWholeTable) {
                 index = indexInWholeTable;
-                /*boolean isOdd = indexInWholeTable % 2 == 0;
-                // Inverted logic to be backwards compatible with earlier 6.4.
-                // It is very strange because rows 1,3,5 are considered "even"
-                // and 2,4,6 "odd".
-                if (!isOdd) {
-                    addStyleName(ROW_CLASSNAME_ODD);
-                } else {
-                    addStyleName(ROW_CLASSNAME_EVEN);
-                }*/
             }
 
             public int getIndex() {
@@ -1931,9 +1944,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         addCell(cell.toString(), aligns[col], style, col, false);
                     } else {
                         Paintable cellContent = client.getPaintable((UIDL) cell);
-//                        if (cellContent instanceof EditableWidget) {
-//                            cellContent = new EditorWrapper(cellContent);
-//                        }
                         addCell((Widget) cellContent, aligns[col], style, col);
                         paintComponent(cellContent, (UIDL) cell);
                     }
@@ -1946,21 +1956,18 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 // String only content is optimized by not using Label widget
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
-                String classNameTd = CLASSNAME + "-cell";
-                String className = CLASSNAME + "-cell-content";
+
+                //We should apply paddings and borders only to <div/> element, not to <td> element of cell
+                Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
+                initCellStylePaddingBorders(Tools.setStylePrimaryName(container, CLASSNAME + "-cell-content"));
                 if (allowMultiStingCells) {
-                    classNameTd += " " + CLASSNAME + "-cell-wrap";
+                    Tools.addStyleName(td, CLASSNAME + "-cell-wrap");
                 }
-                String classNameTdExt = null;
                 if (style != null && !style.equals("")) {
-                    className += " " + CLASSNAME + "-cell-content-" + style;
-                    classNameTdExt = CLASSNAME + "-cell-" + style;
+                    //We should apply paddings and borders only to <div/> element, not to <td> element of cell
+                    Tools.addStyleDependentName(td, style);
+                    initCellStylePaddingBorders(Tools.addStyleDependentName(container, style));
                 }
-                if (classNameTdExt != null) {
-                    classNameTd += " " + classNameTdExt;
-                }
-                DOM.setElementProperty(td, "className", classNameTd);
-                DOM.setElementProperty(container, "className", className);
 
                 setCellText(container, text, textIsHTML);
                 setCellAlignment(container, align);
@@ -1968,7 +1975,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                if (BrowserInfo.get().isChrome()) {
+                if (BrowserInfo.get().getWebkitVersion() > 0) {
                     DOM.setElementPropertyBoolean(td, "__cell", true);
                     DOM.setElementPropertyBoolean(container, "__cell", true);
                 }
@@ -1979,21 +1986,18 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             public void addCell(Widget w, char align, String style, int col) {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
-                String classNameTd = CLASSNAME + "-cell";
-                String className = CLASSNAME + "-cell-content";
+
+                //We should apply paddings and borders only to <div/> element, not to <td> element of cell
+                Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
+                initCellStylePaddingBorders(Tools.setStylePrimaryName(container, CLASSNAME + "-cell-content"));
                 if (allowMultiStingCells) {
-                    classNameTd += " " + CLASSNAME + "-cell-wrap";
+                    Tools.addStyleName(td, CLASSNAME + "-cell-wrap");
                 }
-                String classNameTdExt = null;
                 if (style != null && !style.equals("")) {
-                    className += " " + CLASSNAME + "-cell-content-" + style;
-                    classNameTdExt = CLASSNAME + "-cell-" + style;
+                    //We should apply paddings and borders only to <div/> element, not to <td> element of cell
+                    Tools.addStyleDependentName(td, style);
+                    initCellStylePaddingBorders(Tools.addStyleDependentName(container, style));
                 }
-                if (classNameTdExt != null) {
-                    classNameTd += " " + classNameTdExt;
-                }
-                DOM.setElementProperty(td, "className", classNameTd);
-                DOM.setElementProperty(container, "className", className);
                 // TODO most components work with this, but not all (e.g.
                 // Select)
                 // Old comment: make widget cells respect align.
@@ -2004,7 +2008,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
-                if (BrowserInfo.get().isChrome()) {
+                if (BrowserInfo.get().getWebkitVersion() > 0) {
                     DOM.setElementPropertyBoolean(td, "__cell", true);
                     DOM.setElementPropertyBoolean(container, "__cell", true);
                 }
@@ -2039,7 +2043,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
                         public void onFocus(FocusEvent event) {
                             Table.this.focusWidgetIndex = childWidgets.indexOf(w);
-                            ApplicationConnection.getConsole().log("onFocus: Focus widget index: "+ Table.this.focusWidgetIndex);
+                            ApplicationConnection.getConsole().log("onFocus: Focus widget index: " + Table.this.focusWidgetIndex);
                         }
                     });
                 }
@@ -2104,6 +2108,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             /*
              * React on click that occur on content cells only
              */
+
             @Override
             public void onBrowserEvent(Event event) {
                 final Element targetElement = DOM.eventGetTarget(event);
@@ -2202,10 +2207,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                             handleRowClick(event);
                         }
 
-                        if (BrowserInfo.get().isChrome()
+                        if (BrowserInfo.get().getWebkitVersion() > 0
                                 && childWidgets.isEmpty()
-                                && DOM.getElementPropertyBoolean(targetElement, "__cell"))
-                        {
+                                && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
                             focusPanel.setFocus(true);
                             ApplicationConnection.getConsole().log("Chrome: setted focus to panel");
                         }
@@ -2275,9 +2279,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         if (w instanceof com.vaadin.terminal.gwt.client.Focusable) {
                             ((com.vaadin.terminal.gwt.client.Focusable) w).focus();
                         }
-                        ApplicationConnection.getConsole().log("onSelect: Focus widget index: "+ focusWidgetIndex);
+                        ApplicationConnection.getConsole().log("onSelect: Focus widget index: " + focusWidgetIndex);
                     }
-                    
+
                     addStyleName("v-selected");
                 } else {
                     selectedRowKeys.remove(key);
@@ -2292,8 +2296,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
              * Is called when a user clicks an item when holding SHIFT key down.
              * This will select a new range from the last focused row
              *
-             * @param deselectPrevious
-             *            Should the previous selected range be deselected
+             * @param deselectPrevious Should the previous selected range be deselected
              */
             private void toggleShiftSelection(boolean deselectPrevious) {
 
@@ -2359,6 +2362,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
              * com.vaadin.terminal.gwt.client.ui.IActionOwner#getActions
              * ()
              */
+
             public Action[] getActions() {
                 if (actionKeys == null) {
                     return new Action[]{};
@@ -2388,15 +2392,18 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 int i = getColIndexOf(child);
                 HeaderCell headerCell = tHead.getHeaderCell(i);
                 if (headerCell != null) {
-                    if (initializedAndAttached) {
-                        w = headerCell.getWidth() - CELL_CONTENT_PADDING;
-                    } else {
-                        // header offset width is not absolutely correct value,
-                        // but
-                        // a best guess (expecting similar content in all
-                        // columns ->
-                        // if one component is relative width so are others)
-                        w = headerCell.getOffsetWidth() - CELL_CONTENT_PADDING;
+                    RenderInformation.Size paddingBorders = getElementPaddingBorders(DOM.getParent(child.getElement()));
+                    if (paddingBorders != null) {
+                        if (initializedAndAttached) {
+                            w = headerCell.getWidth() - paddingBorders.getWidth();
+                        } else {
+                            // header offset width is not absolutely correct value,
+                            // but
+                            // a best guess (expecting similar content in all
+                            // columns ->
+                            // if one component is relative width so are others)
+                            w = headerCell.getOffsetWidth() - paddingBorders.getWidth();
+                        }
                     }
                 }
                 return new RenderSpace(w, getRowHeight());
@@ -2640,7 +2647,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 final Element tBody = DOM.createTBody();
                 tr = DOM.createTR();
 
-                DOM.setElementProperty(tr, "className", CLASSNAME + "-arow-row");
+                Tools.setStylePrimaryName(tr, CLASSNAME + "-arow-row");
 
                 paintRow(uidl);
 
@@ -2709,8 +2716,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         public void setColWidth(int colIndex, int w) {
             if (initialized && tr != null) {
                 final Element cell = DOM.getChild(tr, colIndex);
-                DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
-                        (w - CELL_CONTENT_PADDING) + "px");
+                setWidthDependsOnStyle(DOM.getFirstChild(cell), w);
                 DOM.setStyleAttribute(cell, "width", w + "px");
             }
         }
@@ -2718,14 +2724,13 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         protected void addCell(String text, char align, String style) {
             final Element td = DOM.createTD();
             final Element container = DOM.createDiv();
-            String classNameTd = CLASSNAME + "-cell";
-            String className = CLASSNAME + "-cell-content";
+
+            Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
+            initCellStylePaddingBorders(Tools.setStylePrimaryName(container, CLASSNAME + "-cell-content"));
             if (style != null && !style.equals("")) {
-                classNameTd += " " + CLASSNAME + "-cell-" + style;
-                className += " " + CLASSNAME + "-cell-content-" + style;
+                Tools.addStyleDependentName(td, style);
+                initCellStylePaddingBorders(Tools.addStyleDependentName(container, style));
             }
-            DOM.setElementProperty(td, "className", classNameTd);
-            DOM.setElementProperty(container, "className", className);
 
             setCellText(container, text, false);
             setCellAlignment(container, align);
@@ -2739,14 +2744,13 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         protected void addCell(Widget widget, char align, String style) {
             final Element td = DOM.createTD();
             final Element container = DOM.createDiv();
-            String classNameTd = CLASSNAME + "-cell";
-            String className = CLASSNAME + "-cell-content";
+
+            Tools.setStylePrimaryName(td, CLASSNAME + "-cell");
+            initCellStylePaddingBorders(Tools.setStylePrimaryName(container, CLASSNAME + "-cell-content"));
             if (style != null && !style.equals("")) {
-                classNameTd += " " + CLASSNAME + "-cell-" + style;
-                className += " " + CLASSNAME + "-cell-content-" + style;
+                Tools.addStyleDependentName(td, style);
+                initCellStylePaddingBorders(Tools.addStyleDependentName(container, style));
             }
-            DOM.setElementProperty(td, "className", classNameTd);
-            DOM.setElementProperty(container, "className", className);
 
             add(widget, container);
 
@@ -2790,8 +2794,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     /**
      * Moves the selection head to a specific row
      *
-     * @param row
-     *            The row to where the selection head should move
+     * @param row The row to where the selection head should move
      * @return Returns true if focus was moved successfully, else false
      */
     private boolean setRowFocus(ITableBody.ITableRow row) {
@@ -2829,8 +2832,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     /**
      * Ensures that the row is visible
      *
-     * @param row
-     *            The row to ensure is visible
+     * @param row The row to ensure is visible
      */
     private void ensureRowIsVisible(ITableBody.ITableRow row) {
         scrollIntoViewVertically(row.getElement());
@@ -2840,42 +2842,40 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
      * Scrolls an element into view vertically only. Modified version of
      * Element.scrollIntoView.
      *
-     * @param elem
-     *            The element to scroll into view
+     * @param elem The element to scroll into view
      */
     private native void scrollIntoViewVertically(Element elem)
-    /*-{
-        var top = elem.offsetTop;
-        var height = elem.offsetHeight;
+        /*-{
+           var top = elem.offsetTop;
+           var height = elem.offsetHeight;
 
-        if (elem.parentNode != elem.offsetParent) {
-          top -= elem.parentNode.offsetTop;
-        }
+           if (elem.parentNode != elem.offsetParent) {
+             top -= elem.parentNode.offsetTop;
+           }
 
-        var cur = elem.parentNode;
-        while (cur && (cur.nodeType == 1)) {
-          if (top < cur.scrollTop) {
-            cur.scrollTop = top;
-          }
-          if (top + height > cur.scrollTop + cur.clientHeight) {
-            cur.scrollTop = (top + height) - cur.clientHeight;
-          }
+           var cur = elem.parentNode;
+           while (cur && (cur.nodeType == 1)) {
+             if (top < cur.scrollTop) {
+               cur.scrollTop = top;
+             }
+             if (top + height > cur.scrollTop + cur.clientHeight) {
+               cur.scrollTop = (top + height) - cur.clientHeight;
+             }
 
-          var offsetTop = cur.offsetTop;
-          if (cur.parentNode != cur.offsetParent) {
-            offsetTop -= cur.parentNode.offsetTop;
-          }
+             var offsetTop = cur.offsetTop;
+             if (cur.parentNode != cur.offsetParent) {
+               offsetTop -= cur.parentNode.offsetTop;
+             }
 
-          top += offsetTop - cur.scrollTop;
-          cur = cur.parentNode;
-        }
-     }-*/;
+             top += offsetTop - cur.scrollTop;
+             cur = cur.parentNode;
+           }
+        }-*/;
 
     /**
      * Removes a key from a range if the key is found in a selected range
      *
-     * @param row
-     *            row to remove
+     * @param row row to remove
      */
     private void removeRowFromUnsentSelectionRanges(ITableBody.ITableRow row) {
         Collection<SelectionRange> newRanges = null;

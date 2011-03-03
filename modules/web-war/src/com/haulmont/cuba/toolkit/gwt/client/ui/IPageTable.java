@@ -184,8 +184,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
                 final Element cell = DOM.getChild(row.getElement(), i);
                 final int w = IPageTable.this
                         .getColWidth(getColKeyByIndex(i));
-                DOM.setStyleAttribute(DOM.getFirstChild(cell), "width",
-                        (w - CELL_CONTENT_PADDING) + "px");
+                setWidthDependsOnStyle(DOM.getFirstChild(cell), w);
                 DOM.setStyleAttribute(cell, "width", w + "px");
             }
             return row;
