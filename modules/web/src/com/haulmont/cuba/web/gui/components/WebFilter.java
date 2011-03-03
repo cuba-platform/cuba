@@ -218,8 +218,16 @@ public class WebFilter
             return;
 
         if (checkGlobalFilterPermission()) {
-            if (filterEntity.getFolder() == null || filterEntity.getFolder() instanceof SearchFolder)
+            if ((filterEntity.getFolder() == null) || (filterEntity.getFolder() instanceof SearchFolder) ||
+                    ((filterEntity.getFolder() instanceof AppFolder) && checkGlobalAppFolderPermission()))
                 actions.addAction(new EditAction());
+
+            if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
+                actions.addAction(new DeleteAction());
+        } else {
+            if (filterEntity.getFolder() instanceof SearchFolder)
+                if ((UserSessionClient.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())))
+                    actions.addAction(new EditAction());
 
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
                 actions.addAction(new DeleteAction());
@@ -487,10 +495,11 @@ public class WebFilter
             name = "";
         AbstractSearchFolder folder = filterEntity.getFolder();
         if (folder != null) {
-            if (!StringUtils.isBlank(folder.getDoubleName()))
-                name = folder.getDoubleName();
-            else if (!StringUtils.isBlank(folder.getCode()))
-                name = MessageProvider.getMessage(mainMessagesPack, folder.getCode() + ".doubleName");
+            if (!StringUtils.isBlank(folder.getTabName()))
+                name = MessageProvider.getMessage(mainMessagesPack, folder.getTabName());
+            else if (!StringUtils.isBlank(folder.getName())) {
+                name = MessageProvider.getMessage(mainMessagesPack, folder.getName());
+            }
             name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
         }
         return name;
@@ -741,11 +750,11 @@ public class WebFilter
         final AbstractSearchFolder folder = isAppFolder ? (new AppFolder()) : (new SearchFolder());
         if (filterEntity.getCode() == null) {
             folder.setName(filterEntity.getName());
-            folder.setDoubleName(filterEntity.getName());
+            folder.setTabName(filterEntity.getName());
         } else {
             String name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
             folder.setName(name);
-            folder.setDoubleName(name);
+            folder.setTabName(name);
         }
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(filterEntity.getXml());

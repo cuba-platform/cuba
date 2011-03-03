@@ -18,7 +18,7 @@ import javax.persistence.*;
 
 @Entity(name = "sec$SearchFolder")
 @Table(name = "SEC_SEARCH_FOLDER")
-@PrimaryKeyJoinColumn(name="FOLDER_ID", referencedColumnName = "ID")
+@PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("S")
 public class SearchFolder extends AbstractSearchFolder {
 
@@ -53,14 +53,7 @@ public class SearchFolder extends AbstractSearchFolder {
 
     @Override
     public String getCaption() {
-        if (code != null) {
-            return getLocName();
-        } else {
-            return name;
-        }
+        return MessageProvider.getMessage(MessageUtils.getMessagePack(), name);
     }
 
-    public String getLocName(){
-        return code != null ? MessageProvider.getMessage(MessageUtils.getMessagePack(), code) : code;
-    }
 }

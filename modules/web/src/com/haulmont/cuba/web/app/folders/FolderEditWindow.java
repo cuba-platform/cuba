@@ -32,7 +32,7 @@ public class FolderEditWindow extends Window {
     protected Folder folder;
     protected String messagesPack;
     protected TextField nameField;
-    protected TextField doubleNameField;
+    protected TextField tabNameField;
     protected Select parentSelect;
     protected TextField sortOrderField;
     protected Select presentation;
@@ -64,11 +64,11 @@ public class FolderEditWindow extends Window {
         nameField.setValue(folder.getName());
         layout.addComponent(nameField);
 
-        doubleNameField = new TextField();
-        doubleNameField.setCaption(getMessage("folders.folderEditWindow.doubleNameField"));
-        doubleNameField.setWidth(250, Sizeable.UNITS_PIXELS);
-        doubleNameField.setValue(StringUtils.trimToEmpty(folder.getDoubleName()));
-        layout.addComponent(doubleNameField);
+        tabNameField = new TextField();
+        tabNameField.setCaption(getMessage("folders.folderEditWindow.tabNameField"));
+        tabNameField.setWidth(250, Sizeable.UNITS_PIXELS);
+        tabNameField.setValue(StringUtils.trimToEmpty(folder.getTabName()));
+        layout.addComponent(tabNameField);
 
         parentSelect = new Select();
         parentSelect.setCaption(getMessage("folders.folderEditWindow.parentSelect"));
@@ -104,8 +104,7 @@ public class FolderEditWindow extends Window {
         layout.addComponent(sortOrderField);
 
         if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
-                && folder instanceof SearchFolder)
-        {
+                && folder instanceof SearchFolder) {
             globalCb = new CheckBox(getMessage("folders.folderEditWindow.global"));
             globalCb.setValue(((SearchFolder) folder).getUser() == null);
             layout.addComponent(globalCb);
@@ -129,11 +128,11 @@ public class FolderEditWindow extends Window {
         buttonsLayout.addComponent(cancelBtn);
     }
 
-    protected void initButtonOkListener(){
+    protected void initButtonOkListener() {
         okBtn.addListener(new Button.ClickListener() {
-             public void buttonClick(Button.ClickEvent event) {
+            public void buttonClick(Button.ClickEvent event) {
                 FolderEditWindow.this.folder.setName((String) nameField.getValue());
-                FolderEditWindow.this.folder.setDoubleName((String) doubleNameField.getValue());
+                FolderEditWindow.this.folder.setTabName((String) tabNameField.getValue());
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     FolderEditWindow.this.folder.setSortOrder(null);
@@ -160,10 +159,13 @@ public class FolderEditWindow extends Window {
                     FolderEditWindow.this.folder.setParent(null);
 
                 if (globalCb != null) {
-                    if (BooleanUtils.isTrue((Boolean) globalCb.getValue()))
+                    if (BooleanUtils.isTrue((Boolean) globalCb.getValue())) {
                         ((SearchFolder) FolderEditWindow.this.folder).setUser(null);
-                    else
+                    } else {
                         ((SearchFolder) FolderEditWindow.this.folder).setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                    }
+                } else {
+                    ((SearchFolder) FolderEditWindow.this.folder).setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                 }
 
                 if (presentation != null) {
@@ -187,9 +189,9 @@ public class FolderEditWindow extends Window {
         FoldersService service = ServiceLocator.lookup(FoldersService.JNDI_NAME);
         List<SearchFolder> list = service.loadSearchFolders();
         for (SearchFolder folder : list) {
-            if (!folder.equals(this.folder) && folder.getCode() == null) {
+            if (!folder.equals(this.folder)) {
                 parentSelect.addItem(folder);
-                parentSelect.setItemCaption(folder, folder.getName());
+                parentSelect.setItemCaption(folder, folder.getCaption());
             }
         }
     }

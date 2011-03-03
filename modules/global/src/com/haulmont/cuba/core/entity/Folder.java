@@ -15,7 +15,7 @@ import javax.persistence.Entity;
 
 @Entity(name = "core$Folder")
 @Table(name = "SYS_FOLDER")
-@Inheritance(strategy= InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("F")
 public class Folder extends StandardEntity {
@@ -35,11 +35,8 @@ public class Folder extends StandardEntity {
     @Transient
     protected String itemStyle = null;
 
-    @Column(name="CODE")
-    protected String code;
-
-    @Column(name="DOUBLE_NAME")
-    protected String doubleName;
+    @Column(name = "TAB_NAME")
+    protected String tabName;
 
     public Folder getParent() {
         return parent;
@@ -69,27 +66,19 @@ public class Folder extends StandardEntity {
         this.sortOrder = sortOrder;
     }
 
-    public String getItemStyle(){
+    public String getItemStyle() {
         return itemStyle;
     }
 
-    public void setItemStyle(String itemStyle){
+    public void setItemStyle(String itemStyle) {
         this.itemStyle = itemStyle;
     }
 
-    public String getCode() {
-        return code;
+    public String getTabName() {
+        return tabName;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getDoubleName() {
-        return doubleName;
-    }
-
-    public void setDoubleName(String doubleName) {
-        this.doubleName = doubleName;
+    public void setTabName(String tabName) {
+        this.tabName = tabName;
     }
 }

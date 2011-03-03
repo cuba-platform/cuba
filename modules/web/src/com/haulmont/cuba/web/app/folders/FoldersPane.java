@@ -45,15 +45,12 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Tree;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.List;
-
-import com.haulmont.cuba.web.toolkit.Timer;
 
 @SuppressWarnings("serial")
 public class FoldersPane extends VerticalLayout {
@@ -474,14 +471,12 @@ public class FoldersPane extends VerticalLayout {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("disableAutoRefresh", true);
-        if (!StringUtils.isBlank(folder.getCode()))
-            params.put("description", MessageProvider.getMessage(messagesPack, folder.getCode() + ".doubleName"));
-        else if (folder instanceof AppFolder)
+        if (!StringUtils.isBlank(folder.getTabName())) {
+            params.put("description", MessageProvider.getMessage(messagesPack, folder.getTabName()));
+        } else {
             params.put("description", MessageProvider.getMessage(messagesPack, folder.getName()));
-        else if (!StringUtils.isBlank(folder.getDoubleName()))
-            params.put("description", folder.getDoubleName());
-        else
-            params.put("description", folder.getName());
+        }
+
         params.put("disableApplySettings", true);
 
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
@@ -498,10 +493,8 @@ public class FoldersPane extends VerticalLayout {
             filterEntity.setComponentId(folder.getFilterComponentId());
             if (folder instanceof AppFolder)
                 filterEntity.setName(((AppFolder) folder).getLocName());
-            else if (folder.getCode() == null)
-                filterEntity.setName(folder.getName());
             else
-                filterEntity.setName(folder.getCaption());
+                filterEntity.setName(folder.getName());
             filterEntity.setXml(folder.getFilterXml());
 
             filterComponent.setFilterEntity(filterEntity);
@@ -585,7 +578,7 @@ public class FoldersPane extends VerticalLayout {
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof Folder) {
                 if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global")) {
-                    return new Action[]{new OpenAction(), new CreateAction(true), new EditAction(), new RemoveAction()};
+                    return new Action[]{new OpenAction(), new CreateAction(true), new CopyAction(), new EditAction(), new RemoveAction()};
                 } else {
                     return new Action[]{new OpenAction()};
                 }
@@ -607,18 +600,73 @@ public class FoldersPane extends VerticalLayout {
 
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof SearchFolder) {
-                if (StringUtils.isBlank(((SearchFolder) target).getFilterComponentId()))
-                    return new Action[]{new CreateAction(false), new EditAction(), new RemoveAction()};
-                else {
-                    if (((SearchFolder) target).getCode() == null)
-                        return new Action[]{new OpenAction(), new CreateAction(false), new EditAction(), new RemoveAction()};
-                    else
-                        return new Action[]{new OpenAction(), new CreateAction(false)};
+                if (isGlobalFolder((SearchFolder) target)) {
+                    if (isFilterFolder((SearchFolder) target)) {
+                        if (isGlobalSearchFolderPermitted()) {
+                            return createAllActions();
+                        } else {
+                            return createOpenCreateAction();
+                        }
+                    } else {
+                        if (isGlobalSearchFolderPermitted()) {
+                            return createWithoutOpenActions();
+                        } else {
+                            return createOnlyCreateAction();
+                        }
+                    }
+                } else {
+                    if (isFilterFolder((SearchFolder) target)) {
+                        if (isOwner((SearchFolder) target)) {
+                            return createAllActions();
+                        } else {
+                            return createOpenCreateAction();
+                        }
+                    } else {
+                        if (isOwner((SearchFolder) target)) {
+                            return createWithoutOpenActions();
+                        } else {
+                            return createOnlyCreateAction();
+                        }
+                    }
                 }
-
-            } else
-                return new Action[]{new CreateAction(false)};
+            } else {
+                return createOnlyCreateAction();
+            }
         }
+
+
+        private boolean isGlobalFolder(SearchFolder folder) {
+            return (folder.getUser() == null);
+        }
+
+        private boolean isFilterFolder(SearchFolder folder) {
+            return (folder.getFilterComponentId() != null);
+        }
+
+        private boolean isOwner(SearchFolder folder) {
+            return UserSessionClient.getUserSession().getUser().equals(folder.getUser());
+        }
+
+        private boolean isGlobalSearchFolderPermitted() {
+            return (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global"));
+        }
+
+        private Action[] createAllActions() {
+            return new Action[]{new OpenAction(), new CopyAction(), new CreateAction(false), new EditAction(), new RemoveAction()};
+        }
+
+        private Action[] createWithoutOpenActions() {
+            return new Action[]{new CreateAction(false), new EditAction(), new RemoveAction()};
+        }
+
+        private Action[] createOnlyCreateAction() {
+            return new Action[]{new CreateAction(false)};
+        }
+
+        private Action[] createOpenCreateAction() {
+            return new Action[]{new OpenAction(), new CreateAction(false), new CopyAction()};
+        }
+
     }
 
     protected abstract class FolderAction extends Action {
@@ -655,7 +703,7 @@ public class FoldersPane extends VerticalLayout {
 
             final Folder newFolder = isAppFolder ? (new AppFolder()) : (new SearchFolder());
             newFolder.setName("");
-            newFolder.setDoubleName("");
+            newFolder.setTabName("");
             newFolder.setParent(folder);
             final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, true, newFolder, null,
                     new Runnable() {
@@ -671,6 +719,37 @@ public class FoldersPane extends VerticalLayout {
                 }
             });
             App.getInstance().getAppWindow().addWindow(window);
+        }
+    }
+
+    protected class CopyAction extends FolderAction {
+        public CopyAction() {
+            super(MessageProvider.getMessage(messagesPack, "folders.copyFolderAction"));
+        }
+
+        public void perform(final Folder folder) {
+            AbstractSearchFolder oldFolder = (AbstractSearchFolder) folder;
+            final AbstractSearchFolder newFolder = (folder instanceof AppFolder) ? (new AppFolder()) : (new SearchFolder());
+            newFolder.setCreatedBy(folder.getCreatedBy());
+            newFolder.setCreateTs(folder.getCreateTs());
+            newFolder.setDeletedBy(folder.getDeletedBy());
+            newFolder.setDeleteTs(folder.getDeleteTs());
+            newFolder.setFilterComponentId(oldFolder.getFilterComponentId());
+            newFolder.setFilterXml(oldFolder.getFilterXml());
+            newFolder.setName(oldFolder.getCaption());
+            newFolder.setTabName(oldFolder.getTabName());
+            newFolder.setParent(oldFolder.getParent());
+            newFolder.setItemStyle(oldFolder.getItemStyle());
+            newFolder.setSortOrder(oldFolder.getSortOrder());
+            if (newFolder instanceof SearchFolder) {
+
+                ((SearchFolder) newFolder).setUser(UserSessionClient.getUserSession().getUser());
+            } else {
+                ((AppFolder) newFolder).setQuantityScript(((AppFolder) oldFolder).getQuantityScript());
+                ((AppFolder) newFolder).setVisibilityScript(((AppFolder) oldFolder).getVisibilityScript());
+            }
+            new EditAction().perform(newFolder);
+
         }
     }
 

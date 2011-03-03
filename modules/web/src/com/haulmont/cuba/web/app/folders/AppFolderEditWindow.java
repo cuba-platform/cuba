@@ -64,7 +64,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
         okBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 AppFolderEditWindow.this.folder.setName((String) nameField.getValue());
-                AppFolderEditWindow.this.folder.setDoubleName((String) doubleNameField.getValue());
+                AppFolderEditWindow.this.folder.setTabName((String) tabNameField.getValue());
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     AppFolderEditWindow.this.folder.setSortOrder(null);
