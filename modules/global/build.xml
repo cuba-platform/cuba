@@ -49,6 +49,11 @@
             <arg value="${project.dir}/modules/core/src/cuba-persistence.xml"/>
             <!--<jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"/>-->
         </java>
+        <java classpathref="enhance-cp"
+              classname="com.haulmont.cuba.core.sys.CubaTransientEnhancer" failonerror="true">
+            <arg value="${project.dir}/modules/core/src/cuba-metadata.xml"/>
+
+        </java>
     </target>
 
     <target name="build-module" depends="compile-module">
