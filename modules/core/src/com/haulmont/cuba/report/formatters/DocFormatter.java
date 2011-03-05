@@ -50,6 +50,7 @@ public class DocFormatter extends AbstractFormatter {
     private static final String ROOT_BAND_NAME = "Root";
 
     private static Map<Pattern, TagHandler> tagHandlers = new HashMap<Pattern, TagHandler>();
+
     static {
         // Tags for value formatters
         tagHandlers.put(
@@ -303,8 +304,11 @@ public class DocFormatter extends AbstractFormatter {
                 }
             }
             if (!handled) {
-                String valueString = formatString(paramValue, fullParamName);
-                text.insertString(textRange, valueString, true);
+                if (paramValue != null) {
+                    String valueString = formatString(paramValue, fullParamName);
+                    text.insertString(textRange, valueString, true);
+                } else
+                    text.insertString(textRange, "", true);
             }
         } catch (Exception ex) {
             throw new ReportFormatterException("Insert data error");
