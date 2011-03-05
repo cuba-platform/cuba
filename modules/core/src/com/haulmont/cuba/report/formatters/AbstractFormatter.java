@@ -11,7 +11,7 @@
 package com.haulmont.cuba.report.formatters;
 
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.FileStorageService;
+import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.report.Band;
@@ -36,9 +36,9 @@ public abstract class AbstractFormatter implements Formatter {
     public abstract byte[] createDocument(Band rootBand);
 
     protected InputStream getFileInputStream(FileDescriptor fd) {
-        FileStorageService fss = Locator.lookup(FileStorageService.NAME);
+        FileStorageAPI storageAPI = Locator.lookup(FileStorageAPI.NAME);
         try {
-            byte[] arr = fss.loadFile(fd);
+            byte[] arr = storageAPI.loadFile(fd);
             ByteArrayInputStream bis = new ByteArrayInputStream(arr);
             return bis;
         } catch (FileStorageException e) {

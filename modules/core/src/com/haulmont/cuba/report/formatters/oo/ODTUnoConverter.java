@@ -26,7 +26,7 @@ import com.sun.star.util.XCloseable;
 import com.sun.star.util.XReplaceable;
 import com.sun.star.view.XSelectionSupplier;
 
-public class ODTUnoConverter {
+public final class ODTUnoConverter {
 
     public static XDesktop asXDesktop(Object o) {
         return (XDesktop) UnoRuntime.queryInterface(XDesktop.class, o);

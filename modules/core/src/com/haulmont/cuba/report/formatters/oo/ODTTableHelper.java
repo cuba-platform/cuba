@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ODTTableHelper {
+public final class ODTTableHelper {
 
     public static List<String> getTablesNames(XComponent xComponent) {
         XNameAccess tables = asXTextTablesSupplier(xComponent).getTextTables();

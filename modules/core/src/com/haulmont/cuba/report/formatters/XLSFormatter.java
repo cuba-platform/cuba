@@ -16,9 +16,11 @@ import com.haulmont.cuba.report.Orientation;
 import com.haulmont.cuba.report.formatters.xls.Area;
 import com.haulmont.cuba.report.formatters.xls.AreaAlign;
 import com.haulmont.cuba.report.formatters.xls.Cell;
+
 import static com.haulmont.cuba.report.formatters.xls.HSSFCellHelper.*;
 import static com.haulmont.cuba.report.formatters.xls.HSSFPicturesHelper.getAllAnchors;
 import static com.haulmont.cuba.report.formatters.xls.HSSFRangeHelper.*;
+
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.model.Sheet;
 import org.apache.poi.hssf.record.EscherAggregate;
@@ -46,7 +48,7 @@ public class XLSFormatter extends AbstractFormatter {
     private int rowsAddedByHorizontalBand = 0;
 
     private HSSFWorkbook resultWorkbook;
-    private Map<String, List<CellRangeAddress>> mergeRegionsForRangeNames = new HashMap<String, List<CellRangeAddress>>();
+    private Map<String, List<SheetRange>> mergeRegionsForRangeNames = new HashMap<String, List<SheetRange>>();
     private Map<HSSFSheet, HSSFSheet> templateToResultSheetsMapping = new HashMap<HSSFSheet, HSSFSheet>();
     private Map<String, Bounds> templateBounds = new HashMap<String, Bounds>();
 
@@ -148,7 +150,8 @@ public class XLSFormatter extends AbstractFormatter {
             int offset = 0;
 
             topLeft = new CellReference(rownum, 0);
-            copyMergeRegions(resultSheet, rangeName, rownum, getCellFromReference(crefs[0], templateSheet).getColumnIndex());
+            copyMergeRegions(resultSheet, rangeName,
+                    rownum, getCellFromReference(crefs[0], templateSheet).getColumnIndex());
 
             for (CellReference cellRef : crefs) {
                 HSSFCell templateCell = getCellFromReference(cellRef, templateSheet);
@@ -252,46 +255,50 @@ public class XLSFormatter extends AbstractFormatter {
      * </p>
      * todo: if merged regions writes wrong - look on methods isMergeRegionInsideNamedRange & isNamedRangeInsideMergeRegion
      * todo: how to recognize if merge region must be copied with named range
+     *
      * @param currentSheet Sheet which contains merge regions
      */
     private void initMergeRegions(HSSFSheet currentSheet) {
         int rangeNumber = templateWorkbook.getNumberOfNames();
         for (int i = 0; i < rangeNumber; i++) {
             HSSFName aNamedRange = templateWorkbook.getNameAt(i);
+
             AreaReference aref = new AreaReference(aNamedRange.getRefersToFormula());
+
             Integer rangeFirstRow = aref.getFirstCell().getRow();
             Integer rangeFirstColumn = (int) aref.getFirstCell().getCol();
             Integer rangeLastRow = aref.getLastCell().getRow();
             Integer rangeLastColumn = (int) aref.getLastCell().getCol();
 
-            CellRangeAddress mergedRegion;
-            int j = 0;
-            do {
-                mergedRegion = currentSheet.getMergedRegion(j++);
+            for (int j = 0; j < currentSheet.getNumMergedRegions(); j++) {
+                CellRangeAddress mergedRegion = currentSheet.getMergedRegion(j);
                 if (mergedRegion != null) {
                     Integer regionFirstRow = mergedRegion.getFirstRow();
                     Integer regionFirstColumn = mergedRegion.getFirstColumn();
                     Integer regionLastRow = mergedRegion.getLastRow();
                     Integer regionLastColumn = mergedRegion.getLastColumn();
 
-                    if (isMergeRegionInsideNamedRange(rangeFirstRow, rangeFirstColumn, rangeLastRow, rangeLastColumn,
-                            regionFirstRow, regionFirstColumn, regionLastRow, regionLastColumn)
-                            ||
-                            isNamedRangeInsideMergeRegion(rangeFirstRow, rangeFirstColumn, rangeLastRow, rangeLastColumn,
-                                    regionFirstRow, regionFirstColumn, regionLastRow, regionLastColumn)
-                            ) {
-                        String name = aNamedRange.getNameName();
+                    boolean mergedInsideNamed = isMergeRegionInsideNamedRange(
+                            rangeFirstRow, rangeFirstColumn, rangeLastRow, rangeLastColumn,
+                            regionFirstRow, regionFirstColumn, regionLastRow, regionLastColumn);
 
+                    boolean namedInsideMerged = isNamedRangeInsideMergeRegion(
+                            rangeFirstRow, rangeFirstColumn, rangeLastRow, rangeLastColumn,
+                            regionFirstRow, regionFirstColumn, regionLastRow, regionLastColumn);
+
+                    if (mergedInsideNamed || namedInsideMerged) {
+                        String name = aNamedRange.getNameName();
+                        SheetRange sheetRange = new SheetRange(mergedRegion, currentSheet.getSheetName());
                         if (mergeRegionsForRangeNames.get(name) == null) {
-                            ArrayList<CellRangeAddress> list = new ArrayList<CellRangeAddress>();
-                            list.add(mergedRegion);
+                            ArrayList<SheetRange> list = new ArrayList<SheetRange>();
+                            list.add(sheetRange);
                             mergeRegionsForRangeNames.put(name, list);
                         } else {
-                            mergeRegionsForRangeNames.get(name).add(mergedRegion);
+                            mergeRegionsForRangeNames.get(name).add(sheetRange);
                         }
                     }
                 }
-            } while (mergedRegion != null);
+            }
         }
     }
 
@@ -313,7 +320,7 @@ public class XLSFormatter extends AbstractFormatter {
             lastColNum = Math.max(rowColNum, lastColNum);
         }
         for (int i = 0; i < lastColNum; i++)
-            resultSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));       
+            resultSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));
 
         resultSheet.setDisplayGridlines(templateSheet.isDisplayGridlines());
 
@@ -357,20 +364,19 @@ public class XLSFormatter extends AbstractFormatter {
         cellStyle.cloneStyleFrom(templateWorkbook.createCellStyle());
 
         HSSFPalette customPalette = templateWorkbook.getCustomPalette();
-        for (short i = PaletteRecord.FIRST_COLOR_INDEX; i < PaletteRecord.FIRST_COLOR_INDEX + PaletteRecord.STANDARD_PALETTE_SIZE; i++) {
+        for (short i = PaletteRecord.FIRST_COLOR_INDEX;
+             i < PaletteRecord.FIRST_COLOR_INDEX + PaletteRecord.STANDARD_PALETTE_SIZE; i++) {
             HSSFColor color = customPalette.getColor(i);
-            if (color == null) continue;
-
-            short[] colors = color.getTriplet();
-            resultWorkbook.getCustomPalette().setColorAtIndex(i, (byte) colors[0], (byte) colors[1], (byte) colors[2]);
+            if (color != null) {
+                short[] colors = color.getTriplet();
+                resultWorkbook.getCustomPalette().setColorAtIndex(i, (byte) colors[0], (byte) colors[1], (byte) colors[2]);
+            }
         }
 
         List<HSSFPictureData> pictures = templateWorkbook.getAllPictures();
         for (HSSFPictureData picture : pictures) {
             resultWorkbook.addPicture(picture.getData(), picture.getFormat());
         }
-
-
     }
 
     /**
@@ -382,30 +388,32 @@ public class XLSFormatter extends AbstractFormatter {
      * @param band         - band
      */
     private void copyCellFromTemplate(HSSFCell templateCell, HSSFRow resultRow, int resultColumn, Band band) {
-        if (templateCell == null) return;
+        if (templateCell != null) {
+            HSSFCell resultCell = resultRow.createCell(resultColumn);
+            HSSFCellStyle resultStyle = resultWorkbook.createCellStyle();
+            resultStyle.cloneStyleFrom(templateCell.getCellStyle());
+            resultCell.setCellStyle(resultStyle);
 
-        HSSFCell resultCell = resultRow.createCell(resultColumn);
-        HSSFCellStyle resultStyle = resultWorkbook.createCellStyle();
-        resultStyle.cloneStyleFrom(templateCell.getCellStyle());
-        resultCell.setCellStyle(resultStyle);
-
-        if (templateCell.getCellType() == HSSFCell.CELL_TYPE_STRING && isOneValueCell(templateCell))
-            updateValueCell(band, templateCell, resultCell);
-        else if (templateCell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)
-            resultCell.setCellFormula(inlineBandDataToCellString(templateCell, band));
-        else
-            resultCell.setCellValue(new HSSFRichTextString(inlineBandDataToCellString(templateCell, band)));
+            if (templateCell.getCellType() == HSSFCell.CELL_TYPE_STRING && isOneValueCell(templateCell))
+                updateValueCell(band, templateCell, resultCell);
+            else if (templateCell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)
+                resultCell.setCellFormula(inlineBandDataToCellString(templateCell, band));
+            else
+                resultCell.setCellValue(new HSSFRichTextString(inlineBandDataToCellString(templateCell, band)));
+        }
     }
 
     /**
      * Create new merge regions in result sheet identically to range's merge regions from template.
+     * Not support copy of frames and rules
      *
      * @param resultSheet            - result sheet
      * @param rangeName              - range name
      * @param firstTargetRangeRow    - first column of target range
      * @param firstTargetRangeColumn - first column of target range
      */
-    private void copyMergeRegions(HSSFSheet resultSheet, String rangeName, int firstTargetRangeRow, int firstTargetRangeColumn) {
+    private void copyMergeRegions(HSSFSheet resultSheet, String rangeName,
+                                  int firstTargetRangeRow, int firstTargetRangeColumn) {
         int rangeNameIdx = templateWorkbook.getNameIndex(rangeName);
         if (rangeNameIdx == -1) return;
 
@@ -414,25 +422,29 @@ public class XLSFormatter extends AbstractFormatter {
         int column = aref.getFirstCell().getCol();
         int row = aref.getFirstCell().getRow();
 
-        List<CellRangeAddress> regionsList = mergeRegionsForRangeNames.get(rangeName);
+        List<SheetRange> regionsList = mergeRegionsForRangeNames.get(rangeName);
         if (regionsList != null)
-            for (CellRangeAddress cra : regionsList)
-                if (cra != null) {
-                    int regionHeight = cra.getLastRow() - cra.getFirstRow() + 1;
-                    int regionWidth = cra.getLastColumn() - cra.getFirstColumn() + 1;
+            for (SheetRange sheetRange : regionsList) {
+                if (resultSheet.getSheetName().equals(sheetRange.getSheetName())) {
+                    CellRangeAddress cra = sheetRange.getCellRangeAddress();
+                    if (cra != null) {
+                        int regionHeight = cra.getLastRow() - cra.getFirstRow() + 1;
+                        int regionWidth = cra.getLastColumn() - cra.getFirstColumn() + 1;
 
-                    int regionVOffset = cra.getFirstRow() - row;
-                    int regionHOffset = cra.getFirstColumn() - column;
+                        int regionVOffset = cra.getFirstRow() - row;
+                        int regionHOffset = cra.getFirstColumn() - column;
 
-                    CellRangeAddress cra2 = cra.copy();
-                    cra2.setFirstColumn(regionHOffset + firstTargetRangeColumn);
-                    cra2.setLastColumn(regionHOffset + regionWidth - 1 + firstTargetRangeColumn);
+                        CellRangeAddress cra2 = cra.copy();
+                        cra2.setFirstColumn(regionHOffset + firstTargetRangeColumn);
+                        cra2.setLastColumn(regionHOffset + regionWidth - 1 + firstTargetRangeColumn);
 
-                    cra2.setFirstRow(regionVOffset + firstTargetRangeRow);
-                    cra2.setLastRow(regionVOffset + regionHeight - 1 + firstTargetRangeRow);
+                        cra2.setFirstRow(regionVOffset + firstTargetRangeRow);
+                        cra2.setLastRow(regionVOffset + regionHeight - 1 + firstTargetRangeRow);
 
-                    resultSheet.addMergedRegion(cra2);
+                        resultSheet.addMergedRegion(cra2);
+                    }
                 }
+            }
     }
 
     /**
@@ -526,7 +538,7 @@ public class XLSFormatter extends AbstractFormatter {
     }
 
     /**
-     *  In this class colected all methods which works with area's dependencies
+     * In this class colected all methods which works with area's dependencies
      */
     private class AreaDependencyHelper {
         void updateCell(Cell cell) {
@@ -553,7 +565,7 @@ public class XLSFormatter extends AbstractFormatter {
         /**
          * Adds area dependency for formula calculations
          *
-         * @param main Main area
+         * @param main      Main area
          * @param dependent Dependent area
          */
         private void addDependency(Area main, Area dependent) {
@@ -636,6 +648,27 @@ public class XLSFormatter extends AbstractFormatter {
         }
     }
 
+    /**
+     * Cell range at sheet
+     */
+    private class SheetRange {
+        private CellRangeAddress cellRangeAddress;
+        private String sheetName;
+
+        private SheetRange(CellRangeAddress cellRangeAddress, String sheetName) {
+            this.cellRangeAddress = cellRangeAddress;
+            this.sheetName = sheetName;
+        }
+
+        public CellRangeAddress getCellRangeAddress() {
+            return cellRangeAddress;
+        }
+
+        public String getSheetName() {
+            return sheetName;
+        }
+    }
+
     private static class Bounds {
         public final int row0;
         public final int column0;
@@ -649,12 +682,12 @@ public class XLSFormatter extends AbstractFormatter {
             this.column1 = column1;
         }
 
-        public int verticalOffset(Bounds bounds) {
+        /*public int verticalOffset(Bounds bounds) {
             if (bounds == null || bounds.row1 <= row0) {
                 return row1 - row0 + 1;
             } else {
                 return row1 - bounds.row1;
             }
-        }
+        }*/
     }
 }

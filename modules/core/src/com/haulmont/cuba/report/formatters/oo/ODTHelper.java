@@ -11,7 +11,7 @@
 package com.haulmont.cuba.report.formatters.oo;
 
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.FileStorageService;
+import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.sun.star.beans.PropertyValue;
@@ -35,14 +35,14 @@ import java.io.File;
 import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.asXCloseable;
 import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.asXStorable;
 
-public class ODTHelper {
+public final class ODTHelper {
 
     private static final String SEARCH_REGULAR_EXPRESSION = "SearchRegularExpression";
 
     public static XInputStream getXInputStream(FileDescriptor fileDescriptor) {
-        FileStorageService fss = Locator.lookup(FileStorageService.NAME);
+        FileStorageAPI storageAPI = Locator.lookup(FileStorageAPI.NAME);
         try {
-            byte[] bytes = fss.loadFile(fileDescriptor);
+            byte[] bytes = storageAPI.loadFile(fileDescriptor);
             OOInputStream oois = new OOInputStream(bytes);
             return oois;
         } catch (FileStorageException e) {
@@ -50,7 +50,8 @@ public class ODTHelper {
         }
     }
 
-    public static XComponent loadXComponent(XComponentLoader xComponentLoader, XInputStream inputStream) throws com.sun.star.lang.IllegalArgumentException, IOException {
+    public static XComponent loadXComponent(XComponentLoader xComponentLoader, XInputStream inputStream)
+            throws com.sun.star.lang.IllegalArgumentException, IOException {
         PropertyValue[] props = new PropertyValue[2];
         props[0] = new PropertyValue();
         props[1] = new PropertyValue();
