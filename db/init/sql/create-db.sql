@@ -387,9 +387,8 @@ create table SYS_FOLDER (
     TYPE char(1),
     PARENT_ID varchar(36),
     NAME varchar(100),
-    DOUBLE_NAME varchar(100),
+    TAB_NAME varchar(100),
     SORT_ORDER integer,
-    CODE varchar(200),
     primary key (ID)
 );
 
@@ -401,8 +400,8 @@ create table SYS_APP_FOLDER (
     FOLDER_ID varchar(36),
     FILTER_COMPONENT varchar(200),
     FILTER_XML varchar(7000),
-    VISIBILITY_SCRIPT varchar(200),
-    QUANTITY_SCRIPT varchar(200),
+    VISIBILITY_SCRIPT text,
+    QUANTITY_SCRIPT text,
     primary key (FOLDER_ID)
 );
 
