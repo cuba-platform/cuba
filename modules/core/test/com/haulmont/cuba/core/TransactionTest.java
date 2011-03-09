@@ -172,36 +172,6 @@ public class TransactionTest extends CubaTestCase
         }
     }
 
-    public void testRollbackAndContinue() {
-        Transaction tx = Locator.createTransaction();
-        try {
-            try {
-                TransactionManager tm = (TransactionManager) Locator.getJndiContext().lookup("java:/TransactionManager");
-                tm.setRollbackOnly();
-            } catch (NamingException e) {
-                throw new RuntimeException(e);
-            } catch (SystemException e) {
-                throw new RuntimeException(e);
-            }
-        } finally {
-            tx.end();
-        }
-
-        tx = Locator.getTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Server server = new Server();
-            server.setName("localhost");
-            server.setAddress("127.0.0.1");
-            server.setRunning(true);
-            em.persist(server);
-
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-    }
-
     public void testNestedRollback() {
         try {
             Transaction tx = Locator.createTransaction();
