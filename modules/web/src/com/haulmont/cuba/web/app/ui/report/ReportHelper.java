@@ -46,12 +46,16 @@ public class ReportHelper {
     public static void runReport(Report report, Window window) {
         if (report != null) {
             if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
-                window.openWindow("report$inputParameters", WindowManager.OpenType.DIALOG,
-                        Collections.<String, Object>singletonMap("report", report));
+                openReportParamsDialog(report, window);
             } else {
                 ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
             }
         }
+    }
+
+    private static void openReportParamsDialog(Report report, Window window) {
+        window.openWindow("report$inputParameters", WindowManager.OpenType.DIALOG,
+                Collections.<String, Object>singletonMap("report", report));
     }
 
     public static void runReport(Report report, Window window, final String paramAlias, final Object paramValue) {
@@ -62,8 +66,7 @@ public class ReportHelper {
         if (report != null) {
             List<ReportInputParameter> params = report.getInputParameters();
             if (params != null && params.size() > 1) {
-                window.openWindow("report$inputParameters", WindowManager.OpenType.DIALOG,
-                        Collections.<String, Object>singletonMap("report", report));
+                openReportParamsDialog(report, window);
             } else {
                 if (params != null && params.size() == 1) {
                     if (name == null)
@@ -97,14 +100,6 @@ public class ReportHelper {
         }
         if (find)
             printReport(report, name, params, item.getKey(), item.getValue());
-        /*
-        if (ReportOutputType.XLS.equals(reportOutputType))
-            printReport(report, params, ReportOutputType.XLS, ExportFormat.XLS);
-        else if (ReportOutputType.DOC.equals(reportOutputType))
-            printReport(report, params, ReportOutputType.DOC, ExportFormat.DOC);
-        else if (ReportOutputType.PDF.equals(reportOutputType))
-            printReport(report, params, ReportOutputType.PDF, ExportFormat.PDF);
-        */
     }
 
     private static void printReport(Report report, String name, Map<String, Object> params, ReportOutputType reportOutputType, ExportFormat exportFormat) {
@@ -131,7 +126,7 @@ public class ReportHelper {
                             report = window.getDsContext().getDataService().reload(report, "report.edit");
                             if (report != null) {
                                 if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
-                                    window.openWindow("report$inputParameters", WindowManager.OpenType.DIALOG, Collections.<String, Object>singletonMap("report", report));
+                                    openReportParamsDialog(report, window);
                                 } else {
                                     ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
                                 }

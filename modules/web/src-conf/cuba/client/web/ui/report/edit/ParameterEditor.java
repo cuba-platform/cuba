@@ -12,7 +12,8 @@ package cuba.client.web.ui.report.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -26,6 +27,8 @@ import com.haulmont.cuba.report.ReportInputParameter;
 import java.util.*;
 
 public class ParameterEditor extends AbstractEditor {
+    private static final long serialVersionUID = -8191035000453382462L;
+
     public ParameterEditor(IFrame frame) {
         super(frame);
     }
@@ -33,56 +36,78 @@ public class ParameterEditor extends AbstractEditor {
     private ReportInputParameter parameter;
     private LookupField metaClass;
     private LookupField screen;
+    private LookupField enumLookup;
     private CheckBox fromBrowser;
-    private HashMap<String, String> metaNamesToClassNames = new HashMap<String, String>();
-    private HashMap<String, String> classNamesToMetaNames = new HashMap<String, String>();
+    private Map<String, String> metaNamesToClassNames = new HashMap<String, String>();
+    private Map<String, String> classNamesToMetaNames = new HashMap<String, String>();
+
+    private Map<String, Class> enumNamesToEnumClass = new HashMap<String, Class>();
+    private Map<String, String> enumClassToEnumNames = new HashMap<String, String>();
 
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
         parameter = (ReportInputParameter) getItem();
-        boolean isEntity = ParameterType.ENTITY.equals(parameter.getType()) || ParameterType.ENTITY_LIST.equals(parameter.getType());
-        metaClass.setEnabled(isEntity);
-        screen.setEnabled(isEntity);
-        fromBrowser.setEnabled(isEntity);
+        enableControlsByParamType(parameter.getType());
+
         metaClass.setValue(metaNamesToClassNames.get(parameter.getEntityMetaClass()));
+        enumLookup.setValue(enumClassToEnumNames.get(parameter.getEnumerationClass()));
         screen.setValue(parameter.getScreen());
     }
 
     @Override
     protected void init(Map<String, Object> params) {
         super.init(params);
+
         LookupField type = getComponent("type");
         metaClass = getComponent("metaClass");
+        enumLookup = getComponent("enumeration");
         screen = getComponent("screen");
         fromBrowser = getComponent("getFromBrowser");
 
-        List lst = new ArrayList();
-        Collection<MetaClass> classes = MetadataProvider.getSession().getClasses();
+        List metaClasses = new ArrayList();
+        Collection<MetaClass> classes = MetadataHelper.getAllMetaClasses();
         for (MetaClass clazz : classes) {
             metaNamesToClassNames.put(clazz.getName(), clazz.getJavaClass().getSimpleName());
             classNamesToMetaNames.put(clazz.getJavaClass().getSimpleName(), clazz.getName());
         }
-        lst.addAll(classNamesToMetaNames.keySet());
-        metaClass.setOptionsList(lst);
+
+        metaClasses.addAll(classNamesToMetaNames.keySet());
+        metaClass.setOptionsList(metaClasses);
         metaClass.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 String metaClassName = value != null ? classNamesToMetaNames.get(value.toString()) : null;
                 parameter.setEntityMetaClass(metaClassName);
-                if (metaClassName != null) {
+                /*if (metaClassName != null) {
                     MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
                     parameter.setClassName(metaClass.getJavaClass().getCanonicalName());
-                }
+                }*/
+            }
+        });
 
+        List enums = new ArrayList();
+        for (Class enumClass : MetadataHelper.getAllEnums()) {
+            enums.add(enumClass.getSimpleName());
+            enumNamesToEnumClass.put(enumClass.getSimpleName(), enumClass);
+            enumClassToEnumNames.put(enumClass.getCanonicalName(),enumClass.getSimpleName());
+        }
+        enumLookup.setOptionsList(enums);
+        enumLookup.addListener(new ValueListener() {
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                if (value != null) {
+                    Class enumClass = enumNamesToEnumClass.get(value.toString());
+                    parameter.setEnumerationClass(enumClass.getCanonicalName());
+                } else
+                    parameter.setEnumerationClass(null);
             }
         });
 
         Collection<WindowInfo> windowInfoCollection = AppConfig.getInstance().getWindowConfig().getWindows();
-        lst = new ArrayList();
+        List screensList = new ArrayList();
         for (WindowInfo windowInfo : windowInfoCollection) {
-            lst.add(windowInfo.getId());
+            screensList.add(windowInfo.getId());
         }
-        screen.setOptionsList(lst);
+        screen.setOptionsList(screensList);
         screen.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 parameter.setScreen(value != null ? value.toString() : null);
@@ -91,11 +116,20 @@ public class ParameterEditor extends AbstractEditor {
 
         type.addListener(new ValueListener() {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                boolean isEntity = ParameterType.ENTITY.equals(value) || ParameterType.ENTITY_LIST.equals(value);
-                metaClass.setEnabled(isEntity);
-                screen.setEnabled(isEntity);
-                fromBrowser.setEnabled(isEntity);
+                enableControlsByParamType(value);
             }
         });
+    }
+
+    private void enableControlsByParamType(Object value) {
+        boolean isEntity = ParameterType.ENTITY.equals(value) || ParameterType.ENTITY_LIST.equals(value);
+        boolean isEnum = ParameterType.ENUMERATION.equals(value);
+        metaClass.setEnabled(isEntity);
+        enumLookup.setEnabled(isEnum);
+        screen.setEnabled(isEntity);
+        fromBrowser.setEnabled(isEntity);
+
+        metaClass.setRequired(isEntity);
+        enumLookup.setRequired(isEnum);
     }
 }

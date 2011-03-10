@@ -55,18 +55,17 @@
 
                     <row>
                         <label value="msg://parameters.metaClass"/>
-                        <lookupField id="metaClass" width="${width}"/>
+                        <lookupField id="metaClass" width="${width}" requiredMessage="msg://parameters.requiredMetaClass"/>
+                    </row>
+
+                    <row>
+                        <label value="msg://parameters.enum"/>
+                        <lookupField id="enumeration" width="${width}" requiredMessage="msg://parameters.requiredEnumClass"/>
                     </row>
 
                     <row>
                         <label value="msg://parameters.screen"/>
                         <lookupField id="screen" width="${width}"/>
-                    </row>
-
-                    <row>
-                        <label value="msg://parameters.className"/>
-                        <textField id="className" datasource="parameterDs" property="className" required="true"
-                                   width="${width}" editable="false" requiredMessage="msg://parameters.classNameMsg"/>
                     </row>
                 </rows>
             </grid>

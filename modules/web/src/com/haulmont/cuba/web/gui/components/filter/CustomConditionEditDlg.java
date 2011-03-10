@@ -10,15 +10,13 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.chile.core.datatypes.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.QueryParserRegex;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.data.Property;
@@ -328,13 +326,7 @@ public class CustomConditionEditDlg extends Window {
     private Collection<MetaClass> getMetaClasses() {
         if (metaClasses == null) {
             synchronized (CustomConditionEditDlg.class) {
-                metaClasses = new ArrayList<MetaClass>();
-                Session session = MetadataProvider.getSession();
-                for (MetaModel model : session.getModels()) {
-                    for (MetaClass metaClass : model.getClasses()) {
-                        metaClasses.add(metaClass);
-                    }
-                }
+                metaClasses = MetadataHelper.getAllMetaClasses();
             }
         }
         return metaClasses;
@@ -343,15 +335,7 @@ public class CustomConditionEditDlg extends Window {
     private Collection<Class> getEnums() {
         if (enums == null) {
             synchronized (CustomConditionEditDlg.class) {
-                enums = new HashSet<Class>();
-                for (MetaClass metaClass : getMetaClasses()) {
-                    for (MetaProperty metaProperty : metaClass.getProperties()) {
-                        if (metaProperty.getRange() != null && metaProperty.getRange().isEnum()) {
-                            Class c = metaProperty.getRange().asEnumeration().getJavaClass();
-                            enums.add(c);
-                        }
-                    }
-                }
+                enums = MetadataHelper.getAllEnums();
             }
         }
         return enums;

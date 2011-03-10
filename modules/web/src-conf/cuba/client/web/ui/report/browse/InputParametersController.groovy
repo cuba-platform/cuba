@@ -45,6 +45,11 @@ import com.vaadin.data.Validator
 import com.haulmont.chile.core.model.Instance
 import com.haulmont.cuba.core.global.MessageProvider
 import com.haulmont.cuba.web.app.ui.report.ReportHelper
+import com.haulmont.cuba.gui.components.LookupField
+import com.haulmont.cuba.web.gui.components.WebLookupField
+import org.apache.commons.lang.StringUtils
+import com.haulmont.cuba.web.gui.data.EnumerationContainer
+import com.haulmont.cuba.gui.components.CaptionMode
 
 public class InputParametersController extends AbstractWindow {
 
@@ -61,8 +66,8 @@ public class InputParametersController extends AbstractWindow {
 
     protected void init(Map<String, Object> params) {
         super.init(params);
-        report = params['param$report']
-        linkedEntity = params['param$entity']
+        report = (Report) params['param$report']
+        linkedEntity = (Entity) params['param$entity']
 
         if (report) {
             grid = (WebGridLayout) getComponent('parametersGrid')
@@ -72,7 +77,6 @@ public class InputParametersController extends AbstractWindow {
             for (ReportInputParameter parameter: report.getInputParameters()) {
                 createComponent(parameter)
             }
-
 
             Button printReportButton = getComponent('printReport')
             def printReport = [
@@ -121,25 +125,41 @@ public class InputParametersController extends AbstractWindow {
         number++
     }
 
-    private def createDateField = {ReportInputParameter parameter ->
+    private def createDateField = { ReportInputParameter parameter ->
         return new WebDateField();
     }
 
-    private def createCheckBoxField = {ReportInputParameter parameter ->
+    private def createCheckBoxField = { ReportInputParameter parameter ->
         return new WebCheckBox()
     }
 
-    private def createTextField = {ReportInputParameter parameter ->
+    private def createTextField = { ReportInputParameter parameter ->
         return new WebTextField();
     }
 
-    private def createNumericField = {ReportInputParameter parameter ->
+    private def createNumericField = { ReportInputParameter parameter ->
         WebTextField wtf = new WebTextField();
         wtf.addValidator(new DoubleValidator())
         return wtf
     }
 
-    private def createLookupField = {Boolean isMulti, ReportInputParameter parameter ->
+    private def createEnumLookup = { ReportInputParameter parameter ->
+        final LookupField lookupField = new WebLookupField()
+        String enumClassName = parameter.getEnumerationClass()
+        if (StringUtils.isNotEmpty(enumClassName)) {
+            Class enumClass = Class.forName(enumClassName)
+            if (enumClass != null) {
+                def optionsList = new ArrayList( Arrays.asList( enumClass.getEnumConstants() ));
+
+                lookupField.setOptionsList(optionsList);
+                lookupField.setCaptionMode(CaptionMode.ITEM);
+            }
+        }
+
+        return lookupField
+    }
+
+    private def createLookupField = { Boolean isMulti, ReportInputParameter parameter ->
         final WebActionsField waf = new WebActionsField()
 
         final com.haulmont.chile.core.model.MetaClass entityMetaClass = MetadataProvider.getSession().getClass(parameter.entityMetaClass)
@@ -203,6 +223,7 @@ public class InputParametersController extends AbstractWindow {
         fieldCreationMapping.put(ParameterType.ENTITY_LIST, createLookupField.curry(true))
         fieldCreationMapping.put(ParameterType.BOOLEAN, createCheckBoxField)
         fieldCreationMapping.put(ParameterType.NUMERIC, createNumericField)
+        fieldCreationMapping.put(ParameterType.ENUMERATION, createEnumLookup)
     }
 
 }

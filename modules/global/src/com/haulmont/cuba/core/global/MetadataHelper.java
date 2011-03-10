@@ -48,8 +48,7 @@ public abstract class MetadataHelper {
         if (oneToMany != null) {
             final Collection<CascadeType> cascadeTypes = Arrays.asList(oneToMany.cascade());
             if (cascadeTypes.contains(CascadeType.ALL) ||
-                    cascadeTypes.contains(CascadeType.MERGE))
-            {
+                    cascadeTypes.contains(CascadeType.MERGE)) {
                 return true;
             }
         }
@@ -66,7 +65,7 @@ public abstract class MetadataHelper {
 
         return BaseUuidEntity.class.equals(javaClass) ||
                 StandardEntity.class.equals(javaClass) ||
-                    BaseLongIdEntity.class.equals(javaClass);
+                BaseLongIdEntity.class.equals(javaClass);
     }
 
     public static Collection<MetaPropertyPath> getPropertyPaths(MetaClass metaClass) {
@@ -107,8 +106,7 @@ public abstract class MetadataHelper {
     }
 
     private static void __walkProperties(Instance instance, PropertyVisitor visitor,
-                                         Session metadata, Set<Instance> visited)
-    {
+                                         Session metadata, Set<Instance> visited) {
         if (visited.contains(instance))
             return;
         visited.add(instance);
@@ -151,8 +149,7 @@ public abstract class MetadataHelper {
     }
 
     public static boolean isAnnotationPresent(Object object, String property,
-                                              Class<? extends Annotation> annotationClass)
-    {
+                                              Class<? extends Annotation> annotationClass) {
         Field field;
         try {
             field = object.getClass().getDeclaredField(property);
@@ -195,5 +192,23 @@ public abstract class MetadataHelper {
                 MetadataProvider.getViewRepository().deployView(metadataContextElement, viewElement);
             }
         }
+    }
+
+    public static Collection<MetaClass> getAllMetaClasses() {
+        Collection<MetaClass> metaClasses = MetadataProvider.getSession().getClasses();
+        return metaClasses;
+    }
+
+    public static Collection<Class> getAllEnums() {
+        Set<Class> enums = new HashSet<Class>();
+        for (MetaClass metaClass : getAllMetaClasses()) {
+            for (MetaProperty metaProperty : metaClass.getProperties()) {
+                if (metaProperty.getRange() != null && metaProperty.getRange().isEnum()) {
+                    Class c = metaProperty.getRange().asEnumeration().getJavaClass();
+                    enums.add(c);
+                }
+            }
+        }
+        return enums;
     }
 }

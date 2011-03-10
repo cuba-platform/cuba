@@ -19,7 +19,8 @@ public enum ParameterType implements EnumClass<Integer> {
     ENTITY(30),
     BOOLEAN(40),
     NUMERIC(50),
-    ENTITY_LIST(60);
+    ENTITY_LIST(60),
+    ENUMERATION(70);
 
     private Integer id;
 

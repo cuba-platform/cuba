@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.report;
 
-import com.haulmont.cuba.core.entity.StandardEntity;
-
 import javax.persistence.*;
 
 @Entity(name = "report$ReportInputParameter")
@@ -37,6 +35,9 @@ public class ReportInputParameter extends HardDeleteEntity {
 
     @Column(name = "META_CLASS")
     private String entityMetaClass;
+
+    @Column(name = "ENUM_CLASS")
+    private String enumerationClass;
 
     @Column(name = "SCREEN")
     private String screen;
@@ -97,6 +98,14 @@ public class ReportInputParameter extends HardDeleteEntity {
     public void setClassName(String className) {
         this.className = className;
     }*/
+
+    public String getEnumerationClass() {
+        return enumerationClass;
+    }
+
+    public void setEnumerationClass(String enumerationClass) {
+        this.enumerationClass = enumerationClass;
+    }
 
     public Boolean getGetFromBrowser() {
         return getFromBrowser;

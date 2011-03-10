@@ -38,10 +38,6 @@ public class ReportServiceBean implements ReportService {
     private ThreadLocal<Map<String, Object>> params = new ThreadLocal<Map<String, Object>>();
     private ThreadLocal<Set<String>> bandDefinitionNames = new ThreadLocal<Set<String>>();
 
-    /*
-    *  Simple algorithm for band tree creation
-    */
-
     public byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params) throws IOException {
         try {
             this.params.set(params);
@@ -205,7 +201,6 @@ public class ReportServiceBean implements ReportService {
     *   Create band from band definition
     *   Perform query from definition and create band from each result row. Do it recursive down
     */
-
     private List<Band> createBands(BandDefinition definition, Band parentBand) {
         definition = reloadEntity(definition, "report.edit");
         List<Map<String, Object>> outputData = getBandData(definition, parentBand);

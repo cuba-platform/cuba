@@ -574,6 +574,7 @@ CREATE TABLE REPORT_INPUT_PARAMETER
   REQUIRED boolean default false,
   POSITION_ integer default 0,
   META_CLASS varchar(255),
+  ENUM_CLASS varchar(500)
 
   primary key (ID),
   constraint FK_REPOR_INPUT_PARAMETER_TO_REPORT_REPORT foreign key (REPORT_ID)
