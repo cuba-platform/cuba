@@ -46,7 +46,7 @@ public class BandDefinition extends HardDeleteEntity {
     @Column(name = "ORIENTATION")
     private Integer orientation;
 
-    @Column(name = "POSITION")
+    @Column(name = "POSITION_")
     private Integer position;
 
     public BandDefinition getParentBandDefinition() {

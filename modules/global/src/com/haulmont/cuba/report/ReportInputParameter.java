@@ -32,7 +32,7 @@ public class ReportInputParameter extends HardDeleteEntity {
     @Column(name = "ALIAS")
     private String alias;
 
-    @Column(name = "POSITION")
+    @Column(name = "POSITION_")
     private Integer position;
 
     @Column(name = "META_CLASS")
@@ -41,8 +41,8 @@ public class ReportInputParameter extends HardDeleteEntity {
     @Column(name = "SCREEN")
     private String screen;
 
-    @Column(name = "CLASS_NAME")
-    private String className;
+/*    @Column(name = "CLASS_NAME")
+    private String className;*/
 
     @Column(name = "FROM_BROWSER")
     private Boolean getFromBrowser = false;
@@ -90,13 +90,13 @@ public class ReportInputParameter extends HardDeleteEntity {
         this.entityMetaClass = entityMetaClass;
     }
 
-    public String getClassName() {
+    /*public String getClassName() {
         return className;
     }
 
     public void setClassName(String className) {
         this.className = className;
-    }
+    }*/
 
     public Boolean getGetFromBrowser() {
         return getFromBrowser;
