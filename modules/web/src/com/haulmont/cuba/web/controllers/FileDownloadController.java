@@ -1,33 +1,35 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 30.10.2009 16:16:30
+ *
+ * Author: Nikolay Gorodnov
+ * Created: 04.03.2011 10:57:41
  *
  * $Id$
  */
-package com.haulmont.cuba.web.sys;
+package com.haulmont.cuba.web.controllers;
 
 import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -39,21 +41,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
 
-/** @deprecated Need to use {@link com.haulmont.cuba.web.controllers.FileDownloadController} */
-public class FileDownloadServlet extends HttpServlet {
+@Controller
+public class FileDownloadController {
 
-    private static Log log = LogFactory.getLog(FileDownloadServlet.class);
+    private static Log log = LogFactory.getLog(FileDownloadController.class);
 
-    @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
-        super.init(servletConfig);
-    }
-
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
+    public ModelAndView download(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
         UserSession userSession = getSession(request, response);
         if (userSession == null) {
             error(response);
@@ -66,7 +63,7 @@ public class FileDownloadServlet extends HttpServlet {
                 fileId = UUID.fromString(request.getParameter("f"));
             } catch (Exception e) {
                 error(response);
-                return;
+                return null;
             }
 
             boolean attach = Boolean.valueOf(request.getParameter("a"));
@@ -108,7 +105,10 @@ public class FileDownloadServlet extends HttpServlet {
         } finally {
             WebSecurityUtils.clearSecurityAssociation();
         }
+
+        return null;
     }
+
 
     protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) {
         App app = getExistingApplication(request, response);
@@ -138,8 +138,7 @@ public class FileDownloadServlet extends HttpServlet {
     }
 
     private App getExistingApplication(HttpServletRequest request,
-                                               HttpServletResponse response)
-    {
+                                       HttpServletResponse response) {
         // Ensures that the session is still valid
         final HttpSession session = request.getSession(true);
 
@@ -169,4 +168,5 @@ public class FileDownloadServlet extends HttpServlet {
         // Existing application not found
         return null;
     }
+
 }

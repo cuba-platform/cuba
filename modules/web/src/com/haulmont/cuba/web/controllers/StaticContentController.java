@@ -1,17 +1,25 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 17.12.10 13:38
+ *
+ * Author: Nikolay Gorodnov
+ * Created: 11.03.2011 10:37:27
  *
  * $Id$
  */
-package com.haulmont.cuba.web.sys;
+package com.haulmont.cuba.web.controllers;
 
+import com.haulmont.cuba.core.global.FileTypesHelper;
 import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.LastModified;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,20 +30,14 @@ import java.net.URL;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-/** @deprecated Need to use {@link com.haulmont.cuba.web.controllers.StaticContentController} */
-public class StaticContentServlet extends HttpServlet {
-
-    private static final long serialVersionUID = -5099558309404773848L;
+@Controller
+@RequestMapping(value = "/static/**")
+public class StaticContentController implements LastModified {
 
     public static interface LookupResult {
-        public void respondGet(HttpServletResponse resp) throws IOException;
+        public void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException;
 
-        public void respondHead(HttpServletResponse resp);
+        public void respondHead(HttpServletRequest req, HttpServletResponse resp) throws IOException;
 
         public long getLastModified();
     }
@@ -53,11 +55,11 @@ public class StaticContentServlet extends HttpServlet {
             return -1;
         }
 
-        public void respondGet(HttpServletResponse resp) throws IOException {
+        public void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             resp.sendError(statusCode, message);
         }
 
-        public void respondHead(HttpServletResponse resp) {
+        public void respondHead(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             throw new UnsupportedOperationException();
         }
     }
@@ -92,7 +94,7 @@ public class StaticContentServlet extends HttpServlet {
                 resp.setContentLength(contentLength);
         }
 
-        public void respondGet(HttpServletResponse resp) throws IOException {
+        public void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             setHeaders(resp);
             final OutputStream os;
             if (willDeflate()) {
@@ -109,34 +111,35 @@ public class StaticContentServlet extends HttpServlet {
             }
         }
 
-        public void respondHead(HttpServletResponse resp) {
+        public void respondHead(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             if (willDeflate())
                 throw new UnsupportedOperationException();
             setHeaders(resp);
         }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        lookup(req).respondGet(resp);
+    @RequestMapping(method = RequestMethod.GET)
+    public String handleGetRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        lookup(request).respondGet(request, response);
+        return null;
     }
 
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        doGet(req, resp);
+    @RequestMapping(method = RequestMethod.POST)
+    public String handlePostRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        return handleGetRequest(request, response);
     }
 
-    @Override
-    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    @RequestMapping(method = RequestMethod.HEAD)
+    public String handleHeadRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            lookup(req).respondHead(resp);
+            lookup(request).respondHead(request, response);
         } catch (UnsupportedOperationException e) {
-            super.doHead(req, resp);
+            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         }
+        return null;
     }
 
-    @Override
-    protected long getLastModified(HttpServletRequest req) {
+    public long getLastModified(HttpServletRequest req) {
         return lookup(req).getLastModified();
     }
 
@@ -154,9 +157,11 @@ public class StaticContentServlet extends HttpServlet {
         if (isForbidden(path))
             return new Error(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
 
+        ServletContext context = req.getSession().getServletContext();
+
         final URL url;
         try {
-            url = getServletContext().getResource(path);
+            url = context.getResource(path);
         } catch (MalformedURLException e) {
             return new Error(HttpServletResponse.SC_BAD_REQUEST, "Malformed path");
         }
@@ -165,7 +170,7 @@ public class StaticContentServlet extends HttpServlet {
 
         final String mimeType = getMimeType(path);
 
-        final String realpath = getServletContext().getRealPath(path);
+        final String realpath = context.getRealPath(path);
         if (realpath != null) {
             // Try as an ordinary file
             File f = new File(realpath);
@@ -202,9 +207,9 @@ public class StaticContentServlet extends HttpServlet {
     }
 
     protected String getPath(HttpServletRequest req) {
-        String servletPath = req.getServletPath();
+        String path = ControllerUtils.getControllerPath(req);
         String pathInfo = coalesce(req.getPathInfo(), "");
-        return servletPath + pathInfo;
+        return path + pathInfo;
     }
 
     protected boolean isForbidden(String path) {
@@ -213,7 +218,7 @@ public class StaticContentServlet extends HttpServlet {
     }
 
     protected String getMimeType(String path) {
-        return coalesce(getServletContext().getMimeType(path), "application/octet-stream");
+        return coalesce(FileTypesHelper.getMIMEType(path), "application/octet-stream");
     }
 
     protected static boolean acceptsDeflate(HttpServletRequest req) {
@@ -239,5 +244,4 @@ public class StaticContentServlet extends HttpServlet {
     protected static final int deflateThreshold = 4 * 1024;
 
     protected static final int bufferSize = 4 * 1024;
-
 }

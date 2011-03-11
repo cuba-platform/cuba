@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+/** @deprecated No need to use this filter. This logic must be implemented in the responsible controller class */
 public class StaticContentHttpFilter implements Filter {
 
     public void init(FilterConfig filterConfig) throws ServletException {

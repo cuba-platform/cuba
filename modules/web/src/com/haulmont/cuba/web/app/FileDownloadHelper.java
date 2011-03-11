@@ -49,7 +49,7 @@ public class FileDownloadHelper {
 
     public static String makeUrl(FileDescriptor fd, boolean attachment) {
         StringBuilder sb = new StringBuilder();
-        sb.append("download?")
+        sb.append("dispatch/download?")
                 .append("s=").append(UserSessionClient.getUserSession().getId()).append("&")
                 .append("f=").append(fd.getId());
         if (attachment)

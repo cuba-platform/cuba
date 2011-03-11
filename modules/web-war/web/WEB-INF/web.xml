@@ -57,12 +57,19 @@
             <param-name>widgetset</param-name>
             <param-value>com.haulmont.cuba.toolkit.gwt.WidgetSet</param-value>
         </init-param>
+        <load-on-startup>0</load-on-startup>
     </servlet>
 
     <servlet>
-        <servlet-name>file_download_servlet</servlet-name>
-        <servlet-class>com.haulmont.cuba.web.sys.FileDownloadServlet</servlet-class>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/dispatch/*</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>jr_image_servlet</servlet-name>
@@ -72,11 +79,6 @@
     <servlet-mapping>
         <servlet-name>cuba_servlet</servlet-name>
         <url-pattern>/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>file_download_servlet</servlet-name>
-        <url-pattern>/download/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
