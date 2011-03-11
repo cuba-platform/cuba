@@ -91,24 +91,37 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
             final String fieldName = StringUtils.uncapitalize(name.replace("set", ""));
 
             code.aload().setThis();
-            code.invokevirtual().setMethod("get" + StringUtils.capitalize(fieldName) , method.getParamTypes()[0], new Class[]{});
+            code.invokevirtual().setMethod("get" + StringUtils.capitalize(fieldName), method.getParamTypes()[0], new Class[]{});
             code.astore().setLocal(2);
 
             code.afterLast();
             Instruction vreturn = code.previous();
-            code.before(vreturn);
 
-            code.aload().setLocal(2);
-            code.aload().setLocal(1);
-            code.invokestatic().setMethod(ObjectUtils.class, "equals", boolean.class, new Class[]{Object.class,Object.class});
-            IfInstruction ifne = code.ifne();
-            code.aload().setThis();
-            code.constant().setValue(fieldName);
-            code.aload().setLocal(2);
-            code.aload().setLocal(1);
-            code.invokevirtual().setMethod("propertyChanged", void.class, new Class[]{String.class,Object.class,Object.class});
+            code.afterLast();
+            code.previous();
+            /*
+             find instruction pcSet + fieldName and invoke propertyChanged
+             */
+            code.beforeFirst();
+            while (code.hasNext()) {
+                Instruction inst = code.next();
+                if (MethodInstruction.class.isAssignableFrom(inst.getClass())) {
+                    if (((MethodInstruction) inst).getMethodName().equals("pcSet" + fieldName)) {
+                        code.after(inst);
+                        code.aload().setLocal(2);
+                        code.aload().setLocal(1);
+                        code.invokestatic().setMethod(ObjectUtils.class, "equals", boolean.class, new Class[]{Object.class, Object.class});
+                        IfInstruction ifne = code.ifne();
+                        code.aload().setThis();
+                        code.constant().setValue(fieldName);
+                        code.aload().setLocal(2);
+                        code.aload().setLocal(1);
+                        code.invokevirtual().setMethod("propertyChanged", void.class, new Class[]{String.class, Object.class, Object.class});
+                        ifne.setTarget(vreturn);
+                    }
+                }
 
-            ifne.setTarget(vreturn);
+            }
 
             code.calculateMaxStack();
             code.calculateMaxLocals();
@@ -154,7 +167,7 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
 
     protected void createPropertyChangedMethod() {
         // protected void propertyChanged(String property, Object prevValue, Object value)
-        BCMethod method = _pc.declareMethod("propertyChanged", void.class, new Class[]{String.class,Object.class,Object.class});
+        BCMethod method = _pc.declareMethod("propertyChanged", void.class, new Class[]{String.class, Object.class, Object.class});
         method.makeProtected();
         Code code = method.getCode(true);
 
@@ -179,7 +192,7 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         code.aload().setParam(0);
         code.aload().setParam(1);
         code.aload().setParam(2);
-        code.invokeinterface().setMethod(ValueListener.class, "propertyChanged", void.class, new Class[]{Object.class,String.class,Object.class,Object.class});
+        code.invokeinterface().setMethod(ValueListener.class, "propertyChanged", void.class, new Class[]{Object.class, String.class, Object.class, Object.class});
         code.go2().setTarget(aload);
 
         ReturnInstruction vreturn = code.vreturn();
@@ -287,7 +300,7 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         code.aload().setLocal(1);
         code.aload().setLocal(2);
         code.invokevirtual().setMethod(MethodsCache.class, "invokeSetter", void.class, new Class[]{Object.class, String.class, Object.class});
-        
+
         code.vreturn();
         code.calculateMaxStack();
         code.calculateMaxLocals();
