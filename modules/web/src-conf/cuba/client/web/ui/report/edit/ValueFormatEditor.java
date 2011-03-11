@@ -26,7 +26,8 @@ public class ValueFormatEditor extends BasicEditor {
             "#,##0.###",
             "#,##0.##",
             "dd/MM/yyyy HH:mm",
-            "${image:WxH>}"
+            "${image:WxH>}",
+            "${html}"
     };
     private static final long serialVersionUID = 3406588486315509607L;
 

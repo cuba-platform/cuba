@@ -13,10 +13,20 @@ package com.haulmont.cuba.report.formatters.oo;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XEnumerationAccess;
 import com.sun.star.container.XNameContainer;
+import com.sun.star.datatransfer.XTransferableSupplier;
+import com.sun.star.datatransfer.clipboard.XClipboard;
+import com.sun.star.document.XDocumentInsertable;
 import com.sun.star.drawing.XShape;
+import com.sun.star.embed.XStorage;
 import com.sun.star.frame.*;
+import com.sun.star.io.XActiveDataSource;
+import com.sun.star.io.XInputStream;
+import com.sun.star.io.XOutputStream;
+import com.sun.star.io.XTextOutputStream;
+import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.lang.XServiceInfo;
+import com.sun.star.lang.XSingleServiceFactory;
 import com.sun.star.table.XCellRange;
 import com.sun.star.text.*;
 import com.sun.star.uno.Any;
@@ -58,6 +68,54 @@ public final class ODTUnoConverter {
 
     public static XMultiServiceFactory asXMultiServiceFactory(Object o) {
         return (XMultiServiceFactory) UnoRuntime.queryInterface(com.sun.star.lang.XMultiServiceFactory.class, o);
+    }
+
+    public static XStorage asXStorage(Object o) {
+        return (XStorage) UnoRuntime.queryInterface(XStorage.class, o);
+    }
+
+    public static XModel asXModel(Object o) {
+        return (XModel) UnoRuntime.queryInterface(XModel.class, o);
+    }
+
+    public static XInputStream asXInputStream(Object o) {
+        return (XInputStream) UnoRuntime.queryInterface(com.sun.star.io.XInputStream.class, o);
+    }
+
+    public static XClipboard asXClipboard(Object o) {
+        return (XClipboard) UnoRuntime.queryInterface(XClipboard.class, o);
+    }
+
+    public static XDocumentInsertable asXDocumentInsertable(Object o) {
+        return (XDocumentInsertable) UnoRuntime.queryInterface(XDocumentInsertable.class, o);
+    }
+
+    public static XOutputStream asXOutputStream(Object o) {
+        return (XOutputStream) UnoRuntime.queryInterface(com.sun.star.io.XOutputStream.class, o);
+    }
+
+    public static XTextOutputStream asXTextOutputStream(Object o) {
+        return (XTextOutputStream) UnoRuntime.queryInterface(XTextOutputStream.class, o);
+    }
+
+    public static XMultiComponentFactory asXMultiComponentFactory(Object o) {
+        return (XMultiComponentFactory) UnoRuntime.queryInterface(XMultiComponentFactory.class, o);
+    }
+
+    public static XSingleServiceFactory asXSingleServiceFactory(Object o) {
+        return (XSingleServiceFactory) UnoRuntime.queryInterface(XSingleServiceFactory.class, o);
+    }
+
+    public static XTextViewCursorSupplier asXTextViewCursorSupplier(Object o) {
+        return (XTextViewCursorSupplier) UnoRuntime.queryInterface(XTextViewCursorSupplier.class, o);
+    }
+
+    public static XTransferableSupplier asXTransferableSupplier(Object o) {
+        return (XTransferableSupplier) UnoRuntime.queryInterface(XTransferableSupplier.class, o);
+    }
+
+    public static XActiveDataSource asXActiveDataSource(Object o) {
+        return (XActiveDataSource) UnoRuntime.queryInterface(com.sun.star.io.XActiveDataSource.class, o);
     }
 
     public static XTextDocument asXTextDocument(Object o) {

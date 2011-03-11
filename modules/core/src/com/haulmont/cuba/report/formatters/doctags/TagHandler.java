@@ -10,27 +10,38 @@
  */
 package com.haulmont.cuba.report.formatters.doctags;
 
+import com.haulmont.cuba.report.formatters.oo.OOOConnection;
+import com.haulmont.cuba.report.formatters.oo.OfficeComponent;
+import com.sun.star.frame.XComponentLoader;
 import com.sun.star.lang.XComponent;
 import com.sun.star.text.XText;
 import com.sun.star.text.XTextRange;
 
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Handle doctags in format strings
  */
 public interface TagHandler {
+
     /**
-     * Insert image in Doc document
+     * Get Regexp Pattern for match format string
      *
-     *
-     * @param xComponent    Document object
-     * @param destination   Text
-     * @param textRange     Place for insert
-     * @param paramValue    Image URL
-     * @param paramsMatcher Matcher for parameters regexp
+     * @return Pattern
+     */
+    Pattern getTagPattern();
+
+    /**
+     * @param officeComponent OpenOffice Objects
+     * @param destination     Text
+     * @param textRange       Place for insert
+     * @param paramValue      Parameter
+     * @param matcher         Matcher for parameters regexp
      * @throws Exception
      */
-    public void handleTag(XComponent xComponent, XText destination, XTextRange textRange,
-                          Object paramValue, Matcher paramsMatcher) throws Exception;
+    void handleTag(OfficeComponent officeComponent,
+                   XText destination, XTextRange textRange,
+                   Object paramValue, Matcher matcher)
+            throws Exception;
 }

@@ -10,12 +10,10 @@
  */
 package com.haulmont.cuba.report.formatters.oo;
 
-import java.io.ByteArrayInputStream;
-
-import com.sun.star.io.BufferSizeExceededException;
-import com.sun.star.io.NotConnectedException;
 import com.sun.star.io.XInputStream;
 import com.sun.star.io.XSeekable;
+
+import java.io.ByteArrayInputStream;
 
 /**
  * Implementation for XInputStream
@@ -26,7 +24,7 @@ public class OOInputStream extends ByteArrayInputStream implements XInputStream,
         super(buf);
     }
 
-    public int readBytes(byte[][] buffer, int bufferSize) throws NotConnectedException, BufferSizeExceededException, com.sun.star.io.IOException {
+    public int readBytes(byte[][] buffer, int bufferSize) throws com.sun.star.io.IOException {
         int numberOfReadBytes;
         try {
             byte[] bytes = new byte[bufferSize];
@@ -50,15 +48,15 @@ public class OOInputStream extends ByteArrayInputStream implements XInputStream,
         }
     }
 
-    public int readSomeBytes(byte[][] buffer, int bufferSize) throws NotConnectedException, BufferSizeExceededException, com.sun.star.io.IOException {
+    public int readSomeBytes(byte[][] buffer, int bufferSize) throws com.sun.star.io.IOException {
         return readBytes(buffer, bufferSize);
     }
 
-    public void skipBytes(int skipLength) throws NotConnectedException, BufferSizeExceededException, com.sun.star.io.IOException {
+    public void skipBytes(int skipLength) throws com.sun.star.io.IOException {
         skip(skipLength);
     }
 
-    public void closeInput() throws NotConnectedException, com.sun.star.io.IOException {
+    public void closeInput() throws com.sun.star.io.IOException {
         try {
             close();
         }

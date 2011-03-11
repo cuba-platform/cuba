@@ -45,4 +45,8 @@ public class OOOConnection {
                 "com.sun.star.frame.DispatchHelper", xComponentContext);
         return asXDispatchHelper(o);
     }
+
+    public XComponentContext getxComponentContext() {
+        return xComponentContext;
+    }
 }

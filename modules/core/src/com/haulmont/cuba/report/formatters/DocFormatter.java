@@ -17,12 +17,14 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.ReportValueFormat;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
-import com.haulmont.cuba.report.formatters.exception.FailedToConnectToOpenOfficeException;
-import com.haulmont.cuba.report.formatters.oo.*;
+import com.haulmont.cuba.report.formatters.doctags.HtmlContentTagHandler;
 import com.haulmont.cuba.report.formatters.doctags.ImageTagHandler;
 import com.haulmont.cuba.report.formatters.doctags.TagHandler;
+import com.haulmont.cuba.report.formatters.exception.FailedToConnectToOpenOfficeException;
+import com.haulmont.cuba.report.formatters.oo.*;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XIndexAccess;
+import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDispatchHelper;
 import com.sun.star.io.IOException;
 import com.sun.star.io.XInputStream;
@@ -36,26 +38,34 @@ import org.apache.commons.lang.StringUtils;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.haulmont.cuba.report.formatters.oo.ODTHelper.*;
 import static com.haulmont.cuba.report.formatters.oo.ODTTableHelper.*;
 import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.*;
 
+/**
+ * Document formatter for '.doc' filetype
+ */
 public class DocFormatter extends AbstractFormatter {
 
     private static final String SEARCH_REGULAR_EXPRESSION = "SearchRegularExpression";
     private static final String ROOT_BAND_NAME = "Root";
 
-    private static Map<Pattern, TagHandler> tagHandlers = new HashMap<Pattern, TagHandler>();
+    /**
+     * Chain of responsibility for tags
+     */
+    private static List<TagHandler> tagHandlers = new ArrayList<TagHandler>();
 
     static {
-        // Tags for value formatters
-        tagHandlers.put(
-                Pattern.compile("\\$\\{image:([0-9]+?)x([0-9]+?)\\}", Pattern.CASE_INSENSITIVE),
-                new ImageTagHandler());
+        // Image tag
+        tagHandlers.add(new ImageTagHandler());
+        // HTML Content tag
+        tagHandlers.add(new HtmlContentTagHandler());
     }
 
     private OOOConnection connection;
@@ -63,6 +73,7 @@ public class DocFormatter extends AbstractFormatter {
     private FileDescriptor templateFileDescriptor;
     private ReportOutputType reportOutputType;
     private XComponent xComponent;
+    private OfficeComponent officeComponent;
 
     public DocFormatter(FileDescriptor templateFileDescriptor, ReportOutputType reportOutputType) {
         String openOfficePath = ConfigProvider.getConfig(ServerConfig.class).getOpenOfficePath();
@@ -80,7 +91,11 @@ public class DocFormatter extends AbstractFormatter {
 
         try {
             XInputStream xis = getXInputStream(templateFileDescriptor);
-            xComponent = loadXComponent(connection.createXComponentLoader(), xis);
+            XComponentLoader xComponentLoader = connection.createXComponentLoader();
+            xComponent = loadXComponent(xComponentLoader, xis);
+
+            officeComponent = new OfficeComponent(connection, xComponentLoader, xComponent);
+
             // Lock clipboard
             synchronized (ClipBoardHelper.class) {
                 // Handling tables
@@ -292,24 +307,25 @@ public class DocFormatter extends AbstractFormatter {
         HashMap<String, ReportValueFormat> formats = rootBand.getValuesFormats();
         try {
             boolean handled = false;
-            if ((formats != null) && (formats.containsKey(fullParamName))) {
-                // Handle doctags
-                for (Map.Entry<Pattern, TagHandler> tagHandler : tagHandlers.entrySet()) {
-                    Matcher matcher = tagHandler.getKey().matcher(formats.get(fullParamName).getFormatString());
-                    if (matcher.find()) {
-                        TagHandler handler = tagHandler.getValue();
-                        handler.handleTag(xComponent, text, textRange, paramValue, matcher);
-                        handled = true;
+
+            if (paramValue != null) {
+                if ((formats != null) && (formats.containsKey(fullParamName))) {
+                    String format = formats.get(fullParamName).getFormatString();
+                    // Handle doctags
+                    for (TagHandler tagHandler : tagHandlers) {
+                        Matcher matcher = tagHandler.getTagPattern().matcher(format);
+                        if (matcher.find()) {
+                            tagHandler.handleTag(officeComponent, text, textRange, paramValue, matcher);
+                            handled = true;
+                        }
                     }
                 }
-            }
-            if (!handled) {
-                if (paramValue != null) {
+                if (!handled) {
                     String valueString = formatString(paramValue, fullParamName);
                     text.insertString(textRange, valueString, true);
-                } else
-                    text.insertString(textRange, "", true);
-            }
+                }
+            } else
+                text.insertString(textRange, "", true);
         } catch (Exception ex) {
             throw new ReportFormatterException("Insert data error");
         }
