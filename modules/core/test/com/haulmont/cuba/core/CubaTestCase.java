@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.PersistenceConfigProcessor;
 import com.haulmont.cuba.testsupport.TestContext;
@@ -26,9 +27,11 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 public abstract class CubaTestCase extends TestCase
 {
@@ -128,5 +131,15 @@ public abstract class CubaTestCase extends TestCase
     protected void initTxManager() throws NamingException {
         Locator.getJndiContext().bind("java:/TransactionManager", new TestTransactionManager());
         Locator.getJndiContext().bind("UserTransaction", new TestUserTransaction());
+    }
+
+    protected void deleteRecord(String table, UUID id) {
+        String sql = "delete from " + table + " where ID = '" + id.toString() + "'";
+        QueryRunner runner = new QueryRunner(Locator.getDataSource());
+        try {
+            runner.update(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
