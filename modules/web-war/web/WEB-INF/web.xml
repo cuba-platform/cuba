@@ -62,7 +62,11 @@
 
     <servlet>
         <servlet-name>dispatcher</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <servlet-class>com.haulmont.cuba.web.sys.ApplicationDispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfig</param-name>
+            <param-value>cuba-controllers.xml</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
