@@ -109,6 +109,8 @@ public class WebFilter
 
     private String mainMessagesPack = AppConfig.getInstance().getMessagesPack();
 
+    private FilterEntity noFilter;
+
     public WebFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
 
@@ -121,10 +123,19 @@ public class WebFilter
         HorizontalLayout topLayout = new HorizontalLayout();
         topLayout.setSpacing(true);
 
+        noFilter = new FilterEntity() {
+            @Override
+            public String toString() {
+                return getName();
+            }
+        };
+        noFilter.setName(MessageProvider.getMessage(mainMessagesPack, "filter.noFilter"));
+
         select = new FilterSelect();
         select.setWidth(300, Sizeable.UNITS_PIXELS);
         select.setStyleName("generic-filter-select");
         select.setNullSelectionAllowed(true);
+        select.setNullSelectionItemId(noFilter);
         select.setImmediate(true);
         select.addListener(new SelectListener());
         App.getInstance().getWindowManager().setDebugId(select, "genericFilterSelect");
@@ -475,6 +486,7 @@ public class WebFilter
                 }
         );
 
+        select.addItem(noFilter);
         for (FilterEntity filter : list) {
             select.addItem(filter);
             select.setItemCaption(filter, captions.get(filter));
@@ -527,6 +539,7 @@ public class WebFilter
                 .addParameter("userId", user.getId());
 
         List<FilterEntity> filters = ds.loadList(ctx);
+        select.addItem(noFilter);
         for (FilterEntity filter : filters) {
             select.addItem(filter);
             if (filter.getCode() == null)
