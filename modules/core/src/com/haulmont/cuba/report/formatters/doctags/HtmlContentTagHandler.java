@@ -13,7 +13,6 @@ package com.haulmont.cuba.report.formatters.doctags;
 import com.haulmont.cuba.report.formatters.oo.OfficeComponent;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.XDocumentInsertable;
-import com.sun.star.io.IOException;
 import com.sun.star.text.XText;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextRange;
@@ -33,6 +32,11 @@ import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.asXDocument
 public class HtmlContentTagHandler implements TagHandler {
 
     public final static String REGULAR_EXPRESSION = "\\$\\{html\\}";
+
+    private static final String ENCODING_HEADER = "<META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">";
+
+    private static final String OPEN_HTML_TAGS = "<html> <head> </head> <body>";
+    private static final String CLOSE_HTML_TAGS = "</body> </html>";
 
     private Pattern tagPattern;
 
@@ -65,9 +69,16 @@ public class HtmlContentTagHandler implements TagHandler {
     private void insertHTML(XText destination, XTextRange textRange, String htmlContent)
             throws Exception {
         File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".htm");
+
+        StringBuilder contentBuilder = new StringBuilder();
+        contentBuilder.append(ENCODING_HEADER);
+        contentBuilder.append(OPEN_HTML_TAGS);
+        contentBuilder.append(htmlContent);
+        contentBuilder.append(CLOSE_HTML_TAGS);
+
         FileOutputStream fileOutput = new FileOutputStream(tempFile);
         try {
-            fileOutput.write(htmlContent.getBytes());
+            fileOutput.write(contentBuilder.toString().getBytes());
         } finally {
             fileOutput.close();
         }
