@@ -8,8 +8,9 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.sys;
+package com.haulmont.cuba.core.sys.querymacro;
 
+import com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler;
 import junit.framework.TestCase;
 
 public class TimeBetweenQueryMacroHandlerTest extends TestCase {

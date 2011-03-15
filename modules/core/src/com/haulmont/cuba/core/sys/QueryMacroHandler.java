@@ -16,5 +16,7 @@ public interface QueryMacroHandler {
 
     String expandMacro(String queryString);
 
+    void setQueryParams(Map<String, Object> namedParameters);
+
     Map<String, Object> getParams();
 }

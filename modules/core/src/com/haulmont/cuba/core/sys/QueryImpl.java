@@ -46,6 +46,9 @@ public class QueryImpl implements Query
 
         macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_TimeBetweenQueryMacroHandler"));
         macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_TimeTodayQueryMacroHandler"));
+        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_DateEqualsQueryMacroHandler"));
+        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_DateBeforeQueryMacroHandler"));
+        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_DateAfterQueryMacroHandler"));
     }
 
     private OpenJPAQuery getQuery() {
@@ -97,6 +100,7 @@ public class QueryImpl implements Query
 
     private void addMacroParams(OpenJPAQuery jpaQuery) {
         for (QueryMacroHandler handler : macroHandlers) {
+            handler.setQueryParams(getQuery().getNamedParameters());
             for (Map.Entry<String, Object> entry : handler.getParams().entrySet()) {
                 jpaQuery.setParameter(entry.getKey(), entry.getValue());
             }

@@ -82,10 +82,19 @@
 
     <!-- Various beans -->
 
-    <bean id="cuba_TimeBetweenQueryMacroHandler" class="com.haulmont.cuba.core.sys.TimeBetweenQueryMacroHandler"
+    <bean id="cuba_TimeBetweenQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler"
           scope="prototype"/>
 
-    <bean id="cuba_TimeTodayQueryMacroHandler" class="com.haulmont.cuba.core.sys.TimeTodayQueryMacroHandler"
+    <bean id="cuba_TimeTodayQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.TimeTodayQueryMacroHandler"
+          scope="prototype"/>
+
+    <bean id="cuba_DateEqualsQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.DateEqualsMacroHandler"
+          scope="prototype"/>
+
+    <bean id="cuba_DateBeforeQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.DateBeforeMacroHandler"
+          scope="prototype"/>
+
+    <bean id="cuba_DateAfterQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.DateAfterMacroHandler"
           scope="prototype"/>
 
     <!-- Annotation-based beans -->

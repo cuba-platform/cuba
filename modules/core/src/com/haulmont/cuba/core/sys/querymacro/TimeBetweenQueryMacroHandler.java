@@ -8,9 +8,10 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.sys;
+package com.haulmont.cuba.core.sys.querymacro;
 
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -49,6 +50,9 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
         }
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    public void setQueryParams(Map<String, Object> namedParameters) {
     }
 
     public Map<String, Object> getParams() {

@@ -8,8 +8,9 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.sys;
+package com.haulmont.cuba.core.sys.querymacro;
 
+import com.haulmont.cuba.core.sys.querymacro.TimeTodayQueryMacroHandler;
 import junit.framework.TestCase;
 
 public class TimeTodayQueryMacroHandlerTest extends TestCase {
