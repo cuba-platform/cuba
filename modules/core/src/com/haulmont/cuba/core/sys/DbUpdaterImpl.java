@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import groovy.lang.Binding;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
@@ -39,7 +40,7 @@ import java.util.*;
 public class DbUpdaterImpl implements DbUpdater {
 
     // File extension handler
-    private interface FileHandler{
+    private interface FileHandler {
         void run(File file);
     }
 
@@ -47,16 +48,20 @@ public class DbUpdaterImpl implements DbUpdater {
 
     protected File dbDir;
 
+    private static final String SQL_EXTENSION = "sql";
+    private static final String GROOVY_EXTENSION = "groovy";
+
     // register handlers for script files
-    private HashMap<String,FileHandler> extensionHandlers = new HashMap<String,FileHandler>();
+    private HashMap<String, FileHandler> extensionHandlers = new HashMap<String, FileHandler>();
+
     {
-        extensionHandlers.put("sql", new FileHandler(){
-            public void run(File file){
-                executeSqlScript(file);    
+        extensionHandlers.put(SQL_EXTENSION, new FileHandler() {
+            public void run(File file) {
+                executeSqlScript(file);
             }
         });
-        extensionHandlers.put("groovy", new FileHandler(){
-            public void run(File file){
+        extensionHandlers.put(GROOVY_EXTENSION, new FileHandler() {
+            public void run(File file) {
                 executeGroovyScript(file);
             }
         });
@@ -137,8 +142,7 @@ public class DbUpdaterImpl implements DbUpdater {
             if (connection != null)
                 try {
                     connection.close();
-                } catch (SQLException e) {
-                    //
+                } catch (SQLException ignored) {
                 }
         }
     }
@@ -154,10 +158,8 @@ public class DbUpdaterImpl implements DbUpdater {
             markScript(getScriptName(file), true);
         }
 
-        List<File> updateFiles = getUpdateScripts();
-        for (File file : updateFiles) {
-            markScript(getScriptName(file), true);
-        }
+        prepareScripts();
+
         log.info("Database initialized");
     }
 
@@ -203,16 +205,12 @@ public class DbUpdaterImpl implements DbUpdater {
 
             createChangelogTable();
 
-            // just mark all scripts as executed before
             List<File> initFiles = getInitScripts();
             for (File file : initFiles) {
                 markScript(getScriptName(file), true);
             }
 
-            List<File> updateFiles = getUpdateScripts();
-            for (File file : updateFiles) {
-                markScript(getScriptName(file), true);
-            }
+            prepareScripts();
 
             return;
         }
@@ -227,6 +225,28 @@ public class DbUpdaterImpl implements DbUpdater {
             }
         }
         log.info("Database is up-to-date");
+    }
+
+
+    /**
+     * Mark all SQL updates scripts as evaluated
+     * Try to execute Groovy scripts
+     */
+    private void prepareScripts() {
+        List<File> groovyScripts = new ArrayList<File>();
+        List<File> updateFiles = getUpdateScripts();
+        for (File file : updateFiles) {
+            String fileExt = getFileExtension(file.getName());
+            if (GROOVY_EXTENSION.equals(fileExt))
+                groovyScripts.add(file);
+            else
+                markScript(getScriptName(file), true);
+        }
+
+        for (File file : groovyScripts) {
+            executeScript(file);
+            markScript(getScriptName(file), true);
+        }
     }
 
     private Set<String> getExecutedScripts() {
@@ -290,35 +310,36 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
-    private void executeGroovyScript(File file){
+    private void executeGroovyScript(File file) {
         Binding bind = new Binding();
         ScriptingProviderImpl.runGroovyScript(getScriptName(file), bind);
     }
 
-    private void executeScript(File file){
+    private void executeScript(File file) {
         log.info("Executing script " + file.getPath());
         String filename = file.getName();
-        String[] paths = filename.split("\\.");
-        if (paths.length > 1)
-        {
-            String extension = paths[paths.length - 1];
-            if (extensionHandlers.containsKey(extension)){
+        String extension = getFileExtension(filename);
+        if (StringUtils.isNotEmpty(extension)) {
+            if (extensionHandlers.containsKey(extension)) {
                 FileHandler handler = extensionHandlers.get(extension);
                 handler.run(file);
-            }
-            else
+            } else
                 log.warn("Update script ignored, file handler for extension not found:" +
-                    file.getName());
-        }
-        else
+                        file.getName());
+        } else
             log.warn("Update script ignored, file extension undefined:" + file.getName());
+    }
+
+    private String getFileExtension(String filename) {
+        int dotPos = filename.lastIndexOf(".");
+        return filename.substring(dotPos + 1);
     }
 
     private void markScript(String name, boolean init) {
         QueryRunner runner = new QueryRunner(Locator.getDataSource());
         try {
             runner.update("insert into SYS_DB_CHANGELOG (SCRIPT_NAME, IS_INIT) values (?, ?)",
-                    new Object[] { name, init ? 1 : 0 }
+                    new Object[]{name, init ? 1 : 0}
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -327,7 +348,6 @@ public class DbUpdaterImpl implements DbUpdater {
 
     private List<File> getInitScripts() {
         List<File> files = new ArrayList<File>();
-
         if (dbDir.exists()) {
             String[] moduleDirs = dbDir.list();
             Arrays.sort(moduleDirs);
