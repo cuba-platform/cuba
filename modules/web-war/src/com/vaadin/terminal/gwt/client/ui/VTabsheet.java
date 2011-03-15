@@ -29,18 +29,22 @@ import com.vaadin.terminal.gwt.client.*;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class VTabsheet extends VTabsheetBase {
 
-    private class TabSheetCaption extends VCaption {
+    private class TabSheetCaption extends VCaption implements ActionOwner {
 
         private boolean hidden = false;
         private boolean closable = false;
         private Element closeButton;
 
+        private String[] actionKeys = null;
+
         TabSheetCaption() {
             super(null, client);
+            sinkEvents(Event.ONCONTEXTMENU);
         }
 
         @Override
@@ -63,6 +67,10 @@ public class VTabsheet extends VTabsheetBase {
 
             setClosable(uidl.hasAttribute("closable"));
 
+            if (uidl.hasAttribute("al")) {
+                actionKeys = uidl.getStringArrayAttribute("al");
+            }
+
             return ret;
         }
 
@@ -70,14 +78,17 @@ public class VTabsheet extends VTabsheetBase {
         public void onBrowserEvent(Event event) {
             if (closable && event.getTypeInt() == Event.ONCLICK
                     && event.getEventTarget().cast() == closeButton) {
-                final String tabKey = tabKeys.get(tb.getTabIndex(this))
-                        .toString();
-                if (!disabledTabKeys.contains(tabKey)) {
-                    client.updateVariable(id, "close", tabKey, true);
+                if (isEnabled()) {
+                    client.updateVariable(id, "close", getTabKey(), true);
                     event.stopPropagation();
                     event.preventDefault();
                     return;
                 }
+            } else if (event.getTypeInt() == Event.ONCONTEXTMENU
+                    && isEnabled() && actionKeys != null && actionKeys.length > 0)
+            {
+                showContextMenu(event);
+                return;
             }
 
             super.onBrowserEvent(event);
@@ -92,6 +103,25 @@ public class VTabsheet extends VTabsheetBase {
             client.handleTooltipEvent(event, VTabsheet.this, getElement());
         }
 
+        private void showContextMenu(Event event) {
+            int left = event.getClientX();
+            int top = event.getClientY();
+            top += Window.getScrollTop();
+            left += Window.getScrollLeft();
+            client.getContextMenu().showAt(this, left, top);
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
+        private boolean isEnabled() {
+            return !disabledTabKeys.contains(getTabKey());
+        }
+
+        private String getTabKey() {
+            return tabKeys.get(tb.getTabIndex(this))
+                        .toString();
+        }
+
         @Override
         public void setWidth(String width) {
             super.setWidth(width);
@@ -103,6 +133,29 @@ public class VTabsheet extends VTabsheetBase {
                  */
                 fixTextWidth();
             }
+        }
+
+        public Action[] getActions() {
+            if (actionKeys == null) {
+                return new Action[]{};
+            }
+            final Action[] actions = new Action[actionKeys.length];
+            for (int i = 0; i < actions.length; i++) {
+                final String actionKey = actionKeys[i];
+                final Action a = new TabsheetAction(this, getTabKey(), actionKey);
+                a.setCaption(getActionCaption(actionKey));
+                a.setIconUrl(getActionIcon(actionKey));
+                actions[i] = a;
+            }
+            return actions;
+        }
+
+        public ApplicationConnection getClient() {
+            return client;
+        }
+
+        public String getPaintableId() {
+            return id;
         }
 
         private void fixTextWidth() {
@@ -155,7 +208,19 @@ public class VTabsheet extends VTabsheetBase {
             }
             return width;
         }
+    }
 
+    class TabsheetAction extends TreeAction {
+        TabsheetAction(ActionOwner owner, String target, String action) {
+            super(owner, target, action);
+        }
+
+        @Override
+        public void execute() {
+            owner.getClient().updateVariable(owner.getPaintableId(), "action", actionKey, false);
+            owner.getClient().updateVariable(owner.getPaintableId(), "actiontarget", targetKey, true);
+            owner.getClient().getContextMenu().hide();
+        }
     }
 
     class TabBar extends ComplexPanel implements ClickHandler {
@@ -325,6 +390,8 @@ public class VTabsheet extends VTabsheetBase {
 
     private String currentStyle;
 
+    private Map<String, String> actions = new HashMap<String, String>();
+
     private void onTabSelected(final int tabIndex) {
         if (disabled || waitingForResponse) {
             return;
@@ -490,6 +557,14 @@ public class VTabsheet extends VTabsheetBase {
         }
 
         super.updateFromUIDL(uidl, client);
+
+        for (final Iterator it = uidl.getChildIterator(); it.hasNext();) {
+            final UIDL c = (UIDL) it.next();
+            if (c.getTag().equals("actions")) {
+                updateActions(c);
+            }
+        }
+
         if (cachedUpdate) {
             rendering = false;
             return;
@@ -530,6 +605,28 @@ public class VTabsheet extends VTabsheetBase {
 
         waitingForResponse = false;
         rendering = false;
+    }
+
+    private void updateActions(UIDL c) {
+        final Iterator it = c.getChildIterator();
+        while (it.hasNext()) {
+            final UIDL action = (UIDL) it.next();
+            final String key = action.getStringAttribute("key");
+            final String caption = action.getStringAttribute("caption");
+            actions.put(key + "_c", caption);
+            if (action.hasAttribute("icon")) {
+                actions.put(key + "_i", client.translateVaadinUri(action
+                        .getStringAttribute("icon")));
+            }
+        }
+    }
+
+    private String getActionCaption(String actionKey) {
+        return actions.get(actionKey + "_c");
+    }
+
+    private String getActionIcon(String actionKey) {
+        return actions.get(actionKey + "_i");
     }
 
     private void handleStyleNames(UIDL uidl) {

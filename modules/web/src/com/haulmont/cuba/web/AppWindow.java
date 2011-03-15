@@ -22,9 +22,8 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -35,12 +34,21 @@ import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
+import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.vaadin.data.Property;
-import com.vaadin.event.ShortcutListener;
+import com.vaadin.event.*;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.SplitPanel;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,6 +58,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
 
 /**
  * Main application window.
@@ -892,9 +901,21 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     @SuppressWarnings("serial")
-    public static class AppTabSheet extends TabSheet {
+    public static class AppTabSheet extends ActionsTabSheet implements com.vaadin.event.Action.Handler {
 
         private Map<Component, TabCloseHandler> closeHandlers = null;
+
+        private com.vaadin.event.Action closeAllTabs = new com.vaadin.event.Action(
+                MessageProvider.getMessage(getMessagesPack(), "actions.closeAllTabs")
+        );
+
+        private com.vaadin.event.Action closeOtherTabs = new com.vaadin.event.Action(
+                MessageProvider.getMessage(getMessagesPack(), "actions.closeOtherTabs")
+        );
+
+        private com.vaadin.event.Action closeCurrentTab = new com.vaadin.event.Action(
+                MessageProvider.getMessage(getMessagesPack(), "actions.closeCurrentTab")
+        );
 
         public AppTabSheet() {
             setCloseHandler(new CloseHandler() {
@@ -907,6 +928,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     }
                 }
             });
+            addActionHandler(this);
         }
 
         @Override
@@ -925,6 +947,41 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 closeHandlers = new LinkedHashMap<Component, TabCloseHandler>();
             }
             closeHandlers.put(tabContent, closeHandler);
+        }
+
+        public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+            return new com.vaadin.event.Action[] {
+                    closeCurrentTab, closeOtherTabs, closeAllTabs
+            };
+        }
+
+        public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+            if (action.equals(closeCurrentTab)) {
+                closeTab((com.vaadin.ui.Component) target);
+            } else if (action.equals(closeOtherTabs)) {
+                closeOtherTabs((com.vaadin.ui.Component) target);
+            } else if (action.equals(closeAllTabs)) {
+                closeAllTabs();
+            }
+        }
+
+        protected String getMessagesPack() {
+            return AppConfig.getInstance().getMessagesPack();
+        }
+
+        public void closeAllTabs() {
+            Set<Component> tabs = new HashSet<Component>(this.tabs.keySet());
+            for (final Component tab : tabs) {
+                closeTab(tab);
+            }
+        }
+
+        public void closeOtherTabs(Component currentTab) {
+            Set<Component> tabs = new HashSet<Component>(this.tabs.keySet());
+            for (final Component tab : tabs) {
+                if (tab.equals(currentTab)) continue;
+                closeTab(tab);
+            }
         }
 
         public interface TabCloseHandler extends Serializable {
