@@ -136,7 +136,7 @@ public class FilterSelect extends Select {
                         valueFound = true;
 
                     fetched = 0;
-                    for (int i = 0; i < count - 1; i++) {
+                    for (int i = 0; i < count; i++) {
                         itemId = ((Ordered) items).nextItemId(prevItemId);
                         if (itemId == null)
                             break;
