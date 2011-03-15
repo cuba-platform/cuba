@@ -181,6 +181,7 @@ create table SEC_USER (
     ACTIVE smallint,
     GROUP_ID varchar(36),
     DEFAULT_SUBSTITUTED_USER_ID varchar(36),
+    IP_MASK varchar(200),
 
     primary key (ID),
     constraint SEC_USER_UNIQ_LOGIN unique (LOGIN_LC, DELETE_TS),

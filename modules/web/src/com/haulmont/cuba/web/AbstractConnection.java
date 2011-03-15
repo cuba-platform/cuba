@@ -10,7 +10,9 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.entity.User;
@@ -21,6 +23,7 @@ import com.vaadin.terminal.gwt.server.WebBrowser;
 
 import java.util.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,6 +67,9 @@ public abstract class AbstractConnection implements Connection {
 
         try {
             internalLogin();
+        } catch (LoginException e) {
+            internalLogout();
+            throw e;
         } catch (RuntimeException e) {
             internalLogout();
             throw e;
@@ -74,16 +80,27 @@ public abstract class AbstractConnection implements Connection {
     }
 
     void internalLogin() throws LoginException {
-        WebBrowser browser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
-        session.setAddress(browser.getAddress());
+        WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
+
+        App app = App.getInstance();
+
+        if (!StringUtils.isBlank(session.getUser().getIpMask())) {
+            IpMatcher ipMatcher = new IpMatcher(session.getUser().getIpMask());
+            if (!ipMatcher.match(app.getClientAddress())) {
+                log.info(String.format("IP address %s is not permitted for user %s", app.getClientAddress(), session.getUser().toString()));
+                throw new LoginException(MessageProvider.getMessage(getClass(), "login.invalidIP"));
+            }
+        }
+
+        session.setAddress(app.getClientAddress());
+        WebBrowser browser = ((WebApplicationContext) app.getContext()).getBrowser();
         session.setClientInfo(browser.getBrowserApplication());
 
-        WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
         fireConnectionListeners();
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Logged in: user=%s, ip=%s, browser=%s",
-                    session.getUser().getLogin(), browser.getAddress(), browser.getBrowserApplication()));
+                    session.getUser().getLogin(), app.getClientAddress(), browser.getBrowserApplication()));
         }
     }
 

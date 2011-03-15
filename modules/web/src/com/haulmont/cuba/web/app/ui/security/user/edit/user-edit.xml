@@ -37,6 +37,7 @@
                     <field id="email">
                         <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator" message="msg://invalidValue"/>
                     </field>
+                    <field id="ipMask"/>
                     <field id="permissionsLookupField" caption="msg://permissions" custom="true"/>
                 </column>
                 <column flex="3" width="250px">

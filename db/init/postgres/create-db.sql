@@ -166,6 +166,7 @@ create table SEC_USER (
     ACTIVE boolean,
     GROUP_ID uuid,
     DEFAULT_SUBSTITUTED_USER_ID uuid,
+    IP_MASK varchar(200),
 
     primary key (ID),
     constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),

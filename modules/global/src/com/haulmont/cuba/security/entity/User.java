@@ -84,6 +84,9 @@ public class User extends StandardEntity
     @Aggregation
     private Set<UserSubstitution> substitutions;
 
+    @Column(name = "IP_MASK", length = 200)
+    private String ipMask;
+
     public String getLogin() {
         return login;
     }
@@ -206,6 +209,14 @@ public class User extends StandardEntity
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public String getIpMask() {
+        return ipMask;
+    }
+
+    public void setIpMask(String ipMask) {
+        this.ipMask = ipMask;
     }
 
     public String getCaption() {

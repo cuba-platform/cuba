@@ -105,6 +105,8 @@ public abstract class App extends Application
 
     protected boolean testModeRequest = false;
 
+    protected String clientAddress;
+
     static {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
@@ -293,11 +295,20 @@ public abstract class App extends Application
 
     public void transactionStart(Application application, Object transactionData) {
         HttpServletRequest request = (HttpServletRequest) transactionData;
+
+        String xForwardedFor = request.getHeader("X_FORWARDED_FOR");
+        if (!StringUtils.isBlank(xForwardedFor)) {
+            String[] strings = xForwardedFor.split(",");
+            clientAddress = strings[strings.length-1].trim();
+        } else {
+            clientAddress = request.getRemoteAddr();
+        }
+
         if (log.isTraceEnabled()) {
             log.trace("requestStart: [@" + Integer.toHexString(System.identityHashCode(request)) + "] " +
                     request.getRequestURI() +
                     (request.getUserPrincipal() != null ? " [" + request.getUserPrincipal() + "]" : "") +
-                    " from " + request.getRemoteAddr());
+                    " from " + clientAddress);
         }
         if (application == App.this) {
             currentApp.set((App) application);
@@ -585,5 +596,9 @@ public abstract class App extends Application
 
     public boolean isTestModeRequest() {
         return testModeRequest;
+    }
+
+    public String getClientAddress() {
+        return clientAddress;
     }
 }
