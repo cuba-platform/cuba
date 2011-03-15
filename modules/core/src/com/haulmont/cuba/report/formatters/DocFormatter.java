@@ -194,10 +194,8 @@ public class DocFormatter extends AbstractFormatter {
     }
 
     private void fillCell(Band band, XCell xCell) throws NoSuchElementException, WrappedTargetException {
-//        String bandFullName = band.getFullName();
         String cellText = preformatCellText(asXText(xCell).getString());
         List<String> parametersToInsert = new ArrayList<String>();
-//        Pattern namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = namePattern.matcher(cellText);
         while (matcher.find()) {
             parametersToInsert.add(unwrapParameterName(matcher.group()));
@@ -206,9 +204,6 @@ public class DocFormatter extends AbstractFormatter {
             XText xText = asXText(xCell);
             XTextCursor xTextCursor = xText.createTextCursor();
 
-//            Object value = band.getData().get(parameterName);
-//            String valueStr = formatString(value, bandFullName + "." + parameterName);
-
             String paramStr = "${" + parameterName + "}";
             int index = cellText.indexOf(paramStr);
             while (index >= 0) {
@@ -216,7 +211,6 @@ public class DocFormatter extends AbstractFormatter {
                 xTextCursor.goRight((short) (index + paramStr.length()), false);
                 xTextCursor.goLeft((short) paramStr.length(), true);
 
-//                xText.insertString(xTextCursor, valueStr, true);
                 insertValue(xText, xTextCursor, band, parameterName);
                 cellText = preformatCellText(xText.getString());
 

@@ -66,18 +66,23 @@ public class HtmlContentTagHandler implements TagHandler {
             throws Exception {
         File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".htm");
         FileOutputStream fileOutput = new FileOutputStream(tempFile);
-        fileOutput.write(htmlContent.getBytes());
-        fileOutput.close();
+        try {
+            fileOutput.write(htmlContent.getBytes());
+        } finally {
+            fileOutput.close();
+        }
 
-        String filePath = tempFile.getCanonicalPath().replace("\\", "/");
-        StringBuffer sUrl = new StringBuffer("file:///");
-        sUrl.append(filePath);
+        try {
+            String filePath = tempFile.getCanonicalPath().replace("\\", "/");
+            StringBuffer sUrl = new StringBuffer("file:///");
+            sUrl.append(filePath);
 
-        XTextCursor textCursor = destination.createTextCursorByRange(textRange);
-        XDocumentInsertable docInsertable = asXDocumentInsertable(textCursor);
+            XTextCursor textCursor = destination.createTextCursorByRange(textRange);
+            XDocumentInsertable docInsertable = asXDocumentInsertable(textCursor);
 
-        docInsertable.insertDocumentFromURL(sUrl.toString(), new PropertyValue[0]);
-        if (!tempFile.delete())
-            throw new IOException();
+            docInsertable.insertDocumentFromURL(sUrl.toString(), new PropertyValue[0]);
+        } finally {
+            tempFile.delete();
+        }
     }
 }
