@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.gui;
+package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.ValueProvider;
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
 import com.haulmont.cuba.web.app.UIComponentsConfig;
-import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 import com.vaadin.ui.ClientWidget;
 

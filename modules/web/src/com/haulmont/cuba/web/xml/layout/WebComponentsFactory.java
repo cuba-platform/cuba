@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.web.gui.WebFileMultiUploadField;
+import com.haulmont.cuba.web.gui.components.WebFileMultiUploadField;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.gui.components.*;
