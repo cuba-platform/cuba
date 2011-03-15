@@ -40,6 +40,9 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
+            if (frame != null) {
+                frame.registerComponent(component);
+            }
         }
         ownComponents.add(component);
     }

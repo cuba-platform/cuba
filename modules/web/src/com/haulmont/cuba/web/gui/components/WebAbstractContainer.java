@@ -38,6 +38,9 @@ class WebAbstractContainer extends AbstractOrderedLayout
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
+            if (frame != null) {
+                frame.registerComponent(component);
+            }
         }
         ownComponents.add(component);
     }

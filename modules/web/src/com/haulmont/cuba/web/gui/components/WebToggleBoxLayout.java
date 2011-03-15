@@ -146,6 +146,9 @@ public class WebToggleBoxLayout
             addComponent(WebComponentsHelper.getComposition(component));
             if (component.getId() != null) {
                 componentByIds.put(component.getId(), component);
+                if (getFrame() != null) {
+                    getFrame().registerComponent(component);
+                }
             }
             ownComponents.add(component);
         }

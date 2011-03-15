@@ -37,6 +37,9 @@ public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayou
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
+            if (frame != null) {
+                frame.registerComponent(component);
+            }
         }
         ownComponents.add(component);
     }
@@ -53,6 +56,9 @@ public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayou
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
+            if (frame != null) {
+                frame.registerComponent(component);
+            }
         }
         ownComponents.add(component);
     }

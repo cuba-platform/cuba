@@ -367,6 +367,7 @@ public class WebWindow
         getContainer().addComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
+            registerComponent(component);
         }
         ownComponents.add(component);
     }

@@ -45,6 +45,9 @@ public class WebHtmlBoxLayout extends CustomLayout implements HtmlBoxLayout {
         if (component.getId() != null) {
             addComponent(itmillComponent, component.getId());
             componentByIds.put(component.getId(), component);
+            if (frame != null) {
+                frame.registerComponent(component);
+            }
         } else {
             addComponent(itmillComponent);
         }
