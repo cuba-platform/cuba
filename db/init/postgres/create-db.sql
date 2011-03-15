@@ -525,7 +525,7 @@ create table REPORT_BAND_DEFINITION
 
 --------------------------------------------------------------------------------------------------------------
 
-CREATE TABLE REPORT_REPORT
+create table REPORT_REPORT
 (
   ID uuid NOT NULL,
   CREATE_TS timestamp without time zone,
@@ -555,7 +555,7 @@ CREATE TABLE REPORT_REPORT
 
 --------------------------------------------------------------------------------------------------------------
 
-CREATE TABLE REPORT_INPUT_PARAMETER
+create table REPORT_INPUT_PARAMETER
 (
   ID uuid NOT NULL,
   CREATE_TS timestamp without time zone,
@@ -575,7 +575,7 @@ CREATE TABLE REPORT_INPUT_PARAMETER
   REQUIRED boolean default false,
   POSITION_ integer default 0,
   META_CLASS varchar(255),
-  ENUM_CLASS varchar(500)
+  ENUM_CLASS varchar(500),
 
   primary key (ID),
   constraint FK_REPOR_INPUT_PARAMETER_TO_REPORT_REPORT foreign key (REPORT_ID)
@@ -586,7 +586,7 @@ CREATE TABLE REPORT_INPUT_PARAMETER
 
 --------------------------------------------------------------------------------------------------------------
 
-CREATE TABLE REPORT_DATA_SET
+create table REPORT_DATA_SET
 (
   ID uuid NOT NULL,
   CREATE_TS timestamp without time zone,

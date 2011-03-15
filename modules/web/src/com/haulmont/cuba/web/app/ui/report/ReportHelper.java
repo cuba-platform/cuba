@@ -10,9 +10,11 @@
  */
 package com.haulmont.cuba.web.app.ui.report;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
@@ -216,13 +218,23 @@ public class ReportHelper {
 
     private static boolean checkReportsForStart(final Window window, final String paramAlias, final Object paramValue,
                                                 String javaClassName, ReportType reportType, final String name) {
+        Collection<MetaClass> metaClasses = MetadataHelper.getAllMetaClasses();
+        String metaClassName = "";
+        Iterator<MetaClass> iterator = metaClasses.iterator();
+        while (iterator.hasNext() && ("".equals(metaClassName))){
+            MetaClass metaClass = iterator.next();
+            if (metaClass.getJavaClass().getCanonicalName().equals(javaClassName))
+                metaClassName = metaClass.getName();
+        }
+
         boolean result = false;
         LoadContext lContext = new LoadContext(Report.class);
         lContext.setView("report.edit");
         String queryStr = "select r from report$Report r left join r.inputParameters ip where " +
-                "(ip.className like :param$javaClassName or :param$javaClassName is null) and (r.reportType = :param$reportType)";
+                "(ip.entityMetaClass like :param$entityMetaClass or :param$entityMetaClass is null) " +
+                " and (r.reportType = :param$reportType)";
         LoadContext.Query query = new LoadContext.Query(queryStr);
-        query.addParameter("param$javaClassName", javaClassName);
+        query.addParameter("param$entityMetaClass", metaClassName);
         query.addParameter("param$reportType", reportType);
         lContext.setQuery(query);
 
