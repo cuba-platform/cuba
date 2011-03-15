@@ -228,6 +228,9 @@ public class WebFilter
         if (filterEntity == null)
             return;
 
+        if (!filterEntity.equals(noFilter))
+            actions.addAction(new CopyAction());
+
         if (checkGlobalFilterPermission()) {
             if ((filterEntity.getFolder() == null) || (filterEntity.getFolder() instanceof SearchFolder) ||
                     ((filterEntity.getFolder() instanceof AppFolder) && checkGlobalAppFolderPermission()))
@@ -236,10 +239,10 @@ public class WebFilter
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
                 actions.addAction(new DeleteAction());
         } else {
-            if (filterEntity.getFolder() instanceof SearchFolder)
+            if (filterEntity.getFolder() instanceof SearchFolder) {
                 if ((UserSessionClient.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())))
                     actions.addAction(new EditAction());
-
+            }
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
                 actions.addAction(new DeleteAction());
         }
@@ -247,9 +250,8 @@ public class WebFilter
         if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
             actions.addAction(new SaveAsFolderAction(false));
         if (checkGlobalAppFolderPermission()) {
-            if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null) {
+            if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
                 actions.addAction(new SaveAsFolderAction(true));
-            }
         }
     }
 
@@ -304,6 +306,17 @@ public class WebFilter
 //                        "</c>\n" +
 //                "</and></filter>"
 //        );
+    }
+
+    private void copyFilterEntity() {
+
+        FilterEntity newFilterEntity = new FilterEntity();
+        newFilterEntity.setComponentId(filterEntity.getComponentId());
+        newFilterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
+        newFilterEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+        newFilterEntity.setCode(filterEntity.getCode());
+        newFilterEntity.setXml(filterEntity.getXml());
+        filterEntity = newFilterEntity;
     }
 
     private String getComponentPath() {
@@ -940,6 +953,23 @@ public class WebFilter
             parseFilterXml();
             switchToEdit();
         }
+    }
+
+    private class CopyAction extends AbstractAction {
+        protected CopyAction() {
+            super("copyAction");
+        }
+
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
+
+        public void actionPerform(Component component) {
+            copyFilterEntity();
+            parseFilterXml();
+            switchToEdit();
+        }
+
     }
 
     private class EditAction extends AbstractAction {
