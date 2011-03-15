@@ -792,8 +792,8 @@ public class WebFilter
                 public void run() {
                     AppFolder savedFolder = saveAppFolder((AppFolder) folder);
                     filterEntity.setFolder(savedFolder);
-                    if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
-                        deleteFilterEntity();
+                    //if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+                    //    deleteFilterEntity();
                     select.setItemCaption(filterEntity, getCurrentFilterCaption());
                 }
             };
@@ -802,8 +802,8 @@ public class WebFilter
                 public void run() {
                     SearchFolder savedFolder = saveFolder((SearchFolder) folder);
                     filterEntity.setFolder(savedFolder);
-                    if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
-                        deleteFilterEntity();
+                    //if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+                    //    deleteFilterEntity();
                     select.setItemCaption(filterEntity, getCurrentFilterCaption());
 
                     // search for existing folders with the same name
