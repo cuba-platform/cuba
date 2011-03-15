@@ -19,10 +19,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.security.app.SecurityConfig;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.ui.security.user.NameBuilderListener;
 import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
@@ -48,7 +48,7 @@ public class UserEditor extends AbstractEditor {
 
     public UserEditor(Window frame) {
         super(frame);
-    }                                                                                                  
+    }
 
     protected void init(Map<String, Object> params) {
 
@@ -259,15 +259,29 @@ public class UserEditor extends AbstractEditor {
         if (isNew) {
             String passw = passwField.getValue();
             String confPassw = confirmPasswField.getValue();
-            if (ObjectUtils.equals(passw, confPassw)) {
-                if (StringUtils.isEmpty(passw))
-                    userDs.getItem().setPassword(null);
-                else
-                    userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
-                return true;
-            } else {
-                showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+            if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
+                showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
                 return false;
+            } else {
+                if (ObjectUtils.equals(passw, confPassw)) {
+                    SecurityConfig passwordPolicyConfig = ConfigProvider.getConfig(SecurityConfig.class);
+                    if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
+                        String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
+                        if (passw.matches(regExp)) {
+                            return true;
+
+                        } else {
+                            showNotification(getMessage("simplePassword"), NotificationType.WARNING);
+                            return false;
+                        }
+                    } else {
+                        userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
+                        return true;
+                    }
+                } else {
+                    showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+                    return false;
+                }
             }
         } else {
             return true;
@@ -321,7 +335,7 @@ public class UserEditor extends AbstractEditor {
                 private Collection<String> getExistingRoleNames() {
                     User user = userDs.getItem();
                     Collection<String> existingRoleNames = new HashSet<String>();
-                    if (user.getUserRoles() != null) { 
+                    if (user.getUserRoles() != null) {
                         for (UserRole userRole : user.getUserRoles()) {
                             if (userRole.getRole() != null)
                                 existingRoleNames.add(userRole.getRole().getName());
