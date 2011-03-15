@@ -839,6 +839,7 @@ public class WebWindowManager extends WindowManager {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setName("cuba-option-dialog");
         setDebugId(window, "cuba-option-dialog");
+        window.setClosable(false);
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
