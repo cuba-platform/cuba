@@ -10,16 +10,17 @@
  */
 package com.haulmont.cuba.core.sys.listener;
 
-import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
-import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
-import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
+import com.haulmont.cuba.core.listener.*;
 
 public enum EntityListenerType
 {
     BEFORE_INSERT(BeforeInsertEntityListener.class),
+    AFTER_INSERT(AfterInsertEntityListener.class),
     BEFORE_UPDATE(BeforeUpdateEntityListener.class),
+    AFTER_UPDATE(AfterUpdateEntityListener.class),
+    AFTER_DELETE(AfterDeleteEntityListener.class),
     BEFORE_DELETE(BeforeDeleteEntityListener.class);
-    
+
     private final Class listenerInterface;
 
     private EntityListenerType(Class listenerInterface) {

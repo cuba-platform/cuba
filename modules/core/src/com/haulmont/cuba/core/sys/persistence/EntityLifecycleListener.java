@@ -85,6 +85,29 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         }
     }
 
+    @Override
+    public void afterStore(LifecycleEvent event) {
+        if (!(event.getSource() instanceof BaseEntity))
+            return;
+
+        BaseEntity entity = (BaseEntity) event.getSource();
+
+        if (((PersistenceCapable) entity).pcIsNew()) {
+            EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_INSERT);
+        } else {
+            if (entity instanceof Updatable) {
+                __beforeUpdate((Updatable) event.getSource());
+                if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
+                    EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_DELETE);
+                } else {
+                    EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_UPDATE);
+                }
+            } else {
+                EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_UPDATE);
+            }
+        }
+    }
+
     public void beforeDelete(LifecycleEvent event) {
         if (!(event.getSource() instanceof BaseEntity))
             return;
@@ -93,6 +116,15 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         getEntityLog().registerDelete(entity, true);
         EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_DELETE);
         enqueueForFts(entity, FtsChangeType.DELETE);
+    }
+
+    @Override
+    public void afterDelete(LifecycleEvent event) {
+        if (!(event.getSource() instanceof BaseEntity))
+            return;
+
+        BaseEntity entity = (BaseEntity) event.getSource();
+        EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_DELETE);
     }
 
     private boolean justDeleted(SoftDelete dd) {

@@ -15,8 +15,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
 
-// test change
-
 @Entity(name = "core$Server")
 @Table(name = "SYS_SERVER")
 @NamePattern("%s:%s|name,address")

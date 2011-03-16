@@ -13,9 +13,7 @@ package com.haulmont.cuba.core.sys.listener;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
-import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
-import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
-import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
+import com.haulmont.cuba.core.listener.*;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,13 +71,13 @@ public class EntityListenerManager
         return instance;
     }
 
-    public void addListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClassName) {
+    public void addListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClass) {
         Set<String> set = dynamicListeners.get(entityClass);
         if (set == null) {
             set = new HashSet<String>();
             dynamicListeners.put(entityClass, set);
         }
-        set.add(listenerClassName.getName());
+        set.add(listenerClass.getName());
     }
 
     public void fireListener(BaseEntity entity, EntityListenerType type) {
@@ -89,21 +87,30 @@ public class EntityListenerManager
         List listeners = getListener(entity.getClass(), type);
         for (Object listener : listeners) {
             switch (type) {
-                case BEFORE_INSERT: {
+                case BEFORE_INSERT:
                     logExecution(type, entity);
                     ((BeforeInsertEntityListener) listener).onBeforeInsert(entity);
                     break;
-                }
-                case BEFORE_UPDATE: {
+                case AFTER_INSERT:
+                    logExecution(type, entity);
+                    ((AfterInsertEntityListener) listener).onAfterInsert(entity);
+                    break;
+                case BEFORE_UPDATE:
                     logExecution(type, entity);
                     ((BeforeUpdateEntityListener) listener).onBeforeUpdate(entity);
                     break;
-                }
-                case BEFORE_DELETE: {
+                case AFTER_UPDATE:
+                    logExecution(type, entity);
+                    ((AfterUpdateEntityListener) listener).onAfterUpdate(entity);
+                    break;
+                case BEFORE_DELETE:
                     logExecution(type, entity);
                     ((BeforeDeleteEntityListener) listener).onBeforeDelete(entity);
                     break;
-                }
+                case AFTER_DELETE:
+                    logExecution(type, entity);
+                    ((AfterDeleteEntityListener) listener).onAfterDelete(entity);
+                    break;
                 default:
                     throw new UnsupportedOperationException("Unsupported EntityListenerType: " + type);
             }
