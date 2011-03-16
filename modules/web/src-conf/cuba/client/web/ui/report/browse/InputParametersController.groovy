@@ -50,6 +50,7 @@ import com.haulmont.cuba.web.gui.components.WebLookupField
 import org.apache.commons.lang.StringUtils
 import com.haulmont.cuba.web.gui.data.EnumerationContainer
 import com.haulmont.cuba.gui.components.CaptionMode
+import com.haulmont.cuba.gui.components.DateField.Resolution
 
 public class InputParametersController extends AbstractWindow {
 
@@ -126,7 +127,9 @@ public class InputParametersController extends AbstractWindow {
     }
 
     private def createDateField = { ReportInputParameter parameter ->
-        return new WebDateField();
+        def dateField = new WebDateField()
+        dateField.setResolution(Resolution.DAY)
+        return dateField;
     }
 
     private def createCheckBoxField = { ReportInputParameter parameter ->
