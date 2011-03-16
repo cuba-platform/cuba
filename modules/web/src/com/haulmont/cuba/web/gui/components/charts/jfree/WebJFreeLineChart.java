@@ -22,6 +22,7 @@ public class WebJFreeLineChart extends WebAbstractChart<JFreeLineChart> implemen
 
     public WebJFreeLineChart() {
         component = new JFreeLineChart();
+        setOrientation(Orientation.VERTICAL);
     }
 
     public Orientation getOrientation() {

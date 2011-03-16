@@ -152,11 +152,11 @@ public abstract class AbstractChartLoader extends com.haulmont.cuba.gui.xml.layo
     }
 
     protected void loadAxisLabels(Chart component, Element element) {
-        String label = element.attributeValue("xLabel");
+        String label = loadResourceString(element.attributeValue("xLabel"));
         if (!StringUtils.isEmpty(label)) {
             component.setColumnAxisLabel(label);
         }
-        label = element.attributeValue("yLabel");
+        label = loadResourceString(element.attributeValue("yLabel"));
         if (!StringUtils.isEmpty(label)) {
             component.setValueAxisLabel(label);
         }

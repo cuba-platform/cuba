@@ -22,6 +22,7 @@ public class WebJFreeBarChart extends WebAbstractChart<JFreeBarChart> implements
 
     public WebJFreeBarChart() {
         component = new JFreeBarChart();
+        setOrientation(Orientation.VERTICAL);
     }
 
     public boolean is3D() {
