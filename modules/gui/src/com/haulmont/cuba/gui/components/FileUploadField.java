@@ -9,7 +9,9 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface FileUploadField 
+import java.util.UUID;
+
+public interface FileUploadField
         extends Component, Component.HasCaption, Component.Expandable,
                 Component.BelongToFrame
 {
@@ -40,7 +42,19 @@ public interface FileUploadField
 
     boolean isUploading();
 
+    /**
+     * Get content bytes for uploaded file
+     * @return Bytes for uploaded file
+     * @deprecated Please use {@link FileUploadField#getFileId()} method and {@link com.haulmont.cuba.core.app.FileUploadService}
+     */
     byte[] getBytes();
+
+    /**
+     * Get id for uploaded file in {@link com.haulmont.cuba.core.app.FileUploadService}
+     * @return File Id
+     */
+    UUID getFileId();
+
     long getBytesRead();
     void release();
 

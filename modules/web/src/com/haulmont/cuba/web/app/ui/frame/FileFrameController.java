@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.app.ui.frame;
 
 import com.haulmont.cuba.core.app.FileStorageService;
+import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -21,7 +22,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 
+import java.io.File;
 import java.util.Map;
+import java.util.UUID;
 
 public class FileFrameController extends AbstractWindow {
 
@@ -62,7 +65,11 @@ public class FileFrameController extends AbstractWindow {
                 fd = new FileDescriptor();
                 fd.setName(uploadField.getFileName());
                 fd.setExtension(FileDownloadHelper.getFileExt(uploadField.getFileName()));
-                fd.setSize(uploadField.getBytes().length);
+
+                FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+                File file = uploadService.getFile(uploadField.getFileId());
+                fd.setSize((int)file.length());
+
                 fd.setCreateDate(TimeProvider.currentTimestamp());
                 saveFile();
                 ds.addItem(fd);
@@ -85,9 +92,13 @@ public class FileFrameController extends AbstractWindow {
     }
 
     private void saveFile() {
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
+        FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
+        FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
         try {
-            fss.saveFile(fd, uploadField.getBytes());
+            UUID fileId = uploadField.getFileId();
+            File file = uploadService.getFile(fileId);
+            fss.putFile(fd, file);
+            uploadService.deleteFile(fileId);
         } catch (FileStorageException e) {
             throw new RuntimeException(e);
         }

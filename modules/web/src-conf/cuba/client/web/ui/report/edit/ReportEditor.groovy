@@ -49,6 +49,7 @@ import com.haulmont.cuba.gui.components.ValueProvider
 import com.haulmont.chile.core.model.MetaPropertyPath
 import com.haulmont.cuba.gui.components.Tree
 import org.apache.commons.lang.StringUtils
+import com.haulmont.cuba.core.app.FileUploadService
 
 public class ReportEditor extends AbstractEditor {
 
@@ -113,7 +114,8 @@ public class ReportEditor extends AbstractEditor {
                 [
                         getValues: {
                             ['position': parametersDs.itemIds.size(),
-                             'report': report]},
+                                    'report': report]
+                        },
                         getParameters: {[:]}
                 ] as ValueProvider)
         paramHelper.createRemoveAction(false)
@@ -335,7 +337,11 @@ public class ReportEditor extends AbstractEditor {
                     templateDescriptor = new com.haulmont.cuba.core.entity.FileDescriptor();
                     templateDescriptor.setName(uploadTemplate.getFileName());
                     templateDescriptor.setExtension(FileDownloadHelper.getFileExt(uploadTemplate.getFileName()));
-                    templateDescriptor.setSize(uploadTemplate.getBytes().length);
+
+                    FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+                    File file = uploadService.getFile(uploadTemplate.getFileId());
+                    templateDescriptor.setSize((int) file.length());
+
                     templateDescriptor.setCreateDate(TimeProvider.currentTimestamp());
                     saveFile(templateDescriptor, uploadTemplate);
                     templatePath.setCaption(templateDescriptor.getName());
@@ -397,8 +403,12 @@ public class ReportEditor extends AbstractEditor {
 
     private void saveFile(com.haulmont.cuba.core.entity.FileDescriptor fd, FileUploadField uploadField) {
         FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
+        FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
         try {
-            fss.saveFile(fd, uploadField.getBytes());
+            UUID fileId = uploadField.getFileId();
+            File file = uploadService.getFile(fileId);
+            fss.putFile(templateDescriptor, file);
+            uploadService.deleteFile(fileId);
         } catch (FileStorageException e) {
             throw new RuntimeException(e);
         }

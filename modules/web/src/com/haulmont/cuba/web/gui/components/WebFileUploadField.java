@@ -9,30 +9,41 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.UIDL;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class WebFileUploadField
         extends
         WebAbstractComponent<Upload>
         implements
         FileUploadField {
+
+    private static final int BUFFER__SIZE = 64 * 1024;
+
+    protected FileUploadService uploadService;
+
     protected String fileName;
     protected byte[] bytes;
-    protected ByteArrayOutputStream outputStream;
+
+    protected UUID fileId;
+
+    protected FileOutputStream outputStream;
+    protected UUID tempFileId;
+
     private List<Listener> listeners = new ArrayList<Listener>();
 
     public WebFileUploadField() {
+        uploadService = ServiceLocator.lookup(FileUploadService.NAME);
         String caption = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "Upload");
         component = new Upload(
                 /* Fixes caption rendering.
@@ -41,7 +52,13 @@ public class WebFileUploadField
                 new Upload.Receiver() {
                     public OutputStream receiveUpload(String filename, String MIMEType) {
                         fileName = filename;
-                        outputStream = new ByteArrayOutputStream();
+                        try {
+                            tempFileId = uploadService.createEmptyFile();
+                            File tmpFile = uploadService.getFile(tempFileId);
+                            outputStream = new FileOutputStream(tmpFile);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                         return outputStream;
                     }
                 });
@@ -60,7 +77,12 @@ public class WebFileUploadField
         });
         component.addListener(new Upload.FinishedListener() {
             public void uploadFinished(Upload.FinishedEvent event) {
-                bytes = outputStream.toByteArray();
+                if (outputStream != null)
+                    try {
+                        outputStream.close();
+                        fileId = tempFileId;
+                    } catch (IOException ignored) {
+                    }
                 final Listener.Event e = new Listener.Event(event.getFilename());
                 for (Listener listener : listeners) {
                     listener.uploadFinished(e);
@@ -94,13 +116,6 @@ public class WebFileUploadField
                 "upload.submit"));
     }
 
-/*
-    public <T> T getComponent() {
-        return (T) component;
-    }
-
-*/
-
     public String getFilePath() {
         return fileName;
     }
@@ -131,7 +146,36 @@ public class WebFileUploadField
         listeners.remove(listener);
     }
 
+    private void readFileToBytes(FileInputStream fileInput, ByteArrayOutputStream byteOutput)
+            throws IOException {
+        int readedBytes;
+        byte[] buffer = new byte[BUFFER__SIZE];
+        do {
+            readedBytes = fileInput.read(buffer);
+            byteOutput.write(buffer, 0, readedBytes);
+        }
+        while (readedBytes == BUFFER__SIZE);
+    }
+
+    /**
+     * Get content bytes for uploaded file
+     *
+     * @return Bytes for uploaded file
+     * @deprecated Please use {@link WebFileUploadField#getFileId()} method and {@link FileUploadService}
+     */
     public byte[] getBytes() {
+        if (bytes == null) {
+            try {
+                File file = uploadService.getFile(fileId);
+                FileInputStream fileInputStream = new FileInputStream(file);
+                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+                readFileToBytes(fileInputStream, byteOutput);
+                bytes = byteOutput.toByteArray();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return bytes;
     }
 
@@ -149,5 +193,14 @@ public class WebFileUploadField
 
     public void setDescription(String description) {
         component.setDescription(description);
+    }
+
+    /**
+     * Get id for uploaded file in {@link FileUploadService}
+     *
+     * @return File Id
+     */
+    public UUID getFileId() {
+        return fileId;
     }
 }

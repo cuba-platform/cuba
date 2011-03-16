@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.app.ui.core.file;
 
+import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -22,7 +23,9 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 
+import java.io.File;
 import java.util.Map;
+import java.util.UUID;
 
 public class FileEditor extends AbstractEditor {
 
@@ -72,7 +75,11 @@ public class FileEditor extends AbstractEditor {
                 public void uploadSucceeded(Event event) {
                     nameText.setValue(uploadField.getFileName());
                     extLabel.setValue(FileDownloadHelper.getFileExt(uploadField.getFileName()));
-                    sizeLab.setValue(uploadField.getBytes().length);
+
+                    FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+                    File file = uploadService.getFile(uploadField.getFileId());
+                    sizeLab.setValue(file.length());
+
                     createDateLab.setValue(TimeProvider.currentTimestamp());
                     okBtn.setEnabled(true);
 
@@ -91,7 +98,7 @@ public class FileEditor extends AbstractEditor {
     }
 
     @Override
-    public void commitAndClose() {        
+    public void commitAndClose() {
         if (needSave) {
             saveFile();
         }
@@ -99,9 +106,13 @@ public class FileEditor extends AbstractEditor {
     }
 
     private void saveFile() {
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.JNDI_NAME);
+        FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
+        FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
         try {
-            fss.saveFile(ds.getItem(), uploadField.getBytes());
+            UUID fileId = uploadField.getFileId();
+            File file = uploadService.getFile(fileId);
+            fss.putFile(ds.getItem(), file);
+            uploadService.deleteFile(fileId);
         } catch (FileStorageException e) {
             throw new RuntimeException(e);
         }
