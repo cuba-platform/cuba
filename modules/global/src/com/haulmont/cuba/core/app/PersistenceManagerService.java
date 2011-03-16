@@ -16,6 +16,8 @@ public interface PersistenceManagerService {
 
     boolean useLazyCollection(String entityName);
 
+    boolean useLookupScreen(String entityName);
+
     int getFetchUI(String entityName);
 
     int getMaxFetchUI(String entityName);

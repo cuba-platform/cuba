@@ -1,5 +1,7 @@
-.pickerfield .v-textfield {
-    padding: 0;
+.v-app .pickerfield .v-textfield {
+    height: 22px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .pickerfield .v-button {

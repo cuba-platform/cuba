@@ -88,6 +88,7 @@ create table SYS_ENTITY_STATISTICS (
     FETCH_UI integer,
     MAX_FETCH_UI integer,
     LAZY_COLLECTION_THRESHOLD integer,
+    LOOKUP_SCREEN_THRESHOLD integer,
 
     primary key (ID)
 );

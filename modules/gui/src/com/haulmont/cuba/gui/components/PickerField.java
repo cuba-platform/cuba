@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.gui.WindowManager;
 
 public interface PickerField extends Field {
     CaptionMode getCaptionMode();
@@ -23,6 +24,9 @@ public interface PickerField extends Field {
 
     String getLookupScreen();
     void setLookupScreen(String lookupScreen);
+
+    WindowManager.OpenType getLookupScreenOpenType();
+    void setLookupScreenOpenType(WindowManager.OpenType lookupScreenOpenType);
 
     void setPickerButtonCaption(String caption);
 

@@ -24,6 +24,10 @@ public class PersistenceManagerServiceBean implements PersistenceManagerService 
         return pm.useLazyCollection(entityName);
     }
 
+    public boolean useLookupScreen(String entityName) {
+        return pm.useLookupScreen(entityName);
+    }
+
     public int getFetchUI(String entityName) {
         return pm.getFetchUI(entityName);
     }

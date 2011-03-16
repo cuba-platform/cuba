@@ -17,6 +17,9 @@ public interface PersistenceManagerMBean
 {
     String OBJECT_NAME = "haulmont.cuba:service=PersistenceManager";
     
+    int getDefaultLookupScreenThreshold();
+    void setDefaultLookupScreenThreshold(int value);
+
     int getDefaultLazyCollectionThreshold();
     void setDefaultLazyCollectionThreshold(int value);
 

@@ -52,6 +52,7 @@ public class WebPickerField
     private MetaClass metaClass;
 
     private String lookupScreen;
+    private WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
 
     protected ValueProvider valueProvider;
 
@@ -70,20 +71,24 @@ public class WebPickerField
                     WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
                     WindowManager wm = App.getInstance().getWindowManager();
-                    wm.openLookup(windowInfo, new Window.Lookup.Handler() {
-                        public void handleLookup(Collection items) {
-                            if (!items.isEmpty()) {
-                                final Object item = items.iterator().next();
-                                __setValue(item);
-                            }
-                        }
-                    },
-                            WindowManager.OpenType.THIS_TAB,
-                            valueProvider != null ? valueProvider.getParameters() : Collections.EMPTY_MAP);
+                    wm.openLookup(
+                            windowInfo,
+                            new Window.Lookup.Handler() {
+                                public void handleLookup(Collection items) {
+                                    if (!items.isEmpty()) {
+                                        final Object item = items.iterator().next();
+                                        __setValue(item);
+                                    }
+                                }
+                            },
+                            lookupScreenOpenType,
+                            valueProvider != null ? valueProvider.getParameters() : Collections.EMPTY_MAP
+                    );
                 }
             }
         });
         component.setImmediate(true);
+        attachListener(component);
     }
 
     private void __setValue(Object newValue) {
@@ -102,7 +107,7 @@ public class WebPickerField
                     }
                 }
             };
-            setValue(wrapper);
+            super.setValue(wrapper);
         }
     }
 
@@ -129,6 +134,14 @@ public class WebPickerField
         this.lookupScreen = lookupScreen;
     }
 
+    public WindowManager.OpenType getLookupScreenOpenType() {
+        return lookupScreenOpenType;
+    }
+
+    public void setLookupScreenOpenType(WindowManager.OpenType lookupScreenOpenType) {
+        this.lookupScreenOpenType = lookupScreenOpenType;
+    }
+
     @Override
     public <T> T getValue() {
         if (component.getPropertyDataSource() != null) {
@@ -136,6 +149,12 @@ public class WebPickerField
         } else {
             return (T) value;
         }
+    }
+
+    @Override
+    public void setValue(Object value) {
+        this.value = value;
+        super.setValue(value);
     }
 
     @Override

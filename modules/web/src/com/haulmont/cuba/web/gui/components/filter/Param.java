@@ -16,11 +16,14 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.ActionsField;
+import com.haulmont.cuba.gui.components.ActionsFieldHelper;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -29,7 +32,9 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.gui.components.WebActionsField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
@@ -311,20 +316,7 @@ public class Param {
                 }
             }
             final ListEditComponent component = new ListEditComponent(javaClass);
-            component.addListener(
-                    new Property.ValueChangeListener() {
-                        public void valueChange(Property.ValueChangeEvent event) {
-                            setValue(component.getValue());
-                        }
-                    }
-            );
-            if (value != null) {
-                Map<Object, String> values = new HashMap<Object, String>();
-                for (Object v : (List) value) {
-                    values.put(v, getValueCaption(v));
-                }
-                component.setValues(values);
-            }
+            initListEdit(component);
             return component;
         }
 
@@ -466,72 +458,102 @@ public class Param {
     private Component createEntityLookup() {
         MetaClass metaClass = MetadataProvider.getSession().getClass(javaClass);
 
-        CollectionDatasource ds = new DsBuilder(datasource.getDsContext())
-                .setMetaClass(metaClass)
-                .setViewName(entityView)
-                .setFetchMode(CollectionDatasource.FetchMode.AUTO)
-                .buildCollectionDatasource();
+        PersistenceManagerService persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
+        boolean useLookupScreen = persistenceManager.useLookupScreen(metaClass.getName());
 
-        ds.setRefreshOnComponentValueChange(true);
-        ((DatasourceImplementation) ds).initialized();
+        if (useLookupScreen) {
+            if (inExpr) {
+                final ListEditComponent component = new ListEditComponent(metaClass);
+                initListEdit(component);
+                return component;
 
-        Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
-        if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
-            if (ds instanceof CollectionDatasource.Suspendable)
-                ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
-            else
-                ds.refresh();
-        }
+            } else {
+                WebPickerField picker = new WebPickerField();
+                picker.setMetaClass(metaClass);
 
-        if (!StringUtils.isBlank(entityWhere)) {
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(
-                    "select e from " + metaClass.getName() + " e",
-                    metaClass.getName());
-            transformer.addWhere(entityWhere);
-            String q = transformer.getResult();
-            ds.setQuery(q);
-        }
-
-        if (inExpr) {
-            final ListEditComponent component = new ListEditComponent(ds);
-            component.addListener(
-                    new Property.ValueChangeListener() {
-                        public void valueChange(Property.ValueChangeEvent event) {
-                            setValue(component.getValue());
+                picker.addListener(
+                        new ValueListener() {
+                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                                setValue(value);
+                            }
                         }
-                    }
-            );
-            if (value != null) {
-                Map<Object, String> values = new HashMap<Object, String>();
-                for (Object v : (List) value) {
-                    values.put(v, getValueCaption(v));
-                }
-                component.setValues(values);
+                );
+                picker.setValue(value);
+
+                return picker.getComponent();
             }
-            return component;
-
         } else {
-            final WebLookupField lookup = new WebLookupField();
-            lookup.setOptionsDatasource(ds);
+            CollectionDatasource ds = new DsBuilder(datasource.getDsContext())
+                    .setMetaClass(metaClass)
+                    .setViewName(entityView)
+                    .setFetchMode(CollectionDatasource.FetchMode.AUTO)
+                    .buildCollectionDatasource();
 
-            ds.addListener(
-                    new CollectionDsListenerAdapter() {
-                        @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                            lookup.setValue(null);
+            ds.setRefreshOnComponentValueChange(true);
+            ((DatasourceImplementation) ds).initialized();
+
+            Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
+            if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+                if (ds instanceof CollectionDatasource.Suspendable)
+                    ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
+                else
+                    ds.refresh();
+            }
+
+            if (!StringUtils.isBlank(entityWhere)) {
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(
+                        "select e from " + metaClass.getName() + " e",
+                        metaClass.getName());
+                transformer.addWhere(entityWhere);
+                String q = transformer.getResult();
+                ds.setQuery(q);
+            }
+
+            if (inExpr) {
+                final ListEditComponent component = new ListEditComponent(ds);
+                initListEdit(component);
+                return component;
+
+            } else {
+                final WebLookupField lookup = new WebLookupField();
+                lookup.setOptionsDatasource(ds);
+
+                ds.addListener(
+                        new CollectionDsListenerAdapter() {
+                            @Override
+                            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                                lookup.setValue(null);
+                            }
                         }
+                );
+
+                lookup.addListener(new ValueListener() {
+                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                        setValue(value);
                     }
-            );
+                });
 
-            lookup.addListener(new ValueListener() {
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    setValue(value);
+                lookup.setValue(value);
+
+                return lookup.getComponent();
+            }
+        }
+    }
+
+    private void initListEdit(final ListEditComponent component) {
+        component.addListener(
+                new Property.ValueChangeListener() {
+                    public void valueChange(Property.ValueChangeEvent event) {
+                        setValue(component.getValue());
+                    }
                 }
-            });
-
-            lookup.setValue(value);
-
-            return lookup.getComponent();
+        );
+        if (value != null) {
+            Map<Object, String> values = new HashMap<Object, String>();
+            for (Object v : (List) value) {
+                values.put(v, getValueCaption(v));
+            }
+            component.setValues(values);
         }
     }
 
@@ -575,20 +597,7 @@ public class Param {
     private Component createEnumLookup() {
         if (inExpr) {
             final ListEditComponent component = new ListEditComponent(javaClass);
-            component.addListener(
-                    new Property.ValueChangeListener() {
-                        public void valueChange(Property.ValueChangeEvent event) {
-                            setValue(component.getValue());
-                        }
-                    }
-            );
-            if (value != null) {
-                Map<Object, String> values = new HashMap<Object, String>();
-                for (Object v : (List) value) {
-                    values.put(v, getValueCaption(v));
-                }
-                component.setValues(values);
-            }
+            initListEdit(component);
             return component;
 
         } else {

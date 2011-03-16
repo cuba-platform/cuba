@@ -19,6 +19,10 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
 public interface PersistenceConfig extends Config {
 
     @DefaultInt(100)
+    int getDefaultLookupScreenThreshold();
+    void setDefaultLookupScreenThreshold(int value);
+
+    @DefaultInt(100)
     int getDefaultLazyCollectionThreshold();
     void setDefaultLazyCollectionThreshold(int value);
 

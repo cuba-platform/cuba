@@ -42,6 +42,9 @@ public class EntityStatistics extends BaseUuidEntity implements Updatable {
     @Column(name = "LAZY_COLLECTION_THRESHOLD")
     private Integer lazyCollectionThreshold;
 
+    @Column(name = "LOOKUP_SCREEN_THRESHOLD")
+    private Integer lookupScreenThreshold;
+
     public String getUpdatedBy() {
         return updatedBy;
     }
@@ -96,6 +99,14 @@ public class EntityStatistics extends BaseUuidEntity implements Updatable {
 
     public void setLazyCollectionThreshold(Integer lazyCollectionThreshold) {
         this.lazyCollectionThreshold = lazyCollectionThreshold;
+    }
+
+    public Integer getLookupScreenThreshold() {
+        return lookupScreenThreshold;
+    }
+
+    public void setLookupScreenThreshold(Integer lookupScreenThreshold) {
+        this.lookupScreenThreshold = lookupScreenThreshold;
     }
 
     @Override

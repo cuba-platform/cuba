@@ -358,7 +358,8 @@ public class WebFilter
             Condition condition = visibleConditions.get(i);
             HorizontalLayout paramLayout = new HorizontalLayout();
             paramLayout.setSpacing(true);
-            paramLayout.setMargin(false, true, true, false);
+            boolean bottomMargin = (i / columns) < (rows - 1); // no bottom margin for the last row
+            paramLayout.setMargin(false, true, bottomMargin, false);
             if (condition.getParam().getJavaClass() != null) {
                 Label label = new Label(condition.getLocCaption());
                 paramLayout.addComponent(label);

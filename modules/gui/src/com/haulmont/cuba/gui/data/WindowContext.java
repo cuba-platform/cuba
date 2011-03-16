@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.data;
 
+import com.haulmont.cuba.gui.components.IFrame;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -16,6 +18,8 @@ import java.util.Map;
  * Provides access to window parameters and component values
  */
 public interface WindowContext extends Serializable {
+
+    IFrame getFrame();
 
     /**
      * External parameters passed to the window on opening.

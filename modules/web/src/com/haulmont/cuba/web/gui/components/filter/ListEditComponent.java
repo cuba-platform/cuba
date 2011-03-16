@@ -11,14 +11,17 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
@@ -41,6 +44,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     protected String requiredError;
 
     private Class itemClass;
+    private MetaClass metaClass;
     private CollectionDatasource collectionDatasource;
 
     private List listValue;
@@ -109,6 +113,11 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     public ListEditComponent(CollectionDatasource collectionDatasource) {
         this(collectionDatasource.getMetaClass().getJavaClass());
         this.collectionDatasource = collectionDatasource;
+    }
+
+    public ListEditComponent(MetaClass metaClass) {
+        this(metaClass.getJavaClass());
+        this.metaClass = metaClass;
     }
 
     @Override
@@ -334,6 +343,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
     private class ListEditWindow extends Window {
 
+        private static final String COMPONENT_WIDTH = "140";
         private VerticalLayout listLayout;
         private Map<Object, String> values;
 
@@ -354,11 +364,11 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             }
             contentLayout.addComponent(listLayout);
 
-            final AbstractField field;
+            final Field field;
 
             if (collectionDatasource != null) {
                 final WebLookupField lookup = new WebLookupField();
-                lookup.setWidth("140");
+                lookup.setWidth(COMPONENT_WIDTH);
                 lookup.setOptionsDatasource(collectionDatasource);
 
                 collectionDatasource.addListener(
@@ -382,6 +392,26 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
                 field = lookup.getComponent();
 
+            } else if (metaClass != null) {
+                final WebPickerField picker = new WebPickerField();
+                picker.setWidth(COMPONENT_WIDTH);
+                picker.setMetaClass(metaClass);
+                picker.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+
+                picker.addListener(
+                        new ValueListener() {
+                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                                if (value != null) {
+                                    String str = addEntityInstance((Instance) value);
+                                    addItemLayout(value, str);
+                                    picker.setValue(null);
+                                }
+                            }
+                        }
+                );
+
+                field = picker.getComponent();
+
             } else if (itemClass.isEnum()) {
                 Map<String, Object> options = new HashMap<String, Object>();
                 for (Object obj : itemClass.getEnumConstants()) {
@@ -389,7 +419,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 }
 
                 final WebLookupField lookup = new WebLookupField();
-                lookup.setWidth("140");
+                lookup.setWidth(COMPONENT_WIDTH);
                 lookup.setOptionsMap(options);
 
                 lookup.addListener(new ValueListener() {
@@ -406,7 +436,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
             } else if (Date.class.isAssignableFrom(itemClass)) {
                 field = new DateField();
-                field.setImmediate(true);
+                ((DateField) field).setImmediate(true);
                 if (itemClass.equals(java.sql.Date.class))
                     ((DateField) field).setResolution(DateField.RESOLUTION_DAY);
                 else

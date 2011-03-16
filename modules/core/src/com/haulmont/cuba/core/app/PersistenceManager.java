@@ -10,12 +10,9 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.EntityStatistics;
-import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.QueryParser;
@@ -96,6 +93,14 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         metadataLoaded = true;
     }
 
+    public int getDefaultLookupScreenThreshold() {
+        return config.getDefaultLookupScreenThreshold();
+    }
+
+    public void setDefaultLookupScreenThreshold(int value) {
+        config.setDefaultLookupScreenThreshold(value);
+    }
+
     public int getDefaultLazyCollectionThreshold() {
         return config.getDefaultLazyCollectionThreshold();
     }
@@ -158,6 +163,16 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
             return false;
         else {
             int threshold = es.getLazyCollectionThreshold() != null ? es.getLazyCollectionThreshold() : config.getDefaultLazyCollectionThreshold();
+            return es.getInstanceCount() > threshold;
+        }
+    }
+
+    public boolean useLookupScreen(String entityName) {
+        EntityStatistics es = getStatisticsCache().get(entityName);
+        if (es == null || es.getInstanceCount() == null)
+            return false;
+        else {
+            int threshold = es.getLookupScreenThreshold() != null ? es.getLookupScreenThreshold() : config.getDefaultLookupScreenThreshold();
             return es.getInstanceCount() > threshold;
         }
     }

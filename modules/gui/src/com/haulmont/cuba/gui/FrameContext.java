@@ -47,6 +47,10 @@ public class FrameContext implements WindowContext {
         return (T) params.get("param$" + property);
     }
 
+    public IFrame getFrame() {
+        return frame;
+    }
+
     public Map<String, Object> getParams() {
         return params;
     }

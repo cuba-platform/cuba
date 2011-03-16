@@ -23,6 +23,9 @@ public interface PersistenceManagerAPI
     /** Whether to use a lazy collection datasource for this entity, based on current statistics */
     boolean useLazyCollection(String entityName);
 
+    /** Whether to use a lookup screen or a dropdown for this entity, based on current statistics */
+    boolean useLookupScreen(String entityName);
+
     /** Limit rows fetched for UI components in 'normal' conditions */
     int getFetchUI(String entityName);
 
