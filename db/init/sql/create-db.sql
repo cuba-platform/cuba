@@ -561,24 +561,22 @@ create table REPORT_BAND_DEFINITION
 (
   ID varchar(36) NOT NULL,
   CREATE_TS timestamp,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
   DELETE_TS timestamp,
-  DELETED_BY character varying(50),
+  DELETED_BY varchar(50),
 
-  QUERY character varying(255),
+  QUERY varchar(255),
   PARENT_DEFINITION_ID varchar(36),
-  NAME character varying(255),
+  NAME varchar(255),
   ORIENTATION integer default 0,
   POSITION_ integer default 0,
 
   primary key (ID),
   constraint FK_REPORT_BAND_DEFINITION_TO_REPORT_BAND_DEFINITION foreign key (PARENT_DEFINITION_ID)
       references REPORT_BAND_DEFINITION (ID)
-      on update no action
-      on delete no action
 );
 
 --------------------------------------------------------------------------------------------------------------
@@ -587,28 +585,26 @@ create table REPORT_REPORT
 (
   ID varchar(36) NOT NULL,
   CREATE_TS timestamp,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
   DELETE_TS timestamp,
-  DELETED_BY character varying(50),
+  DELETED_BY varchar(50),
 
-  NAME character varying(255),
+  NAME varchar(255),
   ROOT_DEFINITION_ID varchar(36),
   TEMPLATE_PATH longvarchar,
   REPORT_OUTPUT_TYPE integer default 0,
   IS_CUSTOM boolean default false,
-  CUSTOM_CLASS character varying,
-  LINKED_ENTITY character varying,
+  CUSTOM_CLASS varchar,
+  LINKED_ENTITY varchar,
   TEMPLATE_FILE_ID varchar(36),
   REPORT_TYPE integer,
 
   primary key (ID),
   constraint FK_REPORT_REPORT_TO_REPORT_BAND_DEFINITION foreign key (ROOT_DEFINITION_ID)
       references REPORT_BAND_DEFINITION (ID)
-      on update no action
-      on delete no action
 );
 
 --------------------------------------------------------------------------------------------------------------
@@ -617,29 +613,27 @@ create table REPORT_INPUT_PARAMETER
 (
   ID varchar(36) NOT NULL,
   CREATE_TS timestamp,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
   DELETE_TS timestamp,
-  DELETED_BY character varying(50),
+  DELETED_BY varchar(50),
 
   REPORT_ID varchar(36),
   TYPE integer,
-  NAME character varying(255),
-  ALIAS character varying(100),
-  SCREEN character varying(255),
-  FROM_BROWSER boolean,
-  REQUIRED boolean default false,
+  NAME varchar(255),
+  ALIAS varchar(100),
+  SCREEN varchar(255),
+  FROM_BROWSER smallint,
+  REQUIRED smallint default 0,
   POSITION_ integer default 0,
   META_CLASS varchar(255),
-  ENUM_CLASS varchar(500)
+  ENUM_CLASS varchar(500),
 
   primary key (ID),
   constraint FK_REPOR_INPUT_PARAMETER_TO_REPORT_REPORT foreign key (REPORT_ID)
       references REPORT_REPORT (ID)
-      on update no action
-      on delete no action
 );
 
 --------------------------------------------------------------------------------------------------------------
@@ -648,14 +642,14 @@ create table REPORT_DATA_SET
 (
   ID varchar(36) NOT NULL,
   CREATE_TS timestamp,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
   DELETE_TS timestamp,
-  DELETED_BY character varying(50),
+  DELETED_BY varchar(50),
 
-  NAME character varying(255),
+  NAME varchar(255),
   TEXT longvarchar,
   TYPE integer,
   BAND_DEFINITION varchar(36),
@@ -663,8 +657,6 @@ create table REPORT_DATA_SET
   primary key (ID),
   constraint FK_REPORT_DATA_SET_TO_REPORT_BAND_DEFINITION foreign key (BAND_DEFINITION)
       references REPORT_BAND_DEFINITION (ID)
-      on update no action
-      on delete no action
 );
 
 --------------------------------------------------------------------------------------------------------------
@@ -686,21 +678,19 @@ create table REPORT_REPORT_SCREEN
 (
   ID varchar(36) NOT NULL,
   CREATE_TS timestamp,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
   DELETE_TS timestamp,
-  DELETED_BY character varying(50),
+  DELETED_BY varchar(50),
 
   REPORT_ID varchar(36),
-  SCREEN_ID character varying(255),
+  SCREEN_ID varchar(255),
 
   primary key (ID),
   constraint FK_REPORT_REPORT_SCREEN_TO_REPORT_REPORT foreign key (REPORT_ID)
       references REPORT_REPORT (id)
-      on update no action
-      on delete no action
 );
 
 --------------------------------------------------------------------------------------------------------------
@@ -709,22 +699,20 @@ create table REPORT_VALUE_FORMAT
 (
   ID varchar(36) NOT NULL,
   CREATE_TS timestamp,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
   DELETE_TS timestamp,
-  DELETED_BY character varying(50),
+  DELETED_BY varchar(50),
 
   REPORT_ID varchar(36),
-  NAME character varying(255),
-  FORMAT character varying(255),
+  NAME varchar(255),
+  FORMAT varchar(255),
 
   primary key (ID),
   constraint FK_REPORT_VALUE_FORMAT_TO_REPORT_REPORT foreign key (REPORT_ID)
       references report_report (ID)
-      on update no action
-      on delete no action
 );
 
 ------------------------------------------------------------------------------------------------------------
