@@ -19,6 +19,7 @@ import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public abstract class AbstractChartDatasource<T extends Entity<K>, K>
@@ -50,7 +51,16 @@ public abstract class AbstractChartDatasource<T extends Entity<K>, K>
     }
 
     public Collection<K> getRowIds() {
-        return data.keySet();
+        return Collections.unmodifiableCollection(data.keySet());
+    }
+
+    public String getRowCaption(K rowId) {
+        Object o =  data.get(rowId);
+        if (o == null) {
+            return "";
+        } else {
+            return String.valueOf(o);
+        }
     }
 
     protected abstract Collection<T> loadChartData(Map<String, Object> params);
