@@ -28,7 +28,7 @@ public class WebFileUploadField
         implements
         FileUploadField {
 
-    private static final int BUFFER__SIZE = 64 * 1024;
+    private static final int BUFFER_SIZE = 64 * 1024;
 
     protected FileUploadService uploadService;
 
@@ -149,12 +149,12 @@ public class WebFileUploadField
     private void readFileToBytes(FileInputStream fileInput, ByteArrayOutputStream byteOutput)
             throws IOException {
         int readedBytes;
-        byte[] buffer = new byte[BUFFER__SIZE];
+        byte[] buffer = new byte[BUFFER_SIZE];
         do {
             readedBytes = fileInput.read(buffer);
             byteOutput.write(buffer, 0, readedBytes);
         }
-        while (readedBytes == BUFFER__SIZE);
+        while (readedBytes == BUFFER_SIZE);
     }
 
     /**
