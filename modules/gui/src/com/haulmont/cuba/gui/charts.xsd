@@ -16,7 +16,7 @@
 
     <xs:element name="barChart">
         <xs:complexType>
-            <xs:sequence minOccurs="1" maxOccurs="unbounded" >
+            <xs:sequence minOccurs="0" maxOccurs="unbounded" >
                 <xs:element name="column" type="columnType"/>
             </xs:sequence>
             <xs:attributeGroup ref="chartAttributes"/>
@@ -29,7 +29,7 @@
 
     <xs:element name="lineChart">
         <xs:complexType>
-            <xs:sequence minOccurs="1" maxOccurs="unbounded" >
+            <xs:sequence minOccurs="0" maxOccurs="unbounded" >
                 <xs:element name="column" type="columnType"/>
             </xs:sequence>
             <xs:attributeGroup ref="chartAttributes"/>
