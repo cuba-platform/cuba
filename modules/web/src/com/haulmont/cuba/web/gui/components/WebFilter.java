@@ -783,8 +783,11 @@ public class WebFilter
             folder.setName(name);
             folder.setTabName(name);
         }
+
+        String newXml = submintParameters();
+
         folder.setFilterComponentId(filterEntity.getComponentId());
-        folder.setFilterXml(filterEntity.getXml());
+        folder.setFilterXml(newXml);
         if (!isAppFolder) {
             if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
                 ((SearchFolder) folder).setUser(filterEntity.getUser());
@@ -866,6 +869,22 @@ public class WebFilter
             }
         });
         App.getInstance().getAppWindow().addWindow(window);
+    }
+
+    private String submintParameters() {
+        FilterParser parser = new FilterParser(filterEntity.getXml(), MESSAGES_PACK, filterEntity.getComponentId(), datasource);
+        parser.fromXml();
+        List<Condition> defaultConditions = parser.getConditions();
+        Iterator<Condition> it = conditions.iterator();
+        Iterator<Condition> defaultIt = defaultConditions.iterator();
+        while (it.hasNext()) {
+            Condition current = it.next();
+            Condition defCondition = defaultIt.next();
+            if (current.getParam().getValue() != null) {
+                defCondition.setParam(current.getParam());
+            }
+        }
+        return parser.toXml().getXml();
     }
 
     private SearchFolder saveFolder(SearchFolder folder) {

@@ -457,12 +457,14 @@ public class FilterEditor {
     }
 
     public boolean commit() {
-        if (existingNames.contains(nameField.getValue())) {
-            App.getInstance().getAppWindow().showNotification(
-                    getMessage("FilterEditor.commitError"),
-                    getMessage("FilterEditor.nameAlreadyExists"),
-                    Window.Notification.TYPE_HUMANIZED_MESSAGE);
-            return false;
+        if (filterEntity.getFolder() == null) {
+            if (existingNames.contains(nameField.getValue())) {
+                App.getInstance().getAppWindow().showNotification(
+                        getMessage("FilterEditor.commitError"),
+                        getMessage("FilterEditor.nameAlreadyExists"),
+                        Window.Notification.TYPE_HUMANIZED_MESSAGE);
+                return false;
+            }
         }
 
         StringBuilder sb = new StringBuilder();
