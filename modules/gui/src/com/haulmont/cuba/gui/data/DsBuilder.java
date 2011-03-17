@@ -23,10 +23,10 @@ import java.lang.reflect.Constructor;
 
 /**
  * Datasources builder.
- * <p>
+ * <p/>
  * Use setters to provide parameters and then invoke one of build... mehods to obtain the datasource implementation.<br>
- * <p>
- * Sample usage: 
+ * <p/>
+ * Sample usage:
  * <pre>
  * CollectionDatasource usersDs = new DsBuilder(getDsContext())
  *               .setMetaClass(metaClass)
@@ -36,7 +36,7 @@ import java.lang.reflect.Constructor;
  *
  * If you set <code>master</code> and <code>property</code> properties you will get a <code>PropertyDatasource</code>
  * implementation.
- * <p>
+ *
  * If you don't set <code>fetchMode</code> explicitly, lazy implementation may be chosen based on <code>PersistenceManager</code>
  * statistics.
  */
@@ -67,6 +67,8 @@ public class DsBuilder {
     private Class<? extends Datasource> dsClass;
 
     private CollectionDatasource.FetchMode fetchMode;
+
+    private CollectionDatasource.RefreshMode refreshMode;
 
     public DsBuilder() {
         this(null);
@@ -175,6 +177,15 @@ public class DsBuilder {
         return this;
     }
 
+    public CollectionDatasource.RefreshMode getRefreshMode() {
+        return refreshMode;
+    }
+
+    public DsBuilder setRefreshMode(CollectionDatasource.RefreshMode refreshMode) {
+        this.refreshMode = refreshMode;
+        return this;
+    }
+
     public Class<? extends Datasource> getDsClass() {
         return dsClass;
     }
@@ -246,8 +257,10 @@ public class DsBuilder {
             if (dsClass == null) {
                 if (CollectionDatasource.FetchMode.LAZY.equals(resolvedFetchMode()))
                     datasource = new LazyCollectionDatasource(dsContext, dataService, id, metaClass, view, softDeletion);
-                else
+                else {
                     datasource = new CollectionDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
+                    ((CollectionDatasourceImpl) datasource).setRefreshMode(refreshMode);
+                }
             } else {
                 try {
                     Constructor constructor = dsClass.getConstructor(

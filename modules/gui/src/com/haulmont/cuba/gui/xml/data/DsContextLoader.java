@@ -312,41 +312,39 @@ public class DsContextLoader {
     }
 
     private Datasource loadHierarchicalDatasource(Element element, Datasource ds, String property) {
-            final String id = element.attributeValue("id");
-            final String hierarchyProperty = element.attributeValue("hierarchyProperty");
-            final MetaClass metaClass = ds.getMetaClass();
-            final MetaProperty metaProperty = metaClass.getProperty(property);
-            if (metaProperty == null) {
-                throw new IllegalStateException(
-                        String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
-            }
-
-            builder.reset().setMetaClass(metaClass).setId(id).setMaster(ds).setProperty(property);
-
-            final HierarchicalDatasource datasource;
-
-            final Element datasourceClassElement = element.element("datasourceClass");
-
-            if (datasourceClassElement != null) {
-                final String datasourceClass = datasourceClassElement.getText();
-                if (StringUtils.isEmpty(datasourceClass))
-                    throw new IllegalStateException("Datasource class is not specified");
-
-                final Class<HierarchicalDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
-                datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
-            } else {
-                datasource = builder.buildHierarchicalDatasource();
-            }
-
-            if (!StringUtils.isEmpty(hierarchyProperty)) {
-                datasource.setHierarchyPropertyName(hierarchyProperty);
-            }
-            loadDatasources(element, datasource);
-
-            return datasource;
+        final String id = element.attributeValue("id");
+        final String hierarchyProperty = element.attributeValue("hierarchyProperty");
+        final MetaClass metaClass = ds.getMetaClass();
+        final MetaProperty metaProperty = metaClass.getProperty(property);
+        if (metaProperty == null) {
+            throw new IllegalStateException(
+                    String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
         }
 
+        builder.reset().setMetaClass(metaClass).setId(id).setMaster(ds).setProperty(property);
 
+        final HierarchicalDatasource datasource;
+
+        final Element datasourceClassElement = element.element("datasourceClass");
+
+        if (datasourceClassElement != null) {
+            final String datasourceClass = datasourceClassElement.getText();
+            if (StringUtils.isEmpty(datasourceClass))
+                throw new IllegalStateException("Datasource class is not specified");
+
+            final Class<HierarchicalDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
+        } else {
+            datasource = builder.buildHierarchicalDatasource();
+        }
+
+        if (!StringUtils.isEmpty(hierarchyProperty)) {
+            datasource.setHierarchyPropertyName(hierarchyProperty);
+        }
+        loadDatasources(element, datasource);
+
+        return datasource;
+    }
 
     private Datasource loadGroupDatasource(Element element, Datasource ds, String property) {
         final String id = element.attributeValue("id");
@@ -382,11 +380,11 @@ public class DsContextLoader {
         final String className = element.attributeValue("class");
         if (className == null)
             return null;
-        
+
         final Class<?> aClass = ReflectionHelper.getClass(className);
         final MetaClass metaClass = MetadataProvider.getSession().getClass(aClass);
 
-        if (metaClass == null) 
+        if (metaClass == null)
             throw new IllegalStateException(String.format("Can't find metaClass '%s'", className));
 
         return metaClass;
@@ -396,6 +394,7 @@ public class DsContextLoader {
         final String id = element.attributeValue("id");
         final MetaClass metaClass = loadMetaClass(element);
         final String viewName = element.attributeValue("view");
+
         String deletion = element.attributeValue("softDeletion");
         boolean softDeletion = deletion == null || Boolean.valueOf(deletion);
 
@@ -413,7 +412,12 @@ public class DsContextLoader {
             datasource = builder.setDsClass(aClass).buildCollectionDatasource();
         } else {
             final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
-            datasource = builder.setFetchMode(fetchMode).buildCollectionDatasource();
+            final CollectionDatasource.RefreshMode refreshMode = getRefreshMode(element);
+
+            datasource = builder
+                    .setFetchMode(fetchMode)
+                    .setRefreshMode(refreshMode)
+                    .buildCollectionDatasource();
         }
 
         if (datasource instanceof CollectionDatasource.Suspendable)
@@ -435,6 +439,15 @@ public class DsContextLoader {
         loadDatasources(element, datasource);
 
         return datasource;
+    }
+
+    private CollectionDatasource.RefreshMode getRefreshMode(Element element) {
+        final String refreshModeName = element.attributeValue("refreshMode");
+        CollectionDatasource.RefreshMode refreshMode = CollectionDatasource.RefreshMode.ALWAYS;
+        if (StringUtils.isNotEmpty(refreshModeName)) {
+            refreshMode = CollectionDatasource.RefreshMode.valueOf(refreshModeName);
+        }
+        return refreshMode;
     }
 
     protected CollectionDatasource.FetchMode getFetchMode(Element element) {

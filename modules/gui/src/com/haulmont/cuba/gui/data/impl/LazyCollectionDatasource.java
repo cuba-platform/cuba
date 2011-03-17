@@ -123,6 +123,18 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    public void includeItem(T item) throws UnsupportedOperationException {
+        checkState();
+
+        data.put(item.getId(), item);
+        attachListener((Instance) item);
+
+        if (size != null && size > 0)
+            size++;
+
+        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+    }
+
     public void modifyItem(T item) {
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {

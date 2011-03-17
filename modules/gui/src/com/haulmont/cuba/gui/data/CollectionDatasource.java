@@ -35,6 +35,15 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
         AUTO
     }
 
+    /** Mode of load data from database: {@link #ALWAYS}, {@link #NEVER} */
+    enum RefreshMode{
+        /** Datasource will load data for each refresh */
+        ALWAYS,
+
+        /** Datasource doesn't change data in container */
+        NEVER
+    }
+
     /** Get item by ID */
     T getItem(K key);
 
@@ -58,6 +67,9 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /** Exclude item from the collection. The datasource "modified" state doesn't change. */
     void excludeItem(T item) throws UnsupportedOperationException;
+
+    /** Include item from the collection. The datasource "modified" state doesn't change. */
+    void includeItem(T item) throws UnsupportedOperationException;
 
     /** Updates item in the collection if it is already there. The datasource becomes modified. */
     void modifyItem(T item);

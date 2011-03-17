@@ -31,17 +31,18 @@ import org.perf4j.log4j.Log4JStopWatch;
 import java.util.*;
 
 public class CollectionDatasourceImpl<T extends Entity<K>, K>
-    extends
+        extends
         AbstractCollectionDatasource<T, K>
-    implements
+        implements
         CollectionDatasource.Sortable<T, K>,
         CollectionDatasource.Aggregatable<T, K>,
         CollectionDatasource.Suspendable<T, K>,
-        CollectionDatasource.SupportsPaging<T, K>
-{
+        CollectionDatasource.SupportsPaging<T, K> {
+
     protected LinkedMap data = new LinkedMap();
 
     private boolean inRefresh;
+    protected RefreshMode refreshMode = RefreshMode.ALWAYS;
 
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
@@ -68,31 +69,26 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
      */
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, String viewName)
-    {
+            String id, MetaClass metaClass, String viewName) {
         super(context, dataservice, id, metaClass, viewName);
     }
 
-     public CollectionDatasourceImpl(
+    public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, View view)
-    {
+            String id, MetaClass metaClass, View view) {
         super(context, dataservice, id, metaClass, view);
     }
 
-
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, String viewName, boolean softDeletion)
-    {
+            String id, MetaClass metaClass, String viewName, boolean softDeletion) {
         super(context, dataservice, id, metaClass, viewName);
         setSoftDeletion(softDeletion);
     }
 
     public CollectionDatasourceImpl(
             DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, View view, boolean softDeletion)
-    {
+            String id, MetaClass metaClass, View view, boolean softDeletion) {
         super(context, dataservice, id, metaClass, view);
         setSoftDeletion(softDeletion);
     }
@@ -125,6 +121,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (inRefresh)
             return;
 
+        if (refreshMode == RefreshMode.NEVER)
+            return;
+
         inRefresh = true;
         try {
             savedParameters = parameters;
@@ -153,11 +152,19 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
             suspended = false;
             refreshOnResumeRequired = false;
-            
+
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         } finally {
             inRefresh = false;
         }
+    }
+
+    public RefreshMode getRefreshMode() {
+        return refreshMode;
+    }
+
+    public void setRefreshMode(RefreshMode refreshMode) {
+        this.refreshMode = refreshMode;
     }
 
     public synchronized T getItem(K key) {
@@ -280,7 +287,16 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
-    public void excludeItem(T item) throws UnsupportedOperationException {
+    public synchronized void includeItem(T item) throws UnsupportedOperationException {
+        checkState();
+
+        data.put(item.getId(), item);
+        attachListener((Instance) item);
+
+        forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+    }
+
+    public synchronized void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.remove(item.getId());
@@ -333,8 +349,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             if (filter.getRoot() instanceof DenyingClause)
                 return false;
             if ((filter.getRoot() instanceof LogicalCondition)
-                    && ((LogicalCondition) filter.getRoot()).getOperation().equals(LogicalOp.AND))
-            {
+                    && ((LogicalCondition) filter.getRoot()).getOperation().equals(LogicalOp.AND)) {
                 for (Condition condition : filter.getRoot().getConditions()) {
                     if (condition instanceof DenyingClause) {
                         return false;
