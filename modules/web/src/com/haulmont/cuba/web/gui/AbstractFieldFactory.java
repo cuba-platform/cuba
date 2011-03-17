@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.security.SecurityHelper;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.vaadin.data.Item;
@@ -165,6 +166,10 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                 propertyPath.toString()));
 
         initField(field, null, propertyPath, false);
+
+        if (!field.isReadOnly()) {
+            field.setReadOnly(!SecurityHelper.isEditPermitted(propertyPath.getMetaProperty()));
+        }
 
         return field;
     }

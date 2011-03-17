@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.ScriptValidator;
+import com.haulmont.cuba.gui.security.SecurityHelper;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -98,15 +99,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             if (component instanceof DatasourceComponent
                     && ((DatasourceComponent) component).getDatasource() != null)
             {
-                MetaClass metaClass = ((DatasourceComponent) component).getDatasource().getMetaClass();
-                MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
-
-                UserSession userSession = UserSessionClient.getUserSession();
-                boolean editable = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
-                                        || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
-                        && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
-
-                if (!editable) {
+                if (!SecurityHelper.isEditPermitted(((DatasourceComponent) component).getMetaProperty())) {
                     ((Component.Editable) component).setEditable(false);
                     return;
                 }

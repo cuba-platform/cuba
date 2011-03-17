@@ -17,16 +17,13 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.gui.security.SecurityHelper;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -366,8 +363,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                boolean editable = isEditPermitted(metaProperty);
-                dsComponent.setEditable(dsComponent.isEditable() && editable);
+                dsComponent.setEditable(SecurityHelper.isEditPermitted(metaProperty)
+                        && dsComponent.isEditable());
             }
         }
     }
@@ -377,18 +374,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         if (propertyPath != null) {
             MetaProperty metaProperty = propertyPath.getMetaProperty();
 
-            boolean editable = isEditPermitted(metaProperty);
-            editable = editable && isEditable(fieldConf);
-            setEditable(fieldConf, editable);
+            setEditable(fieldConf, SecurityHelper.isEditPermitted(metaProperty)
+                    && isEditable(fieldConf));
         }
-    }
-
-    private boolean isEditPermitted(MetaProperty metaProperty) {
-        MetaClass metaClass = metaProperty.getDomain();
-        UserSession userSession = UserSessionClient.getUserSession();
-        return (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
-                || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
-                && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
     }
 
     private int rowsCount() {
