@@ -16,8 +16,8 @@ import org.apache.commons.lang.ObjectUtils;
 public enum ReportOutputType implements EnumClass<Integer> {
     XLS(0),
     DOC(10),
-    PDF(20);
-
+    PDF(20),
+    HTML(30);
 
     private Integer id;
 
@@ -37,5 +37,4 @@ public enum ReportOutputType implements EnumClass<Integer> {
         }
         return null;
     }
-
 }

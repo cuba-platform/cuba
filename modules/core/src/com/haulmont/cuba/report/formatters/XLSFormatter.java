@@ -74,7 +74,7 @@ public class XLSFormatter extends AbstractFormatter {
     }
 
     public byte[] createDocument(Band rootBand) {
-        for (Band childBand : rootBand.getChildren()) {
+        for (Band childBand : rootBand.getChildrenList()) {
             writeBand(childBand);
         }
 
@@ -181,7 +181,7 @@ public class XLSFormatter extends AbstractFormatter {
                     new Area(band.getName(), AreaAlign.HORIZONTAL, resultRange));
         }
 
-        for (Band child : band.getChildren()) {
+        for (Band child : band.getChildrenList()) {
             writeBand(child);
         }
 

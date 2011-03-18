@@ -43,7 +43,8 @@
                     <row>
                         <label value="msg://definition.orientation"/>
                         <lookupField id="orientation" datasource="bandDefinitionDs" property="orientation"
-                                   width="${width}" required="true" requiredMessage="msg://definition.orientationMsg"/>
+                                     width="${width}" required="true"
+                                     requiredMessage="msg://definition.orientationMsg"/>
                     </row>
                 </rows>
             </grid>
@@ -66,35 +67,18 @@
                         <rows datasource="dataSetsDs"/>
                     </table>
                 </vbox>
-                <vbox margin="false;false;false;true" expand="space">
-                    <groupBox>
-                        <caption label="msg://dataSet.properties"/>
-                        <grid spacing="true" expandable="false">
-                            <columns>
-                                <column flex="1"/>
-                                <column flex="1"/>
-                                <column flex="1"/>
-                            </columns>
-                            <rows>
-                                <row>
-                                    <label value="msg://dataSet.name"/>
-                                    <textField id="datasetName" datasource="dataSetsDs" property="name" width="${rwidth}"
-                                               required="true" requiredMessage="msg://dataSet.nameMsg"/>
-                                </row>
-                                <row>
-                                    <label value="msg://dataSet.type"/>
-                                    <lookupField id="type" datasource="dataSetsDs" property="type" width="${rwidth}"
-                                               required="true" requiredMessage="msg://dataSet.typeMsg"/>
-                                </row>
-                                <row>
-                                    <label id="dataSet_text" value="msg://dataSet.text"/>
-                                    <autoCompleteTextField id="text" datasource="dataSetsDs" property="text"
-                                               rows="25" cols="60"/>
-                                </row>
-                            </rows>
-                        </grid>
-                    </groupBox>
-                    <hbox id="space"> </hbox>
+                <!-- Split -->
+                <vbox margin="false;false;false;true" expand="text">
+                    <label value="msg://dataSet.name"/>
+                    <textField id="datasetName" datasource="dataSetsDs" property="name"
+                               required="true" requiredMessage="msg://dataSet.nameMsg"/>
+
+                    <label value="msg://dataSet.type"/>
+                    <lookupField id="type" datasource="dataSetsDs" property="type"
+                                 required="true" requiredMessage="msg://dataSet.typeMsg"/>
+
+                    <label id="dataSet_text" value="msg://dataSet.text"/>
+                    <autoCompleteTextField id="text" datasource="dataSetsDs" property="text" rows="25" cols="60"/>
                 </vbox>
             </split>
 

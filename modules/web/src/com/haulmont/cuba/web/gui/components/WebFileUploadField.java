@@ -171,6 +171,7 @@ public class WebFileUploadField
      * @return Bytes for uploaded file
      * @deprecated Please use {@link WebFileUploadField#getFileId()} method and {@link FileUploadService}
      */
+    @Deprecated
     public byte[] getBytes() {
         if (bytes == null) {
             try {

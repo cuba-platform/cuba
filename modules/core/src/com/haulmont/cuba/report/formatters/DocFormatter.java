@@ -170,13 +170,14 @@ public class DocFormatter extends AbstractFormatter {
             ClipBoardHelper.clear();
         }
         int startRow = xTextTable.getRows().getCount() - 1;
-        for (int i = 0; i < parentBand.getChildren().size(); i++) {
-            if (name.equals(parentBand.getChildren().get(i).getName())) {
+        List<Band> childrenBands = parentBand.getChildrenList();
+        for (Band child : childrenBands) {
+            if (name.equals(child.getName())) {
                 duplicateLastRow(xDispatchHelper, asXTextDocument(xComponent).getCurrentController(), xTextTable);
             }
         }
         int i = startRow;
-        for (Band child : parentBand.getChildren()) {
+        for (Band child : childrenBands) {
             if (name.equals(child.getName())) {
                 fillRow(child, xTextTable, i);
                 i++;
@@ -329,7 +330,7 @@ public class DocFormatter extends AbstractFormatter {
         if (band.getName().equals(name)) {
             return band;
         }
-        for (Band child : band.getChildren()) {
+        for (Band child : band.getChildrenList()) {
             Band fromChild = findBand(child, name);
             if (fromChild != null) {
                 return fromChild;

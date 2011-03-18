@@ -40,6 +40,7 @@ public class ReportHelper {
         exportFormats.put(ReportOutputType.XLS, ExportFormat.XLS);
         exportFormats.put(ReportOutputType.DOC, ExportFormat.DOC);
         exportFormats.put(ReportOutputType.PDF, ExportFormat.PDF);
+        exportFormats.put(ReportOutputType.HTML, ExportFormat.HTML);
     }
 
     private ReportHelper() {
@@ -109,8 +110,7 @@ public class ReportHelper {
             ReportService srv = ServiceLocator.lookup(ReportService.NAME);
             byte[] byteArr = srv.createReport(report, reportOutputType, params);
             new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), name, exportFormat);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -221,7 +221,7 @@ public class ReportHelper {
         Collection<MetaClass> metaClasses = MetadataHelper.getAllMetaClasses();
         String metaClassName = "";
         Iterator<MetaClass> iterator = metaClasses.iterator();
-        while (iterator.hasNext() && ("".equals(metaClassName))){
+        while (iterator.hasNext() && ("".equals(metaClassName))) {
             MetaClass metaClass = iterator.next();
             if (metaClass.getJavaClass().getCanonicalName().equals(javaClassName))
                 metaClassName = metaClass.getName();

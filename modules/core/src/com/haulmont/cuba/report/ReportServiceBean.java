@@ -22,10 +22,8 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
-import com.haulmont.cuba.report.formatters.CustomFormatter;
-import com.haulmont.cuba.report.formatters.DocFormatter;
+import com.haulmont.cuba.report.formatters.*;
 import com.haulmont.cuba.report.formatters.Formatter;
-import com.haulmont.cuba.report.formatters.XLSFormatter;
 import com.haulmont.cuba.report.loaders.*;
 import org.springframework.stereotype.Service;
 
@@ -53,9 +51,9 @@ public class ReportServiceBean implements ReportService {
             List<BandDefinition> childrenBandDefinitions = rootBandDefinition.getChildrenBandDefinitions();
             Band rootBand = createRootBand(rootBandDefinition);
 
-            HashMap<String,ReportValueFormat> valuesFormats = new HashMap<String,ReportValueFormat>();
-            for (ReportValueFormat valueFormat : report.getValuesFormats()){
-                valuesFormats.put(valueFormat.getValueName(),valueFormat);
+            HashMap<String, ReportValueFormat> valuesFormats = new HashMap<String, ReportValueFormat>();
+            for (ReportValueFormat valueFormat : report.getValuesFormats()) {
+                valuesFormats.put(valueFormat.getValueName(), valueFormat);
             }
             rootBand.setValuesFormats(valuesFormats);
 
@@ -68,10 +66,9 @@ public class ReportServiceBean implements ReportService {
 
             Formatter formatter = createFormatter(report, format);
             return formatter.createDocument(rootBand);
-        } catch (ReportFormatterException ex){
+        } catch (ReportFormatterException ex) {
             throw ex;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ReportFormatterException(e);
         }
     }
@@ -109,8 +106,7 @@ public class ReportServiceBean implements ReportService {
         try {
             FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
             mbean.saveFile(file, reportData);
-        }
-        catch (FileStorageException e) {
+        } catch (FileStorageException e) {
             throw new IOException(e);
         }
 
@@ -119,8 +115,7 @@ public class ReportServiceBean implements ReportService {
             EntityManager em = PersistenceProvider.getEntityManager();
             em.persist(file);
             tx.commit();
-        }
-        finally {
+        } finally {
             tx.end();
         }
         return file;
@@ -138,11 +133,13 @@ public class ReportServiceBean implements ReportService {
         }
     }
 
-    //todo: move to another service
     private Formatter createFormatter(Report report, ReportOutputType format) throws IOException {
         if (ReportOutputType.XLS.equals(format)) {
             return new XLSFormatter(report.getTemplateFileDescriptor());
-        } else return new DocFormatter(report.getTemplateFileDescriptor(), format);
+        } else if (ReportOutputType.HTML.equals(format)) {
+            return new HtmlFormatter(report.getTemplateFileDescriptor());
+        } else
+            return new DocFormatter(report.getTemplateFileDescriptor(), format);
     }
 
     private Band createRootBand(BandDefinition rootBandDefinition) {
