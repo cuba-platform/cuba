@@ -400,8 +400,8 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                 if (!(cell == null || cell.cc == null || !cell.cc.isAttached())) {
                     if (!cell.cc.isVisible()) continue;
                     cell.layout(x, y);
+                    y += rowHeights[j] + spacingPixelsVertical;
                 }
-                y += rowHeights[j] + spacingPixelsVertical;
             }
             x += columnWidths[i] + spacingPixelsHorizontal;
             maxHeight = Math.max(maxHeight, y);
