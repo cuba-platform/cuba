@@ -763,9 +763,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 if (relativeWidth && totalWidthR >= scrollbarWidth) {
                     scrollbarWidthReserved = scrollbarWidth + 1; //
                     int columnindex = tHead.getVisibleCellCount() - 1;
-                    widths[columnindex] += scrollbarWidthReserved;
                     HeaderCell headerCell = tHead.getHeaderCell(columnindex);
                     if (headerCell.getWidth() == -1) {
+                        widths[columnindex] += scrollbarWidthReserved;
                         totalWidthR += scrollbarWidthReserved;
                     }
                     extraSpace -= scrollbarWidthReserved;
