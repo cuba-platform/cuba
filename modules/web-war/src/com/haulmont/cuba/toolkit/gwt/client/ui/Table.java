@@ -2116,16 +2116,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     return;
 
                 switch (DOM.eventGetType(event)) {
-                    /*case Event.ONCLICK:
-                        handleClickEvent(event);
-                        handleRowClick(event);
-                        break;*/
-//                    mDown = false;
                     case Event.ONCLICK:
-                        handleClickEvent(event/*, targetTdOrTr*/);
-//                            scrollBodyPanel.setFocus(true);
+                        handleClickEvent(event);
                         if (isSelectable()) {
-
                             // Ctrl+Shift click
                             if ((event.getCtrlKey() || event.getMetaKey())
                                     && event.getShiftKey()
@@ -2174,27 +2167,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
                                 // click
                             } else {
-                                boolean currentlyJustThisRowSelected = selectedRowKeys
-                                        .size() == 1
-                                        && selectedRowKeys
-                                        .contains(getKey());
-
-                                if (!currentlyJustThisRowSelected) {
-                                    if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
-                                        deselectAll();
-                                    }
-                                    toggleSelection();
-                                } else if (selectMode == SELECT_MODE_SINGLE
-                                        && !nullSelectionDisallowed) {
-                                    toggleSelection();
-                                }/*
-                                      * else NOP to avoid excessive server
-                                      * visits (selection is removed with
-                                      * CTRL/META click)
-                                      */
-
-                                selectionRangeStart = this;
-                                setRowFocus(this);
+                                rowClick();
                             }
 
                             // Remove IE text selection hack
@@ -2203,7 +2176,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                                         .setPropertyJSO("onselectstart",
                                                 null);
                             }
-//                                sendSelectedRows();
                             handleRowClick(event);
                         }
 
@@ -2219,6 +2191,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         handleClickEvent(event);
                         break;
                     case Event.ONCONTEXTMENU:
+                        if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
+                            rowClick();
+                        }
                         handleRowClick(event);
                         showContextMenu(event);
                         break;
@@ -2229,8 +2204,31 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
 
             protected void handleRowClick(Event event) {
-//                processRowSelection();
                 sendSelectedRows();
+            }
+
+            private void rowClick() {
+                boolean currentlyJustThisRowSelected = selectedRowKeys
+                        .size() == 1
+                        && selectedRowKeys
+                        .contains(getKey());
+
+                if (!currentlyJustThisRowSelected) {
+                    if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                        deselectAll();
+                    }
+                    toggleSelection();
+                } else if (selectMode == SELECT_MODE_SINGLE
+                        && !nullSelectionDisallowed) {
+                    toggleSelection();
+                }/*
+                      * else NOP to avoid excessive server
+                      * visits (selection is removed with
+                      * CTRL/META click)
+                      */
+
+                selectionRangeStart = this;
+                setRowFocus(this);
             }
 
             private void processRowSelection() {
