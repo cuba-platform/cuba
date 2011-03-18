@@ -76,6 +76,7 @@ public class VTabsheet extends VTabsheetBase {
 
         @Override
         public void onBrowserEvent(Event event) {
+            client.handleTooltipEvent(event, VTabsheet.this, getElement());
             if (closable && event.getTypeInt() == Event.ONCLICK
                     && event.getEventTarget().cast() == closeButton) {
                 if (isEnabled()) {
@@ -100,7 +101,6 @@ public class VTabsheet extends VTabsheetBase {
                 }
                 updateTabScroller();
             }
-            client.handleTooltipEvent(event, VTabsheet.this, getElement());
         }
 
         private void showContextMenu(Event event) {
