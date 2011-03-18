@@ -10,15 +10,16 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.chile.core.datatypes.*;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaModel;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
+import com.haulmont.cuba.gui.autocomplete.JpqlSuggestionFactory;
+import com.haulmont.cuba.gui.autocomplete.Suggester;
+import com.haulmont.cuba.gui.autocomplete.Suggestion;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.AutoCompleteTextField;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
@@ -29,6 +30,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 public class CustomConditionEditDlg extends Window {
+
+    private static final String WHERE = " where ";
 
     public enum ParamType {
         STRING,
@@ -49,8 +52,8 @@ public class CustomConditionEditDlg extends Window {
     private Label entityLab;
     private Select entitySelect;
     private TextField nameText;
-    private TextField whereText;
-    private TextField joinText;
+    private AutoCompleteTextField whereText;
+    private AutoCompleteTextField joinText;
     private AbstractSelect typeSelect;
     private CheckBox typeCheckBox;
     private TextField entityParamWhereText;
@@ -61,8 +64,7 @@ public class CustomConditionEditDlg extends Window {
     private static final String FIELD_WIDTH = "250px";
     private String messagesPack;
 
-    private static volatile Collection<MetaClass> metaClasses;
-    private static volatile Collection<Class> enums;
+    private String entityAlias;
 
     public CustomConditionEditDlg(final CustomCondition condition) {
         super(condition.getLocCaption());
@@ -77,8 +79,8 @@ public class CustomConditionEditDlg extends Window {
 
         setContent(layout);
 
-        Label eaLab = new Label(MessageProvider.formatMessage(getClass(),
-                "CustomConditionEditDlg.hintLabel", condition.getEntityAlias()));
+        entityAlias = condition.getEntityAlias();
+        Label eaLab = new Label(MessageProvider.formatMessage(getClass(), "CustomConditionEditDlg.hintLabel", entityAlias));
         eaLab.setContentMode(Label.CONTENT_XHTML);
         layout.addComponent(eaLab);
 
@@ -110,22 +112,34 @@ public class CustomConditionEditDlg extends Window {
         grid.addComponent(joinLab, 0, i);
         grid.setComponentAlignment(joinLab, Alignment.MIDDLE_RIGHT);
 
-        joinText = new TextField();
+        joinText = new AutoCompleteTextField();
         joinText.setWidth(FIELD_WIDTH);
         joinText.setNullRepresentation("");
         joinText.setValue(condition.getJoin());
+        joinText.setSuggester(new Suggester() {
+            public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
+                return requestHint(joinText, text, cursorPosition);
+            }
+        });
         grid.addComponent(joinText, 1, i++);
 
         Label whereLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.whereLabel"));
         grid.addComponent(whereLab, 0, i);
         grid.setComponentAlignment(whereLab, Alignment.MIDDLE_RIGHT);
 
-        whereText = new TextField();
+        whereText = new AutoCompleteTextField();
         whereText.setWidth(FIELD_WIDTH);
         whereText.setRows(4);
         whereText.setNullRepresentation("");
         String where = replaceParamWithQuestionMark(condition.getWhere());
         whereText.setValue(where);
+        whereText.setSuggester(
+                new Suggester() {
+                    public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
+                        return requestHint(whereText, text, cursorPosition);
+                    }
+                }
+        );
         grid.addComponent(whereText, 1, i++);
 
         Label typeLab = new Label(MessageProvider.getMessage(getClass(), "CustomConditionEditDlg.paramTypeLabel"));
@@ -233,6 +247,32 @@ public class CustomConditionEditDlg extends Window {
         layout.addComponent(btnLayout);
     }
 
+    private List<Suggestion> requestHint(AutoCompleteTextField sender, String text, int senderCursorPosition) {
+        String joinStr = (String) joinText.getValue();
+        String whereStr = (String) whereText.getValue();
+        CollectionDatasource ds = (CollectionDatasource) condition.getDatasource();
+
+        int queryPosition = -1;
+        String queryStart = "select " + entityAlias + " from " + ds.getMetaClass().getName() + " " + entityAlias + " ";
+
+        StringBuilder queryBuilder = new StringBuilder(queryStart);
+        if (joinStr != null && !joinStr.equals("")) {
+            if (sender == joinText) {
+                queryPosition = queryBuilder.length() + senderCursorPosition - 1;
+            }
+            queryBuilder.append(joinStr);
+        }
+        if (whereStr != null && !whereStr.equals("")) {
+            if (sender == whereText) {
+                queryPosition = queryBuilder.length() + WHERE.length() + senderCursorPosition - 1;
+            }
+            queryBuilder.append(WHERE).append(whereStr);
+        }
+        String query = queryBuilder.toString();
+
+        return JpqlSuggestionFactory.requestHint(query, queryPosition, sender, senderCursorPosition);
+    }
+
     private boolean commit() {
         ParamType type = (ParamType) typeSelect.getValue();
         if (ParamType.ENTITY.equals(type) && entitySelect.getValue() == null) {
@@ -323,24 +363,6 @@ public class CustomConditionEditDlg extends Window {
         return res;
     }
 
-    private Collection<MetaClass> getMetaClasses() {
-        if (metaClasses == null) {
-            synchronized (CustomConditionEditDlg.class) {
-                metaClasses = MetadataHelper.getAllMetaClasses();
-            }
-        }
-        return metaClasses;
-    }
-
-    private Collection<Class> getEnums() {
-        if (enums == null) {
-            synchronized (CustomConditionEditDlg.class) {
-                enums = MetadataHelper.getAllEnums();
-            }
-        }
-        return enums;
-    }
-
     private void fillEntitySelect(AbstractSelect select, Param param) {
         if (!select.isEnabled())
             return;
@@ -350,10 +372,8 @@ public class CustomConditionEditDlg extends Window {
         Map<String, Object> items = new TreeMap<String, Object>();
 
         if (ParamType.ENTITY.equals(typeSelect.getValue())) {
-            for (MetaClass metaClass : getMetaClasses()) {
-                if(metaClass.getJavaClass().getAnnotation(javax.persistence.Entity.class) != null){
-                    items.put(metaClass.getName() + " (" + MessageUtils.getEntityCaption(metaClass) + ")", metaClass);
-                }
+            for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+                items.put(metaClass.getName() + " (" + MessageUtils.getEntityCaption(metaClass) + ")", metaClass);
             }
             for (Map.Entry<String, Object> entry : items.entrySet()) {
                 select.addItem(entry.getValue());
@@ -366,7 +386,7 @@ public class CustomConditionEditDlg extends Window {
             }
 
         } else if (ParamType.ENUM.equals(typeSelect.getValue())) {
-            for (Class enumClass : getEnums()) {
+            for (Class enumClass : MetadataHelper.getAllEnums()) {
                 items.put(enumClass.getSimpleName() + " (" + MessageProvider.getMessage(enumClass, enumClass.getSimpleName()) + ")", enumClass);
             }
             for (Map.Entry<String, Object> entry : items.entrySet()) {

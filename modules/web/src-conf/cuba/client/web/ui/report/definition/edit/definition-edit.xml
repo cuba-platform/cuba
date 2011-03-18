@@ -88,7 +88,7 @@
                                 </row>
                                 <row>
                                     <label id="dataSet_text" value="msg://dataSet.text"/>
-                                    <textField id="text" datasource="dataSetsDs" property="text"
+                                    <autoCompleteTextField id="text" datasource="dataSetsDs" property="text"
                                                rows="25" cols="60"/>
                                 </row>
                             </rows>

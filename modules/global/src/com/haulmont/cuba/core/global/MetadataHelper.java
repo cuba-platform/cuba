@@ -27,6 +27,10 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class MetadataHelper {
+
+    private static volatile Collection<MetaClass> metaClasses;
+    private static volatile Collection<Class> enums;
+
     public static Class getTypeClass(MetaProperty metaProperty) {
         if (metaProperty == null)
             throw new IllegalArgumentException("MetaProperty is null");
@@ -199,17 +203,35 @@ public abstract class MetadataHelper {
     }
 
     public static Collection<MetaClass> getAllMetaClasses() {
-        Collection<MetaClass> metaClasses = MetadataProvider.getSession().getClasses();
+        if (metaClasses == null) {
+            synchronized (MetadataHelper.class) {
+                metaClasses = MetadataProvider.getSession().getClasses();
+            }
+        }
         return metaClasses;
     }
 
-    public static Collection<Class> getAllEnums() {
-        Set<Class> enums = new HashSet<Class>();
+    public static Collection<MetaClass> getAllPersistentMetaClasses() {
+        List<MetaClass> result = new ArrayList<MetaClass>();
         for (MetaClass metaClass : getAllMetaClasses()) {
-            for (MetaProperty metaProperty : metaClass.getProperties()) {
-                if (metaProperty.getRange() != null && metaProperty.getRange().isEnum()) {
-                    Class c = metaProperty.getRange().asEnumeration().getJavaClass();
-                    enums.add(c);
+            if (metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Entity.class)) {
+                result.add(metaClass);
+            }
+        }
+        return result;
+    }
+
+    public static Collection<Class> getAllEnums() {
+        if (enums == null) {
+            synchronized (MetadataHelper.class) {
+                enums = new HashSet<Class>();
+                for (MetaClass metaClass : getAllMetaClasses()) {
+                    for (MetaProperty metaProperty : metaClass.getProperties()) {
+                        if (metaProperty.getRange() != null && metaProperty.getRange().isEnum()) {
+                            Class c = metaProperty.getRange().asEnumeration().getJavaClass();
+                            enums.add(c);
+                        }
+                    }
                 }
             }
         }

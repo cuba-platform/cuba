@@ -50,6 +50,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("checkBox", WebCheckBox.class);
         classes.put("groupBox", WebGroupBox.class);
         classes.put("textField", WebTextField.class);
+        classes.put("autoCompleteTextField", WebAutoCompleteTextField.class);
         classes.put("textArea", WebTextArea.class);
         classes.put("iframe", WebFrame.class);
         classes.put("table", WebTable.class);

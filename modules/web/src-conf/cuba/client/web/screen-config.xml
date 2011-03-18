@@ -100,9 +100,6 @@
     <screen id="report$BandDefinition.edit"
             template="/cuba/client/web/ui/report/definition/edit/definition-edit.xml"/>
 
-    <screen id="report$DataSet.edit"
-            template="/cuba/client/web/ui/report/definition/edit/dataset-edit.xml"/>
-
     <screen id="report$inputParameters"
             template="/cuba/client/web/ui/report/browse/input-parameters.xml"/>
 

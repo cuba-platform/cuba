@@ -42,6 +42,7 @@
         </copy>
         <!-- common libs -->
         <ext:install-lib groupId="antlr" artifactId="antlr" version="${antlr.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.antlr" artifactId="antlr-runtime" version="${antlr-runtime.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="asm" artifactId="asm" version="${asm.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="commons-codec" artifactId="commons-codec" version="${commons-codec.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="commons-pool" artifactId="commons-pool" version="${commons-pool.version}" toDir="${lib.common.dir}"/>

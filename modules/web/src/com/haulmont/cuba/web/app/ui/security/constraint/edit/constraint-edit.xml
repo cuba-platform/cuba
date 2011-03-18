@@ -1,12 +1,12 @@
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.gui.components.BasicEditor"
+        class="com.haulmont.cuba.web.app.ui.security.constraint.edit.ConstraintEditor"
         datasource="constraint"
         messagesPack="com.haulmont.cuba.web.app.ui.security.constraint"
         >
 
     <metadataContext>
         <view class="com.haulmont.cuba.security.entity.Constraint" name="edit">
-            <property name="entityName"/>
+            <property name="entityName"/>                                          x
             <property name="joinClause"/>
             <property name="whereClause"/>
         </view>
@@ -35,14 +35,14 @@
                         <vbox align="MIDDLE_RIGHT">
                             <label value="msg://joinClause"/>
                         </vbox>
-                        <textField id="joinClause" datasource="constraint" property="joinClause"
+                        <autoCompleteTextField id="joinClause" datasource="constraint" property="joinClause"
                                    width="500px" rows="3"/>
                     </row>
                     <row>
                         <vbox align="MIDDLE_RIGHT">
                             <label value="msg://whereClause"/>
                         </vbox>
-                        <textField id="whereClause" datasource="constraint" property="whereClause"
+                        <autoCompleteTextField id="whereClause" datasource="constraint" property="whereClause"
                                    width="500px" rows="3"/>
                     </row>
                 </rows>

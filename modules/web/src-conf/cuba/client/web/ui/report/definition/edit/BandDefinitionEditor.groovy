@@ -10,30 +10,28 @@
  */
 package cuba.client.web.ui.report.definition.edit
 
-import com.haulmont.cuba.gui.components.AbstractEditor
 import com.haulmont.cuba.core.entity.Entity
-import com.haulmont.cuba.gui.components.IFrame
-import com.haulmont.cuba.gui.components.Component
-import com.haulmont.cuba.report.BandDefinition
-import com.haulmont.cuba.gui.components.Table
-import com.haulmont.cuba.gui.components.TableActionsHelper
-import com.haulmont.cuba.gui.components.LookupField
-import com.haulmont.cuba.gui.components.TextField
-import com.haulmont.cuba.gui.components.Label
-import com.haulmont.cuba.report.DataSetType
-import com.haulmont.cuba.gui.data.ValueListener
-import com.haulmont.cuba.gui.data.CollectionDatasource
-import com.haulmont.cuba.gui.components.ActionAdapter
-import com.haulmont.cuba.report.DataSet
 import com.haulmont.cuba.core.global.MessageProvider
 import com.haulmont.cuba.gui.AppConfig
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
-import com.haulmont.cuba.gui.data.Datasource
 import com.haulmont.cuba.gui.UserSessionClient
-import com.haulmont.cuba.security.entity.EntityOp
+import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport
+import com.haulmont.cuba.gui.autocomplete.JpqlSuggestionFactory
+import com.haulmont.cuba.gui.autocomplete.Suggester
+import com.haulmont.cuba.gui.autocomplete.Suggestion
+import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.data.Datasource
+import com.haulmont.cuba.gui.data.ValueListener
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter
+import com.haulmont.cuba.report.BandDefinition
+import com.haulmont.cuba.report.DataSet
+import com.haulmont.cuba.report.DataSetType
 import com.haulmont.cuba.report.Orientation
+import com.haulmont.cuba.security.entity.EntityOp
+import com.haulmont.cuba.gui.components.*
 
-public class BandDefinitionEditor extends AbstractEditor {
+public class BandDefinitionEditor extends AbstractEditor implements Suggester {
+
+    private static volatile Collection<com.haulmont.chile.core.model.MetaClass> metaClasses;
 
     def BandDefinitionEditor(IFrame frame) {
         super(frame);
@@ -82,7 +80,7 @@ public class BandDefinitionEditor extends AbstractEditor {
 
     def initDataSetControls() {
         LookupField lookupField = getComponent('type')
-        TextField textField = getComponent('text')
+        AutoCompleteTextField textField = getComponent('text')
         TextField nameField = getComponent('datasetName')
         Label label = getComponent('dataSet_text')
 
@@ -90,6 +88,8 @@ public class BandDefinitionEditor extends AbstractEditor {
                 [
                         valueChanged: {Object source, String property, Object prevValue, Object value ->
                             [textField, label].each {Component c -> c.visible = !(value && [DataSetType.SINGLE, DataSetType.MULTI].contains(value))}
+
+                            textField.setSuggester(DataSetType.JPQL.equals(value) ? this : null)
                         }
                 ] as ValueListener
         )
@@ -121,5 +121,14 @@ public class BandDefinitionEditor extends AbstractEditor {
             set.add(item)
             datasets.setSelected(set)
         }
+    }
+
+    java.util.List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
+        String query = (String) source.getValue()
+        if (query == null || "".equals(query.trim())) {
+            return Collections.emptyList();
+        }
+        def queryPosition = cursorPosition - 1
+        return JpqlSuggestionFactory.requestHint(query, queryPosition, source, cursorPosition)
     }
 }
