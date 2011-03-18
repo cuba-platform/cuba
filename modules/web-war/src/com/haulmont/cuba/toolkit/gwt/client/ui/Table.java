@@ -983,6 +983,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             if (enabled && event != null) {
                 if (isResizing || event.getEventTarget().cast() == colResizeWidget) {
                     onResizeEvent(event);
+                    //Fixes #415 (Изменение ширины столбцов таблицы приводит к ее кривому отображению)
+                    int scrollLeft = bodyContainer.getElement().getScrollLeft();
+                    tHead.setHorizontalScrollPosition(scrollLeft);
                 } else {
                     handleCaptionEvent(event);
                 }
