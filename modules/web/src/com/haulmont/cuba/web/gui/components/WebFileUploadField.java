@@ -99,6 +99,14 @@ public class WebFileUploadField
         });
         component.addListener(new Upload.FailedListener() {
             public void uploadFailed(Upload.FailedEvent event) {
+                try {
+                    // close and remove temp file
+                    outputStream.close();
+                    uploadService.deleteFile(tempFileId);
+                    tempFileId = null;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 final Listener.Event e = new Listener.Event(event.getFilename());
                 for (Listener listener : listeners) {
                     listener.uploadFailed(e);
@@ -166,11 +174,13 @@ public class WebFileUploadField
     public byte[] getBytes() {
         if (bytes == null) {
             try {
-                File file = uploadService.getFile(fileId);
-                FileInputStream fileInputStream = new FileInputStream(file);
-                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-                readFileToBytes(fileInputStream, byteOutput);
-                bytes = byteOutput.toByteArray();
+                if (fileId != null) {
+                    File file = uploadService.getFile(fileId);
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+                    readFileToBytes(fileInputStream, byteOutput);
+                    bytes = byteOutput.toByteArray();
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
