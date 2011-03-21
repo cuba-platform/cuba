@@ -17,13 +17,13 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.security.SecurityHelper;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.vaadin.data.Item;
@@ -168,7 +168,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         initField(field, null, propertyPath, false);
 
         if (!field.isReadOnly()) {
-            field.setReadOnly(!SecurityHelper.isEditPermitted(propertyPath.getMetaProperty()));
+            field.setReadOnly(!UserSessionClient.isEditPermitted(propertyPath.getMetaProperty()));
         }
 
         return field;

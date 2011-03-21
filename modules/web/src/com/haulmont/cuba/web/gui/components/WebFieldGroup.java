@@ -17,13 +17,13 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.security.SecurityHelper;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -363,7 +363,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                dsComponent.setEditable(SecurityHelper.isEditPermitted(metaProperty)
+                dsComponent.setEditable(UserSessionClient.isEditPermitted(metaProperty)
                         && dsComponent.isEditable());
             }
         }
@@ -374,7 +374,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         if (propertyPath != null) {
             MetaProperty metaProperty = propertyPath.getMetaProperty();
 
-            setEditable(fieldConf, SecurityHelper.isEditPermitted(metaProperty)
+            setEditable(fieldConf, UserSessionClient.isEditPermitted(metaProperty)
                     && isEditable(fieldConf));
         }
     }

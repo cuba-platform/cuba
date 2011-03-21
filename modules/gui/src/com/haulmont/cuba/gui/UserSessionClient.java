@@ -10,7 +10,11 @@
  */
 package com.haulmont.cuba.gui;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.UUID;
@@ -54,6 +58,15 @@ public abstract class UserSessionClient
     public static UUID currentOrSubstitutedUserId() {
         UserSession us = getInstance().__getUserSession();
         return us.getSubstitutedUser() != null ? us.getSubstitutedUser().getId() : us.getUser().getId();
+    }
+
+    public static boolean isEditPermitted(MetaProperty metaProperty) {
+        MetaClass metaClass = metaProperty.getDomain();
+
+        UserSession userSession = getUserSession();
+        return (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                                || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
+                && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
     }
 
     protected abstract UserSession __getUserSession();
