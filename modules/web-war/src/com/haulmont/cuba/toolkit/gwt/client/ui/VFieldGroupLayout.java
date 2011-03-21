@@ -99,6 +99,39 @@ public class VFieldGroupLayout extends VGridLayout {
         }
     }
 
+    @Override
+    protected void layoutCells() {
+        int x = 0;
+        int maxHeight = 0;
+        for (int i = 0; i < cells.length; i++) {
+            int y = 0;
+            for (int j = 0; j < cells[i].length; j++) {
+                Cell cell = cells[i][j];
+                if (!(cell == null || cell.cc == null || !cell.cc.isAttached())) {
+                    if (!cell.cc.isVisible()) continue;
+                    cell.layout(x, y);
+                    y += rowHeights[j] + spacingPixelsVertical;
+                }
+            }
+            x += columnWidths[i] + spacingPixelsHorizontal;
+            maxHeight = Math.max(maxHeight, y);
+        }
+
+        if ("".equals(width)) {
+            canvas.setWidth((x - spacingPixelsHorizontal) + "px");
+        } else {
+            // main element defines width
+            canvas.setWidth("");
+        }
+        int canvasHeight;
+        if ("".equals(height)) {
+            canvasHeight = maxHeight - spacingPixelsVertical;
+        } else {
+            canvasHeight = getOffsetHeight() - marginTopAndBottom;
+        }
+        canvas.setHeight(canvasHeight + "px");
+    }
+
     private class FieldGroupComponentContainer extends ChildComponentContainer {
         protected FieldGroupComponentContainer(Widget widget, int orientation) {
             super(widget, orientation);
