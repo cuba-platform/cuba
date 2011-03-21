@@ -479,8 +479,13 @@ public class FoldersPane extends VerticalLayout {
 
         params.put("disableApplySettings", true);
 
+        boolean exist = App.getInstance().getWindowManager().windowExist(windowInfo, params);
+
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
                 WindowManager.OpenType.NEW_TAB, params);
+
+        if (exist)
+            return;
 
         Filter filterComponent = null;
 

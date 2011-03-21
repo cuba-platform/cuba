@@ -29,12 +29,12 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -90,6 +90,19 @@ public abstract class WindowManager implements Serializable {
     protected abstract DataService createDefaultDataService();
 
     public abstract Collection<Window> getOpenWindows();
+
+    private String getHash(WindowInfo windowInfo, Map<String, Object> params) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream objectOut = new ObjectOutputStream(bytes);
+            objectOut.writeObject(windowInfo.getId());
+            objectOut.writeObject(params);
+            objectOut.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return DigestUtils.md5Hex(bytes.toByteArray());
+    }
 
     protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
         checkPermission(windowInfo);
@@ -273,31 +286,48 @@ public abstract class WindowManager implements Serializable {
             throw new IllegalStateException("Screen class must be an instance of Callable<Window> or Runnable");
     }
 
+    public boolean windowExist(WindowInfo windowInfo, Map<String,Object> params){
+        return (getWindow(getHash(windowInfo, params)) != null);
+    }
+
     public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
         checkCanOpenWindow(windowInfo, openType, params);
-
+        String hashCode = getHash(windowInfo, params);
         params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();
-        if (template != null) {
-            //noinspection unchecked
-            Window window = createWindow(windowInfo, params, LayoutLoaderConfig.getWindowLoaders());
-            window.setId(windowInfo.getId());
 
+        Window window = getWindow(hashCode);
+        if (window != null) {
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
             showWindow(window, caption, description, openType);
+            return (T) window;
+        }
 
+        if (template != null) {
+            //noinspection unchecked
+            window = createWindow(windowInfo, params, LayoutLoaderConfig.getWindowLoaders());
+            window.setId(windowInfo.getId());
+            String caption = loadCaption(window, params);
+            String description = loadDescription(window, params);
+            showWindow(window, caption, description, openType);
+            putToWindowMap(window, hashCode);
             return (T) window;
         } else {
             Class screenClass = windowInfo.getScreenClass();
             if (screenClass != null) {
                 //noinspection unchecked
-                Window window = createWindowByScreenClass(windowInfo, params);
+                window = createWindowByScreenClass(windowInfo, params);
+                putToWindowMap(window, hashCode);
                 return (T) window;
             } else
                 return null;
         }
     }
+
+    protected abstract void putToWindowMap(Window window,String hashCode);
+
+    protected abstract Window getWindow(String hashCode);
 
     protected abstract void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params);
 
@@ -363,12 +393,23 @@ public abstract class WindowManager implements Serializable {
     {
         checkCanOpenWindow(windowInfo, openType, params);
 
+        checkCanOpenWindow(windowInfo, openType, params);
+        String hashCode = getHash(windowInfo, params);
+        params = createParametersMap(windowInfo, params);
+        String template = windowInfo.getTemplate();
+        Window window = getWindow(hashCode);
+        if (window != null) {
+            String caption = loadCaption(window, params);
+            String description = loadDescription(window, params);
+
+            showWindow(window, caption, description, openType);
+            return (T) window;
+        }
+
         params = createParametersMap(windowInfo, params);
         params.put("item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
         params.put("param$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
-        String template = windowInfo.getTemplate();
-        Window window;
         if (template != null) {
             window = createWindow(windowInfo, params, LayoutLoaderConfig.getEditorLoaders());
         } else {
@@ -430,6 +471,7 @@ public abstract class WindowManager implements Serializable {
 
         final String caption = loadCaption(window, params);
         final String description = loadDescription(window, params);
+
         showWindow(window, caption, description, openType);
 
         //noinspection unchecked

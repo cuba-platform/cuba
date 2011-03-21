@@ -49,7 +49,9 @@ public class WebWindowManager extends WindowManager {
         private static final long serialVersionUID = -3919777239558187362L;
 
         protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
+        protected final Map<WindowBreadCrumbs,Stack<Map.Entry<Window,String>>> stacks = new HashMap<WindowBreadCrumbs,Stack<Map.Entry<Window,String>>>();
         protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
+        protected final Map<Window,String> windows = new HashMap<Window,String>();
     }
 
     protected App app;
@@ -209,11 +211,24 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    public void showWindow(final Window window, final String caption, OpenType type) {
+    protected Layout findTab(Window window) {
+        Set<Map.Entry<Layout, WindowBreadCrumbs>> set = getTabs().entrySet();
+        for (Map.Entry<Layout, WindowBreadCrumbs> entry : set) {
+            if (entry.getValue().getCurrentWindow().equals(window))
+                return entry.getKey();
+        }
+        return null;
+    }
+
+    protected Stack<Map.Entry<Window, String>> getStack(WindowBreadCrumbs breadCrumbs) {
+        return getCurrentWindowData().stacks.get(breadCrumbs);
+    }
+
+    protected void showWindow(final Window window, final String caption, OpenType type) {
         showWindow(window, caption, null, type);
     }
 
-    public void showWindow(final Window window, final String caption, final String description, OpenType type) {
+    protected void showWindow(final Window window, final String caption, final String description, OpenType type) {
         AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
         Component component;
@@ -224,7 +239,7 @@ public class WebWindowManager extends WindowManager {
         if (window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !type.equals(OpenType.DIALOG)) {
             saveScreenHistory(window, caption);
         }
-
+        boolean newTab=true;
         switch (type) {
             case NEW_TAB:
                 closeStartupScreen(appWindow);
@@ -244,8 +259,14 @@ public class WebWindowManager extends WindowManager {
                         }
                     }
                 }
-
-                component = showWindowNewTab(window, caption, description, appWindow);
+                Layout tab = findTab(window);
+                if (tab!=null) {
+                    appWindow.getTabSheet().setSelectedTab(tab);
+                    component = tab;
+                    newTab=false;
+                } else {
+                    component = showWindowNewTab(window, caption, description, appWindow);
+                }
                 break;
 
             case THIS_TAB:
@@ -271,7 +292,7 @@ public class WebWindowManager extends WindowManager {
         }
 
         if (window.getContext() != null &&
-                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings"))) {
+                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings")) && newTab) {
             window.applySettings(new SettingsImpl(window.getId()));
         }
 
@@ -442,6 +463,22 @@ public class WebWindowManager extends WindowManager {
             throw new IllegalStateException("BreadCrumbs not found");
 
         final Window currentWindow = breadCrumbs.getCurrentWindow();
+
+        Set<Map.Entry<Window, String>> set = getCurrentWindowData().windows.entrySet();
+        boolean pushed = false;
+        for (Map.Entry<Window, String> entry : set) {
+            if (entry.getKey().equals(currentWindow)) {
+                getCurrentWindowData().windows.remove(currentWindow);
+                getStack(breadCrumbs).push(entry);
+                pushed = true;
+                break;
+            }
+        }
+        if (!pushed) {
+            getStack(breadCrumbs).push(new AbstractMap.SimpleEntry<Window, String>(currentWindow, null));
+        }
+
+        removeFromWindowMap(currentWindow);
         layout.removeComponent(WebComponentsHelper.getComposition(currentWindow));
 
         final Component component = WebComponentsHelper.getComposition(window);
@@ -456,9 +493,8 @@ public class WebWindowManager extends WindowManager {
             TabSheet.Tab tab = tabSheet.getTab(layout);
             tab.setCaption(formatTabCaption(caption, description));
             tab.setDescription(formatTabDescription(caption, description));
-        } else {
+        } else
             appWindow.getMainLayout().requestRepaintAll();
-        }
 
         return layout;
     }
@@ -543,7 +579,9 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected WindowBreadCrumbs createWindowBreadCrumbs() {
-        return new WindowBreadCrumbs();
+        WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs();
+        getCurrentWindowData().stacks.put(windowBreadCrumbs, new Stack<Map.Entry<Window, String>>());
+        return windowBreadCrumbs;
     }
 
     protected com.vaadin.ui.Window createDialogWindow(Window window) {
@@ -563,6 +601,7 @@ public class WebWindowManager extends WindowManager {
 
         closeWindow(window, openMode);
         getWindowOpenMode().remove(window);
+        removeFromWindowMap(openMode.getWindow());
     }
 
     public void checkModificationsAndCloseAll(final Runnable runIfOk, final Runnable runIfCancel) {
@@ -655,6 +694,7 @@ public class WebWindowManager extends WindowManager {
                 }
 
                 getTabs().remove(layout);
+                getCurrentWindowData().stacks.remove(windowBreadCrumbs);
                 fireListeners(window, getTabs().size() != 0);
                 showStartupScreen(appWindow);
                 break;
@@ -668,7 +708,10 @@ public class WebWindowManager extends WindowManager {
 
                 breadCrumbs.removeWindow();
                 Window currentWindow = breadCrumbs.getCurrentWindow();
-
+                if (!getStack(breadCrumbs).empty()) {
+                    Map.Entry<Window, String> entry = getStack(breadCrumbs).pop();
+                    putToWindowMap(entry.getKey(), entry.getValue());
+                }
                 final Component component = WebComponentsHelper.getComposition(currentWindow);
                 component.setSizeFull();
 
@@ -957,6 +1000,29 @@ public class WebWindowManager extends WindowManager {
                 }
             });
         }
+    }
+
+    @Override
+    protected void putToWindowMap(Window window, String hashCode) {
+        if (window != null) {
+            getCurrentWindowData().windows.put(window, hashCode);
+        }
+    }
+
+    protected void removeFromWindowMap(Window window) {
+        getCurrentWindowData().windows.remove(window);
+    }
+
+    @Override
+    protected Window getWindow(String hashCode) {
+        Set<Map.Entry<Window, String>> set = getCurrentWindowData().windows.entrySet();
+        for (Map.Entry<Window, String> entry : set) {
+            if (hashCode.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+
     }
 
     @Override
