@@ -22,6 +22,7 @@ package com.haulmont.cuba.core.config.type;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.ConfigUtil;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.entity.Entity;
 import org.apache.commons.lang.ClassUtils;
 
 import java.lang.reflect.Constructor;
@@ -91,26 +92,30 @@ public abstract class TypeFactory
                 throw new RuntimeException("Type factory error", ex);
             }
         } else {
-            for (String methodName : FACTORY_METHOD_NAMES) {
+
+            if (Entity.class.isAssignableFrom(returnType)){
+                return new EntityFactory();
+            } else {
+                for (String methodName : FACTORY_METHOD_NAMES) {
+                    try {
+                        Method factoryMethod = returnType.getMethod(methodName, String.class);
+                        if (Modifier.isStatic(factoryMethod.getModifiers()) &&
+                                Modifier.isPublic(factoryMethod.getModifiers()) &&
+                                returnType.isAssignableFrom(factoryMethod.getReturnType())) {
+                            return new StaticTypeFactory(factoryMethod);
+                        }
+                    } catch (NoSuchMethodException ex) {
+                    }
+                }
                 try {
-                    Method factoryMethod = returnType.getMethod(methodName, String.class);
-                    if (Modifier.isStatic(factoryMethod.getModifiers()) &&
-                            Modifier.isPublic(factoryMethod.getModifiers()) &&
-                            returnType.isAssignableFrom(factoryMethod.getReturnType()))
-                    {
-                        return new StaticTypeFactory(factoryMethod);
+                    Constructor ctor = returnType.getConstructor(String.class);
+                    if (Modifier.isPublic(ctor.getModifiers())) {
+                        return new ConstructorTypeFactory(ctor);
                     }
                 } catch (NoSuchMethodException ex) {
                 }
+                throw new IllegalArgumentException("Unsupported return type: " + method);
             }
-            try {
-                Constructor ctor = returnType.getConstructor(String.class);
-                if (Modifier.isPublic(ctor.getModifiers())) {
-                    return new ConstructorTypeFactory(ctor);
-                }
-            } catch (NoSuchMethodException ex) {
-            }
-            throw new IllegalArgumentException("Unsupported return type: " + method);
         }
     }
 }

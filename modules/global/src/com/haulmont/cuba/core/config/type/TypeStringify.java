@@ -25,6 +25,7 @@ import java.lang.reflect.Modifier;
 import com.haulmont.cuba.core.config.ConfigUtil;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.entity.Entity;
 
 /**
  * A class that sets a configuration type by converting the type to a
@@ -64,10 +65,13 @@ public abstract class TypeStringify
                     methodName = stringify.method();
                 }
             } else {
+
                 if (methodType.isPrimitive()) {
                     return new PrimitiveTypeStringify();
                 } else if (methodType.isEnum()) { // enum
                     methodName = "name";
+                } else if (Entity.class.isAssignableFrom(method.getParameterTypes()[0])) {
+                    return new EntityStringify();
                 } else if (Class.class.equals(methodType)) { // Class
                     methodName = "getName";
                 } else { // all else
