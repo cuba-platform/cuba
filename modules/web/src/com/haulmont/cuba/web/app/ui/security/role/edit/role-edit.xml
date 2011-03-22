@@ -51,13 +51,13 @@
         </collectionDatasource>
     </dsContext>
 
+    <#assign width = 200>
+    <#assign widthPPB = 120>
+    <#assign widthPPBMenu = 100>
     <layout expandLayout="true" expand="main">
         <vbox id="main" spacing="true" expand="permissions-types">
-            <hbox spacing="true" margin="true" align="MIDDLE_LEFT" width="100%"  expand="spacer"
+            <hbox spacing="true" margin="true" width="100%" expand="descrBox"
                   stylename="edit-area">
-                <#assign width = 200>
-                <#assign widthPPB = 120>
-                <#assign widthPPBMenu = 100>
                 <grid  spacing="true">
                     <columns>
                         <column/>
@@ -95,12 +95,10 @@
                     </rows>
                 </grid>
 
-                <hbox spacing="true" id="descrBox">
+                <hbox spacing="true" id="descrBox" expand="description;width=300px;height=100%">
                     <label value="msg://description"/>
-                    <textField id="description" datasource="role" property="description" rows="4" width="300px"/>
+                    <textField id="description" datasource="role" property="description" rows="4"/>
                 </hbox>
-
-                <vbox id="spacer"/>
             </hbox>
 
             <tabsheet id="permissions-types">

@@ -9,13 +9,11 @@
     </dsContext>
 
     <layout expand="windowActions">
-        <vbox stylename="edit-area" width="100%">
-            <hbox spacing="true" margin="true" align="MIDDLE_LEFT" expandable="false">
-                <label value="msg://group.name"/>
-                <textField id="name" datasource="group" property="name"
-                           width="300px" required="true" requiredMessage="msg://nameMsg"/>
-            </hbox>
-        </vbox>
+        <hbox spacing="true" margin="true" expand="name;width=300px" stylename="edit-area" width="100%">
+            <label value="msg://group.name"/>
+            <textField id="name" datasource="group" property="name"
+                       required="true" requiredMessage="msg://nameMsg"/>
+        </hbox>
 
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
