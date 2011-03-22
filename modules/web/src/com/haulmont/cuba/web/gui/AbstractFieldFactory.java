@@ -113,9 +113,6 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                 field = super.createField(item, propertyId, uiContext);
             }
 
-            field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
-                    propertyPath.toString()));
-
             initField(field, cubaField, propertyPath, true);
 
             return field;
@@ -162,9 +159,6 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             field = super.createField(container, itemId, propertyId, uiContext);
         }
 
-        field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
-                propertyPath.toString()));
-
         initField(field, null, propertyPath, false);
 
         if (!field.isReadOnly()) {
@@ -174,7 +168,15 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         return field;
     }
 
-    protected void initField(final com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath, boolean validationVisible) {
+    protected void setCaption(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
+        field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaClass(),
+                propertyPath.toString()));
+    }
+
+    protected void initField(final com.vaadin.ui.Field field, Field cubaField, MetaPropertyPath propertyPath,
+                             boolean validationVisible) {
+        setCaption(field, propertyPath);
+
         if (field instanceof com.vaadin.ui.AbstractField) {
             ((com.vaadin.ui.AbstractField) field).setImmediate(true);
         }

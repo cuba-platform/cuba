@@ -20,7 +20,10 @@ import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -35,7 +38,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
@@ -252,32 +255,32 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         component.setCols(cols);
 
-        Collection<MetaPropertyPath> fields = null;
+        Collection<MetaPropertyPath> fieldsMetaProps = null;
         if (this.fields.isEmpty() && datasource != null) {//collects fields by entity view
-            fields = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+            fieldsMetaProps = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
 
-            final ArrayList<MetaPropertyPath> propertyPaths = new ArrayList<MetaPropertyPath>(fields);
+            final ArrayList<MetaPropertyPath> propertyPaths = new ArrayList<MetaPropertyPath>(fieldsMetaProps);
             for (final MetaPropertyPath propertyPath : propertyPaths) {
                 MetaProperty property = propertyPath.getMetaProperty();
                 if (property.getRange().getCardinality().isMany() || MetadataHelper.isSystem(property)) {
-                    fields.remove(propertyPath);
+                    fieldsMetaProps.remove(propertyPath);
                 }
             }
 
-            component.setRows(fields.size());
+            component.setRows(fieldsMetaProps.size());
 
         } else {
             if (datasource != null) {
                 final List<String> fieldIds = new ArrayList<String>(this.fields.keySet());
-                fields = new ArrayList<MetaPropertyPath>();
+                fieldsMetaProps = new ArrayList<MetaPropertyPath>();
                 for (final String id : fieldIds) {
                     final Field field = getField(id);
                     final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
                     final String clickAction = field.getXmlDescriptor().attributeValue("clickAction");
                     if (field.getDatasource() == null && propertyPath != null
                             && StringUtils.isEmpty(clickAction)) {
-                        //fields with attribute "clickAction" will be created manually
-                        fields.add(propertyPath);
+                        //fieldsMetaProps with attribute "clickAction" will be created manually
+                        fieldsMetaProps.add(propertyPath);
                     }
                 }
             }
@@ -286,19 +289,19 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         if (datasource != null) {
-            itemWrapper = createDatasourceWrapper(datasource, fields, dsManager);
+            itemWrapper = createDatasourceWrapper(datasource, fieldsMetaProps, dsManager);
 
             if (!this.fields.isEmpty()) {
-                //Removes custom fields from the list. We shouldn't to create components for custom fields
-                for (MetaPropertyPath propertyPath : new ArrayList<MetaPropertyPath>(fields)) {
+                //Removes custom fieldsMetaProps from the list. We shouldn't to create components for custom fieldsMetaProps
+                for (MetaPropertyPath propertyPath : new ArrayList<MetaPropertyPath>(fieldsMetaProps)) {
                     final Field field = getField(propertyPath.toString());
                     if (field.isCustom()) {
-                        fields.remove(propertyPath);
+                        fieldsMetaProps.remove(propertyPath);
                     }
                 }
             }
 
-            component.setItemDataSource(itemWrapper, fields);
+            component.setItemDataSource(itemWrapper, fieldsMetaProps);
         } else {
             component.setItemDataSource(null, null);
         }
@@ -849,6 +852,14 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         protected Element getXmlDescriptor(MetaPropertyPath propertyPath) {
             Field field = fields.get(propertyPath.toString());
             return field != null ? field.getXmlDescriptor() : null;
+        }
+
+        @Override
+        protected void setCaption(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
+            // if caption not already loaded from attributes then load default caption
+            Field fieldConf = WebFieldGroup.this.fields.get(propertyPath.toString());
+            if ((fieldConf == null) || (StringUtils.isEmpty(fieldConf.getCaption())))
+                super.setCaption(field, propertyPath);
         }
     }
 
