@@ -22,7 +22,7 @@ public interface Filter
 
     void setFilterEntity(FilterEntity filterEntity);
 
-    void apply();
+    void apply(boolean isNewWindow);
 
     /**
      * Low-level method, don't invoke from application code

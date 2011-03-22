@@ -87,4 +87,8 @@ public interface WebConfig extends Config
 
     @DefaultBoolean(true)
     boolean getGenericFilterManualApplyRequired();
+
+    /** If true, then check filter conditions(empty or not) before apply filter */
+    @DefaultBoolean(true)
+    boolean getGenericFilterChecking();
 }

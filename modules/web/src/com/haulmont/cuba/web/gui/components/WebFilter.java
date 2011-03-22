@@ -145,7 +145,7 @@ public class WebFilter
         applyBtn.setCaption(MessageProvider.getMessage(mainMessagesPack, "actions.Apply"));
         applyBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                apply();
+                apply(false);
             }
         });
         App.getInstance().getWindowManager().setDebugId(applyBtn, "genericFilterApplyBtn");
@@ -255,8 +255,30 @@ public class WebFilter
         }
     }
 
-    public void apply() {
-        applyDatasourceFilter();
+    public void apply(boolean isNewWindow) {
+        if (ConfigProvider.getConfig(WebConfig.class).getGenericFilterChecking()) {
+            if (filterEntity != null) {
+                boolean haveCorrectCondition = false;
+
+                for (Condition condition : conditions) {
+                    if (condition.getParam().getValue() != null) {
+                        haveCorrectCondition = true;
+                        break;
+                    }
+                }
+
+                if (!haveCorrectCondition) {
+                    if (!isNewWindow) {
+                        App.getInstance().getWindowManager().showNotification
+                                (MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"), IFrame.NotificationType.ERROR);
+                    }
+                    return;
+                } else
+                    applyDatasourceFilter();
+            }
+        } else {
+            applyDatasourceFilter();
+        }
 
         if (useMaxResults) {
             int maxResults;
@@ -391,7 +413,7 @@ public class WebFilter
         } finally {
             changingFilter = false;
         }
-        apply();
+        apply(true);
     }
 
     public void loadFiltersAndApplyDefault() {
@@ -426,7 +448,7 @@ public class WebFilter
                                 try {
                                     select.setValue(filter);
                                     updateControls();
-                                    apply();
+                                    apply(true);
                                     if (filterEntity != null)
                                         if (filterEntity.getCode() != null) {
                                             window.setDescription(MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode()));
