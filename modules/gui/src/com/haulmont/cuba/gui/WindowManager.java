@@ -91,17 +91,8 @@ public abstract class WindowManager implements Serializable {
 
     public abstract Collection<Window> getOpenWindows();
 
-    private String getHash(WindowInfo windowInfo, Map<String, Object> params) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        try {
-            ObjectOutputStream objectOut = new ObjectOutputStream(bytes);
-            objectOut.writeObject(windowInfo.getId());
-            objectOut.writeObject(params);
-            objectOut.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return DigestUtils.md5Hex(bytes.toByteArray());
+    private Integer getHash(WindowInfo windowInfo, Map<String, Object> params) {
+        return windowInfo.hashCode() + params.hashCode();
     }
 
     protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
@@ -292,7 +283,7 @@ public abstract class WindowManager implements Serializable {
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
         checkCanOpenWindow(windowInfo, openType, params);
-        String hashCode = getHash(windowInfo, params);
+        Integer hashCode = getHash(windowInfo, params);
         params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();
 
@@ -325,9 +316,9 @@ public abstract class WindowManager implements Serializable {
         }
     }
 
-    protected abstract void putToWindowMap(Window window,String hashCode);
+    protected abstract void putToWindowMap(Window window, Integer hashCode);
 
-    protected abstract Window getWindow(String hashCode);
+    protected abstract Window getWindow(Integer hashCode);
 
     protected abstract void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params);
 
@@ -394,7 +385,7 @@ public abstract class WindowManager implements Serializable {
         checkCanOpenWindow(windowInfo, openType, params);
 
         checkCanOpenWindow(windowInfo, openType, params);
-        String hashCode = getHash(windowInfo, params);
+        Integer hashCode = getHash(windowInfo, params);
         params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();
         Window window = getWindow(hashCode);

@@ -49,9 +49,9 @@ public class WebWindowManager extends WindowManager {
         private static final long serialVersionUID = -3919777239558187362L;
 
         protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
-        protected final Map<WindowBreadCrumbs,Stack<Map.Entry<Window,String>>> stacks = new HashMap<WindowBreadCrumbs,Stack<Map.Entry<Window,String>>>();
+        protected final Map<WindowBreadCrumbs,Stack<Map.Entry<Window,Integer>>> stacks = new HashMap<WindowBreadCrumbs,Stack<Map.Entry<Window,Integer>>>();
         protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
-        protected final Map<Window,String> windows = new HashMap<Window,String>();
+        protected final Map<Window,Integer> windows = new HashMap<Window,Integer>();
     }
 
     protected App app;
@@ -220,7 +220,7 @@ public class WebWindowManager extends WindowManager {
         return null;
     }
 
-    protected Stack<Map.Entry<Window, String>> getStack(WindowBreadCrumbs breadCrumbs) {
+    protected Stack<Map.Entry<Window, Integer>> getStack(WindowBreadCrumbs breadCrumbs) {
         return getCurrentWindowData().stacks.get(breadCrumbs);
     }
 
@@ -464,9 +464,9 @@ public class WebWindowManager extends WindowManager {
 
         final Window currentWindow = breadCrumbs.getCurrentWindow();
 
-        Set<Map.Entry<Window, String>> set = getCurrentWindowData().windows.entrySet();
+        Set<Map.Entry<Window, Integer>> set = getCurrentWindowData().windows.entrySet();
         boolean pushed = false;
-        for (Map.Entry<Window, String> entry : set) {
+        for (Map.Entry<Window, Integer> entry : set) {
             if (entry.getKey().equals(currentWindow)) {
                 getCurrentWindowData().windows.remove(currentWindow);
                 getStack(breadCrumbs).push(entry);
@@ -475,7 +475,7 @@ public class WebWindowManager extends WindowManager {
             }
         }
         if (!pushed) {
-            getStack(breadCrumbs).push(new AbstractMap.SimpleEntry<Window, String>(currentWindow, null));
+            getStack(breadCrumbs).push(new AbstractMap.SimpleEntry<Window, Integer>(currentWindow, null));
         }
 
         removeFromWindowMap(currentWindow);
@@ -580,7 +580,7 @@ public class WebWindowManager extends WindowManager {
 
     protected WindowBreadCrumbs createWindowBreadCrumbs() {
         WindowBreadCrumbs windowBreadCrumbs = new WindowBreadCrumbs();
-        getCurrentWindowData().stacks.put(windowBreadCrumbs, new Stack<Map.Entry<Window, String>>());
+        getCurrentWindowData().stacks.put(windowBreadCrumbs, new Stack<Map.Entry<Window, Integer>>());
         return windowBreadCrumbs;
     }
 
@@ -709,7 +709,7 @@ public class WebWindowManager extends WindowManager {
                 breadCrumbs.removeWindow();
                 Window currentWindow = breadCrumbs.getCurrentWindow();
                 if (!getStack(breadCrumbs).empty()) {
-                    Map.Entry<Window, String> entry = getStack(breadCrumbs).pop();
+                    Map.Entry<Window, Integer> entry = getStack(breadCrumbs).pop();
                     putToWindowMap(entry.getKey(), entry.getValue());
                 }
                 final Component component = WebComponentsHelper.getComposition(currentWindow);
@@ -1003,7 +1003,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    protected void putToWindowMap(Window window, String hashCode) {
+    protected void putToWindowMap(Window window, Integer hashCode) {
         if (window != null) {
             getCurrentWindowData().windows.put(window, hashCode);
         }
@@ -1014,9 +1014,9 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    protected Window getWindow(String hashCode) {
-        Set<Map.Entry<Window, String>> set = getCurrentWindowData().windows.entrySet();
-        for (Map.Entry<Window, String> entry : set) {
+    protected Window getWindow(Integer hashCode) {
+        Set<Map.Entry<Window, Integer>> set = getCurrentWindowData().windows.entrySet();
+        for (Map.Entry<Window, Integer> entry : set) {
             if (hashCode.equals(entry.getValue())) {
                 return entry.getKey();
             }
