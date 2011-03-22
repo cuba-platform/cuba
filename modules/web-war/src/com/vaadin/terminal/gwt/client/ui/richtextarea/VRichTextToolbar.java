@@ -164,6 +164,10 @@ public class VRichTextToolbar extends Composite {
         String xxsmall();
 
         String yellow();
+
+        String foreground();
+
+        String background();
     }
 
     /**
@@ -359,8 +363,8 @@ public class VRichTextToolbar extends Composite {
         }
 
         if (basic != null) {
-            bottomPanel.add(backColors = createColorList("Background"));
-            bottomPanel.add(foreColors = createColorList("Foreground"));
+            bottomPanel.add(backColors = createColorList(strings.background()));
+            bottomPanel.add(foreColors = createColorList(strings.foreground()));
             bottomPanel.add(fonts = createFontList());
             bottomPanel.add(fontSizes = createFontSizes());
 

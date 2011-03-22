@@ -5,5 +5,8 @@
     <inherits name="com.vaadin.incubator.dashlayout.DashLayoutWidgetSet" />
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
 
+    <!-- Uncomment if 'ru' locale support will be needed -->
+    <!--<extend-property name="locale" values="ru"/>-->
+
     <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet" />
 </module>
