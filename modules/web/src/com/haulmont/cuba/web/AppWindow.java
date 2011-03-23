@@ -580,7 +580,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             for (MenuItem child : item.getChildren()) {
                 if (child.getChildren().isEmpty()) {
                     if (child.isPermitted(session)) {
-                        MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
+                        MenuBar.MenuItem menuItem = (child.isSeparator()) ? vItem.addSeparator() : vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
                         createShortcut(menuItem, child);
                         createDebugIds(menuItem, child);
                     }

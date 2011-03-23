@@ -158,22 +158,26 @@ public class VMenuBar extends Widget implements Paintable,
             boolean itemHasCommand = item.getBooleanAttribute("command");
 
             // Construct html from the text and the optional icon
-            StringBuffer itemHTML = new StringBuffer("<div>");
+            StringBuffer itemHTML = new StringBuffer();
+            if (item.hasAttribute("separator")) {
+                itemHTML.append("<div class=\"menu-separator\"/>");
+            } else {
+                itemHTML.append("<div>");
+                if (item.hasAttribute("icon")) {
+                    itemHTML.append("<img src=\"").append(client.translateVaadinUri(item
+                            .getStringAttribute("icon"))).append("\" align=\"left\" />");
+                }
 
-            if (item.hasAttribute("icon")) {
-                itemHTML.append("<img src=\"").append(client.translateVaadinUri(item
-                        .getStringAttribute("icon"))).append("\" align=\"left\" />");
+                itemHTML.append(itemText);
+
+                if (currentMenu != this && item.getChildCount() > 0
+                        && submenuIcon != null) {
+                    itemHTML.append("<img src=\"").append(submenuIcon)
+                            .append("\" align=\"right\" />");
+                }
+
+                itemHTML.append("</div>");
             }
-
-            itemHTML.append(itemText);
-
-            if (currentMenu != this && item.getChildCount() > 0
-                    && submenuIcon != null) {
-                itemHTML.append("<img src=\"").append(submenuIcon)
-                        .append("\" align=\"right\" />");
-            }
-
-            itemHTML.append("</div>");
 
             final String debugId = item.hasAttribute("debugId")
                     ? Util.escapeHTML(item.getStringAttribute("debugId")) : null;
@@ -200,6 +204,8 @@ public class VMenuBar extends Widget implements Paintable,
                     shortcut,
                     debugId
             );
+
+            currentItem.setSeparator(item.hasAttribute("separator"));
 
             if (item.hasAttribute("stylename")) {
                 currentItem.addStyleName(item.getStringAttribute("stylename"));
@@ -645,6 +651,7 @@ public class VMenuBar extends Widget implements Paintable,
         protected String shortcut = null;
 
         private Element shortcutElement = null;
+        protected boolean isSeparator = false;
 
         private static final String shortcutClassSel = "menuitem-shortcut-selected";
 
@@ -663,7 +670,7 @@ public class VMenuBar extends Widget implements Paintable,
         }
 
         public void setSelected(boolean selected) {
-            if (selected) {
+            if (selected && !isSeparator) {
                 addStyleDependentName("selected");
                 if (shortcutElement != null) {
                     shortcutElement.addClassName(shortcutClassSel);
@@ -674,6 +681,19 @@ public class VMenuBar extends Widget implements Paintable,
                     shortcutElement.removeClassName(shortcutClassSel);
                 }
             }
+        }
+
+        private void setSeparator(boolean separator) {
+            isSeparator = separator;
+            if (separator) {
+                addStyleName("separator");
+            } else {
+                removeStyleName("separator");
+            }
+        }
+
+        public boolean isSeparator() {
+            return isSeparator;
         }
 
         /*
