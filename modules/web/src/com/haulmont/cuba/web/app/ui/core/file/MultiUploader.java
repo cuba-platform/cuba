@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.*;
@@ -49,8 +50,7 @@ public class MultiUploader extends AbstractEditor {
         okBtn = getComponent("windowActions.windowCommit");
         okBtn.setEnabled(false);
 
-        TableActionsHelper helper = new TableActionsHelper(this, uploadsTable);
-        helper.createRemoveAction();
+        uploadsTable.addAction(new RemoveAction(uploadsTable, true));
 
         uploadField = getComponent("multiUpload");
         uploadField.setCaption(getMessage("upload"));

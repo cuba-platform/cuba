@@ -12,6 +12,7 @@ package cuba.client.web.ui.jmxcontrol.browse;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
 
 import java.util.Map;
@@ -30,8 +31,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
         super.init(params);
 
         final Table mbeansTable = getComponent("mbeans");
-        ListActionsHelper mbeansHelper = new TableActionsHelper(this, mbeansTable);
-        mbeansHelper.createRefreshAction();
+        mbeansTable.addAction(new RefreshAction(mbeansTable));
 
         Action inspectAction = new AbstractAction("inspect") {
             private static final long serialVersionUID = 3804486579147680485L;

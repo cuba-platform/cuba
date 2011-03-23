@@ -16,10 +16,11 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.TableActionsHelper;
+import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -38,6 +39,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Map;
 
 public class GenericBrowserWindow extends WebWindow
@@ -69,12 +71,7 @@ public class GenericBrowserWindow extends WebWindow
         final WebTable table = new WebTable();
         table.setMultiSelect(true);
 
-        final TableActionsHelper helper = new TableActionsHelper(this, table);
-
-        helper.createCreateAction();
-        helper.createEditAction();
-        helper.createRemoveAction();
-        helper.createRefreshAction();
+        ComponentsHelper.createActions(table, EnumSet.of(ListActionType.CREATE, ListActionType.EDIT, ListActionType.REMOVE, ListActionType.REFRESH));
 
         return table;
     }

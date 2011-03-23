@@ -12,8 +12,11 @@ package com.haulmont.cuba.web.app.ui.security.user.edit;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -24,8 +27,8 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.ui.security.user.NameBuilderListener;
 import com.haulmont.cuba.web.app.ui.security.role.edit.PermissionsLookup;
+import com.haulmont.cuba.web.app.ui.security.user.NameBuilderListener;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPopupButton;
 import com.haulmont.cuba.web.gui.components.WebTextField;
@@ -58,15 +61,12 @@ public class UserEditor extends AbstractEditor {
         rolesTable = getComponent("roles");
         rolesTable.addAction(new AddRoleAction());
         rolesTable.addAction(new EditRoleAction());
-        TableActionsHelper rolesTableActions = new TableActionsHelper(this, rolesTable);
-        rolesTableActions.createRemoveAction(false);
+        rolesTable.addAction(new RemoveAction(rolesTable, false));
 
         substTable = getComponent("subst");
         substTable.addAction(new AddSubstitutedAction());
         substTable.addAction(new EditSubstitutedAction());
-        TableActionsHelper substTableActions = new TableActionsHelper(this, substTable);
-        substTableActions.createRemoveAction(false);
-
+        substTable.addAction(new RemoveAction(substTable, false));
 
         setPermissionsShowAction(rolesTable, "show-screens", "sec$Target.screenPermissions.lookup", PermissionType.SCREEN);
         setPermissionsShowAction(rolesTable, "show-entities", "sec$Target.entityPermissions.lookup", PermissionType.ENTITY_OP);

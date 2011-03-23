@@ -10,46 +10,31 @@
  */
 package cuba.client.web.ui.report.edit
 
-import com.haulmont.cuba.gui.components.AbstractEditor
-import com.haulmont.cuba.gui.components.IFrame
-import com.haulmont.cuba.core.entity.Entity
-import com.haulmont.cuba.core.global.PersistenceHelper
-import com.haulmont.cuba.report.Report
-import com.haulmont.cuba.report.BandDefinition
-import com.haulmont.cuba.gui.components.Button
-import com.haulmont.cuba.gui.components.Component
-import com.haulmont.cuba.gui.WindowManager
-import com.haulmont.cuba.gui.components.Window
-
-import com.haulmont.cuba.gui.data.Datasource
-import com.haulmont.cuba.gui.components.ActionAdapter
-import com.haulmont.cuba.core.global.MetadataProvider
-import com.haulmont.cuba.gui.data.CollectionDatasource
-import com.haulmont.cuba.report.ReportInputParameter
-import com.haulmont.cuba.gui.components.Table
-import com.haulmont.cuba.gui.components.TableActionsHelper
-
-import com.haulmont.cuba.core.global.View
-import com.haulmont.cuba.gui.data.DataService
-import com.haulmont.cuba.report.Orientation
-import com.haulmont.cuba.gui.components.TextField
-import com.haulmont.cuba.gui.components.CheckBox
-import com.haulmont.cuba.gui.data.ValueListener
-import com.haulmont.cuba.gui.components.FileUploadField
-import com.haulmont.cuba.web.filestorage.FileDisplay
-import com.haulmont.cuba.gui.components.FileUploadField.Listener.Event
-import com.haulmont.cuba.core.global.MessageProvider
-import com.haulmont.cuba.core.global.TimeProvider
-import com.haulmont.cuba.web.app.FileDownloadHelper
-import com.haulmont.cuba.core.app.FileStorageService
-import com.haulmont.cuba.core.global.FileStorageException
-import com.haulmont.cuba.gui.ServiceLocator
-import com.haulmont.cuba.gui.components.ValueProvider
-
 import com.haulmont.chile.core.model.MetaPropertyPath
-import com.haulmont.cuba.gui.components.Tree
-import org.apache.commons.lang.StringUtils
+import com.haulmont.cuba.core.app.FileStorageService
 import com.haulmont.cuba.core.app.FileUploadService
+import com.haulmont.cuba.core.entity.Entity
+import com.haulmont.cuba.gui.ServiceLocator
+import com.haulmont.cuba.gui.WindowManager
+import com.haulmont.cuba.gui.components.FileUploadField.Listener.Event
+import com.haulmont.cuba.gui.components.actions.AddAction
+import com.haulmont.cuba.gui.components.actions.CreateAction
+import com.haulmont.cuba.gui.components.actions.EditAction
+import com.haulmont.cuba.gui.components.actions.RemoveAction
+import com.haulmont.cuba.gui.data.CollectionDatasource
+import com.haulmont.cuba.gui.data.DataService
+import com.haulmont.cuba.gui.data.Datasource
+import com.haulmont.cuba.gui.data.ValueListener
+import com.haulmont.cuba.report.BandDefinition
+import com.haulmont.cuba.report.Orientation
+import com.haulmont.cuba.report.Report
+import com.haulmont.cuba.report.ReportInputParameter
+import com.haulmont.cuba.web.app.FileDownloadHelper
+import com.haulmont.cuba.web.filestorage.FileDisplay
+import java.util.List
+import org.apache.commons.lang.StringUtils
+import com.haulmont.cuba.core.global.*
+import com.haulmont.cuba.gui.components.*
 
 public class ReportEditor extends AbstractEditor {
 
@@ -109,17 +94,16 @@ public class ReportEditor extends AbstractEditor {
         final CollectionDatasource parametersDs = getDsContext().get('parametersDs')
 
         Table parametersTable = getComponent('generalFrame.parametersFrame.inputParametersTable')
-        TableActionsHelper paramHelper = new TableActionsHelper(this, parametersTable)
-        paramHelper.createCreateAction(
-                [
-                        getValues: {
-                            ['position': parametersDs.itemIds.size(),
-                                    'report': report]
-                        },
-                        getParameters: {[:]}
-                ] as ValueProvider)
-        paramHelper.createRemoveAction(false)
-        paramHelper.createEditAction()
+        parametersTable.addAction(
+                new CreateAction(parametersTable) {
+                    @Override protected Map<String, Object> getInitialValues() {
+                        return ['position': parametersDs.itemIds.size(), 'report': report]
+                    }
+
+                }
+        )
+        parametersTable.addAction(new RemoveAction(parametersTable, false));
+        parametersTable.addAction(new EditAction(parametersTable));
 
         Button upButton = getComponent('generalFrame.parametersFrame.up')
         Button downButton = getComponent('generalFrame.parametersFrame.down')
@@ -178,35 +162,39 @@ public class ReportEditor extends AbstractEditor {
 
     private def initValuesFormats() {
         Table formatsTable = getComponent('generalFrame.formatsFrame.valuesFormatsTable')
-        TableActionsHelper formatsHelper = new TableActionsHelper(this, formatsTable)
-        formatsHelper.createCreateAction(
-                [getValues: { ['report': report] },
-                        getParameters: { [:] }] as ValueProvider,
-                WindowManager.OpenType.DIALOG)
-        formatsHelper.createRemoveAction(false)
-        formatsHelper.createEditAction(WindowManager.OpenType.DIALOG)
+
+        formatsTable.addAction(
+                new CreateAction(formatsTable, WindowManager.OpenType.DIALOG) {
+                    @Override protected Map<String, Object> getInitialValues() {
+                        return ['report': report]
+                    }
+                }
+        )
+        formatsTable.addAction(new RemoveAction(formatsTable, false))
+        formatsTable.addAction(new EditAction(formatsTable, WindowManager.OpenType.DIALOG))
     }
 
     private def initRoles() {
         final CollectionDatasource parametersDs = getDsContext().get('rolesDs')
         Table rolesTable = getComponent('securityFrame.rolesTable')
-        TableActionsHelper paramHelper = new TableActionsHelper(this, rolesTable)
-        paramHelper.createRemoveAction(false)
         def handler = [
                 handleLookup: {Collection items ->
                     if (items)
                         items.each {Entity item -> parametersDs.addItem(item)}
                 }
         ] as Window.Lookup.Handler
-        paramHelper.createAddAction(handler)
+        rolesTable.addAction(new AddAction(rolesTable, handler))
+        rolesTable.addAction(new RemoveAction(rolesTable, false))
 
         Table screenTable = getComponent('securityFrame.screenTable')
-        TableActionsHelper screenTableHelper = new TableActionsHelper(this, screenTable)
-        screenTableHelper.createCreateAction([
-                getValues: { return ['report': report] },
-                getParameters: { return [:] }
-        ] as ValueProvider)
-        screenTableHelper.createRemoveAction(false)
+        screenTable.addAction(
+                new CreateAction(screenTable) {
+                    @Override protected Map<String, Object> getInitialValues() {
+                        return ['report': report]
+                    }
+                }
+        )
+        screenTable.addAction(new RemoveAction(screenTable, false))
     }
 
     private def initGeneral() {

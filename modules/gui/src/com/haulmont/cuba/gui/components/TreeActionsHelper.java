@@ -16,6 +16,21 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import java.util.Map;
 import java.util.Collections;
 
+/**
+ * @deprecated Use these actions directly:<br/>
+ *     <ul>
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.RefreshAction}
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.EditAction}
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.RemoveAction}
+ *     <li>etc.
+ *     </ul>
+ *     See also:
+ *     <ul>
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List)}
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List, java.util.EnumSet)}
+  *     </ul>
+ */
+@Deprecated
 public class TreeActionsHelper extends ListActionsHelper<Tree>{
 
     private static final long serialVersionUID = 1841229918439188174L;
@@ -30,6 +45,7 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
         return action;
     }
 
+    @Deprecated
     private class CreateAction extends AbstractAction {
         private final ValueProvider valueProvider;
         private final WindowManager.OpenType openType;

@@ -11,8 +11,10 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.*;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 
 /**
  * Utility class to work for GenericUI components
@@ -119,5 +121,32 @@ public abstract class ComponentsHelper {
         float height = c.getHeight();
         int heightUnit = c.getHeightUnits();
         return height + UNIT_SYMBOLS[heightUnit];
+    }
+
+    /**
+     * Creates standard Create, Edit and Remove actions for the component
+     * @param owner List, Table or Tree component
+     */
+    public static void createActions(List owner) {
+        createActions(owner, EnumSet.of(ListActionType.CREATE, ListActionType.EDIT, ListActionType.REMOVE));
+    }
+
+    /**
+     * Creates standard actions for the component
+     * @param owner List, Table or Tree component
+     * @param actions set of actions to create
+     */
+    public static void createActions(List owner, EnumSet<ListActionType> actions) {
+        if (actions.contains(ListActionType.CREATE))
+            owner.addAction(new CreateAction(owner));
+
+        if (actions.contains(ListActionType.EDIT))
+            owner.addAction(new EditAction(owner));
+
+        if (actions.contains(ListActionType.REMOVE))
+            owner.addAction(new RemoveAction(owner));
+
+        if (actions.contains(ListActionType.REFRESH))
+            owner.addAction(new RefreshAction(owner));
     }
 }

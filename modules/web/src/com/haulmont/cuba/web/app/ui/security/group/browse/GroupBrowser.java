@@ -13,8 +13,10 @@ package com.haulmont.cuba.web.app.ui.security.group.browse;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.Group;
@@ -44,27 +46,34 @@ public class GroupBrowser extends AbstractWindow {
             tree.setSelected(treeDS.getItem(itemIds.iterator().next()));
         }
 
-        final TreeActionsHelper helper = new TreeActionsHelper(this, tree);
-        helper.createCreateAction(WindowManager.OpenType.DIALOG);
-        helper.createEditAction(WindowManager.OpenType.DIALOG);
-        helper.createRemoveAction();
+        tree.addAction(new CreateAction(tree, WindowManager.OpenType.DIALOG));
+        tree.addAction(new EditAction(tree, WindowManager.OpenType.DIALOG));
+        tree.addAction(new RemoveAction(tree));
 
         final Table users = getComponent("users");
 
-        final TableActionsHelper usersActions = new TableActionsHelper(this, users);
-        usersActions.createCreateAction(new ValueProvider() {
-            public Map<String, Object> getValues() {
-                final Map<String, Object> map = new HashMap<String, Object>();
-                map.put("group", tree.getSelected());
-                return map;
-            }
+        users.addAction(
+                new CreateAction(users) {
+                    @Override
+                    protected Map<String, Object> getInitialValues() {
+                        final Map<String, Object> map = new HashMap<String, Object>();
+                        map.put("group", tree.getSelected());
+                        return map;
+                    }
+                }
+        );
 
-            public Map<String, Object> getParameters() {
-                return Collections.emptyMap();
-            }
-        });
-        usersActions.createEditAction();
-        usersActions.addListener(new EditUserListener(users));
+        users.addAction(
+                new EditAction(users) {
+                    @Override
+                    protected void afterCommit(Entity entity) {
+                        final CollectionDatasource ds = users.getDatasource();
+                        ds.refresh();
+                        users.setSelected((Entity) null);
+                    }
+                }
+        );
+
         users.addAction(new AbstractAction("moveToGroup") {
             public String getCaption() {
                 return getMessage("users.moveToGroup");
@@ -97,7 +106,8 @@ public class GroupBrowser extends AbstractWindow {
                 }
             }
         });
-        usersActions.createRefreshAction();
+
+        users.addAction(new RefreshAction(users));
 
         Tabsheet tabsheet = getComponent("tabsheet");
         tabsheet.addListener(
@@ -117,7 +127,6 @@ public class GroupBrowser extends AbstractWindow {
             return;
 
         final Table constraints = getComponent("constraints");
-        final TableActionsHelper constraintsActions = new TableActionsHelper(this, constraints);
         constraints.addAction(
                 new AbstractAction("create") {
 
@@ -152,9 +161,7 @@ public class GroupBrowser extends AbstractWindow {
                 }
         );
 
-        constraintsActions.createEditAction();
-        constraintsActions.createRemoveAction();
-        constraintsActions.createRefreshAction();
+        ComponentsHelper.createActions(constraints, EnumSet.of(ListActionType.EDIT, ListActionType.REMOVE, ListActionType.REFRESH));
 
         constraintsTabInitialized = true;
     }
@@ -164,7 +171,6 @@ public class GroupBrowser extends AbstractWindow {
             return;
 
         final Table attributes = getComponent("attributes");
-        final TableActionsHelper attributesActions = new TableActionsHelper(this, attributes);
         attributes.addAction(
                 new AbstractAction("create") {
 
@@ -199,31 +205,8 @@ public class GroupBrowser extends AbstractWindow {
                 }
         );
 
-        attributesActions.createEditAction();
-        attributesActions.createRemoveAction();
-        attributesActions.createRefreshAction();
+        ComponentsHelper.createActions(attributes, EnumSet.of(ListActionType.EDIT, ListActionType.REMOVE, ListActionType.REFRESH));
 
         attributesTabInitialized = true;
-    }
-
-    private class EditUserListener implements TableActionsHelper.Listener {
-
-        private Table users;
-
-        private EditUserListener(Table users) {
-            this.users = users;
-        }
-
-        public void entityCreated(Entity entity) {
-        }
-
-        public void entityEdited(Entity entity) {
-            final CollectionDatasource ds = users.getDatasource();
-            ds.refresh();
-            users.setSelected((Entity) null);
-        }
-
-        public void entityRemoved(Set<Entity> entity) {
-        }
     }
 }

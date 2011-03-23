@@ -15,6 +15,21 @@ import com.haulmont.cuba.security.global.UserSession;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * @deprecated Use these actions directly:<br/>
+ *     <ul>
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.RefreshAction}
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.EditAction}
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.RemoveAction}
+ *     <li>etc.
+ *     </ul>
+ *     See also:
+ *     <ul>
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List)}
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List, java.util.EnumSet)}
+  *     </ul>
+ */
+@Deprecated
 public abstract class ListActionsHelper<T extends List> implements Serializable {
 
     protected IFrame frame;
@@ -230,6 +245,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         windowListeners.remove(listener);
     }
 
+    @Deprecated
     protected class EditAction extends AbstractAction {
         private final WindowManager.OpenType openType;
 
@@ -308,6 +324,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         void childWindowClosed(Window window);
     }
 
+    @Deprecated
     protected class RefreshAction extends AbstractAction {
 
         private ValueProvider valueProvider;
@@ -336,6 +353,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
+    @Deprecated
     protected class RemoveAction extends AbstractAction {
         private final boolean autocommit;
 
@@ -425,6 +443,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
+    @Deprecated
     protected class ExcludeAction extends AbstractAction {
         private final boolean autocommit;
         private final boolean confirm;
@@ -521,6 +540,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
+    @Deprecated
     protected class FilterApplyAction extends AbstractAction {
         public FilterApplyAction() {
             super("apply");
@@ -536,6 +556,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
+    @Deprecated
     protected class FilterClearAction extends AbstractAction {
         private final String containerName;
 
@@ -563,6 +584,7 @@ public abstract class ListActionsHelper<T extends List> implements Serializable 
         }
     }
 
+    @Deprecated
     protected class AddAction extends AbstractAction {
         private final String captionKey;
         private final Window.Lookup.Handler handler;

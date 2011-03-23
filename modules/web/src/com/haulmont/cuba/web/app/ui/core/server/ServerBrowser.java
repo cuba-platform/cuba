@@ -13,7 +13,7 @@ package com.haulmont.cuba.web.app.ui.core.server;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TableActionsHelper;
+import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 
 import java.util.Map;
@@ -28,8 +28,7 @@ public class ServerBrowser extends AbstractWindow
         super.init(params);
 
         Table table = getComponent("servers");
-        TableActionsHelper helper = new TableActionsHelper(this, table);
-        helper.createRefreshAction();
+        table.addAction(new RefreshAction(table));
 
         com.vaadin.ui.Table impl = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         impl.setPageLength(10);

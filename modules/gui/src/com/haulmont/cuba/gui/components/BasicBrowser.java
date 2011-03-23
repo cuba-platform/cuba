@@ -10,6 +10,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.actions.FilterApplyAction;
+import com.haulmont.cuba.gui.components.actions.FilterClearAction;
+import com.haulmont.cuba.gui.components.actions.RefreshAction;
+
 import java.util.Map;
 
 public class BasicBrowser extends AbstractLookup{
@@ -22,16 +27,13 @@ public class BasicBrowser extends AbstractLookup{
     protected void init(Map<String, Object> params) {
         super.init(params);
         Table table = getComponent("table");
-        TableActionsHelper helper = new TableActionsHelper(this, table);
-        helper.createCreateAction();
-        helper.createEditAction();
-        helper.createRemoveAction();
+        ComponentsHelper.createActions(table);
 
         if (getComponent("filter") != null) {
-            helper.createFilterApplyAction("filter.apply");
-            helper.createFilterClearAction("filter.clear", "filterPanel");
+            table.addAction(new FilterApplyAction(table));
+            table.addAction(new FilterClearAction(table, "filterPanel"));
         } else {
-            helper.createRefreshAction();
+            table.addAction(new RefreshAction(table));
         }
     }    
 }

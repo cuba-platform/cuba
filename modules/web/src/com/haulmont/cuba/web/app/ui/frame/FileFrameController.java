@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
@@ -48,9 +49,8 @@ public class FileFrameController extends AbstractWindow {
         filesTable = getComponent("files");
         initGeneratedColumn();
         ds = getDsContext().get("filesDs");
-        TableActionsHelper helper = new TableActionsHelper(this, filesTable);
         Button remove = getComponent("remove");
-        remove.setAction(helper.createRemoveAction(false));
+        remove.setAction(new RemoveAction(filesTable, false));
 
         uploadField.addListener(new FileUploadField.Listener() {
             public void uploadStarted(Event event) {

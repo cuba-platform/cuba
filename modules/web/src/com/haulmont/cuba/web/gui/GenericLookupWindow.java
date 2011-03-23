@@ -9,13 +9,15 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.TableActionsHelper;
+import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 
+import java.util.EnumSet;
 import java.util.Map;
 
 public class GenericLookupWindow extends GenericBrowserWindow implements com.haulmont.cuba.gui.components.Window.Lookup {
@@ -51,10 +53,7 @@ public class GenericLookupWindow extends GenericBrowserWindow implements com.hau
         final WebTable table = new WebTable();
         table.setMultiSelect(true);
 
-        final TableActionsHelper helper = new TableActionsHelper(this, table);
-
-        helper.createEditAction();
-        helper.createRefreshAction();
+        ComponentsHelper.createActions(table, EnumSet.of(ListActionType.EDIT, ListActionType.REFRESH));
 
         return table;
     }

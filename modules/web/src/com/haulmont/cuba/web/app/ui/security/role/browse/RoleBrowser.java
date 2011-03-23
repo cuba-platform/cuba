@@ -13,13 +13,14 @@ package com.haulmont.cuba.web.app.ui.security.role.browse;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ExcelAction;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
 
 import java.util.*;
@@ -36,11 +37,8 @@ public class RoleBrowser extends AbstractLookup {
     protected void init(Map<String, Object> params) {
         table = getComponent("roles");
 
-        TableActionsHelper helper = new TableActionsHelper(this, table);
-        helper.createCreateAction();
-        helper.createEditAction();
-        helper.createRemoveAction();
-        helper.createExcelAction(new WebExportDisplay());
+        ComponentsHelper.createActions(table);
+        table.addAction(new ExcelAction(table, new WebExportDisplay()));
 
         table.addAction(new AbstractAction("assignToUsers") {
             public void actionPerform(Component component) {

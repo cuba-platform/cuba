@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport
 import com.haulmont.cuba.gui.autocomplete.JpqlSuggestionFactory
 import com.haulmont.cuba.gui.autocomplete.Suggester
 import com.haulmont.cuba.gui.autocomplete.Suggestion
+import com.haulmont.cuba.gui.components.actions.RemoveAction
 import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.data.Datasource
 import com.haulmont.cuba.gui.data.ValueListener
@@ -55,8 +56,7 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
         position = (Integer) params['param$position']
 
         Table table = getComponent('dataSets')
-        TableActionsHelper tah = new TableActionsHelper(this, table)
-        tah.createRemoveAction(false)
+        table.addAction(new RemoveAction(table, false))
 
         table.addAction(new ActionAdapter('create', [
                 actionPerform: {

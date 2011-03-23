@@ -29,6 +29,21 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 
+/**
+ * @deprecated Use these actions directly:<br/>
+ *     <ul>
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.RefreshAction}
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.EditAction}
+ *     <li>{@link com.haulmont.cuba.gui.components.actions.RemoveAction}
+ *     <li>etc.
+ *     </ul>
+ *     See also:
+ *     <ul>
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List)}
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List, java.util.EnumSet)}
+ *     </ul>
+ */
+@Deprecated
 public class TableActionsHelper extends ListActionsHelper<Table> {
 
     private static final long serialVersionUID = -8710627236049217204L;
@@ -61,6 +76,7 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
         return action;
     }
 
+    @Deprecated
     private class CreateAction extends AbstractAction {
         private final ValueProvider valueProvider;
         private final WindowManager.OpenType openType;
@@ -145,6 +161,7 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
         }
     }
 
+    @Deprecated
     private class ExcelAction extends AbstractAction {
         private final ExportDisplay display;
 
@@ -164,6 +181,7 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
         }
     }
 
+    @Deprecated
     private class ParameterizedExcelAction extends AbstractAction {
         private final ExportDisplay display;
 

@@ -1,11 +1,11 @@
 package com.haulmont.cuba.web.app.ui.security.role.edit;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -126,8 +125,7 @@ public class RoleEditor extends AbstractEditor {
                                     permissionType, "FORBID",  PropertyPermissionValue.DENY.getValue()));
         }
 
-        final TableActionsHelper helper = new TableActionsHelper(this, table);
-        helper.createRemoveAction(false);
+        table.addAction(new RemoveAction(table, false));
 
         initTableColumns(permissionsStorage);
     }

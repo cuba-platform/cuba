@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.FilterApplyAction;
+import com.haulmont.cuba.gui.components.actions.FilterClearAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -39,9 +41,8 @@ public class EntityLogViewer extends AbstractWindow {
         ((LookupField) getComponent("filter.object")).setOptionsMap(getTargets());
 
         Table table = getComponent("events");
-        TableActionsHelper helper = new TableActionsHelper(this, table);
-        helper.createFilterApplyAction("filter.apply");
-        helper.createFilterClearAction("filter.clear", "filter.filter-pane");
+        table.addAction(new FilterApplyAction(table));
+        table.addAction(new FilterClearAction(table, "filter.filter-pane"));
 
         Date date = TimeProvider.currentTimestamp();
         ((DateField) getComponent("filter.createdFrom")).setValue(DateUtils.addDays(date, -1));
