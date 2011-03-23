@@ -275,7 +275,8 @@ public class WebFilter
                     return;
                 } else
                     applyDatasourceFilter();
-            }
+            } else
+                applyDatasourceFilter();
         } else {
             applyDatasourceFilter();
         }
