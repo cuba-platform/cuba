@@ -67,7 +67,7 @@ public class WebButton
         this.action = action;
 
         final String caption = action.getCaption();
-        if (!StringUtils.isEmpty(caption)) {
+        if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(component.getCaption())) {
             component.setCaption(caption);
         }
 
