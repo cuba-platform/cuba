@@ -608,7 +608,7 @@ public class WebWindowManager extends WindowManager {
             closeWindow(window, entries.get(i).getValue());
         }
         getWindowOpenMode().clear();
-
+        getCurrentWindowData().windows.clear();
         Collection windows = App.getInstance().getWindows();
         for (Object win : new ArrayList(windows)) {
             if (!win.equals(App.getInstance().getAppWindow())) {
