@@ -42,7 +42,7 @@ public class RoleBrowser extends AbstractLookup {
 
         table.addAction(new AbstractAction("assignToUsers") {
             public void actionPerform(Component component) {
-                if (table.getSelected() == null) {
+                if (table.getSelected().size() >= 0) {
                     showNotification(getMessage("selectRole.msg"), NotificationType.HUMANIZED);
                     return;
                 }
