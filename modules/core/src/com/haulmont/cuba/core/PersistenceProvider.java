@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.HsqlDbDialect;
@@ -23,9 +24,12 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.util.ObjectId;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 
 import javax.annotation.Nonnull;
@@ -95,6 +99,69 @@ public abstract class PersistenceProvider
             }
         }
         return set;
+    }
+
+    /**
+     * Returns an ID of directly referenced entity without loading it from DB
+     * @param entity master entity
+     * @param property name of reference property
+     * @return UUID of the referenced entity
+     * @exception IllegalStateException if the entity is not in Managed state
+     */
+    public static UUID getReferenceId(Object entity, String property) {
+        OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
+        if (!(stateManager instanceof StateManagerImpl))
+            throw new IllegalStateException("Entity must be in managed state");
+
+        ClassMetaData metaData = stateManager.getMetaData();
+        int index = metaData.getField(property).getIndex();
+
+        UUID id;
+        BitSet loaded = stateManager.getLoaded();
+        if (loaded.get(index)) {
+            Object reference = ((Instance) entity).getValue(property);
+            if (!(reference instanceof Instance))
+                throw new IllegalArgumentException("Property " + property + " is not a reference");
+            id = ((Instance) reference).getUuid();
+        } else {
+            Object implData = stateManager.getIntermediate(index);
+            if (implData == null)
+                return null;
+            if (!(implData instanceof ObjectId))
+                throw new IllegalArgumentException("Property " + property + " is not a reference");
+            ObjectId objectId = (ObjectId) implData;
+            id = (UUID) objectId.getId();
+        }
+        return id;
+    }
+
+    /**
+     * Checks if the property is loaded from DB
+     * @param entity entity
+     * @param property name of the property
+     * @return true if loaded
+     * @exception IllegalStateException if the entity is not in Managed state
+     */
+    public static boolean isLoaded(Object entity, String property) {
+        if (entity instanceof PersistenceCapable) {
+            final PersistenceCapable persistenceCapable = (PersistenceCapable) entity;
+            final OpenJPAStateManager stateManager = (OpenJPAStateManager) persistenceCapable.pcGetStateManager();
+
+            if (!(stateManager instanceof StateManagerImpl))
+                throw new IllegalStateException("Entity must be in managed state");
+
+            final BitSet loaded = stateManager.getLoaded();
+            final ClassMetaData metaData = stateManager.getMetaData();
+
+            final FieldMetaData fieldMetaData = metaData.getField(property);
+            if (fieldMetaData == null) throw new IllegalStateException();
+
+            final int index = fieldMetaData.getIndex();
+
+            return loaded.get(index);
+        } else {
+            return true;
+        }
     }
 
     /**

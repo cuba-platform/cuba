@@ -44,25 +44,6 @@ public class PersistenceHelper {
             return true;
     }
 
-    public static boolean isLoaded(Object entity, String property) {
-        if (entity instanceof PersistenceCapable) {
-            final PersistenceCapable persistenceCapable = (PersistenceCapable) entity;
-            final OpenJPAStateManager stateManager = (OpenJPAStateManager) persistenceCapable.pcGetStateManager();
-
-            final BitSet loaded = stateManager.getLoaded();
-            final ClassMetaData metaData = stateManager.getMetaData();
-
-            final FieldMetaData fieldMetaData = metaData.getField(property);
-            if (fieldMetaData == null) throw new IllegalStateException();
-
-            final int index = fieldMetaData.getIndex();
-
-            return loaded.get(index);
-        } else {
-            return true;
-        }
-    }
-
     public static String getEntityName(Class entityClass) {
         Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
         if (annotation == null)
