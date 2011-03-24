@@ -524,6 +524,7 @@ public class WebWindowManager extends WindowManager {
         dialogParams.reset();
 
         win.setModal(true);
+        win.setResizable(false);
 
         App.getInstance().getAppWindow().addWindow(win);
         win.center();
