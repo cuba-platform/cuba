@@ -68,21 +68,6 @@ public class WebWindowManager extends WindowManager {
 
     private static Log log = LogFactory.getLog(WebWindowManager.class);
 
-    private String baseModalWindowCaption = "";
-
-    private Stack<ModalContentWithCaption> modalWindowStack = new Stack<ModalContentWithCaption>();
-
-    private static class ModalContentWithCaption implements Serializable{
-        String caption;
-        ComponentContainer componentContainer;
-        private static final long serialVersionUID = -1389415942614781757L;
-
-        private ModalContentWithCaption(String caption, ComponentContainer componentContainer) {
-            this.caption = caption;
-            this.componentContainer = componentContainer;
-        }
-    }
-
     public WebWindowManager(final App app) {
         this.app = app;
         app.getConnection().addListener(new UserSubstitutionListener() {
@@ -502,38 +487,8 @@ public class WebWindowManager extends WindowManager {
     protected Component showWindowDialog(final Window window, final String caption, final String description, AppWindow appWindow) {
         removeWindowsWithName(window.getId());
 
-        com.vaadin.ui.Window win = null;
-
-        com.vaadin.ui.Window mainWindow = app.getAppWindow();
-        for (com.vaadin.ui.Window childWindow: mainWindow.getChildWindows()) {
-            if (childWindow.isModal() && !childWindow.isClosable()) {
-                win = childWindow;
-                break;
-            }
-        }
-
-        if (win == null) {
-            win = createDialogWindow(window);
-            baseModalWindowCaption = win.getCaption();
-            win.setName(window.getId());
-        } else {
-            modalWindowStack.push(new ModalContentWithCaption(win.getCaption(), win.getContent()));
-            win.setCaption(modalWindowStack.peek().caption + " - " + window.getCaption());
-            final com.vaadin.ui.Window finalWin = win;
-            window.addListener(new Window.CloseListener() {
-
-                public void windowClosed(String actionId) {
-                    if (!modalWindowStack.isEmpty()) {
-                        ModalContentWithCaption modalContentWithCaption = modalWindowStack.pop();
-                        finalWin.setContent(modalContentWithCaption.componentContainer);
-                        finalWin.setCaption(modalContentWithCaption.caption);
-                        finalWin.center();
-                    }
-                }
-            });
-        }
-
-//        win.setName(window.getId());
+        final com.vaadin.ui.Window win = createDialogWindow(window);
+        win.setName(window.getId());
         setDebugId(win, window.getId());
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
@@ -570,9 +525,7 @@ public class WebWindowManager extends WindowManager {
 
         win.setModal(true);
 
-        if (!app.getAppWindow().getChildWindows().contains(win)) {
-            app.getAppWindow().addWindow(win);
-        }
+        App.getInstance().getAppWindow().addWindow(win);
         win.center();
 
         return win;
@@ -671,10 +624,8 @@ public class WebWindowManager extends WindowManager {
         switch (openMode.openType) {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
-                if (modalWindowStack.isEmpty()) {
-                    App.getInstance().getAppWindow().removeWindow(win);
-                    fireListeners(window, getTabs().size() != 0);
-                }
+                App.getInstance().getAppWindow().removeWindow(win);
+                fireListeners(window, getTabs().size() != 0);
                 break;
             }
             case NEW_TAB: {
