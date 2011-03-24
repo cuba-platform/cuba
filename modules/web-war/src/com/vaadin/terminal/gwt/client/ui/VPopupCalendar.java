@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.VCalendarPanel;
 
 public class VPopupCalendar extends VTextualDate implements Paintable, Field,
         ClickHandler, CloseHandler<PopupPanel> {
@@ -79,7 +80,7 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
         if (lastReadOnlyState != readonly) {
             updateWidth();
         }
-
+        calendar.setCloseWhenDateSelected(uidl.hasAttribute("closeWhenDateSelected"));
     }
 
     @Override

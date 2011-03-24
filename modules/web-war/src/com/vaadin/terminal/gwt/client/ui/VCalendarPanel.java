@@ -61,6 +61,8 @@ public class VCalendarPanel extends FlexTable implements MouseListener {
     /* Needed to identify locale changes */
     private String locale = LocaleService.getDefaultLocale();
 
+    private boolean closeWhenDateSelected = false;
+
     public VCalendarPanel(VDateField parent) {
         datefield = parent;
         setStyleName(VDateField.CLASSNAME + "-calendarpanel");
@@ -588,6 +590,9 @@ public class VCalendarPanel extends FlexTable implements MouseListener {
                     ((VOverlay) getParent()).hide();
                 } else {
                     updateCalendar();
+                    if (isCloseWhenDateSelected()){
+                        ((VOverlay) getParent()).hide();
+                    }
                 }
 
             } catch (final NumberFormatException e) {
@@ -640,4 +645,11 @@ public class VCalendarPanel extends FlexTable implements MouseListener {
         nextYear.setFocus(focus);
     }
 
+    public boolean isCloseWhenDateSelected() {
+        return closeWhenDateSelected;
+    }
+
+    public void setCloseWhenDateSelected(boolean closeWhenDateSelected) {
+        this.closeWhenDateSelected = closeWhenDateSelected;
+    }
 }

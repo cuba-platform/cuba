@@ -69,6 +69,9 @@ public interface WebConfig extends Config
     @Default("English|en;Russian|ru")
     Map<String, Locale> getAvailableLocales();
 
+    @DefaultBoolean(false)
+    boolean getCloseCalendarWhenDateSelected();
+
     @DefaultInt(5)
     int getLogLongRequestsThresholdSec();
 
