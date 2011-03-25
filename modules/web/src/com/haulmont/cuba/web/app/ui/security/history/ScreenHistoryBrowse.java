@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.app.ui.security.history;
 
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
@@ -30,11 +31,16 @@ public class ScreenHistoryBrowse extends AbstractWindow{
 
     @Override
     protected void init(Map<String, Object> params) {
+        DialogParams dialogParams = getDialogParams();
+        dialogParams.setHeight(480);
+        dialogParams.setWidth(500);
+        dialogParams.setResizable(false);
         historyTable = getComponent("historyTable");
         LinkColumnHelper.initColumn(historyTable, "caption",
                 new LinkColumnHelper.Handler() {
                     public void onClick(Entity entity) {
                         openUrl(entity);
+                        close("windowClose");
                     }
                 }
         );

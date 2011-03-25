@@ -10,8 +10,10 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
@@ -67,6 +69,8 @@ public class WebWindowManager extends WindowManager {
     protected Map<String, Integer> debugIds = new HashMap<String, Integer>();
 
     private static Log log = LogFactory.getLog(WebWindowManager.class);
+    
+    private List<String> screenIds;
 
     public WebWindowManager(final App app) {
         this.app = app;
@@ -76,6 +80,9 @@ public class WebWindowManager extends WindowManager {
                 showStartupScreen(app.getAppWindow());
             }
         });
+        String property = AppContext.getProperty("cuba.web.screenHistoryIds");
+        if (property != null && StringUtils.isNotBlank(property))
+            screenIds = Arrays.asList(StringUtils.split(property, ','));
     }
 
     private WindowData getCurrentWindowData() {
@@ -221,9 +228,6 @@ public class WebWindowManager extends WindowManager {
         window.setCaption(caption);
         window.setDescription(description);
 
-        if (window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !type.equals(OpenType.DIALOG)) {
-            saveScreenHistory(window, caption);
-        }
         boolean newTab=true;
         switch (type) {
             case NEW_TAB:
@@ -622,6 +626,12 @@ public class WebWindowManager extends WindowManager {
 
     private void closeWindow(Window window, WindowOpenMode openMode) {
         AppWindow appWindow = app.getAppWindow();
+
+        if (window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !openMode.openType.equals(OpenType.DIALOG)) {
+            if (screenIds == null || (screenIds != null && screenIds.contains(window.getId())))
+                saveScreenHistory(window, window.getCaption());
+        }
+
         switch (openMode.openType) {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
@@ -723,6 +733,13 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected void saveScreenHistory(Window window, String caption){
+        IFrame frame = window.getFrame();
+        if (frame instanceof WebWindow.Editor) {
+            Instance entity = (Instance) ((WebWindow.Editor) frame).getItem();
+            if (entity != null) {
+                caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
+            }
+        }
         ScreenHistoryEntity screenHistoryEntity = EntityFactory.create(ScreenHistoryEntity.class);
         screenHistoryEntity.setCaption(caption);
         screenHistoryEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
