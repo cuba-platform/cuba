@@ -985,6 +985,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected Window getWindow(Integer hashCode) {
+        if (AppWindow.Mode.SINGLE.equals(app.getAppWindow().getMode()))
+            return null;
         Set<Map.Entry<Window, Integer>> set = getCurrentWindowData().windows.entrySet();
         for (Map.Entry<Window, Integer> entry : set) {
             if (hashCode.equals(entry.getValue())) {
@@ -992,7 +994,6 @@ public class WebWindowManager extends WindowManager {
             }
         }
         return null;
-
     }
 
     @Override
