@@ -233,6 +233,7 @@ public class WebWindowManager extends WindowManager {
             case NEW_TAB:
                 closeStartupScreen(appWindow);
                 if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
+                    newTab=false;
                     VerticalLayout mainLayout = appWindow.getMainLayout();
                     if (mainLayout.getComponentIterator().hasNext()) {
                         Layout oldLayout = (Layout) mainLayout.getComponentIterator().next();
