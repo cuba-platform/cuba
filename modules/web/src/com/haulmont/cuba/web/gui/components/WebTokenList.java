@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -448,19 +449,68 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             String key = componentsMapper.key(label);
             label.setKey(key);
             label.addListener(new TokenListLabel.RemoveTokenListener() {
-                public void removeToken(TokenListLabel source) {
+                public void removeToken(final TokenListLabel source) {
                     if (isEditable()) {
-                        Instance item = componentItems.get(source);
-                        if (item != null) {
-                            datasource.removeItem((Entity) item);
+                        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                        App.getInstance().getWindowManager().showOptionDialog(
+                                MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
+                                MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
+                                IFrame.MessageType.CONFIRMATION,
+                                new Action[]{
+                                        new AbstractAction("ok") {
+                                            public String getCaption() {
+                                                return MessageProvider.getMessage(messagesPackage, "actions.Ok");
+                                            }
 
-                            itemComponents.remove(item);
-                            componentItems.remove(source);
-                        }
+                                            public boolean isEnabled() {
+                                                return true;
+                                            }
+
+                                            @Override
+                                            public String getIcon() {
+                                                return "icons/ok.png";
+                                            }
+
+                                            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                                doRemove(source);
+                                            }
+                                        }, new AbstractAction("cancel") {
+                                            public String getCaption() {
+                                                return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
+                                            }
+
+                                            public boolean isEnabled() {
+                                                return true;
+                                            }
+
+                                            @Override
+                                            public String getIcon() {
+                                                return "icons/cancel.png";
+                                            }
+
+                                            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                            }
+                                        }
+                                }
+                        );
                     }
                 }
             });
             return label;
+        }
+
+        private void doRemove(TokenListLabel source) {
+            Instance item = componentItems.get(source);
+            if (item != null) {
+                if (itemChangeHandler != null) { //todo test
+                    itemChangeHandler.removeItem(item);
+                } else {
+                    datasource.removeItem((Entity) item);
+                }
+
+                itemComponents.remove(item);
+                componentItems.remove(source);
+            }
         }
 
         @Override
