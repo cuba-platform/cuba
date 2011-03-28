@@ -285,6 +285,22 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             return ((Instance) value).getInstanceName();
         } else if (value instanceof Date) {
             return Datatypes.getInstance().get(Date.class).format((Date) value);
+        } else if (value instanceof Set) {
+            StringBuffer sb = new StringBuffer();
+            for (Object obj : (Set) value) {
+                sb.append(stringify(obj)).append(",");
+            }
+            if (sb.length() > 0)
+                sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
+        } else if (value instanceof List) {
+            StringBuffer sb = new StringBuffer();
+            for (Object obj : (List) value) {
+                sb.append(stringify(obj)).append(",");
+            }
+            if (sb.length() > 0)
+                sb.deleteCharAt(sb.length() - 1);
+            return sb.toString();
         } else {
             return StringUtils.abbreviate(value.toString(), EntityLogAttr.VALUE_LEN - 3);
         }
