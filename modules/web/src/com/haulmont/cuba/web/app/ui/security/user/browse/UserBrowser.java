@@ -18,10 +18,12 @@ import com.haulmont.cuba.gui.components.actions.ExcelAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.app.ui.security.user.edit.UserEditor;
 import com.haulmont.cuba.web.rpt.WebExportDisplay;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -80,14 +82,17 @@ public class UserBrowser extends AbstractLookup {
                             selectedUser = getDsContext().getDataService().reload(selectedUser, "user.edit");
                             User newUser = new User();
                             if(selectedUser.getUserRoles()!=null){
-                                Set<UserRole> roles = new HashSet<UserRole>();
-                                for(UserRole oldRole : selectedUser.getUserRoles()){
+                                Set<UserRole> userRoles = new HashSet<UserRole>();
+                                for (UserRole oldUserRole : selectedUser.getUserRoles()) {
+                                    Role oldRole = getDsContext().getDataService().reload(oldUserRole.getRole(), "_local");
+                                    if (BooleanUtils.isTrue(oldRole.getDefaultRole()))
+                                        continue;
                                     UserRole role = new UserRole();
                                     role.setUser(newUser);
-                                    role.setRole(oldRole.getRole());
-                                    roles.add(role);
+                                    role.setRole(oldRole);
+                                    userRoles.add(role);
                                 }
-                                newUser.setUserRoles(roles);
+                                newUser.setUserRoles(userRoles);
                             }
                             newUser.setGroup(selectedUser.getGroup());
                             UserEditor editor = openEditor("sec$User.edit", newUser, WindowManager.OpenType.THIS_TAB);
