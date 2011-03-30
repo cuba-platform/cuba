@@ -65,15 +65,14 @@ public abstract class TypeStringify
                     methodName = stringify.method();
                 }
             } else {
-
+                if ((method.getParameterTypes().length > 0)) {
+                    if (Entity.class.isAssignableFrom(method.getParameterTypes()[0]))
+                        return new EntityStringify();
+                }
                 if (methodType.isPrimitive()) {
                     return new PrimitiveTypeStringify();
                 } else if (methodType.isEnum()) { // enum
                     methodName = "name";
-                } else if ((method.getParameterTypes().length > 0)) {
-                    if (Entity.class.isAssignableFrom(method.getParameterTypes()[0]))
-                        return new EntityStringify();
-                    else throw new Exception("Invalid stringify method :" + method);
                 } else if (Class.class.equals(methodType)) { // Class
                     methodName = "getName";
                 } else { // all else
