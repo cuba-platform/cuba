@@ -13,14 +13,11 @@ package com.haulmont.cuba.report.formatters;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.Orientation;
+import com.haulmont.cuba.report.ReportOutputType;
+import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.xls.Area;
 import com.haulmont.cuba.report.formatters.xls.AreaAlign;
 import com.haulmont.cuba.report.formatters.xls.Cell;
-
-import static com.haulmont.cuba.report.formatters.xls.HSSFCellHelper.*;
-import static com.haulmont.cuba.report.formatters.xls.HSSFPicturesHelper.getAllAnchors;
-import static com.haulmont.cuba.report.formatters.xls.HSSFRangeHelper.*;
-
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.model.Sheet;
 import org.apache.poi.hssf.record.EscherAggregate;
@@ -34,9 +31,13 @@ import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
+
+import static com.haulmont.cuba.report.formatters.xls.HSSFCellHelper.*;
+import static com.haulmont.cuba.report.formatters.xls.HSSFPicturesHelper.getAllAnchors;
+import static com.haulmont.cuba.report.formatters.xls.HSSFRangeHelper.*;
 
 public class XLSFormatter extends AbstractFormatter {
     private HSSFWorkbook templateWorkbook;
@@ -58,8 +59,15 @@ public class XLSFormatter extends AbstractFormatter {
 
     private AreaDependencyHelper areaDependencyHelper = new AreaDependencyHelper();
 
-    public XLSFormatter(FileDescriptor template) throws IOException {
-        templateWorkbook = new HSSFWorkbook(getFileInputStream(template));
+    public XLSFormatter() {
+        registerReportExtension("xls");
+        registerReportOutput(ReportOutputType.XLS);
+
+        defaultOutputType = ReportOutputType.XLS;
+    }
+
+    private void initWorkbook() throws IOException {
+        templateWorkbook = new HSSFWorkbook(getFileInputStream(templateFile));
         resultWorkbook = new HSSFWorkbook();
 
         cloneWorkbookStyles();
@@ -73,7 +81,27 @@ public class XLSFormatter extends AbstractFormatter {
         colnum = 0;
     }
 
-    public byte[] createDocument(Band rootBand) {
+    public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
+
+        if (templateFile == null)
+            throw new NullPointerException();
+
+        try {
+            initWorkbook();
+        } catch (Exception e) {
+            throw new ReportFormatterException(e);
+        }
+
+        processDocument(rootBand);
+
+        try {
+            resultWorkbook.write(outputStream);
+        } catch (Exception e) {
+            throw new ReportFormatterException(e);
+        }
+    }
+
+    private void processDocument(Band rootBand) {
         for (Band childBand : rootBand.getChildrenList()) {
             writeBand(childBand);
         }
@@ -91,16 +119,6 @@ public class XLSFormatter extends AbstractFormatter {
             HSSFSheet resultSheet = resultWorkbook.getSheetAt(sheetNumber);
 
             copyPicturesOnSheet(templateSheet, resultSheet);
-        }
-
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            resultWorkbook.write(byteArrayOutputStream);
-            byte[] result = byteArrayOutputStream.toByteArray();
-            byteArrayOutputStream.close();
-            return result;
-        } catch (Exception e) {
-            return null;
         }
     }
 

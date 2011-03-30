@@ -12,48 +12,134 @@ package com.haulmont.cuba.report.formatters;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.FileStorageAPI;
-import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.report.Band;
+import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.formatters.exception.UnsupportedFormatException;
+import com.lowagie.text.*;
+import com.lowagie.text.Font;
+import com.lowagie.text.Image;
+import com.lowagie.text.html.simpleparser.ChainedProperties;
+import com.lowagie.text.html.simpleparser.HTMLWorker;
+import com.lowagie.text.html.simpleparser.ImageProvider;
+import com.lowagie.text.pdf.PdfWriter;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
+import java.awt.*;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 
+/**
+ * Engine for create reports with HTML tamplates and FreeMarker markup
+ */
 public class HtmlFormatter extends AbstractFormatter {
 
-    private FileDescriptor templateFileDescriptor;
+    private static final String HTML_IMAGE_PROVIDER = "img_provider";
+    private static final String HTML_FONT_FACTORY = "font_factory";
 
-    public HtmlFormatter(FileDescriptor templateFileDescriptor) {
-        this.templateFileDescriptor = templateFileDescriptor;
+    private static final String PDF_DEFAULT_ENCODING = "Cp1251";
+    private static final String PDF_DEFAULT_FONT = "Times New Roman";
+
+    private static final String CUBA_FONTS_DIR = "/cuba/fonts";
+
+    public HtmlFormatter() {
+        registerReportExtension("htm");
+        registerReportExtension("html");
+
+        registerReportOutput(ReportOutputType.HTML);
+        registerReportOutput(ReportOutputType.PDF);
+
+        defaultOutputType = ReportOutputType.HTML;
     }
 
-    @Override
-    public byte[] createDocument(Band rootBand) {
-        ByteArrayOutputStream resultContent = new ByteArrayOutputStream();
+    public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
 
-        Map templateModel = getTemplateModel(rootBand);
+        if (templateFile == null)
+            throw new NullPointerException();
 
-        Template htmlTemplate = getTemplate();
-        OutputStreamWriter resultWriter = new OutputStreamWriter(resultContent);
+        switch (outputType) {
+            case HTML:
+                writeHtmlDocument(rootBand, outputStream);
+                break;
 
+            case PDF:
+                ByteArrayOutputStream htmlOuputStream = new ByteArrayOutputStream();
+                writeHtmlDocument(rootBand, htmlOuputStream);
+
+                String htmlContent = new String(htmlOuputStream.toByteArray());
+
+                ByteArrayInputStream htmlInputStream = new ByteArrayInputStream(
+                        htmlContent.getBytes(Charset.forName(PDF_DEFAULT_ENCODING)));
+
+                writePdfDocument(htmlInputStream, outputStream);
+                break;
+
+            default:
+                throw new UnsupportedFormatException();
+        }
+    }
+
+    private void writePdfDocument(InputStream htmlInput, OutputStream outputStream) {
+//        String htmlContent = htmlWriter.getBuffer().toString();
+        /*ByteArrayInputStream htmlInput = new ByteArrayInputStream(
+                htmlContent.getBytes(Charset.forName(PDF_DEFAULT_ENCODING)));*/
+        InputStreamReader htmlReader = new InputStreamReader(htmlInput, Charset.forName(PDF_DEFAULT_ENCODING));
+
+        GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
+        String fontsDir = config.getConfDir() + CUBA_FONTS_DIR;
+        FontsLoader fontsLoader = new FontsLoader();
+
+        int registeredFonts = fontsLoader.registerDirectory(fontsDir);
+        if (registeredFonts == 0)
+            return;
+
+        Document document = new Document(PageSize.A4);
         try {
-            htmlTemplate.process(templateModel, resultWriter);
-            resultWriter.close();
+            PdfWriter pdfWriter = PdfWriter.getInstance(document, outputStream);
+            document.open();
+            document.addCreationDate();
+
+            HashMap workerProps = new HashMap();
+            workerProps.put(HTML_IMAGE_PROVIDER, new HtmlImageLoader());
+            workerProps.put(HTML_FONT_FACTORY, fontsLoader);
+
+            HTMLWorker htmlWorker = new HTMLWorker(document);
+            htmlWorker.setInterfaceProps(workerProps);
+            htmlWorker.parse(htmlReader);
+
+            document.close();
+            pdfWriter.close();
         } catch (ReportFormatterException e) {
             throw e;
         } catch (Exception e) {
             throw new ReportFormatterException(e);
         }
+    }
 
-        return resultContent.toByteArray();
+    private void writeHtmlDocument(Band rootBand, OutputStream outputStream) {
+        Map templateModel = getTemplateModel(rootBand);
+
+        Template htmlTemplate = getTemplate();
+        Writer htmlWriter = new OutputStreamWriter(outputStream);
+
+        try {
+            htmlTemplate.process(templateModel, htmlWriter);
+            htmlWriter.close();
+        } catch (ReportFormatterException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ReportFormatterException(e);
+        }
     }
 
     private Map getTemplateModel(Band rootBand) {
@@ -82,16 +168,19 @@ public class HtmlFormatter extends AbstractFormatter {
     }
 
     private Template getTemplate() {
+        if (templateFile == null)
+            throw new NullPointerException();
+
         String templateContent;
         FileStorageAPI storageAPI = Locator.lookup(FileStorageAPI.NAME);
         try {
-            byte[] templateBytes = storageAPI.loadFile(templateFileDescriptor);
+            byte[] templateBytes = storageAPI.loadFile(templateFile);
             templateContent = new String(templateBytes);
         } catch (FileStorageException e) {
             throw new ReportFormatterException(e);
         }
         StringTemplateLoader stringLoader = new StringTemplateLoader();
-        stringLoader.putTemplate(templateFileDescriptor.getFileName(), templateContent);
+        stringLoader.putTemplate(templateFile.getFileName(), templateContent);
 
         Configuration fmConfiguration = new Configuration();
         fmConfiguration.setTemplateLoader(stringLoader);
@@ -99,10 +188,38 @@ public class HtmlFormatter extends AbstractFormatter {
 
         Template htmlTemplate;
         try {
-            htmlTemplate = fmConfiguration.getTemplate(templateFileDescriptor.getFileName());
+            htmlTemplate = fmConfiguration.getTemplate(templateFile.getFileName());
         } catch (Exception e) {
             throw new ReportFormatterException(e);
         }
         return htmlTemplate;
+    }
+
+    private class FontsLoader extends FontFactoryImp {
+
+        public FontsLoader() {
+            defaultEncoding = PDF_DEFAULT_ENCODING;
+            defaultEmbedding = true;
+        }
+
+        public Font getFont(String fontName, String encoding, boolean embedded, float size,
+                            int style, Color color, boolean cached) {
+            if (fontName == null || size == 0) {
+                fontName = PDF_DEFAULT_FONT;
+            }
+
+            return super.getFont(fontName, PDF_DEFAULT_ENCODING, embedded, size, style, color, cached);
+        }
+    }
+
+    private class HtmlImageLoader implements ImageProvider {
+        public Image getImage(String src, HashMap h, ChainedProperties cprops, DocListener doc) {
+            Image image = null;
+            try {
+                image = Image.getInstance(new URL(src));
+            } catch (Exception ignored) {
+            }
+            return image;
+        }
     }
 }

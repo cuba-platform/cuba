@@ -11,7 +11,6 @@
 package com.haulmont.cuba.report.formatters;
 
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
@@ -36,6 +35,7 @@ import com.sun.star.util.XReplaceable;
 import com.sun.star.util.XSearchDescriptor;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,6 +56,9 @@ public class DocFormatter extends AbstractFormatter {
     private static final String SEARCH_REGULAR_EXPRESSION = "SearchRegularExpression";
     private static final String ROOT_BAND_NAME = "Root";
 
+    private static final String PDF_OUTPUT_FILE = "writer_pdf_Export";
+    private static final String MS_WORD_OUTPUT_FILE = "MS Word 97";
+
     /**
      * Chain of responsibility for tags
      */
@@ -70,27 +73,39 @@ public class DocFormatter extends AbstractFormatter {
 
     private OOOConnection connection;
     private Band rootBand;
-    private FileDescriptor templateFileDescriptor;
-    private ReportOutputType reportOutputType;
+
     private XComponent xComponent;
     private OfficeComponent officeComponent;
 
-    public DocFormatter(FileDescriptor templateFileDescriptor, ReportOutputType reportOutputType) {
+    public DocFormatter() {
+        registerReportExtension("doc");
+        registerReportExtension("odt");
+
+        registerReportOutput(ReportOutputType.DOC);
+        registerReportOutput(ReportOutputType.PDF);
+
+        defaultOutputType = ReportOutputType.HTML;
+
+        connectToOffice();
+    }
+
+    private void connectToOffice() {
         String openOfficePath = ConfigProvider.getConfig(ServerConfig.class).getOpenOfficePath();
         try {
             connection = OOOConnector.createConnection(openOfficePath);
         } catch (Exception ex) {
             throw new FailedToConnectToOpenOfficeException("Please check OpenOffice path: " + openOfficePath);
         }
-        this.templateFileDescriptor = templateFileDescriptor;
-        this.reportOutputType = reportOutputType;
     }
 
-    public byte[] createDocument(Band rootBand) {
-        this.rootBand = rootBand;
+    public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
 
+        if (templateFile == null)
+            throw new NullPointerException();
+
+        this.rootBand = rootBand;
         try {
-            XInputStream xis = getXInputStream(templateFileDescriptor);
+            XInputStream xis = getXInputStream(templateFile);
             XComponentLoader xComponentLoader = connection.createXComponentLoader();
             xComponent = loadXComponent(xComponentLoader, xis);
 
@@ -104,23 +119,23 @@ public class DocFormatter extends AbstractFormatter {
             // Handling text
             replaceAllAliasesInDocument();
             // Saving document to output stream and closing
-            return saveAndClose(xComponent);
+            saveAndClose(xComponent, outputType, outputStream);
         } catch (java.lang.Exception ex) {
             throw new java.lang.RuntimeException(ex);
         }
     }
 
-    private byte[] saveAndClose(XComponent xComponent) throws IOException {
-        OOOutputStream ooos = new OOOutputStream();
+    private void saveAndClose(XComponent xComponent, ReportOutputType outputType, OutputStream outputStream)
+            throws IOException {
+        OOOutputStream ooos = new OOOutputStream(outputStream);
         String filterName;
-        if (ReportOutputType.PDF.equals(reportOutputType)) {
-            filterName = "writer_pdf_Export";
+        if (ReportOutputType.PDF.equals(outputType)) {
+            filterName = PDF_OUTPUT_FILE;
         } else {
-            filterName = "MS Word 97";
+            filterName = MS_WORD_OUTPUT_FILE;
         }
         saveXComponent(xComponent, ooos, filterName);
         closeXComponent(xComponent);
-        return ooos.toByteArray();
     }
 
     private void fillTables() throws com.sun.star.uno.Exception {

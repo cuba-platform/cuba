@@ -15,25 +15,64 @@ import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.report.Band;
+import com.haulmont.cuba.report.ReportOutputType;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class AbstractFormatter implements Formatter {
+public abstract class AbstractFormatter implements Formatter, ReportEngine {
     public static final String UNIVERSAL_ALIAS_PATTERN = "\\$\\{[a-z|A-Z|0-9|_|\\.]+?\\}";
     public static final String ALIAS_WITH_BAND_NAME_PATTERN = "\\$\\{[a-z|A-Z|0-9|_]+?\\.[a-z|A-Z|0-9|_|\\.]+?\\}";
 
     protected static Pattern namePattern;
+    protected FileDescriptor templateFile;
+    protected ReportOutputType defaultOutputType = null;
+
+    private Set<String> extensions = new HashSet<String>();
+    private Set<ReportOutputType> outputTypes = new HashSet<ReportOutputType>();
 
     static {
         namePattern = Pattern.compile(UNIVERSAL_ALIAS_PATTERN, Pattern.CASE_INSENSITIVE);
     }
 
-    public abstract byte[] createDocument(Band rootBand);
+    protected void registerReportExtension(String extension) {
+        if (StringUtils.isNotEmpty(extension))
+            extensions.add(extension.toLowerCase());
+    }
+
+    protected void registerReportOutput(ReportOutputType outputType){
+        outputTypes.add(outputType);
+    }
+
+    public FileDescriptor getTemplateFile() {
+        return templateFile;
+    }
+
+    public void setTemplateFile(FileDescriptor templateFile) {
+        this.templateFile = templateFile;
+    }
+
+    public byte[] createDocument(Band rootBand) {
+        ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+        createDocument(rootBand, getDefaultOutputType(), resultStream);
+        return resultStream.toByteArray();
+    }
+
+    public boolean hasSupportReport(String reportExtension, ReportOutputType outputType) {
+        return extensions.contains(reportExtension) && outputTypes.contains(outputType);
+    }
+
+    public ReportOutputType getDefaultOutputType() {
+        return defaultOutputType;
+    }
 
     protected InputStream getFileInputStream(FileDescriptor fd) {
         FileStorageAPI storageAPI = Locator.lookup(FileStorageAPI.NAME);

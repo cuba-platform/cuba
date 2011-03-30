@@ -23,10 +23,12 @@ import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.*;
-import com.haulmont.cuba.report.formatters.Formatter;
+import com.haulmont.cuba.report.formatters.exception.UnsupportedFormatException;
 import com.haulmont.cuba.report.loaders.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -64,8 +66,16 @@ public class ReportServiceBean implements ReportService {
             }
             rootBand.setBandDefinitionNames(bandDefinitionNames.get());
 
-            Formatter formatter = createFormatter(report, format);
-            return formatter.createDocument(rootBand);
+            ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+
+            ReportEngine reportEngine = getReportEngine(report);
+            if (reportEngine.hasSupportReport(report.getTemplateFileDescriptor().getExtension(), format)) {
+                reportEngine.setTemplateFile(report.getTemplateFileDescriptor());
+                reportEngine.createDocument(rootBand, format, resultStream);
+            } else
+                throw new UnsupportedFormatException();
+
+            return resultStream.toByteArray();
         } catch (ReportFormatterException ex) {
             throw ex;
         } catch (Exception e) {
@@ -133,13 +143,33 @@ public class ReportServiceBean implements ReportService {
         }
     }
 
-    private Formatter createFormatter(Report report, ReportOutputType format) throws IOException {
-        if (ReportOutputType.XLS.equals(format)) {
-            return new XLSFormatter(report.getTemplateFileDescriptor());
-        } else if (ReportOutputType.HTML.equals(format)) {
-            return new HtmlFormatter(report.getTemplateFileDescriptor());
+    private ReportEngine getReportEngine(Report report) {
+        String extension = report.getTemplateFileDescriptor().getExtension();
+        ReportEngine reportEngine = null;
+        if (StringUtils.isNotEmpty(extension)) {
+            ReportFileExtension reportExt = ReportFileExtension.fromId(extension.toLowerCase());
+            if (reportExt != null) {
+                switch (reportExt) {
+                    case DOC:
+                    case ODT:
+                        reportEngine = new DocFormatter();
+                        break;
+
+                    case HTML:
+                    case HTM:
+                        reportEngine = new HtmlFormatter();
+                        break;
+
+                    case XLS:
+                        reportEngine = new XLSFormatter();
+                        break;
+                }
+            } else
+                throw new UnsupportedFormatException();
         } else
-            return new DocFormatter(report.getTemplateFileDescriptor(), format);
+            throw new UnsupportedFormatException();
+
+        return reportEngine;
     }
 
     private Band createRootBand(BandDefinition rootBandDefinition) {

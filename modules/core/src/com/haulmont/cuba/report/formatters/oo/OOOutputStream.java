@@ -10,43 +10,67 @@
  */
 package com.haulmont.cuba.report.formatters.oo;
 
-import com.sun.star.io.BufferSizeExceededException;
-import com.sun.star.io.NotConnectedException;
 import com.sun.star.io.XOutputStream;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
-public class OOOutputStream extends ByteArrayOutputStream implements XOutputStream {
+/**
+ * Proxy stream
+ */
+public class OOOutputStream extends OutputStream implements XOutputStream {
 
-    public OOOutputStream() {
-        super(32768);
+    private OutputStream outputStream;
+
+    public OOOutputStream(OutputStream outputStream) {
+        if (outputStream == null)
+            throw new NullPointerException();
+
+        this.outputStream = outputStream;
     }
 
-    public void writeBytes(byte[] values) throws NotConnectedException, BufferSizeExceededException, com.sun.star.io.IOException {
+    @Override
+    public void write(int b) throws IOException {
+        this.outputStream.write(b);
+    }
+
+    public void writeBytes(byte[] values) throws com.sun.star.io.IOException {
         try {
-            this.write(values);
-        }
-        catch (java.io.IOException e) {
+            this.outputStream.write(values);
+        } catch (java.io.IOException e) {
             throw (new com.sun.star.io.IOException(e.getMessage()));
         }
     }
 
-    public void closeOutput() throws NotConnectedException, BufferSizeExceededException, com.sun.star.io.IOException {
+    public void closeOutput() throws com.sun.star.io.IOException {
         try {
-            super.flush();
-            super.close();
-        }
-        catch (java.io.IOException e) {
+            this.outputStream.flush();
+            this.outputStream.close();
+        } catch (java.io.IOException e) {
             throw (new com.sun.star.io.IOException(e.getMessage()));
         }
     }
 
     @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+        this.outputStream.write(b, off, len);
+    }
+
+    @Override
+    public void write(byte[] b) throws IOException {
+        this.outputStream.write(b);
+    }
+
+    @Override
     public void flush() {
         try {
-            super.flush();
+            this.outputStream.flush();
+        } catch (java.io.IOException ignored) {
         }
-        catch (java.io.IOException e) {
-        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.outputStream.close();
     }
 }
