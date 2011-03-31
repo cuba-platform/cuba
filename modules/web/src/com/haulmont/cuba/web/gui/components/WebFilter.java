@@ -261,7 +261,7 @@ public class WebFilter
                 boolean haveCorrectCondition = false;
 
                 for (Condition condition : conditions) {
-                    if (condition.getParam().getValue() != null) {
+                    if ((condition.getParam()==null) || (condition.getParam().getValue() != null)) {
                         haveCorrectCondition = true;
                         break;
                     }
