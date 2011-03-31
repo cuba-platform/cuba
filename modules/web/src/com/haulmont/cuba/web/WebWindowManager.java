@@ -72,6 +72,8 @@ public class WebWindowManager extends WindowManager {
     
     private List<String> screenIds;
 
+    private boolean allReady;
+
     public WebWindowManager(final App app) {
         this.app = app;
         app.getConnection().addListener(new UserSubstitutionListener() {
@@ -557,7 +559,7 @@ public class WebWindowManager extends WindowManager {
             log.warn("Problem closing window " + window + " : WindowOpenMode not found");
             return;
         }
-
+        allReady = false;
         closeWindow(window, openMode);
         getWindowOpenMode().remove(window);
         removeFromWindowMap(openMode.getWindow());
@@ -566,11 +568,16 @@ public class WebWindowManager extends WindowManager {
     public void checkModificationsAndCloseAll(final Runnable runIfOk, final Runnable runIfCancel) {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
+            if (!allReady && window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !getWindowOpenMode().get(window).getOpenType().equals(OpenType.DIALOG)) {
+                if (screenIds == null || (screenIds != null && screenIds.contains(window.getId())))
+                    saveScreenHistory(window, window.getCaption());
+            }
             window.saveSettings();
             if (window.getDsContext() != null && window.getDsContext().isModified()) {
                 modified = true;
             }
         }
+        allReady = true;
         if (modified) {
             showOptionDialog(
                     MessageProvider.getMessage(WebWindow.class, "closeUnsaved.caption"),
@@ -613,6 +620,7 @@ public class WebWindowManager extends WindowManager {
             }
             closeWindow(window, entries.get(i).getValue());
         }
+        allReady = false;
         getWindowOpenMode().clear();
         getCurrentWindowData().windows.clear();
         Collection windows = App.getInstance().getWindows();
@@ -628,7 +636,7 @@ public class WebWindowManager extends WindowManager {
     private void closeWindow(Window window, WindowOpenMode openMode) {
         AppWindow appWindow = app.getAppWindow();
 
-        if (window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !openMode.openType.equals(OpenType.DIALOG)) {
+        if (!allReady && window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !openMode.openType.equals(OpenType.DIALOG)) {
             if (screenIds == null || (screenIds != null && screenIds.contains(window.getId())))
                 saveScreenHistory(window, window.getCaption());
         }

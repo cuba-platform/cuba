@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler;
+import com.vaadin.terminal.gwt.client.ui.VTabsheet;
 
 import java.util.Set;
 
@@ -145,6 +146,8 @@ public class IScrollablePanel
         }
 
         rendering = false;
+
+        runWebkitOverflowAutoFix();
     }
 
     @Override
@@ -356,5 +359,20 @@ public class IScrollablePanel
     protected void onAttach() {
         super.onAttach();
         detectContainerBorders();
+    }
+
+    protected void runWebkitOverflowAutoFix() {
+        if (BrowserInfo.get().getWebkitVersion() > 0) {
+            Widget w = this;
+            Container container;
+            while ((container = Util.getLayout(w)) != null) {
+                w = (Widget) container;
+                if (w instanceof VTabsheet) {
+                    ApplicationConnection.getConsole().log("Run overflow auto fix");
+                    ((VTabsheet) w).runWebkitOverflowAutoFix();
+                    break;
+                }
+            }
+        }
     }
 }
