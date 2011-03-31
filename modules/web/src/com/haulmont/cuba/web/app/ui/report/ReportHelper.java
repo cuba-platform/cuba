@@ -109,7 +109,11 @@ public class ReportHelper {
         try {
             ReportService srv = ServiceLocator.lookup(ReportService.NAME);
             byte[] byteArr = srv.createReport(report, reportOutputType, params);
-            new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), name, exportFormat);
+
+            if (exportFormat == ExportFormat.HTML)
+                new WebExportDisplay(false, true).show(new ByteArrayDataProvider(byteArr), name, exportFormat);
+            else
+                new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), name, exportFormat);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
