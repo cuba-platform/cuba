@@ -38,7 +38,7 @@ import java.util.LinkedList;
 import java.util.zip.CRC32;
 
 public class ImportExportHelper {
-    private static final String ENCODING = "CP866";
+    protected static final String ENCODING = "CP866";
 
     public static byte[] loadAndCompress(Collection<FileDescriptor> files) throws IOException, FileStorageException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
